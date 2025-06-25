@@ -7,38 +7,29 @@ import { Subscriptions } from '../../../../../app/models/client';
 
 const sortOptions = { sort: { lm: -1 } } as const;
 
-export const useTeamsListChildrenUpdate = (
-	parentRid: string,
-	teamId?: string | null,
-	sidepanelItems?: 'channels' | 'discussions' | null,
-) => {
+export const useTeamsListChildrenUpdate = (parentRid: string, teamId?: string | null) => {
 	const query = useMemo(() => {
 		const query: Filter<ISubscription> = {
 			$or: [
 				{
 					_id: parentRid,
+					prid: parentRid,
 				},
 			],
 		};
 
-		if ((!sidepanelItems || sidepanelItems === 'discussions') && query.$or) {
-			query.$or.push({
-				prid: parentRid,
-			});
-		}
-
-		if ((!sidepanelItems || sidepanelItems === 'channels') && teamId && query.$or) {
+		if (teamId && query.$or) {
 			query.$or.push({
 				teamId,
 			});
 		}
 		return query;
-	}, [parentRid, teamId, sidepanelItems]);
+	}, [parentRid, teamId]);
 
 	const result = useQuery({
-		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems],
+		queryKey: ['sidepanel', 'list', parentRid],
 		queryFn: () => Subscriptions.find(query, sortOptions).fetch(),
-		enabled: sidepanelItems !== null && teamId !== null,
+		enabled: teamId !== null,
 		refetchInterval: 5 * 60 * 1000,
 		placeholderData: keepPreviousData,
 	});
