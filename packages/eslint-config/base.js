@@ -142,10 +142,18 @@ export function defineConfig(config = {}) {
 			},
 		},
 		config,
+		{
+			files: [
+				'**/*.spec.ts',
+				'**/__tests__/**/*.ts',
+				'**/*.test.ts',
+				'**/tests/**/*.ts',
+				'**/__mocks__/**/*.ts',
+				'**/__examples__/**/*.ts',
+			],
+			extends: [tseslint.configs.disableTypeChecked],
+		},
 	);
 }
 
-export const config = defineConfig({
-	files: ['**/*.spec.ts', '**/__tests__/**/*.ts', '**/*.test.ts', '**/tests/**/*.ts', '**/__mocks__/**/*.ts', '**/__examples__/**/*.ts'],
-	extends: [tseslint.configs.disableTypeChecked],
-});
+export const config = defineConfig();
