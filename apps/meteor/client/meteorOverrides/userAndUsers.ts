@@ -10,12 +10,12 @@ Tracker.autorun((computation) => {
 	const currentUid = Meteor.userId();
 	if (currentUid) {
 		const unsubscribe = Users.use.subscribe((state, prevState) => {
-			if (state.has(currentUid) && prevState.has(currentUid)) {
+			if (state.records.size !== prevState.records.size) {
 				dep.changed();
 			}
 		});
 		computation.onInvalidate(() => {
-			unsubscribe?.();
+			unsubscribe();
 		});
 		return;
 	}
