@@ -11,12 +11,13 @@ import {
 	Button,
 	Callout,
 } from '@rocket.chat/fuselage';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { Form, ActionLink, FormHeader, FormContainer, FormFooter } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useEffect, useId, useState } from 'react';
+import { useCallback, useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -65,7 +66,6 @@ const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): R
 		handleSubmit,
 		setError,
 		clearErrors,
-		setFocus,
 		getValues,
 		formState: { errors },
 	} = useForm<{ usernameOrEmail: string; password: string }>({
@@ -105,9 +105,18 @@ const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): R
 	const usernameId = useId();
 	const passwordId = useId();
 
-	useEffect(() => {
-		setFocus('usernameOrEmail');
-	}, [errorOnSubmit, setFocus]);
+	const autoFocusRef = useCallback((node: HTMLElement) => {
+		if (!node) {
+			return;
+		}
+
+		node.focus();
+	}, []);
+
+	const { ref, ...usernameOrEmailField } = register('usernameOrEmail', {
+		required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
+	});
+	const usernameOrEmailRef = useMergedRefs(autoFocusRef, ref);
 
 	const renderErrorOnSubmit = ([error, message]: Exclude<LoginErrorState, undefined>) => {
 		if (error in LOGIN_SUBMIT_ERRORS) {
@@ -152,9 +161,8 @@ const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): R
 								</FieldLabel>
 								<FieldRow>
 									<TextInput
-										{...register('usernameOrEmail', {
-											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
-										})}
+										ref={usernameOrEmailRef}
+										{...usernameOrEmailField}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={errors.usernameOrEmail?.message}
 										aria-invalid={errors.usernameOrEmail || errorOnSubmit ? 'true' : 'false'}
