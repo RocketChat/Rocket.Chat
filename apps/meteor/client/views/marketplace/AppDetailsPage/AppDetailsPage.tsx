@@ -14,7 +14,7 @@ import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
 import AppLogs from './tabs/AppLogs';
-import AppLogsFilterContextualBar from './tabs/AppLogs/Filters/AppLogsFilterContextualBar';
+import { AppLogsFilterContextualBar } from './tabs/AppLogs/Filters/AppLogsFilterContextualBar';
 import AppReleases from './tabs/AppReleases';
 import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';

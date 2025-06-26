@@ -125,7 +125,7 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 		['last30Minutes', t('Last_30_minutes')],
 		['last1Hour', t('Last_1_hour')],
 		['thisWeek', t('This_week')],
-		['custom', compactView ? t('Custom_time_range') : customTimeRangeLabel],
+		...(compactView ? [] : [['custom', customTimeRangeLabel]]),
 	] as SelectOption[];
 
 	return (

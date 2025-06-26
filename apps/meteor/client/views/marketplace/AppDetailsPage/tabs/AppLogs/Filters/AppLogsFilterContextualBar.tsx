@@ -1,5 +1,4 @@
 import { Box, Label } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -20,12 +19,10 @@ type AppLogsFilterContextualBarProps = {
 	onClose: () => void;
 };
 
-const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLogsFilterContextualBarProps) => {
+export const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLogsFilterContextualBarProps) => {
 	const { t } = useTranslation();
 
 	const { control } = useFormContext();
-
-	const formId = useUniqueId();
 
 	return (
 		<ContextualbarDialog onClose={onClose}>
@@ -34,10 +31,12 @@ const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLogsFilter
 				<ContextualbarTitle>{t('Filters')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent is='form' id={formId}>
+			<ContextualbarScrollableContent is='form'>
 				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label htmlFor='timeFilter'>{t('Time')}</Label>
-					<TimeFilterSelect id='timeFilter' compactView={true} />
+					<Label id='timeFilterLabel' htmlFor='timeFilter'>
+						{t('Time')}
+					</Label>
+					<TimeFilterSelect aria-labelledby='timeFilterLabel' id='timeFilter' compactView={true} />
 				</Box>
 				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
@@ -48,16 +47,26 @@ const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLogsFilter
 					<DateTimeFilter control={control} type='end' />
 				</Box>
 				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label htmlFor='instanceFilter'>{t('Instance')}</Label>
-					<Controller control={control} name='instance' render={({ field }) => <InstanceFilterSelect id='instanceFilter' {...field} />} />
+					<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
+						{t('Instance')}
+					</Label>
+					<Controller
+						control={control}
+						name='instance'
+						render={({ field }) => <InstanceFilterSelect aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />}
+					/>
 				</Box>
 				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label>{t('Severity')}</Label>
-					<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
+					<Label id='severityFilterLabel' htmlFor='severityFilter'>
+						{t('Severity')}
+					</Label>
+					<Controller
+						control={control}
+						name='severity'
+						render={({ field }) => <SeverityFilterSelect aria-labelledby='severityFilterLabel' id='severityFilter' {...field} />}
+					/>
 				</Box>
 			</ContextualbarScrollableContent>
 		</ContextualbarDialog>
 	);
 };
-
-export default AppLogsFilterContextualBar;
