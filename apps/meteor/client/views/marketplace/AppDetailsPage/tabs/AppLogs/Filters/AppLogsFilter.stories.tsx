@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -10,20 +11,19 @@ export default {
 	args: {},
 	decorators: [
 		mockAppRoot()
-			// @ts-expect-error mock endpoint while we do not have the real one
-			.withEndpoint('GET', '/v1/apps/instances', () => [
-				['instanceId', 'instanceName'],
-				['node1', 'node1'],
-				['node2', 'node2'],
-				['node3', 'node3'],
-				['node4', 'node4'],
-			])
-			.withTranslations('en', 'core', { App_name: 'App Name' })
+			.withEndpoint('GET', '/apps/logs/instanceIds', () => ({
+				success: true,
+				instanceIds: ['instance-1', 'instance-2', 'instance-3'],
+			}))
 			.buildStoryDecorator(),
 		(fn) => {
 			const methods = useForm({});
 
-			return <FormProvider {...methods}>{fn()}</FormProvider>;
+			return (
+				<FormProvider {...methods}>
+					<Box p={16}>{fn()}</Box>
+				</FormProvider>
+			);
 		},
 	],
 	parameters: {
@@ -31,4 +31,4 @@ export default {
 	},
 } satisfies Meta<typeof AppLogsFilter>;
 
-export const Simple = () => <AppLogsFilter />;
+export const Filter = () => <AppLogsFilter />;

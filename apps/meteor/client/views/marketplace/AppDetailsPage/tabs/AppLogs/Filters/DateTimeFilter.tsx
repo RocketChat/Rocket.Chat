@@ -19,7 +19,14 @@ const DateTimeFilter = ({ type, control, id, error }: DateTimeFilterProps) => {
 					<Controller
 						control={control}
 						name={type === 'start' ? 'startDate' : 'endDate'}
-						render={({ field }) => <InputBox type='date' {...field} error={error ? t('Required_field') : undefined} />}
+						render={({ field }) => (
+							<InputBox
+								aria-label={type === 'start' ? 'Start Date' : 'End Date'}
+								type='date'
+								{...field}
+								error={error ? t('Required_field') : undefined}
+							/>
+						)}
 					/>
 				</Margins>
 
@@ -27,7 +34,7 @@ const DateTimeFilter = ({ type, control, id, error }: DateTimeFilterProps) => {
 					<Controller
 						control={control}
 						name={type === 'start' ? 'startTime' : 'endTime'}
-						render={({ field }) => <InputBox type='time' {...field} />}
+						render={({ field }) => <InputBox aria-label={type === 'start' ? 'Start Time' : 'End Time'} type='time' {...field} />}
 					/>
 				</Margins>
 			</Box>
