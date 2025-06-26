@@ -1,13 +1,9 @@
-import { isEmptyArray } from './comparisons';
-
 const isNullDocument = (doc: unknown): doc is undefined | null => doc === undefined || doc === null;
 
 const isRecordDocument = (doc: unknown): doc is Record<string, unknown> =>
 	doc !== undefined && doc !== null && (typeof doc === 'object' || typeof doc === 'function');
 
-const isIndexedByNumber = <T>(value: unknown, isIndexedByNumber: boolean): value is T[] => Array.isArray(value) || isIndexedByNumber;
-
-export const createLookupFunction = <T>(key: string): ((doc: T) => unknown[]) => {
+export const createLookupFunction = (key: string): (<T>(doc: T) => unknown[]) => {
 	const [first, rest] = key.split(/\.(.+)/);
 
 	if (!rest) {
@@ -28,13 +24,20 @@ export const createLookupFunction = <T>(key: string): ((doc: T) => unknown[]) =>
 			return [undefined];
 		}
 
-		const firstLevel = doc[first];
+		const nestedDoc = doc[first];
 
-		if (isEmptyArray(firstLevel)) {
-			return [undefined];
+		if (Array.isArray(nestedDoc)) {
+			if (nestedDoc.length === 0) {
+				return [undefined];
+			}
+
+			if (nextIsNumeric) {
+				return lookupRest(nestedDoc).concat(nestedDoc.flatMap((item) => lookupRest(item)));
+			}
+
+			return nestedDoc.flatMap((item) => lookupRest(item));
 		}
 
-		const docs = isIndexedByNumber(firstLevel, nextIsNumeric) ? firstLevel : [firstLevel as T];
-		return Array.prototype.concat.apply([], docs.map(lookupRest));
+		return lookupRest(nestedDoc);
 	};
 };
