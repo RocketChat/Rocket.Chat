@@ -7,7 +7,7 @@ import { axe } from 'jest-axe';
 
 import * as stories from './AppLogsFilter.stories';
 
-const { Filter } = composeStories(stories);
+const { Default } = composeStories(stories);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -29,18 +29,16 @@ test.each(testCases)(`renders AppLogsItem without crashing`, async (_storyname, 
 test.each(testCases)('AppLogsItem should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 
-	const results = await axe(container, {
-		// TODO: Remove this once our select component is compliant. The way our select component is implemented causes this error.
-		rules: {
-			'nested-interactive': { enabled: false },
-		},
-	});
+	/**
+	 ** Disable 'nested-interactive' rule because our `Select` component is still not a11y compliant
+	 **/
+	const results = await axe(container, { rules: { 'nested-interactive': { enabled: false } } });
 
 	expect(results).toHaveNoViolations();
 });
 
 it('Instance select should have correct options', async () => {
-	render(<Filter />, {
+	render(<Default />, {
 		wrapper: mockAppRoot().build(),
 	});
 
@@ -55,7 +53,7 @@ it('Instance select should have correct options', async () => {
 });
 
 it('Time select should open modal when custom time range is selected', async () => {
-	render(<Filter />, {
+	render(<Default />, {
 		wrapper: mockAppRoot().build(),
 	});
 

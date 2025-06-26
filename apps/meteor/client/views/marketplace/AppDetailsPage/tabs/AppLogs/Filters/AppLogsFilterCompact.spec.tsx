@@ -6,7 +6,7 @@ import { axe } from 'jest-axe';
 
 import * as stories from './AppLogsFilter.stories';
 
-const { Filter } = composeStories(stories);
+const { Default } = composeStories(stories);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -20,18 +20,13 @@ test.each(testCases)(`renders AppLogsItem without crashing`, async (_storyname, 
 test.each(testCases)('AppLogsItem should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 
-	const results = await axe(container, {
-		// TODO: Remove this once our select component is compliant. The way our select component is implemented causes this error.
-		rules: {
-			'nested-interactive': { enabled: false },
-		},
-	});
+	const results = await axe(container);
 
 	expect(results).toHaveNoViolations();
 });
 
 it('Should show filter button in contextual bar', async () => {
-	render(<Filter />, {
+	render(<Default />, {
 		wrapper: mockAppRoot().build(),
 	});
 
@@ -39,7 +34,7 @@ it('Should show filter button in contextual bar', async () => {
 });
 
 it('Should not show instance, time, and severity filters', async () => {
-	render(<Filter />, {
+	render(<Default />, {
 		wrapper: mockAppRoot().build(),
 	});
 

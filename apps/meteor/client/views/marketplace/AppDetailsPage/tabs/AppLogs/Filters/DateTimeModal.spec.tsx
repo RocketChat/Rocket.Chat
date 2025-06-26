@@ -7,7 +7,7 @@ import { axe } from 'jest-axe';
 
 import * as stories from './DateTimeModal.stories';
 
-const { DateTimeModalDefault } = composeStories(stories);
+const { Default } = composeStories(stories);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -27,7 +27,7 @@ test.each(testCases)('AppLogsItem should have no a11y violations', async (_story
 });
 
 it('should not enable apply button when start Date and end Date are not selected', async () => {
-	render(<DateTimeModalDefault />, { wrapper: mockAppRoot().build() });
+	render(<Default />, { wrapper: mockAppRoot().build() });
 	const startDate = screen.getByLabelText('Start Date');
 	const endDate = screen.getByLabelText('End Date');
 	const startTime = screen.getByLabelText('Start Time');
