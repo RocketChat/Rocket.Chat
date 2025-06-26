@@ -1,51 +1,49 @@
 import { compareBSONValues } from './bson';
 import { isEmptyArray } from './comparisons';
 import { createLookupFunction } from './lookups';
-import type { Sort } from './types';
+import type { LookupBranch, Sort } from './types';
 
 const createSortSpecParts = <T>(
 	spec: Sort,
 ): {
-	lookup: (doc: T) => unknown[];
+	lookup: (doc: T) => LookupBranch[];
 	ascending: boolean;
 }[] => {
 	if (Array.isArray(spec)) {
 		return spec.map((value) => {
 			if (typeof value === 'string') {
 				return {
-					lookup: createLookupFunction(value),
+					lookup: createLookupFunction(value, { forSort: true }),
 					ascending: true,
 				};
 			}
 
 			return {
-				lookup: createLookupFunction(value[0]),
+				lookup: createLookupFunction(value[0], { forSort: true }),
 				ascending: value[1] !== 'desc',
 			};
 		});
 	}
 
 	return Object.entries(spec).map(([key, value]) => ({
-		lookup: createLookupFunction(key),
+		lookup: createLookupFunction(key, { forSort: true }),
 		ascending: value >= 0,
 	}));
 };
 
-const reduceValue = (branchValues: unknown[], ascending: boolean): unknown =>
-	([] as unknown[])
-		.concat(
-			...branchValues.map<unknown[]>((branchValue) => {
-				if (!Array.isArray(branchValue)) {
-					return [branchValue];
-				}
+const reduceValue = (branchValues: LookupBranch[], ascending: boolean): unknown =>
+	branchValues
+		.flatMap(({ value }) => {
+			if (!Array.isArray(value)) {
+				return [value];
+			}
 
-				if (isEmptyArray(branchValue)) {
-					return [undefined];
-				}
+			if (isEmptyArray(value)) {
+				return [undefined];
+			}
 
-				return branchValue;
-			}),
-		)
+			return value;
+		})
 		.reduce((reduced, value) => {
 			const cmp = compareBSONValues(reduced, value);
 			if ((ascending && cmp > 0) || (!ascending && cmp < 0)) {
@@ -59,18 +57,18 @@ export const compileSort = (spec: Sort): ((a: unknown, b: unknown) => number) =>
 	const sortSpecParts = createSortSpecParts(spec);
 
 	if (sortSpecParts.length === 0) {
-		return (): number => 0;
+		return () => 0;
 	}
 
-	return (a: unknown, b: unknown): number => {
+	return (a, b) => {
 		for (let i = 0; i < sortSpecParts.length; ++i) {
-			const specPart = sortSpecParts[i];
-			const aValue = reduceValue(specPart.lookup(a), specPart.ascending);
-			const bValue = reduceValue(specPart.lookup(b), specPart.ascending);
+			const { lookup, ascending } = sortSpecParts[i];
+			const aValue = reduceValue(lookup(a), ascending);
+			const bValue = reduceValue(lookup(b), ascending);
 			const compare = compareBSONValues(aValue, bValue);
 
 			if (compare !== 0) {
-				return specPart.ascending ? compare : -compare;
+				return ascending ? compare : -compare;
 			}
 		}
 
