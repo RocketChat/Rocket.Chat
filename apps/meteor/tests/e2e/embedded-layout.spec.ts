@@ -11,16 +11,18 @@ test.describe('embedded-layout', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannelId: string;
 	let notMemberChannelId: string;
+	let joinChannelId: string;
 
 	test.beforeAll(async ({ api }) => {
-		[targetChannelId, notMemberChannelId] = await Promise.all([
+		[targetChannelId, notMemberChannelId, joinChannelId] = await Promise.all([
 			createTargetChannel(api, { members: ['user1'] }),
+			createTargetChannel(api, { members: ['user2'] }),
 			createTargetChannel(api, { members: ['user2'] }),
 		]);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([deleteChannel(api, targetChannelId), deleteChannel(api, notMemberChannelId)]);
+		await Promise.all([deleteChannel(api, targetChannelId), deleteChannel(api, notMemberChannelId), deleteChannel(api, joinChannelId)]);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -105,7 +107,7 @@ test.describe('embedded-layout', () => {
 
 		test('should allow joining channel and enable messaging', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(notMemberChannelId);
+			await poHomeChannel.sidenav.openChat(joinChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
 			await poHomeChannel.btnJoinRoom.click();
