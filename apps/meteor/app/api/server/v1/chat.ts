@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IUser, IRoom, IThreadMainMessage, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IThreadMainMessage, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
@@ -29,6 +29,7 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -318,6 +319,7 @@ const chatPostMessageEndpoints = API.v1.post(
 	'chat.postMessage',
 	{
 		authRequired: true,
+		validateParams: isChatPostMessageProps,
 		body: isChatPostMessageProps,
 		response: {
 			400: ajv.compile({
@@ -351,7 +353,7 @@ const chatPostMessageEndpoints = API.v1.post(
 			}),
 			200: ajv.compile<{
 				ts: number;
-				channel: string | string[];
+				channel: string;
 				message: IMessage;
 				success: boolean;
 			}>({
@@ -426,7 +428,7 @@ const chatPostMessageEndpoints = API.v1.post(
 		},
 	},
 	async function action() {
-		const { text, attachments } = this.bodyParams;
+		const { text, attachments } = this.bodyParams as ChatPostMessage;
 		const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
 		if (text && text.length > maxAllowedSize) {
@@ -451,7 +453,7 @@ const chatPostMessageEndpoints = API.v1.post(
 			return API.v1.failure('unknown-error');
 		}
 
-		const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
+		const [message] = (await normalizeMessagesForUser([messageReturn.message], this.userId)) as IMessage[];
 
 		return API.v1.success({
 			ts: Date.now(),
