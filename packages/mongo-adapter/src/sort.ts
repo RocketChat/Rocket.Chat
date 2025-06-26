@@ -13,20 +13,20 @@ const createSortSpecParts = <T>(
 		return spec.map((value) => {
 			if (typeof value === 'string') {
 				return {
-					lookup: createLookupFunction<T>(value),
+					lookup: createLookupFunction(value),
 					ascending: true,
 				};
 			}
 
 			return {
-				lookup: createLookupFunction<T>(value[0]),
+				lookup: createLookupFunction(value[0]),
 				ascending: value[1] !== 'desc',
 			};
 		});
 	}
 
 	return Object.entries(spec).map(([key, value]) => ({
-		lookup: createLookupFunction<T>(key),
+		lookup: createLookupFunction(key),
 		ascending: value >= 0,
 	}));
 };
