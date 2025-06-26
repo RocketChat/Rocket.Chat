@@ -62,6 +62,8 @@ COPY ./packages/instance-status/dist packages/instance-status/dist
 COPY ./packages/tracing/package.json packages/tracing/package.json
 COPY ./packages/tracing/dist packages/tracing/dist
 
+COPY ./packages/tsconfig packages/tsconfig
+
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
 

@@ -1,10 +1,10 @@
+import { Router } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
 import express from 'express';
 import request from 'supertest';
 
 import { cors } from './cors';
 import { CachedSettings } from '../../../settings/server/CachedSettings';
-import { Router } from '../router';
 
 describe('Cors middleware', () => {
 	it('should return allow-origin header for GET if CORS enabled', async () => {

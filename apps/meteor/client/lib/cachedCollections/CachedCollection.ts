@@ -147,28 +147,32 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		const data = await this.callLoad();
 		this.log(`${data.length} records loaded from server`);
 
-		const newRecords = data.map((record) => this.handleLoadFromServer(record)).filter((record) => hasId(record));
+		const newRecords = data.map((record) => {
+			const mapped = this.mapRecord(record);
 
-		newRecords.forEach((record) => {
-			if (hasUpdatedAt(record) && record._updatedAt > this.updatedAt) {
-				this.updatedAt = record._updatedAt;
+			if (hasUpdatedAt(mapped) && mapped._updatedAt > this.updatedAt) {
+				this.updatedAt = mapped._updatedAt;
 			}
+
+			return mapped;
 		});
 
 		this.collection.state.storeMany(newRecords);
+		this.handleLoadedFromServer(newRecords);
+
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
 
-	protected handleLoadFromServer(record: U): T {
+	protected mapRecord(record: U): T {
 		return record as unknown as T;
 	}
 
-	protected handleReceived(record: U, _action: 'removed' | 'changed'): T {
-		return record as unknown as T;
+	protected handleLoadedFromServer(_records: T[]): void {
+		// This method can be overridden to handle records after they are loaded from the server
 	}
 
-	protected handleSync(record: U, _action: 'removed' | 'changed'): T {
-		return record as unknown as T;
+	protected handleSyncEvent(_action: 'removed' | 'changed', _record: T): void {
+		// This method can be overridden to handle sync events
 	}
 
 	private async loadFromServerAndPopulate() {
@@ -203,17 +207,11 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	}
 
 	protected async handleRecordEvent(action: 'removed' | 'changed', record: U) {
-		const newRecord = this.handleReceived(record, action);
-
-		if (!hasId(newRecord)) {
-			return;
-		}
+		const newRecord = this.mapRecord(record);
 
 		if (action === 'removed') {
 			this.collection.state.delete(newRecord._id);
 		} else {
-			const { _id } = newRecord;
-			if (!_id) return;
 			this.collection.state.store(newRecord);
 		}
 
@@ -247,12 +245,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		if (data.update && data.update.length > 0) {
 			this.log(`${data.update.length} records updated in sync`);
 			for (const record of data.update) {
-				const action = 'changed';
-				const newRecord = this.handleSync(record, action);
-
-				if (!hasId(newRecord)) {
-					continue;
-				}
+				const newRecord = this.mapRecord(record);
 
 				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
 				changes.push({
@@ -261,6 +254,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
+						this.handleSyncEvent('changed', newRecord);
 					},
 					timestamp: actionTime.getTime(),
 				});
@@ -270,10 +264,9 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		if (data.remove && data.remove.length > 0) {
 			this.log(`${data.remove.length} records removed in sync`);
 			for (const record of data.remove) {
-				const action = 'removed';
-				const newRecord = this.handleSync(record, action);
+				const newRecord = this.mapRecord(record);
 
-				if (!hasId(newRecord) || !hasDeletedAt(newRecord)) {
+				if (!hasDeletedAt(newRecord)) {
 					continue;
 				}
 
@@ -284,6 +277,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
+						this.handleSyncEvent('removed', newRecord);
 					},
 					timestamp: actionTime.getTime(),
 				});
