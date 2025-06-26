@@ -41,7 +41,7 @@
 		"sharp": "^0.33.5",
 		"underscore": "^1.13.7",
 		"uuid": "^11.0.3",
-		"ws": "^8.18.0"
+		"ws": "^8.18.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
@@ -49,7 +49,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.2",
 		"@types/gc-stats": "^1.4.3",
-		"@types/node": "~22.14.0",
+		"@types/node": "~22.14.1",
 		"@types/polka": "^0.5.7",
 		"@types/underscore": "^1.13.0",
 		"@types/uuid": "^10.0.0",

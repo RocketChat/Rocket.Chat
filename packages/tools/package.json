@@ -7,7 +7,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~29.5.14",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
+		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {
@@ -25,6 +25,6 @@
 		"/dist"
 	],
 	"dependencies": {
-		"moment-timezone": "^0.5.46"
+		"moment-timezone": "^0.5.48"
 	}
 }
