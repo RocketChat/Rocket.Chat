@@ -2,20 +2,16 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { InputBoxSkeleton, Select } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
+import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type InstanceFilterSelectProps = {
-	id: string;
-};
+type InstanceFilterSelectProps = Omit<ComponentProps<typeof Select>, 'options'>;
 
 // TODO: Requires endpoint to fetch instances
-export const InstanceFilterSelect = ({ id }: InstanceFilterSelectProps) => {
+export const InstanceFilterSelect = ({ ...props }: InstanceFilterSelectProps) => {
 	const { t } = useTranslation();
 	const getOptions = useEndpoint('GET', '/apps/logs/instanceIds');
-
-	const { control } = useFormContext();
 
 	const { data, isPending } = useQuery({
 		queryKey: ['app-logs-filter-instances'],
@@ -28,14 +24,8 @@ export const InstanceFilterSelect = ({ id }: InstanceFilterSelectProps) => {
 	}, [data, t]);
 
 	if (isPending) {
-		return <InputBoxSkeleton aria-label={t('Time')} aria-busy />;
+		return <InputBoxSkeleton aria-labelledby={props['aria-labelledby']} aria-busy />;
 	}
 
-	return (
-		<Controller
-			control={control}
-			name='instance'
-			render={({ field }) => <Select id={id} aria-label={t('Time')} options={options} {...field} />}
-		/>
-	);
+	return <Select options={options} {...props} />;
 };
