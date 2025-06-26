@@ -7313,15 +7313,15 @@ __metadata:
   resolution: "@rocket.chat/eslint-config@workspace:packages/eslint-config"
   dependencies:
     "@eslint/js": "npm:^9.29.0"
-    "@types/eslint-plugin-security": "npm:^3.0.0"
+    "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:^9.29.0"
     eslint-config-prettier: "npm:^10.1.5"
-    eslint-import-resolver-typescript: "npm:^4.4.3"
-    eslint-plugin-import-x: "npm:^4.15.2"
+    eslint-import-resolver-typescript: "npm:^4.4.4"
+    eslint-plugin-import-x: "npm:^4.16.0"
     eslint-plugin-jest: "npm:^29.0.1"
     eslint-plugin-jsx-a11y: "npm:^6.10.2"
     eslint-plugin-mocha: "npm:^11.1.0"
-    eslint-plugin-prettier: "npm:^5.5.0"
+    eslint-plugin-prettier: "npm:^5.5.1"
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-react-hooks: "npm:^5.2.0"
     eslint-plugin-react-refresh: "npm:^0.4.20"
@@ -11313,15 +11313,6 @@ __metadata:
   version: 2.2.9
   resolution: "@types/emojione@npm:2.2.9"
   checksum: 10/ec16f96f8d9886dc3f82bd8aa3ee34f320069771d9a82d01c3c20da9c0c13c7b07347eff2912b914caf3416e3cedea4b963ecc3331c23d743270c975a91ff4d4
-  languageName: node
-  linkType: hard
-
-"@types/eslint-plugin-security@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@types/eslint-plugin-security@npm:3.0.0"
-  dependencies:
-    "@types/eslint": "npm:*"
-  checksum: 10/00ed770a5184cdd7853964c5f7b4ddf782178c29ea2eccd166b67e7f999d5b66fc6d5a4f0913c9d19ad2f495ebe5cf4148a36501bf6bf823f71f245ec8f7d9dc
   languageName: node
   linkType: hard
 
@@ -18994,15 +18985,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-import-resolver-typescript@npm:^4.4.3":
-  version: 4.4.3
-  resolution: "eslint-import-resolver-typescript@npm:4.4.3"
+"eslint-import-resolver-typescript@npm:^4.4.4":
+  version: 4.4.4
+  resolution: "eslint-import-resolver-typescript@npm:4.4.4"
   dependencies:
     debug: "npm:^4.4.1"
     eslint-import-context: "npm:^0.1.8"
     get-tsconfig: "npm:^4.10.1"
     is-bun-module: "npm:^2.0.0"
-    stable-hash-x: "npm:^0.1.1"
+    stable-hash-x: "npm:^0.2.0"
     tinyglobby: "npm:^0.2.14"
     unrs-resolver: "npm:^1.7.11"
   peerDependencies:
@@ -19014,13 +19005,13 @@ __metadata:
       optional: true
     eslint-plugin-import-x:
       optional: true
-  checksum: 10/1811e1122213b2817363889402f461ab35542c4a728d43666a64752fa7e8712d9b40af4047aec98035e34ff57588b8d876895f435cbc32e92a10c64b02ebc072
+  checksum: 10/4f871f6d1a04c55c2087c5ff1030f783a29abb59901b354d7ef58a0fc687d379dcbd08cf377cddeb7e19f26dd380d32d85ee4760e9410a059639d2b3df7d1ff3
   languageName: node
   linkType: hard
 
-"eslint-plugin-import-x@npm:^4.15.2":
-  version: 4.15.2
-  resolution: "eslint-plugin-import-x@npm:4.15.2"
+"eslint-plugin-import-x@npm:^4.16.0":
+  version: 4.16.0
+  resolution: "eslint-plugin-import-x@npm:4.16.0"
   dependencies:
     "@typescript-eslint/types": "npm:^8.34.0"
     comment-parser: "npm:^1.4.1"
@@ -19040,7 +19031,7 @@ __metadata:
       optional: true
     eslint-import-resolver-node:
       optional: true
-  checksum: 10/5b0cedb7fa3dc5ecedddaa2dd08719429f717b3d3ff5986e7b7523db3ddd88b1dff4a0a56c3326f83eefd5d6971a30ecb5ce767ba2f1dfd449f4b9d77217f9db
+  checksum: 10/3e9f57e1d4524a35d1f069022768eba15b640f12d134c0f14a42e292714fbc3a1d21da561c650a0329c642b07e993ed7cb60c62fd40f89650017b647275dce34
   languageName: node
   linkType: hard
 
@@ -19099,7 +19090,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prettier@npm:^5.5.0":
+"eslint-plugin-prettier@npm:^5.5.1":
   version: 5.5.1
   resolution: "eslint-plugin-prettier@npm:5.5.1"
   dependencies:
@@ -32528,6 +32519,13 @@ __metadata:
   version: 0.1.1
   resolution: "stable-hash-x@npm:0.1.1"
   checksum: 10/c5fc31f13a8736c46ad4ec73ae307e8378d60123b31db218008c0f0a85d047f50df09aef8517108fac0c72ee9825e81a10ba6a1bc6b87558ecc056d2684bc547
+  languageName: node
+  linkType: hard
+
+"stable-hash-x@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "stable-hash-x@npm:0.2.0"
+  checksum: 10/136f05d0e4d441876012b423541476ff5b695c93b56d1959560be858b9e324ea6de6c16ecbd735a040ee8396427dd867bed0bf90b2cdb1fc422566747b91a0e5
   languageName: node
   linkType: hard
 

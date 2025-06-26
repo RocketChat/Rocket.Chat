@@ -1,6 +1,4 @@
-// @ts-check
-
-import tseslint from 'typescript-eslint';
+import tseslint, { type ConfigWithExtends } from 'typescript-eslint';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -10,19 +8,23 @@ import storybook from 'eslint-plugin-storybook';
 import globals from 'globals';
 import { config as base } from './base.js';
 
-/**
- * A shared ESLint configuration for the repository
- *
- * @param {import('typescript-eslint').ConfigWithExtends} [config={}] - Additional configuration options to extend the base config.
- * @return {import('typescript-eslint').ConfigArray} The complete ESLint configuration.
- */
-export function defineConfig(config = {}) {
+export function defineConfig({ languageOptions, ...config }: ConfigWithExtends = {}) {
 	return tseslint.config(
 		...base,
-		react.configs.flat.recommended,
-		react.configs.flat['jsx-runtime'],
 		{
+			plugins: {
+				react: react,
+			},
+			languageOptions: {
+				parserOptions: {
+					ecmaFeatures: {
+						jsx: true,
+					},
+					jsxPragma: null,
+				},
+			},
 			rules: {
+				...react.configs.flat.recommended.rules,
 				'react/no-unescaped-entities': 'warn',
 				'react/no-children-prop': 'warn',
 				'react/prop-types': 'warn',
@@ -86,9 +88,10 @@ export function defineConfig(config = {}) {
 		{
 			languageOptions: {
 				globals: globals.browser,
-				...config.languageOptions,
+				...languageOptions,
 			},
 		},
+		config,
 	);
 }
 

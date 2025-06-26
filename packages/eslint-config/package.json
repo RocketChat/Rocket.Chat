@@ -3,17 +3,20 @@
 	"type": "module",
 	"version": "0.7.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
+	"scripts": {
+		"build": "tsc"
+	},
 	"devDependencies": {
 		"@eslint/js": "^9.29.0",
-		"@types/eslint-plugin-security": "^3.0.0",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "^9.29.0",
 		"eslint-config-prettier": "^10.1.5",
-		"eslint-import-resolver-typescript": "^4.4.3",
-		"eslint-plugin-import-x": "^4.15.2",
+		"eslint-import-resolver-typescript": "^4.4.4",
+		"eslint-plugin-import-x": "^4.16.0",
 		"eslint-plugin-jest": "^29.0.1",
 		"eslint-plugin-jsx-a11y": "^6.10.2",
 		"eslint-plugin-mocha": "^11.1.0",
-		"eslint-plugin-prettier": "^5.5.0",
+		"eslint-plugin-prettier": "^5.5.1",
 		"eslint-plugin-react": "^7.37.5",
 		"eslint-plugin-react-hooks": "^5.2.0",
 		"eslint-plugin-react-refresh": "^0.4.20",
@@ -25,10 +28,6 @@
 		"typescript-eslint": "^8.35.0"
 	},
 	"exports": {
-		".": "./index.js",
-		"./base": "./base.js",
-		"./jest": "./jest.js",
-		"./mocha": "./mocha.js",
-		"./react": "./react.js"
+		"./*": "./dist/*.js"
 	}
 }

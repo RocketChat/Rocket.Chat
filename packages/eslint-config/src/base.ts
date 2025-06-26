@@ -1,8 +1,3 @@
-// @ts-check
-/**
- * @import { ConfigWithExtends, ConfigArray } from 'typescript-eslint';
- */
-import { globalIgnores } from 'eslint/config';
 import eslint from '@eslint/js';
 import prettier from 'eslint-config-prettier/flat';
 import tseslint from 'typescript-eslint';
@@ -10,16 +5,10 @@ import globals from 'globals';
 import { importX } from 'eslint-plugin-import-x';
 import security from 'eslint-plugin-security';
 
-/**
- * A shared ESLint configuration for the repository
- *
- * @param {ConfigWithExtends} [config={}] - Additional configuration options to extend the base config.
- * @return {ConfigArray} The complete ESLint configuration.
- */
 export function defineConfig(config = {}) {
 	return tseslint.config(
-		globalIgnores(
-			[
+		{
+			ignores: [
 				'**/scripts/**',
 				'**/dist/**',
 				'**/public/**',
@@ -34,8 +23,8 @@ export function defineConfig(config = {}) {
 				'webpack.config.js',
 				'.prettierrc.js',
 			],
-			'base-ignore',
-		),
+			name: 'base-ignore',
+		},
 		eslint.configs.recommended,
 		importX.flatConfigs.recommended,
 		importX.flatConfigs.typescript,
@@ -61,6 +50,7 @@ export function defineConfig(config = {}) {
 				'import-x/namespace': 'warn',
 				'import-x/export': 'warn',
 				'import-x/no-unresolved': 'warn',
+				'import-x/default': 'warn',
 			},
 		},
 		{
