@@ -4,7 +4,7 @@ import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
 import { Hono } from 'hono';
 import { config } from './config';
-import type { RouteDefinition } from '@rocket.chat/homeserver';
+import type { RouteDefinition, RouteContext } from '@rocket.chat/homeserver';
 import { serve } from '@hono/node-server';
 
 export function handleFederationRoutesRegistration(app: Hono, homeserverRoutes: RouteDefinition[]): Hono {
@@ -23,7 +23,7 @@ export function handleFederationRoutesRegistration(app: Hono, homeserverRoutes: 
 					body: await c.req.json().catch(() => ({})),
 				};
 				
-				const result = await route.handler(context);
+				const result = await route.handler(context as unknown as RouteContext);
 				
 				return c.json(result);
 			} catch (error) {
@@ -65,8 +65,8 @@ function handleHealthCheck(app: Hono) {
 
 	serve({
 		fetch: app.fetch,
-		port: config.port,
-	});	
+		port: 443, //config.port,
+	});
 
 	await api.start();
 })();

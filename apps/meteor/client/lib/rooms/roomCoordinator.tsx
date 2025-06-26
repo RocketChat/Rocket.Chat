@@ -169,7 +169,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return false;
 		}
 		if (isRoomFederated(room)) {
-			return settings.get('Federation_Matrix_enabled');
+			return settings.get('Federation_Matrix_enabled') || settings.get('FEDERATION_Service_Enabled');
 		}
 		return true;
 	}

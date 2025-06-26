@@ -22,7 +22,8 @@
 		"test": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"testunit": "jest",
-		"typecheck": "tsc --noEmit --skipLibCheck"
+		"typecheck": "tsc --noEmit --skipLibCheck",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./dist/FederationMatrix.js",
 	"typings": "./dist/FederationMatrix.d.ts",

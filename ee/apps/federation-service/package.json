@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} bun run --watch src/service.ts",
+    "ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} bun --watch run src/service.ts",
     "start": "bun run src/service.ts",
     "dev": "bun --watch run src/service.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -25,7 +25,7 @@
     "@rocket.chat/core-typings": "workspace:*",
     "@rocket.chat/emitter": "^0.31.25",
     "@rocket.chat/federation-matrix": "workspace:^",
-    "@rocket.chat/homeserver": "git+https://github.com/RocketChat/homeserver.git#test-lib",
+    "@rocket.chat/homeserver": "workspace:*",
     "@rocket.chat/http-router": "workspace:*",
     "@rocket.chat/models": "workspace:*",
     "hono": "^3.11.0",
