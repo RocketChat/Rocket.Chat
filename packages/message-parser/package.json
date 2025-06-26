@@ -48,31 +48,31 @@
     "docs": "typedoc"
   },
   "devDependencies": {
-    "@babel/core": "~7.26.0",
-    "@babel/preset-env": "~7.26.0",
+    "@babel/core": "~7.26.10",
+    "@babel/preset-env": "~7.26.9",
     "@rocket.chat/eslint-config": "workspace:*",
     "@rocket.chat/jest-presets": "workspace:~",
     "@rocket.chat/peggy-loader": "workspace:~",
     "@rocket.chat/prettier-config": "~0.31.25",
     "@rocket.chat/tsconfig": "workspace:*",
     "@types/jest": "~29.5.14",
-    "@types/node": "~22.14.0",
+    "@types/node": "~22.14.1",
     "babel-loader": "~9.2.1",
     "eslint": "^9.29.0",
-    "jest": "~30.0.0",
+    "jest": "~30.0.2",
     "npm-run-all": "^4.1.5",
     "peggy": "4.1.1",
     "prettier": "~3.3.3",
     "prettier-plugin-pegjs": "~0.5.4",
     "rimraf": "^6.0.1",
-    "ts-loader": "~9.5.1",
-    "typedoc": "~0.24.8",
+    "ts-loader": "~9.5.2",
+    "typedoc": "~0.28.5",
     "typescript": "~5.8.3",
-    "webpack": "~5.96.1",
+    "webpack": "~5.99.9",
     "webpack-cli": "~5.1.4"
   },
   "dependencies": {
-    "tldts": "~6.1.61"
+    "tldts": "~6.1.86"
   },
   "volta": {
     "extends": "../../package.json"

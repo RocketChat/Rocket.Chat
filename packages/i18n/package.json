@@ -9,7 +9,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "^9.29.0",
 		"i18next": "~23.4.9",
-		"jest": "~30.0.0",
+		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {

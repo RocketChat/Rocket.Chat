@@ -10,6 +10,8 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"storybook": "storybook dev -p 6006",
@@ -21,11 +23,13 @@
 		"@rocket.chat/emitter": "~0.31.25"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.0",
+		"@babel/core": "~7.26.10",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/fuselage": "^0.64.0",
 		"@rocket.chat/fuselage-hooks": "^0.36.0",
+		"@rocket.chat/fuselage-polyfills": "~0.31.25",
+		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/styled": "~0.32.0",
@@ -42,13 +46,17 @@
 		"@storybook/react-webpack5": "^8.6.14",
 		"@types/jest": "~29.5.14",
 		"@types/jest-axe": "~3.5.9",
-		"@types/react": "~18.3.17",
+		"@types/react": "~18.3.23",
+		"@types/react-dom": "~18.3.7",
 		"eslint": "^9.29.0",
-		"jest": "~30.0.0",
+		"jest": "~30.0.2",
 		"jest-axe": "~10.0.0",
 		"react": "~18.3.1",
+		"react-dom": "~18.3.1",
+		"react-virtuoso": "^4.12.0",
 		"storybook": "^8.6.14",
-		"typescript": "~5.8.3"
+		"typescript": "~5.8.3",
+		"webpack": "~5.99.9"
 	},
 	"peerDependencies": {
 		"@rocket.chat/css-in-js": "*",
@@ -58,8 +66,8 @@
 		"@rocket.chat/styled": "*",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"react": "~17.0.2",
-		"react-dom": "^17.0.2"
+		"react": "*",
+		"react-dom": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"
