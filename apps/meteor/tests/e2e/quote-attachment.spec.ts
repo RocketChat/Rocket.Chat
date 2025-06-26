@@ -30,8 +30,7 @@ test.describe.parallel('Quote Attachment', () => {
 		const imageFileName = 'test-image.jpeg';
 		await test.step('Send message with attachment in the channel', async () => {
 			await poHomeChannel.content.sendFileMessage(imageFileName);
-			await poHomeChannel.content.fileNameInput.fill(imageFileName);
-			await poHomeChannel.content.descriptionInput.fill(fileDescription);
+			await poHomeChannel.content.inputFileUploadName.fill(imageFileName);
 			await poHomeChannel.content.btnModalConfirm.click();
 
 			// Wait for the file to be uploaded and message to be sent
@@ -71,8 +70,7 @@ test.describe.parallel('Quote Attachment', () => {
 			await expect(page).toHaveURL(/.*thread/);
 
 			await poHomeChannel.content.dragAndDropTxtFileToThread();
-			await poHomeChannel.content.descriptionInput.fill(fileDescription);
-			await poHomeChannel.content.fileNameInput.fill(textFileName);
+			await poHomeChannel.content.inputFileUploadName.fill(textFileName);
 			await poHomeChannel.content.btnModalConfirm.click();
 
 			await expect(poHomeChannel.content.lastThreadMessageFileDescription).toHaveText(fileDescription);
