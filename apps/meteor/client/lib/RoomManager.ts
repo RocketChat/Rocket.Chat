@@ -160,7 +160,10 @@ export const useOpenedRoomUnreadSince = (): Date | undefined => {
 
 	const { subscribe, getSnapshotValue } = useMemo(() => {
 		if (!rid) {
-			throw new Error('rid is required');
+			return {
+				subscribe: () => () => void 0,
+				getSnapshotValue: () => undefined,
+			};
 		}
 		return LegacyRoomManager.listenRoomPropsByRid(rid, 'unreadSince');
 	}, [rid]);
