@@ -341,5 +341,3 @@ export function assertIsValidFieldName(key: string) {
 		throw new MinimongoError(`Key ${key} must not ${invalidCharMsg[match[0] as keyof typeof invalidCharMsg]}`);
 	}
 }
-
-export type ArrayIndices = (number | 'x')[];

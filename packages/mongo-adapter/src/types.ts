@@ -80,3 +80,11 @@ export type Sort =
 	| {
 			[key: string]: -1 | 1;
 	  };
+
+export type ArrayIndices = (number | 'x')[];
+
+export type LookupBranch = {
+	value: unknown;
+	dontIterate?: boolean;
+	arrayIndices?: ArrayIndices;
+};

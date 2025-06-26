@@ -1,8 +1,8 @@
-import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
+import { createLookupFunction } from '@rocket.chat/mongo-adapter';
+import type { LookupBranch, FieldExpression, Filter, ArrayIndices } from '@rocket.chat/mongo-adapter';
 
 import { MinimongoError } from './MinimongoError';
-import type { ArrayIndices } from './common';
-import { _f, _isPlainObject, isBinary, isEqual, isIndexable, isNumericKey, isOperatorObject } from './common';
+import { _f, _isPlainObject, isBinary, isEqual, isIndexable, isOperatorObject } from './common';
 import { isTruthy } from '../../../lib/isTruthy';
 
 type Result =
@@ -15,15 +15,9 @@ type Result =
 			arrayIndices?: undefined;
 	  };
 
-type Branch = {
-	value: unknown;
-	dontIterate?: boolean;
-	arrayIndices?: ArrayIndices;
-};
-
 type DocumentMatcher<T extends { _id: string }> = (doc: T) => Result;
 
-type BranchedMatcher = (branches: Branch[]) => Result;
+type BranchedMatcher = (branches: LookupBranch[]) => Result;
 
 type ElementMatcher = (value: unknown) => boolean | number;
 
@@ -86,7 +80,7 @@ export class Matcher<T extends { _id: string }> {
 					return undefined;
 				}
 
-				const lookUpByIndex = this.makeLookupFunction(key);
+				const lookUpByIndex = createLookupFunction(key);
 				const valueMatcher = this.compileValueSelector(subSelector as FieldExpression<T>);
 
 				return (doc: T) => valueMatcher(lookUpByIndex(doc));
@@ -96,71 +90,11 @@ export class Matcher<T extends { _id: string }> {
 		return this.andSomeMatchers(docMatchers);
 	}
 
-	private makeLookupFunction(key: string, options: { forSort?: boolean } = {}) {
-		const parts = key.split('.');
-		const firstPart = parts.length ? parts[0] : '';
-		const lookupRest = parts.length > 1 && this.makeLookupFunction(parts.slice(1).join('.'), options);
-
-		function buildResult(arrayIndices: ArrayIndices | undefined, dontIterate: boolean, value: unknown): [Branch] {
-			if (arrayIndices?.length) {
-				if (dontIterate) {
-					return [{ arrayIndices, dontIterate, value }];
-				}
-				return [{ arrayIndices, value }];
-			}
-			if (dontIterate) {
-				return [{ dontIterate, value }];
-			}
-			return [{ value }];
-		}
-
-		return <T>(doc: T, arrayIndices?: ArrayIndices): Branch[] => {
-			if (Array.isArray(doc)) {
-				if (!(isNumericKey(firstPart) && +firstPart < doc.length)) {
-					return [];
-				}
-
-				arrayIndices = arrayIndices ? arrayIndices.concat(+firstPart, 'x') : [+firstPart, 'x'];
-			}
-
-			const firstLevel = doc[firstPart as keyof typeof doc];
-
-			if (!lookupRest) {
-				return buildResult(arrayIndices, Array.isArray(doc) && Array.isArray(firstLevel), firstLevel);
-			}
-
-			if (!isIndexable(firstLevel)) {
-				if (Array.isArray(doc)) {
-					return [];
-				}
-
-				return buildResult(arrayIndices, false, undefined);
-			}
-
-			const result: Branch[] = [];
-			const appendToResult = (more: Branch[]) => {
-				result.push(...more);
-			};
-
-			appendToResult(lookupRest(firstLevel, arrayIndices));
-
-			if (Array.isArray(firstLevel) && !(isNumericKey(parts[1]) && options.forSort)) {
-				firstLevel.forEach((branch, arrayIndex) => {
-					if (_isPlainObject(branch)) {
-						appendToResult(lookupRest(branch, arrayIndices ? [...arrayIndices, arrayIndex] : [arrayIndex]));
-					}
-				});
-			}
-
-			return result;
-		};
-	}
-
 	private andSomeMatchers(subMatchers: DocumentMatcher<T>[]): DocumentMatcher<T>;
 
 	private andSomeMatchers(subMatchers: BranchedMatcher[]): BranchedMatcher;
 
-	private andSomeMatchers(subMatchers: ((docOrBranches: T | Branch[]) => Result)[]) {
+	private andSomeMatchers(subMatchers: ((docOrBranches: T | LookupBranch[]) => Result)[]) {
 		if (subMatchers.length === 0) {
 			return () => ({ result: true });
 		}
@@ -169,7 +103,7 @@ export class Matcher<T extends { _id: string }> {
 			return subMatchers[0];
 		}
 
-		return (docOrBranches: T | Branch[]) => {
+		return (docOrBranches: T | LookupBranch[]) => {
 			const match: Result = {
 				result: subMatchers.every((fn) => {
 					const subResult = fn(docOrBranches);
@@ -223,7 +157,7 @@ export class Matcher<T extends { _id: string }> {
 		elementMatcher: ElementMatcher,
 		options: { dontExpandLeafArrays?: boolean; dontIncludeLeafArrays?: boolean } = {},
 	) {
-		return (branches: Branch[]) => {
+		return (branches: LookupBranch[]) => {
 			const expanded = options.dontExpandLeafArrays ? branches : this.expandArraysInBranches(branches, options.dontIncludeLeafArrays);
 
 			const match: Result = {
@@ -263,8 +197,8 @@ export class Matcher<T extends { _id: string }> {
 		return (value) => _f._equal(elementSelector, value);
 	}
 
-	private expandArraysInBranches(branches: Branch[], skipTheArrays?: boolean) {
-		const branchesOut: Branch[] = [];
+	private expandArraysInBranches(branches: LookupBranch[], skipTheArrays?: boolean) {
+		const branchesOut: LookupBranch[] = [];
 
 		branches.forEach((branch) => {
 			if (!(skipTheArrays && Array.isArray(branch.value) && !branch.dontIterate)) {
@@ -336,8 +270,8 @@ export class Matcher<T extends { _id: string }> {
 		return false;
 	}
 
-	private invertBranchedMatcher(branchedMatcher: (branches: Branch[]) => Result) {
-		return (branches: Branch[]): Result => {
+	private invertBranchedMatcher(branchedMatcher: (branches: LookupBranch[]) => Result) {
+		return (branches: LookupBranch[]): Result => {
 			return { result: !branchedMatcher(branches).result };
 		};
 	}

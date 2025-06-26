@@ -1,43 +1,66 @@
-const isNullDocument = (doc: unknown): doc is undefined | null => doc === undefined || doc === null;
+import { getBSONType } from './bson';
+import type { ArrayIndices, LookupBranch } from './types';
+import { BSONType } from './types';
 
-const isRecordDocument = (doc: unknown): doc is Record<string, unknown> =>
-	doc !== undefined && doc !== null && (typeof doc === 'object' || typeof doc === 'function');
+const isNumericKey = (s: string) => /^\d+$/.test(s);
 
-export const createLookupFunction = (key: string): (<T>(doc: T) => unknown[]) => {
-	const [first, rest] = key.split(/\.(.+)/);
+const isPlainObject = (x: unknown): x is Record<string, any> => !!x && getBSONType(x) === BSONType.Object;
 
-	if (!rest) {
-		return <T>(doc: T): unknown[] => {
-			if (isNullDocument(doc) || !isRecordDocument(doc)) {
-				return [undefined];
-			}
+const isIndexable = (obj: unknown): obj is Record<string | number, any> => Array.isArray(obj) || isPlainObject(obj);
 
-			return [doc[first]];
-		};
+const buildResult = (arrayIndices: ArrayIndices | undefined, dontIterate: boolean, value: unknown): [LookupBranch] => {
+	if (arrayIndices?.length) {
+		if (dontIterate) {
+			return [{ arrayIndices, dontIterate, value }];
+		}
+		return [{ arrayIndices, value }];
 	}
+	if (dontIterate) {
+		return [{ dontIterate, value }];
+	}
+	return [{ value }];
+};
 
-	const lookupRest = createLookupFunction(rest);
-	const nextIsNumeric = /^\d+(\.|$)/.test(rest);
+export const createLookupFunction = (
+	key: string,
+	options: { forSort?: boolean } = {},
+): (<T>(doc: T, arrayIndices?: ArrayIndices) => LookupBranch[]) => {
+	const [firstPart = '', ...rest] = key.split('.');
+	const lookupRest = rest.length > 0 ? createLookupFunction(rest.join('.'), options) : undefined;
 
-	return <T>(doc: T): unknown[] => {
-		if (isNullDocument(doc) || !isRecordDocument(doc)) {
-			return [undefined];
-		}
-
-		const nestedDoc = doc[first];
-
-		if (Array.isArray(nestedDoc)) {
-			if (nestedDoc.length === 0) {
-				return [undefined];
+	return <T>(doc: T, arrayIndices?: ArrayIndices): LookupBranch[] => {
+		if (Array.isArray(doc)) {
+			if (!(isNumericKey(firstPart) && +firstPart < doc.length)) {
+				return [];
 			}
 
-			if (nextIsNumeric) {
-				return lookupRest(nestedDoc).concat(nestedDoc.flatMap((item) => lookupRest(item)));
-			}
-
-			return nestedDoc.flatMap((item) => lookupRest(item));
+			arrayIndices = arrayIndices ? arrayIndices.concat(+firstPart, 'x') : [+firstPart, 'x'];
 		}
 
-		return lookupRest(nestedDoc);
+		const firstLevel = doc[firstPart as keyof typeof doc];
+
+		if (!lookupRest) {
+			return buildResult(arrayIndices, Array.isArray(doc) && Array.isArray(firstLevel), firstLevel);
+		}
+
+		if (!isIndexable(firstLevel)) {
+			if (Array.isArray(doc)) {
+				return [];
+			}
+
+			return buildResult(arrayIndices, false, undefined);
+		}
+
+		const result: LookupBranch[] = lookupRest(firstLevel, arrayIndices);
+
+		if (Array.isArray(firstLevel) && !(isNumericKey(rest[0]) && options.forSort)) {
+			firstLevel.forEach((branch, arrayIndex) => {
+				if (isPlainObject(branch)) {
+					result.push(...lookupRest(branch, arrayIndices ? [...arrayIndices, arrayIndex] : [arrayIndex]));
+				}
+			});
+		}
+
+		return result;
 	};
 };
