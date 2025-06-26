@@ -27,6 +27,6 @@ export default {
 	},
 } satisfies Meta<typeof DateTimeModal>;
 
-export const DateTimeModalDefault: StoryFn<ComponentProps<typeof DateTimeModal>> = () => (
+export const Default: StoryFn<ComponentProps<typeof DateTimeModal>> = () => (
 	<DateTimeModal onClose={action('onClose')} onSave={action('onSave')} />
 );

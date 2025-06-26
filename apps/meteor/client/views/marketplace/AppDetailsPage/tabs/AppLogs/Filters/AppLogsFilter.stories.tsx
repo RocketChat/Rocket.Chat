@@ -31,4 +31,4 @@ export default {
 	},
 } satisfies Meta<typeof AppLogsFilter>;
 
-export const Filter = () => <AppLogsFilter />;
+export const Default = () => <AppLogsFilter />;
