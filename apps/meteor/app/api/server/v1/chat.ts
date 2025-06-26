@@ -314,7 +314,7 @@ const ChatPostMessageSchema = {
 
 const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
 
-API.v1.post(
+const chatPostMessageEndpoints = API.v1.post(
 	'chat.postMessage',
 	{
 		authRequired: true,
