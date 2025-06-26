@@ -4,15 +4,13 @@ import type { ReactElement, ReactNode } from 'react';
 import { Surface } from './Surface';
 
 type ContextualBarSurfaceProps = {
-  children?: ReactNode;
+	children?: ReactNode;
 };
 
-const ContextualBarSurface = ({
-  children,
-}: ContextualBarSurfaceProps): ReactElement => (
-  <Surface type='contextualBar'>
-    <Margins blockEnd={16}>{children}</Margins>
-  </Surface>
+const ContextualBarSurface = ({ children }: ContextualBarSurfaceProps): ReactElement => (
+	<Surface type='contextualBar'>
+		<Margins blockEnd={16}>{children}</Margins>
+	</Surface>
 );
 
 export default ContextualBarSurface;
