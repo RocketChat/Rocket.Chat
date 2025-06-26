@@ -26,9 +26,6 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	const roomInfo = useRoomInfoEndpoint(parentRid);
 
 	const result = useTeamsListChildrenUpdate(parentRid, !roomInfo.data ? null : roomInfo.data.room?.teamId);
-	if (roomInfo.isSuccess && !roomInfo.data.room?.sidepanel && !roomInfo.data.parent?.sidepanel) {
-		return null;
-	}
 
 	if (roomInfo.isLoading || (roomInfo.isSuccess && result.isPending)) {
 		return <RoomSidepanelLoading />;

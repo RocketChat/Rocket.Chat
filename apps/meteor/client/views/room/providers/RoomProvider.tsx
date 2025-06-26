@@ -95,40 +95,22 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		if (isSidepanelFeatureEnabled) {
 			if (resultFromServer.isSuccess) {
 				if (resultFromServer.data.room?.teamMain) {
-					if (
-						resultFromServer.data.room.sidepanel?.items.includes('channels') ||
-						resultFromServer.data.room?.sidepanel?.items.includes('discussions')
-					) {
-						RoomManager.openSecondLevel(rid, rid);
-					} else {
-						RoomManager.open(rid);
-					}
+					RoomManager.openSecondLevel(rid, rid);
 					return (): void => {
 						RoomManager.back(rid);
 					};
 				}
 
 				switch (true) {
-					case resultFromServer.data.room?.prid &&
-						resultFromServer.data.parent &&
-						resultFromServer.data.parent.sidepanel?.items.includes('discussions'):
+					case resultFromServer.data.room?.prid && !!resultFromServer.data.parent:
 						RoomManager.openSecondLevel(resultFromServer.data.parent._id, rid);
 						break;
-					case resultFromServer.data.team?.roomId &&
-						!resultFromServer.data.room?.teamMain &&
-						resultFromServer.data.parent?.sidepanel?.items.includes('channels'):
+					case resultFromServer.data.team?.roomId && !resultFromServer.data.room?.teamMain:
 						RoomManager.openSecondLevel(resultFromServer.data.team.roomId, rid);
 						break;
 
 					default:
-						if (
-							resultFromServer.data.parent?.sidepanel?.items.includes('channels') ||
-							resultFromServer.data.parent?.sidepanel?.items.includes('discussions')
-						) {
-							RoomManager.openSecondLevel(rid, rid);
-						} else {
-							RoomManager.open(rid);
-						}
+						RoomManager.openSecondLevel(rid, rid);
 						break;
 				}
 			}
