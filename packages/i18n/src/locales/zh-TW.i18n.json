@@ -3648,6 +3648,7 @@
   "Upload_Folder_Path": "上傳資料夾路徑",
   "Upload_From": "從 {{name}} 上傳",
   "Upload_app": "上傳應用程式",
+  "Upload_file_description": "檔案敘述",
   "Upload_file_name": "檔案名稱",
   "Upload_file_question": "是否上傳檔案？",
   "Upload_user_avatar": "上傳頭像",

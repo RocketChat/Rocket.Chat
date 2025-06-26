@@ -3839,6 +3839,7 @@
   "Upload_Folder_Path": "تحميل مسار المجلد",
   "Upload_From": "تحميل من {{name}}",
   "Upload_app": "تحميل التطبيق",
+  "Upload_file_description": "وصف الملف",
   "Upload_file_name": "اسم الملف",
   "Upload_file_question": "تحميل الملف؟",
   "Upload_user_avatar": "تحميل الصورة الرمزية",

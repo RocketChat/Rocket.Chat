@@ -4426,6 +4426,7 @@
   "Upload_From": "Lataukset käyttäjältä {{name}}",
   "Upload_anyway": "Lataa silti",
   "Upload_app": "Lataa sovellus",
+  "Upload_file_description": "Tiedoston kuvaus",
   "Upload_file_name": "Tiedoston nimi",
   "Upload_file_question": "Ladataanko tiedosto?",
   "Upload_private_app": "Lataa yksityinen sovellus",

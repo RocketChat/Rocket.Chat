@@ -3990,6 +3990,7 @@
   "Upload_Folder_Path": "Путь к папке загрузки",
   "Upload_From": "Загрузить с {{name}}",
   "Upload_app": "Загрузить приложение",
+  "Upload_file_description": "Описание файла",
   "Upload_file_name": "Имя файла",
   "Upload_file_question": "Загрузить файл?",
   "Upload_user_avatar": "Загруженный аватар",

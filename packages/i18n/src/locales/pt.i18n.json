@@ -2539,6 +2539,7 @@
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics",
   "Upload_Folder_Path": "Carregar caminho da pasta",
   "Upload_From": "Upload de {{name}}",
+  "Upload_file_description": "Descrição do ficheiro",
   "Upload_file_name": "Nome do ficheiro",
   "Upload_file_question": "Carregar ficheiro?",
   "Upload_user_avatar": "Carregar Avatar",

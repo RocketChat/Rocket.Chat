@@ -3772,6 +3772,7 @@
   "Upload_Folder_Path": "Carregar ruta de la carpeta",
   "Upload_From": "Pujar des de {{name}}",
   "Upload_app": "Pujar l'Aplicació",
+  "Upload_file_description": "Descripció de l'arxiu",
   "Upload_file_name": "Nom de l'arxiu",
   "Upload_file_question": "Pujar l'arxiu?",
   "Upload_user_avatar": "Carregar l'avatar",

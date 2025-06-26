@@ -3190,6 +3190,7 @@
   "Upload_Folder_Path": "Cesta složky pro nahrávání souborů",
   "Upload_From": "Nahrát z {{name}}",
   "Upload_app": "Nahrát aplikaci",
+  "Upload_file_description": "Popis souboru",
   "Upload_file_name": "Název souboru",
   "Upload_file_question": "Nahrát soubor?",
   "Upload_user_avatar": "Nahrát avatara",

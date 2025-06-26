@@ -4166,6 +4166,7 @@
   "Upload_Folder_Path": "Feltöltési mappa útvonala",
   "Upload_From": "Feltöltés innen: {{name}}",
   "Upload_app": "Alkalmazás feltöltése",
+  "Upload_file_description": "Fájl leírása",
   "Upload_file_name": "Fájlnév",
   "Upload_file_question": "Feltölti a fájlt?",
   "Upload_user_avatar": "Profilkép feltöltése",

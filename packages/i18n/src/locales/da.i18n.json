@@ -3286,6 +3286,7 @@
   "Upload_Folder_Path": "Upload mappepath",
   "Upload_From": "Upload fra {{name}}",
   "Upload_app": "Upload-app",
+  "Upload_file_description": "Filbeskrivelse",
   "Upload_file_name": "Filnavn",
   "Upload_file_question": "Upload fil?",
   "Upload_user_avatar": "Upload avatar",

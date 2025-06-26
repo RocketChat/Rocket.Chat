@@ -4166,6 +4166,7 @@
   "Upload_Folder_Path": "Prześlij ścieżkę folderu",
   "Upload_From": "Prześlij z {{name}}",
   "Upload_app": "Prześlij aplikację",
+  "Upload_file_description": "Opis pliku",
   "Upload_file_name": "Nazwa pliku",
   "Upload_file_question": "Przesłać plik?",
   "Upload_user_avatar": "Załaduj awatar",

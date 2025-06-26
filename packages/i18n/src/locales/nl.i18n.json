@@ -3835,6 +3835,7 @@
   "Upload_Folder_Path": "Upload mappad",
   "Upload_From": "Uploaden van {{name}}",
   "Upload_app": "App uploaden",
+  "Upload_file_description": "Bestandsomschrijving",
   "Upload_file_name": "Bestandsnaam",
   "Upload_file_question": "Upload bestand?",
   "Upload_user_avatar": "Upload avatar",

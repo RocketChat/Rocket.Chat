@@ -3953,6 +3953,7 @@
   "Upload_Folder_Path": "Ruta de carpeta de subida",
   "Upload_From": "Subir desde {{name}}",
   "Upload_app": "Subir aplicación",
+  "Upload_file_description": "Descripción de archivo",
   "Upload_file_name": "Nombre de archivo",
   "Upload_file_question": "¿Subir archivo?",
   "Upload_user_avatar": "Subir avatar",

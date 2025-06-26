@@ -3844,6 +3844,7 @@
   "Upload_Folder_Path": "Chemin du dossier de chargement",
   "Upload_From": "Charger depuis {{name}}",
   "Upload_app": "Charger l'application",
+  "Upload_file_description": "Description du fichier",
   "Upload_file_name": "Nom du fichier",
   "Upload_file_question": "Charger le fichier ?",
   "Upload_user_avatar": "Charger un avatar",

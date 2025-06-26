@@ -2611,6 +2611,7 @@
   "Upload_Folder_Path": "Dosya yükleme konumu",
   "Upload_From": "{{name}} den yükle",
   "Upload_app": "Uygulamayı Yükle",
+  "Upload_file_description": "Dosya açıklaması",
   "Upload_file_name": "Dosya adı",
   "Upload_file_question": "Dosya yükle?",
   "Upload_user_avatar": "Avatarı yükle",

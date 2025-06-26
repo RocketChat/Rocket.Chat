@@ -3806,6 +3806,7 @@
   "Upload_Folder_Path": "フォルダパスのアップロード",
   "Upload_From": "{{name}}からアップロード",
   "Upload_app": "アプリのアップロード",
+  "Upload_file_description": "ファイルの説明",
   "Upload_file_name": "ファイル名",
   "Upload_file_question": "ファイルをアップロードしますか？",
   "Upload_user_avatar": "アバターをアップロード",
