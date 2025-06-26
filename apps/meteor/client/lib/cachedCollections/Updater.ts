@@ -1,7 +1,7 @@
-import { createComparatorFromSort, createPredicateFromFilter, type Filter, type Sort } from '@rocket.chat/mongo-adapter';
+import { createComparatorFromSort, createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import type { ArrayIndices, Filter, Sort } from '@rocket.chat/mongo-adapter';
 
 import { MinimongoError } from './MinimongoError';
-import type { ArrayIndices } from './common';
 import {
 	_f,
 	_isPlainObject,

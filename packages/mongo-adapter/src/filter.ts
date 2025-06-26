@@ -308,7 +308,7 @@ export const compileFilter = <T>(filter: Filter<T> | FieldExpression<T>['$where'
 		const valueSelectorFunc = compileValueSelector(subSelector);
 		return (doc: T): boolean => {
 			const branchValues = lookUpByIndex(doc);
-			return branchValues.some(valueSelectorFunc);
+			return branchValues.some((branch) => valueSelectorFunc(branch.value));
 		};
 	});
 
