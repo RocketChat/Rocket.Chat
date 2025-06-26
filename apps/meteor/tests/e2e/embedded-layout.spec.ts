@@ -7,7 +7,7 @@ const embeddedLayoutURL = (pageUrl: string) => `${pageUrl}?layout=embedded`;
 
 test.use({ storageState: Users.user1.state });
 
-test.describe.parallel('embedded-layout', () => {
+test.describe('embedded-layout', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannelId: string;
 	let notMemberChannelId: string;
