@@ -85,6 +85,7 @@ test.describe('embedded-layout', () => {
 			await poHomeChannel.sidenav.openChat(targetChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
+			await expect(poHomeChannel.composer).toBeVisible();
 			await expect(poHomeChannel.composerToolbar).toBeVisible();
 
 			await poHomeChannel.composer.fill('Test message');
