@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"eslint": "~8.45.0",
-		"jest": "~29.7.0",
+		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {

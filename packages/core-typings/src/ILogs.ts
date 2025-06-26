@@ -3,6 +3,7 @@ export interface ILogEntry {
 	caller: string;
 	severity: string;
 	timestamp: string;
+	method?: string;
 }
 
 export interface ILogItem {

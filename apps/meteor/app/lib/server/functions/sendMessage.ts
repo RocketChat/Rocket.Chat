@@ -235,6 +235,9 @@ const updateFileNames = async (filesToConfirm: IUploadToConfirm[], isE2E: boolea
 
 /**
  * Validates and sends the message object.
+ * Validates and sends the message object. This function does not verify the Message_MaxAllowedSize settings.
+ * Caller of the function should verify the Message_MaxAllowedSize if needed.
+ * There might be same use cases which needs to override this setting. Example - sending error logs.
  */
 export const sendMessage = async (
 	user: any,

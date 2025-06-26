@@ -1,5 +1,5 @@
 {
-	"extends": "../../tsconfig.base.json",
+	"extends": "@rocket.chat/tsconfig/base.json",
   "compilerOptions": {
     "target": "ES5",
     "module": "ES2020",

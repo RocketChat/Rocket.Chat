@@ -15,11 +15,13 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useDownloadExportMutation } from './useDownloadExportMutation';
+import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation';
 import { useRoomExportMutation } from './useRoomExportMutation';
 import { validateEmail } from '../../../../../lib/emailValidator';
 import {
@@ -41,7 +43,7 @@ export type ExportMessagesFormValues = {
 	type: 'email' | 'file' | 'download';
 	dateFrom: string;
 	dateTo: string;
-	format: 'html' | 'json';
+	format: 'html' | 'json' | 'pdf';
 	toUsers: string[];
 	additionalEmails: string;
 	messagesCount: number;
@@ -51,6 +53,7 @@ export type ExportMessagesFormValues = {
 const ExportMessages = () => {
 	const { t } = useTranslation();
 	const { closeTab } = useRoomToolbox();
+	const pfdExportPermission = usePermission('export-messages-as-pdf');
 	const formFocus = useAutoFocus<HTMLFormElement>();
 	const room = useRoom();
 	const isE2ERoom = room.encrypted;
@@ -92,13 +95,21 @@ const ExportMessages = () => {
 		[t],
 	);
 
-	const outputOptions = useMemo<SelectOption[]>(
-		() => [
+	const outputOptions = useMemo<SelectOption[]>(() => {
+		const options: SelectOption[] = [
 			['html', t('HTML')],
 			['json', t('JSON')],
-		],
-		[t],
-	);
+		];
+
+		if (pfdExportPermission) {
+			options.push(['pdf', t('PDF')]);
+		}
+
+		return options;
+	}, [t, pfdExportPermission]);
+
+	// Remove HTML from download options
+	const downloadOutputOptions = outputOptions.slice(1);
 
 	const roomExportMutation = useRoomExportMutation();
 	const downloadExportMutation = useDownloadExportMutation();
@@ -107,6 +118,12 @@ const ExportMessages = () => {
 	const messageCount = useCountSelected();
 
 	const { type, toUsers } = watch();
+
+	useEffect(() => {
+		if (type === 'email') {
+			setValue('format', 'html');
+		}
+	}, [type, setValue]);
 
 	useEffect(() => {
 		if (type !== 'file') {
@@ -119,24 +136,24 @@ const ExportMessages = () => {
 	}, [type, selectedMessageStore]);
 
 	useEffect(() => {
-		if (type === 'email') {
-			setValue('format', 'html');
-		}
-
-		if (type === 'download') {
-			setValue('format', 'json');
-		}
-
 		setValue('messagesCount', messageCount, { shouldDirty: true });
-	}, [type, setValue, messageCount]);
+	}, [messageCount, setValue]);
+
+	const { mutate: exportAsPDF } = useExportMessagesAsPDFMutation();
 
 	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
 		const messages = selectedMessageStore.getSelectedMessages();
 
 		if (type === 'download') {
-			return downloadExportMutation.mutateAsync({
-				mids: messages,
-			});
+			if (format === 'pdf') {
+				return exportAsPDF(messages);
+			}
+
+			if (format === 'json') {
+				return downloadExportMutation.mutateAsync({
+					mids: messages,
+				});
+			}
 		}
 
 		if (type === 'file') {
@@ -145,7 +162,7 @@ const ExportMessages = () => {
 				type: 'file',
 				...(dateFrom && { dateFrom }),
 				...(dateTo && { dateTo }),
-				format,
+				format: format as 'html' | 'json',
 			});
 		}
 
@@ -207,9 +224,9 @@ const ExportMessages = () => {
 										<Select
 											{...field}
 											id={formatField}
-											disabled={type === 'email' || type === 'download'}
+											disabled={type === 'email'}
 											placeholder={t('Format')}
-											options={outputOptions}
+											options={type === 'download' ? downloadOutputOptions : outputOptions}
 										/>
 									)}
 								/>

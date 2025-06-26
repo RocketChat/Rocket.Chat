@@ -28,7 +28,7 @@ import type {
 	FindOneAndUpdateOptions,
 } from 'mongodb';
 
-import { Subscriptions } from '../index';
+import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
 
 const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
@@ -504,9 +504,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T>(query, options);
 	}
 
-	findLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
+	findActiveLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options: FindOptions<IUser> = {}) {
 		const query = {
 			ldap: true,
+			active: true,
 			_id: {
 				$nin: userIds,
 			},
@@ -3409,5 +3410,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				},
 			},
 		);
+	}
+
+	countActiveUsersInNonDMRoom(rid: string) {
+		return this.countDocuments({ active: true, __rooms: rid });
+	}
+
+	async countActiveUsersInDMRoom(rid: string) {
+		const room = await Rooms.findOneById(rid, { projection: { uids: 1 } });
+		if (!room?.uids?.length) {
+			return 0;
+		}
+		return this.countDocuments({ _id: { $in: room.uids }, active: true });
 	}
 }
