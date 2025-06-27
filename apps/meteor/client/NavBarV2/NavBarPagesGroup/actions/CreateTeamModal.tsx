@@ -39,8 +39,6 @@ type CreateTeamModalInputs = {
 	encrypted: boolean;
 	broadcast: boolean;
 	members?: string[];
-	showDiscussions?: boolean;
-	showChannels?: boolean;
 };
 
 type CreateTeamModalProps = { onClose: () => void };
@@ -96,8 +94,6 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
 			broadcast: false,
 			members: [],
-			showChannels: true,
-			showDiscussions: true,
 		},
 	});
 
