@@ -17,10 +17,9 @@ const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
 type ListenRoomPropsByRidProps = keyof OpenedRoom;
 type ListenRoomPropsByRidPropsEvent = `${string}/${ListenRoomPropsByRidProps}`;
 
-const listener = new (class ListenRoomPropsByRid extends Emitter<{
+const listener = new Emitter<{
 	[key in ListenRoomPropsByRidPropsEvent]: undefined;
-}> {
-})();
+}>();
 
 type OpenedRoom = {
 	typeName: string;
