@@ -88,14 +88,16 @@ const POSTRemoveWebdavAccountSchema = {
 
 const isPOSTRemoveWebdavAccount = ajv.compile<POSTRemoveWebdavAccount>(POSTRemoveWebdavAccountSchema);
 
-API.v1.post(
+const webdavRemoveAccountEndpoints = API.v1.post(
 	'webdav.removeWebdavAccount',
 	{
 		authRequired: true,
 		validateParams: isPOSTRemoveWebdavAccount,
 		body: isPOSTRemoveWebdavAccount,
 		response: {
-			200: ajv.compile({
+			200: ajv.compile<{
+				result: DeleteResult;
+			}>({
 				type: 'object',
 				properties: {
 					result: {
@@ -167,9 +169,15 @@ API.v1.post(
 	},
 );
 
-export type WebdavEndpoints = ExtractRoutesFromAPI<typeof webdavGetMyAccountsEndpoints>;
+type WebdavGetMyAccountsEndpoints = ExtractRoutesFromAPI<typeof webdavGetMyAccountsEndpoints>;
+
+type WebdavRemoveAccountEndpoints = ExtractRoutesFromAPI<typeof webdavRemoveAccountEndpoints>;
+
+export type WebdavEndpoints = WebdavGetMyAccountsEndpoints | WebdavRemoveAccountEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends WebdavEndpoints {}
+	interface Endpoints extends WebdavGetMyAccountsEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends WebdavRemoveAccountEndpoints {}
 }
