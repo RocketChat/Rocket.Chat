@@ -25,7 +25,7 @@ function prepareEnvironment() {
 // 1. To require native modules
 // 2. To require external npm packages we may provide
 // 3. To require apps-engine files
-function buildRequire(): (module: string) => unknown {
+export function buildRequire(): (module: string) => unknown {
 	return (module: string): unknown => {
 		if (ALLOWED_NATIVE_MODULES.includes(module)) {
 			return require(`node:${module}`);
@@ -44,7 +44,7 @@ function buildRequire(): (module: string) => unknown {
 	};
 }
 
-function wrapAppCode(code: string): (require: (module: string) => unknown) => Promise<Record<string, unknown>> {
+export function wrapAppCode(code: string): (require: (module: string) => unknown) => Promise<Record<string, unknown>> {
 	return new Function(
 		'require',
 		`
