@@ -280,17 +280,13 @@ test.describe.serial('feature preview', () => {
 
 	test.describe.skip('Sidepanel', () => {
 		test.beforeEach(async ({ api }) => {
-			sidepanelTeam = await createTargetTeam(api, { sidepanel: { items: ['channels', 'discussions'] } });
+			sidepanelTeam = await createTargetTeam(api);
 
 			await setUserPreferences(api, {
 				sidebarViewMode: 'Medium',
 				featuresPreview: [
 					{
 						name: 'newNavigation',
-						value: true,
-					},
-					{
-						name: 'sidepanelNavigation',
 						value: true,
 					},
 				],
@@ -305,10 +301,6 @@ test.describe.serial('feature preview', () => {
 				featuresPreview: [
 					{
 						name: 'newNavigation',
-						value: false,
-					},
-					{
-						name: 'sidepanelNavigation',
 						value: false,
 					},
 				],

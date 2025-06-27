@@ -6,7 +6,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import SidePanelNoResults from './SidePanelNoResults';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
-import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
+import { useOpenedRoom } from '../../../lib/RoomManager';
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
 import RoomSidepanelListWrapper from '../../room/Sidepanel/RoomSidepanelListWrapper';
 import RoomSidepanelItem from '../../room/Sidepanel/SidepanelItem';
@@ -24,13 +24,11 @@ const SidePanel = ({ currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePa
 	const { t } = useTranslation();
 	const ref = useRef(null);
 	const unreadFieldId = useId();
-	const parentRid = useOpenedRoom();
+	const openedRoom = useOpenedRoom();
 	const {
 		isTablet,
 		sidePanel: { closeSidePanel },
 	} = useLayout();
-
-	const secondLevelOpenedRoom = useSecondLevelOpenedRoom() ?? parentRid;
 
 	usePreventDefault(ref);
 
@@ -53,7 +51,7 @@ const SidePanel = ({ currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePa
 						totalCount={rooms.length}
 						data={rooms}
 						components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper }}
-						itemContent={(_, data) => <RoomSidepanelItem openedRoom={secondLevelOpenedRoom} room={data} />}
+						itemContent={(_, data) => <RoomSidepanelItem openedRoom={openedRoom} room={data} />}
 					/>
 				</VirtualizedScrollbars>
 			</Box>

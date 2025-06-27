@@ -9,32 +9,22 @@ import RoomSidepanelItem from './SidepanelItem';
 import { useTeamsListChildrenUpdate } from './hooks/useTeamslistChildren';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
-import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
+import { useOpenedRoom } from '../../../lib/RoomManager';
 
 const RoomSidepanel = () => {
 	const parentRid = useOpenedRoom();
-	const secondLevelOpenedRoom = useSecondLevelOpenedRoom() ?? parentRid;
 
-	if (!parentRid || !secondLevelOpenedRoom) {
+	if (!parentRid) {
 		return null;
 	}
 
-	return <RoomSidepanelWithData parentRid={parentRid} openedRoom={secondLevelOpenedRoom} />;
+	return <RoomSidepanelWithData parentRid={parentRid} openedRoom='' />;
 };
 
 const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; openedRoom: string }) => {
 	const roomInfo = useRoomInfoEndpoint(parentRid);
-	const sidepanelItems = roomInfo.data?.room?.sidepanel?.items || roomInfo.data?.parent?.sidepanel?.items;
 
-	const result = useTeamsListChildrenUpdate(
-		parentRid,
-		!roomInfo.data ? null : roomInfo.data.room?.teamId,
-		// eslint-disable-next-line no-nested-ternary
-		!sidepanelItems ? null : sidepanelItems?.length === 1 ? sidepanelItems[0] : undefined,
-	);
-	if (roomInfo.isSuccess && !roomInfo.data.room?.sidepanel && !roomInfo.data.parent?.sidepanel) {
-		return null;
-	}
+	const result = useTeamsListChildrenUpdate(parentRid, !roomInfo.data ? null : roomInfo.data.room?.teamId);
 
 	if (roomInfo.isLoading || (roomInfo.isSuccess && result.isPending)) {
 		return <RoomSidepanelLoading />;
