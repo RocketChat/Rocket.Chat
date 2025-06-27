@@ -27,14 +27,23 @@ async function getVoIPStatisticsForPeriod(days?: number): Promise<IVoIPPeriodSta
 
 	const minDate = getMinDate(days);
 
-	const statistics: IVoIPPeriodStats = {
-		externalInboundCalls: 0,
-		externalOutboundCalls: 0,
-	};
+	const statistics: IVoIPPeriodStats = {};
 
 	promises.push(
 		FreeSwitchChannel.countChannelsByKind('internal', minDate, options).then((count) => {
 			statistics.internalCalls = count;
+		}),
+	);
+
+	promises.push(
+		FreeSwitchChannel.countChannelsByKindAndDirection('external', 'inbound', minDate, options).then((count) => {
+			statistics.externalInboundCalls = count;
+		}),
+	);
+
+	promises.push(
+		FreeSwitchChannel.countChannelsByKindAndDirection('external', 'outbound', minDate, options).then((count) => {
+			statistics.externalOutboundCalls = count;
 		}),
 	);
 

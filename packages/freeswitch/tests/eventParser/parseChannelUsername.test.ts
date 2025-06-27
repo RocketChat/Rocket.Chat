@@ -14,6 +14,12 @@ describe('parseChannelUsername', () => {
 		expect(result).toBe('1001');
 	});
 
+	it('should parse username from external channel', () => {
+		const channelName = 'sofia/external/1001@voip.open.rocket.chat:9999';
+		const result = parseChannelUsername(channelName);
+		expect(result).toBe('1001');
+	});
+
 	it('should parse username from originatee channel', () => {
 		const channelName = 'sofia/internal/1000-LJZ8A9MhHv4Eh6ZQH-spo254ol@open.rocket.chat';
 		const result = parseChannelUsername(channelName);

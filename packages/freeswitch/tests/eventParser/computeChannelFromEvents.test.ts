@@ -336,7 +336,7 @@ describe('computeChannelFromEvents', () => {
 				durationSum: 0,
 				totalDuration: 0,
 				startedAt: new Date('2024-02-28T12:00:00.000Z'),
-				kind: 'internal',
+				kind: 'unknown',
 			},
 			deltas: [
 				{
@@ -418,7 +418,7 @@ describe('computeChannelFromEvents', () => {
 				durationSum: 0,
 				totalDuration: 0,
 				startedAt: new Date('2024-02-28T12:00:00.000Z'),
-				kind: 'internal',
+				kind: 'unknown',
 			},
 			deltas: [
 				{

@@ -7,7 +7,7 @@ function normalizeUsername(value?: string): string | undefined {
 		return undefined;
 	}
 
-	if (value.startsWith('sofia/internal')) {
+	if (value.startsWith('sofia/internal') || value.startsWith('sofia/external')) {
 		return parseChannelUsername(value);
 	}
 

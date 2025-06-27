@@ -20,8 +20,7 @@ export interface IFreeSwitchChannel extends IRocketChatRecord {
 	durationSum: number;
 	totalDuration: number;
 
-	// Add new kinds for external calls when those get parsed
-	kind: 'internal';
+	kind: 'internal' | 'external' | 'voicemail' | 'unknown';
 }
 
 export interface IFreeSwitchChannelProfile extends IFreeSwitchChannelEventLegProfile {

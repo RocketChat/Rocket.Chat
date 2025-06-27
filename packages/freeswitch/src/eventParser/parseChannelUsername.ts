@@ -9,15 +9,16 @@ import { logger } from '../logger';
 import type { EventData } from './parseEventData';
 
 export function parseChannelUsername(channelName?: string): string | undefined {
-	if (!channelName) {
+	if (!channelName || channelName.startsWith('loopback/')) {
 		return;
 	}
 
-	// If it's not a sofia internal channel, don't even try to parse it
+	// If it's not a sofia internal/external channel, don't even try to parse it
 	// It's most likely a voicemail or maybe some spam bots trying different stuff
 	// If we implement other kinds of channels in the future we should look into how their names are generated so that we may parse them here too.
-	if (!channelName.startsWith('sofia/internal/') || !channelName.includes('@')) {
-		logger.info({ msg: 'FreeSwitch event triggered with something other than a sofia internal channel.', channelName });
+	// The format for external channels may depend on what the external service is, but extension@host should be quite standard
+	if ((!channelName.startsWith('sofia/internal/') && !channelName.startsWith('sofia/external/')) || !channelName.includes('@')) {
+		logger.info({ msg: 'FreeSwitch event triggered with something other than a sofia or loopback channel.', channelName });
 		return;
 	}
 
@@ -27,7 +28,7 @@ export function parseChannelUsername(channelName?: string): string | undefined {
 	// Originatee channels will have the format 'sofia/internal/contact_uri', assigned by freeswitch itself
 	// Example: sofia/internal/1000-LJZ8A9MhHv4Eh6ZQH-spo254ol@open.rocket.chat
 
-	return channelName.match(/sofia\/internal\/(\d+)[\@\-]/)?.[1];
+	return channelName.match(/sofia\/(?:in|ex)ternal\/(\d+)[\@\-]/)?.[1];
 }
 
 export function parseContactUsername(contactNameOrUri: string): string | undefined {

@@ -8,6 +8,12 @@ export interface IFreeSwitchChannelModel extends IBaseModel<IFreeSwitchChannel> 
 	findAllByUniqueIds<T extends IFreeSwitchChannel>(uniqueIds: string[], options?: FindOptions<IFreeSwitchChannel>): FindCursor<T>;
 
 	countChannelsByKind(kind: Required<IFreeSwitchChannel>['kind'], minDate?: Date, options?: CountDocumentsOptions): Promise<number>;
+	countChannelsByKindAndDirection(
+		kind: Required<IFreeSwitchChannel>['kind'],
+		callDirection: Required<IFreeSwitchChannel>['callDirection'],
+		minDate?: Date,
+		options?: CountDocumentsOptions,
+	): Promise<number>;
 	sumChannelsDurationByKind(kind: Required<IFreeSwitchChannel>['kind'], minDate?: Date, options?: AggregateOptions): Promise<number>;
 	countChannelsByKindAndSuccessState(
 		kind: Required<IFreeSwitchChannel>['kind'],

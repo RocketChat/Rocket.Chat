@@ -11,6 +11,7 @@ import { computeChannelProfiles } from './computeChannelProfiles';
 import { extractChannelChangesFromEvent } from './extractChannelChangesFromEvent';
 import { filterOutMissingData } from './filterOutMissingData';
 import { insertDataIntoEventProfile } from './insertDataIntoEventProfile';
+import { parseChannelKind } from './parseChannelKind';
 
 function splitEventDataSections(event: IFreeSwitchChannelEvent): {
 	header: IFreeSwitchChannelEventHeader;
@@ -131,7 +132,7 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 				// If we couldn't parse a startedAt, use the time of the first event
 				startedAt: computedProfiles.startedAt || firstEvent,
 			},
-			kind: 'internal',
+			kind: parseChannelKind(finalState.channelName),
 		},
 		deltas,
 		finalState,
