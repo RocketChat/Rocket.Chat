@@ -63,7 +63,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new UserService());
 
 	// if the process is running in micro services mode we don't need to register services that will run separately
-	if (!isRunningMs()) {
+	// if (!isRunningMs()) {
 		const { Presence } = await import('@rocket.chat/presence');
 
 		const { Authorization } = await import('./authorization/service');
@@ -71,14 +71,14 @@ export const registerServices = async (): Promise<void> => {
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
 
-		console.log('Starting federation-matrix service on monolith mode');
-		const { FederationMatrix } = await import('@rocket.chat/federation-matrix');
-		api.registerService(new FederationMatrix());
+		// console.log('Starting federation-matrix service on monolith mode');
+		// const { FederationMatrix } = await import('@rocket.chat/federation-matrix');
+		// api.registerService(new FederationMatrix());
 
 		// Run EE services defined outside of the main repo
 		// Otherwise, monolith would ignore them :(
 		// Always register the service and manage licensing inside the service (tbd)
 		api.registerService(new QueueWorker(db, Logger));
 		api.registerService(new OmnichannelTranscript(Logger, i18n));
-	}
+	// }
 };

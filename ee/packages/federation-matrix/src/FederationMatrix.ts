@@ -117,15 +117,16 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async sendMessage(message: IMessage, room: IRoom, user: IUser): Promise<void> {
-		console.log('[FederationMatrix] Sending message:', message._id);
-		console.log('[FederationMatrix] Room:', room._id, room.fname);
-		console.log('[FederationMatrix] User:', user.username);
+		console.log('sendMessage', message, room, user);
+		// console.log('[FederationMatrix] Sending message:', message._id);
+		// console.log('[FederationMatrix] Room:', room._id, room.fname);
+		// console.log('[FederationMatrix] User:', user.username);
 
 		try {
 			// 1. Get the Matrix room ID from the bridged mapping
 			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(room._id);
 			if (!matrixRoomId) {
-				console.error('[FederationMatrix] No bridged room found for:', room._id);
+				// console.error('[FederationMatrix] No bridged room found for:', room._id);
 				throw new Error(`No Matrix room mapping found for room ${room._id}`);
 			}
 
@@ -135,7 +136,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			if (!existingMatrixUserId) {
 				// Create bridged user if it doesn't exist
 				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, this.matrixDomain);
-				console.log('[FederationMatrix] Created bridged user mapping for:', user.username);
+				// console.log('[FederationMatrix] Created bridged user mapping for:', user.username);
 			}
 
 			// 3. Determine the target server
@@ -143,12 +144,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const targetServer = 'hs1.tunnel.dev.rocket.chat'; // matrixRoomId.split(':')[1] || this.matrixDomain;
 
 			// 4. Send the message to Matrix
-			console.log('[FederationMatrix] Sending message to Matrix2:', {
-				roomId: matrixRoomId,
-				message: message.msg,
-				sender: matrixUserId,
-				targetServer,
-			});
+			// console.log('[FederationMatrix] Sending message to Matrix2:', {
+			// 	roomId: matrixRoomId,
+			// 	message: message.msg,
+			// 	sender: matrixUserId,
+			// 	targetServer,
+			// });
 
 			if (!this.homeserverServices) {
 				console.warn('[FederationMatrix] Homeserver services not available, skipping message send');

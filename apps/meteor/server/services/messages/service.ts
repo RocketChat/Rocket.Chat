@@ -179,9 +179,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
-		if (!FederationActions.shouldPerformAction(message, room)) {
-			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
-		}
+		// TODO: Adjust this to check for new federation service too
+		// if (!FederationActions.shouldPerformAction(message, room)) {
+		// 	throw new FederationMatrixInvalidConfigurationError('Unable to send message');
+		// }
 
 		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
