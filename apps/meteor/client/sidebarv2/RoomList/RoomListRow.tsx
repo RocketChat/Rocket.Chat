@@ -15,7 +15,7 @@ type RoomListRowProps = {
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { t, openedRoom } = data;
+	const { t } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -31,7 +31,7 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 		[acceptCall, rejectCall, currentCall],
 	);
 
-	return <SidebarItemWithData selected={item.rid === openedRoom} t={t} room={item} videoConfActions={videoConfActions} />;
+	return <SidebarItemWithData t={t} room={item} videoConfActions={videoConfActions} />;
 };
 
 export default memo(RoomListRow);

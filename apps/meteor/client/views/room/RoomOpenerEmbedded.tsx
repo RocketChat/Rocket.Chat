@@ -85,14 +85,14 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 
 	return (
 		<Box display='flex' w='full' h='full'>
-			{!isDirectOrOmnichannelRoom(type) && (
+			{/* {!isDirectOrOmnichannelRoom(type) && (
 				<FeaturePreviewSidePanelNavigation>
 					<FeaturePreviewOff>{null}</FeaturePreviewOff>
 					<FeaturePreviewOn>
 						<RoomSidepanel />
 					</FeaturePreviewOn>
 				</FeaturePreviewSidePanelNavigation>
-			)}
+			)} */}
 
 			<Suspense fallback={<RoomSkeleton />}>
 				{isLoading && <RoomSkeleton />}

@@ -6,7 +6,7 @@ import { createContext, useContext, useMemo } from 'react';
 
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 
-export const sidePanelFiltersConfig: { [Key in SidePanelFiltersKeys]: { title: TranslationKey; icon: IconName } } = {
+export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: TranslationKey; icon: IconName } } = {
 	all: {
 		title: 'All',
 		icon: 'inbox',
@@ -35,6 +35,18 @@ export const sidePanelFiltersConfig: { [Key in SidePanelFiltersKeys]: { title: T
 		title: 'On_Hold',
 		icon: 'pause-unfilled',
 	},
+	teams: {
+		title: 'Teams',
+		icon: 'team',
+	},
+	channels: {
+		title: 'Channels',
+		icon: 'hashtag',
+	},
+	directMessages: {
+		title: 'Direct_Messages',
+		icon: 'at',
+	},
 };
 
 export const TEAM_COLLAB_GROUPS = {
@@ -56,9 +68,14 @@ export const SIDE_PANEL_GROUPS = {
 } as const;
 
 export const SIDE_BAR_GROUPS = {
-	TEAMS: 'Teams',
-	CHANNELS: 'Channels',
-	DIRECT_MESSAGES: 'Direct_Messages',
+	TEAMS: 'teams',
+	CHANNELS: 'channels',
+	DIRECT_MESSAGES: 'directMessages',
+} as const;
+
+export const ALL_GROUPS = {
+	...SIDE_PANEL_GROUPS,
+	...SIDE_BAR_GROUPS,
 } as const;
 
 export const SidebarOrder = [SIDE_BAR_GROUPS.TEAMS, SIDE_BAR_GROUPS.CHANNELS, SIDE_BAR_GROUPS.DIRECT_MESSAGES];
@@ -77,8 +94,10 @@ export type AllGroupsKeysWithUnread = SidePanelFilters | SideBarGroupsKeys | Sid
 export type RoomsNavigationContextValue = {
 	groups: Map<AllGroupsKeysWithUnread, Set<SubscriptionWithRoom | ILivechatInquiryRecord>>;
 	currentFilter: AllGroupsKeysWithUnread;
-	setFilter: (filter: SidePanelFiltersKeys, unread: boolean) => void;
+	setFilter: (filter: AllGroupsKeys, unread: boolean) => void;
 	unreadGroupData: Map<AllGroupsKeys, GroupedUnreadInfoData>;
+	parentRid?: string;
+	setParentRid: (parentRid: string) => void;
 };
 
 export type GroupedUnreadInfoData = {
@@ -169,7 +188,7 @@ export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
 	return roomsList;
 };
 
-export const useSidePanelFilter = (): [SidePanelFiltersKeys, boolean, AllGroupsKeysWithUnread] => {
+export const useSidePanelFilter = (): [AllGroupsKeys, boolean, AllGroupsKeysWithUnread] => {
 	const { currentFilter } = useRoomsListContext();
 	return [...splitFilter(currentFilter), currentFilter];
 };
@@ -185,7 +204,7 @@ export const useSwitchSidePanelTab = () => {
 	const { setFilter } = useRoomsListContext();
 	const [, unread] = useSidePanelFilter();
 
-	return (tab: SidePanelFiltersKeys) => {
+	return (tab: AllGroupsKeys) => {
 		setFilter(tab, unread);
 	};
 };
