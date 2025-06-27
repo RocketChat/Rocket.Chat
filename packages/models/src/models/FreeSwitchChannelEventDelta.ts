@@ -11,10 +11,10 @@ export class FreeSwitchChannelEventDeltaRaw extends BaseRaw<IFreeSwitchChannelEv
 
 	protected modelIndexes(): IndexDescription[] {
 		return [
-			{ key: { channelUniqueId: 1 } },
+			{ key: { channelUniqueId: 1, sequence: 1 }, unique: true },
 
-			// Keep event deltas for 30 days, final state forever
-			{ key: { _updatedAt: 1 }, expireAfterSeconds: 30 * 24 * 60 * 60, partialFilterExpression: { isFinalState: false } },
+			// Keep event deltas for 30 days
+			{ key: { _updatedAt: 1 }, expireAfterSeconds: 30 * 24 * 60 * 60 },
 		];
 	}
 

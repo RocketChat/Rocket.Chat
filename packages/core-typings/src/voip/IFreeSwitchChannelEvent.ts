@@ -11,6 +11,15 @@ export interface IFreeSwitchChannelEventHeader {
 	callee?: string;
 }
 
+export interface IFreeSwitchChannelEventStates {
+	channelState: string;
+	channelCallState: string;
+	originalChannelCallState?: string;
+	answerState?: string;
+}
+
+export type FreeSwitchChannelEventHeaderWithStates = IFreeSwitchChannelEventHeader & IFreeSwitchChannelEventStates;
+
 export interface IFreeSwitchChannelEventMutable {
 	// uniqueId of the main channel in the active call, might not actually be unique between different calls.
 	// We overwrite this value in some events to ensure it always refer to the same uniqueId even while the call is not active.

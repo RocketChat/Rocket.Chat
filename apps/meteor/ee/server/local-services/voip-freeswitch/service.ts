@@ -228,14 +228,11 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 		const result = await computeChannelFromEvents(allEvents);
 		if (result?.channel) {
-			const { channel, deltas, finalState } = result;
+			const { channel, deltas } = result;
 
 			await this.registerChannel(channel);
-			await this.registerChannelDelta({ channelUniqueId: channel.uniqueId, isFinalState: true, finalState });
 
-			await Promise.allSettled(
-				deltas.map(async (delta) => this.registerChannelDelta({ channelUniqueId: channel.uniqueId, isFinalState: false, event: delta })),
-			);
+			await Promise.allSettled(deltas.map(async (delta) => this.registerChannelDelta({ channelUniqueId: channel.uniqueId, ...delta })));
 		}
 	}
 

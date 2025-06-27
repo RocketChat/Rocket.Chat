@@ -4,6 +4,8 @@ import type {
 	IFreeSwitchChannelEventDeltaData,
 	IFreeSwitchChannelEventHeader,
 	IFreeSwitchChannelEventMutable,
+	FreeSwitchChannelEventHeaderWithStates,
+	IFreeSwitchChannelEventStates,
 } from '@rocket.chat/core-typings';
 import { convertPathsIntoSubObjects, convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
@@ -37,8 +39,7 @@ function splitEventDataSections(event: IFreeSwitchChannelEvent): {
 export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEvent[]): Promise<
 	| {
 			channel: Omit<IFreeSwitchChannel, '_id' | '_updatedAt'>;
-			deltas: IFreeSwitchChannelEventDeltaData[];
-			finalState: IFreeSwitchChannelEventMutable;
+			deltas: (IFreeSwitchChannelEventDeltaData & IFreeSwitchChannelEventStates)[];
 	  }
 	| undefined
 > {
@@ -46,12 +47,13 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 		return;
 	}
 
-	const deltas: IFreeSwitchChannelEventDeltaData[] = [];
+	const deltas: (IFreeSwitchChannelEventDeltaData & IFreeSwitchChannelEventStates)[] = [];
 	const { channelUniqueId: uniqueId, firedAt: firstEvent } = allEvents[0];
 	const callDirections: string[] = [];
 	const callers: string[] = [];
 	const callees: string[] = [];
 	const bridgedTo: string[] = [];
+	const headers: FreeSwitchChannelEventHeaderWithStates[] = [];
 
 	for (const event of allEvents) {
 		const { callee, caller, bridgeUniqueIds, bridgedTo: eventBridgedTo } = event;
@@ -92,9 +94,18 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 			// Compare the event's list of values with the full list from all past events
 			const { changedValues, newValues, changedExistingValues } = extractChannelChangesFromEvent(state, eventName, eventValues);
 
-			// Generate a "delta" entry with the data that has changed in this event
-			const delta: IFreeSwitchChannelEventDeltaData = {
+			const { channelState, channelCallState, originalChannelCallState, answerState } = eventData;
+			const headerWithStates: FreeSwitchChannelEventHeaderWithStates = {
 				...header,
+				channelState,
+				channelCallState,
+				originalChannelCallState,
+				answerState,
+			};
+
+			// Generate a "delta" entry with the data that has changed in this event
+			const delta: IFreeSwitchChannelEventDeltaData & IFreeSwitchChannelEventStates = {
+				...headerWithStates,
 
 				newValues: convertPathsIntoSubObjects(newValues),
 				modifiedValues: convertPathsIntoSubObjects(changedExistingValues),
@@ -102,6 +113,7 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 
 			// Store this delta in a list
 			deltas.push(filterOutMissingData(delta));
+			headers.push(headerWithStates);
 
 			return {
 				channelUniqueId,
@@ -133,8 +145,9 @@ export async function computeChannelFromEvents(allEvents: IFreeSwitchChannelEven
 				startedAt: computedProfiles.startedAt || firstEvent,
 			},
 			kind: parseChannelKind(finalState.channelName),
+			finalState,
+			events: headers,
 		},
 		deltas,
-		finalState,
 	};
 }

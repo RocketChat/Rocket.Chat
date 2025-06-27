@@ -1,5 +1,9 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IFreeSwitchChannelEventLegProfile } from './IFreeSwitchChannelEvent';
+import type {
+	FreeSwitchChannelEventHeaderWithStates,
+	IFreeSwitchChannelEventLegProfile,
+	IFreeSwitchChannelEventMutable,
+} from './IFreeSwitchChannelEvent';
 
 export interface IFreeSwitchChannel extends IRocketChatRecord {
 	uniqueId: string;
@@ -21,6 +25,9 @@ export interface IFreeSwitchChannel extends IRocketChatRecord {
 	totalDuration: number;
 
 	kind: 'internal' | 'external' | 'voicemail' | 'unknown';
+
+	finalState: IFreeSwitchChannelEventMutable;
+	events: FreeSwitchChannelEventHeaderWithStates[];
 }
 
 export interface IFreeSwitchChannelProfile extends IFreeSwitchChannelEventLegProfile {
