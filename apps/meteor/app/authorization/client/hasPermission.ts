@@ -26,14 +26,11 @@ const createPermissionValidator =
 				}
 			}
 
-			const permission = Models.Permissions.findOne(permissionId, {
-				fields: { roles: 1 },
-			});
+			const permission = Models.Permissions.state.get(permissionId);
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleId) => {
-				const role = Models.Roles.findOne(roleId, { fields: { scope: 1 } });
-				const roleScope = role?.scope;
+				const roleScope = Models.Roles.state.get(roleId)?.scope;
 
 				if (!isValidScope(roleScope)) {
 					return false;
