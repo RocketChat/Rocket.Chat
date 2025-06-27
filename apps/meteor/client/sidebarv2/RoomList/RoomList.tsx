@@ -13,7 +13,7 @@ import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
-import { useSideBarRoomsList } from '../../views/navigation/contexts/RoomsNavigationContext';
+import { useSideBarRoomsList, sidePanelFiltersConfig } from '../../views/navigation/contexts/RoomsNavigationContext';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 
@@ -49,7 +49,7 @@ const RoomList = () => {
 								collapsedGroups={collapsedGroups}
 								onClick={() => handleClick(group)}
 								onKeyDown={(e) => handleKeyDown(e, group)}
-								groupTitle={group}
+								groupTitle={sidePanelFiltersConfig[group].title}
 								unreadCount={unreadInfo}
 							/>
 						);

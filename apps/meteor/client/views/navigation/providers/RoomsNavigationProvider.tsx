@@ -1,17 +1,10 @@
-import {
-	isDirectMessageRoom,
-	isDiscussion,
-	isOmnichannelRoom,
-	isPrivateRoom,
-	isPublicRoom,
-	isTeamRoom,
-	type ILivechatInquiryRecord,
-} from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isDiscussion, isOmnichannelRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
+import type { IRoom, ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 // import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 
 import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
@@ -142,6 +135,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) => {
 	const { currentFilter, setFilter } = useSidePanelFilters();
 
+	const [parentRid, setParentRid] = useState<IRoom['_id']>();
 	const [groups, unreadGroupData] = useRoomsGroups();
 
 	const contextValue = useMemo(() => {
@@ -150,8 +144,10 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 			setFilter,
 			groups,
 			unreadGroupData,
+			parentRid,
+			setParentRid,
 		};
-	}, [currentFilter, setFilter, groups, unreadGroupData]);
+	}, [parentRid, currentFilter, setFilter, groups, unreadGroupData]);
 
 	return <RoomsNavigationContext.Provider value={contextValue}>{children}</RoomsNavigationContext.Provider>;
 };
