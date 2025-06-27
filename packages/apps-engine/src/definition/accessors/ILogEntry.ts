@@ -19,4 +19,6 @@ export interface ILogEntry {
 	timestamp: Date;
 	/** The items which were logged. */
 	args: Array<any>;
+	/** The method which was logged. */
+	method?: string;
 }

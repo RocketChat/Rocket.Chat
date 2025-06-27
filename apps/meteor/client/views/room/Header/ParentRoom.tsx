@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
 
 import { HeaderTag, HeaderTagIcon } from '../../../components/Header';
@@ -12,15 +13,11 @@ type ParentRoomProps = {
 const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
 	const icon = useRoomIcon(room);
 
-	const handleRedirect = (): void => roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });
+	const handleRedirect = () => roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });
+	const buttonProps = useButtonPattern(handleRedirect);
 
 	return (
-		<HeaderTag
-			role='button'
-			tabIndex={0}
-			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && handleRedirect()}
-			onClick={handleRedirect}
-		>
+		<HeaderTag {...buttonProps}>
 			<HeaderTagIcon icon={icon} />
 			{roomCoordinator.getRoomName(room.t, room)}
 		</HeaderTag>

@@ -10,11 +10,12 @@ import {
 	getUserPassword,
 	getExtensionList,
 	getExtensionDetails,
-	listenToEvents,
 	parseEventData,
 	computeChannelFromEvents,
 	logger,
+	FreeSwitchEventClient,
 	type EventData,
+	type FreeSwitchOptions,
 } from '@rocket.chat/freeswitch';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { FreeSwitchChannel, FreeSwitchChannelEvent, FreeSwitchChannelEventDelta } from '@rocket.chat/models';
@@ -29,42 +30,130 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 	private serviceStarter: ServiceStarter;
 
+	private eventClient: FreeSwitchEventClient | null = null;
+
+	private wasEverConnected = false;
+
 	constructor() {
 		super();
 
-		this.serviceStarter = new ServiceStarter(() => this.startEvents());
+		this.serviceStarter = new ServiceStarter(
+			async () => {
+				// Delay start to ensure setting values are up-to-date in the cache
+				setImmediate(() => this.startEvents());
+			},
+			async () => this.stopEvents(),
+		);
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
-			if (setting._id === 'VoIP_TeamCollab_Enabled' && setting.value === true) {
-				void this.serviceStarter.start();
+			if (setting._id === 'VoIP_TeamCollab_Enabled') {
+				if (setting.value !== true) {
+					void this.serviceStarter.stop();
+					return;
+				}
+
+				if (setting.value === true) {
+					void this.serviceStarter.start();
+					return;
+				}
+			}
+
+			if (setting._id === 'VoIP_TeamCollab_FreeSwitch_Host') {
+				// Re-connect if the host changes
+				if (this.eventClient && this.eventClient.host !== setting.value) {
+					this.stopEvents();
+				}
+
+				if (setting.value) {
+					void this.serviceStarter.start();
+				}
+			}
+
+			// If any other freeswitch setting changes, only reconnect if it's not yet connected
+			if (setting._id.startsWith('VoIP_TeamCollab_FreeSwitch_')) {
+				if (!this.eventClient?.isReady()) {
+					this.stopEvents();
+					void this.serviceStarter.start();
+				}
 			}
 		});
 	}
-
-	private listening = false;
 
 	public async started(): Promise<void> {
 		void this.serviceStarter.start();
 	}
 
 	private async startEvents(): Promise<void> {
-		if (this.listening) {
+		if (this.eventClient) {
+			if (!this.eventClient.isDone()) {
+				return;
+			}
+
+			const client = this.eventClient;
+			this.eventClient = null;
+			client.endConnection();
+		}
+
+		const options = wrapExceptions(() => this.getConnectionSettings()).suppress();
+		if (!options) {
+			this.wasEverConnected = false;
 			return;
 		}
 
-		try {
-			// #ToDo: Reconnection
-			// #ToDo: Only connect from one rocket.chat instance
-			await listenToEvents(
-				async (...args) => wrapExceptions(() => this.onFreeSwitchEvent(...args)).suppress(),
-				this.getConnectionSettings(),
-			);
-			this.listening = true;
-		} catch (_e) {
-			this.listening = false;
-		}
+		this.initializeEventClient(options);
 	}
 
-	private getConnectionSettings(): { host: string; port: number; password: string; timeout: number } {
+	private retryEventsLater(): void {
+		// Try to re-establish connection after some time
+		setTimeout(
+			() => {
+				void this.startEvents();
+			},
+			this.wasEverConnected ? 3000 : 20_000,
+		);
+	}
+
+	private initializeEventClient(options: FreeSwitchOptions): void {
+		const client = FreeSwitchEventClient.listenToEvents(options);
+		this.eventClient = client;
+
+		client.on('ready', () => {
+			if (this.eventClient !== client) {
+				return;
+			}
+			this.wasEverConnected = true;
+		});
+
+		client.on('end', () => {
+			if (this.eventClient && this.eventClient !== client) {
+				return;
+			}
+
+			this.eventClient = null;
+			this.retryEventsLater();
+		});
+
+		client.on('event', async ({ eventName, eventData }) => {
+			if (this.eventClient !== client) {
+				return;
+			}
+
+			await wrapExceptions(() =>
+				this.onFreeSwitchEvent(eventName as string, eventData as unknown as Record<string, string | undefined>),
+			).suppress();
+		});
+	}
+
+	private stopEvents(): void {
+		if (!this.eventClient) {
+			return;
+		}
+
+		this.eventClient.endConnection();
+		this.wasEverConnected = false;
+		this.eventClient = null;
+	}
+
+	private getConnectionSettings(): FreeSwitchOptions {
 		if (!settings.get('VoIP_TeamCollab_Enabled')) {
 			throw new Error('VoIP is disabled.');
 		}
@@ -79,8 +168,10 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		const password = settings.get<string>('VoIP_TeamCollab_FreeSwitch_Password');
 
 		return {
-			host,
-			port,
+			socketOptions: {
+				host,
+				port,
+			},
 			password,
 			timeout,
 		};

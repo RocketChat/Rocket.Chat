@@ -3,17 +3,25 @@
 	"version": "15.0.1",
 	"private": true,
 	"devDependencies": {
-		"@babel/core": "~7.26.0",
-		"@rocket.chat/fuselage": "^0.62.3",
+		"@babel/core": "~7.26.10",
+		"@rocket.chat/core-typings": "workspace:~",
+		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/fuselage": "^0.64.0",
+		"@rocket.chat/fuselage-hooks": "^0.36.0",
+		"@rocket.chat/fuselage-polyfills": "~0.31.25",
+		"@rocket.chat/fuselage-tokens": "~0.33.2",
+		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@types/react": "~18.3.17",
-		"@types/react-dom": "~18.3.5",
+		"@types/react": "~18.3.23",
+		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
-		"eslint-plugin-react": "~7.37.2",
+		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
-		"eslint-plugin-storybook": "~0.11.4",
+		"eslint-plugin-storybook": "~0.11.6",
 		"eslint-plugin-testing-library": "~6.4.0",
 		"react": "~18.3.1",
+		"react-dom": "~18.3.1",
+		"react-virtuoso": "^4.12.0",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {
@@ -31,7 +39,7 @@
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"react": "~17.0.2"
+		"react": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"

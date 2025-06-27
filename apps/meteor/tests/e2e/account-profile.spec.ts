@@ -110,6 +110,11 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.btnTokenAddedOk.click();
 		});
 
+		await test.step('should not allow add new personal with no name', async () => {
+			await poAccountProfile.btnTokensAdd.click();
+			await expect(page.getByRole('alert').filter({ hasText: 'Please provide a name for your token' })).toBeVisible();
+		});
+
 		await test.step('should not allow add new personal token with same name', async () => {
 			await poAccountProfile.inputToken.fill(token);
 			await poAccountProfile.btnTokensAdd.click();
