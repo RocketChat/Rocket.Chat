@@ -7,7 +7,7 @@ import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 
 actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
-	const room = Rooms.findOne({ _id: message.rid });
+	const room = Rooms.state.get(message.rid);
 	if (!room) {
 		throw new Error('Room not found');
 	}
@@ -20,7 +20,7 @@ actionLinks.register('joinLivechatWebRTCCall', (message: IMessage) => {
 });
 
 actionLinks.register('endLivechatWebRTCCall', async (message: IMessage) => {
-	const room = Rooms.findOne({ _id: message.rid });
+	const room = Rooms.state.get(message.rid);
 	if (!room) {
 		throw new Error('Room not found');
 	}
