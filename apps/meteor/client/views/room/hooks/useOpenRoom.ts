@@ -1,4 +1,5 @@
 import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
+import { getObjectKeys } from '@rocket.chat/tools';
 import { useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -57,21 +58,20 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			const $set: any = {};
-			const $unset: any = {};
-
-			for (const key of Object.keys(roomFields)) {
-				if (key in roomData) {
-					$set[key] = roomData[key as keyof typeof roomData];
-				} else {
-					$unset[key] = '';
-				}
-			}
-
 			const { Rooms, Subscriptions } = await import('../../../../app/models/client');
 
-			Rooms.upsert({ _id: roomData._id }, { $set, $unset });
-			const room = Rooms.findOne({ _id: roomData._id });
+			Rooms.state.update(
+				(record) => record._id === roomData._id,
+				(record) => {
+					const unsetKeys = getObjectKeys(roomFields).filter((key) => key in roomData) as (keyof IRoom)[];
+					unsetKeys.forEach((key) => {
+						delete record[key];
+					});
+					return { ...record, ...roomData };
+				},
+			);
+
+			const room = Rooms.state.get(roomData._id);
 
 			if (!room) {
 				throw new TypeError('room is undefined');
@@ -118,7 +118,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	useEffect(() => {
 		if (error) {
 			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
-				Rooms.remove(reference);
+				Rooms.state.remove((record) => Object.values(record).includes(reference));
 				queryClient.removeQueries({ queryKey: ['rooms', reference] });
 				queryClient.removeQueries({ queryKey: roomsQueryKeys.info(reference) });
 			}
