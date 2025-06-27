@@ -4700,8 +4700,6 @@
   "Sidebar_Sections_Order_Description": "Selecione as categorias em sua ordem preferida",
   "Sidebar_actions": "Ações da barra lateral",
   "Sidebar_list_mode": "Modo de Lista de Canais da Barra Lateral",
-  "Sidepanel_navigation": "Navegação secundária para equipes",
-  "Sidepanel_navigation_description": "Exibir canais e/ou discussões associados às equipes por padrão. Isso permite que os proprietários de equipes personalizem os métodos de comunicação para melhor atender às necessidades de suas equipes. Atualmente, esse recurso está em fase de visualização e será um recurso premium quando for totalmente lançado.",
   "Sign_in_to_start_talking": "Faça login para começar a conversar",
   "Sign_in_with__provider__": "Faça login com {{provider}}",
   "Site_Name": "Nome do site",
