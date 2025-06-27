@@ -12,6 +12,7 @@ import RoomSkeleton from './RoomSkeleton';
 import RoomSidepanel from './Sidepanel/RoomSidepanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
 import { CachedChatSubscription } from '../../../app/models/client';
+import { LegacyRoomManager } from '../../../app/ui-utils/client';
 import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePreviewSidePanelNavigation';
 import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
@@ -61,7 +62,11 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 		}
 
 		CachedChatSubscription.upsertSubscription(mapSubscriptionFromApi(subscriptionData.subscription));
-	}, [subscriptionData]);
+
+		// yes this must be done here, this is already called in useOpenRoom, but it skips subscription streams because of the subscriptions list is empty
+		// now that we inserted the subscription, we can open the room
+		LegacyRoomManager.open({ typeName: type + reference, rid: subscriptionData.subscription.rid });
+	}, [subscriptionData, type, rid, reference]);
 
 	useEffect(() => {
 		if (!uid) {
