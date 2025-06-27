@@ -9,17 +9,16 @@ import RoomSidepanelItem from './SidepanelItem';
 import { useTeamsListChildrenUpdate } from './hooks/useTeamslistChildren';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
-import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
+import { useOpenedRoom } from '../../../lib/RoomManager';
 
 const RoomSidepanel = () => {
 	const parentRid = useOpenedRoom();
-	const secondLevelOpenedRoom = useSecondLevelOpenedRoom() ?? parentRid;
 
-	if (!parentRid || !secondLevelOpenedRoom) {
+	if (!parentRid) {
 		return null;
 	}
 
-	return <RoomSidepanelWithData parentRid={parentRid} openedRoom={secondLevelOpenedRoom} />;
+	return <RoomSidepanelWithData parentRid={parentRid} openedRoom='' />;
 };
 
 const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; openedRoom: string }) => {

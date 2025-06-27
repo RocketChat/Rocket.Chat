@@ -8,7 +8,6 @@ jest.mock('../../../../lib/RoomManager', () => ({
 		getStore: jest.fn(),
 	},
 	useOpenedRoom: jest.fn(() => 'room-id'),
-	useSecondLevelOpenedRoom: jest.fn(() => 'room-id'),
 }));
 
 describe('useRestoreScrollPosition', () => {

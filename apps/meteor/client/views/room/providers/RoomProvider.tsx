@@ -14,8 +14,6 @@ import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { omit } from '../../../../lib/utils/omit';
 import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
-import { useSidePanelNavigation } from '../../../hooks/useSidePanelNavigation';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
@@ -30,9 +28,7 @@ type RoomProviderProps = {
 };
 
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
-	const resultFromServer = useRoomInfoEndpoint(rid);
-
-	const resultFromLocal = useRoomQuery(rid);
+	const { data: room, isSuccess } = useRoomQuery(rid);
 
 	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
 
@@ -41,7 +37,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useUsersNameChanged();
 
 	const pseudoRoom: IRoomWithFederationOriginalName | null = useMemo(() => {
-		const room = resultFromLocal.data;
 		if (!room) {
 			return null;
 		}
@@ -52,7 +47,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			name: roomCoordinator.getRoomName(room.t, room),
 			federationOriginalName: room.name,
 		};
-	}, [resultFromLocal.data, subscritionFromLocal]);
+	}, [room, subscritionFromLocal]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
 		useCallback(() => {
@@ -81,59 +76,20 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscritionFromLocal]);
 
-	const isSidepanelFeatureEnabled = useSidePanelNavigation();
-
 	const { mutate: fireRoomOpenedEvent } = useFireGlobalEvent('room-opened', rid);
 
 	useEffect(() => {
-		if (resultFromLocal.data) {
-			fireRoomOpenedEvent(omit(resultFromLocal.data, 'usernames'));
+		if (room) {
+			fireRoomOpenedEvent(omit(room, 'usernames'));
 		}
-	}, [rid, resultFromLocal.data, fireRoomOpenedEvent]);
+	}, [rid, room, fireRoomOpenedEvent]);
 
 	useEffect(() => {
-		if (isSidepanelFeatureEnabled) {
-			if (resultFromServer.isSuccess) {
-				if (resultFromServer.data.room?.teamMain) {
-					RoomManager.openSecondLevel(rid, rid);
-					return (): void => {
-						RoomManager.back(rid);
-					};
-				}
-
-				switch (true) {
-					case resultFromServer.data.room?.prid && !!resultFromServer.data.parent:
-						RoomManager.openSecondLevel(resultFromServer.data.parent._id, rid);
-						break;
-					case resultFromServer.data.team?.roomId && !resultFromServer.data.room?.teamMain:
-						RoomManager.openSecondLevel(resultFromServer.data.team.roomId, rid);
-						break;
-
-					default:
-						RoomManager.openSecondLevel(rid, rid);
-						break;
-				}
-			}
-			return (): void => {
-				RoomManager.back(rid);
-			};
-		}
-
 		RoomManager.open(rid);
 		return (): void => {
 			RoomManager.back(rid);
 		};
-	}, [
-		isSidepanelFeatureEnabled,
-		rid,
-		resultFromServer.data?.room?.prid,
-		resultFromServer.data?.room?.teamId,
-		resultFromServer.data?.room?.teamMain,
-		resultFromServer.isSuccess,
-		resultFromServer.data?.parent,
-		resultFromServer.data?.team?.roomId,
-		resultFromServer.data,
-	]);
+	}, [rid]);
 
 	const subscribed = !!subscritionFromLocal;
 
@@ -146,7 +102,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return !resultFromLocal.data ? <RoomNotFound /> : <RoomSkeleton />;
+		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (
