@@ -3,10 +3,11 @@ import prettier from 'eslint-config-prettier/flat';
 import tseslint, { type InfiniteDepthConfigWithExtends } from 'typescript-eslint';
 import globals from 'globals';
 import { importX } from 'eslint-plugin-import-x';
-import security from 'eslint-plugin-security';
 import type { FlatConfig } from '@typescript-eslint/utils/ts-eslint';
 import { ignore } from './config/ignore.js';
+
 import javascript from './rules/javascript.js';
+import security from './security.js';
 
 function base(...configs: InfiniteDepthConfigWithExtends[]): FlatConfig.ConfigArray {
 	return tseslint.config(
@@ -24,7 +25,6 @@ function base(...configs: InfiniteDepthConfigWithExtends[]): FlatConfig.ConfigAr
 			'jest.config.ts',
 			'webpack.config.js',
 			'.prettierrc.js',
-			'',
 		]),
 		eslint.configs.recommended,
 		{
@@ -34,12 +34,12 @@ function base(...configs: InfiniteDepthConfigWithExtends[]): FlatConfig.ConfigAr
 		importX.flatConfigs.typescript,
 		prettier,
 		tseslint.configs.recommendedTypeChecked,
+		security({ rules: { 'security/detect-object-injection': 'off' } }),
 		{
 			rules: {
 				'prefer-const': 'warn',
 			},
 		},
-		security.configs.recommended,
 		{
 			rules: {
 				'import-x/namespace': 'warn',

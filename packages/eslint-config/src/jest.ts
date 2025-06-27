@@ -5,9 +5,9 @@ import type { ConfigWithExtends } from 'typescript-eslint';
 import rules from './rules/jest.js';
 import type { ExtractRules } from './types/rules.js';
 
-type Rules = typeof rules.recommended & typeof rules.style;
+type Rules = ExtractRules<typeof rules.recommended & typeof rules.style>;
 
-function jest(config: Linter.Config<ExtractRules<Rules>> = {}): Linter.Config & ConfigWithExtends {
+function jest(config: Linter.Config<Rules> = {}): Linter.Config & ConfigWithExtends {
 	return {
 		files: config.files ? config.files : ['**/*.spec.js', '**/*.spec.jsx', '**/*.spec.ts'],
 		plugins: { jest: jestPlugin },

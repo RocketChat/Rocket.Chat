@@ -1,10 +1,3 @@
-declare module 'eslint-plugin-security' {
-	import { ConfigArray } from 'typescript-eslint';
-	export const configs: {
-		recommended: ConfigArray;
-	};
-}
-
 declare module 'eslint-plugin-jsx-a11y' {
 	import type { ConfigArray } from 'typescript-eslint';
 	export const flatConfigs: {

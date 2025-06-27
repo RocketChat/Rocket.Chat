@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"target": "es2018",
 		"module": "esNext",
+		"moduleResolution": "bundler",
 		"lib": ["esnext", "dom"],
 
 		"allowJs": true,

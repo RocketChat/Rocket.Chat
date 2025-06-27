@@ -1,14 +1,13 @@
-import mochaPlugin from 'eslint-plugin-mocha';
-import globals from 'globals';
-
+// @ts-expect-error security plugin is not typed
+import securityPlugin from 'eslint-plugin-security';
 import type { Linter } from 'eslint';
 import type { ConfigWithExtends } from 'typescript-eslint';
-import rules from './rules/mocha.js';
+import rules from './rules/security.js';
 import type { MergeRules } from './types/rules.js';
 
-type Rules = MergeRules<[typeof rules.recommended, typeof rules.all]>;
+type Rules = MergeRules<[typeof rules.recommended]>;
 
-export default function mocha(config: Linter.Config<Rules> = {}): Linter.Config & ConfigWithExtends {
+export default function security(config: Linter.Config<Rules> = {}): Linter.Config & ConfigWithExtends {
 	return {
 		files: config.files ?? [
 			'**/*.spec.js',
@@ -20,10 +19,7 @@ export default function mocha(config: Linter.Config<Rules> = {}): Linter.Config 
 			'**/*.tests.ts',
 			'**/*.mock.ts',
 		],
-		plugins: { mocha: mochaPlugin },
-		languageOptions: {
-			globals: config.languageOptions?.globals ?? globals.mocha,
-		},
+		plugins: { security: securityPlugin },
 		rules: {
 			...rules.recommended,
 			...config.rules,
