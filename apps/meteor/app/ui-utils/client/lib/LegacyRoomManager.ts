@@ -9,7 +9,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Subscriptions, CachedChatSubscription } from '../../../models/client';
+import { Messages, Subscriptions } from '../../../models/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const maxRoomsOpen = parseInt(getConfig('maxRoomsOpen') ?? '5') || 5;
@@ -29,7 +29,6 @@ type OpenedRoom = {
 	typeName: string;
 	rid: IRoom['_id'];
 	ready: boolean;
-	active: boolean;
 	dom?: Node;
 	streamActive?: boolean;
 	unreadSince: Date | undefined;
@@ -47,7 +46,6 @@ function close(typeName: string) {
 		openedRooms[typeName].stream?.stop();
 
 		openedRooms[typeName].ready = false;
-		openedRooms[typeName].active = false;
 
 		delete openedRooms[typeName].dom;
 
@@ -117,7 +115,7 @@ function getOpenedRoomByRid(rid: IRoom['_id']) {
 }
 
 const openRoom = (typeName: string, record: OpenedRoom) => {
-	if (record.active !== true || (record.ready === true && record.streamActive === true)) {
+	if (record.ready === true && record.streamActive === true) {
 		return;
 	}
 
@@ -256,7 +254,6 @@ function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 		openedRooms[typeName] = {
 			typeName,
 			rid,
-			active: false,
 			ready: false,
 			unreadSince: undefined,
 			lastSeen: new Date(),
@@ -269,12 +266,7 @@ function open({ typeName, rid }: { typeName: string; rid: IRoom['_id'] }) {
 		closeOlderRooms();
 	}
 
-	if (CachedChatSubscription.ready.get() === true) {
-		if (openedRooms[typeName].active !== true) {
-			openedRooms[typeName].active = true;
-			openRoom(typeName, openedRooms[typeName]);
-		}
-	}
+	openRoom(typeName, openedRooms[typeName]);
 }
 
 let openedRoom: string | undefined = undefined;
