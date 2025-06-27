@@ -1,6 +1,8 @@
 import { api } from '@rocket.chat/core-services';
+import type { IWebdavAccount, IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import { WebdavAccounts } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import type { DeleteResult } from 'mongodb';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -11,7 +13,9 @@ const webdavGetMyAccountsEndpoints = API.v1.get(
 	{
 		authRequired: true,
 		response: {
-			200: ajv.compile({
+			200: ajv.compile<{
+				accounts: IWebdavAccountIntegration[];
+			}>({
 				type: 'object',
 				properties: {
 					accounts: {
@@ -68,7 +72,7 @@ const webdavGetMyAccountsEndpoints = API.v1.get(
 );
 
 type POSTRemoveWebdavAccount = {
-	accountId: string;
+	accountId: IWebdavAccount['_id'];
 };
 
 const POSTRemoveWebdavAccountSchema = {
@@ -164,3 +168,8 @@ API.v1.post(
 );
 
 export type WebdavEndpoints = ExtractRoutesFromAPI<typeof webdavGetMyAccountsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends WebdavEndpoints {}
+}
