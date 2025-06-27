@@ -20,9 +20,6 @@ type ListenRoomPropsByRidPropsEvent = `${string}/${ListenRoomPropsByRidProps}`;
 const listener = new (class ListenRoomPropsByRid extends Emitter<{
 	[key in ListenRoomPropsByRidPropsEvent]: undefined;
 }> {
-	constructor() {
-		super();
-	}
 })();
 
 type OpenedRoom = {
