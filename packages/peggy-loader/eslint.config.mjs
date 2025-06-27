@@ -1,4 +1,4 @@
-import { config as base } from '@rocket.chat/eslint-config/base';
-import { config as jest } from '@rocket.chat/eslint-config/jest';
+// @ts-check
+import { base } from '@rocket.chat/eslint-config';
 
-export default [...base, jest];
+export default base();

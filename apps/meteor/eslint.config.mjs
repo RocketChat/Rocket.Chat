@@ -1,21 +1,13 @@
-import { config as base } from '@rocket.chat/eslint-config/base';
-import { config as jest } from '@rocket.chat/eslint-config/jest';
-import { config as mocha } from '@rocket.chat/eslint-config/mocha';
-import { config as react } from '@rocket.chat/eslint-config/react';
-import tseslint from 'typescript-eslint';
+import { base, jest, mocha, react } from '@rocket.chat/eslint-config';
 import globals from 'globals';
 
-export default tseslint.config(
-	[
-		...base,
-		{
-			ignores: ['packages/**/*', 'definition/**/*', '.scripts/**/*', 'imports/client/**/*'],
-		},
-	],
-	jest,
-	mocha,
-	react,
+export default base(
 	{
+		ignores: ['packages/**/*', 'definition/**/*', '.scripts/**/*', 'imports/client/**/*'],
+	},
+	jest(),
+	mocha(),
+	react({
 		files: ['server/**/*', 'app/*/server/**/*', 'app/*/lib/**/*'],
 		languageOptions: {
 			globals: {
@@ -27,5 +19,5 @@ export default tseslint.config(
 				projectService: true,
 			},
 		},
-	},
+	}),
 );

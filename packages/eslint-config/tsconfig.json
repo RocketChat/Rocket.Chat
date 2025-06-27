@@ -6,7 +6,14 @@
 		"rootDir": "./src",
 		"outDir": "./dist",
 		"declaration": true,
-		"declarationMap": true
+		"declarationMap": true,
+		"isolatedDeclarations": true,
+		"isolatedModules": true,
+		"target": "es2024",
+		"lib": ["es2024"],
+		"stripInternal": true,
+		"erasableSyntaxOnly": true,
+		"verbatimModuleSyntax": true
 	},
-	"exclude": ["dist"]
+	"include": ["./src"]
 }

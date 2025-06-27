@@ -1,11 +1,3 @@
-import { defineConfig } from '@rocket.chat/eslint-config/base';
+import { base, jest } from '@rocket.chat/eslint-config';
 
-export default defineConfig({
-	languageOptions: {
-		parserOptions: {
-			projectService: {
-				allowDefaultProject: ['src/*.spec.ts'],
-			},
-		},
-	},
-});
+export default base(jest());

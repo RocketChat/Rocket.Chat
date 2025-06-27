@@ -1,10 +1,4 @@
-import { defineConfig } from '@rocket.chat/eslint-config/base';
-export default defineConfig({
-	languageOptions: {
-		parserOptions: {
-			projectService: {
-				allowDefaultProject: ['tests/*.test.ts'],
-			},
-		},
-	},
-});
+// @ts-check
+import { base } from '@rocket.chat/eslint-config';
+
+export default base();

@@ -1,8 +1,5 @@
-import { config } from '@rocket.chat/eslint-config/base';
+import { base } from '@rocket.chat/eslint-config';
 
-export default [
-	...config,
-	{
-		ignores: ['client/**/*', 'server/**/*', 'definition/**/*', 'lib/**/*', 'deno-runtime/**/*', '.deno-cache/**/*'],
-	},
-];
+export default base({
+	ignores: ['client/**/*', 'server/**/*', 'definition/**/*', 'lib/**/*', 'deno-runtime/**/*', '.deno-cache/**/*'],
+});

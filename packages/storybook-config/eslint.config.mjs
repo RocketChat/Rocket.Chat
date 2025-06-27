@@ -1,8 +1,5 @@
-import { config } from '@rocket.chat/eslint-config/base';
+import { base } from '@rocket.chat/eslint-config';
 
-export default [
-	...config,
-	{
-		ignores: ['**/dist', '*.d.ts', '*.js'],
-	},
-];
+export default base({
+	ignores: ['./preview.js', './preview.d.ts', './main.js', './main.d.ts'],
+});

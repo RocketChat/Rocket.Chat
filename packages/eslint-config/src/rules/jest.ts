@@ -1,0 +1,28 @@
+export default {
+	recommended: {
+		'jest/expect-expect': 'warn',
+		'jest/no-alias-methods': 'warn',
+		'jest/no-commented-out-tests': 'warn',
+		'jest/no-conditional-expect': 'warn',
+		'jest/no-deprecated-functions': 'warn',
+		'jest/no-disabled-tests': 'warn',
+		'jest/no-done-callback': 'warn',
+		'jest/no-export': 'warn',
+		'jest/no-focused-tests': 'warn',
+		'jest/no-identical-title': 'warn',
+		'jest/no-interpolation-in-snapshots': 'warn',
+		'jest/no-jasmine-globals': 'warn',
+		'jest/no-mocks-import': 'warn',
+		'jest/no-standalone-expect': 'warn',
+		'jest/no-test-prefixes': 'warn',
+		'jest/valid-describe-callback': 'warn',
+		'jest/valid-expect': 'warn',
+		'jest/valid-expect-in-promise': 'warn',
+		'jest/valid-title': 'warn',
+	},
+	style: {
+		'jest/prefer-to-be': 'warn',
+		'jest/prefer-to-contain': 'warn',
+		'jest/prefer-to-have-length': 'warn',
+	},
+} as const;

@@ -1,26 +1,25 @@
-// @ts-check
-import jest from 'eslint-plugin-jest';
+import type { Linter } from 'eslint';
+import jestPlugin from 'eslint-plugin-jest';
 import globals from 'globals';
+import type { ConfigWithExtends } from 'typescript-eslint';
+import rules from './rules/jest.js';
+import type { ExtractRules } from './types/rules.js';
 
-/**
- * @type {import('typescript-eslint').ConfigWithExtends}
- */
-export const config = {
-	files: ['**/*.spec.js', '**/*.test.js', '**/*.tests.js', '**/*.mock.js'],
-	plugins: { jest },
-	languageOptions: {
-		globals: globals.jest,
-		parserOptions: {
-			projectService: {
-				allowDefaultProject: ['jest.config.js', 'jest.config.mjs'],
-			},
+type Rules = typeof rules.recommended & typeof rules.style;
+
+function jest(config: Linter.Config<ExtractRules<Rules>> = {}): Linter.Config & ConfigWithExtends {
+	return {
+		files: config.files ? config.files : ['**/*.spec.js', '**/*.spec.jsx', '**/*.spec.ts'],
+		plugins: { jest: jestPlugin },
+		rules: {
+			...rules.recommended,
+			...rules.style,
+			...config.rules,
 		},
-	},
-	rules: {
-		'jest/no-disabled-tests': 'warn',
-		'jest/no-focused-tests': 'warn',
-		'jest/no-identical-title': 'warn',
-		'jest/prefer-to-have-length': 'warn',
-		'jest/valid-expect': 'warn',
-	},
-};
+		languageOptions: {
+			globals: config.languageOptions?.globals ?? globals.jest,
+		},
+	};
+}
+
+export default jest;

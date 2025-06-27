@@ -1,3 +1,4 @@
-import { config } from '@rocket.chat/eslint-config/react';
+// @ts-check
+import { base, react } from '@rocket.chat/eslint-config';
 
-export default config;
+export default base(react());

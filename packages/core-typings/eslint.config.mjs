@@ -1,6 +1,6 @@
-import { defineConfig } from '@rocket.chat/eslint-config/base';
+import { base } from '@rocket.chat/eslint-config';
 
-export default defineConfig({
+export default base({
 	rules: {
 		'import-x/export': 'off',
 	},

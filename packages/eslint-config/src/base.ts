@@ -1,50 +1,45 @@
 import eslint from '@eslint/js';
 import prettier from 'eslint-config-prettier/flat';
-import tseslint from 'typescript-eslint';
+import tseslint, { type InfiniteDepthConfigWithExtends } from 'typescript-eslint';
 import globals from 'globals';
 import { importX } from 'eslint-plugin-import-x';
 import security from 'eslint-plugin-security';
+import type { FlatConfig } from '@typescript-eslint/utils/ts-eslint';
+import { ignore } from './config/ignore.js';
+import javascript from './rules/javascript.js';
 
-export function defineConfig(config = {}) {
+function base(...configs: InfiniteDepthConfigWithExtends[]): FlatConfig.ConfigArray {
 	return tseslint.config(
-		{
-			ignores: [
-				'**/scripts/**',
-				'**/dist/**',
-				'**/public/**',
-				'**/.meteor/**',
-				'.mocha.api.js',
-				'.mocharc.js',
-				'.mocharc.*.js',
-				'**/.storybook/**',
-				'babel.config.js',
-				'eslint.config.mjs',
-				'jest.config.ts',
-				'webpack.config.js',
-				'.prettierrc.js',
-			],
-			name: 'base-ignore',
-		},
+		ignore([
+			'**/scripts/**',
+			'**/dist/**',
+			'**/public/**',
+			'**/.meteor/**',
+			'.mocha.api.js',
+			'.mocharc.js',
+			'.mocharc.*.js',
+			'**/.storybook/**',
+			'babel.config.js',
+			'eslint.config.mjs',
+			'jest.config.ts',
+			'webpack.config.js',
+			'.prettierrc.js',
+			'',
+		]),
 		eslint.configs.recommended,
+		{
+			rules: javascript.recommended,
+		},
 		importX.flatConfigs.recommended,
 		importX.flatConfigs.typescript,
 		prettier,
 		tseslint.configs.recommendedTypeChecked,
-		security.configs.recommended,
 		{
 			rules: {
-				'no-unused-expressions': 'warn',
-				'no-async-promise-executor': 'warn',
-				'no-case-declarations': 'warn',
-				'no-prototype-builtins': 'warn',
-				'no-await-in-loop': 'warn',
-				'no-unsafe-optional-chaining': 'warn',
-				'no-useless-catch': 'warn',
-				'no-useless-escape': 'warn',
-				'no-constant-binary-expression': 'warn',
 				'prefer-const': 'warn',
 			},
 		},
+		security.configs.recommended,
 		{
 			rules: {
 				'import-x/namespace': 'warn',
@@ -131,7 +126,7 @@ export function defineConfig(config = {}) {
 				},
 			},
 		},
-		config,
+		...configs,
 		{
 			files: [
 				'**/*.spec.ts',
@@ -146,4 +141,4 @@ export function defineConfig(config = {}) {
 	);
 }
 
-export const config = defineConfig();
+export default base;

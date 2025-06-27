@@ -16,7 +16,7 @@
 		"typescript": "~5.8.3"
 	},
 	"scripts": {
-		"build": "rm -rf dist && tsc",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"typecheck": "tsc --noEmit",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
