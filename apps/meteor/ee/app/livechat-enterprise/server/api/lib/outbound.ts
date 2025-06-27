@@ -19,7 +19,16 @@ export class OutboundMessageProviderService {
 			throw new Error('Invalid type');
 		}
 
-		return this.provider.getOutboundMessageProviders(type);
+		const providers = this.provider.getOutboundMessageProviders(type);
+
+		return providers.map<IOutboundProvider>((provider: IOutboundMessageProviders) => {
+			return {
+				providerId: provider.appId,
+				providerName: provider.name,
+				supportsTemplates: true,
+				providerType: provider.type,
+			};
+		});
 	}
 }
 
