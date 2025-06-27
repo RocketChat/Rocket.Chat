@@ -26,6 +26,8 @@ export const useTranslateAction = (
 		[message, language],
 	);
 
+	const updateMessages = Messages.use((state) => state.update);
+
 	if (!autoTranslateEnabled || !canAutoTranslate || !user) {
 		return null;
 	}
@@ -48,11 +50,19 @@ export const useTranslateAction = (
 		action() {
 			if (!hasTranslations) {
 				AutoTranslate.messageIdsToWait[message._id] = true;
-				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+				updateMessages(
+					(record) => record._id === message._id,
+					(record) => ({ ...record, autoTranslateFetching: true }),
+				);
 				void translateMessage(message, language);
 			}
-			const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
-			Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
+
+			updateMessages(
+				(record) => record._id === message._id,
+				'autoTranslateShowInverse' in message
+					? ({ autoTranslateShowInverse: _, ...record }) => record
+					: (record) => ({ ...record, autoTranslateShowInverse: true }),
+			);
 		},
 		order: 90,
 	};

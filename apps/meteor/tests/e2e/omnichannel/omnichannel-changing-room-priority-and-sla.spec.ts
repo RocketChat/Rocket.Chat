@@ -35,6 +35,9 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 		statusCode = (await api.post('/livechat/users/manager', { username: ADMIN_CREDENTIALS.username })).status();
 		expect(statusCode).toBe(200);
 
+		statusCode = (await api.post('/livechat/agent.status', { status: 'available' })).status();
+		expect(statusCode).toBe(200);
+
 		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' })).status();
 		expect(statusCode).toBe(200);
 

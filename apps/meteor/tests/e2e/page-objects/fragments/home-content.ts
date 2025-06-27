@@ -47,6 +47,10 @@ export class HomeContent {
 		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
 	}
 
+	get lastUserMessageAttachment(): Locator {
+		return this.page.locator('[data-qa-type="message-attachment"]').last();
+	}
+
 	get lastUserMessageNotSequential(): Locator {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
@@ -170,6 +174,50 @@ export class HomeContent {
 
 	get lastMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
+	}
+
+	get btnQuoteMessage(): Locator {
+		return this.page.getByRole('button', { name: 'Quote' });
+	}
+
+	get quotePreview(): Locator {
+		return this.page.locator('footer blockquote');
+	}
+
+	get quotedMessage(): Locator {
+		return this.page.getByRole('blockquote');
+	}
+
+	quotedFileDescription(fileDescription: string): Locator {
+		return this.quotedMessage.getByText(fileDescription);
+	}
+
+	quotedFileName(fileName: string): Locator {
+		return this.quotedMessage.getByTitle(fileName);
+	}
+
+	threadMessageQuotedFileDescription(fileDescription: string): Locator {
+		return this.threadQuotedMessage.getByText(fileDescription);
+	}
+
+	threadMessageQuotedFileName(fileName: string): Locator {
+		return this.threadQuotedMessage.getByTitle(fileName);
+	}
+
+	get linkPreview(): Locator {
+		return this.lastUserMessage.getByText('Link Preview');
+	}
+
+	quotedLinkText(name: string): Locator {
+		return this.quotedMessage.getByRole('link', { name });
+	}
+
+	get threadQuotedMessage(): Locator {
+		return this.page.getByRole('dialog').getByRole('blockquote');
+	}
+
+	get threadQuotePreview(): Locator {
+		return this.page.getByRole('dialog').locator('footer blockquote');
 	}
 
 	get lastThreadMessageTextAttachmentEqualsText(): Locator {
@@ -393,12 +441,16 @@ export class HomeContent {
 		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
 	}
 
-	get btnStartVideoCall(): Locator {
-		return this.page.locator('#video-conf-root .rcx-button--primary.rcx-button >> text="Start call"');
+	getVideoConfPopup(name?: string): Locator {
+		return this.page.getByRole('dialog', { name });
 	}
 
-	getVideoConfPopupByName(name: string): Locator {
-		return this.page.getByRole('dialog', { name });
+	get btnStartVideoCall(): Locator {
+		return this.getVideoConfPopup().getByRole('button', { name: 'Start call' });
+	}
+
+	get btnVideoConfMic(): Locator {
+		return this.getVideoConfPopup().getByRole('button', { name: 'Mic' });
 	}
 
 	get btnDeclineVideoCall(): Locator {
@@ -488,5 +540,9 @@ export class HomeContent {
 
 	get btnDismissContactUnknownCallout() {
 		return this.contactUnknownCallout.getByRole('button', { name: 'Dismiss' });
+	}
+
+	async expectLastMessageToHaveText(text: string): Promise<void> {
+		await expect(this.lastUserMessageBody).toHaveText(text);
 	}
 }

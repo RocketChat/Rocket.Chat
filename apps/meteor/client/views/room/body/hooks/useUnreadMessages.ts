@@ -52,6 +52,10 @@ export const useHandleUnread = (
 
 	const chat = useChat();
 
+	const getMessage = Messages.use((state) => state.get);
+	const findFirstMessage = Messages.use((state) => state.findFirst);
+	const filterMessages = Messages.use((state) => state.filter);
+
 	if (!chat) {
 		throw new Error('No ChatContext provided');
 	}
@@ -60,14 +64,17 @@ export const useHandleUnread = (
 		const { firstUnread } = RoomHistoryManager.getRoom(rid);
 		let message = firstUnread?.get();
 		if (!message) {
-			message = Messages.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
+			message = findFirstMessage(
+				(record) => record.rid === rid && record.ts.getTime() > (unread?.since.getTime() ?? -Infinity),
+				(a, b) => a.ts.getTime() - b.ts.getTime(),
+			);
 		}
 		if (!message) {
 			return;
 		}
 		setMessageJumpQueryStringParameter(message?._id);
 		setUnreadCount(0);
-	}, [room._id, unread?.since, setUnreadCount]);
+	}, [room._id, setUnreadCount, findFirstMessage, unread?.since]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
 		chat.readStateManager.markAsRead();
@@ -80,13 +87,15 @@ export const useHandleUnread = (
 			return;
 		}
 
-		const count = Messages.find({
-			rid: room._id,
-			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
-		}).count();
+		const count = filterMessages(
+			(record) =>
+				record.rid === room._id &&
+				record.ts.getTime() <= (lastMessageDate?.getTime() ?? Infinity) &&
+				record.ts.getTime() > (subscription?.ls?.getTime() ?? -Infinity),
+		).length;
 
 		setUnreadCount(count);
-	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
+	}, [filterMessages, lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	const router = useRouter();
 
@@ -158,7 +167,7 @@ export const useHandleUnread = (
 							return;
 						}
 
-						const lastMessage = Messages.findOne(lastInvisibleMessageOnScreen.id);
+						const lastMessage = getMessage(lastInvisibleMessageOnScreen.id);
 						if (!lastMessage) {
 							setUnreadCount(0);
 							return;
@@ -169,7 +178,7 @@ export const useHandleUnread = (
 				}),
 			);
 		},
-		[setUnreadCount],
+		[getMessage, setUnreadCount],
 	);
 
 	return {

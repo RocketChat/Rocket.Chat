@@ -29,7 +29,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 		poOmnichannelPriorities = new OmnichannelPriorities(page);
 
 		await page.goto('/omnichannel');
-		await page.locator('.main-content').waitFor();
+		await page.locator('#main-content').waitFor();
 		await poOmnichannelPriorities.sidenav.linkPriorities.click();
 	});
 

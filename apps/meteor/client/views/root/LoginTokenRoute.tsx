@@ -1,23 +1,16 @@
-import { useRouter } from '@rocket.chat/ui-contexts';
-import { Accounts } from 'meteor/accounts-base';
+import { useLoginWithTokenRoute, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 const LoginTokenRoute = () => {
 	const router = useRouter();
+	const loginMethod = useLoginWithTokenRoute();
 
 	useEffect(() => {
-		Accounts.callLoginMethod({
-			methodArguments: [
-				{
-					loginToken: router.getRouteParameters().token,
-				},
-			],
-			userCallback(error) {
-				console.error(error);
-				router.navigate('/');
-			},
+		loginMethod(router.getRouteParameters().token, (error) => {
+			console.error(error);
+			router.navigate('/');
 		});
-	}, [router]);
+	}, [loginMethod, router]);
 
 	return null;
 };
