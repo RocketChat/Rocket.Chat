@@ -245,7 +245,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		drafts.set(mid, draft);
 	};
 
-	const findRoom = async (): Promise<IRoom | undefined> => Rooms.findOne({ _id: rid }, { reactive: false });
+	const findRoom = async (): Promise<IRoom | undefined> => Rooms.state.get(rid);
 
 	const getRoom = async (): Promise<IRoom> => {
 		const room = await findRoom();
@@ -264,7 +264,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>
-		Rooms.findOne({ _id: drid, prid: { $exists: true } }, { reactive: false });
+		Rooms.state.find((record) => Boolean(record._id === drid && record.prid));
 
 	const getDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom> => {
 		const discussion = await findDiscussionByID(drid);

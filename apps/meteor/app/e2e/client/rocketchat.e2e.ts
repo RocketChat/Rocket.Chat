@@ -255,7 +255,7 @@ class E2E extends Emitter {
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
+		const room = await waitUntilFind(() => Rooms.state.get(rid));
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
@@ -846,11 +846,12 @@ class E2E extends Emitter {
 			return;
 		}
 
+		const predicate = (record: IRoom) =>
+			Boolean('usersWaitingForE2EKeys' in record && record.usersWaitingForE2EKeys?.every((user) => user.userId !== Meteor.userId()));
+
 		const keyDistribution = async () => {
-			const roomIds = Rooms.find({
-				'usersWaitingForE2EKeys': { $exists: true },
-				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
-			}).map((room) => room._id);
+			const roomIds = Rooms.state.filter(predicate).map((room) => room._id);
+
 			if (!roomIds.length) {
 				return;
 			}

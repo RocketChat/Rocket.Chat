@@ -112,12 +112,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	public readOnly(rid: string, user: AtLeast<IUser, 'username'>): boolean {
-		const fields = {
-			ro: 1,
-			t: 1,
-			...(user && { muted: 1, unmuted: 1 }),
-		};
-		const room = Rooms.findOne({ _id: rid }, { fields });
+		const room = Rooms.state.get(rid);
 		if (!room) {
 			return false;
 		}
@@ -156,12 +151,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 
 	// #ToDo: Move this out of the RoomCoordinator
 	public archived(rid: string): boolean {
-		const room = Rooms.findOne({ _id: rid }, { fields: { archived: 1 } });
+		const room = Rooms.state.get(rid);
 		return Boolean(room?.archived);
 	}
 
 	public verifyCanSendMessage(rid: string): boolean {
-		const room = Rooms.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
+		const room = Rooms.state.get(rid);
 		if (!room?.t) {
 			return false;
 		}
