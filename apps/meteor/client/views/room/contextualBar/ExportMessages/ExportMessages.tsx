@@ -109,7 +109,14 @@ const ExportMessages = () => {
 	}, [t, pfdExportPermission]);
 
 	// Remove HTML from download options
-	const downloadOutputOptions = outputOptions.slice(1);
+	const downloadOutputOptions = useMemo<SelectOption[]>(() => {
+		return outputOptions.filter((option) => option[0] !== 'html');
+	}, [outputOptions]);
+
+	// Remove PDF from file options
+	const fileOutputOptions = useMemo<SelectOption[]>(() => {
+		return outputOptions.filter((option) => option[0] !== 'pdf');
+	}, [outputOptions]);
 
 	const roomExportMutation = useRoomExportMutation();
 	const downloadExportMutation = useDownloadExportMutation();
@@ -220,15 +227,19 @@ const ExportMessages = () => {
 								<Controller
 									name='format'
 									control={control}
-									render={({ field }) => (
-										<Select
-											{...field}
-											id={formatField}
-											disabled={type === 'email'}
-											placeholder={t('Format')}
-											options={type === 'download' ? downloadOutputOptions : outputOptions}
-										/>
-									)}
+									render={({ field }) => {
+										let options: SelectOption[];
+
+										if (type === 'download') {
+											options = downloadOutputOptions;
+										} else if (type === 'file') {
+											options = fileOutputOptions;
+										} else {
+											options = outputOptions;
+										}
+
+										return <Select {...field} id={formatField} disabled={type === 'email'} placeholder={t('Format')} options={options} />;
+									}}
 								/>
 							</FieldRow>
 						</Field>
