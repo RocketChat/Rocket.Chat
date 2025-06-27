@@ -185,7 +185,7 @@ export async function saveDepartmentAgents(
 	departmentAgents: {
 		upsert?: (Pick<ILivechatDepartmentAgents, 'agentId' | 'username'> & {
 			count?: number;
-			sort?: number;
+			order?: number;
 		})[];
 		remove?: Pick<ILivechatDepartmentAgents, 'agentId' | 'username'>[];
 	},
