@@ -289,10 +289,6 @@ test.describe.serial('feature preview', () => {
 						name: 'newNavigation',
 						value: true,
 					},
-					{
-						name: 'sidepanelNavigation',
-						value: true,
-					},
 				],
 			});
 		});
@@ -305,10 +301,6 @@ test.describe.serial('feature preview', () => {
 				featuresPreview: [
 					{
 						name: 'newNavigation',
-						value: false,
-					},
-					{
-						name: 'sidepanelNavigation',
 						value: false,
 					},
 				],

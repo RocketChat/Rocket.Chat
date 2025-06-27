@@ -4730,8 +4730,6 @@
   "Sidebar_Sections_Order_Description": "Select the categories in your preferred order",
   "Sidebar_actions": "Sidebar actions",
   "Sidebar_list_mode": "Sidebar Channel List Mode",
-  "Sidepanel_navigation": "Secondary navigation for teams",
-  "Sidepanel_navigation_description": "Display channels and/or discussions associated with teams by default. This allows team owners to customize communication methods to best meet their team’s needs. This is currently in feature preview and will be a premium capability once fully released.",
   "Sign_in_to_start_talking": "Sign in to start talking",
   "Sign_in_with__provider__": "Sign in with {{provider}}",
   "Site_Name": "Site Name",
