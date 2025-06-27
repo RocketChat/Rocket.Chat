@@ -29,7 +29,7 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			return Rooms.findOne({ _id: identifier });
+			return Rooms.state.get(identifier);
 		},
 
 		canSendMessage(_rid) {
