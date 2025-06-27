@@ -1,5 +1,14 @@
 # @rocket.chat/freeswitch
 
+## 1.2.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.1
+  </details>
+
 ## 1.2.11
 
 ### Patch Changes
