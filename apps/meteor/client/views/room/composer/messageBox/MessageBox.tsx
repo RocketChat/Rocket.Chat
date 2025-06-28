@@ -477,7 +477,7 @@ const MessageBox = ({
 						{canSend && (
 							<>
 								{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
-								{/* Add the Schedule (clock) icon before the send button */}
+								{/* Schedule (clock) icon */}
 								<MessageComposerAction
 									aria-label={scheduleAction.label}
 									icon={scheduleAction.icon}
