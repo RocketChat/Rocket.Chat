@@ -25,6 +25,7 @@ function base(...configs: InfiniteDepthConfigWithExtends[]): FlatConfig.ConfigAr
 			'jest.config.ts',
 			'webpack.config.js',
 			'.prettierrc.js',
+			'**/coverage/**',
 		]),
 		eslint.configs.recommended,
 		{
