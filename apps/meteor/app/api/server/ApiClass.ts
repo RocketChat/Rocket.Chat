@@ -64,7 +64,7 @@ export type Prettify<T> = {
 	[K in keyof T]: T[K];
 } & unknown;
 
-type ExtractValidation<T> = T extends ValidateFunction<infer TSchema> ? TSchema : never;
+type ExtractValidation<T> = T extends ValidateFunction<infer TSchema> ? TSchema : unknown;
 
 export type ExtractRoutesFromAPI<T> =
 	T extends APIClass<any, infer TOperations> ? (TOperations extends MinimalRoute ? Prettify<ConvertToRoute<TOperations>> : never) : never;
