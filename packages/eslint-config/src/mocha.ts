@@ -6,7 +6,7 @@ import type { ConfigWithExtends } from 'typescript-eslint';
 import rules from './rules/mocha.js';
 import type { MergeRules } from './types/rules.js';
 
-type Rules = MergeRules<[typeof rules.recommended, typeof rules.all]>;
+type Rules = MergeRules<[typeof rules.all, typeof rules.recommended]>;
 
 export default function mocha(config: Linter.Config<Rules> = {}): Linter.Config & ConfigWithExtends {
 	return {

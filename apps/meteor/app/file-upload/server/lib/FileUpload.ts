@@ -608,6 +608,7 @@ export const FileUpload = {
 				return;
 			}
 
+			// eslint-disable-next-line prettier/prettier
 			const headersToProxy = ['age', 'cache-control', 'content-length', 'content-type', 'date', 'expired', 'last-modified'];
 
 			headersToProxy.forEach((header) => {
