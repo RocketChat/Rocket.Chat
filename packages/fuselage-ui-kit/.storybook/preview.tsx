@@ -14,55 +14,55 @@ import '@rocket.chat/icons/dist/rocketchat.css';
 import 'normalize.css/normalize.css';
 
 export const parameters: Parameters = {
-  backgrounds: {
-    grid: {
-      cellSize: 4,
-      cellAmount: 4,
-      opacity: 0.5,
-    },
-  },
-  options: {
-    storySort: {
-      method: 'alphabetical',
-    },
-  },
-  layout: 'fullscreen',
-  docs: {
-    container: DocsContainer,
-  },
-  darkMode: {
-    dark: {
-      ...themes.dark,
-      appBg: surface.sidebar,
-      appContentBg: surface.main,
-      barBg: surface.main,
-      brandTitle: manifest.name,
-      brandImage: logo,
-      brandUrl: manifest.homepage,
-    },
-    light: {
-      ...themes.normal,
-      brandTitle: manifest.name,
-      brandImage: logo,
-      brandUrl: manifest.homepage,
-    },
-  },
+	backgrounds: {
+		grid: {
+			cellSize: 4,
+			cellAmount: 4,
+			opacity: 0.5,
+		},
+	},
+	options: {
+		storySort: {
+			method: 'alphabetical',
+		},
+	},
+	layout: 'fullscreen',
+	docs: {
+		container: DocsContainer,
+	},
+	darkMode: {
+		dark: {
+			...themes.dark,
+			appBg: surface.sidebar,
+			appContentBg: surface.main,
+			barBg: surface.main,
+			brandTitle: manifest.name,
+			brandImage: logo,
+			brandUrl: manifest.homepage,
+		},
+		light: {
+			...themes.normal,
+			brandTitle: manifest.name,
+			brandImage: logo,
+			brandUrl: manifest.homepage,
+		},
+	},
 };
 
 const queryClient = new QueryClient();
 
 export const decorators: Decorator[] = [
-  (fn) => {
-    const dark = useDarkMode();
+	(fn) => {
+		const dark = useDarkMode();
 
-    return (
-      <>
-        <PaletteStyleTag theme={dark ? 'dark' : 'light'} />
-        {fn()}
-      </>
-    );
-  },
-  (fn) => <QueryClientProvider client={queryClient} children={fn()} />,
+		return (
+			<>
+				<PaletteStyleTag theme={dark ? 'dark' : 'light'} />
+				{fn()}
+			</>
+		);
+	},
+	(fn) => <QueryClientProvider client={queryClient} children={fn()} />,
 ];
 
 export const tags = ['autodocs'];
