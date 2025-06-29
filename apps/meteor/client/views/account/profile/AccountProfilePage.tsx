@@ -92,10 +92,11 @@ const AccountProfilePage = (): ReactElement => {
 	);
 
 	const handleDeleteOwnAccount = useCallback(async () => {
-		const handleConfirm = async (passwordOrUsername: string): Promise<void> => {
+		const handleConfirm = async (passwordOrUsername: string, setInputError: (message: string) => void ): Promise<void> => {
 			try {
 				await deleteOwnAccount({ password: SHA256(passwordOrUsername) });
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
+				setModal(null);
 				logout();
 			} catch (error: any) {
 				if (error.error === 'user-last-owner') {
@@ -103,7 +104,12 @@ const AccountProfilePage = (): ReactElement => {
 					return handleConfirmOwnerChange(passwordOrUsername, shouldChangeOwner, shouldBeRemoved);
 				}
 
-				dispatchToastMessage({ type: 'error', message: error });
+				if (
+					error.errorType === 'error-invalid-password'
+				) {
+					setInputError(t('Invalid_password'));
+					return;
+				}
 			}
 		};
 
