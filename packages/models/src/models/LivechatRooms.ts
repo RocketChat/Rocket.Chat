@@ -2409,6 +2409,15 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.deleteMany(query);
 	}
 
+	removeByVisitorId(_id: string) {
+		const query: Filter<IOmnichannelRoom> = {
+			't': 'l',
+			'v._id': _id,
+		};
+
+		return this.deleteMany(query);
+	}
+
 	removeById(_id: string) {
 		const query: Filter<IOmnichannelRoom> = {
 			_id,
