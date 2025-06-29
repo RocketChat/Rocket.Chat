@@ -1,12 +1,11 @@
 import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useEndpoint, useAllPermissions } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
-import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
 import { ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import Tags from '../../../../../../components/Omnichannel/Tags';
 import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
@@ -51,11 +50,13 @@ const getInitialValuesRoom = (room: Serialized<IOmnichannelRoom>): RoomEditFormD
 	};
 };
 
+const customFieldsPermissions = ['view-livechat-room-customfields', 'edit-livechat-room-customfields'];
+
 function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
-	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+	const canViewCustomFields = useAllPermissions(customFieldsPermissions);
 
 	const saveRoom = useEndpoint('POST', '/v1/livechat/room.saveInfo');
 
