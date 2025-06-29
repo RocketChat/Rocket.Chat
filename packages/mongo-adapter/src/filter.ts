@@ -127,7 +127,7 @@ const $regex = <T>(operand: string | RegExp, options: string): ((value: T) => bo
 };
 
 const $elemMatch = <T>(operand: Filter<T>, _options: undefined): ((value: T) => boolean) => {
-	const matcher = compileFilter(operand);
+	const matcher = createPredicateFromFilter(operand);
 
 	return (value: T): boolean => {
 		if (!Array.isArray(value)) {
@@ -177,23 +177,23 @@ const valueOperators = {
 } as const;
 
 const $and = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
-	const subSelectorFunctions = subSelector.map(compileFilter);
-	return (doc: T): boolean => subSelectorFunctions.every((f) => f(doc));
+	const subSelectorFunctions = subSelector.map(createPredicateFromFilter);
+	return (doc: T) => subSelectorFunctions.every((f) => f(doc));
 };
 
 const $or = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
-	const subSelectorFunctions = subSelector.map(compileFilter);
-	return (doc: T): boolean => subSelectorFunctions.some((f) => f(doc));
+	const subSelectorFunctions = subSelector.map(createPredicateFromFilter);
+	return (doc: T) => subSelectorFunctions.some((f) => f(doc));
 };
 
 const $nor = <T>(subSelector: Filter<T>[]): ((doc: T) => boolean) => {
-	const subSelectorFunctions = subSelector.map(compileFilter);
-	return (doc: T): boolean => subSelectorFunctions.every((f) => !f(doc));
+	const subSelectorFunctions = subSelector.map(createPredicateFromFilter);
+	return (doc: T) => subSelectorFunctions.every((f) => !f(doc));
 };
 
 const $where = <T>(selectorValue: string | ((doc: T) => boolean)): ((doc: T) => boolean) => {
 	const fn = selectorValue instanceof Function ? selectorValue : Function(`doc`, `return ${selectorValue}`);
-	return (doc: T): boolean => !!fn.call(doc, doc);
+	return (doc: T) => !!fn.call(doc, doc);
 };
 
 const logicalOperators = {
@@ -278,10 +278,10 @@ const compileValueSelector = <T>(valueSelector: FieldExpression<T>[keyof FieldEx
 	return (value: T): boolean => flatSome(value, (x) => equals(valueSelector, x as unknown as object));
 };
 
-export const compileFilter = <T>(filter: Filter<T> | FieldExpression<T>['$where'][]): ((doc: T) => boolean) => {
+export const createPredicateFromFilter = <T>(filter: Filter<T> | FieldExpression<T>['$where'][]): ((doc: T) => boolean) => {
 	const perKeySelectors = Object.entries(filter).map(([key, subSelector]) => {
 		if (subSelector === undefined) {
-			return (): boolean => true;
+			return () => true;
 		}
 
 		if (isLogicalOperator(key)) {
@@ -306,11 +306,11 @@ export const compileFilter = <T>(filter: Filter<T> | FieldExpression<T>['$where'
 
 		const lookUpByIndex = createLookupFunction(key);
 		const valueSelectorFunc = compileValueSelector(subSelector);
-		return (doc: T): boolean => {
+		return (doc: T) => {
 			const branchValues = lookUpByIndex(doc);
-			return branchValues.some((branch) => valueSelectorFunc(branch.value));
+			return branchValues.every((branch) => valueSelectorFunc(branch.value));
 		};
 	});
 
-	return (doc: T): boolean => perKeySelectors.every((f) => f(doc));
+	return (doc: T) => perKeySelectors.every((f) => f(doc));
 };

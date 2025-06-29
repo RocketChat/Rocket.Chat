@@ -53,7 +53,7 @@ const reduceValue = (branchValues: LookupBranch[], ascending: boolean): unknown 
 			return reduced;
 		});
 
-export const compileSort = (spec: Sort): ((a: unknown, b: unknown) => number) => {
+export const createComparatorFromSort = (spec: Sort): ((a: unknown, b: unknown) => number) => {
 	const sortSpecParts = createSortSpecParts(spec);
 
 	if (sortSpecParts.length === 0) {
