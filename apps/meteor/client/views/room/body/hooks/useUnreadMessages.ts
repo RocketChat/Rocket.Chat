@@ -4,9 +4,10 @@ import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Messages } from '../../../../../app/models/client';
-import { LegacyRoomManager, RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useOpenedRoomUnreadSince } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { useChat } from '../../contexts/ChatContext';
@@ -22,7 +23,7 @@ const useUnreadMessages = (room: IRoom): readonly [data: IUnreadMessages | undef
 
 	const count = useMemo(() => notLoadedCount + loadedCount, [notLoadedCount, loadedCount]);
 
-	const since = useReactiveValue(useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.unreadSince.get(), [room._id]));
+	const since = useOpenedRoomUnreadSince();
 
 	return useMemo(() => {
 		if (count && since) {
