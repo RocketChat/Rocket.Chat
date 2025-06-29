@@ -43,7 +43,6 @@ test.describe('prune-messages', () => {
 			const { alert, dismiss } = poToastBar;
 
 			await content.sendFileMessage('any_file.txt');
-			await content.descriptionInput.fill('a message with a file');
 			await content.btnModalConfirm.click();
 			await expect(content.lastMessageFileName).toHaveText('any_file.txt');
 
