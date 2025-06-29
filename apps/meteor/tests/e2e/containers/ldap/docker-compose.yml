@@ -1,0 +1,14 @@
+services:
+  test_openldap:
+    image: bitnami/openldap:latest
+    volumes:
+      - ./openldap:/opt/bitnami/openldap/data/
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_ROOT=dc=space,dc=air
+      - LDAP_ADMIN_DN=cn=admin,dc=space,dc=air
+      - LDAP_CUSTOM_LDIF_DIR=/opt/bitnami/openldap/data
+    ports:
+      - 1389:1389
+      - 1636:1636
