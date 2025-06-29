@@ -1,9 +1,9 @@
-import { compileSort } from './sort';
+import { createComparatorFromSort } from './sort';
 
-describe('compileSort', () => {
+describe('createComparatorFromSort', () => {
 	describe('object specification format', () => {
 		it('should sort by a single field ascending', () => {
-			const sorter = compileSort({ name: 1 });
+			const sorter = createComparatorFromSort({ name: 1 });
 
 			const a = { name: 'Alice' };
 			const b = { name: 'Bob' };
@@ -14,7 +14,7 @@ describe('compileSort', () => {
 		});
 
 		it('should sort by a single field descending', () => {
-			const sorter = compileSort({ name: -1 });
+			const sorter = createComparatorFromSort({ name: -1 });
 
 			const a = { name: 'Alice' };
 			const b = { name: 'Bob' };
@@ -25,7 +25,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle multiple fields with different directions', () => {
-			const sorter = compileSort({ age: 1, name: -1 });
+			const sorter = createComparatorFromSort({ age: 1, name: -1 });
 
 			const a = { age: 30, name: 'Alice' };
 			const b = { age: 30, name: 'Bob' };
@@ -37,7 +37,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle when the first field has equal values', () => {
-			const sorter = compileSort({ age: 1, name: 1 });
+			const sorter = createComparatorFromSort({ age: 1, name: 1 });
 
 			const a = { age: 30, name: 'Alice' };
 			const b = { age: 30, name: 'Bob' };
@@ -46,7 +46,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle missing fields', () => {
-			const sorter = compileSort({ age: 1 });
+			const sorter = createComparatorFromSort({ age: 1 });
 
 			const a = { age: 30 };
 			const b = {}; // Missing age
@@ -56,7 +56,7 @@ describe('compileSort', () => {
 		});
 
 		it('should sort numbers correctly', () => {
-			const sorter = compileSort({ score: 1 });
+			const sorter = createComparatorFromSort({ score: 1 });
 
 			const a = { score: 100 };
 			const b = { score: 50 };
@@ -66,7 +66,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle nested fields', () => {
-			const sorter = compileSort({ 'user.age': 1 });
+			const sorter = createComparatorFromSort({ 'user.age': 1 });
 
 			const a = { user: { age: 30 } };
 			const b = { user: { age: 25 } };
@@ -78,7 +78,7 @@ describe('compileSort', () => {
 
 	describe('array specification format', () => {
 		it('should sort using string array format', () => {
-			const sorter = compileSort(['name']);
+			const sorter = createComparatorFromSort(['name']);
 
 			const a = { name: 'Alice' };
 			const b = { name: 'Bob' };
@@ -88,7 +88,7 @@ describe('compileSort', () => {
 		});
 
 		it('should sort using field and direction array format', () => {
-			const sorter = compileSort([['name', 'desc']]);
+			const sorter = createComparatorFromSort([['name', 'desc']]);
 
 			const a = { name: 'Alice' };
 			const b = { name: 'Bob' };
@@ -98,7 +98,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle mix of string and array formats', () => {
-			const sorter = compileSort(['age', ['name', 'desc']]);
+			const sorter = createComparatorFromSort(['age', ['name', 'desc']]);
 
 			const a = { age: 30, name: 'Alice' };
 			const b = { age: 30, name: 'Bob' };
@@ -107,7 +107,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle ascending in array format', () => {
-			const sorter = compileSort([['name', 'asc']]);
+			const sorter = createComparatorFromSort([['name', 'asc']]);
 
 			const a = { name: 'Alice' };
 			const b = { name: 'Bob' };
@@ -118,7 +118,7 @@ describe('compileSort', () => {
 
 	describe('array values handling', () => {
 		it('should handle array values by selecting min value for ascending', () => {
-			const sorter = compileSort({ scores: 1 });
+			const sorter = createComparatorFromSort({ scores: 1 });
 
 			const a = { scores: [10, 20, 30] };
 			const b = { scores: [5, 15, 25] };
@@ -127,7 +127,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle array values by selecting max value for descending', () => {
-			const sorter = compileSort({ scores: -1 });
+			const sorter = createComparatorFromSort({ scores: -1 });
 
 			const a = { scores: [10, 20, 30] };
 			const b = { scores: [5, 15, 25] };
@@ -136,7 +136,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle empty arrays', () => {
-			const sorter = compileSort({ scores: 1 });
+			const sorter = createComparatorFromSort({ scores: 1 });
 
 			const a = { scores: [] };
 			const b = { scores: [5] };
@@ -145,7 +145,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle nested arrays', () => {
-			const sorter = compileSort({ 'users.scores': 1 });
+			const sorter = createComparatorFromSort({ 'users.scores': 1 });
 
 			const a = { users: [{ scores: [10, 5] }, { scores: [20, 15] }] };
 			const b = { users: [{ scores: [8, 3] }, { scores: [18, 13] }] };
@@ -156,7 +156,7 @@ describe('compileSort', () => {
 
 	describe('edge cases', () => {
 		it('should handle empty sort specification', () => {
-			const sorter = compileSort({});
+			const sorter = createComparatorFromSort({});
 
 			const a = { name: 'Alice' };
 			const b = { name: 'Bob' };
@@ -165,7 +165,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle empty array sort specification', () => {
-			const sorter = compileSort([]);
+			const sorter = createComparatorFromSort([]);
 
 			const a = { name: 'Alice' };
 			const b = { name: 'Bob' };
@@ -174,7 +174,7 @@ describe('compileSort', () => {
 		});
 
 		it('should sort by multiple fields when first fields are equal', () => {
-			const sorter = compileSort({ lastName: 1, firstName: 1 });
+			const sorter = createComparatorFromSort({ lastName: 1, firstName: 1 });
 
 			const a = { lastName: 'Smith', firstName: 'Alice' };
 			const b = { lastName: 'Smith', firstName: 'Bob' };
@@ -185,7 +185,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle objects and scalars in the same comparison', () => {
-			const sorter = compileSort({ data: 1 });
+			const sorter = createComparatorFromSort({ data: 1 });
 
 			const a = { data: { value: 10 } };
 			const b = { data: 5 };
@@ -195,7 +195,7 @@ describe('compileSort', () => {
 		});
 
 		it('should handle null and undefined values', () => {
-			const sorter = compileSort({ value: 1 });
+			const sorter = createComparatorFromSort({ value: 1 });
 
 			const a = { value: null };
 			const b = {};
