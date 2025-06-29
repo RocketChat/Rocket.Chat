@@ -1,5 +1,6 @@
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
+import { useOmnichannelPriorities } from '@rocket.chat/ui-omnichannel';
 import { hashKey } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +18,6 @@ import {
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../components/GenericTable/hooks/useSort';
-import { useOmnichannelPriorities } from '../../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { useCurrentChats } from '../../../currentChats/hooks/useCurrentChats';
 import { useChatsContext } from '../../contexts/ChatsContext';
 
