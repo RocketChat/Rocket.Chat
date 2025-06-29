@@ -12,7 +12,7 @@ type UseSplitRoomActionsOptions = {
  */
 export const useSplitRoomActions = (actions: RoomInfoActionsProps['actions'], options?: UseSplitRoomActionsOptions) => {
 	const size = options?.size || 2;
-
+	
 	if (actions.items.length <= size) {
 		return { buttons: actions };
 	}
