@@ -1,4 +1,4 @@
-import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -122,8 +122,8 @@ roomCoordinator.add(
 
 			const sub = Subscriptions.findOne({ rid: room._id }, { fields: { name: 1 } });
 			if (sub?.name) {
-				const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } }) as IUser | undefined;
-				return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
+				const { username, avatarETag } = Users.state.find((record) => record.username === sub.name) || {};
+				return getUserAvatarURL(username || sub.name, avatarETag);
 			}
 
 			return getUserAvatarURL(room.name || this.roomName(room) || '');

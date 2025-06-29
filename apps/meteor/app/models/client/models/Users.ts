@@ -1,24 +1,18 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
 
-import { MinimongoCollection } from '../../../../client/lib/cachedCollections/MinimongoCollection';
+import { createDocumentMapStore } from '../../../../client/lib/cachedCollections/DocumentMapStore';
 
-class UsersCollection extends MinimongoCollection<IUser> {
-	isUserInRole(uid: IUser['_id'], roleId: IRole['_id']) {
-		const user = this.findOne({ _id: uid }, { fields: { roles: 1 } });
-		return user && Array.isArray(user.roles) && user.roles.includes(roleId);
-	}
-
-	findUsersInRoles(roles: IRole['_id'][] | IRole['_id'], _scope: string, options: any) {
-		roles = Array.isArray(roles) ? roles : [roles];
-
-		return this.find(
-			{
-				roles: { $in: roles },
-			},
-			options,
-		);
-	}
-}
-
-/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
-export const Users = new UsersCollection();
+/** @deprecated prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
+export const Users = {
+	use: createDocumentMapStore<IUser>(),
+	get state() {
+		return Users.use.getState();
+	},
+	isUserInRole: (uid: IUser['_id'], roleId: IRole['_id']) => Users.state.get(uid)?.roles?.includes(roleId),
+	// TODO: remove options and scope from `findUsersInRoles` type.
+	findUsersInRoles: (roles: IRole['_id'][] | IRole['_id'], _scope: string, _options: any) => {
+		const rolesArray = Array.isArray(roles) ? roles : [roles];
+		const result = Users.state.filter((record) => record.roles?.some((roleId) => rolesArray.includes(roleId)));
+		return result;
+	},
+};
