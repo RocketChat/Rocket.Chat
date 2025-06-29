@@ -969,6 +969,13 @@ export type ChatEndpoints = {
 			total: number;
 		};
 	};
+	'/v1/chat.postMessage': {
+		POST: (params: ChatPostMessage) => {
+			ts: number;
+			channel: IRoom;
+			message: IMessage;
+		};
+	};
 	'/v1/chat.syncThreadsList': {
 		GET: (params: ChatSyncThreadsList) => {
 			threads: {
@@ -1037,13 +1044,6 @@ export type ChatEndpoints = {
 					previous: string | null;
 				};
 			};
-		};
-	};
-	'/v1/chat.postMessage': {
-		POST: (params: ChatPostMessage) => {
-			ts: number;
-			channel: IRoom;
-			message: IMessage;
 		};
 	};
 	'/v1/chat.syncThreadMessages': {
