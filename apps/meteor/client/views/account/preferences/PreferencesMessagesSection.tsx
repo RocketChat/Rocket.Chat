@@ -110,7 +110,7 @@ const PreferencesMessagesSection = () => {
 					<FieldLink
 						id={messageTimeFormatLinkId}
 						aria-labelledby={`${messageTimeFormatLabelId} ${messageTimeFormatLinkId}`}
-						href='/account/accessibility-and-appearance'
+						href='/account/accessibility-and-appearance#timeformat'
 					>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
@@ -180,7 +180,7 @@ const PreferencesMessagesSection = () => {
 						{t('Hide_usernames')}
 					</FieldLabel>
 					<FieldLink
-						href='/account/accessibility-and-appearance'
+						href='/account/accessibility-and-appearance#usernames'
 						id={hideUsernamesLinkId}
 						aria-labelledby={`${hideUsernamesLabelId} ${hideUsernamesLinkId}`}
 					>
@@ -194,7 +194,7 @@ const PreferencesMessagesSection = () => {
 					<FieldLink
 						id={hideRolesLinkId}
 						aria-labelledby={`${hideRolesLabelId} ${hideRolesLinkId}`}
-						href='/account/accessibility-and-appearance'
+						href='/account/accessibility-and-appearance#roles'
 					>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
