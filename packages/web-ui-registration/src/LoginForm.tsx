@@ -10,6 +10,7 @@ import {
 	ButtonGroup,
 	Button,
 	Callout,
+	Box
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
@@ -23,6 +24,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import EmailConfirmationForm from './EmailConfirmationForm';
 import LoginServices from './LoginServices';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
+import { useQrModalHandler } from './hooks/useQrModalHandler';
 
 const LOGIN_SUBMIT_ERRORS = {
 	'error-user-is-not-activated': {
@@ -103,6 +105,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const usernameId = useId();
 	const passwordId = useId();
+	const handleQrModal = useQrModalHandler();
 	const loginFormRef = useRef<HTMLElement>(null);
 
 	useEffect(() => {
@@ -215,10 +218,11 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						{errorOnSubmit && <FieldGroup disabled={loginMutation.isPending}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
 					<Form.Footer>
-						<ButtonGroup>
+						<ButtonGroup >
 							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
+
 						</ButtonGroup>
 						<p>
 							<Trans i18nKey='registration.page.login.register'>
@@ -229,6 +233,16 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 				</>
 			)}
 			<LoginServices disabled={loginMutation.isPending} setError={setErrorOnSubmit} />
+			<Box padding='x4'>
+				<ButtonGroup>
+					<Button
+						onClick={handleQrModal}
+						primary
+					>
+						Login using QR
+					</Button>
+				</ButtonGroup>
+			</Box>
 		</Form>
 	);
 };
