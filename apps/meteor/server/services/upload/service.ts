@@ -1,6 +1,10 @@
+import type Stream from 'stream';
+
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
+import { streamToBuffer } from '@rocket.chat/tools';
+import sharp from 'sharp';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
@@ -37,5 +41,39 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 	async parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments> {
 		return parseFileIntoMessageAttachments(file, roomId, user);
+	}
+
+	async streamUploadedFile({
+		file,
+		imageResizeOpts,
+	}: {
+		file: IUpload;
+		imageResizeOpts?: { width: number; height: number };
+	}): Promise<Stream.Readable> {
+		const stream = await FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
+		if (!stream) {
+			throw new Error('File not found');
+		}
+
+		if (file?.type?.includes('image') && imageResizeOpts) {
+			const { width, height } = imageResizeOpts;
+			return stream.pipe(
+				sharp()
+					.resize({ width, height, fit: 'contain' })
+					.on('error', (error) => {
+						throw new Error(`Error resizing image: ${error.message}`);
+					}),
+			);
+		}
+
+		return stream;
+	}
+
+	async uploadFileFromStream({ stream, details }: { stream: Stream.Readable; details: any }): Promise<IUpload> {
+		const fileStore = FileUpload.getStore('Uploads');
+		const buffer = await streamToBuffer(stream);
+
+		details.size = buffer.length;
+		return fileStore.insert(details, buffer);
 	}
 }
