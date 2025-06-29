@@ -1,5 +1,5 @@
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
-import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
+import type { ArrayIndices, FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
 import { Meteor } from 'meteor/meteor';
 import type { CountDocumentsOptions } from 'mongodb';
 import type { StoreApi, UseBoundStore } from 'zustand';
@@ -14,7 +14,6 @@ import type { Query } from './Query';
 import { SynchronousQueue } from './SynchronousQueue';
 import type { UpdateFilter } from './Updater';
 import { Updater } from './Updater';
-import type { ArrayIndices } from './common';
 import { hasOwn, _selectorIsId, clone, assertHasValidFieldNames } from './common';
 
 /**
