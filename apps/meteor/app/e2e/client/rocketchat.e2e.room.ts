@@ -336,8 +336,8 @@ export class E2ERoom extends Emitter {
 
 		try {
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const room = Rooms.findOne({ _id: this.roomId })!;
-			if (!room.e2eKeyId) {
+			const room = Rooms.state.get(this.roomId);
+			if (!room?.e2eKeyId) {
 				this.setState(E2ERoomState.CREATING_KEYS);
 				await this.createGroupKey();
 				this.setState(E2ERoomState.READY);

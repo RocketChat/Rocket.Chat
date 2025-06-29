@@ -13,7 +13,7 @@ slashCommands.add({
 		if (hasPermission('edit-room', message.rid)) {
 			try {
 				await sdk.call('saveRoomSettings', message.rid, 'roomTopic', params);
-				await callbacks.run('roomTopicChanged', Rooms.findOne(message.rid));
+				await callbacks.run('roomTopicChanged', Rooms.state.get(message.rid));
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });
 				throw error;
