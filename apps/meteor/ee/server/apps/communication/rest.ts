@@ -13,6 +13,7 @@ import { ZodError } from 'zod';
 
 import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { registerAppGeneralLogsHandler } from './endpoints/appGeneralLogsHandler';
+import { registerAppLogsDistinctInstanceHandler } from './endpoints/appLogsDistinctInstanceHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import { API } from '../../../../app/api/server';
@@ -107,6 +108,7 @@ export class AppsRestApi {
 		registerActionButtonsHandler(this);
 		registerAppsCountHandler(this);
 
+		registerAppLogsDistinctInstanceHandler(this);
 		registerAppLogsHandler(this);
 		registerAppGeneralLogsHandler(this);
 
