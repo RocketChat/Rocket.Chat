@@ -41,7 +41,7 @@ const GenericUpsellModal = ({
 			<Modal.Header>
 				{icon && <Modal.Icon name={icon} />}
 				<Modal.HeaderText>
-					<Modal.Tagline color='font-annotation'>{tagline ?? t('Premium_capability')}</Modal.Tagline>
+					<Modal.Tagline color='annotation'>{tagline ?? t('Premium_capability')}</Modal.Tagline>
 					<Modal.Title>{title}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close aria-label={t('Close')} onClick={onClose} />

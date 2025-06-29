@@ -101,7 +101,7 @@ API.v1.addRoute(
 			const role = this.urlParams.type === 'agent' ? 'livechat-agent' : 'livechat-manager';
 
 			const user = await Users.findOneByIdAndRole(this.urlParams._id, role, {
-				projection: { _id: 1, username: 1, name: 1, status: 1, statusLivechat: 1, emails: 1, livechat: 1 },
+				projection: { _id: 1, username: 1, name: 1, status: 1, statusLivechat: 1, emails: 1, livechat: 1, phone: 1 },
 			});
 
 			// TODO: throw error instead of returning null
