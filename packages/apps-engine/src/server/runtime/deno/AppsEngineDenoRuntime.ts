@@ -83,6 +83,7 @@ export function getDenoWrapperPath(): string {
 
 export type DenoRuntimeOptions = {
 	timeout: number;
+	inspect: boolean;
 };
 
 export class DenoRuntimeSubprocessController extends EventEmitter {
@@ -99,6 +100,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
 	private readonly options = {
 		timeout: getRuntimeTimeout(),
+		// We should make a map to inspect just one of the apps
+		inspect: process.env.APPS_ENGINE_RUNTIME_INSPECT === 'true',
 	};
 
 	private readonly accessors: AppAccessorManager;
@@ -137,6 +140,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 		this.bridges = manager.getBridges();
 	}
 
+	public getOptions(): DenoRuntimeOptions {
+		return this.options;
+	}
+
 	public spawnProcess(): void {
 		try {
 			const denoExePath = 'deno';
@@ -160,6 +167,12 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 				String(this.spawnId++),
 			];
 
+			if (this.options.inspect) {
+				// If the app is being inspected, we need to pass the inspect flag
+				// The port is not important, as the Deno process will not be able to connect to it
+				options.splice(1, 0, '--inspect-wait');
+			}
+
 			// If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
 			// If the app requests specific permissions, we need to check whether it requests "networking" or not
 			if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking') !== -1) {
@@ -177,7 +190,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
 			this.deno = child_process.spawn(denoExePath, options, environment);
 			this.messenger.setReceiver(this.deno);
-			this.livenessManager.attach(this.deno);
+
+			if (!this.options.inspect) {
+				this.livenessManager.attach(this.deno);
+			}
 
 			this.debug('Started subprocess %d with options %O and env %O', this.deno.pid, options, environment);
 
@@ -340,14 +356,19 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 			let timeoutId: NodeJS.Timeout;
 
 			const handler = () => {
-				clearTimeout(timeoutId);
+				if (timeoutId) {
+					clearTimeout(timeoutId);
+				}
+
 				resolve();
 			};
 
-			timeoutId = setTimeout(() => {
-				this.off('ready', handler);
-				reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`));
-			}, this.options.timeout);
+			if (!this.options.inspect) {
+				timeoutId = setTimeout(() => {
+					this.off('ready', handler);
+					reject(new Error(`[${this.getAppId()}] Timeout: app process not ready`));
+				}, this.options.timeout);
+			}
 
 			this.once('ready', handler);
 		});
@@ -355,8 +376,12 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
 	private waitForResponse(req: jsonrpc.RequestObject, options = this.options): Promise<unknown> {
 		return new Promise((resolve, reject) => {
+			let timeoutId: NodeJS.Timeout;
+
 			const responseCallback = (result: unknown, error: jsonrpc.IParsedObjectError['payload']['error']) => {
-				clearTimeout(timeoutId);
+				if (timeoutId) {
+					clearTimeout(timeoutId);
+				}
 
 				if (error) {
 					reject(error);
@@ -367,10 +392,13 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
 			const eventName = `result:${req.id}`;
 
-			const timeoutId = setTimeout(() => {
-				this.off(eventName, responseCallback);
-				reject(new Error(`[${this.getAppId()}] Request "${req.id}" for method "${req.method}" timed out`));
-			}, options.timeout);
+			// If we're inspecting the app, timeout will get in the way, so let's not do that
+			if (!this.options.inspect) {
+				timeoutId = setTimeout(() => {
+					this.off(eventName, responseCallback);
+					reject(new Error(`[${this.getAppId()}] Request "${req.id}" for method "${req.method}" timed out`));
+				}, options.timeout);
+			}
 
 			this.once(eventName, responseCallback);
 		});
