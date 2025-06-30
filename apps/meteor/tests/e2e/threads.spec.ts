@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannel, deleteChannel } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -16,13 +16,12 @@ test.describe.serial('Threads', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
 
+	test.afterAll(async ({ api }) => deleteChannel(api, targetChannel));
+
 	test('expect no unread banner when replying to a thread in a fresh channel', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('parent for unread-banner test');
-		await page.locator('[data-qa-type="message"]').last().hover();
-		await page.getByRole('button', { name: 'Reply in thread' }).click();
-		const threadDialog = page.getByRole('dialog');
-		await threadDialog.locator('[name="msg"]').last().fill('first thread reply');
-		await page.keyboard.press('Enter');
+		await poHomeChannel.content.openReplyInThread();
+		await poHomeChannel.content.sendMessageInThread('first thread reply');
 
 		await page.waitForTimeout(200);
 		await expect(page.getByTitle('Mark as read')).not.toBeVisible();
