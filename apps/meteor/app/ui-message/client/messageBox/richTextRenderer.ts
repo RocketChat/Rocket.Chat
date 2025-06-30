@@ -102,8 +102,7 @@ export const replaceSelectionWithHTML = (html: string): void => {
 	range.collapse(false);
 	selection.removeAllRanges();
 	selection.addRange(range);
-}
-
+};
 
 export const convertToHTML = (input: HTMLDivElement): void => {
 	console.log('convertToHTML');
