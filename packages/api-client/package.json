@@ -7,7 +7,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~29.5.14",
 		"@types/strict-uri-encode": "^2.0.2",
-		"eslint": "^9.29.0",
+		"eslint": "^9.30.0",
 		"jest": "~30.0.2",
 		"jest-fetch-mock": "^3.0.3",
 		"typescript": "~5.8.3"

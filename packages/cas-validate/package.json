@@ -5,7 +5,7 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:*",
-		"eslint": "^9.29.0",
+		"eslint": "^9.30.0",
 		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},

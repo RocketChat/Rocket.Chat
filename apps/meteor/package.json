@@ -171,7 +171,7 @@
 		"cross-env": "^7.0.3",
 		"docker-compose": "^0.24.8",
 		"emojione-assets": "^4.5.0",
-		"eslint": "^9.29.0",
+		"eslint": "^9.30.0",
 		"fast-glob": "^3.3.3",
 		"i18next": "~23.4.9",
 		"jest": "~30.0.2",

@@ -9,7 +9,10 @@ import javascript from './rules/javascript.js';
 import security from './security.js';
 import prettier from './prettier.js';
 
-function base(...configs: InfiniteDepthConfigWithExtends[]): FlatConfig.ConfigArray {
+export default async function base(
+	...configs: (Promise<InfiniteDepthConfigWithExtends> | InfiniteDepthConfigWithExtends)[]
+): Promise<FlatConfig.ConfigArray> {
+	const resolvedConfigs = await Promise.all(configs);
 	return tseslint.config(
 		ignore([
 			'**/scripts/**',
@@ -127,7 +130,7 @@ function base(...configs: InfiniteDepthConfigWithExtends[]): FlatConfig.ConfigAr
 				},
 			},
 		},
-		...configs,
+		...resolvedConfigs,
 		{
 			files: [
 				'**/*.spec.ts',
@@ -141,5 +144,3 @@ function base(...configs: InfiniteDepthConfigWithExtends[]): FlatConfig.ConfigAr
 		},
 	);
 }
-
-export default base;

@@ -48,7 +48,7 @@
 		"@types/jest-axe": "~3.5.9",
 		"@types/react": "~18.3.23",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "^9.29.0",
+		"eslint": "^9.30.0",
 		"jest": "~30.0.2",
 		"jest-axe": "~10.0.0",
 		"react": "~18.3.1",

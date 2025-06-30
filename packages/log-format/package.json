@@ -6,7 +6,7 @@
 		"@rocket.chat/eslint-config": "workspace:*",
 		"@types/chalk": "^2.2.4",
 		"@types/ejson": "^2.2.2",
-		"eslint": "^9.29.0",
+		"eslint": "^9.30.0",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {

@@ -11,7 +11,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/node": "~22.14.1",
 		"babel-jest": "~30.0.2",
-		"eslint": "^9.29.0",
+		"eslint": "^9.30.0",
 		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},

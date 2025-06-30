@@ -1,3 +1,3 @@
 // @ts-check
-import { base, jest } from '@rocket.chat/eslint-config';
-export default base(jest());
+import { base } from '@rocket.chat/eslint-config';
+export default base();
