@@ -16,8 +16,8 @@ export const startup = async () => {
 
 	setImmediate(() => startCronJobs());
 	// only starts network broker if running in micro services mode
-	// if (!isRunningMs()) {
+	if (!isRunningMs()) {
 		require('./localServices');
-		// require('./watchDb');
-	// }
+		require('./watchDb');
+	}
 };

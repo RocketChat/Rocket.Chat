@@ -6,13 +6,14 @@ import { setupHomeserver, getAllRoutes, getAllServices } from '@rocket.chat/home
 import { MatrixBridgedUser, MatrixBridgedRoom } from '@rocket.chat/models';
 
 import { registerEvents } from './events';
+import type { QueryProfileResponse } from '@rocket.chat/homeserver/packages/homeserver/src/dtos';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
 
 	private eventHandler: Emitter<HomeserverEventSignatures>;
 
-	private homeserverServices: HomeserverServices | null = null;
+	private homeserverServices: HomeserverServices;
 
 	private matrixDomain = process.env.MATRIX_DOMAIN || 'rc1.local';
 
@@ -37,6 +38,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	getAllRoutes() {
 		return getAllRoutes();
+	}
+
+	async getWellKnownHostData(): Promise<{ 'm.server': string }> {
+		return this.homeserverServices.wellKnown.getWellKnownHostData();
+	}
+
+	async queryProfile(userId: string): Promise<QueryProfileResponse> {
+		return this.homeserverServices.profile.queryProfile(userId);
 	}
 
 	ping(): void {
@@ -78,16 +87,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			// 2. Create bridged room in Rocket.Chat
 			// TODO: Implement bridged room creation
-			const bridgedRoom = await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.matrixDomain);
-			console.log('xxxxxxx', room._id, matrixRoomResult.room_id, this.matrixDomain);
-			console.log('bridgedRoom', bridgedRoom);
-			console.log('[FederationMatrix] Bridged room mapping created');
+			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.matrixDomain);
 
 			// 3. Create bridged user for owner
 			// TODO: Implement bridged user creation
-			const bridgedUser = await MatrixBridgedUser.createOrUpdateByLocalId(owner._id, matrixUserId, true, this.matrixDomain);
-			console.log('bridgedUser', bridgedUser);
-			console.log('[FederationMatrix] Bridged user for owner created');
+			await MatrixBridgedUser.createOrUpdateByLocalId(owner._id, matrixUserId, true, this.matrixDomain);
 
 			// 4. Invite members to the room on Matrix
 			// TODO: Process members and invite them
@@ -104,7 +108,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				// 	await MatrixBridgedUser.createOrUpdateByLocalId(member, member, true, this.matrixDomain);
 				// }
 
-				console.log(this.homeserverServices?.invite);
 				await this.homeserverServices?.invite.inviteUserToRoom(member, matrixRoomResult.room_id, matrixUserId, roomName);
 				console.log('[FederationMatrix] Member invited to room:', member);
 			}

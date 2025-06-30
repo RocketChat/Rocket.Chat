@@ -12,6 +12,7 @@ import { tracerSpanMiddleware } from './middlewares/tracer';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
+import { isRunningMs } from '../../../server/lib/isRunningMs';
 
 const logger = new Logger('API');
 
@@ -41,6 +42,11 @@ const createApi = function _createApi(options: { version?: string; useDefaultAut
 export const API: {
 	api: Router<'/api', any, APIActionHandler>;
 	v1: APIClass<'/v1'>;
+	// TODO: See best way to handle the group of federation
+	// routes (_matrix, .well-known, internal)
+	_matrix: Router<'/_matrix', any, APIActionHandler>;
+	wellKnown: Router<'/.well-known', any, APIActionHandler>;
+	matrixInternal: Router<'/internal', any, APIActionHandler>;
 	default: APIClass;
 	ApiClass: typeof APIClass;
 	channels?: {
@@ -72,6 +78,9 @@ export const API: {
 		version: 'v1',
 		useDefaultAuth: true,
 	}),
+	_matrix: new RocketChatAPIRouter('/_matrix'),
+	wellKnown: new RocketChatAPIRouter('/.well-known'),
+	matrixInternal: new RocketChatAPIRouter('/internal'),
 	default: createApi({}),
 };
 
@@ -99,6 +108,15 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 });
 
 export const startRestAPI = () => {
+	// Register federation routes at root level if enabled and not running in MS mode
+	if (settings.get('Federation_Service_Enabled') && !isRunningMs()) {
+		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>)
+			.use(API._matrix.router)
+			.use(API.wellKnown.router)
+			.use(API.matrixInternal.router);
+	}
+
+	// Register main API routes under /api prefix
 	(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
 		API.api
 			.use(remoteAddressMiddleware)
@@ -107,7 +125,7 @@ export const startRestAPI = () => {
 			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/v1\//), api: API.v1, settings, summary: metrics.rocketchatRestApi }))
 			.use(tracerSpanMiddleware)
 			.use(API.v1.router)
-			.use(API.default.router).router
+			.use(API.default.router).router,
 	);
 };
 
