@@ -14,7 +14,7 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 
 	const { highlightRegex } = useContext(MarkupInteractionContext);
 
-	const code = useMemo(() => lines.map((line) => line.value.value).join('\n'), [lines]);
+	const code = useMemo(() => lines.map((line, index) => `<span>${index + 1}</span> ${line.value.value}`).join('\n'), [lines]);
 
 	const content = useMemo(() => {
 		const regex = highlightRegex?.();
@@ -41,7 +41,7 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 			);
 		}
 
-		return code;
+		return <div dangerouslySetInnerHTML={{ __html: code }} />;
 	}, [code, highlightRegex]);
 
 	useLayoutEffect(() => {
@@ -59,6 +59,14 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 
 	return (
 		<pre role='region'>
+			<style>{`
+				.hljs-symbol {
+					display: inline-block;
+					width: 2em;
+					user-select: none;
+					color: grey;
+				}
+			`}</style>
 			<span className='copyonly'>```</span>
 			<code
 				key={language + code}
