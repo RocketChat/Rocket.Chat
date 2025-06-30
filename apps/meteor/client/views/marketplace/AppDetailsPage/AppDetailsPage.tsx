@@ -13,6 +13,7 @@ import AppDetailsPageTabs from './AppDetailsPageTabs';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
+import AppInstances from './tabs/AppInstances';
 import AppLogs from './tabs/AppLogs';
 import AppReleases from './tabs/AppReleases';
 import AppRequests from './tabs/AppRequests/AppRequests';
@@ -117,6 +118,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 								</FormProvider>
 							)}
 							{tab === 'logs' && <AppLogs id={id} />}
+							{tab === 'instances' && <AppInstances id={id} />}
 						</>
 					)}
 				</Box>
