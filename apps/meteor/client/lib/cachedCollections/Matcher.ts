@@ -5,19 +5,14 @@ import { MinimongoError } from './MinimongoError';
 import { _f, _isPlainObject, isBinary, isEqual, isIndexable, isOperatorObject } from './common';
 import { isTruthy } from '../../../lib/isTruthy';
 
-type Result =
-	| {
-			readonly result: true;
-			arrayIndices?: ArrayIndices;
-	  }
-	| {
-			readonly result: false;
-			arrayIndices?: undefined;
-	  };
+type DocumentMatch = {
+	result: boolean;
+	arrayIndices?: ArrayIndices;
+};
 
-type DocumentMatcher<T extends { _id: string }> = (doc: T) => Result;
+type DocumentMatcher<T extends { _id: string }> = (doc: T) => DocumentMatch;
 
-type BranchedMatcher = (branches: LookupBranch[]) => Result;
+type BranchedMatcher = (branches: LookupBranch[]) => DocumentMatch;
 
 type ElementMatcher = (value: unknown) => boolean | number;
 
@@ -56,12 +51,7 @@ export class Matcher<T extends { _id: string }> {
 		return this.compileDocumentSelector(selector);
 	}
 
-	private compileDocumentSelector(
-		docSelector: Filter<T>,
-		options: {
-			inElemMatch?: boolean;
-		} = {},
-	) {
+	private compileDocumentSelector(docSelector: Filter<T>) {
 		const docMatchers = Object.entries(docSelector)
 			.map(([key, subSelector]): DocumentMatcher<T> | undefined => {
 				if (key.slice(0, 1) === '$') {
@@ -72,7 +62,6 @@ export class Matcher<T extends { _id: string }> {
 					return Matcher.LOGICAL_OPERATORS[key as keyof typeof Matcher.LOGICAL_OPERATORS](
 						subSelector as Filter<T>[] & (string | ((this: T, doc: T) => boolean)),
 						this,
-						options.inElemMatch,
 					);
 				}
 
@@ -94,7 +83,7 @@ export class Matcher<T extends { _id: string }> {
 
 	private andSomeMatchers(subMatchers: BranchedMatcher[]): BranchedMatcher;
 
-	private andSomeMatchers(subMatchers: ((docOrBranches: T | LookupBranch[]) => Result)[]) {
+	private andSomeMatchers(subMatchers: ((docOrBranches: T | LookupBranch[]) => DocumentMatch)[]) {
 		if (subMatchers.length === 0) {
 			return () => ({ result: true });
 		}
@@ -104,17 +93,19 @@ export class Matcher<T extends { _id: string }> {
 		}
 
 		return (docOrBranches: T | LookupBranch[]) => {
-			const match: Result = {
-				result: subMatchers.every((fn) => {
-					const subResult = fn(docOrBranches);
-
-					if (subResult.result && subResult.arrayIndices) {
-						match.arrayIndices = subResult.arrayIndices;
-					}
-
-					return subResult.result;
-				}),
+			const match: DocumentMatch = {
+				result: false,
 			};
+
+			match.result = subMatchers.every((fn) => {
+				const subResult = fn(docOrBranches);
+
+				if (subResult.result && subResult.arrayIndices) {
+					match.arrayIndices = subResult.arrayIndices;
+				}
+
+				return subResult.result;
+			});
 
 			if (!match.result) {
 				delete match.arrayIndices;
@@ -160,26 +151,28 @@ export class Matcher<T extends { _id: string }> {
 		return (branches: LookupBranch[]) => {
 			const expanded = options.dontExpandLeafArrays ? branches : this.expandArraysInBranches(branches, options.dontIncludeLeafArrays);
 
-			const match: Result = {
-				result: expanded.some((element) => {
-					let matched = elementMatcher(element.value);
-
-					if (typeof matched === 'number') {
-						if (!element.arrayIndices) {
-							element.arrayIndices = [matched];
-						}
-
-						matched = true;
-					}
-
-					if (matched && element.arrayIndices) {
-						match.arrayIndices = element.arrayIndices;
-					}
-
-					return matched;
-				}),
+			const match: DocumentMatch = {
+				result: false,
 				arrayIndices: undefined,
 			};
+
+			match.result = expanded.some((element) => {
+				let matched = elementMatcher(element.value);
+
+				if (typeof matched === 'number') {
+					if (!element.arrayIndices) {
+						element.arrayIndices = [matched];
+					}
+
+					matched = true;
+				}
+
+				if (matched && element.arrayIndices) {
+					match.arrayIndices = element.arrayIndices;
+				}
+
+				return matched;
+			});
 
 			return match;
 		};
@@ -270,8 +263,8 @@ export class Matcher<T extends { _id: string }> {
 		return false;
 	}
 
-	private invertBranchedMatcher(branchedMatcher: (branches: LookupBranch[]) => Result) {
-		return (branches: LookupBranch[]): Result => {
+	private invertBranchedMatcher(branchedMatcher: (branches: LookupBranch[]) => DocumentMatch) {
+		return (branches: LookupBranch[]): DocumentMatch => {
 			return { result: !branchedMatcher(branches).result };
 		};
 	}
@@ -292,7 +285,7 @@ export class Matcher<T extends { _id: string }> {
 		};
 	}
 
-	private compileArrayOfDocumentSelectors(selectors: Filter<T>[], inElemMatch?: boolean) {
+	private compileArrayOfDocumentSelectors(selectors: Filter<T>[]) {
 		if (!Array.isArray(selectors) || selectors.length === 0) {
 			throw new MinimongoError('$and/$or/$nor must be nonempty array');
 		}
@@ -302,7 +295,7 @@ export class Matcher<T extends { _id: string }> {
 				throw new MinimongoError('$or/$and/$nor entries need to be full objects');
 			}
 
-			return this.compileDocumentSelector(subSelector, { inElemMatch });
+			return this.compileDocumentSelector(subSelector);
 		});
 	}
 
@@ -551,7 +544,7 @@ export class Matcher<T extends { _id: string }> {
 				);
 
 				if (isDocMatcher) {
-					const subMatcher = matcher.compileDocumentSelector(operand, { inElemMatch: true });
+					const subMatcher = matcher.compileDocumentSelector(operand);
 
 					return (value: any) => {
 						if (!Array.isArray(value)) {
@@ -595,12 +588,12 @@ export class Matcher<T extends { _id: string }> {
 	} as const;
 
 	private static readonly LOGICAL_OPERATORS = {
-		$and<T extends { _id: string }>(subSelector: Filter<T>[], matcher: Matcher<T>, inElemMatch?: boolean) {
-			return matcher.andSomeMatchers(matcher.compileArrayOfDocumentSelectors(subSelector, inElemMatch));
+		$and<T extends { _id: string }>(subSelector: Filter<T>[], matcher: Matcher<T>) {
+			return matcher.andSomeMatchers(matcher.compileArrayOfDocumentSelectors(subSelector));
 		},
 
-		$or<T extends { _id: string }>(subSelector: Filter<T>[], matcher: Matcher<T>, inElemMatch?: boolean) {
-			const matchers = matcher.compileArrayOfDocumentSelectors(subSelector, inElemMatch);
+		$or<T extends { _id: string }>(subSelector: Filter<T>[], matcher: Matcher<T>) {
+			const matchers = matcher.compileArrayOfDocumentSelectors(subSelector);
 
 			if (matchers.length === 1) {
 				return matchers[0];
@@ -612,8 +605,8 @@ export class Matcher<T extends { _id: string }> {
 			};
 		},
 
-		$nor<T extends { _id: string }>(subSelector: Filter<T>[], matcher: Matcher<T>, inElemMatch?: boolean) {
-			const matchers = matcher.compileArrayOfDocumentSelectors(subSelector, inElemMatch);
+		$nor<T extends { _id: string }>(subSelector: Filter<T>[], matcher: Matcher<T>) {
+			const matchers = matcher.compileArrayOfDocumentSelectors(subSelector);
 			return (doc: T) => {
 				const result = matchers.every((fn) => !fn(doc).result);
 				return { result };

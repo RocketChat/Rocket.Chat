@@ -106,7 +106,7 @@ export function populateDocumentWithQueryFields<T extends { _id: string }>(query
 
 	entriesOf(query).forEach(([key, value]) => {
 		if (key === '$and') {
-			(value as NonNullable<Filter<T>['$and']>).forEach((element) => populateDocumentWithQueryFields(element, document));
+			(value as Filter<T>['$and'][]).forEach((element) => populateDocumentWithQueryFields(element, document));
 		} else if (key === '$or') {
 			if ((value as NonNullable<Filter<T>['$or']>).length === 1) {
 				populateDocumentWithQueryFields((value as NonNullable<Filter<T>['$or']>)[0], document);
@@ -308,8 +308,8 @@ export function _isPlainObject(x: any): x is Record<string, any> {
 	return x && _f._type(x) === 3;
 }
 
-export function _selectorIsId(selector: unknown): selector is string | number {
-	return typeof selector === 'number' || typeof selector === 'string';
+export function _selectorIsId(selector: unknown): selector is string {
+	return typeof selector === 'string';
 }
 
 export function isBinary(x: unknown): x is Uint8Array {
