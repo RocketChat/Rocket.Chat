@@ -84,6 +84,7 @@ export default async function base(
 				'@typescript-eslint/no-base-to-string': 'warn',
 				'@typescript-eslint/no-for-in-array': 'warn',
 				'@typescript-eslint/no-array-delete': 'warn',
+				'@typescript-eslint/no-non-null-assertion': 'warn',
 				'@typescript-eslint/naming-convention': [
 					'warn',
 					{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
