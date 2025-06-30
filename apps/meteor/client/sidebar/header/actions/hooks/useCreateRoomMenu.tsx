@@ -13,7 +13,7 @@ export const useCreateRoom = () => {
 
 	const { data } = useIsEnterprise();
 	const matrixFederationEnabled = useSetting('Federation_Matrix_enabled');
-	const serviceFederationEnabled = useSetting('FEDERATION_Service_Enabled');
+	const serviceFederationEnabled = useSetting('Federation_Service_Enabled');
 	const isMatrixEnabled = (matrixFederationEnabled || serviceFederationEnabled) && data?.isEnterprise;
 
 	const createRoomItems = useCreateRoomItems();

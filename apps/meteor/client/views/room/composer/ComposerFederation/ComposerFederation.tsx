@@ -9,7 +9,7 @@ import ComposerFederationJoinRoomDisabled from './ComposerFederationJoinRoomDisa
 
 const ComposerFederation = ({ subscription, children, ...props }: ComposerMessageProps): ReactElement => {
 	const matrixFederationEnabled = useSetting('Federation_Matrix_enabled') === true;
-	const serviceFederationEnabled = useSetting('FEDERATION_Service_Enabled') === true;
+	const serviceFederationEnabled = useSetting('Federation_Service_Enabled') === true;
 	const federationEnabled = matrixFederationEnabled || serviceFederationEnabled;
 	const federationModuleEnabled = useHasLicenseModule('federation') === true;
 

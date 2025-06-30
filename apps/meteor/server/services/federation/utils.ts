@@ -6,7 +6,7 @@ export function getFederationVersion(): 'matrix' | 'native' | null {
 		return 'matrix';
 	}
 
-	if (settings.get<boolean>('FEDERATION_Service_Enabled')) {
+	if (settings.get<boolean>('Federation_Service_Enabled')) {
 		return 'native';
 	}
 
