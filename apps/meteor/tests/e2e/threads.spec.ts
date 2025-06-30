@@ -15,6 +15,19 @@ test.describe.serial('Threads', () => {
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
+
+	test('expect no unread banner when replying to a thread in a fresh channel', async ({ page }) => {
+		await poHomeChannel.content.sendMessage('parent for unread-banner test');
+		await page.locator('[data-qa-type="message"]').last().hover();
+		await page.getByRole('button', { name: 'Reply in thread' }).click();
+		const threadDialog = page.getByRole('dialog');
+		await threadDialog.locator('[name="msg"]').last().fill('first thread reply');
+		await page.keyboard.press('Enter');
+
+		await page.waitForTimeout(200);
+		await expect(page.getByTitle('Mark as read')).not.toBeVisible();
+	});
+
 	test('expect thread message preview if alsoSendToChannel checkbox is checked', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
 		await page.locator('[data-qa-type="message"]').last().hover();

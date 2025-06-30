@@ -55,6 +55,7 @@ export const useHandleUnread = (
 	const getMessage = Messages.use((state) => state.get);
 	const findFirstMessage = Messages.use((state) => state.findFirst);
 	const filterMessages = Messages.use((state) => state.filter);
+	const messagesCount = Messages.use((state) => state.records.size);
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -73,8 +74,9 @@ export const useHandleUnread = (
 			return;
 		}
 		setMessageJumpQueryStringParameter(message?._id);
+		chat.readStateManager.markAsRead();
 		setUnreadCount(0);
-	}, [room._id, setUnreadCount, findFirstMessage, unread?.since]);
+	}, [room._id, setUnreadCount, findFirstMessage, unread?.since, chat.readStateManager]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
 		chat.readStateManager.markAsRead();
@@ -180,6 +182,22 @@ export const useHandleUnread = (
 		},
 		[getMessage, setUnreadCount],
 	);
+
+	useEffect(() => {
+		// When a room is first opened, there’s no “off-screen” message yet, so we set
+		// an initial baseline timestamp (the newest message’s ts) as our anchor.
+		// This ensures our unread-count logic only starts counting messages that arrive
+		// after the initial load, rather than everything already in the DOM.
+		if (lastMessageDate === undefined && messagesCount > 0) {
+			const newest = findFirstMessage(
+				(r) => r.rid === room._id,
+				(a, b) => b.ts.getTime() - a.ts.getTime(),
+			);
+			if (newest) {
+				setLastMessageDate(newest.ts);
+			}
+		}
+	}, [messagesCount, lastMessageDate, findFirstMessage, room._id]);
 
 	return {
 		innerRef: ref,
