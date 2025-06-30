@@ -1,3 +1,5 @@
+import type { FindOptions } from '@rocket.chat/ui-contexts/dist/UserContext';
+
 interface IPipeReturn<D> {
 	slice(skip: number, limit: number): IPipeReturn<D>;
 	sortByField(fieldName: keyof D, direction?: 1 | -1): IPipeReturn<D>;
@@ -69,3 +71,22 @@ export function pipe<D>(
 		},
 	};
 }
+
+export const applyQueryOptions = <T extends { _id: string }>(records: T[], options: FindOptions<T>): T[] => {
+	let currentPipeline = pipe(records);
+	if (options.sort && options.sort.length > 0) {
+		for (let i = options.sort.length - 1; i >= 0; i--) {
+			const { field, direction } = options.sort[i];
+			currentPipeline = currentPipeline.sortByField(field, direction);
+		}
+	}
+	if (options.skip) {
+		currentPipeline = currentPipeline.slice(options.skip, records.length);
+	}
+	if (options.limit !== undefined) {
+		// If skip was applied, limit will be applied on the already skipped array
+		// If no skip, it will be applied from the beginning.
+		currentPipeline = currentPipeline.slice(0, options.limit);
+	}
+	return currentPipeline.apply();
+};
