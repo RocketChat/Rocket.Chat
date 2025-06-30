@@ -4,6 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
+import { convertToHTML } from './richTextRenderer';
 import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
@@ -85,6 +86,8 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 		if (!selection) {
 			input.innerHTML = text;
 		}
+
+		convertToHTML(input);
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
@@ -280,6 +283,8 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 
 		const newStart = selectionStart + pattern.indexOf('{{text}}');
 		const newEnd = newStart + selectedText.length;
+
+		convertToHTML(input);
 
 		setSelectionRange(input, newStart, newEnd);
 

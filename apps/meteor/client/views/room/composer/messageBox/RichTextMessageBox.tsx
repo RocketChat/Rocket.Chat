@@ -30,6 +30,7 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { convertToHTML } from '../../../../../app/ui-message/client/messageBox/richTextRenderer';
 import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
@@ -270,11 +271,24 @@ const RichTextMessageBox = ({
 	};
 
 	const keyboardEventHandler = useEffectEvent((event: KeyboardEvent) => {
+		const node = event.currentTarget as HTMLDivElement;
+
 		const { which: keyCode } = event;
+
+		const isBackspace = keyCode === 8;
+		const isAsterisk = event.key === '*';
+		const isUnderscore = event.key === '_';
+		const isTilde = event.key === '~';
 
 		const input = event.target as HTMLDivElement;
 
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
+
+		const isUpdateMarkdown = isBackspace || isAsterisk || isUnderscore || isTilde;
+
+		if (isUpdateMarkdown) {
+			setTimeout(() => convertToHTML(node), 0);
+		}
 
 		if (isSubmitKey) {
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
