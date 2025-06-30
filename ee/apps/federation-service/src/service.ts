@@ -65,7 +65,7 @@ function handleHealthCheck(app: Hono) {
 
 	serve({
 		fetch: app.fetch,
-		port: 443, //config.port,
+		port: config.port,
 	});
 
 	await api.start();
