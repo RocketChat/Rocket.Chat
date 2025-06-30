@@ -271,14 +271,14 @@ const compileValueSelector = <T>(valueSelector: FieldExpression<T>[keyof FieldEx
 		return compileArraySelector(valueSelector as unknown as T);
 	}
 
-	if (hasValueOperators<T>(valueSelector)) {
-		return compileValueOperatorsSelector(valueSelector);
+	if (hasValueOperators<T>(valueSelector as FieldExpression<T>)) {
+		return compileValueOperatorsSelector(valueSelector as FieldExpression<T>);
 	}
 
 	return (value: T): boolean => flatSome(value, (x) => equals(valueSelector, x as unknown as object));
 };
 
-export const createPredicateFromFilter = <T>(filter: Filter<T> | FieldExpression<T>['$where'][]): ((doc: T) => boolean) => {
+export const createPredicateFromFilter = <T>(filter: Filter<T>): ((doc: T) => boolean) => {
 	const perKeySelectors = Object.entries(filter).map(([key, subSelector]) => {
 		if (subSelector === undefined) {
 			return () => true;

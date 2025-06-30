@@ -14,7 +14,7 @@ import type { Query } from './Query';
 import { SynchronousQueue } from './SynchronousQueue';
 import type { UpdateFilter } from './Updater';
 import { Updater } from './Updater';
-import { hasOwn, _selectorIsId, clone, assertHasValidFieldNames } from './common';
+import { _selectorIsId, clone, assertHasValidFieldNames } from './common';
 
 /**
  * Forked from Meteor's Mongo.Collection, this class implements a local collection over a Zustand store.
@@ -814,7 +814,7 @@ export class LocalCollection<T extends { _id: string }> {
 		throw new MinimongoError('object missing from query');
 	}
 
-	private _idsMatchedBySelector(selector: Filter<T> | T['_id']): T['_id'][] | null {
+	private _idsMatchedBySelector(selector: Filter<T> | T['_id']): readonly T['_id'][] | null {
 		if (_selectorIsId(selector)) {
 			return [selector];
 		}
@@ -823,7 +823,7 @@ export class LocalCollection<T extends { _id: string }> {
 			return null;
 		}
 
-		if (hasOwn.call(selector, '_id')) {
+		if ('_id' in selector) {
 			if (_selectorIsId(selector._id)) {
 				return [selector._id];
 			}
