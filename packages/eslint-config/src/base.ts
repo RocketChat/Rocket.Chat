@@ -111,6 +111,16 @@ export default async function base(
 							match: true,
 						},
 					},
+					{
+						selector: 'variable',
+						modifiers: ['destructured'],
+						format: null,
+					},
+					{
+						selector: 'parameter',
+						modifiers: ['destructured'],
+						format: null,
+					},
 				],
 				'@typescript-eslint/no-unused-vars': [
 					'warn',
