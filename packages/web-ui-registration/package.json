@@ -17,13 +17,22 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.0",
-		"@babel/preset-env": "~7.26.0",
+		"@babel/core": "~7.26.10",
+		"@babel/preset-env": "~7.26.9",
 		"@babel/preset-react": "~7.25.9",
 		"@babel/preset-typescript": "~7.26.0",
+		"@rocket.chat/core-typings": "workspace:~",
+		"@rocket.chat/css-in-js": "~0.31.25",
+		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/fuselage": "^0.64.0",
+		"@rocket.chat/fuselage-hooks": "^0.36.0",
+		"@rocket.chat/fuselage-polyfills": "~0.31.25",
+		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/i18n": "workspace:~",
+		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/layout": "^0.33.0",
 		"@rocket.chat/mock-providers": "workspace:~",
+		"@rocket.chat/rest-typings": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
@@ -35,22 +44,26 @@
 		"@storybook/react-webpack5": "^8.6.14",
 		"@storybook/theming": "^8.6.14",
 		"@tanstack/react-query": "~5.65.1",
+		"@testing-library/dom": "~10.4.0",
 		"@testing-library/react": "~16.0.1",
 		"@types/dompurify": "^3.0.5",
-		"@types/react": "~18.3.17",
-		"babel-loader": "~9.2.1",
+		"@types/react": "~18.3.23",
+		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
+		"i18next": "~23.4.9",
 		"react": "~18.3.1",
+		"react-dom": "~18.3.1",
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
+		"react-virtuoso": "^4.12.0",
 		"storybook": "^8.6.14",
 		"storybook-dark-mode": "^4.0.2",
 		"typescript": "~5.8.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
-		"@rocket.chat/tools": "0.2.2",
-		"@rocket.chat/ui-contexts": "workspace:^",
+		"@rocket.chat/tools": "*",
+		"@rocket.chat/ui-contexts": "*",
 		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-hook-form": "*",
@@ -60,6 +73,6 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"dompurify": "^3.2.4"
+		"dompurify": "^3.2.6"
 	}
 }
