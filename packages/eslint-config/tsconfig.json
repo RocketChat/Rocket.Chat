@@ -13,7 +13,9 @@
 		"lib": ["es2024"],
 		"stripInternal": true,
 		"erasableSyntaxOnly": true,
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+		"types": [],
+		"libReplacement": false
 	},
 	"include": ["./src"]
 }

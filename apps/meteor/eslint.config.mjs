@@ -1,4 +1,3 @@
-// @ts-check
 import { base, jest, mocha, react } from '@rocket.chat/eslint-config';
 import globals from 'globals';
 
