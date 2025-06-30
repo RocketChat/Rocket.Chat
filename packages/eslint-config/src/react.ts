@@ -1,4 +1,5 @@
 import tseslint, { type ConfigWithExtends } from 'typescript-eslint';
+// @ts-expect-error jsx-a11y plugin is not typed
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -41,6 +42,7 @@ const configs = {
 	},
 	'jsx-a11y': {
 		plugins: {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			'jsx-a11y': jsxA11y,
 		},
 		rules: {
@@ -62,6 +64,7 @@ const configs = {
 function react({ languageOptions, ...config }: ConfigWithExtends = {}): FlatConfig.ConfigArray {
 	return tseslint.config(
 		{
+			name: 'react',
 			plugins: {
 				react: reactPlugin,
 			},
@@ -104,7 +107,8 @@ function react({ languageOptions, ...config }: ConfigWithExtends = {}): FlatConf
 				'react-refresh/only-export-components': 'warn',
 			},
 		},
-		storybook.configs['flat/recommended'],
+
+		(storybook as unknown as (typeof import('eslint-plugin-storybook/'))['default']).configs['flat/recommended'],
 		{
 			rules: {
 				'storybook/no-renderer-packages': 'warn',

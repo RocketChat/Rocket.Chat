@@ -4,16 +4,11 @@ import globals from 'globals';
 import type { ConfigWithExtends } from 'typescript-eslint';
 import rules from './rules/jest.js';
 import type { MergeRules } from './types/rules.js';
+import type { Config } from './types/config.js';
 import { readConfig } from 'jest-config';
-import { existsSync } from 'fs';
+type Rules = MergeRules<[typeof rules.recommended, typeof rules.style]>;
 
-async function jest(
-	config: Linter.Config<MergeRules<[typeof rules.recommended, typeof rules.style]>> = {},
-): Promise<Linter.Config & ConfigWithExtends> {
-	if (!existsSync('./jest.config.ts')) {
-		throw new Error('jest.config.ts file not found. Please ensure you have a Jest configuration file in your project root.');
-	}
-
+async function jest(config: Config<Rules> = {}): Promise<Linter.Config & ConfigWithExtends> {
 	const jestConfig = await readConfig(
 		{
 			$0: 'yarn jest',
@@ -21,11 +16,11 @@ async function jest(
 		},
 		'jest.config.ts',
 	);
-
-	const files = jestConfig.projectConfig.testMatch;
+	config.files ??= jestConfig.projectConfig.testMatch;
 
 	return {
-		files: config.files ? config.files : files,
+		name: 'jest',
+		files: config.files,
 		plugins: { jest: jestPlugin },
 		rules: {
 			...rules.recommended,

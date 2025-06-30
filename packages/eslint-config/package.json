@@ -29,6 +29,14 @@
 		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.35.0"
 	},
+	"peerDependencies": {
+		"jest-config": ">=30.0.0"
+	},
+	"peerDependenciesMeta": {
+		"jest-config": {
+			"optional": true
+		}
+	},
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",

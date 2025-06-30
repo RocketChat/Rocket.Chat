@@ -7331,6 +7331,11 @@ __metadata:
     globals: "npm:^16.2.0"
     typescript: "npm:^5.8.3"
     typescript-eslint: "npm:^8.35.0"
+  peerDependencies:
+    jest-config: ">=30.0.0"
+  peerDependenciesMeta:
+    jest-config:
+      optional: true
   languageName: unknown
   linkType: soft
 
