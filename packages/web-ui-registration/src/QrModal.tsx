@@ -1,57 +1,55 @@
 import type { ReactElement } from 'react';
-import { Modal, Button, Box, Throbber, ProgressBar, Callout } from '@rocket.chat/fuselage';
-import { useState, useEffect, useCallback } from 'react';
-import QRCode from 'qrcode';
+import { Modal, Button, Box, Throbber, ProgressBar } from '@rocket.chat/fuselage';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useQrCodeQueryHandler } from './hooks/useQrCodeQueryHandler';
 
 type QrModalProps = {
     onClose: () => void;
 };
 
 const QrModal = ({ onClose }: QrModalProps): ReactElement => {
-    const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
     const [timeLeft, setTimeLeft] = useState<number>(60);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string>('');
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const {
+        data: qrCodeUrl,
+        isLoading,
+        error,
+        refetch
+    } = useQrCodeQueryHandler();
 
     const generateQrCode = useCallback(async () => {
-        setIsLoading(true);
-        setError('');
+        setTimeLeft(60);
+        await refetch();
+    }, [refetch]);
 
-        try {
-            const timestamp = Date.now();
-            const randomId = Math.random().toString(36).slice(2, 15);
-            const qrPayload = `login:${timestamp}:${randomId}`;
-
-            const url = await QRCode.toDataURL(qrPayload, {
-                width: 256,
-                margin: 2,
-                color: { dark: '#1f2329', light: '#ffffff' },
-                errorCorrectionLevel: 'M',
-                type: 'image/png',
-            });
-
-            setQrCodeUrl(url);
-            setTimeLeft(60);
-        } catch (err) {
-            console.error('QR generation failed:', err);
-            setError('Failed to generate QR code. Please try again.');
-            setQrCodeUrl('');
-        } finally {
-            setIsLoading(false);
-        }
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+        };
     }, []);
 
     useEffect(() => {
-        generateQrCode();
-    }, [generateQrCode]);
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+        }
 
-    useEffect(() => {
         if (timeLeft <= 0) {
             generateQrCode();
             return;
         }
-        const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-        return () => clearTimeout(timer);
+
+        timerRef.current = setTimeout(() => {
+            setTimeLeft(prev => prev - 1);
+        }, 1000);
+
+        return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+        };
     }, [timeLeft, generateQrCode]);
 
     const formatTime = (seconds: number): string => {
@@ -65,6 +63,10 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
         if (timeLeft > 20) return 'warning';
         return 'danger';
     };
+
+    const handleRenewCode = useCallback(() => {
+        generateQrCode();
+    }, [generateQrCode]);
 
     return (
         <Modal>
@@ -115,9 +117,9 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
                         ) : error ? (
                             <Box display='flex' flexDirection='column' alignItems='center' padding='x16'>
                                 <Box fontScale='c1' color='danger-500' textAlign='center' marginBlockEnd='x16'>
-                                    {error}
+                                    Failed to generate QR code. Please try again.
                                 </Box>
-                                <Button small secondary onClick={generateQrCode}>
+                                <Button small secondary onClick={handleRenewCode}>
                                     Try Again
                                 </Button>
                             </Box>
@@ -165,7 +167,7 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
                     <Box display='flex' justifyContent='center' marginInlineEnd='x12'>
                         <Button
                             secondary
-                            onClick={generateQrCode}
+                            onClick={handleRenewCode}
                             disabled={isLoading}
                             marginInlineEnd={'x8'}
                             title='Generate a new QR code'

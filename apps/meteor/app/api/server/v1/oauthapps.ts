@@ -7,6 +7,7 @@ import { addOAuthApp } from '../../../oauth2-server-config/server/admin/function
 import { deleteOAuthApp } from '../../../oauth2-server-config/server/admin/methods/deleteOAuthApp';
 import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/methods/updateOAuthApp';
 import { API } from '../api';
+import QRCode from 'qrcode';
 
 API.v1.addRoute(
 	'oauth-apps.list',
@@ -98,3 +99,24 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'oauth-apps.qrcode',
+	{
+		authRequired: false,
+	},
+	{
+		async get() {
+			const timestamp = Date.now();
+			const randomId = Math.random().toString(36).slice(2, 15);
+			const qrPayload = `login:${timestamp}:${randomId}`;
+			const qrCodeUrl = await QRCode.toDataURL(qrPayload, {
+				width: 256,
+				margin: 2,
+				color: { dark: '#1f2329', light: '#ffffff' },
+				errorCorrectionLevel: 'M',
+				type: 'image/png',
+			});
+			return API.v1.success(qrCodeUrl);
+		},	
+	})
