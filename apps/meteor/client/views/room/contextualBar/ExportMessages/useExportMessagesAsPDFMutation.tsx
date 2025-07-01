@@ -1,7 +1,7 @@
-import { Document, Page, pdf, Text, View } from '@react-pdf/renderer';
-import type { IMessage } from '@rocket.chat/core-typings';
+import { Document, Image, Page, pdf, StyleSheet, Text, View } from '@react-pdf/renderer';
+import type { IMessage, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -9,10 +9,45 @@ import { Messages } from '../../../../../app/models/client';
 import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
+const leftTab = {
+	marginLeft: 20,
+};
+
+const pdfStyles = StyleSheet.create({
+	messageHeader: {
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'flex-end',
+		gap: 10,
+	},
+	username: {
+		color: '#000',
+		fontSize: 14,
+	},
+	dateTime: {
+		color: '#aaa',
+		fontSize: 12,
+	},
+	threadMessagesCount: {
+		color: '#000',
+		fontSize: 14,
+	},
+	threadMessage: {
+		color: '#555',
+		fontSize: 12,
+		...leftTab,
+	},
+	message: {
+		color: '#555',
+		fontSize: 14,
+	},
+});
+
 export const useExportMessagesAsPDFMutation = () => {
 	const { t } = useTranslation();
 	const chatopsUsername = useSetting('Chatops_Username');
 	const formatDateAndTime = useFormatDateAndTime();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMutation({
 		mutationFn: async (messageIds: IMessage['_id'][]) => {
@@ -48,12 +83,21 @@ export const useExportMessagesAsPDFMutation = () => {
 							{messages.map((message) => {
 								const dateTime = formatDateAndTime(message.ts);
 								return (
-									<Text key={message._id} style={{ marginBottom: 5 }}>
-										<Text style={{ color: '#555', fontSize: 14 }}>{message.u.username}</Text>{' '}
-										<Text style={{ color: '#aaa', fontSize: 12 }}>{dateTime}</Text>
-										<Text>{'\n'}</Text>
-										{parseMessage(message)}
-									</Text>
+									<View key={message._id} style={{ marginBottom: 10 }}>
+										<View style={pdfStyles.messageHeader}>
+											<Text style={{ ...(message.tmid ? leftTab : {}), ...pdfStyles.username }}>{message.u.username}</Text>
+											<Text style={pdfStyles.dateTime}>{dateTime}</Text>
+											{message.tcount && <Text style={pdfStyles.threadMessagesCount}>{`${message.tcount} ${t('thread_messages')}`}</Text>}
+										</View>
+										<Text style={message.tmid ? pdfStyles.threadMessage : pdfStyles.message}>{parseMessage(message)}</Text>
+										{message.attachments?.map((attachment: MessageAttachmentDefault, index) => (
+											<View key={index}>
+												{attachment.description && <Text style={pdfStyles.message}>{attachment.description}</Text>}
+												{attachment.image_url && <Image src={attachment.title_link} style={attachment.image_dimensions} />}
+												<Text style={pdfStyles.message}>{attachment.title}</Text>
+											</View>
+										))}
+									</View>
 								);
 							})}
 						</View>
@@ -79,6 +123,12 @@ export const useExportMessagesAsPDFMutation = () => {
 			} finally {
 				instance.removeListener('change', callback);
 			}
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Messages_exported_successfully') });
 		},
 	});
 };
