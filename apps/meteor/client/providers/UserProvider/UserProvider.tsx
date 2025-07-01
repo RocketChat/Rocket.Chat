@@ -1,6 +1,7 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -20,6 +21,7 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { applyQueryOptions } from '../../lib/cachedCollections/pipe';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
@@ -74,13 +76,28 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields, sort) =>
 				Subscriptions.findOne(query, { fields, sort }),
 			),
-			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => Rooms.findOne(query, { fields })),
+			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query) => {
+				const predicate = createPredicateFromFilter(query);
+				return Rooms.state.find(predicate);
+			}),
 			querySubscriptions: createReactiveSubscriptionFactory<SubscriptionWithRoom[]>((query, options) => {
 				if (userId) {
-					return Subscriptions.find(query, options).fetch();
-				}
+					const predicate = createPredicateFromFilter(query);
+					const subs = Subscriptions.state.filter(predicate);
 
-				return Rooms.find(query, options).fetch();
+					if (options?.sort || options?.limit || options?.skip) {
+						return applyQueryOptions(subs, options);
+					}
+					return subs;
+				}
+				// Anonnymous users don't have subscriptions. Fetch Rooms instead.
+				const predicate = createPredicateFromFilter(query);
+				const rooms = Rooms.state.filter(predicate) as unknown as SubscriptionWithRoom[]; // FIXME: this is a hack to make the typings work. How was it working before?
+
+				if (options?.sort || options?.limit) {
+					return applyQueryOptions(rooms, options);
+				}
+				return rooms;
 			}),
 			logout: async () => Meteor.logout(),
 			onLogout: (cb) => {
