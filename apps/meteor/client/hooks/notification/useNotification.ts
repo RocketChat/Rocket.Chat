@@ -105,7 +105,7 @@ export const useNotification = () => {
 					});
 				case 'l':
 					return router.navigate({
-						pattern: '/live/:id/:tab?/:context?',
+						pattern: '/live/:id/:tab?/:context?/:contextId?',
 						params: {
 							id: rid,
 							tab: 'room-info',
