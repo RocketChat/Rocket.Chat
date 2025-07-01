@@ -4,12 +4,12 @@ import { memo, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import RoomSidepanelListWrapper from './RoomSidepanelListWrapper';
 import SidePanelNoResults from './SidePanelNoResults';
+import RoomSidepanelItem from './SidepanelItem';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
-import RoomSidepanelListWrapper from '../../room/Sidepanel/RoomSidepanelListWrapper';
-import RoomSidepanelItem from '../../room/Sidepanel/SidepanelItem';
 import { type SidePanelFiltersKeys, sidePanelFiltersConfig } from '../contexts/RoomsNavigationContext';
 
 type SidePanelProps = {

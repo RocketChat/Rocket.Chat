@@ -11,6 +11,7 @@ import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 
+// TODO: Remove this component when the sidepanel teams get ready
 const RoomSidepanel = () => {
 	const parentRid = useOpenedRoom();
 

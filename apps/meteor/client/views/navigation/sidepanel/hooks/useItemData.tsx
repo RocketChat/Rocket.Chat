@@ -11,7 +11,7 @@ import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../../../../sidebarv2/RoomMenu';
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
-import { getNavigationMessagePreview } from '../../../navigation/lib/getNavigationMessagePreview';
+import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
 
 export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { openedRoom: string | undefined }) => {
 	const { t } = useTranslation();

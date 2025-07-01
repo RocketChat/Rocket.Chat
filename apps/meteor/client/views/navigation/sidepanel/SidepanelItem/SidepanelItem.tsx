@@ -17,13 +17,13 @@ import SidePanelParentRoom from './SidePanelParentRoom';
 import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
 import { useItemData } from '../hooks/useItemData';
 
-type RoomSidepanelItemProps = {
+type SidepanelItemProps = {
 	openedRoom?: string;
 	room: SubscriptionWithRoom;
 	parentRid?: string;
 };
 
-const RoomSidepanelItem = ({ room, openedRoom }: RoomSidepanelItemProps) => {
+const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
 	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, { openedRoom });
 	const { sidebar } = useLayout();
 	const formatDate = useShortTimeAgo();
@@ -69,4 +69,4 @@ const RoomSidepanelItem = ({ room, openedRoom }: RoomSidepanelItemProps) => {
 	);
 };
 
-export default memo(RoomSidepanelItem);
+export default memo(SidepanelItem);
