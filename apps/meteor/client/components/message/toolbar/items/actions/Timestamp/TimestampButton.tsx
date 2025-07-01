@@ -1,7 +1,8 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
-import MessageToolbarItem from '../../../MessageToolbarItem';
+
 import { TimestampPicker } from './TimestampPicker';
+import MessageToolbarItem from '../../../MessageToolbarItem';
 
 const TimestampButton = () => {
 	const t = useTranslation();
@@ -13,16 +14,8 @@ const TimestampButton = () => {
 
 	return (
 		<>
-			<MessageToolbarItem
-				id='timestamp'
-				icon='clock'
-				title={t('Add_Date_And_Time')}
-				qa='message-action-timestamp'
-				onClick={handleClick}
-			/>
-			{isPickerOpen && (
-				<TimestampPicker onClose={() => setIsPickerOpen(false)} />
-			)}
+			<MessageToolbarItem id='timestamp' icon='clock' title={t('Add_Date_And_Time')} qa='message-action-timestamp' onClick={handleClick} />
+			{isPickerOpen && <TimestampPicker onClose={() => setIsPickerOpen(false)} />}
 		</>
 	);
 };

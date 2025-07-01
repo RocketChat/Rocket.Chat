@@ -1,6 +1,6 @@
 import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
 
 type DatePickerProps = {
 	selectedDate: Date;
@@ -17,16 +17,17 @@ const DatePicker = ({ selectedDate, onChange }: DatePickerProps): ReactElement =
 		onChange(newDate);
 	};
 
+	const yyyy = selectedDate.getFullYear();
+	const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
+	const dd = String(selectedDate.getDate()).padStart(2, '0');
+	const dateValue = `${yyyy}-${mm}-${dd}`;
+
 	return (
 		<Box mb='x16'>
 			<Field>
 				<FieldLabel>{t('Date')}</FieldLabel>
 				<FieldRow>
-					<InputBox
-						type='date'
-						value={selectedDate.toISOString().split('T')[0]}
-						onChange={handleDateChange}
-					/>
+					<InputBox type='date' value={dateValue} onChange={handleDateChange} />
 				</FieldRow>
 			</Field>
 		</Box>

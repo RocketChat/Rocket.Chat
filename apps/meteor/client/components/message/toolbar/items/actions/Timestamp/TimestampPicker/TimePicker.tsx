@@ -1,6 +1,6 @@
-import { Box, Field, FieldLabel, FieldRow, InputBox} from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
 
 type TimePickerProps = {
 	selectedDate: Date;
@@ -24,12 +24,7 @@ const TimePicker = ({ selectedDate, onChange }: TimePickerProps): ReactElement =
 			<Field>
 				<FieldLabel>{t('Time')}</FieldLabel>
 				<FieldRow>
-					<InputBox
-						type='time'
-						value={timeValue}
-						onChange={handleTimeChange}
-						step='60'
-					/>
+					<InputBox type='time' value={timeValue} onChange={handleTimeChange} step='60' />
 				</FieldRow>
 			</Field>
 		</Box>

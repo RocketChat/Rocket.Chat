@@ -1,10 +1,10 @@
-
 import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+
 import DatePicker from './DatePicker';
-import TimePicker from './TimePicker';
 import FormatSelector from './FormatSelector';
 import Preview from './Preview';
+import TimePicker from './TimePicker';
 import { useTimestampPicker } from './useTimestampPicker';
 import type { ComposerAPI } from '../../../../../../../lib/chats/ChatAPI';
 
@@ -15,8 +15,8 @@ type TimestampPickerProps = {
 
 export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => {
 	const t = useTranslation();
-	const { selectedDate, selectedFormat, handleDateChange, 
-			handleTimeChange, handleFormatChange, handleSubmit } = useTimestampPicker(composer);
+	const { selectedDate, selectedFormat, handleDateChange, handleTimeChange, handleFormatChange, handleSubmit } =
+		useTimestampPicker(composer);
 
 	const handleAddClick = () => {
 		handleSubmit();
