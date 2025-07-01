@@ -3,6 +3,7 @@ import type { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
+
 import { APIClass } from './ApiClass';
 import { cors } from './middlewares/cors';
 import { loggerMiddleware } from './middlewares/logger';
@@ -10,9 +11,9 @@ import { metricsMiddleware } from './middlewares/metrics';
 import { remoteAddressMiddleware } from './middlewares/remoteAddressMiddleware';
 import { tracerSpanMiddleware } from './middlewares/tracer';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
+import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
-import { isRunningMs } from '../../../server/lib/isRunningMs';
 
 const logger = new Logger('API');
 
@@ -42,8 +43,6 @@ const createApi = function _createApi(options: { version?: string; useDefaultAut
 export const API: {
 	api: Router<'/api', any, APIActionHandler>;
 	v1: APIClass<'/v1'>;
-	// TODO: See best way to handle the group of federation
-	// routes (_matrix, .well-known, internal)
 	_matrix: Router<'/_matrix', any, APIActionHandler>;
 	wellKnown: Router<'/.well-known', any, APIActionHandler>;
 	matrixInternal: Router<'/internal', any, APIActionHandler>;

@@ -7,4 +7,3 @@ import './roles';
 import '../apps/communication/uikit';
 import './engagementDashboard';
 import './audit';
-import './federationRouter';

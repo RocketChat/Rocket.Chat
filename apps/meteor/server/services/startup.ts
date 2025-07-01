@@ -30,7 +30,10 @@ import { UploadService } from './upload/service';
 import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
 import { VoipAsteriskService } from './voip-asterisk/service';
+import { registerFederationRoutes } from '../../ee/server/api/federation';
 import { i18n } from '../lib/i18n';
+
+// TODO: Move it to a proper place since it's EE only
 
 export const registerServices = async (): Promise<void> => {
 	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -72,7 +75,9 @@ export const registerServices = async (): Promise<void> => {
 		api.registerService(new Authorization());
 
 		const { FederationMatrix } = await import('@rocket.chat/federation-matrix');
-		api.registerService(new FederationMatrix());
+		const federationMatrix = new FederationMatrix();
+		api.registerService(federationMatrix);
+		await registerFederationRoutes(federationMatrix);
 
 		// Run EE services defined outside of the main repo
 		// Otherwise, monolith would ignore them :(
