@@ -1,5 +1,50 @@
 # @rocket.chat/meteor
 
+## 7.7.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36323](https://github.com/RocketChat/Rocket.Chat/pull/36323) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that was causing ddp-streamer process to break if the communication with presence service was interrupted for any reason.
+
+- ([#36250](https://github.com/RocketChat/Rocket.Chat/pull/36250) by [@dionisio-bot](https://github.com/dionisio-bot)) fix: Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#36270](https://github.com/RocketChat/Rocket.Chat/pull/36270) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that caused the queue worker to stop processing if something failed when checking MAC limits or while fetching the list of queues
+
+- ([#36298](https://github.com/RocketChat/Rocket.Chat/pull/36298) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
+
+- <details><summary>Updated dependencies [8874a5aab72c962f213d128a54393d95f7dabef8]:</summary>
+
+  - @rocket.chat/rest-typings@7.7.2
+  - @rocket.chat/omnichannel-services@0.3.23
+  - @rocket.chat/presence@0.2.26
+  - @rocket.chat/api-client@0.2.26
+  - @rocket.chat/core-services@0.9.5
+  - @rocket.chat/models@1.5.5
+  - @rocket.chat/ui-contexts@19.0.2
+  - @rocket.chat/network-broker@0.2.5
+  - @rocket.chat/cron@0.1.26
+  - @rocket.chat/instance-status@0.1.26
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/fuselage-ui-kit@19.0.2
+  - @rocket.chat/gazzodown@19.0.2
+  - @rocket.chat/ui-avatar@15.0.2
+  - @rocket.chat/ui-client@19.0.2
+  - @rocket.chat/ui-video-conf@19.0.2
+  - @rocket.chat/ui-voip@9.0.2
+  - @rocket.chat/web-ui-registration@19.0.2
+  - @rocket.chat/core-typings@7.7.2
+  - @rocket.chat/license@1.0.17
+  - @rocket.chat/pdf-worker@0.3.5
+  - @rocket.chat/apps@0.5.5
+  - @rocket.chat/freeswitch@1.2.13
+  - @rocket.chat/model-typings@1.6.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
 ## 7.7.1
 
 ### Patch Changes

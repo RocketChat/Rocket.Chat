@@ -1,5 +1,16 @@
 # @rocket.chat/rest-typings
 
+## 7.7.2
+
+### Patch Changes
+
+- ([#36298](https://github.com/RocketChat/Rocket.Chat/pull/36298) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.2
+  </details>
+
 ## 7.7.1
 
 ### Patch Changes
