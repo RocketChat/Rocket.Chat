@@ -11,6 +11,7 @@ import { metricsMiddleware } from './middlewares/metrics';
 import { remoteAddressMiddleware } from './middlewares/remoteAddressMiddleware';
 import { tracerSpanMiddleware } from './middlewares/tracer';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
+import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
 
@@ -42,6 +43,9 @@ const createApi = function _createApi(options: { version?: string; useDefaultAut
 export const API: {
 	api: Router<'/api', any, APIActionHandler>;
 	v1: APIClass<'/v1'>;
+	_matrix: Router<'/_matrix', any, APIActionHandler>;
+	wellKnown: Router<'/.well-known', any, APIActionHandler>;
+	matrixInternal: Router<'/internal', any, APIActionHandler>;
 	default: APIClass;
 	ApiClass: typeof APIClass;
 	channels?: {
@@ -73,6 +77,9 @@ export const API: {
 		version: 'v1',
 		useDefaultAuth: true,
 	}),
+	_matrix: new RocketChatAPIRouter('/_matrix'),
+	wellKnown: new RocketChatAPIRouter('/.well-known'),
+	matrixInternal: new RocketChatAPIRouter('/internal'),
 	default: createApi({}),
 };
 
@@ -100,6 +107,15 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 });
 
 export const startRestAPI = () => {
+	// Register federation routes at root level if enabled and not running in MS mode
+	if (settings.get('Federation_Service_Enabled') && !isRunningMs()) {
+		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>)
+			.use(API._matrix.router)
+			.use(API.wellKnown.router)
+			.use(API.matrixInternal.router);
+	}
+
+	// Register main API routes under /api prefix
 	(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
 		API.api
 			.use(remoteAddressMiddleware)
