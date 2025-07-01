@@ -72,11 +72,44 @@ export function pipe<D>(
 	};
 }
 
-export const applyQueryOptions = <T extends { _id: string }>(records: T[], options: FindOptions<T>): T[] => {
+type OriginalStructure = FindOptions['sort'];
+
+type SortField = 'lm' | 'lowerCaseFName' | 'lowerCaseName';
+type SortDirection = -1 | 1;
+
+type SortObject = {
+	field: SortField;
+	direction: SortDirection;
+}[];
+
+/**
+ * Converts a MongoDB-style sort structure to a sort object.
+ */
+export const convertSort = (original: OriginalStructure): SortObject => {
+	const convertedSort: SortObject = [];
+
+	if (!original) {
+		return convertedSort;
+	}
+	Object.keys(original as Record<string, any>).forEach((key) => {
+		const direction = original[key as keyof OriginalStructure];
+
+		if (direction === -1 || direction === 1) {
+			convertedSort.push({
+				field: key as SortField,
+				direction,
+			});
+		}
+	});
+	return convertedSort;
+};
+
+export const applyQueryOptions = <T extends Record<string, any>>(records: T[], options: FindOptions): T[] => {
 	let currentPipeline = pipe(records);
-	if (options.sort && options.sort.length > 0) {
-		for (let i = options.sort.length - 1; i >= 0; i--) {
-			const { field, direction } = options.sort[i];
+	if (options.sort) {
+		const sortObj = convertSort(options.sort);
+		for (let i = sortObj.sort.length - 1; i >= 0; i--) {
+			const { field, direction } = sortObj[i];
 			currentPipeline = currentPipeline.sortByField(field, direction);
 		}
 	}
