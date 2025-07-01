@@ -168,8 +168,10 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		if (!this.getRoomDirectives(room.t).canSendMessage(rid)) {
 			return false;
 		}
+		// TODO: Adjust this to call a central function validator instead of settings
+		// since there will be more than one setting to check (status, connection, etc.)
 		if (isRoomFederated(room)) {
-			return settings.get('Federation_Matrix_enabled');
+			return settings.get('Federation_Matrix_enabled') || settings.get('Federation_Service_Enabled');
 		}
 		return true;
 	}
