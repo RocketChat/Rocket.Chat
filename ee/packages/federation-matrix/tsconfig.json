@@ -1,0 +1,12 @@
+{
+	"extends": "@rocket.chat/tsconfig/server.json",
+	"compilerOptions": {
+		"strictPropertyInitialization": false,
+		"skipLibCheck": true,
+		"experimentalDecorators": true,
+		"declaration": true,
+		"rootDir": "./src",
+		"outDir": "./dist"
+	},
+	"files": ["./src/FederationMatrix.ts"]
+}
