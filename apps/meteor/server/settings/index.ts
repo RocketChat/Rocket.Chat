@@ -11,6 +11,7 @@ import { createDiscussionsSettings } from './discussions';
 import { createE2ESettings } from './e2e';
 import { createEmailSettings } from './email';
 import { createFederationSettings } from './federation';
+import { createFederationServiceSettings } from './federation-service';
 import { createFileUploadSettings } from './file-upload';
 import { createGeneralSettings } from './general';
 import { createIRCSettings } from './irc';
@@ -51,6 +52,7 @@ await Promise.all([
 	createEmailSettings(),
 	createE2ESettings(),
 	createFederationSettings(),
+	createFederationServiceSettings(),
 	createFileUploadSettings(),
 	createGeneralSettings(),
 	createIRCSettings(),
