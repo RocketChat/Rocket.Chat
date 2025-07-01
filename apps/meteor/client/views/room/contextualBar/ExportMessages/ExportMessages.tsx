@@ -123,6 +123,10 @@ const ExportMessages = () => {
 		if (type === 'email') {
 			setValue('format', 'html');
 		}
+
+		if (type === 'download') {
+			setValue('format', 'json');
+		}
 	}, [type, setValue]);
 
 	useEffect(() => {
@@ -139,7 +143,7 @@ const ExportMessages = () => {
 		setValue('messagesCount', messageCount, { shouldDirty: true });
 	}, [messageCount, setValue]);
 
-	const { mutate: exportAsPDF } = useExportMessagesAsPDFMutation();
+	const { mutateAsync: exportAsPDF } = useExportMessagesAsPDFMutation();
 
 	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
 		const messages = selectedMessageStore.getSelectedMessages();
