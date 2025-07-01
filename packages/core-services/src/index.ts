@@ -11,6 +11,7 @@ import type { ICalendarService } from './types/ICalendarService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
+import type { IFederationMatrixService } from './types/IFederationMatrixService';
 import type { IImportService } from './types/IImportService';
 import type { ILDAPService } from './types/ILDAPService';
 import type { ILicense } from './types/ILicense';
@@ -66,6 +67,8 @@ export {
 	IFederationJoinExternalPublicRoomInput,
 	FederationConfigurationStatus,
 } from './types/IFederationService';
+
+export { IFederationMatrixService } from './types/IFederationMatrixService';
 
 export {
 	ConversationData,
@@ -187,3 +190,5 @@ export const User = proxify<IUserService>('user');
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
+
+export const FederationMatrix = proxify<IFederationMatrixService>('federation-matrix');
