@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -13,6 +13,7 @@ import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../../../..
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
+import { getFederationVersion } from '../../../../server/services/federation/utils';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
@@ -67,6 +68,7 @@ async function createUsersSubscriptions({
 
 	const membersCursor = Users.findUsersByUsernames(members);
 
+	// TODO: Check re new federation-service - should we add them here or keep on createRoom inside of homeserver?!
 	for await (const member of membersCursor) {
 		try {
 			await beforeAddUserToRoom.run({ user: member, inviter: owner }, room);
@@ -264,6 +266,7 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
+
 	if (shouldBeHandledByFederation) {
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
 	}
@@ -275,3 +278,10 @@ export const createRoom = async <T extends RoomType>(
 		...room,
 	};
 };
+
+callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, originalMemberList: members }) => {
+	const federationVersion = getFederationVersion();
+	if (federationVersion === 'matrix') {
+		await FederationMatrix.createRoom(room, owner, members);
+	}
+});
