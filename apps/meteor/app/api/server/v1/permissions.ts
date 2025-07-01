@@ -249,10 +249,10 @@ const permissionsUpdateEndpoints = API.v1.post(
 			}>({
 				type: 'object',
 				properties: {
+					success: { type: 'boolean', enum: [false] },
+					stack: { type: 'string' },
 					error: { type: 'string' },
 					errorType: { type: 'string' },
-					stack: { type: 'string' },
-					success: { type: 'boolean', enum: [false] },
 				},
 				required: ['success'],
 				additionalProperties: false,
@@ -264,12 +264,24 @@ const permissionsUpdateEndpoints = API.v1.post(
 						type: 'boolean',
 						enum: [false],
 					},
-					status: {
-						type: 'string',
+					status: { type: 'string' },
+					message: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			403: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
 					},
-					message: {
-						type: 'string',
-					},
+					message: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
 				},
 				required: ['success'],
 				additionalProperties: false,
