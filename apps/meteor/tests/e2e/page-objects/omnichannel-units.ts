@@ -78,7 +78,7 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 	}
 
 	get contextualBar() {
-		return this.page.locator('div[data-qa-id="units-contextual-bar"]');
+		return this.page.locator('div[role="dialog"][aria-labelledby="contextualbarTitle"]');
 	}
 
 	get btnSave() {

@@ -80,6 +80,7 @@ const Room = (): ReactElement => {
 									</ErrorBoundary>
 								)) ||
 								(contextualBarView && (
+									// TODO: improve fallback handling
 									<ErrorBoundary fallback={null}>
 										<SelectedMessagesProvider>
 											<Suspense fallback={<ContextualbarSkeleton />}>

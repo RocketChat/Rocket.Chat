@@ -56,6 +56,9 @@ COPY ./packages/sha256/dist packages/sha256/dist
 COPY ./packages/tracing/package.json packages/tracing/package.json
 COPY ./packages/tracing/dist packages/tracing/dist
 
+COPY ./packages/tsconfig packages/tsconfig
+
+
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
 

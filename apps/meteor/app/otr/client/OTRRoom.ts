@@ -180,7 +180,9 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	deleteOTRMessages(): void {
-		Messages.remove({ t: { $in: ['otr', 'otr-ack', ...Object.values(otrSystemMessages)] }, rid: this._roomId });
+		Messages.state.remove(
+			(record) => record.rid === this._roomId && !!record.t && ['otr', 'otr-ack', ...Object.values(otrSystemMessages)].includes(record.t),
+		);
 	}
 
 	end(): void {

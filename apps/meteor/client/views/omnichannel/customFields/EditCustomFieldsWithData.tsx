@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import EditCustomFields from './EditCustomFields';
-import PageSkeleton from '../../../components/PageSkeleton';
+import { ContextualbarSkeletonBody } from '../../../components/Contextualbar';
 
-const EditCustomFieldsWithData = ({ customFieldId }: { customFieldId: ILivechatCustomField['_id'] }) => {
+const EditCustomFieldsWithData = ({ customFieldId, onClose }: { customFieldId: ILivechatCustomField['_id']; onClose: () => void }) => {
 	const { t } = useTranslation();
 
 	const getCustomFieldById = useEndpoint('GET', '/v1/livechat/custom-fields/:_id', { _id: customFieldId });
@@ -18,14 +18,14 @@ const EditCustomFieldsWithData = ({ customFieldId }: { customFieldId: ILivechatC
 	});
 
 	if (isPending) {
-		return <PageSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError) {
 		return <Callout type='danger'>{t('Error')}</Callout>;
 	}
 
-	return <EditCustomFields customFieldData={data?.customField} />;
+	return <EditCustomFields customFieldData={data?.customField} onClose={onClose} />;
 };
 
 export default EditCustomFieldsWithData;

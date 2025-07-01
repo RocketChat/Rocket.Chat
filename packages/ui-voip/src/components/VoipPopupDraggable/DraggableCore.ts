@@ -341,6 +341,9 @@ interface IHandleElement {
 	onGrab(cb: (event: [mousePosition: PointCoordinates, elementRect: IGenericRect]) => void): OffCallbackHandler;
 }
 
+const isLeftClick = (event: PointerEvent) => event.button === 0;
+const isMousePointer = (event: PointerEvent) => event.pointerType === 'mouse';
+
 class HandleDomElement
 	extends Emitter<{
 		grab: [PointCoordinates, IGenericRect];
@@ -350,9 +353,10 @@ class HandleDomElement
 	public setElement(element: HTMLElement) {
 		const onGrab = (event: PointerEvent) => {
 			const element = event.currentTarget as HTMLElement;
-			if (!element) {
+			if (!element || (isMousePointer(event) && !isLeftClick(event))) {
 				return;
 			}
+			event.preventDefault();
 
 			this.emit('grab', [getPointerEventCoordinates(event), element.getBoundingClientRect()]);
 		};
