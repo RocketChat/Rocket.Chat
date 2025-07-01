@@ -1,0 +1,21 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": false,
+		"skipLibCheck": true,
+		"isolatedModules": true,
+		"allowJs": false,
+		"checkJs": false,
+		"esModuleInterop": true
+	},
+	"include": [
+		"src/**/*.ts"
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"**/*.spec.ts",
+		"**/*.test.ts",
+		"../../../../**/*",
+	]
+}
