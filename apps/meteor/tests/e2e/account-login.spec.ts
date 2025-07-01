@@ -1,5 +1,5 @@
-import { test, expect } from './utils/test';
 import { Users, restoreState } from './fixtures/userStates';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.userE2EE.state });
 
