@@ -19,7 +19,7 @@ test.describe('Account Login', () => {
 		await restoreState(page, Users.userE2EE);
 	});
 
-	test('should remove private_key and public_key from localStorage on logout', async ({ page }) => {
+	test('should remove private_key and public_key from localStorage when token expires', async ({ page }) => {
 		expect(await page.evaluate(() => localStorage.getItem('Meteor.userId'))).not.toBeNull();
 		expect(await page.evaluate(() => localStorage.getItem('Meteor.loginToken'))).not.toBeNull();
 		expect(await page.evaluate(() => localStorage.getItem('Meteor.loginTokenExpires'))).not.toBeNull();
@@ -31,6 +31,8 @@ test.describe('Account Login', () => {
 		});
 
 		await page.reload();
+
+		await expect(page.getByRole('form', { name: 'Login' })).toBeVisible();
 
 		expect(await page.evaluate(() => localStorage.getItem('Meteor.userId'))).toBeNull();
 		expect(await page.evaluate(() => localStorage.getItem('Meteor.loginToken'))).toBeNull();
