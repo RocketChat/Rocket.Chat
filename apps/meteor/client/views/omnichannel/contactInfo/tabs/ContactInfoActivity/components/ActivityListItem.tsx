@@ -6,12 +6,13 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Info from './ContactInfoActivityInfo';
-import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
+import Info from './ActivityItemInfo';
+import { useTimeFromNow } from '../../../../../../hooks/useTimeFromNow';
 
 type ActivityStatus = 'sent' | 'delivered' | 'read' | 'failed';
 
 type ActivityListItemProps = {
+	id: string;
 	name: string;
 	status: { id: ActivityStatus; ts: string };
 	onClick: () => void;

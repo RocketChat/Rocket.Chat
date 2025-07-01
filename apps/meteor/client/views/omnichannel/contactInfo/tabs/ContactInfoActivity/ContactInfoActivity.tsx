@@ -1,24 +1,25 @@
 import { Box, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Throbber } from '@rocket.chat/fuselage';
-import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
-import ActivityListItem from './ActivityListItem';
+import ActivityListItem from './components/ActivityListItem';
+import type { ActivityItem } from './useActivityList';
 import { useActivityList } from './useActivityList';
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
+import { useContactRoute } from '../../../hooks/useContactRoute';
 
 const ContactInfoActivity = () => {
 	const { t } = useTranslation();
+	const handleNavigate = useContactRoute();
 
 	const { data: activities, isError, isPending, refetch } = useActivityList();
 
-	const messageId = useRouteParameter('messageId');
-	console.log('messageId', messageId);
-
-	const handleClickItem = (activity: ComponentProps<typeof ActivityListItem>) => {
-		console.log('clicked activity', activity);
+	const handleClickItem = (activity: ActivityItem) => {
+		handleNavigate({
+			context: 'activity',
+			contextId: activity.id,
+		});
 	};
 
 	if (isPending) {
