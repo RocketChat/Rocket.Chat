@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useSidebarListNavigation } from '../../../sidebar/RoomList/useSidebarListNavigation';
 
-type RoomListWrapperProps = HTMLAttributes<HTMLDivElement>;
+type SidepanelListWrapperProps = HTMLAttributes<HTMLDivElement>;
 
-const RoomSidepanelListWrapper = forwardRef(function RoomListWrapper(props: RoomListWrapperProps, ref: ForwardedRef<HTMLDivElement>) {
+const SidepanelListWrapper = forwardRef(function SidepanelListWrapper(props: SidepanelListWrapperProps, ref: ForwardedRef<HTMLDivElement>) {
 	const { t } = useTranslation();
 	const { sidebarListRef } = useSidebarListNavigation();
 	const mergedRefs = useMergedRefs(ref, sidebarListRef);
@@ -16,4 +16,4 @@ const RoomSidepanelListWrapper = forwardRef(function RoomListWrapper(props: Room
 	return <SidepanelList aria-label={t('Channels')} ref={mergedRefs} {...props} />;
 });
 
-export default RoomSidepanelListWrapper;
+export default SidepanelListWrapper;
