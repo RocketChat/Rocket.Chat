@@ -1,4 +1,5 @@
 import { isPrivateRoom } from '@rocket.chat/core-typings';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
 
 import SidePanelTag from './SidePanelTag';
@@ -14,16 +15,14 @@ const SidePanelParentDiscussion = ({ prid }: { prid: string }) => {
 
 	const icon = isPrivateRoom(subscription) ? 'hashtag-lock' : 'hashtag';
 	const roomName = roomCoordinator.getRoomName(subscription?.t, subscription);
-	const handleRedirect = () => roomCoordinator.openRouteLink(subscription.t, { ...subscription });
+
+	const buttonProps = useButtonPattern((e) => {
+		e.preventDefault();
+		roomCoordinator.openRouteLink(subscription.t, { ...subscription });
+	});
 
 	return (
-		<SidePanelTag
-			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && handleRedirect()}
-			onClick={(e) => {
-				e.preventDefault();
-				handleRedirect();
-			}}
-		>
+		<SidePanelTag {...buttonProps}>
 			{icon && <SidePanelTagIcon icon={{ name: icon }} />}
 			{roomName}
 		</SidePanelTag>

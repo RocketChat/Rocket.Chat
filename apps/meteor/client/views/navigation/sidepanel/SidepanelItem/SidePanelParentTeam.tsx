@@ -1,3 +1,4 @@
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import SidePanelTag from './SidePanelTag';
@@ -7,18 +8,17 @@ import { useParentTeamData } from './useParentTeamData';
 const SidePanelParentTeam = ({ room }: { room: SubscriptionWithRoom }) => {
 	const { redirectToMainRoom, teamName, shouldDisplayTeam, teamInfoError, isTeamPublic } = useParentTeamData(room);
 
+	const buttonProps = useButtonPattern((e) => {
+		e.preventDefault();
+		redirectToMainRoom();
+	});
+
 	if (teamInfoError || !shouldDisplayTeam) {
 		return null;
 	}
 
 	return (
-		<SidePanelTag
-			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && redirectToMainRoom()}
-			onClick={(e) => {
-				e.preventDefault();
-				redirectToMainRoom();
-			}}
-		>
+		<SidePanelTag {...buttonProps}>
 			<SidePanelTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
 			{teamName}
 		</SidePanelTag>
