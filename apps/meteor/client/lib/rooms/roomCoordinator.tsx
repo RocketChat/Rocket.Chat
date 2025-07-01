@@ -140,6 +140,28 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return false;
 	}
 
+	// #ToDo: Move this out of the RoomCoordinator
+	public archived(rid: string): boolean {
+		const room = Rooms.findOne({ _id: rid }, { fields: { archived: 1 } });
+		return Boolean(room?.archived);
+	}
+
+	public verifyCanSendMessage(rid: string): boolean {
+		const room = Rooms.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
+		if (!room?.t) {
+			return false;
+		}
+		if (!this.getRoomDirectives(room.t).canSendMessage(rid)) {
+			return false;
+		}
+		// TODO: Adjust this to call a central function validator instead of settings
+		// since there will be more than one setting to check (status, connection, etc.)
+		if (isRoomFederated(room)) {
+			return settings.get('Federation_Matrix_enabled') || settings.get('Federation_Service_Enabled');
+		}
+		return true;
+	}
+
 	private validateRoute<TRouteName extends RouteName>(route: IRoomTypeRouteConfig<TRouteName>): void {
 		const { name, path, link } = route;
 
