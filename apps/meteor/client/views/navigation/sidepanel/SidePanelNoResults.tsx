@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../components/GenericNoResults';
-import { SIDE_PANEL_GROUPS, type SidePanelFiltersKeys } from '../contexts/RoomsNavigationContext';
+import { SIDE_PANEL_GROUPS } from '../contexts/RoomsNavigationContext';
+import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 
-type SidePanelNoResultsProps = { currentTab: SidePanelFiltersKeys; onlyUnreads: boolean };
+type SidePanelNoResultsProps = { currentTab: AllGroupsKeys; onlyUnreads: boolean };
 
 const SidePanelNoResults = ({ currentTab, onlyUnreads }: SidePanelNoResultsProps) => {
 	const { t } = useTranslation();

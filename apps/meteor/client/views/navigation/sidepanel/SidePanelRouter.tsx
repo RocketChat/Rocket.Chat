@@ -1,30 +1,32 @@
 import SidePanelAll from './tabs/SidePanelAll';
-import { SIDE_PANEL_GROUPS, useSidePanelFilter } from '../contexts/RoomsNavigationContext';
+import { ALL_GROUPS, useSidePanelFilter } from '../contexts/RoomsNavigationContext';
+import SidePanelChannels from './tabs/SidePanelChannels';
 import SidePanelDiscussions from './tabs/SidePanelDiscussions';
 import SidePanelFavorites from './tabs/SidePanelFavorites';
 import SidePanelMentions from './tabs/SidePanelMentions';
+import SidePanelTeams from './tabs/SidePanelTeams';
 
 const SidePanelRouter = () => {
 	const [currentTab] = useSidePanelFilter();
 
 	// TODO: figure out if we need this switch
 	switch (currentTab) {
-		case SIDE_PANEL_GROUPS.ALL:
+		case ALL_GROUPS.ALL:
 			return <SidePanelAll />;
-		case SIDE_PANEL_GROUPS.MENTIONS:
+		case ALL_GROUPS.MENTIONS:
 			return <SidePanelMentions />;
-		case SIDE_PANEL_GROUPS.FAVORITES:
+		case ALL_GROUPS.FAVORITES:
 			return <SidePanelFavorites />;
-		case SIDE_PANEL_GROUPS.DISCUSSIONS:
+		case ALL_GROUPS.DISCUSSIONS:
 			return <SidePanelDiscussions />;
-		// case SIDE_PANEL_GROUPS.IN_PROGRESS:
-		// 	return null; // TODO implement tab
-		// case SIDE_PANEL_GROUPS.QUEUE:
-		// 	return null; // TODO implement tab
-		// case SIDE_PANEL_GROUPS.ON_HOLD:
-		// 	return null; // TODO implement tab
-		// default:
-		// 	return null;
+		case ALL_GROUPS.TEAMS:
+			return <SidePanelTeams />;
+		case ALL_GROUPS.CHANNELS:
+			return <SidePanelChannels />;
+		case ALL_GROUPS.DIRECT_MESSAGES:
+			return <SidePanelChannels />;
+		default:
+			return null;
 	}
 };
 

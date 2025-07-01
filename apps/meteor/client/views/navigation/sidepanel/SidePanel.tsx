@@ -4,23 +4,24 @@ import { memo, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
-import RoomSidepanelListWrapper from './RoomSidepanelListWrapper';
 import SidePanelNoResults from './SidePanelNoResults';
 import RoomSidepanelItem from './SidepanelItem';
+import SidepanelListWrapper from './SidepanelListWrapper';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
-import { type SidePanelFiltersKeys, sidePanelFiltersConfig } from '../contexts/RoomsNavigationContext';
+import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 
 type SidePanelProps = {
-	currentTab: SidePanelFiltersKeys;
+	title: string;
+	currentTab: AllGroupsKeys;
 	onlyUnreads: boolean;
 	toggleOnlyUnreads: () => void;
 	// TODO: This can also be of type ILivechatInquiryRecord[]
 	rooms: SubscriptionWithRoom[];
 };
 
-const SidePanel = ({ currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePanelProps) => {
+const SidePanel = ({ title, currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePanelProps) => {
 	const { t } = useTranslation();
 	const ref = useRef(null);
 	const unreadFieldId = useId();
@@ -36,7 +37,7 @@ const SidePanel = ({ currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePa
 		<Sidepanel role='tabpanel'>
 			<SidepanelHeader>
 				{isTablet && <IconButton icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
-				<SidepanelHeaderTitle>{t(sidePanelFiltersConfig[currentTab].title)}</SidepanelHeaderTitle>
+				<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
 				<Box display='flex' alignItems='center'>
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 						{t('Unread')}
@@ -50,7 +51,7 @@ const SidePanel = ({ currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePa
 					<Virtuoso
 						totalCount={rooms.length}
 						data={rooms}
-						components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper }}
+						components={{ Item: SidepanelListItem, List: SidepanelListWrapper }}
 						itemContent={(_, data) => <RoomSidepanelItem openedRoom={openedRoom} room={data} />}
 					/>
 				</VirtualizedScrollbars>

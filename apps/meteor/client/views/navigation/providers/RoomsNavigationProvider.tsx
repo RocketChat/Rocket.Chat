@@ -1,12 +1,5 @@
-import {
-	isDirectMessageRoom,
-	isDiscussion,
-	isOmnichannelRoom,
-	isPrivateRoom,
-	isPublicRoom,
-	isTeamRoom,
-	type ILivechatInquiryRecord,
-} from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isDiscussion, isOmnichannelRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
@@ -19,6 +12,7 @@ import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquirie
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
 import { RoomsNavigationContext, SIDE_PANEL_GROUPS, SIDE_BAR_GROUPS, getEmptyUnreadInfo } from '../contexts/RoomsNavigationContext';
 import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
+import { useSidePanelParentRid } from '../hooks/useSidePanelParentRid';
 
 const query = { open: { $ne: false } };
 const sortOptions = { sort: { lm: -1 } } as const;
@@ -141,6 +135,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 
 const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) => {
 	const { currentFilter, setFilter } = useSidePanelFilters();
+	const { parentRid } = useSidePanelParentRid();
 
 	const [groups, unreadGroupData] = useRoomsGroups();
 
@@ -150,8 +145,9 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 			setFilter,
 			groups,
 			unreadGroupData,
+			parentRid,
 		};
-	}, [currentFilter, setFilter, groups, unreadGroupData]);
+	}, [parentRid, currentFilter, setFilter, groups, unreadGroupData]);
 
 	return <RoomsNavigationContext.Provider value={contextValue}>{children}</RoomsNavigationContext.Provider>;
 };
