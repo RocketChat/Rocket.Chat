@@ -1,6 +1,5 @@
 import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
-import { isBodyParamsValidPermissionUpdate } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { Meteor } from 'meteor/meteor';
 
@@ -170,14 +169,46 @@ const permissionsListAllEndpoints = API.v1.get(
 	},
 );
 
-API.v1.post(
+type PermissionsUpdateProps = {
+	permissions: { _id: string; roles: string[] }[];
+};
+
+const permissionUpdatePropsSchema = {
+	type: 'object',
+	properties: {
+		permissions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					roles: {
+						type: 'array',
+						items: { type: 'string' },
+						uniqueItems: true,
+					},
+				},
+				additionalProperties: false,
+				required: ['_id', 'roles'],
+			},
+		},
+	},
+	required: ['permissions'],
+	additionalProperties: false,
+};
+
+export const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(permissionUpdatePropsSchema);
+
+const permissionsUpdateEndpoints = API.v1.post(
 	'permissions.update',
 	{
 		authRequired: true,
 		permissionsRequired: ['access-permissions'],
 		body: isBodyParamsValidPermissionUpdate,
 		response: {
-			200: ajv.compile({
+			200: ajv.compile<{
+				permissions: IPermission[];
+			}>({
 				type: 'object',
 				properties: {
 					permissions: {
@@ -211,54 +242,41 @@ API.v1.post(
 				required: ['permissions', 'success'],
 				additionalProperties: false,
 			}),
-			// TODO: add 400 error response
-			400: ajv.compile({
+			400: ajv.compile<{
+				error?: string;
+				errorType?: string;
+				stack?: string;
+			}>({
 				type: 'object',
 				properties: {
-					errorType: {
-						type: 'string',
-						description: 'The type of the error.',
-					},
-					success: {
-						type: 'boolean',
-						enum: [false],
-					},
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					stack: { type: 'string' },
+					success: { type: 'boolean', enum: [false] },
 				},
-				required: ['success', 'errorType'],
+				required: ['success'],
+				additionalProperties: false,
 			}),
-			// TODO: add 401 error response
 			401: ajv.compile({
 				type: 'object',
 				properties: {
-					name: {
-						type: 'string',
-						description: 'The error message.',
-					},
-					errorType: {
-						type: 'string',
-						description: 'The type of the error.',
-					},
 					success: {
 						type: 'boolean',
 						enum: [false],
 					},
-				},
-				required: ['success', 'name', 'errorType'],
-			}),
-			// TODO: add 403 error response
-			403: ajv.compile({
-				type: 'object',
-				properties: {
-					success: {
-						type: 'boolean',
-						enum: [false],
+					status: {
+						type: 'string',
+					},
+					message: {
+						type: 'string',
 					},
 				},
 				required: ['success'],
+				additionalProperties: false,
 			}),
 		},
 	},
-	async function () {
+	async function action() {
 		const { bodyParams } = this;
 
 		if (!isBodyParamsValidPermissionUpdate(bodyParams)) {
@@ -295,7 +313,13 @@ API.v1.post(
 
 type PermissionsListAllEndpoints = ExtractRoutesFromAPI<typeof permissionsListAllEndpoints>;
 
+type PermissionsUpdateEndpoints = ExtractRoutesFromAPI<typeof permissionsUpdateEndpoints>;
+
+export type PermissionsEndpoints = PermissionsListAllEndpoints | PermissionsUpdateEndpoints;
+
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends PermissionsListAllEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends PermissionsUpdateEndpoints {}
 }
