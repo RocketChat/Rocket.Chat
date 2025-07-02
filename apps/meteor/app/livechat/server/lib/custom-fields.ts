@@ -19,23 +19,38 @@ export const validateRequiredCustomFields = (customFields: string[], livechatCus
 	}
 };
 
-export async function updateContactsCustomFields(contact: ILivechatContact, key: string, value: string, overwrite: boolean): Promise<void> {
-	const shouldUpdateCustomFields = overwrite || !contact.customFields || !contact.customFields[key];
+export async function updateContactsCustomFields(
+	contact: ILivechatContact,
+	validCustomFields: {
+		key: string;
+		value: string;
+		overwrite: boolean;
+	}[],
+): Promise<void> {
+	const contactCustomFieldsToUpdate = validCustomFields.reduce(
+		(prev, curr) => {
+			if (curr.overwrite || !contact?.customFields?.[curr.key]) {
+				prev.customFields ??= {};
+				prev.customFields[curr.key] = curr.value;
+				return prev;
+			}
+			prev.conflictingFields ??= [];
+			prev.conflictingFields.push({ field: `customFields.${curr.key}`, value: curr.value });
+			return prev;
+		},
+		{} as {
+			customFields?: Record<string, string>;
+			conflictingFields?: Array<{ field: `customFields.${string}`; value: string }>;
+		},
+	);
 
-	if (shouldUpdateCustomFields) {
-		contact.customFields ??= {};
-		contact.customFields[key] = value;
-	} else {
-		contact.conflictingFields ??= [];
-		contact.conflictingFields.push({ field: `customFields.${key}`, value });
+	if (!Object.keys(contactCustomFieldsToUpdate).length) {
+		return;
 	}
 
-	await LivechatContacts.updateContactCustomFields(contact._id, {
-		...(shouldUpdateCustomFields && { customFields: contact.customFields }),
-		...(contact.conflictingFields && { conflictingFields: contact.conflictingFields }),
-	});
-
-	livechatLogger.debug({ msg: `Contact ${contact._id} updated with custom fields` });
+	// TODO: model method
+	livechatLogger.debug({ msg: 'Updating custom fields for contact', contactId: contact._id, contactCustomFieldsToUpdate });
+	await LivechatContacts.updateById(contact._id, { $set: contactCustomFieldsToUpdate });
 }
 
 export async function setCustomFields({
@@ -73,7 +88,7 @@ export async function setCustomFields({
 		if (visitor) {
 			const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
 			if (contacts.length > 0) {
-				await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, key, value, overwrite)));
+				await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, [{ key, value, overwrite }])));
 			}
 		}
 	}
