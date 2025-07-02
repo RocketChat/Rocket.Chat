@@ -26,8 +26,6 @@ test.describe.serial('OC - Canned Responses Usage', () => {
 	const secondResponseText = 'Is there anything else I can help you with today?';
 
 	test.beforeAll(async ({ api, browser }) => {
-		newVisitor = createFakeVisitor();
-
 		await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }),
 			api.post('/livechat/users/manager', { username: 'user1' }),
@@ -72,6 +70,7 @@ test.describe.serial('OC - Canned Responses Usage', () => {
 	});
 
 	test.beforeEach(async ({ page, api }) => {
+		newVisitor = createFakeVisitor();
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
@@ -108,7 +107,7 @@ test.describe.serial('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect canned response text to appear in message composer', async () => {
-			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(cannedResponseText + ' ');
+			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(`${cannedResponseText} `);
 		});
 
 		await test.step('expect agent to be able to send the canned response message', async () => {
@@ -194,13 +193,13 @@ test.describe.serial('OC - Canned Responses Usage', () => {
 
 		await test.step('expect to use first canned response', async () => {
 			await agent.poHomeChannel.content.useCannedResponse(cannedResponseName);
-			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(cannedResponseText + ' ');
+			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(`${cannedResponseText} `);
 			await agent.page.keyboard.press('Enter');
 		});
 
 		await test.step('expect to use second canned response', async () => {
 			await agent.poHomeChannel.content.useCannedResponse(secondResponseName);
-			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(secondResponseText + ' ');
+			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(`${secondResponseText} `);
 			await agent.page.keyboard.press('Enter');
 		});
 
