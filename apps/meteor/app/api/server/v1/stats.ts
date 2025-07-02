@@ -2116,7 +2116,7 @@ type TelemetryPayload = {
 	params: Param[];
 };
 
-API.v1.post(
+const statisticsTelemetryEndpoints = API.v1.post(
 	'statistics.telemetry',
 	{
 		authRequired: true,
@@ -2208,11 +2208,15 @@ type StatisticsEndpoint = ExtractRoutesFromAPI<typeof statisticsEndpoints>;
 
 type StatisticsListEndpoints = ExtractRoutesFromAPI<typeof statisticsListEndpoints>;
 
-export type StatisticsEndpoints = StatisticsEndpoint | StatisticsListEndpoints;
+type StatisticsTelemetryEndpoints = ExtractRoutesFromAPI<typeof statisticsTelemetryEndpoints>;
+
+export type StatisticsEndpoints = StatisticsEndpoint | StatisticsListEndpoints | StatisticsTelemetryEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends StatisticsEndpoint {}
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends StatisticsListEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends StatisticsTelemetryEndpoints {}
 }
