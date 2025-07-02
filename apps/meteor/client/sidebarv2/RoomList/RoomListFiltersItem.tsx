@@ -4,7 +4,11 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { type SidePanelFiltersKeys, sidePanelFiltersConfig } from '../../views/navigation/contexts/RoomsNavigationContext';
+import {
+	type SidePanelFiltersKeys,
+	sidePanelFiltersConfig,
+	useSidePanelFilter,
+} from '../../views/navigation/contexts/RoomsNavigationContext';
 import { useUnreadGroupData } from '../../views/navigation/contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -18,11 +22,12 @@ const RoomListFiltersItem = ({ group, icon, onClick }: SidebarFiltersItemProps) 
 	const { t } = useTranslation();
 	const unreadGroupCount = useUnreadGroupData(group);
 	const buttonProps = useButtonPattern(onClick);
+	const [currentTab] = useSidePanelFilter();
 	const roomTitle = sidePanelFiltersConfig[group].title;
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(unreadGroupCount);
 
 	return (
-		<SidebarV2Item {...buttonProps}>
+		<SidebarV2Item selected={group === currentTab} {...buttonProps}>
 			<Icon size='x20' name={icon} />
 			<SidebarV2ItemTitle unread={highlighted}>{t(roomTitle)}</SidebarV2ItemTitle>
 			{showUnread && (

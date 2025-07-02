@@ -1,4 +1,4 @@
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -6,7 +6,7 @@ import { createContext, useContext, useMemo } from 'react';
 
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 
-export const sidePanelFiltersConfig: { [Key in SidePanelFiltersKeys]: { title: TranslationKey; icon: IconName } } = {
+export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: TranslationKey; icon: IconName } } = {
 	all: {
 		title: 'All',
 		icon: 'inbox',
@@ -35,6 +35,18 @@ export const sidePanelFiltersConfig: { [Key in SidePanelFiltersKeys]: { title: T
 		title: 'On_Hold',
 		icon: 'pause-unfilled',
 	},
+	teams: {
+		title: 'Teams',
+		icon: 'team',
+	},
+	channels: {
+		title: 'Channels',
+		icon: 'hashtag',
+	},
+	directMessages: {
+		title: 'Direct_Messages',
+		icon: 'at',
+	},
 };
 
 export const TEAM_COLLAB_GROUPS = {
@@ -56,9 +68,14 @@ export const SIDE_PANEL_GROUPS = {
 } as const;
 
 export const SIDE_BAR_GROUPS = {
-	TEAMS: 'Teams',
-	CHANNELS: 'Channels',
-	DIRECT_MESSAGES: 'Direct_Messages',
+	TEAMS: 'teams',
+	CHANNELS: 'channels',
+	DIRECT_MESSAGES: 'directMessages',
+} as const;
+
+export const ALL_GROUPS = {
+	...SIDE_PANEL_GROUPS,
+	...SIDE_BAR_GROUPS,
 } as const;
 
 export const SidebarOrder = [SIDE_BAR_GROUPS.TEAMS, SIDE_BAR_GROUPS.CHANNELS, SIDE_BAR_GROUPS.DIRECT_MESSAGES];
@@ -67,18 +84,20 @@ export type SidePanelFiltersKeys = (typeof SIDE_PANEL_GROUPS)[keyof typeof SIDE_
 export type SidePanelFiltersUnreadKeys = `${SidePanelFiltersKeys}_unread`;
 export type SidePanelFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
-export type SideBarGroupsKeys = (typeof SIDE_BAR_GROUPS)[keyof typeof SIDE_BAR_GROUPS];
-export type SideBarGroupsUnreadKeys = `${SideBarGroupsKeys}_unread`;
+export type SideBarFiltersKeys = (typeof SIDE_BAR_GROUPS)[keyof typeof SIDE_BAR_GROUPS];
+export type SideBarFiltersUnreadKeys = `${SideBarFiltersKeys}_unread`;
+export type SideBarFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
-export type AllGroupsKeys = SidePanelFiltersKeys | SideBarGroupsKeys;
+export type AllGroupsKeys = SidePanelFiltersKeys | SideBarFiltersKeys;
 
-export type AllGroupsKeysWithUnread = SidePanelFilters | SideBarGroupsKeys | SideBarGroupsUnreadKeys;
+export type AllGroupsKeysWithUnread = SidePanelFilters | SideBarFiltersKeys | SideBarFiltersUnreadKeys;
 
 export type RoomsNavigationContextValue = {
 	groups: Map<AllGroupsKeysWithUnread, Set<SubscriptionWithRoom | ILivechatInquiryRecord>>;
 	currentFilter: AllGroupsKeysWithUnread;
-	setFilter: (filter: SidePanelFiltersKeys, unread: boolean) => void;
+	setFilter: (filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => void;
 	unreadGroupData: Map<AllGroupsKeys, GroupedUnreadInfoData>;
+	parentRid?: IRoom['_id'];
 };
 
 export type GroupedUnreadInfoData = {
@@ -169,24 +188,24 @@ export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
 	return roomsList;
 };
 
-export const useSidePanelFilter = (): [SidePanelFiltersKeys, boolean, AllGroupsKeysWithUnread] => {
+export const useSidePanelFilter = (): [AllGroupsKeys, boolean, AllGroupsKeysWithUnread] => {
 	const { currentFilter } = useRoomsListContext();
 	return [...splitFilter(currentFilter), currentFilter];
 };
 
 export const useUnreadOnlyToggle = (): [boolean, () => void] => {
-	const { setFilter } = useRoomsListContext();
+	const { setFilter, parentRid } = useRoomsListContext();
 	const [currentTab, unread] = useSidePanelFilter();
 
-	return [unread, useEffectEvent(() => setFilter(currentTab, !unread))];
+	return [unread, useEffectEvent(() => setFilter(currentTab, !unread, parentRid))];
 };
 
 export const useSwitchSidePanelTab = () => {
 	const { setFilter } = useRoomsListContext();
 	const [, unread] = useSidePanelFilter();
 
-	return (tab: SidePanelFiltersKeys) => {
-		setFilter(tab, unread);
+	return (tab: AllGroupsKeys, { parentRid }: { parentRid?: IRoom['_id'] } = {}) => {
+		setFilter(tab, unread, parentRid);
 	};
 };
 
