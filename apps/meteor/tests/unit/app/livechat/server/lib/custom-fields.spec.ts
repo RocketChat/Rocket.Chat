@@ -29,7 +29,7 @@ describe('[Custom Fields] updateContactsCustomFields', () => {
 		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
-			$set: { customFields: { field1: 'value1' } },
+			$set: { 'customFields.field1': 'value1' },
 		});
 	});
 	it('should add multiple custom fields from the validCustomFields param', async () => {
@@ -42,7 +42,7 @@ describe('[Custom Fields] updateContactsCustomFields', () => {
 		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
-			$set: { customFields: { field1: 'value1', field2: 'value2' } },
+			$set: { 'customFields.field1': 'value1', 'customFields.field2': 'value2' },
 		});
 	});
 	it('should add custom field to conflictingFields when the contact already has the field and overwrite is false', async () => {
@@ -65,7 +65,7 @@ describe('[Custom Fields] updateContactsCustomFields', () => {
 		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
-			$set: { customFields: { field2: 'value2' }, conflictingFields: [{ field: 'customFields.field1', value: 'newValue' }] },
+			$set: { 'customFields.field2': 'value2', 'conflictingFields': [{ field: 'customFields.field1', value: 'newValue' }] },
 		});
 	});
 	it('should overwrite an existing field when field is on validCustomFields array & overwrite is true', async () => {
@@ -78,7 +78,7 @@ describe('[Custom Fields] updateContactsCustomFields', () => {
 		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
-			$set: { customFields: { field1: 'newValue', field2: 'value2' } },
+			$set: { 'customFields.field1': 'newValue', 'customFields.field2': 'value2' },
 		});
 	});
 	it('should update all custom fields from the validCustomFields array without issues', async () => {
@@ -94,7 +94,13 @@ describe('[Custom Fields] updateContactsCustomFields', () => {
 		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
 		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
-			$set: { customFields: { field1: 'newValue', field2: 'value2', field3: 'value3', field4: 'value4', field5: 'value5' } },
+			$set: {
+				'customFields.field1': 'newValue',
+				'customFields.field2': 'value2',
+				'customFields.field3': 'value3',
+				'customFields.field4': 'value4',
+				'customFields.field5': 'value5',
+			},
 		});
 	});
 });

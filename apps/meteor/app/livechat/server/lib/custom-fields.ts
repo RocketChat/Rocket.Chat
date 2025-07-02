@@ -30,18 +30,14 @@ export async function updateContactsCustomFields(
 	const contactCustomFieldsToUpdate = validCustomFields.reduce(
 		(prev, curr) => {
 			if (curr.overwrite || !contact?.customFields?.[curr.key]) {
-				prev.customFields ??= {};
-				prev.customFields[curr.key] = curr.value;
+				prev[`customFields.${curr.key}`] = curr.value;
 				return prev;
 			}
-			prev.conflictingFields ??= [];
+			prev.conflictingFields ??= contact.conflictingFields || [];
 			prev.conflictingFields.push({ field: `customFields.${curr.key}`, value: curr.value });
 			return prev;
 		},
-		{} as {
-			customFields?: Record<string, string>;
-			conflictingFields?: Array<{ field: `customFields.${string}`; value: string }>;
-		},
+		{} as Record<string, any>,
 	);
 
 	if (!Object.keys(contactCustomFieldsToUpdate).length) {
