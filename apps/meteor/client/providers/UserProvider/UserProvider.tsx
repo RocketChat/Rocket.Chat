@@ -82,13 +82,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			}),
 			querySubscriptions: createReactiveSubscriptionFactory<SubscriptionWithRoom[]>((query, options) => {
 				if (userId) {
-					const predicate = createPredicateFromFilter(query);
-					const subs = Subscriptions.state.filter(predicate);
-
-					if (options?.sort || options?.limit || options?.skip) {
-						return applyQueryOptions(subs, options);
-					}
-					return subs;
+					return Subscriptions.find(query, options).fetch();
 				}
 				// Anonnymous users don't have subscriptions. Fetch Rooms instead.
 				const predicate = createPredicateFromFilter(query);
