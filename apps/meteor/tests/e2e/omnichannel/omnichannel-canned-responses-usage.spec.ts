@@ -164,7 +164,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		await test.step('expect to modify the canned response text before sending', async () => {
 			await agent.poHomeChannel.content.inputMessage.click();
 			await agent.page.keyboard.press('End');
-			await agent.page.keyboard.type(modifiedText);
+			await agent.poHomeChannel.content.inputMessage.pressSequentially(modifiedText);
 
 			await expect(agent.poHomeChannel.content.inputMessage).toHaveValue(`${cannedResponseText} ${modifiedText}`);
 		});
