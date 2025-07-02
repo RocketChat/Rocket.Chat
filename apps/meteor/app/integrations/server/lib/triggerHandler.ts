@@ -265,13 +265,12 @@ class RocketChatIntegrationHandler {
 		const userWithoutServicesField = user?.services ? omitServicesField(user) : user;
 		const ownerWithoutServicesField = owner?.services ? omitServicesField(owner) : owner;
 
-		if (!room || !message) {
-			outgoingLogger.warn({ msg: 'Integration called without room or message', event });
-			return;
-		}
-
 		switch (event) {
 			case 'sendMessage':
+				if (!room || !message) {
+					outgoingLogger.warn({ msg: 'Integration called without room or message', event });
+					return;
+				}
 				data.channel_id = room._id;
 				data.channel_name = room.name;
 				data.message_id = message._id;
@@ -298,6 +297,10 @@ class RocketChatIntegrationHandler {
 				}
 				break;
 			case 'fileUploaded':
+				if (!room || !message) {
+					outgoingLogger.warn({ msg: 'Integration called without room or message', event });
+					return;
+				}
 				data.channel_id = room._id;
 				data.channel_name = room.name;
 				data.message_id = message._id;
@@ -318,8 +321,8 @@ class RocketChatIntegrationHandler {
 				}
 				break;
 			case 'roomCreated':
-				if (!owner) {
-					outgoingLogger.warn({ msg: 'Integration called without owner data', event });
+				if (!room || !owner) {
+					outgoingLogger.warn({ msg: 'Integration called without owner data or room', event });
 					return;
 				}
 				data.channel_id = room._id;
@@ -333,8 +336,8 @@ class RocketChatIntegrationHandler {
 			case 'roomArchived':
 			case 'roomJoined':
 			case 'roomLeft':
-				if (!user) {
-					outgoingLogger.warn({ msg: 'Integration called without owner data', event });
+				if (!room || !user) {
+					outgoingLogger.warn({ msg: 'Integration called without user data or room', event });
 					return;
 				}
 				data.timestamp = new Date();
@@ -351,7 +354,7 @@ class RocketChatIntegrationHandler {
 				break;
 			case 'userCreated':
 				if (!user) {
-					outgoingLogger.warn({ msg: 'Integration called without owner data', event });
+					outgoingLogger.warn({ msg: 'Integration called without user data', event });
 					return;
 				}
 				data.timestamp = user.createdAt;
