@@ -20,10 +20,14 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.0",
+		"@babel/core": "~7.26.10",
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
+		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "^0.0.0-dev-20250528192456",
+		"@rocket.chat/fuselage": "^0.64.0",
+		"@rocket.chat/fuselage-hooks": "^0.36.0",
+		"@rocket.chat/fuselage-polyfills": "~0.31.25",
+		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -36,24 +40,26 @@
 		"@storybook/react": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
 		"@types/jest": "~29.5.14",
-		"@types/react": "~18.3.17",
-		"@types/react-dom": "~18.3.5",
+		"@types/react": "~18.3.23",
+		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
-		"eslint-plugin-react": "~7.37.2",
+		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
-		"eslint-plugin-storybook": "^0.11.4",
-		"jest": "~30.0.0",
+		"eslint-plugin-storybook": "^0.11.6",
+		"jest": "~30.0.2",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
+		"react-virtuoso": "^4.12.0",
 		"storybook": "^8.6.14",
-		"typescript": "~5.8.3"
+		"typescript": "~5.8.3",
+		"webpack": "~5.99.9"
 	},
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/icons": "*",
-		"react": "^17.0.2",
-		"react-dom": "^17.0.2"
+		"react": "*",
+		"react-dom": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"

@@ -1,8 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { useSyncExternalStore } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 import { getConfig } from './utils/getConfig';
+import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));
@@ -130,3 +131,19 @@ const subscribeOpenedRoom = [
 ] as const;
 
 export const useOpenedRoom = (): IRoom['_id'] | undefined => useSyncExternalStore(...subscribeOpenedRoom);
+
+export const useOpenedRoomUnreadSince = (): Date | undefined => {
+	const rid = useOpenedRoom();
+
+	const { subscribe, getSnapshotValue } = useMemo(() => {
+		if (!rid) {
+			return {
+				subscribe: () => () => void 0,
+				getSnapshotValue: () => undefined,
+			};
+		}
+		return LegacyRoomManager.listenRoomPropsByRid(rid, 'unreadSince');
+	}, [rid]);
+
+	return useSyncExternalStore(subscribe, getSnapshotValue);
+};
