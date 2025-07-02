@@ -1066,7 +1066,7 @@ const StatisticsListSchema = {
 
 export const isStatisticsListProps = ajv.compile<StatisticsListProps>(StatisticsListSchema);
 
-API.v1.get(
+const statisticsListEndpoints = API.v1.get(
 	'statistics.list',
 	{
 		authRequired: true,
@@ -2206,9 +2206,13 @@ API.v1.post(
 
 type StatisticsEndpoint = ExtractRoutesFromAPI<typeof statisticsEndpoints>;
 
-export type StatisticsEndpoints = StatisticsEndpoint;
+type StatisticsListEndpoints = ExtractRoutesFromAPI<typeof statisticsListEndpoints>;
+
+export type StatisticsEndpoints = StatisticsEndpoint | StatisticsListEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends StatisticsEndpoint {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends StatisticsListEndpoints {}
 }
