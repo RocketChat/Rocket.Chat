@@ -85,6 +85,20 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSendMessage(fromId, { rid, msg });
 	}
 
+	async saveMessageFromFederation({
+		fromId,
+		rid,
+		msg,
+		federation_event_id,
+	}: {
+		fromId: string;
+		rid: string;
+		msg: string;
+		federation_event_id: string;
+	}): Promise<IMessage> {
+		return executeSendMessage(fromId, { rid, msg, federation: { eventId: federation_event_id } });
+	}
+
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
 		return sendMessage(user, message, room, upsert);
 	}
@@ -175,9 +189,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
-		if (!FederationActions.shouldPerformAction(message, room)) {
-			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
-		}
+		// TODO: Adjust this to check for new federation service too
+		// if (!FederationActions.shouldPerformAction(message, room)) {
+		// 	throw new FederationMatrixInvalidConfigurationError('Unable to send message');
+		// }
 
 		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
