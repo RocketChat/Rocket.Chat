@@ -88,6 +88,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				const localUserId = await Users.findOneByUsername(member);
 				if (localUserId) {
 					await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, true, matrixDomain);
+					continue;
 				}
 
 				// We are not generating bridged users for members outside of the current workspace
@@ -98,6 +99,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Room creation completed successfully', room._id);
 		} catch (error) {
+			console.log(error);
 			this.logger.error('Failed to create room:', error);
 			throw error;
 		}
