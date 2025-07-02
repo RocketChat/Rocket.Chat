@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/models",
-	"version": "1.5.5-rc.5",
+	"version": "1.5.5-rc.6",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
