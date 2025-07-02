@@ -21,7 +21,7 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { applyQueryOptions } from '../../lib/cachedCollections/pipe';
+import { applyQueryOptions } from '../../lib/cachedCollections';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
