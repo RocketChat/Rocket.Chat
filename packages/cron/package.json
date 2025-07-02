@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.1.26",
+	"version": "0.1.27",
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",

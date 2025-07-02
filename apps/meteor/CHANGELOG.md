@@ -1,5 +1,40 @@
 # @rocket.chat/meteor
 
+## 7.7.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.3
+  - @rocket.chat/rest-typings@7.7.3
+  - @rocket.chat/license@1.0.18
+  - @rocket.chat/omnichannel-services@0.3.24
+  - @rocket.chat/pdf-worker@0.3.6
+  - @rocket.chat/presence@0.2.27
+  - @rocket.chat/api-client@0.2.27
+  - @rocket.chat/apps@0.5.6
+  - @rocket.chat/core-services@0.9.6
+  - @rocket.chat/cron@0.1.27
+  - @rocket.chat/freeswitch@1.2.14
+  - @rocket.chat/fuselage-ui-kit@19.0.3
+  - @rocket.chat/gazzodown@19.0.3
+  - @rocket.chat/model-typings@1.6.6
+  - @rocket.chat/ui-contexts@19.0.3
+  - @rocket.chat/models@1.5.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.6
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@15.0.3
+  - @rocket.chat/ui-client@19.0.3
+  - @rocket.chat/ui-video-conf@19.0.3
+  - @rocket.chat/ui-voip@9.0.3
+  - @rocket.chat/web-ui-registration@19.0.3
+  - @rocket.chat/instance-status@0.1.27
+  </details>
+
 ## 7.7.2
 
 ### Patch Changes
