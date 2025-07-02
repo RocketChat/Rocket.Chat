@@ -4,6 +4,7 @@ import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
 import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
@@ -23,7 +24,7 @@ const StatisticsSchema = {
 
 export const isStatisticsProps = ajv.compile<StatisticsProps>(StatisticsSchema);
 
-API.v1.get(
+const statisticsEndpoints = API.v1.get(
 	'statistics',
 	{
 		authRequired: true,
@@ -1022,7 +1023,7 @@ API.v1.get(
 			}),
 		},
 	},
-	async function () {
+	async function action() {
 		const { refresh = 'false' } = this.queryParams;
 		return API.v1.success(
 			await getLastStatistics({
@@ -2202,3 +2203,12 @@ API.v1.post(
 		return API.v1.success();
 	},
 );
+
+type StatisticsEndpoint = ExtractRoutesFromAPI<typeof statisticsEndpoints>;
+
+export type StatisticsEndpoints = StatisticsEndpoint;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends StatisticsEndpoint {}
+}
