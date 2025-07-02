@@ -1,20 +1,129 @@
 import type { Emitter } from '@rocket.chat/emitter';
 import type { HomeserverEventSignatures } from '@rocket.chat/homeserver';
+import { Message } from '@rocket.chat/core-services';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Logger } from '@rocket.chat/logger';
+
+const logger = new Logger('federation-matrix:message');
 
 export function message(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.message', async (data) => {
-		console.log('Received Matrix message event:', {
-			event_id: data.event_id,
-			room_id: data.room_id,
-			sender: data.sender,
-			body: data.content.body,
-		});
+		try {
+			logger.info('Received Matrix message event:', {
+				event_id: data.event_id,
+				room_id: data.room_id,
+				sender: data.sender,
+			});
 
-		// await Message.receiveMessageFromFederation({
-		// 	fromId: data.sender,
-		// 	rid: data.room_id,
-		// 	msg: data.content.body,
-		// 	federation_event_id: data.event_id,
-		// });
+			const message = data.event.content?.body?.toString();
+			if (!message) {
+				logger.debug('No message found in event content');
+				return;
+			}
+
+			const [userPart, domain] = data.sender.split(':');
+			if (!userPart || !domain) {
+				logger.error('Invalid Matrix sender ID format:', data.sender);
+				return;
+			}
+			const username = userPart.substring(1);
+
+			let user = await Users.findOneByUsername(data.sender);
+
+			if (!user) {
+				logger.info('Creating new federated user:', { username: data.sender, externalId: data.sender });
+
+				const userData: Partial<IUser> = {
+					username: data.sender,
+					name: username, // TODO: Fetch display name from Matrix profile
+					type: 'user',
+					status: UserStatus.ONLINE,
+					active: true,
+					roles: ['user'],
+					requirePasswordChange: false,
+					federated: true, // Mark as federated user
+					createdAt: new Date(),
+					_updatedAt: new Date(),
+				};
+
+				const { insertedId } = await Users.insertOne(userData as IUser);
+
+				await MatrixBridgedUser.createOrUpdateByLocalId(
+					insertedId,
+					data.sender,
+					true, // isRemote = true for external Matrix users
+					domain,
+				);
+
+				user = await Users.findOneById(insertedId);
+				if (!user) {
+					logger.error('Failed to create user:', data.sender);
+					return;
+				}
+
+				logger.info('Successfully created federated user:', { userId: user._id, username });
+			} else {
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, data.sender, true, domain);
+			}
+
+			const internalRoomId = await MatrixBridgedRoom.getLocalRoomId(data.room_id);
+			if (!internalRoomId) {
+				logger.error('Room not found in bridge mapping:', data.room_id);
+				// TODO: Handle room creation for unknown federated rooms
+				return;
+			}
+
+			const room = await Rooms.findOneById(internalRoomId);
+			if (!room) {
+				logger.error('Room not found:', internalRoomId);
+				return;
+			}
+
+			if (!room.federated) {
+				logger.error('Room is not marked as federated:', { roomId: room._id, matrixRoomId: data.room_id });
+				// TODO: Should we update the room to be federated?
+			}
+
+			const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+
+			if (!existingSubscription) {
+				logger.info('Creating subscription for federated user in room:', { userId: user._id, roomId: room._id });
+
+				const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
+					ts: new Date(),
+					open: false,
+					alert: false,
+					unread: 0,
+					userMentions: 0,
+					groupMentions: 0,
+					// Federation status is inherited from room.federated and user.federated
+				});
+
+				if (insertedId) {
+					logger.debug('Successfully created subscription:', insertedId);
+					// TODO: Import and use notifyOnSubscriptionChangedById if needed
+					// void notifyOnSubscriptionChangedById(insertedId, 'inserted');
+				}
+			}
+
+			logger.info('Saving federated message:', {
+				fromId: user._id,
+				roomId: internalRoomId,
+				eventId: data.event_id,
+			});
+
+			await Message.saveMessageFromFederation({
+				fromId: user._id,
+				rid: internalRoomId,
+				msg: message,
+				federation_event_id: data.event_id,
+			});
+
+			logger.debug('Successfully processed Matrix message');
+		} catch (error) {
+			logger.error('Error processing Matrix message:', error);
+		}
 	});
 }
