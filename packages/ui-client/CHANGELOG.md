@@ -1,5 +1,15 @@
 # @rocket.chat/ui-client
 
+## 20.0.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.7
+  - @rocket.chat/ui-avatar@16.0.0-rc.7
+  </details>
+
 ## 20.0.0-rc.6
 
 ### Patch Changes
