@@ -1,6 +1,6 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import type { FindOptions, SchemaMember } from 'mongodb';
 
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
 import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
@@ -14,8 +14,8 @@ const StatisticsSchema = {
 	type: 'object',
 	properties: {
 		refresh: {
-			type: 'string',
-			nullable: true,
+			enum: ['true', 'false'],
+			default: 'false',
 		},
 	},
 	required: [],
@@ -1034,33 +1034,50 @@ const statisticsEndpoints = API.v1.get(
 	},
 );
 
-type StatisticsListProps = PaginatedRequest<{ fields?: string }>;
+type StatisticsListProps = {
+	offset: number;
+	count?: number;
+	sort?: FindOptions<IStats>['sort'];
+	fields?: SchemaMember<IStats, number | boolean>;
+	query?: Record<string, any>;
+};
 
 const StatisticsListSchema = {
 	type: 'object',
 	properties: {
-		fields: {
-			type: 'string',
-			nullable: true,
+		offset: {
+			type: 'number',
+			default: 0,
+			minimum: 0,
 		},
 		count: {
 			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
+			default: 100,
+			minimum: 1,
 		},
 		sort: {
-			type: 'string',
+			type: 'object',
 			nullable: true,
+			additionalProperties: {
+				type: 'integer',
+				enum: [1, -1],
+			},
+		},
+		fields: {
+			type: 'object',
+			nullable: true,
+			additionalProperties: {
+				type: 'integer',
+				enum: [0, 1],
+			},
 		},
 		query: {
-			type: 'string',
+			type: 'object',
 			nullable: true,
+			additionalProperties: true,
 		},
 	},
-	required: [],
+	required: ['offset'],
 	additionalProperties: false,
 };
 
@@ -1072,11 +1089,7 @@ const statisticsListEndpoints = API.v1.get(
 		authRequired: true,
 		query: isStatisticsListProps,
 		response: {
-			200: ajv.compile<
-				PaginatedResult<{
-					statistics: IStats[];
-				}>
-			>({
+			200: ajv.compile<{ statistics: IStats[]; count: number; offset: number; total: number }>({
 				type: 'object',
 				properties: {
 					statistics: {
