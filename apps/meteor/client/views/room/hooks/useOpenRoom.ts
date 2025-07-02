@@ -35,7 +35,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			let roomData;
+			let roomData: IRoom;
 			try {
 				roomData = await getRoomByTypeAndName(type, reference);
 			} catch (error) {
@@ -60,16 +60,11 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			const { Rooms, Subscriptions } = await import('../../../../app/models/client');
 
-			Rooms.state.update(
-				(record) => record._id === roomData._id,
-				(record) => {
-					const unsetKeys = getObjectKeys(roomFields).filter((key) => key in roomData) as (keyof IRoom)[];
-					unsetKeys.forEach((key) => {
-						delete record[key];
-					});
-					return { ...record, ...roomData };
-				},
-			);
+			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
+			unsetKeys.forEach((key) => {
+				delete roomData[key];
+			});
+			Rooms.state.store(roomData);
 
 			const room = Rooms.state.get(roomData._id);
 
