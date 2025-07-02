@@ -29,11 +29,7 @@ export function useRoomQuery(
 	const { refetch } = queryResult;
 
 	useEffect(() => {
-		Rooms.use.subscribe((state, prevState) => {
-			if (state.records.size !== prevState.records.size) {
-				refetch();
-			}
-		});
+		Rooms.use.subscribe(() => refetch());
 	}, [refetch, rid]);
 
 	return queryResult;
