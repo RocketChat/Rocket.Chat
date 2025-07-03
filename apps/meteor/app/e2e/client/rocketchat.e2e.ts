@@ -556,7 +556,7 @@ class E2E extends Emitter {
 		}
 	}
 
-	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string) => void) {
+	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string, errorFn: (msg: string) => void, errorMsg: string) => void) {
 		imperativeModal.open({
 			component: EnterE2EPasswordModal,
 			props: {
@@ -567,18 +567,26 @@ class E2E extends Emitter {
 					this.closeAlert();
 					imperativeModal.close();
 				},
-				onConfirm: (password) => {
-					onEnterE2EEPassword?.(password);
-					this.closeAlert();
-					imperativeModal.close();
+				onConfirm: (password, errorFn: (msg: string) => void, errorMsg: string) => {
+					onEnterE2EEPassword?.(password, errorFn, errorMsg);
 				},
 			},
 		});
 	}
 
-	async requestPasswordAlert(): Promise<string> {
+	async requestPasswordAlert(privateKey: string): Promise<string> {
 		return new Promise((resolve) => {
-			const showModal = () => this.openEnterE2EEPasswordModal((password) => resolve(password));
+			const showModal = () =>
+				this.openEnterE2EEPasswordModal(async (password: string, _errorFn: (msg: string) => void, errorMsg: string) => {
+					try {
+						await this.checkPasswordWithPrivateKey(password, privateKey);
+						this.closeAlert();
+						imperativeModal.close();
+						resolve(password);
+					} catch (e) {
+						_errorFn(errorMsg);
+					}
+				});
 
 			const showAlert = () => {
 				this.openAlert({
@@ -602,11 +610,29 @@ class E2E extends Emitter {
 	}
 
 	async requestPasswordModal(): Promise<string> {
-		return new Promise((resolve) => this.openEnterE2EEPasswordModal((password) => resolve(password)));
+		return new Promise((resolve) =>
+			this.openEnterE2EEPasswordModal(async (password, _errorFn: (msg: string) => void, errorMsg: string) => {
+				try {
+					await this.checkPassword(password);
+					this.closeAlert();
+					imperativeModal.close();
+					resolve(password);
+				} catch (e) {
+					_errorFn(errorMsg);
+				}
+			}),
+		);
 	}
 
 	async decodePrivateKeyFlow() {
-		const password = await this.requestPasswordModal();
+		return this.requestPasswordModal();
+	}
+
+	async decodePrivateKey(privateKey: string): Promise<string> {
+		return this.requestPasswordAlert(privateKey);
+	}
+
+	async checkPassword(password: string) {
 		const masterKey = await this.getMasterKey(password);
 
 		if (!this.db_private_key) {
@@ -632,15 +658,11 @@ class E2E extends Emitter {
 			dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
 		} catch (error) {
 			this.setState(E2EEState.ENTER_PASSWORD);
-			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
-			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
 			throw new Error('E2E -> Error decrypting private key');
 		}
 	}
 
-	async decodePrivateKey(privateKey: string): Promise<string> {
-		const password = await this.requestPasswordAlert();
-
+	private async checkPasswordWithPrivateKey(password: string, privateKey: string) {
 		const masterKey = await this.getMasterKey(password);
 
 		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(privateKey));
@@ -653,8 +675,6 @@ class E2E extends Emitter {
 			return toString(privKey);
 		} catch (error) {
 			this.setState(E2EEState.ENTER_PASSWORD);
-			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
-			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
 			throw new Error('E2E -> Error decrypting private key');
 		}
 	}
