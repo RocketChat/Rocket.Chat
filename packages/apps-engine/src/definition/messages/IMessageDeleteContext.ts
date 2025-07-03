@@ -1,4 +1,4 @@
-import type { IMessage } from '.';
+import type { IMessage } from './index.ts';
 import type { IUser } from '../users';
 
 /**
