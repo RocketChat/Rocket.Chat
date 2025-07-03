@@ -2,8 +2,6 @@
 "@rocket.chat/meteor": patch
 ---
 
-Adds `imgAlt`, `imgWidth`, and `imgHeight` props to the `GenericUpsellModal` component.
-
-These new props improve the accessibility of upsell modals by providing alternative text for images (`imgAlt`) and help prevent layout shifts during image loading by allowing fixed dimensions to be specified (`imgWidth` and `imgHeight`).
+Adds `imgAlt`, `imgWidth`, and `imgHeight` props to the `GenericUpsellModal` in order to improve the accessibility of upsell modals by providing alternative text for images and preventing layout shifts during image loading by allowing fixed dimensions.
 
 
