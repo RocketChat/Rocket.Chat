@@ -28,7 +28,7 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 		<Modal
 			aria-labelledby={`${fileUploadFormId}-title`}
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(({ name }) => onSubmit(name))} {...props} />
+				<Box is='form' id={fileUploadFormId} onSubmit={handleSubmit(({ name }) => (!isDirty ? onClose() : onSubmit(name)))} {...props} />
 			)}
 		>
 			<Box display='flex' flexDirection='column' height='100%'>
@@ -64,7 +64,7 @@ const FileUploadModal = ({ onClose, file, fileName, onSubmit }: FileUploadModalP
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' loading={isSubmitting} disabled={!isDirty}>
+						<Button primary type='submit' loading={isSubmitting}>
 							{t('Update')}
 						</Button>
 					</Modal.FooterControllers>
