@@ -85,10 +85,15 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					continue;
 				}
 
-				const localUserId = await Users.findOneByUsername(member);
-				if (localUserId) {
-					await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, true, matrixDomain);
-					continue;
+				try {
+					// TODO: Check if it is external user - split domain etc
+					const localUserId = await Users.findOneByUsername(member);
+					if (localUserId) {
+						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, true, matrixDomain);
+						// continue;
+					}
+				} catch (error) {
+					this.logger.error('Error creating or updating bridged user:', error);
 				}
 
 				// We are not generating bridged users for members outside of the current workspace
