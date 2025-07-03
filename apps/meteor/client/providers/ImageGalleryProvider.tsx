@@ -30,7 +30,7 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 				 * SOLUTION: We likely need to store the individual file ID within each attachment element
 				 * and use the initially passed first ID as a fallback for older records.
 				 */
-				const idFromSrc = target.dataset.src?.split('/file-upload/')[1].split('/')[0];
+				const idFromSrc = target.dataset.src?.split('/file-upload/')[1]?.split('/')[0];
 
 				const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
 				return setImageId(idFromSrc || target.dataset.id || id);
