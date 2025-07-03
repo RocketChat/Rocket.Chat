@@ -1,4 +1,4 @@
-import type { ILivechatContact, ILivechatCustomField } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatCustomField, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { LivechatContacts, LivechatCustomField, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
 import { livechatLogger } from './logger';
@@ -94,4 +94,121 @@ export async function setCustomFields({
 	}
 
 	return result.modifiedCount;
+}
+
+export async function setMultipleVisitorCustomFields(
+	visitor: ILivechatVisitor,
+	customFields: {
+		key: string;
+		value: string;
+		overwrite: boolean;
+	}[],
+) {
+	const keys = customFields.map((field) => field.key);
+
+	const livechatCustomFields = await LivechatCustomField.findByScope('visitor', { projection: { _id: 1, required: 1 } }, false).toArray();
+	validateRequiredCustomFields(keys, livechatCustomFields);
+
+	const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
+	const validCustomFields = customFields.filter((cf) => matchingCustomFields.find((mcf) => cf.key === mcf._id));
+	if (!validCustomFields.length) {
+		return false;
+	}
+
+	const visitorCustomFieldsToUpdate = validCustomFields.reduce(
+		(prev, curr) => {
+			if (curr.overwrite) {
+				prev[`livechatData.${curr.key}`] = curr.value;
+				return prev;
+			}
+
+			if (!visitor?.livechatData?.[curr.key]) {
+				prev[`livechatData.${curr.key}`] = curr.value;
+			}
+
+			return prev;
+		},
+		{} as Record<string, string>,
+	);
+
+	if (Object.keys(visitorCustomFieldsToUpdate).length) {
+		await LivechatVisitors.updateAllLivechatDataByToken(visitor.token, visitorCustomFieldsToUpdate);
+	}
+
+	const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+	if (contacts.length) {
+		await Promise.all(contacts.map((contact) => updateContactsCustomFields(contact, validCustomFields)));
+	}
+
+	if (validCustomFields.length !== keys.length) {
+		livechatLogger.warn({
+			msg: 'Some custom fields were not processed',
+			visitorId: visitor._id,
+			missingKeys: keys.filter((key) => !validCustomFields.map((v) => v.key).includes(key)),
+		});
+	}
+
+	return true;
+}
+
+export async function setMultipleCustomFields({
+	visitor,
+	customFields,
+}: {
+	visitor: ILivechatVisitor;
+	customFields: {
+		key: string;
+		value: string;
+		overwrite: boolean;
+	}[];
+}): Promise<
+	{
+		key: string;
+		value: string;
+		overwrite: boolean;
+	}[]
+> {
+	livechatLogger.debug(`Setting custom fields data for visitor with token ${visitor.token}`);
+
+	const dbFields = await LivechatCustomField.findByScope('room', { projection: { _id: 1, required: 1, regexp: 1 } }).toArray();
+	if (!dbFields.length) {
+		throw new Error('invalid-custom-field');
+	}
+
+	const { visitorFields, roomFields } = customFields.reduce(
+		(prev, customField) => {
+			const dbField = dbFields.find((customF) => customF._id === customField.key);
+			if (!dbField || dbField.scope === 'visitor') {
+				prev.visitorFields ??= [];
+				prev.visitorFields.push(customField);
+				return prev;
+			}
+			if (dbField.regexp !== undefined && dbField.regexp !== '') {
+				const regexp = new RegExp(dbField.regexp);
+				if (!regexp.test(customField.value)) {
+					throw new Error(i18n.t('error-invalid-custom-field-value', { field: dbField._id }));
+				}
+			}
+
+			prev.roomFields ??= [];
+			prev.roomFields.push(customField);
+			return prev;
+		},
+		{} as {
+			visitorFields: { key: string; value: string; overwrite: boolean }[];
+			roomFields: { key: string; value: string; overwrite: boolean }[];
+		},
+	);
+
+	if (roomFields?.length) {
+		await Promise.all(roomFields.map(({ key, value, overwrite }) => LivechatRooms.updateDataByToken(visitor.token, key, value, overwrite)));
+		livechatLogger.debug({ msg: 'Custom fields for room updated', visitor, roomFields });
+	}
+
+	if (visitorFields.length) {
+		await setMultipleVisitorCustomFields(visitor, visitorFields);
+		livechatLogger.debug({ msg: 'Custom fields for visitor updated', visitor, visitorFields });
+	}
+
+	return [...roomFields, ...visitorFields];
 }
