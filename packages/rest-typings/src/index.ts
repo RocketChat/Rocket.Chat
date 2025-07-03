@@ -49,7 +49,6 @@ import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
-import type { WebdavEndpoints } from './v1/webdav';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
@@ -92,7 +91,6 @@ export interface Endpoints
 		AssetsEndpoints,
 		EmailInboxEndpoints,
 		MailerEndpoints,
-		WebdavEndpoints,
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
