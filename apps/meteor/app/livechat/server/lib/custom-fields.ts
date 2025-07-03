@@ -44,7 +44,6 @@ export async function updateContactsCustomFields(
 		return;
 	}
 
-	// TODO: model method
 	livechatLogger.debug({ msg: 'Updating custom fields for contact', contactId: contact._id, contactCustomFieldsToUpdate });
 	await LivechatContacts.updateById(contact._id, { $set: contactCustomFieldsToUpdate });
 }
