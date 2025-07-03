@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
+import { composeStories } from '@storybook/react';
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -7,8 +9,11 @@ import type { ComponentProps } from 'react';
 import { forwardRef, useImperativeHandle } from 'react';
 
 import RecipientStep from './RecipientStep';
+import * as stories from './RecipientStep.stories';
 import type { RecipientFormRef } from '../forms/RecipientForm';
 import type RecipientForm from '../forms/RecipientForm';
+
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 const mockSubmit = jest.fn();
 
@@ -17,14 +22,6 @@ jest.mock('../forms/RecipientForm', () => ({
 	default: forwardRef<RecipientFormRef, ComponentProps<typeof RecipientForm>>((_, ref) => {
 		useImperativeHandle(ref, () => ({ submit: mockSubmit }));
 		return <form name='recipient-form' />;
-	}),
-}));
-
-const mockUpsellModalOpen = jest.fn();
-jest.mock('../../../modals/OutboundMessageUpsellModal', () => ({
-	useOutboundMessageUpsellModal: () => ({
-		open: mockUpsellModalOpen,
-		close: jest.fn(),
 	}),
 }));
 
@@ -54,8 +51,14 @@ describe('RecipientStep', () => {
 		jest.clearAllMocks();
 	});
 
-	it('should pass accessibility tests', async () => {
-		const { container } = render(<RecipientStep onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
+	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+		const view = render(<Story />, { wrapper: mockAppRoot().build() });
+		expect(view.baseElement).toMatchSnapshot();
+	});
+
+	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+		const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
+
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
 	});
@@ -70,7 +73,6 @@ describe('RecipientStep', () => {
 		await userEvent.click(screen.getByRole('button', { name: 'Next' }));
 
 		await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expectedPayload));
-		await waitFor(() => expect(mockUpsellModalOpen).not.toHaveBeenCalled());
 	});
 
 	it('should not call onSubmit and prevent default when form submission rejects', async () => {
