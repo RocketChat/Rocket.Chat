@@ -1,4 +1,4 @@
-import { equals, isObject, flatSome, some, isEmptyArray } from './comparisons';
+import { equals, isEmptyArray } from './comparisons';
 
 describe('equals', () => {
 	it('should return true if two numbers are equal', () => {
@@ -53,64 +53,6 @@ describe('equals', () => {
 		const obj2 = { a: 1 };
 
 		expect(equals(obj, obj2)).toBe(true);
-	});
-});
-
-describe('isObject', () => {
-	it('should return true if value is an object or function', () => {
-		const obj = {};
-		const func = (a: any): any => a;
-
-		expect(isObject(obj)).toBe(true);
-		expect(isObject(func)).toBe(true);
-	});
-
-	it('should return false for other data types', () => {
-		expect(isObject(1)).toBe(false);
-		expect(isObject(true)).toBe(false);
-		expect(isObject('212')).toBe(false);
-	});
-});
-
-describe('flatSome', () => {
-	it('should run .some on array', () => {
-		const arr = [1, 2, 4, 6, 9];
-		const isEven = (v: number): boolean => v % 2 === 0;
-
-		expect(flatSome(arr, isEven)).toBe(true);
-	});
-
-	it('should run the function on the value when its not an array', () => {
-		const val = 1;
-		const isEven = (v: number): boolean => v % 2 === 0;
-
-		expect(flatSome(val, isEven)).toBe(false);
-	});
-});
-
-describe('some', () => {
-	it('should run .some on array', () => {
-		const arr = [1, 2, 4, 6, 9];
-		const isEven = (v: number | number[]): boolean => {
-			if (Array.isArray(v)) {
-				return false;
-			}
-			return v % 2 === 0;
-		};
-
-		expect(some(arr, isEven)).toBe(true);
-	});
-
-	it('should run the function on the value when its not an array', () => {
-		const val = 1;
-		const isEven = (v: number | number[]): boolean => {
-			if (Array.isArray(v)) {
-				return false;
-			}
-			return v % 2 === 0;
-		};
-
-		expect(some(val, isEven)).toBe(false);
 	});
 });
 

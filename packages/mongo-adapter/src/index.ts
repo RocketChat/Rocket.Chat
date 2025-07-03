@@ -1,5 +1,4 @@
-export { FieldExpression, Filter, Sort, LookupBranch, ArrayIndices } from './types';
-export { getBSONType, compareBSONValues } from './bson';
-export { createLookupFunction } from './lookups';
-export { createPredicateFromFilter } from './filter';
+export { FieldExpression, Filter, Sort, ArrayIndices } from './types';
+export { getBSONType } from './bson';
+export { createPredicateFromFilter, createDocumentMatcherFromFilter } from './filter';
 export { createComparatorFromSort } from './sort';

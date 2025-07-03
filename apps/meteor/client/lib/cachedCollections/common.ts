@@ -1,23 +1,74 @@
-import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
+import { getBSONType, type FieldExpression, type Filter } from '@rocket.chat/mongo-adapter';
 import { EJSON } from 'meteor/ejson';
 
 import { MinimongoError } from './MinimongoError';
 
 export const hasOwn = Object.prototype.hasOwnProperty;
 
-export function clone<T>(obj: T): T {
-	return EJSON.clone(obj);
-}
+export const { clone } = EJSON;
 
-export function isEqual<T>(
-	a: T,
-	b: T,
-	options?: {
-		keyOrderSensitive?: boolean | undefined;
-	},
-): boolean {
-	return EJSON.equals(a as any, b as any, options);
-}
+export const equals = <T>(a: T, b: T): boolean => {
+	if (a === b) {
+		return true;
+	}
+
+	if (!a || !b) {
+		return false;
+	}
+
+	if (typeof a !== 'object' || typeof b !== 'object') {
+		return false;
+	}
+
+	if (a instanceof Date && b instanceof Date) {
+		return a.valueOf() === b.valueOf();
+	}
+
+	if (a instanceof Uint8Array && b instanceof Uint8Array) {
+		if (a.length !== b.length) {
+			return false;
+		}
+		for (let i = 0; i < a.length; i++) {
+			if (a[i] !== b[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	if (Array.isArray(a)) {
+		if (!Array.isArray(b)) {
+			return false;
+		}
+
+		if (a.length !== b.length) {
+			return false;
+		}
+
+		for (let i = 0; i < a.length; i++) {
+			if (!equals(a[i], b[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	if (Object.keys(b).length !== Object.keys(a).length) {
+		return false;
+	}
+
+	for (const key of Object.keys(a)) {
+		if (!(key in b)) {
+			return false;
+		}
+
+		if (!equals((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])) {
+			return false;
+		}
+	}
+
+	return true;
+};
 
 function insertIntoDocument(document: any, key: any, value: any) {
 	Object.keys(document).forEach((existingKey) => {
@@ -34,38 +85,10 @@ function insertIntoDocument(document: any, key: any, value: any) {
 	document[key] = value;
 }
 
-export function isIndexable(obj: any): obj is { [index: string | number]: any } {
-	return Array.isArray(obj) || _isPlainObject(obj);
-}
+export const isIndexable = (obj: any): obj is { [index: string | number]: any } => Array.isArray(obj) || isPlainObject(obj);
 
 export function isNumericKey(s: string) {
 	return /^[0-9]+$/.test(s);
-}
-
-export function isOperatorObject<TOperators extends `$${string}`>(
-	valueSelector: unknown,
-	inconsistentOK = false,
-): valueSelector is Record<TOperators, any> {
-	if (!_isPlainObject(valueSelector)) {
-		return false;
-	}
-
-	let theseAreOperators: boolean | undefined = undefined;
-	for (const selKey of Object.keys(valueSelector)) {
-		const thisIsOperator = selKey.slice(0, 1) === '$' || selKey === 'diff';
-
-		if (theseAreOperators === undefined) {
-			theseAreOperators = thisIsOperator;
-		} else if (theseAreOperators !== thisIsOperator) {
-			if (!inconsistentOK) {
-				throw new Error(`Inconsistent operator: ${JSON.stringify(valueSelector)}`);
-			}
-
-			theseAreOperators = false;
-		}
-	}
-
-	return theseAreOperators ?? true;
 }
 
 function populateDocumentWithKeyValue<T extends { _id: string }>(document: Partial<T>, key: string, value: unknown) {
@@ -138,182 +161,10 @@ function validateObject(object: Record<string, unknown>, path: string) {
 	}
 }
 
-export const _f = {
-	_type(v: any) {
-		if (typeof v === 'number') {
-			return 1;
-		}
-
-		if (typeof v === 'string') {
-			return 2;
-		}
-
-		if (typeof v === 'boolean') {
-			return 8;
-		}
-
-		if (Array.isArray(v)) {
-			return 4;
-		}
-
-		if (v === null) {
-			return 10;
-		}
-
-		if (v instanceof RegExp) {
-			return 11;
-		}
-
-		if (typeof v === 'function') {
-			return 13;
-		}
-
-		if (v instanceof Date) {
-			return 9;
-		}
-
-		if (isBinary(v)) {
-			return 5;
-		}
-
-		return 3;
-	},
-
-	_equal(a: unknown, b: unknown) {
-		return isEqual(a, b, { keyOrderSensitive: true });
-	},
-
-	_typeorder(t: number) {
-		return [-1, 1, 2, 3, 4, 5, -1, 6, 7, 8, 0, 9, -1, 100, 2, 100, 1, 8, 1][t];
-	},
-
-	// eslint-disable-next-line complexity
-	_cmp(a: unknown, b: unknown): number {
-		if (a === undefined) {
-			return b === undefined ? 0 : -1;
-		}
-
-		if (b === undefined) {
-			return 1;
-		}
-
-		let ta = _f._type(a);
-		let tb = _f._type(b);
-
-		const oa = _f._typeorder(ta);
-		const ob = _f._typeorder(tb);
-
-		if (oa !== ob) {
-			return oa < ob ? -1 : 1;
-		}
-
-		if (ta !== tb) {
-			throw new MinimongoError('Missing type coercion logic in _cmp');
-		}
-
-		if (ta === 7) {
-			ta = 2;
-			tb = 2;
-			a = (a as { toHexString(): string }).toHexString();
-			b = (b as { toHexString(): string }).toHexString();
-		}
-
-		if (ta === 9) {
-			ta = 1;
-			tb = 1;
-			a = isNaN(a as number) ? 0 : (a as Date).getTime();
-			b = isNaN(b as number) ? 0 : (b as Date).getTime();
-		}
-
-		if (ta === 1) {
-			return (a as number) - (b as number);
-		}
-
-		if (tb === 2) {
-			if (a === b) {
-				return 0;
-			}
-
-			return (a as string) < (b as string) ? -1 : 1;
-		}
-
-		if (ta === 3) {
-			const toArray = (object: any) => {
-				const result: any[] = [];
-
-				Object.keys(object).forEach((key) => {
-					result.push(key, object[key]);
-				});
-
-				return result;
-			};
-
-			return _f._cmp(toArray(a), toArray(b));
-		}
-
-		if (ta === 4) {
-			for (let i = 0; ; i++) {
-				if (i === (a as unknown[]).length) {
-					return i === (b as unknown[]).length ? 0 : -1;
-				}
-
-				if (i === (b as unknown[]).length) {
-					return 1;
-				}
-
-				const s = _f._cmp((a as unknown[])[i], (b as unknown[])[i]);
-				if (s !== 0) {
-					return s;
-				}
-			}
-		}
-
-		if (ta === 5) {
-			if ((a as Uint8Array).length !== (b as Uint8Array).length) {
-				return (a as Uint8Array).length - (b as Uint8Array).length;
-			}
-
-			for (let i = 0; i < (a as Uint8Array).length; i++) {
-				if ((a as Uint8Array)[i] < (b as Uint8Array)[i]) {
-					return -1;
-				}
-
-				if ((a as Uint8Array)[i] > (b as Uint8Array)[i]) {
-					return 1;
-				}
-			}
-
-			return 0;
-		}
-
-		if (ta === 8) {
-			if (a) {
-				return b ? 0 : 1;
-			}
-
-			return b ? -1 : 0;
-		}
-
-		if (ta === 10) return 0;
-
-		if (ta === 11) throw new MinimongoError('Sorting not supported on regular expression');
-
-		if (ta === 13) throw new MinimongoError('Sorting not supported on Javascript code');
-
-		throw new MinimongoError('Unknown type to sort');
-	},
-};
-
-export function _isPlainObject(x: any): x is Record<string, any> {
-	return x && _f._type(x) === 3;
-}
+export const isPlainObject = (x: any): x is Record<string, any> => x && getBSONType(x) === 3;
 
 export function _selectorIsId(selector: unknown): selector is string {
 	return typeof selector === 'string';
-}
-
-export function isBinary(x: unknown): x is Uint8Array {
-	return typeof x === 'object' && x !== null && x instanceof Uint8Array;
 }
 
 export function entriesOf<T extends Record<string, any>>(obj: T): [keyof T, T[keyof T]][] {

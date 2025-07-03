@@ -8,7 +8,7 @@ import { MinimongoError } from './MinimongoError';
 import { ObserveHandle, ReactiveObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
 import type { Query, OrderedQuery, UnorderedQuery } from './Query';
-import { _isPlainObject, clone, hasOwn } from './common';
+import { isPlainObject, clone, hasOwn } from './common';
 import type { OrderedObserver, UnorderedObserver } from './observers';
 
 type Transform<T> = ((doc: T) => any) | null | undefined;
@@ -253,7 +253,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 
 			const transformed = Tracker.nonreactive(() => transform(doc));
 
-			if (!_isPlainObject(transformed)) {
+			if (!isPlainObject(transformed)) {
 				throw new MinimongoError('transform must return object');
 			}
 
