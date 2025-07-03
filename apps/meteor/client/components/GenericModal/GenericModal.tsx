@@ -9,7 +9,7 @@ import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
 import { modalStore } from '../../providers/ModalProvider/ModalStore';
 
-type VariantType = 'danger' | 'warning' | 'info' | 'success';
+type VariantType = 'danger' | 'warning' | 'info' | 'success' | 'upsell';
 
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
@@ -38,6 +38,7 @@ const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => 
 		case 'danger':
 			return { danger: true };
 		case 'warning':
+		case 'upsell':
 			return { primary: true };
 		default:
 			return {};
@@ -83,6 +84,8 @@ const GenericModal = ({
 
 	const dismissedRef = useRef(true);
 
+	const taglineColor = variant === 'upsell' ? 'annotation' : undefined;
+
 	const handleConfirm = useEffectEvent(() => {
 		dismissedRef.current = false;
 		onConfirm?.();
@@ -118,7 +121,7 @@ const GenericModal = ({
 			<Modal.Header>
 				{renderIcon(icon, variant)}
 				<Modal.HeaderText>
-					{tagline && <Modal.Tagline>{tagline}</Modal.Tagline>}
+					{tagline && <Modal.Tagline color={taglineColor}>{tagline}</Modal.Tagline>}
 					<Modal.Title id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</Modal.Title>
 				</Modal.HeaderText>
 				{onClose && <Modal.Close aria-label={t('Close')} onClick={handleCloseButtonClick} />}
