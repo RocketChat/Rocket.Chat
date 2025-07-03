@@ -299,9 +299,9 @@ describe('LIVECHAT - visitors', () => {
 		describe('visitor & contact custom fields', () => {
 			let visitor: ILivechatVisitor;
 			let room: IOmnichannelRoom;
-			const cf1 = `cf1-${Date.now()}`;
-			const cf2 = `cf2-${Date.now()}`;
-			const cf3 = `cf3-${Date.now()}`;
+			const cf1 = `cf1-${Date.now()}_1`;
+			const cf2 = `cf2-${Date.now()}_2`;
+			const cf3 = `cf3-${Date.now()}_3`;
 			before(async () => {
 				await createCustomField({
 					searchable: true,
