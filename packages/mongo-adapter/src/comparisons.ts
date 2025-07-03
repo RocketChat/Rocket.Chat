@@ -61,25 +61,6 @@ export const equals = <T>(a: T, b: T): boolean => {
 	return true;
 };
 
-export const isObject = (value: unknown): value is object => {
-	const type = typeof value;
-	return !!value && (type === 'object' || type === 'function');
-};
-
-export const flatSome = <T>(x: T[] | T, f: (x: T) => boolean): boolean => {
-	if (Array.isArray(x)) {
-		return x.some(f);
-	}
-
-	return f(x);
-};
-
-export const some = <T>(x: T | T[], f: (x: T | T[]) => boolean): boolean => {
-	if (f(x)) {
-		return true;
-	}
-
-	return Array.isArray(x) && x.some(f);
-};
-
 export const isEmptyArray = <T>(value: unknown): value is T[] & { length: 0 } => Array.isArray(value) && value.length === 0;
+
+export const isTruthy = <T>(x: T | null | undefined | 0 | false | ''): x is T => Boolean(x);

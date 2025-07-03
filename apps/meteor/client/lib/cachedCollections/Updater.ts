@@ -1,14 +1,14 @@
-import { createComparatorFromSort, createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import { createComparatorFromSort, createPredicateFromFilter, getBSONType } from '@rocket.chat/mongo-adapter';
 import type { ArrayIndices, Filter, Sort } from '@rocket.chat/mongo-adapter';
 
 import { MinimongoError } from './MinimongoError';
 import {
-	_f,
-	_isPlainObject,
+	isPlainObject,
 	assertHasValidFieldNames,
 	assertIsValidFieldName,
 	clone,
 	entriesOf,
+	equals,
 	isIndexable,
 	isNumericKey,
 	populateDocumentWithQueryFields,
@@ -24,7 +24,7 @@ export class Updater<T extends { _id: string }> {
 	constructor(private readonly modifier: UpdateFilter<T>) {}
 
 	modify(doc: T, { isInsert = false, arrayIndices }: { isInsert?: boolean; arrayIndices?: ArrayIndices } = {}): T {
-		if (!_isPlainObject(this.modifier)) {
+		if (!isPlainObject(this.modifier)) {
 			throw new MinimongoError('Modifier must be an object');
 		}
 
@@ -339,7 +339,7 @@ export class Updater<T extends { _id: string }> {
 				sortFunction = createComparatorFromSort(arg.$sort);
 
 				for (const element of toPush) {
-					if (_f._type(element) !== 3) {
+					if (getBSONType(element) !== 3) {
 						throw new MinimongoError('$push like modifiers using $sort require all elements to be objects', { field });
 					}
 				}
@@ -406,7 +406,7 @@ export class Updater<T extends { _id: string }> {
 				throw new MinimongoError('Cannot apply $addToSet modifier to non-array', { field });
 			} else {
 				for (const value of values) {
-					if (toAdd.some((element) => _f._equal(value, element))) {
+					if (toAdd.some((element) => equals(value, element))) {
 						continue;
 					}
 
@@ -459,7 +459,7 @@ export class Updater<T extends { _id: string }> {
 
 				out = toPull.filter((element) => !predicate(element));
 			} else {
-				out = toPull.filter((element) => !_f._equal(element, arg));
+				out = toPull.filter((element) => !equals(element, arg as any));
 			}
 
 			target[field] = out;
@@ -483,7 +483,7 @@ export class Updater<T extends { _id: string }> {
 				throw new MinimongoError('Cannot apply $pull/pullAll modifier to non-array', { field });
 			}
 
-			target[field] = toPull.filter((object) => !arg.some((element) => _f._equal(object, element)));
+			target[field] = toPull.filter((object) => !arg.some((element) => equals(object, element)));
 		},
 		$bit(_target: unknown, field: string) {
 			throw new MinimongoError('$bit is not supported', { field });

@@ -1,4 +1,4 @@
-import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import { createDocumentMatcherFromFilter, createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { ArrayIndices, FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
 import { Meteor } from 'meteor/meteor';
 import type { CountDocumentsOptions } from 'mongodb';
@@ -8,7 +8,6 @@ import { Cursor } from './Cursor';
 import type { Options } from './Cursor';
 import { DiffSequence } from './DiffSequence';
 import type { IdMap } from './IdMap';
-import { Matcher } from './Matcher';
 import { MinimongoError } from './MinimongoError';
 import type { Query } from './Query';
 import { SynchronousQueue } from './SynchronousQueue';
@@ -429,7 +428,7 @@ export class LocalCollection<T extends { _id: string }> {
 		const callback = !_callback && typeof _options === 'function' ? _options : _callback;
 		const options = typeof _options === 'object' && _options !== null ? _options : {};
 
-		const matcher = new Matcher(selector);
+		const matchDocument = createDocumentMatcherFromFilter<T>(selector);
 
 		const queriesToOriginalResults = this.prepareUpdate(selector);
 
@@ -438,7 +437,7 @@ export class LocalCollection<T extends { _id: string }> {
 		let updateCount = 0;
 
 		await this._eachPossiblyMatchingDocAsync(selector, async (doc, id) => {
-			const queryResult = matcher.documentMatches(doc);
+			const queryResult = matchDocument(doc);
 
 			if (queryResult.result) {
 				this._saveOriginal(id, doc);
@@ -507,7 +506,7 @@ export class LocalCollection<T extends { _id: string }> {
 		const callback = !_callback && typeof _options === 'function' ? _options : _callback;
 		const options = typeof _options === 'object' && _options !== null ? _options : {};
 
-		const matcher = new Matcher(selector);
+		const matchDocument = createDocumentMatcherFromFilter(selector);
 
 		const queriesToOriginalResults = this.prepareUpdate(selector);
 
@@ -516,7 +515,7 @@ export class LocalCollection<T extends { _id: string }> {
 		let updateCount = 0;
 
 		this._eachPossiblyMatchingDoc(selector, (doc, id) => {
-			const queryResult = matcher.documentMatches(doc);
+			const queryResult = matchDocument(doc);
 
 			if (queryResult.result) {
 				this._saveOriginal(id, doc);
