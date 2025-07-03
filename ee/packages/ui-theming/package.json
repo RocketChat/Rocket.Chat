@@ -14,7 +14,7 @@
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"@types/react": "~18.3.23",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "^9.30.0",
+		"eslint": "^9.30.1",
 		"react": "~18.3.1",
 		"react-docgen-typescript-plugin": "~1.0.8",
 		"react-dom": "~18.3.1",

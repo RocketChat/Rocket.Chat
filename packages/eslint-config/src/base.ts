@@ -14,6 +14,9 @@ export default async function base(
 ): Promise<FlatConfig.ConfigArray> {
 	const resolvedConfigs = await Promise.all(configs);
 	return tseslint.config(
+		{
+			name: 'base',
+		},
 		ignore([
 			'**/scripts/**',
 			'**/dist/**',

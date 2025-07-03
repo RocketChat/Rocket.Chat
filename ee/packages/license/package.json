@@ -9,7 +9,7 @@
 		"@types/bcrypt": "^5.0.2",
 		"@types/jest": "~29.5.14",
 		"@types/ws": "^8.5.13",
-		"eslint": "^9.30.0",
+		"eslint": "^9.30.1",
 		"jest": "~30.0.2",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.8.3"
