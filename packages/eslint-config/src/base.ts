@@ -49,7 +49,9 @@ export default async function base(
 				'import-x/namespace': 'warn',
 				'import-x/export': 'warn',
 				'import-x/no-unresolved': 'warn',
+				'import-x/no-dynamic-require': 'warn',
 				'import-x/default': 'warn',
+				'import-x/order': 'error',
 			},
 		},
 		{
