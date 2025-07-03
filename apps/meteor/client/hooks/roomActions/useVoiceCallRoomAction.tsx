@@ -1,10 +1,9 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
+import { useMediaDeviceMicrophonePermission, usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMediaPermissions } from '../../views/room/composer/messageBox/hooks/useMediaPermissions';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useUserInfoQuery } from '../useUserInfoQuery';
@@ -17,7 +16,9 @@ export const useVoiceCallRoomAction = () => {
 	const canStartVoiceCall = usePermission('view-user-voip-extension');
 	const dispatchWarning = useVoipWarningModal();
 
-	const [isMicPermissionDenied] = useMediaPermissions('microphone');
+	const { state: micPermissionState } = useMediaDeviceMicrophonePermission();
+
+	const isMicPermissionDenied = micPermissionState === 'denied';
 
 	const { isEnabled, isRegistered, isInCall } = useVoipState();
 	const { makeCall } = useVoipAPI();

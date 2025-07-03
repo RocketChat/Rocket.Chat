@@ -1,8 +1,8 @@
 import type { Serialized, IRoom } from '@rocket.chat/core-typings';
+import { GenericModalSkeleton } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 
 import BaseRemoveUsersModal from './BaseRemoveUsersModal';
-import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';
 

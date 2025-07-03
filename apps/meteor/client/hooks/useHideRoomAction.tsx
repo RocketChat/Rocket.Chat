@@ -1,5 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModalDoNotAskAgain } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useRouter, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -7,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import { useDontAskAgain } from './useDontAskAgain';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
-import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import { updateSubscription } from '../lib/mutationEffects/updateSubscription';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 

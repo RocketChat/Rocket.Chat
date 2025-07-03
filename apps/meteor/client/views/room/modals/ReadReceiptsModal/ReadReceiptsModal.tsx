@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { GenericModal, GenericModalSkeleton } from '@rocket.chat/ui-client';
 import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -6,8 +7,6 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReadReceiptRow from './ReadReceiptRow';
-import GenericModal from '../../../../components/GenericModal';
-import GenericModalSkeleton from '../../../../components/GenericModal/GenericModalSkeleton';
 
 type ReadReceiptsModalProps = {
 	messageId: IMessage['_id'];
