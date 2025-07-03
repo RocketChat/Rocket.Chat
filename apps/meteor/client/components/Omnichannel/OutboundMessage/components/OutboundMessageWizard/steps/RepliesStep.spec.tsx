@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -6,10 +8,13 @@ import type { ComponentProps } from 'react';
 import { forwardRef, useImperativeHandle } from 'react';
 
 import RepliesStep from './RepliesStep';
+import * as stories from './RepliesStep.stories';
 import { WizardContext } from '../../../../../Wizard/WizardContext';
 import { StepsLinkedList } from '../../../../../Wizard/lib/StepsLinkedList';
 import type { RepliesFormRef } from '../forms/RepliesForm';
 import type RepliesForm from '../forms/RepliesForm';
+
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 const mockSubmit = jest.fn();
 
@@ -47,6 +52,18 @@ const appRoot = mockAppRoot()
 describe('RepliesStep', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+		const view = render(<Story />, { wrapper: mockAppRoot().build() });
+		expect(view.baseElement).toMatchSnapshot();
+	});
+
+	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+		const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
+
+		const results = await axe(container);
+		expect(results).toHaveNoViolations();
 	});
 
 	it('should pass accessibility tests', async () => {
