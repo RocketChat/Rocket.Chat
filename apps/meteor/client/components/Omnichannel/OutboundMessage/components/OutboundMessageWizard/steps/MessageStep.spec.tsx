@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
+import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
@@ -7,10 +9,13 @@ import type { ComponentProps } from 'react';
 import { forwardRef, useImperativeHandle } from 'react';
 
 import MessageStep from './MessageStep';
+import * as stories from './MessageStep.stories';
 import { createFakeContact } from '../../../../../../../tests/mocks/data';
 import { createFakeOutboundTemplate } from '../../../../../../../tests/mocks/data/outbound-message';
 import type { MessageFormRef } from '../forms/MessageForm';
 import type MessageForm from '../forms/MessageForm';
+
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 const mockSubmit = jest.fn();
 
@@ -48,6 +53,18 @@ const appRoot = mockAppRoot()
 describe('MessageStep', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+		const view = render(<Story />, { wrapper: mockAppRoot().build() });
+		expect(view.baseElement).toMatchSnapshot();
+	});
+
+	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+		const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
+
+		const results = await axe(container);
+		expect(results).toHaveNoViolations();
 	});
 
 	it('should pass accessibility tests', async () => {
