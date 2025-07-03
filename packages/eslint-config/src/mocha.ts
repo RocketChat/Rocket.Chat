@@ -27,6 +27,7 @@ export default function mocha(config: Config<Rules> = {}): ConfigWithExtends {
 		},
 		rules: {
 			...rules.recommended,
+			'@typescript-eslint/no-unused-expressions': 'off',
 			...config.rules,
 		},
 	};

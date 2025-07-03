@@ -48,6 +48,6 @@ export default {
 		'mocha/valid-suite-title': 'off',
 		'mocha/valid-test-title': 'off',
 		'mocha/no-empty-title': 'warn',
-		'mocha/consistent-spacing-between-blocks': 'warn',
+		'mocha/consistent-spacing-between-blocks': 'off',
 	},
 } as const;
