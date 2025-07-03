@@ -1,12 +1,13 @@
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures, HomeserverServices } from '@rocket.chat/homeserver';
-import { setupHomeserver, getAllRoutes, getAllServices } from '@rocket.chat/homeserver';
+import type { HomeserverEventSignatures, HomeserverServices } from '@hs/federation-sdk';
+import { getAllServices } from '@hs/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
 import { registerEvents } from './events';
+import { setup } from './setupContainers';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -26,7 +27,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async created(): Promise<void> {
 		try {
-			setupHomeserver({ emitter: this.eventHandler });
+			setup(this.eventHandler);
 			registerEvents(this.eventHandler);
 		} catch (error) {
 			this.logger.warn('Homeserver module not available, running in limited mode');
@@ -51,7 +52,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	getAllRoutes() {
-		return getAllRoutes();
+		return [];
 	}
 
 	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<void> {
