@@ -6,4 +6,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Introduces the ability to upload multiple files and send it into a single message
+Introduces the ability to upload multiple files and send them in a single message
