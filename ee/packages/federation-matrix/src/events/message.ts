@@ -1,10 +1,10 @@
-import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@rocket.chat/homeserver';
+import type { HomeserverEventSignatures } from '@hs/federation-sdk';
 import { Message } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions } from '@rocket.chat/models';
+import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
+import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:message');
 
