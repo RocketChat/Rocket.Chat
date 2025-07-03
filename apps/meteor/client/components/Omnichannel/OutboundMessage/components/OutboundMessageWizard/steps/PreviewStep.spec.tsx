@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import type { ComponentProps } from 'react';
 
 import PreviewStep from './PreviewStep';
+import * as stories from './PreviewStep.stories';
+
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 jest.mock('../../OutboundMessagePreview', () => ({
 	__esModule: true,
@@ -27,6 +32,18 @@ describe('PreviewStep', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+		const view = render(<Story />, { wrapper: mockAppRoot().build() });
+		expect(view.baseElement).toMatchSnapshot();
+	});
+
+	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+		const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
+
+		const results = await axe(container);
+		expect(results).toHaveNoViolations();
 	});
 
 	it('renders correctly with OutboundMessagePreview and a send button', () => {
