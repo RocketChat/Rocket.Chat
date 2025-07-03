@@ -114,4 +114,20 @@ describe('convertSubObjectsIntoPaths', () => {
 
 		expect(convertSubObjectsIntoPaths(input, parentPath)).to.deep.equal(expected);
 	});
+
+	it('should not try to convert class instances', () => {
+		const input = {
+			a: new Date(),
+			b: {
+				c: new Date(),
+			},
+		};
+
+		const converted = convertSubObjectsIntoPaths(input);
+		expect(converted).not.to.be.undefined;
+		expect(converted).to.have.keys(['a', 'b.c']);
+
+		expect(converted.a).to.be.a('Date');
+		expect(converted['b.c']).to.be.a('Date');
+	});
 });
