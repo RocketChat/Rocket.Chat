@@ -1,6 +1,7 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import { useDevicePermissionPrompt } from '../../hooks/useDevicePermissionPrompt';
 import ActionButton from '../VoipActionButton';
 
 type VoipGenericActionsProps = {
@@ -36,6 +37,12 @@ const isOngoing = (props: VoipActionsProps): props is VoipOngoingActionsProps =>
 
 const VoipActions = ({ isMuted, isHeld, isDTMFActive, isTransferActive, ...events }: VoipActionsProps) => {
 	const { t } = useTranslation();
+
+	const onAcceptIncoming = useDevicePermissionPrompt({
+		actionType: 'incoming',
+		onAccept: events.onAccept,
+		onReject: events.onDecline,
+	});
 
 	return (
 		<ButtonGroup large>
@@ -77,7 +84,7 @@ const VoipActions = ({ isMuted, isHeld, isDTMFActive, isTransferActive, ...event
 
 			{isOngoing(events) && <ActionButton danger label={t('End_call')} icon='phone-off' disabled={isHeld} onClick={events.onEndCall} />}
 
-			{isIncoming(events) && <ActionButton success label={t('Accept')} icon='phone' onClick={events.onAccept} />}
+			{isIncoming(events) && <ActionButton success label={t('Accept')} icon='phone' onClick={onAcceptIncoming} />}
 		</ButtonGroup>
 	);
 };
