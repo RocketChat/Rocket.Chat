@@ -1,7 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Device, DeviceContextValue } from '@rocket.chat/ui-contexts';
 import { DeviceContext } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
 import { useEffect, useState, useMemo } from 'react';
 
@@ -11,18 +10,10 @@ type DeviceProviderProps = {
 	children?: ReactNode | undefined;
 };
 
-const defaultDevices = {
-	audioInput: [],
-	audioOutput: [],
-};
-
-const devicesQueryKey = ['media-devices-list'];
-
 export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement => {
 	const [enabled] = useState(typeof isSecureContext && isSecureContext);
-	console.log('isSecureContext', isSecureContext);
-	console.log('enabled', enabled);
-
+	const [availableAudioOutputDevices, setAvailableAudioOutputDevices] = useState<Device[]>([]);
+	const [availableAudioInputDevices, setAvailableAudioInputDevices] = useState<Device[]>([]);
 	const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState<Device>({
 		id: 'default',
 		label: '',
@@ -54,92 +45,38 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 		},
 	);
 
-	const queryClient = useQueryClient();
-
-	const { data } = useQuery({
-		queryKey: devicesQueryKey,
-		enabled,
-		queryFn: async () => {
-			const devices = await navigator.mediaDevices?.enumerateDevices();
-			console.log('devices', devices);
-			if (!devices || devices.length === 0) {
-				return defaultDevices;
-			}
-
-			const mappedDevices: Device[] = devices.map((device) => ({
-				id: device.deviceId,
-				label: device.label,
-				type: device.kind,
-			}));
-
-			const audioInput = mappedDevices.filter((device) => device.type === 'audioinput');
-
-			const audioOutput = mappedDevices.filter((device) => device.type === 'audiooutput');
-
-			return {
-				audioInput,
-				audioOutput,
-			};
-		},
-		initialData: defaultDevices,
-		placeholderData: keepPreviousData,
-		refetchOnWindowFocus: false,
-		refetchOnReconnect: false,
-		refetchOnMount: true,
-		staleTime: 0,
-	});
-
-	console.log('data', data);
-
-	const { data: permissionStatus } = useQuery({
-		queryKey: [...devicesQueryKey, 'permission-status'],
-		queryFn: async () => {
-			if (!navigator.permissions) {
-				return;
-			}
-			const result = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-			console.log('result.state', result.state);
-			return result;
-		},
-		initialData: undefined,
-		placeholderData: undefined,
-		refetchOnWindowFocus: false,
-		refetchOnReconnect: false,
-		refetchOnMount: true,
-	});
-
 	useEffect(() => {
-		if (!permissionStatus) {
+		if (!enabled) {
 			return;
 		}
-		const invalidateQueries = (): void => {
-			// queryClient.invalidateQueries({ queryKey: devicesQueryKey });
+		const setMediaDevices = (): void => {
+			navigator.mediaDevices?.enumerateDevices().then((devices) => {
+				const audioInput: Device[] = [];
+				const audioOutput: Device[] = [];
+				devices.forEach((device) => {
+					const mediaDevice: Device = {
+						id: device.deviceId,
+						label: device.label,
+						type: device.kind,
+					};
+					if (device.kind === 'audioinput') {
+						audioInput.push(mediaDevice);
+					} else if (device.kind === 'audiooutput') {
+						audioOutput.push(mediaDevice);
+					}
+				});
+				setAvailableAudioOutputDevices(audioOutput);
+				setAvailableAudioInputDevices(audioInput);
+			});
 		};
 
-		permissionStatus.addEventListener('change', invalidateQueries);
+		navigator.mediaDevices?.addEventListener('devicechange', setMediaDevices);
+		setMediaDevices();
 
 		return (): void => {
-			permissionStatus.removeEventListener('change', invalidateQueries);
+			navigator.mediaDevices?.removeEventListener('devicechange', setMediaDevices);
 		};
-	}, [permissionStatus, queryClient]);
-
-	useEffect(() => {
-		if (!enabled || !navigator.mediaDevices) {
-			return;
-		}
-
-		const invalidateQuery = (): void => {
-			queryClient.invalidateQueries({ queryKey: devicesQueryKey, exact: true });
-		};
-
-		console.log('invalidateQuery', invalidateQuery);
-
-		navigator.mediaDevices.addEventListener('devicechange', invalidateQuery);
-
-		return (): void => {
-			navigator.mediaDevices.removeEventListener('devicechange', invalidateQuery);
-		};
-	}, [enabled, queryClient]);
+	}, [enabled]);
 
 	const contextValue = useMemo((): DeviceContextValue => {
 		if (!enabled) {
@@ -147,19 +84,23 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 				enabled,
 			};
 		}
-		const { audioInput, audioOutput } = data;
 
 		return {
 			enabled,
-			permissionStatus,
-			availableAudioOutputDevices: audioOutput,
-			availableAudioInputDevices: audioInput,
+			availableAudioOutputDevices,
+			availableAudioInputDevices,
 			selectedAudioOutputDevice,
 			selectedAudioInputDevice,
 			setAudioOutputDevice,
 			setAudioInputDevice,
 		};
-	}, [enabled, data, permissionStatus, selectedAudioOutputDevice, selectedAudioInputDevice, setAudioOutputDevice]);
-
+	}, [
+		availableAudioInputDevices,
+		availableAudioOutputDevices,
+		enabled,
+		selectedAudioInputDevice,
+		selectedAudioOutputDevice,
+		setAudioOutputDevice,
+	]);
 	return <DeviceContext.Provider value={contextValue}>{children}</DeviceContext.Provider>;
 };
