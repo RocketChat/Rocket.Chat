@@ -103,10 +103,11 @@ export async function setMultipleVisitorCustomFields(
 		value: string;
 		overwrite: boolean;
 	}[],
+	livechatCustomFields?: ILivechatCustomField[],
 ) {
 	const keys = customFields.map((field) => field.key);
 
-	const livechatCustomFields = await LivechatCustomField.findByScope('visitor', { projection: { _id: 1, required: 1 } }, false).toArray();
+	livechatCustomFields ??= await LivechatCustomField.findByScope('visitor', { projection: { _id: 1, required: 1 } }, false).toArray();
 	validateRequiredCustomFields(keys, livechatCustomFields);
 
 	const matchingCustomFields = livechatCustomFields.filter((field: ILivechatCustomField) => keys.includes(field._id));
@@ -170,7 +171,11 @@ export async function setMultipleCustomFields({
 > {
 	livechatLogger.debug(`Setting custom fields data for visitor with token ${visitor.token}`);
 
-	const dbFields = await LivechatCustomField.findByScope('room', { projection: { _id: 1, required: 1, regexp: 1 } }).toArray();
+	const keys = customFields.map((customField) => customField.key);
+	const dbFields = await LivechatCustomField.find(
+		{ _id: { $in: keys } },
+		{ projection: { _id: 1, required: 1, regexp: 1, scope: 1 } },
+	).toArray();
 	if (!dbFields.length) {
 		throw new Error('invalid-custom-field');
 	}
@@ -178,16 +183,21 @@ export async function setMultipleCustomFields({
 	const { visitorFields, roomFields } = customFields.reduce(
 		(prev, customField) => {
 			const dbField = dbFields.find((customF) => customF._id === customField.key);
-			if (!dbField || dbField.scope === 'visitor') {
-				prev.visitorFields ??= [];
-				prev.visitorFields.push(customField);
-				return prev;
+			if (!dbField) {
+				throw new Error('invalid-custom-field');
 			}
+
 			if (dbField.regexp !== undefined && dbField.regexp !== '') {
 				const regexp = new RegExp(dbField.regexp);
 				if (!regexp.test(customField.value)) {
 					throw new Error(i18n.t('error-invalid-custom-field-value', { field: dbField._id }));
 				}
+			}
+
+			if (dbField.scope === 'visitor') {
+				prev.visitorFields ??= [];
+				prev.visitorFields.push(customField);
+				return prev;
 			}
 
 			prev.roomFields ??= [];
@@ -205,10 +215,14 @@ export async function setMultipleCustomFields({
 		livechatLogger.debug({ msg: 'Custom fields for room updated', visitor, roomFields });
 	}
 
-	if (visitorFields.length) {
-		await setMultipleVisitorCustomFields(visitor, visitorFields);
+	if (visitorFields?.length) {
+		await setMultipleVisitorCustomFields(
+			visitor,
+			visitorFields,
+			dbFields.filter((field) => field.scope === 'visitor'),
+		);
 		livechatLogger.debug({ msg: 'Custom fields for visitor updated', visitor, visitorFields });
 	}
 
-	return [...roomFields, ...visitorFields];
+	return [...(roomFields || []), ...(visitorFields || [])];
 }
