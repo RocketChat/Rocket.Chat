@@ -39,7 +39,7 @@ test.describe.serial('Image Gallery', async () => {
 	test.describe('When sending an image as a file', () => {
 		test.beforeAll(async () => {
 			const largeFileName = 'test-large-image.jpeg';
-			const updatedLargeFileName = 'test-large-image2.jpeg';
+
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
 			for await (const imageName of imageNames) {
@@ -50,12 +50,13 @@ test.describe.serial('Image Gallery', async () => {
 
 			await poHomeChannel.sidenav.openChat(targetChannelLargeImage);
 			await poHomeChannel.content.sendFileMessage(largeFileName);
-			await poHomeChannel.content.getFileComposerByName(largeFileName).getByRole('button', { name: 'Close' }).waitFor({ state: 'visible' });
-			await poHomeChannel.content.getFileComposerByName(largeFileName).click();
-			await poHomeChannel.content.inputFileUploadName.fill(updatedLargeFileName);
-			await poHomeChannel.content.btnUpdateFileUpload.click();
+
+			await poHomeChannel.page.waitForResponse(
+				(response) => /api\/v1\/rooms.media/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+			);
+
 			await poHomeChannel.content.btnSendMainComposer.click();
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(updatedLargeFileName);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(largeFileName);
 
 			await poHomeChannel.content.lastUserMessage.locator('img.gallery-item').click();
 		});
