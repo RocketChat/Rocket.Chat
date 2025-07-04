@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
-import { modalStore } from '../../providers/ModalProvider/ModalStore';
+import { modalStore } from '../../../providers/ModalProvider/ModalStore';
 
 type VariantType = 'danger' | 'warning' | 'info' | 'success' | 'upsell';
 

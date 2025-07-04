@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import { Suspense } from 'react';
 
 import GenericModal from './GenericModal';
-import ModalProviderWithRegion from '../../providers/ModalProvider/ModalProviderWithRegion';
+import ModalProviderWithRegion from '../../../providers/ModalProvider/ModalProviderWithRegion';
 
 const renderModal = (modalElement: ReactElement) => {
 	const {

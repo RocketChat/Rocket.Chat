@@ -1,6 +1,7 @@
 import type { IAuditServerUserActor, IAuditServerSystemActor, IAuditServerAppActor } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +9,6 @@ import { AppInfoField } from './AppInfoField';
 import AuditModalField from './AuditModalField';
 import AuditModalLabel from './AuditModalLabel';
 import AuditModalText from './AuditModalText';
-import GenericModal from '../../../components/GenericModal';
 
 type SecurityLogDisplayProps = {
 	timestamp: string;

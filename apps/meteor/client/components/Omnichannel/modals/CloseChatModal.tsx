@@ -13,13 +13,13 @@ import {
 	FieldRow,
 	FieldError,
 } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { dispatchToastMessage } from '../../../lib/toast';
-import GenericModal from '../../GenericModal';
 import Tags from '../Tags';
 
 type CloseChatModalFormData = {

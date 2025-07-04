@@ -1,4 +1,5 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import type { ReactElement, RefObject } from 'react';
@@ -7,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import AccountTokensRow from './AccountTokensRow';
 import AddToken from './AddToken';
-import GenericModal from '../../../../components/GenericModal';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,

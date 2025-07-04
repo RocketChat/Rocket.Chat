@@ -13,6 +13,7 @@ import {
 	ToggleSwitch,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useAbsoluteUrl, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
 import { useCallback, useId, useMemo } from 'react';
@@ -20,7 +21,6 @@ import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
-import GenericModal from '../../../components/GenericModal';
 
 type EditOAuthAddAppPayload = {
 	name: string;

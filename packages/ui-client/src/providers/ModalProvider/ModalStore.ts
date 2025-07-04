@@ -53,9 +53,7 @@ class ModalStore extends Emitter<{ update: void }> {
 		return () => this.off('update', cb);
 	};
 
-	getSnapshot = (): ModalWithRegion | null => {
-		return this.current;
-	};
+	getSnapshot = (): ModalWithRegion | null => this.current;
 
 	get current(): ModalWithRegion | null {
 		return this.modalStack[this.modalStack.length - 1] ?? null;

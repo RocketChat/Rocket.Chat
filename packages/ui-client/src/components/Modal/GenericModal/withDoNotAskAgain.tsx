@@ -3,7 +3,7 @@ import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-
 import type { ReactElement, ComponentType } from 'react';
 import { useId, useState } from 'react';
 
-import type { DontAskAgainList } from '../../hooks/useDontAskAgain';
+import type { DontAskAgainList } from '../../../hooks/useDontAskAgain';
 
 type DoNotAskAgainProps = {
 	onConfirm: (...args: any) => Promise<void> | void;

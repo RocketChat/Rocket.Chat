@@ -1,5 +1,6 @@
 import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { Dispatch, FormEvent, Key, SetStateAction } from 'react';
@@ -8,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import GenericModal from '../../../components/GenericModal';
 import { CurrentChatTags } from '../additionalForms';
 import Label from './Label';
 import RemoveAllClosed from './RemoveAllClosed';

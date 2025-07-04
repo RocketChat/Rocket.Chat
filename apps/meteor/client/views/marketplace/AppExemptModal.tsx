@@ -1,7 +1,7 @@
 import { Box, Modal } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../components/GenericModal';
 import { useExternalLink } from '../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../admin/subscription/hooks/useCheckoutUrl';
 import { PRICING_LINK } from '../admin/subscription/utils/links';
