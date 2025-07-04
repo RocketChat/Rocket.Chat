@@ -15,7 +15,7 @@ export const runMergeContacts = async (
 	visitor: ILivechatContactVisitorAssociation,
 	session?: ClientSession,
 ): Promise<ILivechatContact | null> => {
-	const originalContact = await LivechatContacts.findOneById(contactId, { session });
+	const originalContact = await LivechatContacts.findOneEnabledById(contactId, { session });
 	if (!originalContact) {
 		throw new Error('error-invalid-contact');
 	}
@@ -57,7 +57,7 @@ export const runMergeContacts = async (
 	logger.debug({ msg: 'Updating rooms with new contact id', contactId });
 	await LivechatRooms.updateMergedContactIds(similarContactIds, contactId, { session });
 
-	return LivechatContacts.findOneById(contactId, { session });
+	return LivechatContacts.findOneEnabledById(contactId, { session });
 };
 
 mergeContacts.patch(runMergeContacts, () => License.hasModule('contact-id-verification'));
