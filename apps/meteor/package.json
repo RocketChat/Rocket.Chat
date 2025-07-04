@@ -255,6 +255,7 @@
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/freeswitch": "workspace:^",
 		"@rocket.chat/fuselage": "^0.64.0",
+		"@rocket.chat/fuselage-forms": "/Users/sandra/fuselage/packages/fuselage-forms",
 		"@rocket.chat/fuselage-hooks": "^0.36.0",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/fuselage-toastbar": "^0.35.0",
