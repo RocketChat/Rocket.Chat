@@ -149,25 +149,34 @@ async function cleanGuestHistory(_id: string) {
 	}
 
 	// TODO: optimize function => instead of removing one by one, fetch the _ids of the rooms and then remove them in bulk
-	const cursor = LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } });
-	for await (const room of cursor) {
-		await Promise.all([
-			Subscriptions.removeByRoomId(room._id, {
+	const rooms = await LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } }).toArray();
+	const roomIds = rooms.map((room) => room._id);
+
+	const subsRemovalPromise = Promise.all(
+		roomIds.map((roomId) =>
+			Subscriptions.removeByRoomId(roomId, {
 				async onTrash(doc) {
 					void notifyOnSubscriptionChanged(doc, 'removed');
 				},
 			}),
-			FileUpload.removeFilesByRoomId(room._id),
-			Messages.removeByRoomId(room._id),
-			ReadReceipts.removeByRoomId(room._id),
-		]);
-	}
+		),
+	);
+
+	// IF this happens simultaneously with the messages, some messages could be removed before the files
+	await FileUpload.removeFilesByRoomIds(roomIds);
+
+	await Promise.all([
+		subsRemovalPromise,
+		Messages.removeByRoomIds(roomIds),
+		ReadReceipts.removeByRoomIds(roomIds),
+		LivechatInquiry.removeByRoomIds(roomIds, {
+			async onTrash(doc) {
+				void notifyOnLivechatInquiryChanged(doc, 'removed');
+			},
+		}),
+	]);
 
 	await LivechatRooms.removeByVisitorId(_id);
-
-	const livechatInquiries = await LivechatInquiry.findIdsByVisitorId(_id).toArray();
-	await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
-	void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 }
 
 export async function getLivechatRoomGuestInfo(room: IOmnichannelRoom) {
