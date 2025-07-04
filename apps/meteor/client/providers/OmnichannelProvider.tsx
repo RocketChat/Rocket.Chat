@@ -7,22 +7,21 @@ import {
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { createComparatorFromSort } from '@rocket.chat/mongo-adapter';
 import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream, useCustomSound } from '@rocket.chat/ui-contexts';
+import { OmnichannelContext } from '@rocket.chat/ui-omnichannel';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ReactNode } from 'react';
+import type { ReactNode, ContextType } from 'react';
 import { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { useShallow } from 'zustand/shallow';
 
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { ClientLogger } from '../../lib/ClientLogger';
-import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
-import { OmnichannelContext } from '../contexts/OmnichannelContext';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../hooks/useLivechatInquiryStore';
 import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 
-const emptyContextValue: OmnichannelContextValue = {
+const emptyContextValue: ContextType<typeof OmnichannelContext> = {
 	inquiries: { enabled: false },
 	enabled: false,
 	isEnterprise: false,
@@ -167,7 +166,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 	useOmnichannelContinuousSoundNotification(queue ?? []);
 
-	const contextValue = useMemo<OmnichannelContextValue>(() => {
+	const contextValue = useMemo<ContextType<typeof OmnichannelContext>>(() => {
 		if (!enabled) {
 			return emptyContextValue;
 		}

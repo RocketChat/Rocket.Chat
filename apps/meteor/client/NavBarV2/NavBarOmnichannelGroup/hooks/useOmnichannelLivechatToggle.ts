@@ -1,9 +1,8 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys } from '@rocket.chat/icons';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useOmnichannelAgentAvailable } from '@rocket.chat/ui-omnichannel';
 import { useTranslation } from 'react-i18next';
-
-import { useOmnichannelAgentAvailable } from '../../../hooks/omnichannel/useOmnichannelAgentAvailable';
 
 export const useOmnichannelLivechatToggle = () => {
 	const { t } = useTranslation();

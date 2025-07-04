@@ -1,4 +1,5 @@
 import { NavBarDivider, NavBarGroup } from '@rocket.chat/fuselage';
+import { useOmnichannelEnabled } from '@rocket.chat/ui-omnichannel';
 import { useTranslation } from 'react-i18next';
 
 import NavBarItemOmniChannelCallDialPad from './NavBarItemOmniChannelCallDialPad';
@@ -7,7 +8,6 @@ import NavBarItemOmnichannelContact from './NavBarItemOmnichannelContact';
 import NavBarItemOmnichannelLivechatToggle from './NavBarItemOmnichannelLivechatToggle';
 import NavBarItemOmnichannelQueue from './NavBarItemOmnichannelQueue';
 import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
-import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 
 const NavBarOmnichannelGroup = () => {
 	const { t } = useTranslation();
