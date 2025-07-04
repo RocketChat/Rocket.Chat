@@ -1,5 +1,5 @@
 import { createComparatorFromSort, createPredicateFromFilter, getBSONType } from '@rocket.chat/mongo-adapter';
-import type { ArrayIndices, Filter, Sort } from '@rocket.chat/mongo-adapter';
+import type { ArrayIndices, FieldExpression, Filter, Sort } from '@rocket.chat/mongo-adapter';
 
 import { MinimongoError } from './MinimongoError';
 import {
@@ -14,11 +14,124 @@ import {
 	populateDocumentWithQueryFields,
 } from './common';
 
-export type UpdateModifiers = {
-	[K in keyof typeof Updater.MODIFIERS]?: Parameters<(typeof Updater.MODIFIERS)[K]>[2];
+type UpdateModifiers<T> = {
+	$set?: Readonly<Partial<T>> & Record<string, any>;
+	$inc?: OnlyFieldsOfType<T, number | undefined>;
+	$min?: Readonly<Partial<T>> & Record<string, any>;
+	$max?: Readonly<Partial<T>> & Record<string, any>;
+	$mul?: OnlyFieldsOfType<T, number | undefined>;
+	$rename?: Record<string, string>;
+	$unset?: OnlyFieldsOfType<T, any, '' | true | 1>;
+	$currentDate?: OnlyFieldsOfType<
+		T,
+		Date,
+		| true
+		| {
+				$type: 'date' | 'timestamp';
+		  }
+	>;
+	$push?: PushOperator<T>;
+	$addToSet?: SetFields<T>;
+	$pop?: OnlyFieldsOfType<T, ReadonlyArray<any>, 1 | -1>;
+	$pull?: PullOperator<T>;
+	$pullAll?: PullAllOperator<T>;
+	$bit?: OnlyFieldsOfType<
+		T,
+		number | undefined,
+		| {
+				and: number;
+		  }
+		| {
+				or: number;
+		  }
+		| {
+				xor: number;
+		  }
+	>;
+	$setOnInsert?: Readonly<Partial<T>> & Record<string, any>;
 };
 
-export type UpdateFilter<T> = UpdateModifiers | Partial<T>;
+type IsAny<Type, ResultIfAny, ResultIfNotAny> = true extends false & Type ? ResultIfAny : ResultIfNotAny;
+
+type KeysOfAType<TSchema, Type> = {
+	[key in keyof TSchema]: NonNullable<TSchema[key]> extends Type ? key : never;
+}[keyof TSchema];
+
+type KeysOfOtherType<TSchema, Type> = {
+	[key in keyof TSchema]: NonNullable<TSchema[key]> extends Type ? never : key;
+}[keyof TSchema];
+
+type AcceptedFields<TSchema, FieldType, AssignableType> = {
+	readonly [key in KeysOfAType<TSchema, FieldType>]?: AssignableType;
+};
+
+type NotAcceptedFields<TSchema, FieldType> = {
+	readonly [key in KeysOfOtherType<TSchema, FieldType>]?: never;
+};
+
+type OnlyFieldsOfType<TSchema, FieldType = any, AssignableType = FieldType> = IsAny<
+	TSchema[keyof TSchema],
+	AssignableType extends FieldType ? Record<string, FieldType> : Record<string, AssignableType>,
+	AcceptedFields<TSchema, FieldType, AssignableType> & NotAcceptedFields<TSchema, FieldType> & Record<string, AssignableType>
+>;
+
+type Flatten<Type> = Type extends ReadonlyArray<infer Item> ? Item : Type;
+
+type ArrayOperator<Type> = {
+	$each?: Array<Flatten<Type>>;
+	$slice?: number;
+	$position?: number;
+	$sort?: Sort;
+};
+
+type PushOperator<TSchema> = ({
+	readonly [key in KeysOfAType<TSchema, ReadonlyArray<any>>]?: Flatten<TSchema[key]> | ArrayOperator<Array<Flatten<TSchema[key]>>>;
+} & NotAcceptedFields<TSchema, ReadonlyArray<any>>) & {
+	readonly [key: string]: ArrayOperator<any> | any;
+};
+
+type PullOperator<TSchema> = ({
+	readonly [key in KeysOfAType<TSchema, ReadonlyArray<any>>]?: Partial<Flatten<TSchema[key]>> | FilterOperations<Flatten<TSchema[key]>>;
+} & NotAcceptedFields<TSchema, ReadonlyArray<any>>) & {
+	readonly [key: string]: FieldExpression<any> | any;
+};
+
+type PullAllOperator<TSchema> = ({
+	readonly [key in KeysOfAType<TSchema, ReadonlyArray<any>>]?: TSchema[key];
+} & NotAcceptedFields<TSchema, ReadonlyArray<any>>) & {
+	readonly [key: string]: ReadonlyArray<any>;
+};
+
+type FilterOperations<T> =
+	T extends Record<string, any>
+		? {
+				[key in keyof T]?: FieldExpression<T[key]> | T[key];
+			}
+		: FieldExpression<T>;
+
+type EnhancedOmit<TRecordOrUnion, TKeyUnion> = string extends keyof TRecordOrUnion
+	? TRecordOrUnion
+	: TRecordOrUnion extends any
+		? Pick<TRecordOrUnion, Exclude<keyof TRecordOrUnion, TKeyUnion>>
+		: never;
+
+type OptionalId<TSchema> = EnhancedOmit<TSchema, '_id'> & {
+	_id?: string;
+};
+
+type AddToSetOperators<Type> = {
+	$each?: Array<Flatten<Type>>;
+};
+
+type SetFields<TSchema> = ({
+	readonly [key in KeysOfAType<TSchema, ReadonlyArray<any> | undefined>]?:
+		| OptionalId<Flatten<TSchema[key]>>
+		| AddToSetOperators<Array<OptionalId<Flatten<TSchema[key]>>>>;
+} & IsAny<TSchema[keyof TSchema], object, NotAcceptedFields<TSchema, ReadonlyArray<any> | undefined>>) & {
+	readonly [key: string]: AddToSetOperators<any> | any;
+};
+
+export type UpdateFilter<T> = UpdateModifiers<T> | Partial<T>;
 
 export class Updater<T extends { _id: string }> {
 	constructor(private readonly modifier: UpdateFilter<T>) {}
@@ -63,7 +176,7 @@ export class Updater<T extends { _id: string }> {
 
 					const key = keyparts.pop();
 
-					if (!key) {
+					if (key === undefined) {
 						throw new MinimongoError(`The update path '${keypath}' ends with an empty field name, which is not allowed.`);
 					}
 
@@ -91,7 +204,7 @@ export class Updater<T extends { _id: string }> {
 		return Object.assign({ _id: doc._id } as T, this.modifier);
 	}
 
-	private isUpdateModifiers(mod: UpdateFilter<T>): mod is UpdateModifiers {
+	private isUpdateModifiers(mod: UpdateFilter<T>): mod is UpdateModifiers<T> {
 		let isModify = false;
 		let isReplace = false;
 
@@ -162,7 +275,7 @@ export class Updater<T extends { _id: string }> {
 				target[field] = arg;
 			}
 		},
-		$minc<TField extends string>(target: Record<TField, number>, field: TField, arg: number) {
+		$min<TField extends string>(target: Record<TField, number>, field: TField, arg: number) {
 			if (typeof arg !== 'number') {
 				throw new MinimongoError('Modifier $min allowed for numbers only', { field });
 			}
@@ -179,7 +292,7 @@ export class Updater<T extends { _id: string }> {
 				target[field] = arg;
 			}
 		},
-		$maxc<TField extends string>(target: Record<TField, number>, field: TField, arg: number) {
+		$max<TField extends string>(target: Record<TField, number>, field: TField, arg: number) {
 			if (typeof arg !== 'number') {
 				throw new MinimongoError('Modifier $max allowed for numbers only', { field });
 			}
@@ -289,9 +402,8 @@ export class Updater<T extends { _id: string }> {
 				throw new MinimongoError('Cannot apply $push modifier to non-array', { field });
 			}
 
-			const isEachArgument = (arg: unknown): arg is { $each?: TItem[]; $position?: number; $slice?: number; $sort?: Sort } => {
-				return typeof arg === 'object' && arg !== null && '$each' in arg && Array.isArray((arg as { $each: TItem[] }).$each);
-			};
+			const isEachArgument = (arg: unknown): arg is { $each?: TItem[]; $position?: number; $slice?: number; $sort?: Sort } =>
+				typeof arg === 'object' && arg !== null && '$each' in arg;
 
 			if (!isEachArgument(arg)) {
 				assertHasValidFieldNames(arg);
@@ -371,23 +483,6 @@ export class Updater<T extends { _id: string }> {
 				} else {
 					target[field] = target[field].slice(0, slice);
 				}
-			}
-		},
-		$pushAll<TField extends string>(target: Record<TField, unknown[]>, field: TField, arg: unknown[]) {
-			if (!(typeof arg === 'object' && Array.isArray(arg))) {
-				throw new MinimongoError('Modifier $pushAll/pullAll allowed for arrays only');
-			}
-
-			assertHasValidFieldNames(arg);
-
-			const toPush = target[field];
-
-			if (toPush === undefined) {
-				target[field] = arg;
-			} else if (!Array.isArray(toPush)) {
-				throw new MinimongoError('Cannot apply $pushAll modifier to non-array', { field });
-			} else {
-				toPush.push(...arg);
 			}
 		},
 		$addToSet<TField extends string, TItem>(target: Record<TField, TItem[]>, field: TField, arg: TItem | { $each: TItem[] }) {
@@ -488,9 +583,6 @@ export class Updater<T extends { _id: string }> {
 		$bit(_target: unknown, field: string) {
 			throw new MinimongoError('$bit is not supported', { field });
 		},
-		$v(_target: unknown, field: string) {
-			throw new MinimongoError('$v is not supported', { field });
-		},
 	};
 
 	private static readonly NO_CREATE_MODIFIERS = {
@@ -510,7 +602,7 @@ export class Updater<T extends { _id: string }> {
 			arrayIndices?: ArrayIndices;
 		} = {},
 	) {
-		let usedArrayIndex = false;
+		let arrayIdx = 0;
 
 		for (let i = 0; i < keyparts.length; i++) {
 			const last = i === keyparts.length - 1;
@@ -521,7 +613,7 @@ export class Updater<T extends { _id: string }> {
 					return undefined;
 				}
 
-				const error = new MinimongoError(`cannot use the part '${keypart}' to traverse ${doc}`);
+				const error = new MinimongoError(`Cannot use the part '${keypart}' to traverse ${doc}`);
 				error.setPropertyError = true;
 				throw error;
 			}
@@ -532,16 +624,11 @@ export class Updater<T extends { _id: string }> {
 				}
 
 				if (keypart === '$') {
-					if (usedArrayIndex) {
-						throw new MinimongoError("Too many positional (i.e. '$') elements");
-					}
-
 					if (!options.arrayIndices?.length) {
 						throw new MinimongoError('The positional operator did not find the match needed from the query');
 					}
 
-					keypart = options.arrayIndices[0];
-					usedArrayIndex = true;
+					keypart = options.arrayIndices[arrayIdx++];
 				} else if (isNumericKey(keypart as string)) {
 					keypart = parseInt(keypart as string);
 				} else {
@@ -572,6 +659,18 @@ export class Updater<T extends { _id: string }> {
 					}
 				}
 			} else {
+				if (keypart === '$') {
+					if (!options.arrayIndices?.length) {
+						throw new MinimongoError('The positional operator did not find the match needed from the query');
+					}
+
+					keypart = options.arrayIndices[arrayIdx++];
+
+					if (keypart === undefined) {
+						throw new MinimongoError('Too many positional');
+					}
+				}
+
 				assertIsValidFieldName(keypart as string);
 
 				if (!(keypart in doc)) {
@@ -580,7 +679,8 @@ export class Updater<T extends { _id: string }> {
 					}
 
 					if (!last) {
-						doc[keypart] = {};
+						const nextpart = keyparts[i + 1];
+						doc[keypart] = typeof nextpart === 'number' || /\d+/.test(nextpart) ? [] : {};
 					}
 				}
 			}
