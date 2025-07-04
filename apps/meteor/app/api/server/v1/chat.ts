@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IThreadMainMessage, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
@@ -10,7 +10,6 @@ import {
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
 	isChatPinMessageProps,
-	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatStarMessageProps,
@@ -30,6 +29,7 @@ import {
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -56,6 +56,7 @@ import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
@@ -194,42 +195,281 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+type ChatPostMessage =
+	| {
+			roomId: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  }
+	| {
+			channel: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  };
+
+const ChatPostMessageSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				tmid: {
+					type: 'string',
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				channel: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+			},
+			required: ['channel'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
+
+const chatPostMessageEndpoints = API.v1.post(
 	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
 	{
-		async post() {
-			const { text, attachments } = this.bodyParams;
-			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
-
-			if (text && text.length > maxAllowedSize) {
-				return API.v1.failure('error-message-size-exceeded');
-			}
-
-			if (attachments && attachments.length > 0) {
-				for (const attachment of attachments) {
-					if (attachment.text && attachment.text.length > maxAllowedSize) {
-						return API.v1.failure('error-message-size-exceeded');
-					}
-				}
-			}
-
-			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
-
-			if (!messageReturn) {
-				return API.v1.failure('unknown-error');
-			}
-
-			const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
-
-			return API.v1.success({
-				ts: Date.now(),
-				channel: messageReturn.channel,
-				message,
-			});
+		authRequired: true,
+		validateParams: isChatPostMessageProps,
+		body: isChatPostMessageProps,
+		response: {
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					stack: { type: 'string' },
+					details: { type: 'object' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['error', 'success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					error: { type: 'string' },
+					success: {
+						type: 'boolean',
+						enum: [false],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['error', 'success'],
+				additionalProperties: false,
+			}),
+			200: ajv.compile<{
+				ts: number;
+				channel: string;
+				message: IMessage;
+				success: boolean;
+			}>({
+				type: 'object',
+				properties: {
+					ts: { type: 'number' },
+					channel: { type: 'string' },
+					message: {
+						// ? Accepts any type for message
+						type: 'object',
+						properties: {
+							alias: { type: 'string' },
+							msg: { type: 'string' },
+							attachments: { type: 'array' },
+							parseUrls: { type: 'boolean' },
+							groupable: { type: 'boolean' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							ts: {
+								oneOf: [{ type: 'string', format: 'date-time' }, { type: 'object' }],
+							},
+							u: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									name: { type: 'string' },
+									username: { type: 'string' },
+								},
+								required: ['_id', 'name', 'username'],
+								additionalProperties: false,
+							},
+							rid: { type: 'string' },
+							_id: { type: 'string' },
+							// ? Set this as a string type with date-time as a format, instead of using an object type
+							_updatedAt: {
+								oneOf: [{ type: 'string', format: 'date-time' }, { type: 'object' }],
+							},
+							urls: { type: 'array', items: { type: 'string' } },
+							mentions: {
+								type: 'array',
+								items: {
+									type: 'object',
+								},
+							},
+							channels: {
+								type: 'array',
+								items: {
+									type: 'object',
+								},
+							},
+							md: { type: 'array' },
+							tmid: { type: 'string' },
+							tshow: { type: 'boolean' },
+							emoji: { type: 'string' },
+							// ? Should customFields have properties implement in the IMessageCustomFields interface and ensure it is not empty?
+							customFields: {
+								type: 'object',
+								properties: {},
+								additionalProperties: true,
+							},
+						},
+						required: ['msg', '_updatedAt'],
+						additionalProperties: false,
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['ts', 'channel', 'message', 'success'],
+				additionalProperties: false,
+			}),
 		},
 	},
+	async function action() {
+		const { text, attachments } = this.bodyParams as ChatPostMessage;
+		const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+
+		if (text && text.length > maxAllowedSize) {
+			return API.v1.failure('error-message-size-exceeded');
+		}
+
+		if (attachments && attachments.length > 0) {
+			for (const attachment of attachments) {
+				if (attachment.text && attachment.text.length > maxAllowedSize) {
+					return API.v1.failure('error-message-size-exceeded');
+				}
+			}
+		}
+
+		const messageReturn = (
+			await applyAirGappedRestrictionsValidation(() =>
+				processWebhookMessage(this.bodyParams, this.user as IUser & { username: RequiredField<IUser, 'username'> }),
+			)
+		)[0];
+
+		if (!messageReturn) {
+			return API.v1.failure('unknown-error');
+		}
+
+		const [message] = (await normalizeMessagesForUser([messageReturn.message], this.userId)) as IMessage[];
+
+		return API.v1.success({
+			ts: Date.now(),
+			channel: messageReturn.channel,
+			message,
+		});
+	},
 );
+
+export type ChatPostMessageEndpoints = ExtractRoutesFromAPI<typeof chatPostMessageEndpoints>;
+
+// TODO: Need to remove the ChatEndpoints packages/rest-typings/src/index.ts file, but only after implementing all the endpoints.
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ChatPostMessageEndpoints {}
+}
 
 API.v1.addRoute(
 	'chat.search',
