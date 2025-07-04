@@ -1,8 +1,7 @@
+
 import { cronJobs } from '@rocket.chat/cron';
-import { Rooms, Messages } from '@rocket.chat/models';
+import { Rooms, Messages, ScheduledMessages, Users } from '@rocket.chat/models';
 import { sendMessage } from '/app/lib/server/functions/sendMessage';
-import { ScheduledMessages } from '/app/models/server/models/ScheduledMessages';
-import { Users } from '@rocket.chat/models';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '/app/lib/server/lib/notifyListener';
 
 export async function scheduleMessagesCron(): Promise<void> {
@@ -13,10 +12,7 @@ export async function scheduleMessagesCron(): Promise<void> {
     const now = new Date();
     console.log('Current time:', now.toISOString());
 
-    const scheduledMessages = await ScheduledMessages.find({
-      t: 'scheduled_message',
-      scheduledAt: { $lte: now },
-    }).fetchAsync();
+    const scheduledMessages = await ScheduledMessages.findByScheduledAtBefore(now);
 
     console.log(`Found ${scheduledMessages.length} scheduled messages to process`);
 
@@ -65,7 +61,6 @@ export async function scheduleMessagesCron(): Promise<void> {
           console.log(`Message ${result._id} successfully inserted into messages collection`);
         }
 
-        // Ensure notifications are sent
         await notifyOnMessageChange({ id: result._id });
         await notifyOnRoomChangedById(message.rid);
 

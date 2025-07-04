@@ -1,6 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage, IScheduledMessage } from '@rocket.chat/core-typings';
-import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Messages, Users, Rooms, Subscriptions, ScheduledMessages } from '@rocket.chat/models';
 import {
 	isChatReportMessageProps,
 	isChatGetURLPreviewProps,
@@ -63,7 +63,6 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 
-import { IScheduledMessage, ScheduledMessages } from '/app/models/server/models/ScheduledMessages';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -858,43 +857,42 @@ API.v1.addRoute(
 	  async post() {
 		const { rid, msg, scheduledAt: scheduledAtStr, tmid } = this.bodyParams;
 		const user = this.user;
-  
+
 		// Validate required fields
 		if (!rid || !msg || !scheduledAtStr) {
 		  return API.v1.failure('Missing required fields: rid, msg, or scheduledAt');
 		}
-  
+
 		// Validate scheduledAt
 		const scheduledAt = new Date(scheduledAtStr);
 		if (isNaN(scheduledAt.getTime()) || scheduledAt <= new Date()) {
 		  return API.v1.failure('Invalid scheduledAt: Must be a future date');
 		}
-  
+
 		// Validate message size
 		const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 		if (msg.length > maxAllowedSize) {
 		  return API.v1.failure('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize');
 		}
-  
+
 		// Validate thread
 		if (tmid && !settings.get('Threads_enabled')) {
 		  return API.v1.failure('error-not-allowed', 'Threads are disabled');
 		}
-  
+
 		// Validate room
 		const room = await Rooms.findOneById(rid);
 		if (!room) {
 		  return API.v1.failure('Invalid room ID');
 		}
-  
+
 		// Validate permissions
 		try {
 			await canSendMessageAsync(rid, { uid: this.userId, username: user.username, type: user.type });
 		} catch (error) {
 		  return API.v1.failure('error-not-allowed', 'Not allowed to send messages in this room');
 		}
-  
-		// Construct the scheduled message object
+
 		const scheduledMessage: Omit<IScheduledMessage, '_id'> = {
 		  t: 'scheduled_message',
 		  rid,
@@ -905,11 +903,10 @@ API.v1.addRoute(
 		  tmid,
 		  _updatedAt: new Date(),
 		};
-  
-		// Insert the scheduled message
+
 		try {
 		  const scheduledMessageId = await ScheduledMessages.insertAsync(scheduledMessage);
-		  const createdScheduledMessage = await ScheduledMessages.findOneAsync({ _id: scheduledMessageId }); 
+		  const createdScheduledMessage = await ScheduledMessages.findOneAsync({ _id: scheduledMessageId });
 		  if (!createdScheduledMessage) {
 			console.error('Failed to find scheduled message after insertion:', scheduledMessageId);
 			return API.v1.failure('Scheduled message created but could not be retrieved');

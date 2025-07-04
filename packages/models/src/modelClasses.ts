@@ -76,3 +76,4 @@ export * from './models/Migrations';
 export * from './models/ModerationReports';
 export * from './models/WorkspaceCredentials';
 export * from './models/Trash';
+export * from './models/ScheduledMessages';
