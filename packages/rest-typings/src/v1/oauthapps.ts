@@ -31,6 +31,6 @@ export type OAuthAppsEndpoint = {
 	};
 
 	'/v1/oauth-apps.qrcode': {
-		GET: () => string;
+		POST: (params: { connectionDetails: any }) => string;
 	};
 };

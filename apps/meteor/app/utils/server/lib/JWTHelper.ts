@@ -5,11 +5,11 @@ const HEADER = {
 	alg: 'HS256',
 };
 
-export const generateJWT = (payload: Record<string, any>, secret: string): string => {
+export const generateJWT = (payload: Record<string, any>, secret: string, expiresIn: string = '1hour'): string => {
 	const tokenPayload = {
 		iat: jsr.KJUR.jws.IntDate.get('now'),
 		nbf: jsr.KJUR.jws.IntDate.get('now'),
-		exp: jsr.KJUR.jws.IntDate.get('now + 1hour'),
+		exp: jsr.KJUR.jws.IntDate.get(`now + ${expiresIn}`),
 		aud: 'RocketChat',
 		context: payload,
 	};
