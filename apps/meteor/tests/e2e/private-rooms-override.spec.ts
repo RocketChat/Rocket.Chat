@@ -63,13 +63,13 @@ test.describe('private-rooms-override', () => {
     test('should handle private rooms visibility based on permissions', async ({ page, api }) => {
         await test.step('Navigate to directory', async () => {
             await poDirectory.goto();
-            await page.waitForLoadState('networkidle');
+            // Wait for directory page to load
+            await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
         });
 
         await test.step('Search and verify own private room is visible', async () => {
             // Use search function to isolate target channel - following mentor's advice
             await page.getByRole('textbox', { name: 'Search' }).fill(privateRoom.name!);
-            await page.waitForLoadState('networkidle');
             
             const roomRow = page.getByRole('table').getByRole('link').filter({ hasText: privateRoom.name! });
             await expect(roomRow).toBeVisible();
@@ -80,11 +80,11 @@ test.describe('private-rooms-override', () => {
             
             // Return to directory page
             await poDirectory.goto();
+            await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
         });
 
         await test.step('Search and verify other private room is visible with view-all-p-room permission', async () => {
             await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
-            await page.waitForLoadState('networkidle');
             
             const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
             await expect(otherRoomRow).toBeVisible();
@@ -101,18 +101,16 @@ test.describe('private-rooms-override', () => {
 
         await test.step('Verify permission change - own room still visible, other room hidden', async () => {
             await poDirectory.goto();
-            await page.waitForLoadState('networkidle');
+            await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
             
             // Own room should still be visible (because user is a member)
             await page.getByRole('textbox', { name: 'Search' }).fill(privateRoom.name!);
-            await page.waitForLoadState('networkidle');
             const ownRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: privateRoom.name! });
             await expect(ownRoomRow).toBeVisible();
             
             // Other room should not be visible (no permission and not a member)
             await page.getByRole('textbox', { name: 'Search' }).clear();
             await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
-            await page.waitForLoadState('networkidle');
             const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
             await expect(otherRoomRow).not.toBeVisible();
         });
@@ -126,24 +124,22 @@ test.describe('private-rooms-override', () => {
             });
             
             await page.reload();
-            await page.waitForLoadState('networkidle');
+            await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
             
             // Search and verify other room is visible again
             await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
-            await page.waitForLoadState('networkidle');
             const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
             await expect(otherRoomRow).toBeVisible();
         });
     });
 
-    test('should allow admin to assign roles in private room accessed via directory', async ({ page, api }) => {
+    test('should allow admin to add user to private room via member management', async ({ page, api }) => {
         await test.step('Navigate to directory and access the private room created by user1', async () => {
             await poDirectory.goto();
-            await page.waitForLoadState('networkidle');
+            await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
             
             // Search for the private room created by user1 (admin is NOT a member)
             await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
-            await page.waitForLoadState('networkidle');
             
             const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
             await expect(otherRoomRow).toBeVisible();
@@ -153,17 +149,47 @@ test.describe('private-rooms-override', () => {
             await expect(page).toHaveURL(`/group/${otherPrivateRoom.name}`);
         });
 
-        await test.step('Open members tab and access user1 info', async () => {
-            // Open the Members tab
-            await poHomeChannel.tabs.btnTabMembers.click();
-            await page.waitForLoadState('networkidle');
+        await test.step('Open members tab and access member management', async () => {
             
-            // Look for user1 in the members list and click on them
-            const user1Element = page.locator('[data-qa="MemberItem-user1"]').first();
-            await expect(user1Element).toBeVisible();
-            await user1Element.click();
+            await poHomeChannel.tabs.btnTabMembers.click();
+            await expect(page.getByText('Members')).toBeVisible();
+            
+            // Check if filter is "Online" and switch to "All" if needed to see offline users
+            const onlineFilter = page.getByLabel('Online', { exact: true });
+            const isOnlineVisible = await onlineFilter.isVisible();
+            
+            if (isOnlineVisible) {
+                // If "Online" filter is active, switch to "All"
+                await onlineFilter.click();
+                await page.getByText('All', { exact: true }).click();
+            }
+            // If already "All", do nothing
+            
+            await expect(page.getByLabel('Members').getByText('user1')).toBeVisible();
         });
 
-        
+        await test.step('Add user2 to the room', async () => {
+            // Click the "Add" button in the members panel
+            const addButton = page.getByRole('button', { name: 'Add' });
+            await expect(addButton).toBeVisible();
+            await addButton.click();
+
+            // Wait for the page full load
+            await expect(page.getByRole('button', { name: 'Add users' })).toBeVisible();
+            await expect(page.getByPlaceholder('Choose users')).toBeVisible();
+            
+            // select user2 and add
+            await page.getByPlaceholder('Choose users').fill('user2');
+            await page.getByRole('option', { name: 'user2 (user2)' }).locator('div').first().click();
+            const addUsersButton = page.getByRole('button', { name: 'Add users' });
+            await expect(addUsersButton).toBeVisible();
+            await addUsersButton.click();
+        });
+
+        await test.step('Verify user2 appears in Members panel', async () => {
+            // Wait for user2 to appear in the members list
+            await expect(page.getByLabel('Members').getByText('user2')).toBeVisible();
+        });
     });
 });
+
