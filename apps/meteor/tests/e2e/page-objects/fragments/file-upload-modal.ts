@@ -15,8 +15,8 @@ export class FileUploadModal extends Modal {
 		return this.root.getByRole('textbox', { name: 'File description' });
 	}
 
-	private get sendButton() {
-		return this.root.getByRole('button', { name: 'Send' });
+	private get updateButton() {
+		return this.root.getByRole('button', { name: 'Update' });
 	}
 
 	setName(fileName: string) {
@@ -27,8 +27,8 @@ export class FileUploadModal extends Modal {
 		return this.fileDescriptionInput.fill(description);
 	}
 
-	async send() {
-		await this.sendButton.click();
+	async update() {
+		await this.updateButton.click();
 		await this.waitForDismissal();
 	}
 }

@@ -219,9 +219,15 @@ test.describe('basic features', () => {
 		await test.step('upload the file with encryption', async () => {
 			// Upload a file
 			await encryptedRoomPage.dragAndDropTxtFile();
-			await fileUploadModal.setName(fileName);
-			await fileUploadModal.setDescription(fileDescription);
-			await fileUploadModal.send();
+
+			// Update file name and send
+			await expect(async () => {
+				await encryptedRoomPage.getFileComposerByName('any_file.txt').click();
+				await fileUploadModal.setName(fileName);
+				await fileUploadModal.update();
+				await expect(encryptedRoomPage.getFileComposerByName(fileName)).toBeVisible();
+				await encryptedRoomPage.sendMessage(fileDescription);
+			}).toPass();
 
 			// Check the file upload
 			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
@@ -236,9 +242,15 @@ test.describe('basic features', () => {
 
 		await test.step('upload the file without encryption', async () => {
 			await encryptedRoomPage.dragAndDropTxtFile();
-			await fileUploadModal.setName(fileName);
-			await fileUploadModal.setDescription(fileDescription);
-			await fileUploadModal.send();
+
+			// Update file name and send
+			await expect(async () => {
+				await encryptedRoomPage.getFileComposerByName('any_file.txt').click();
+				await fileUploadModal.setName(fileName);
+				await fileUploadModal.update();
+				await expect(encryptedRoomPage.getFileComposerByName(fileName)).toBeVisible();
+				await encryptedRoomPage.sendMessage(fileDescription);
+			}).toPass();
 
 			await expect(encryptedRoomPage.lastMessage.encryptedIcon).not.toBeVisible();
 			await expect(encryptedRoomPage.lastMessage.fileUploadName).toContainText(fileName);
