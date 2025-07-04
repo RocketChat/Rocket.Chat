@@ -1,7 +1,7 @@
 import { createDocumentMatcherFromFilter, createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
-import type { ArrayIndices, FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
+import type { ArrayIndices } from '@rocket.chat/mongo-adapter';
 import { Meteor } from 'meteor/meteor';
-import type { CountDocumentsOptions } from 'mongodb';
+import type { CountDocumentsOptions, FilterOperators, Filter, UpdateFilter } from 'mongodb';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { Cursor } from './Cursor';
@@ -11,7 +11,6 @@ import type { IdMap } from './IdMap';
 import { MinimongoError } from './MinimongoError';
 import type { Query } from './Query';
 import { SynchronousQueue } from './SynchronousQueue';
-import type { UpdateFilter } from './Updater';
 import { Updater } from './Updater';
 import { _selectorIsId, clone, assertHasValidFieldNames } from './common';
 
@@ -207,7 +206,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private prepareRemove(selector: Filter<T>) {
-		const predicate = createPredicateFromFilter(selector);
+		const predicate = createPredicateFromFilter<T>(selector);
 		const remove = new Set<T>();
 
 		this._eachPossiblyMatchingDoc(selector, (doc) => {
@@ -829,11 +828,11 @@ export class LocalCollection<T extends { _id: string }> {
 
 			if (
 				selector._id &&
-				Array.isArray((selector._id as FieldExpression<T['_id']>).$in) &&
-				(selector._id as FieldExpression<T['_id']>).$in?.length &&
-				(selector._id as FieldExpression<T['_id']>).$in?.every(_selectorIsId)
+				Array.isArray((selector._id as FilterOperators<T['_id']>).$in) &&
+				(selector._id as FilterOperators<T['_id']>).$in?.length &&
+				(selector._id as FilterOperators<T['_id']>).$in?.every(_selectorIsId)
 			) {
-				return (selector._id as FieldExpression<T['_id']>).$in!;
+				return (selector._id as FilterOperators<T['_id']>).$in!;
 			}
 
 			return null;

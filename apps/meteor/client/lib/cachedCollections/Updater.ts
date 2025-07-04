@@ -1,5 +1,6 @@
 import { createComparatorFromSort, createPredicateFromFilter, getBSONType } from '@rocket.chat/mongo-adapter';
-import type { ArrayIndices, FieldExpression, Filter, Sort } from '@rocket.chat/mongo-adapter';
+import type { ArrayIndices } from '@rocket.chat/mongo-adapter';
+import type { Filter, Sort, UpdateFilter } from 'mongodb';
 
 import { MinimongoError } from './MinimongoError';
 import {
@@ -14,125 +15,6 @@ import {
 	populateDocumentWithQueryFields,
 } from './common';
 
-type UpdateModifiers<T> = {
-	$set?: Readonly<Partial<T>> & Record<string, any>;
-	$inc?: OnlyFieldsOfType<T, number | undefined>;
-	$min?: Readonly<Partial<T>> & Record<string, any>;
-	$max?: Readonly<Partial<T>> & Record<string, any>;
-	$mul?: OnlyFieldsOfType<T, number | undefined>;
-	$rename?: Record<string, string>;
-	$unset?: OnlyFieldsOfType<T, any, '' | true | 1>;
-	$currentDate?: OnlyFieldsOfType<
-		T,
-		Date,
-		| true
-		| {
-				$type: 'date' | 'timestamp';
-		  }
-	>;
-	$push?: PushOperator<T>;
-	$addToSet?: SetFields<T>;
-	$pop?: OnlyFieldsOfType<T, ReadonlyArray<any>, 1 | -1>;
-	$pull?: PullOperator<T>;
-	$pullAll?: PullAllOperator<T>;
-	$bit?: OnlyFieldsOfType<
-		T,
-		number | undefined,
-		| {
-				and: number;
-		  }
-		| {
-				or: number;
-		  }
-		| {
-				xor: number;
-		  }
-	>;
-	$setOnInsert?: Readonly<Partial<T>> & Record<string, any>;
-};
-
-type IsAny<Type, ResultIfAny, ResultIfNotAny> = true extends false & Type ? ResultIfAny : ResultIfNotAny;
-
-type KeysOfAType<TSchema, Type> = {
-	[key in keyof TSchema]: NonNullable<TSchema[key]> extends Type ? key : never;
-}[keyof TSchema];
-
-type KeysOfOtherType<TSchema, Type> = {
-	[key in keyof TSchema]: NonNullable<TSchema[key]> extends Type ? never : key;
-}[keyof TSchema];
-
-type AcceptedFields<TSchema, FieldType, AssignableType> = {
-	readonly [key in KeysOfAType<TSchema, FieldType>]?: AssignableType;
-};
-
-type NotAcceptedFields<TSchema, FieldType> = {
-	readonly [key in KeysOfOtherType<TSchema, FieldType>]?: never;
-};
-
-type OnlyFieldsOfType<TSchema, FieldType = any, AssignableType = FieldType> = IsAny<
-	TSchema[keyof TSchema],
-	AssignableType extends FieldType ? Record<string, FieldType> : Record<string, AssignableType>,
-	AcceptedFields<TSchema, FieldType, AssignableType> & NotAcceptedFields<TSchema, FieldType> & Record<string, AssignableType>
->;
-
-type Flatten<Type> = Type extends ReadonlyArray<infer Item> ? Item : Type;
-
-type ArrayOperator<Type> = {
-	$each?: Array<Flatten<Type>>;
-	$slice?: number;
-	$position?: number;
-	$sort?: Sort;
-};
-
-type PushOperator<TSchema> = ({
-	readonly [key in KeysOfAType<TSchema, ReadonlyArray<any>>]?: Flatten<TSchema[key]> | ArrayOperator<Array<Flatten<TSchema[key]>>>;
-} & NotAcceptedFields<TSchema, ReadonlyArray<any>>) & {
-	readonly [key: string]: ArrayOperator<any> | any;
-};
-
-type PullOperator<TSchema> = ({
-	readonly [key in KeysOfAType<TSchema, ReadonlyArray<any>>]?: Partial<Flatten<TSchema[key]>> | FilterOperations<Flatten<TSchema[key]>>;
-} & NotAcceptedFields<TSchema, ReadonlyArray<any>>) & {
-	readonly [key: string]: FieldExpression<any> | any;
-};
-
-type PullAllOperator<TSchema> = ({
-	readonly [key in KeysOfAType<TSchema, ReadonlyArray<any>>]?: TSchema[key];
-} & NotAcceptedFields<TSchema, ReadonlyArray<any>>) & {
-	readonly [key: string]: ReadonlyArray<any>;
-};
-
-type FilterOperations<T> =
-	T extends Record<string, any>
-		? {
-				[key in keyof T]?: FieldExpression<T[key]> | T[key];
-			}
-		: FieldExpression<T>;
-
-type EnhancedOmit<TRecordOrUnion, TKeyUnion> = string extends keyof TRecordOrUnion
-	? TRecordOrUnion
-	: TRecordOrUnion extends any
-		? Pick<TRecordOrUnion, Exclude<keyof TRecordOrUnion, TKeyUnion>>
-		: never;
-
-type OptionalId<TSchema> = EnhancedOmit<TSchema, '_id'> & {
-	_id?: string;
-};
-
-type AddToSetOperators<Type> = {
-	$each?: Array<Flatten<Type>>;
-};
-
-type SetFields<TSchema> = ({
-	readonly [key in KeysOfAType<TSchema, ReadonlyArray<any> | undefined>]?:
-		| OptionalId<Flatten<TSchema[key]>>
-		| AddToSetOperators<Array<OptionalId<Flatten<TSchema[key]>>>>;
-} & IsAny<TSchema[keyof TSchema], object, NotAcceptedFields<TSchema, ReadonlyArray<any> | undefined>>) & {
-	readonly [key: string]: AddToSetOperators<any> | any;
-};
-
-export type UpdateFilter<T> = UpdateModifiers<T> | Partial<T>;
-
 export class Updater<T extends { _id: string }> {
 	constructor(private readonly modifier: UpdateFilter<T>) {}
 
@@ -145,7 +27,9 @@ export class Updater<T extends { _id: string }> {
 			const newDoc = clone(doc);
 
 			for (const [operator, operand] of entriesOf(this.modifier)) {
-				const modFunc = Updater.MODIFIERS[isInsert && operator === '$setOnInsert' ? '$set' : operator] as (
+				const modFunc = Updater.MODIFIERS[
+					isInsert && operator === '$setOnInsert' ? '$set' : (operator as keyof typeof Updater.MODIFIERS)
+				] as (
 					target: Record<string, any> | Array<object | null> | null | undefined,
 					field: string,
 					arg: unknown,
@@ -204,7 +88,7 @@ export class Updater<T extends { _id: string }> {
 		return Object.assign({ _id: doc._id } as T, this.modifier);
 	}
 
-	private isUpdateModifiers(mod: UpdateFilter<T>): mod is UpdateModifiers<T> {
+	private isUpdateModifiers(mod: UpdateFilter<T>): boolean {
 		let isModify = false;
 		let isReplace = false;
 

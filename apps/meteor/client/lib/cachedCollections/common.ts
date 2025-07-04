@@ -1,4 +1,5 @@
-import { getBSONType, type FieldExpression, type Filter } from '@rocket.chat/mongo-adapter';
+import { getBSONType } from '@rocket.chat/mongo-adapter';
+import type { Filter, FilterOperators } from 'mongodb';
 
 import { MinimongoError } from './MinimongoError';
 
@@ -140,7 +141,7 @@ function populateDocumentWithKeyValue<T extends { _id: string }>(document: Parti
 	}
 }
 
-function populateDocumentWithObject<T extends { _id: string }>(document: Partial<T>, key: string, value: FieldExpression<T>) {
+function populateDocumentWithObject<T extends { _id: string }>(document: Partial<T>, key: string, value: FilterOperators<T>) {
 	const keys = Object.keys(value);
 	const unprefixedKeys = keys.filter((op) => op[0] !== '$');
 
@@ -154,9 +155,9 @@ function populateDocumentWithObject<T extends { _id: string }>(document: Partial
 	} else {
 		entriesOf(value).forEach(([op, object]) => {
 			if (op === '$eq') {
-				populateDocumentWithKeyValue(document, key, object as NonNullable<FieldExpression<T>['$eq']>);
+				populateDocumentWithKeyValue(document, key, object as NonNullable<FilterOperators<T>['$eq']>);
 			} else if (op === '$all') {
-				(object as NonNullable<FieldExpression<T>['$all']>).forEach((element: any) => populateDocumentWithKeyValue(document, key, element));
+				(object as NonNullable<FilterOperators<T>['$all']>).forEach((element: any) => populateDocumentWithKeyValue(document, key, element));
 			}
 		});
 	}
@@ -170,10 +171,10 @@ export function populateDocumentWithQueryFields<T extends { _id: string }>(query
 
 	entriesOf(query).forEach(([key, value]) => {
 		if (key === '$and') {
-			(value as Filter<T>['$and'][]).forEach((element) => populateDocumentWithQueryFields(element, document));
+			(value as NonNullable<Filter<T>['$and']>).forEach((element) => populateDocumentWithQueryFields<T>(element as Filter<T>, document));
 		} else if (key === '$or') {
 			if ((value as NonNullable<Filter<T>['$or']>).length === 1) {
-				populateDocumentWithQueryFields((value as NonNullable<Filter<T>['$or']>)[0], document);
+				populateDocumentWithQueryFields<T>(value[0], document);
 			}
 		} else if (typeof key === 'string' && key[0] !== '$') {
 			populateDocumentWithKeyValue(document, key, value);

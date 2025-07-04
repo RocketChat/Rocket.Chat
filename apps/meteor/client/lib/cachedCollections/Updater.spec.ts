@@ -576,7 +576,7 @@ describe('modify', () => {
 				const updater = new Updater<DocType>({
 					$pull: {
 						items: {
-							type: 'A',
+							type: 'A' as any, // This is a workaround for a fault in the `UpdateFilter` type
 							value: { $gt: 15 },
 						},
 					},
@@ -663,7 +663,6 @@ describe('modify', () => {
 
 		describe('invalid modifiers', () => {
 			it('should throw an error for invalid modifier', () => {
-				// @ts-expect-error - Testing invalid input
 				const updater = new Updater<DocType>({ $invalid: { name: 'test' } });
 				expect(() => updater.modify(baseDoc)).toThrow('Invalid modifier specified $invalid');
 			});
@@ -1319,7 +1318,6 @@ describe('invalid field names', () => {
 	it('should throw when field name contains a dot', () => {
 		type DocType = { _id: string };
 
-		// @ts-expect-error - Testing invalid input
 		const updater = new Updater<DocType>({ 'field.with.dot': 'value' });
 
 		expect(() => updater.modify({ _id: 'test' })).toThrow("contain '.'");
