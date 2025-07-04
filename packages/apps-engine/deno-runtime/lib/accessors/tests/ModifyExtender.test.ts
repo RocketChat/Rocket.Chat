@@ -1,9 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
 import { afterAll, beforeEach, describe, it } from 'https://deno.land/std@0.203.0/testing/bdd.ts';
-import { assertSpyCall, spy } from 'https://deno.land/std@0.203.0/testing/mock.ts';
+import { assertSpyCall, spy, stub } from 'https://deno.land/std@0.203.0/testing/mock.ts';
+import { assertRejects } from 'https://deno.land/std@0.203.0/assert/mod.ts';
 
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { ModifyExtender } from '../modify/ModifyExtender.ts';
+import jsonrpc from 'jsonrpc-lite';
 
 describe('ModifyExtender', () => {
     let extender: ModifyExtender;
@@ -116,5 +118,111 @@ describe('ModifyExtender', () => {
         });
 
         _spy.restore();
+    });
+
+    describe('Error Handling', () => {
+        describe('extendMessage', () => {
+            it('throws an instance of Error when senderFn throws an error', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(new Error('unit-test-error')) as any);
+
+                await assertRejects(() => extender.extendMessage('message-id', { _id: 'user-id' } as any), Error, 'unit-test-error');
+
+                _stub.restore();
+            });
+
+            it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+
+                await assertRejects(() => extender.extendMessage('message-id', { _id: 'user-id' } as any), Error, 'unit-test-error');
+
+                _stub.restore();
+            });
+
+            it('throws an instance of Error when senderFn throws an unknown value', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject({}) as any);
+
+                await assertRejects(() => extender.extendMessage('message-id', { _id: 'user-id' } as any), Error, 'An unknown error occurred');
+
+                _stub.restore();
+            });
+        });
+
+        describe('extendRoom', () => {
+            it('throws an instance of Error when senderFn throws an error', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(new Error('unit-test-error')) as any);
+
+                await assertRejects(() => extender.extendRoom('room-id', { _id: 'user-id' } as any), Error, 'unit-test-error');
+
+                _stub.restore();
+            });
+
+            it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+
+                await assertRejects(() => extender.extendRoom('room-id', { _id: 'user-id' } as any), Error, 'unit-test-error');
+
+                _stub.restore();
+            });
+
+            it('throws an instance of Error when senderFn throws an unknown value', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject({}) as any);
+
+                await assertRejects(() => extender.extendRoom('room-id', { _id: 'user-id' } as any), Error, 'An unknown error occurred');
+
+                _stub.restore();
+            });
+        });
+
+        describe('extendVideoConference', () => {
+            it('throws an instance of Error when senderFn throws an error', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(new Error('unit-test-error')) as any);
+
+                await assertRejects(() => extender.extendVideoConference('video-conference-id'), Error, 'unit-test-error');
+
+                _stub.restore();
+            });
+
+            it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+
+                await assertRejects(() => extender.extendVideoConference('video-conference-id'), Error, 'unit-test-error');
+
+                _stub.restore();
+            });
+
+            it('throws an instance of Error when senderFn throws an unknown value', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject({}) as any);
+
+                await assertRejects(() => extender.extendVideoConference('video-conference-id'), Error, 'An unknown error occurred');
+
+                _stub.restore();
+            });
+        });
+
+        describe('finish', () => {
+            it('throws an instance of Error when senderFn throws an error', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(new Error('unit-test-error')) as any);
+
+                await assertRejects(() => extender.finish({ kind: 'message', getMessage: () => ({})} as any), Error, 'unit-test-error');
+
+                _stub.restore();
+            });
+
+            it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+
+                await assertRejects(() => extender.finish({ kind: 'message', getMessage: () => ({})} as any), Error, 'unit-test-error');
+
+                _stub.restore();
+            });
+
+            it('throws an instance of Error when senderFn throws an unknown value', async () => {
+                const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject({}) as any);
+
+                await assertRejects(() => extender.finish({ kind: 'message', getMessage: () => ({})} as any), Error, 'An unknown error occurred');
+
+                _stub.restore();
+            });
+        });
     });
 });

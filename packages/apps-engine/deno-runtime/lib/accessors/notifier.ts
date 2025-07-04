@@ -7,7 +7,8 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { MessageBuilder } from './builders/MessageBuilder.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import * as Messenger from '../messenger.ts';
-import { require } from "../require.ts";
+import { require } from '../require.ts';
+import { formatErrorResponse } from './formatResponseErrorHandler.ts';
 
 const { TypingScope } = require('@rocket.chat/apps-engine/definition/accessors/INotifier.js') as {
     TypingScope: typeof _TypingScope;
@@ -65,11 +66,19 @@ export class Notifier implements INotifier {
         await this.senderFn({
             method: `bridges:getMessageBridge:${method}`,
             params,
+        }).catch((err) => {
+            throw formatErrorResponse(err);
         });
     }
 
     private async getAppUser(): Promise<IUser | undefined> {
-        const response = await this.senderFn({ method: 'bridges:getUserBridge:doGetAppUser', params: [AppObjectRegistry.get<string>('id')] });
+        const response = await this.senderFn({
+            method: 'bridges:getUserBridge:doGetAppUser',
+            params: [AppObjectRegistry.get<string>('id')],
+        }).catch((err) => {
+            throw formatErrorResponse(err);
+        });
+
         return response.result;
     }
 }
