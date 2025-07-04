@@ -1,0 +1,179 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders BasicWizard without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full"
+    >
+      <div
+        class="steps-wizard"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-tabs--with-divider rcx-tabs rcx-css-1tbw8nv"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-tabs__scroll-box"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-tabs__wrapper"
+              role="tablist"
+            >
+              <button
+                aria-selected="true"
+                class="rcx-box rcx-box--full rcx-tabs__item--selected rcx-tabs__item rcx-css-5dmxf6"
+                role="tab"
+              >
+                First step
+              </button>
+              <button
+                aria-selected="false"
+                class="rcx-box rcx-box--full rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
+                role="tab"
+              >
+                Second step
+              </button>
+              <button
+                aria-selected="false"
+                class="rcx-box rcx-box--full rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
+                role="tab"
+              >
+                Third step
+              </button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-4q8ri8"
+          >
+            <div
+              class="rcx-states"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
+              >
+                
+              </i>
+              <h3
+                class="rcx-states__title"
+              >
+                First step
+              </h3>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-h2s0k0"
+          >
+            <div
+              class="rcx-button-group rcx-button-group--align-start"
+              role="group"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+                type="button"
+              >
+                <span
+                  class="rcx-button--content"
+                >
+                  Next
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders OrderedTabsWizard without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full"
+    >
+      <div
+        class="steps-wizard"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-tabs--with-divider rcx-tabs rcx-css-1tbw8nv"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-tabs__scroll-box"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-tabs__wrapper"
+              role="tablist"
+            >
+              <button
+                aria-selected="true"
+                class="rcx-box rcx-box--full rcx-tabs__item--selected rcx-tabs__item rcx-css-5dmxf6"
+                role="tab"
+              >
+                1. First step
+              </button>
+              <button
+                aria-selected="false"
+                class="rcx-box rcx-box--full rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
+                role="tab"
+              >
+                2. Second step
+              </button>
+              <button
+                aria-selected="false"
+                class="rcx-box rcx-box--full rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
+                role="tab"
+              >
+                3. Third step
+              </button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-4q8ri8"
+          >
+            <div
+              class="rcx-states"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
+              >
+                
+              </i>
+              <h3
+                class="rcx-states__title"
+              >
+                First step
+              </h3>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-h2s0k0"
+          >
+            <div
+              class="rcx-button-group rcx-button-group--align-start"
+              role="group"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+                type="button"
+              >
+                <span
+                  class="rcx-button--content"
+                >
+                  Next
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
