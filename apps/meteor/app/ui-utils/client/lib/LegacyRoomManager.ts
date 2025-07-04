@@ -1,7 +1,7 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
-import type { Filter } from '@rocket.chat/mongo-adapter';
+import type { Filter } from 'mongodb';
 
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { RoomManager } from '../../../../client/lib/RoomManager';

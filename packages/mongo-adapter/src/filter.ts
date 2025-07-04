@@ -1,8 +1,10 @@
+import type { Filter, FilterOperators } from 'mongodb';
+
 import { compareBSONValues, getBSONType } from './bson';
 import { equals, isTruthy } from './comparisons';
 import { createLookupFunction } from './lookups';
 import { BSONType } from './types';
-import type { ArrayIndices, FieldExpression, Filter, LookupBranch } from './types';
+import type { ArrayIndices, LookupBranch } from './types';
 
 type Match = {
 	readonly result: boolean;
@@ -151,7 +153,7 @@ const convertElementMatcherToBranchedMatcher = (
 	};
 };
 
-const operatorBranchedMatcher = <T>(valueSelector: FieldExpression<T>) => {
+const operatorBranchedMatcher = <T>(valueSelector: FilterOperators<T>) => {
 	const operatorMatchers = Object.entries(valueSelector).map(([operator, operand]): ((branches: LookupBranch[]) => Match) => {
 		if (isValueOperator(operator)) {
 			return valueOperators[operator](operand, valueSelector);
@@ -199,8 +201,8 @@ const $in = (operand: unknown): ((value: unknown) => boolean) => {
 
 const $eq = (operand: unknown) => convertElementMatcherToBranchedMatcher(equalityElementMatcher(operand));
 
-const $not = <T>(operand: unknown, _valueSelector: FieldExpression<T>) => {
-	return invertBranchedMatcher(compileValueSelector(operand as FieldExpression<T>));
+const $not = (operand: unknown) => {
+	return invertBranchedMatcher(compileValueSelector(operand));
 };
 
 const $ne = (operand: unknown) => invertBranchedMatcher(convertElementMatcherToBranchedMatcher(equalityElementMatcher(operand)));
@@ -212,7 +214,7 @@ const $exists = (operand: unknown) => {
 	return operand ? exists : invertBranchedMatcher(exists);
 };
 
-const $options = <T>(_operand: unknown, valueSelector: FieldExpression<T>) => {
+const $options = <T>(_operand: unknown, valueSelector: FilterOperators<T>) => {
 	if (!('$regex' in valueSelector)) {
 		throw new Error('$options needs a $regex');
 	}
@@ -220,7 +222,7 @@ const $options = <T>(_operand: unknown, valueSelector: FieldExpression<T>) => {
 	return () => ({ result: true });
 };
 
-const $all = <T>(operand: unknown, _valueSelector: FieldExpression<T>) => {
+const $all = (operand: unknown) => {
 	if (!Array.isArray(operand)) {
 		throw new Error('$all requires array');
 	}
@@ -373,7 +375,7 @@ const $bitsAnyClear = (operand: unknown) => {
 	};
 };
 
-const $regex = <T>(operand: unknown, valueSelector: FieldExpression<T>) => {
+const $regex = <T>(operand: unknown, valueSelector: FilterOperators<T>) => {
 	if (!(typeof operand === 'string' || operand instanceof RegExp)) {
 		throw new Error('$regex has to be a string or RegExp');
 	}
@@ -394,7 +396,7 @@ const $regex = <T>(operand: unknown, valueSelector: FieldExpression<T>) => {
 	return regexpElementMatcher(new RegExp(operand));
 };
 
-const $elemMatch = <T>(operand: unknown, _valueSelector: FieldExpression<T>) => {
+const $elemMatch = <T>(operand: unknown) => {
 	if (!isPlainObject(operand)) {
 		throw new Error('$elemMatch need an object');
 	}
@@ -409,7 +411,7 @@ const $elemMatch = <T>(operand: unknown, _valueSelector: FieldExpression<T>) => 
 	if (isDocMatcher) {
 		const subMatcher = createDocumentMatcherFromFilter(operand);
 
-		return (value: any) => {
+		return (value: unknown) => {
 			if (!Array.isArray(value)) {
 				return false;
 			}
@@ -526,7 +528,7 @@ const isOperatorObject = <TOperator extends `$${string}`>(
 	return theseAreOperators ?? true;
 };
 
-const compileValueSelector = <T>(valueSelector: FieldExpression<T>) => {
+const compileValueSelector = (valueSelector: unknown) => {
 	if (valueSelector instanceof RegExp) {
 		return convertElementMatcherToBranchedMatcher(regexpElementMatcher(valueSelector));
 	}

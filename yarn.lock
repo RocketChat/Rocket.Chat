@@ -8281,7 +8281,10 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.2"
+    mongodb: "npm:6.10.0"
     typescript: "npm:~5.8.3"
+  peerDependencies:
+    mongodb: 6.10.0
   languageName: unknown
   linkType: soft
 

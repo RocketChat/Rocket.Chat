@@ -1,7 +1,9 @@
+import type { Sort } from 'mongodb';
+
 import { compareBSONValues } from './bson';
 import { isEmptyArray } from './comparisons';
 import { createLookupFunction } from './lookups';
-import type { LookupBranch, Sort } from './types';
+import type { LookupBranch } from './types';
 
 const createSortSpecParts = <T>(
 	spec: Sort,
@@ -18,10 +20,18 @@ const createSortSpecParts = <T>(
 				};
 			}
 
-			return {
-				lookup: createLookupFunction(value[0], { forSort: true }),
-				ascending: value[1] !== 'desc',
-			};
+			if (Array.isArray(value)) {
+				return {
+					lookup: createLookupFunction(value[0], { forSort: true }),
+					ascending: value[1] !== 'desc',
+				};
+			}
+
+			if (typeof value === 'object' && value !== null && '$meta' in value) {
+				throw new Error('MongoDB $meta sort is not supported in the adapter');
+			}
+
+			throw new Error('MongoDB numeric sort is not supported in the adapter');
 		});
 	}
 
