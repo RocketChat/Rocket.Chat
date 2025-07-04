@@ -28,6 +28,7 @@
 		"react": "~18.3.1"
 	},
 	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/addon-essentials": "^8.6.14",
@@ -41,7 +42,7 @@
 		"@types/react": "~18.3.23",
 		"@types/react-dom": "~18.3.7",
 		"buffer": "~6.0.3",
-		"eslint": "~8.45.0",
+		"eslint": "^9.30.1",
 		"jest": "~30.0.2",
 		"react-dom": "~18.3.1",
 		"storybook": "^8.6.14",

@@ -1,0 +1,21 @@
+{
+	"extends": "@rocket.chat/tsconfig/server.json",
+	"compilerOptions": {
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"declaration": true,
+		"declarationMap": true,
+		"isolatedDeclarations": true,
+		"isolatedModules": true,
+		"target": "es2024",
+		"lib": ["es2024"],
+		"stripInternal": true,
+		"erasableSyntaxOnly": true,
+		"verbatimModuleSyntax": true,
+		"types": [],
+		"libReplacement": false
+	},
+	"include": ["./src"]
+}

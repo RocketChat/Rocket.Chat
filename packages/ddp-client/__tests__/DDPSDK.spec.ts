@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 import util from 'util';
 
 import WS from 'jest-websocket-mock';
