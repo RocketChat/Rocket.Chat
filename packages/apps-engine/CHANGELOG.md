@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.53.0-rc.1
+
+### Patch Changes
+
+- ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
 ## 1.53.0-rc.0
 
 ### Minor Changes

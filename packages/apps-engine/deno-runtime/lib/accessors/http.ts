@@ -4,6 +4,7 @@ import type { IRead } from '@rocket.chat/apps-engine/definition/accessors/IRead.
 
 import * as Messenger from '../messenger.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
+import { formatErrorResponse } from './formatResponseErrorHandler.ts';
 
 type RequestMethod = 'get' | 'post' | 'put' | 'head' | 'delete' | 'patch';
 
@@ -76,7 +77,7 @@ export class Http implements IHttp {
 				url,
 				request,
 			}],
-		});
+		}).catch((error) => { throw formatErrorResponse(error); });
 
 		for (const handler of this.httpExtender.getPreResponseHandlers()) {
 			response = await handler.executePreHttpResponse(response as IHttpResponse, this.read, this.persistence);
