@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { memo, type ReactNode } from 'react';
 
 import { useWizardContext } from './useWizardContext';
@@ -15,7 +14,7 @@ const WizardContent = ({ id, children }: WizardContentProps) => {
 		return null;
 	}
 
-	return <Box>{children}</Box>;
+	return <div>{children}</div>;
 };
 
 export default memo(WizardContent);
