@@ -1,21 +1,18 @@
-import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
-import type { FieldExpression, Filter } from '@rocket.chat/mongo-adapter';
+import { createDocumentMatcherFromFilter, createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import type { ArrayIndices } from '@rocket.chat/mongo-adapter';
 import { Meteor } from 'meteor/meteor';
-import type { CountDocumentsOptions } from 'mongodb';
+import type { CountDocumentsOptions, FilterOperators, Filter, UpdateFilter } from 'mongodb';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { Cursor } from './Cursor';
 import type { Options } from './Cursor';
 import { DiffSequence } from './DiffSequence';
 import type { IdMap } from './IdMap';
-import { Matcher } from './Matcher';
 import { MinimongoError } from './MinimongoError';
 import type { Query } from './Query';
 import { SynchronousQueue } from './SynchronousQueue';
-import type { UpdateFilter } from './Updater';
 import { Updater } from './Updater';
-import type { ArrayIndices } from './common';
-import { hasOwn, _selectorIsId, clone, assertHasValidFieldNames } from './common';
+import { _selectorIsId, clone, assertHasValidFieldNames } from './common';
 
 /**
  * Forked from Meteor's Mongo.Collection, this class implements a local collection over a Zustand store.
@@ -209,7 +206,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private prepareRemove(selector: Filter<T>) {
-		const predicate = createPredicateFromFilter(selector);
+		const predicate = createPredicateFromFilter<T>(selector);
 		const remove = new Set<T>();
 
 		this._eachPossiblyMatchingDoc(selector, (doc) => {
@@ -430,7 +427,7 @@ export class LocalCollection<T extends { _id: string }> {
 		const callback = !_callback && typeof _options === 'function' ? _options : _callback;
 		const options = typeof _options === 'object' && _options !== null ? _options : {};
 
-		const matcher = new Matcher(selector);
+		const matchDocument = createDocumentMatcherFromFilter<T>(selector);
 
 		const queriesToOriginalResults = this.prepareUpdate(selector);
 
@@ -439,7 +436,7 @@ export class LocalCollection<T extends { _id: string }> {
 		let updateCount = 0;
 
 		await this._eachPossiblyMatchingDocAsync(selector, async (doc, id) => {
-			const queryResult = matcher.documentMatches(doc);
+			const queryResult = matchDocument(doc);
 
 			if (queryResult.result) {
 				this._saveOriginal(id, doc);
@@ -508,7 +505,7 @@ export class LocalCollection<T extends { _id: string }> {
 		const callback = !_callback && typeof _options === 'function' ? _options : _callback;
 		const options = typeof _options === 'object' && _options !== null ? _options : {};
 
-		const matcher = new Matcher(selector);
+		const matchDocument = createDocumentMatcherFromFilter(selector);
 
 		const queriesToOriginalResults = this.prepareUpdate(selector);
 
@@ -517,7 +514,7 @@ export class LocalCollection<T extends { _id: string }> {
 		let updateCount = 0;
 
 		this._eachPossiblyMatchingDoc(selector, (doc, id) => {
-			const queryResult = matcher.documentMatches(doc);
+			const queryResult = matchDocument(doc);
 
 			if (queryResult.result) {
 				this._saveOriginal(id, doc);
@@ -815,7 +812,7 @@ export class LocalCollection<T extends { _id: string }> {
 		throw new MinimongoError('object missing from query');
 	}
 
-	private _idsMatchedBySelector(selector: Filter<T> | T['_id']): T['_id'][] | null {
+	private _idsMatchedBySelector(selector: Filter<T> | T['_id']): readonly T['_id'][] | null {
 		if (_selectorIsId(selector)) {
 			return [selector];
 		}
@@ -824,18 +821,18 @@ export class LocalCollection<T extends { _id: string }> {
 			return null;
 		}
 
-		if (hasOwn.call(selector, '_id')) {
+		if ('_id' in selector) {
 			if (_selectorIsId(selector._id)) {
 				return [selector._id];
 			}
 
 			if (
 				selector._id &&
-				Array.isArray((selector._id as FieldExpression<T['_id']>).$in) &&
-				(selector._id as FieldExpression<T['_id']>).$in?.length &&
-				(selector._id as FieldExpression<T['_id']>).$in?.every(_selectorIsId)
+				Array.isArray((selector._id as FilterOperators<T['_id']>).$in) &&
+				(selector._id as FilterOperators<T['_id']>).$in?.length &&
+				(selector._id as FilterOperators<T['_id']>).$in?.every(_selectorIsId)
 			) {
-				return (selector._id as FieldExpression<T['_id']>).$in!;
+				return (selector._id as FilterOperators<T['_id']>).$in!;
 			}
 
 			return null;

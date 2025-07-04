@@ -1,30 +1,25 @@
-import { createComparatorFromSort, createPredicateFromFilter, type Filter, type Sort } from '@rocket.chat/mongo-adapter';
+import { createComparatorFromSort, createPredicateFromFilter, getBSONType } from '@rocket.chat/mongo-adapter';
+import type { ArrayIndices } from '@rocket.chat/mongo-adapter';
+import type { Filter, Sort, UpdateFilter } from 'mongodb';
 
 import { MinimongoError } from './MinimongoError';
-import type { ArrayIndices } from './common';
 import {
-	_f,
-	_isPlainObject,
+	isPlainObject,
 	assertHasValidFieldNames,
 	assertIsValidFieldName,
 	clone,
 	entriesOf,
+	equals,
 	isIndexable,
 	isNumericKey,
 	populateDocumentWithQueryFields,
 } from './common';
 
-export type UpdateModifiers = {
-	[K in keyof typeof Updater.MODIFIERS]?: Parameters<(typeof Updater.MODIFIERS)[K]>[2];
-};
-
-export type UpdateFilter<T> = UpdateModifiers | Partial<T>;
-
 export class Updater<T extends { _id: string }> {
 	constructor(private readonly modifier: UpdateFilter<T>) {}
 
 	modify(doc: T, { isInsert = false, arrayIndices }: { isInsert?: boolean; arrayIndices?: ArrayIndices } = {}): T {
-		if (!_isPlainObject(this.modifier)) {
+		if (!isPlainObject(this.modifier)) {
 			throw new MinimongoError('Modifier must be an object');
 		}
 
@@ -32,7 +27,9 @@ export class Updater<T extends { _id: string }> {
 			const newDoc = clone(doc);
 
 			for (const [operator, operand] of entriesOf(this.modifier)) {
-				const modFunc = Updater.MODIFIERS[isInsert && operator === '$setOnInsert' ? '$set' : operator] as (
+				const modFunc = Updater.MODIFIERS[
+					isInsert && operator === '$setOnInsert' ? '$set' : (operator as keyof typeof Updater.MODIFIERS)
+				] as (
 					target: Record<string, any> | Array<object | null> | null | undefined,
 					field: string,
 					arg: unknown,
@@ -63,7 +60,7 @@ export class Updater<T extends { _id: string }> {
 
 					const key = keyparts.pop();
 
-					if (!key) {
+					if (key === undefined) {
 						throw new MinimongoError(`The update path '${keypath}' ends with an empty field name, which is not allowed.`);
 					}
 
@@ -91,7 +88,7 @@ export class Updater<T extends { _id: string }> {
 		return Object.assign({ _id: doc._id } as T, this.modifier);
 	}
 
-	private isUpdateModifiers(mod: UpdateFilter<T>): mod is UpdateModifiers {
+	private isUpdateModifiers(mod: UpdateFilter<T>): boolean {
 		let isModify = false;
 		let isReplace = false;
 
@@ -162,7 +159,7 @@ export class Updater<T extends { _id: string }> {
 				target[field] = arg;
 			}
 		},
-		$minc<TField extends string>(target: Record<TField, number>, field: TField, arg: number) {
+		$min<TField extends string>(target: Record<TField, number>, field: TField, arg: number) {
 			if (typeof arg !== 'number') {
 				throw new MinimongoError('Modifier $min allowed for numbers only', { field });
 			}
@@ -179,7 +176,7 @@ export class Updater<T extends { _id: string }> {
 				target[field] = arg;
 			}
 		},
-		$maxc<TField extends string>(target: Record<TField, number>, field: TField, arg: number) {
+		$max<TField extends string>(target: Record<TField, number>, field: TField, arg: number) {
 			if (typeof arg !== 'number') {
 				throw new MinimongoError('Modifier $max allowed for numbers only', { field });
 			}
@@ -289,9 +286,8 @@ export class Updater<T extends { _id: string }> {
 				throw new MinimongoError('Cannot apply $push modifier to non-array', { field });
 			}
 
-			const isEachArgument = (arg: unknown): arg is { $each?: TItem[]; $position?: number; $slice?: number; $sort?: Sort } => {
-				return typeof arg === 'object' && arg !== null && '$each' in arg && Array.isArray((arg as { $each: TItem[] }).$each);
-			};
+			const isEachArgument = (arg: unknown): arg is { $each?: TItem[]; $position?: number; $slice?: number; $sort?: Sort } =>
+				typeof arg === 'object' && arg !== null && '$each' in arg;
 
 			if (!isEachArgument(arg)) {
 				assertHasValidFieldNames(arg);
@@ -339,7 +335,7 @@ export class Updater<T extends { _id: string }> {
 				sortFunction = createComparatorFromSort(arg.$sort);
 
 				for (const element of toPush) {
-					if (_f._type(element) !== 3) {
+					if (getBSONType(element) !== 3) {
 						throw new MinimongoError('$push like modifiers using $sort require all elements to be objects', { field });
 					}
 				}
@@ -373,23 +369,6 @@ export class Updater<T extends { _id: string }> {
 				}
 			}
 		},
-		$pushAll<TField extends string>(target: Record<TField, unknown[]>, field: TField, arg: unknown[]) {
-			if (!(typeof arg === 'object' && Array.isArray(arg))) {
-				throw new MinimongoError('Modifier $pushAll/pullAll allowed for arrays only');
-			}
-
-			assertHasValidFieldNames(arg);
-
-			const toPush = target[field];
-
-			if (toPush === undefined) {
-				target[field] = arg;
-			} else if (!Array.isArray(toPush)) {
-				throw new MinimongoError('Cannot apply $pushAll modifier to non-array', { field });
-			} else {
-				toPush.push(...arg);
-			}
-		},
 		$addToSet<TField extends string, TItem>(target: Record<TField, TItem[]>, field: TField, arg: TItem | { $each: TItem[] }) {
 			const isEachArgument = (arg: unknown): arg is { $each?: TItem[] } => {
 				return typeof arg === 'object' && arg !== null && '$each' in arg && Array.isArray((arg as { $each: TItem[] }).$each);
@@ -406,7 +385,7 @@ export class Updater<T extends { _id: string }> {
 				throw new MinimongoError('Cannot apply $addToSet modifier to non-array', { field });
 			} else {
 				for (const value of values) {
-					if (toAdd.some((element) => _f._equal(value, element))) {
+					if (toAdd.some((element) => equals(value, element))) {
 						continue;
 					}
 
@@ -459,7 +438,7 @@ export class Updater<T extends { _id: string }> {
 
 				out = toPull.filter((element) => !predicate(element));
 			} else {
-				out = toPull.filter((element) => !_f._equal(element, arg));
+				out = toPull.filter((element) => !equals(element, arg as any));
 			}
 
 			target[field] = out;
@@ -483,13 +462,10 @@ export class Updater<T extends { _id: string }> {
 				throw new MinimongoError('Cannot apply $pull/pullAll modifier to non-array', { field });
 			}
 
-			target[field] = toPull.filter((object) => !arg.some((element) => _f._equal(object, element)));
+			target[field] = toPull.filter((object) => !arg.some((element) => equals(object, element)));
 		},
 		$bit(_target: unknown, field: string) {
 			throw new MinimongoError('$bit is not supported', { field });
-		},
-		$v(_target: unknown, field: string) {
-			throw new MinimongoError('$v is not supported', { field });
 		},
 	};
 
@@ -510,7 +486,7 @@ export class Updater<T extends { _id: string }> {
 			arrayIndices?: ArrayIndices;
 		} = {},
 	) {
-		let usedArrayIndex = false;
+		let arrayIdx = 0;
 
 		for (let i = 0; i < keyparts.length; i++) {
 			const last = i === keyparts.length - 1;
@@ -521,7 +497,7 @@ export class Updater<T extends { _id: string }> {
 					return undefined;
 				}
 
-				const error = new MinimongoError(`cannot use the part '${keypart}' to traverse ${doc}`);
+				const error = new MinimongoError(`Cannot use the part '${keypart}' to traverse ${doc}`);
 				error.setPropertyError = true;
 				throw error;
 			}
@@ -532,16 +508,11 @@ export class Updater<T extends { _id: string }> {
 				}
 
 				if (keypart === '$') {
-					if (usedArrayIndex) {
-						throw new MinimongoError("Too many positional (i.e. '$') elements");
-					}
-
 					if (!options.arrayIndices?.length) {
 						throw new MinimongoError('The positional operator did not find the match needed from the query');
 					}
 
-					keypart = options.arrayIndices[0];
-					usedArrayIndex = true;
+					keypart = options.arrayIndices[arrayIdx++];
 				} else if (isNumericKey(keypart as string)) {
 					keypart = parseInt(keypart as string);
 				} else {
@@ -572,6 +543,18 @@ export class Updater<T extends { _id: string }> {
 					}
 				}
 			} else {
+				if (keypart === '$') {
+					if (!options.arrayIndices?.length) {
+						throw new MinimongoError('The positional operator did not find the match needed from the query');
+					}
+
+					keypart = options.arrayIndices[arrayIdx++];
+
+					if (keypart === undefined) {
+						throw new MinimongoError('Too many positional');
+					}
+				}
+
 				assertIsValidFieldName(keypart as string);
 
 				if (!(keypart in doc)) {
@@ -580,7 +563,8 @@ export class Updater<T extends { _id: string }> {
 					}
 
 					if (!last) {
-						doc[keypart] = {};
+						const nextpart = keyparts[i + 1];
+						doc[keypart] = typeof nextpart === 'number' || /\d+/.test(nextpart) ? [] : {};
 					}
 				}
 			}
