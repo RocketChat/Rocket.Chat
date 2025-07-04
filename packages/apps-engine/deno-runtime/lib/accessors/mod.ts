@@ -22,6 +22,7 @@ import { ModifyCreator } from './modify/ModifyCreator.ts';
 import { ModifyUpdater } from './modify/ModifyUpdater.ts';
 import { ModifyExtender } from './modify/ModifyExtender.ts';
 import { Notifier } from './notifier.ts';
+import { formatErrorResponse } from './formatResponseErrorHandler.ts';
 
 const httpMethods = ['get', 'post', 'put', 'delete', 'head', 'options', 'patch'] as const;
 
@@ -71,8 +72,8 @@ export class AppAccessors {
                                 params,
                             })
                                 .then((response) => response.result)
-                                .catch((err) => { throw new Error(err.error) });
-                        },
+                                .catch((err) => { throw formatErrorResponse(err) });
+                    },
                 },
             ) as T;
 

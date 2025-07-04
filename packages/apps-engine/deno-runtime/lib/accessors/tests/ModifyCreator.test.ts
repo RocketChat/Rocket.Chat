@@ -151,7 +151,7 @@ describe('ModifyCreator', () => {
                     name: 'Visitor Name',
                 }),
             Error,
-            '[object Object]',
+            'An unknown error occurred',
         );
     });
 
@@ -176,7 +176,7 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const uploadCreator = modifyCreator.getUploadCreator();
 
-        await assertRejects(() => uploadCreator.uploadBuffer(new Uint8Array([1, 2, 3]), 'image/png'), Error, '[object Object]');
+        await assertRejects(() => uploadCreator.uploadBuffer(new Uint8Array([1, 2, 3]), 'image/png'), Error, 'An unknown error occurred');
     });
 
     it('throws an error when a proxy method of getEmailCreator fails', async () => {
@@ -229,7 +229,7 @@ describe('ModifyCreator', () => {
                     text: 'This is a test email.',
                 }),
             Error,
-            '[object Object]',
+            'An unknown error occurred',
         );
     });
 
@@ -254,6 +254,6 @@ describe('ModifyCreator', () => {
         const modifyCreator = new ModifyCreator(failingSenderFn);
         const contactCreator = modifyCreator.getContactCreator();
 
-        await assertRejects(() => contactCreator.addContactEmail('test-contact-id', 'test@example.com'), Error, '[object Object]');
+        await assertRejects(() => contactCreator.addContactEmail('test-contact-id', 'test@example.com'), Error, 'An unknown error occurred');
     });
 });
