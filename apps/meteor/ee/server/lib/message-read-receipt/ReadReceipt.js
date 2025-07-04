@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, MessageReads } from '@rocket.chat/core-services';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -50,9 +50,48 @@ export const ReadReceipt = {
 			return;
 		}
 
-		this.storeReadReceipts(await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray(), roomId, userId);
+		this.storeReadReceipts(
+			(await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray()).filter((msg) => msg.unread),
+			roomId,
+			userId,
+		);
 
 		await updateMessages(room);
+	},
+
+	async markMessageAsReadByDeactivatedMembers(message, { _id: roomId, t }) {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		if (!message.unread) {
+			return;
+		}
+
+		const deactivatedUsers = await (await Users.findInactiveByRoomId(roomId)).toArray();
+		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
+
+		await Promise.all(
+			deactivatedUsers.map(async (user) => {
+				if (message.tmid) {
+					await MessageReads.readThread(user._id, message.tmid);
+				} else {
+					const result = await Subscriptions.setAsReadByRoomIdAndUserId(roomId, user._id);
+
+					if (result.modifiedCount > 0) {
+						void notifyOnMessageChange({
+							id: message._id,
+						});
+					}
+
+					this.storeReadReceipts([message], roomId, user._id, extraData);
+				}
+			}),
+		);
+
+		if (!message.tmid) {
+			updateMessages({ _id: roomId });
+		}
 	},
 
 	async markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
@@ -87,7 +126,7 @@ export const ReadReceipt = {
 		const message = await Messages.findOneById(tmid, { projection: { tlm: 1, rid: 1 } });
 
 		// if users last seen is greater than thread's last message, it means the user has already marked this thread as read
-		if (!message || userLastSeen > message.tlm) {
+		if (!message || userLastSeen > message.tlm || !message.unread) {
 			return;
 		}
 
