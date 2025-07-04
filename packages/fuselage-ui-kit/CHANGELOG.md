@@ -1,5 +1,19 @@
 # Change Log
 
+## 20.0.0-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [de4293a1ca5af138437bf01a78e7c0450f437dc7]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.0-rc.1
+  - @rocket.chat/core-typings@7.8.0-rc.8
+  - @rocket.chat/gazzodown@20.0.0-rc.8
+  - @rocket.chat/ui-contexts@20.0.0-rc.8
+  - @rocket.chat/ui-avatar@16.0.0-rc.8
+  - @rocket.chat/ui-video-conf@20.0.0-rc.8
+  </details>
+
 ## 20.0.0-rc.7
 
 ### Patch Changes
