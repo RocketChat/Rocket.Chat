@@ -70,7 +70,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 					return {
 						...upload,
 						percentage: 0,
-						error: new Error('Could not updated file name'),
+						error: new Error('Could not update file name'),
 					};
 				}),
 			);
@@ -160,21 +160,29 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				);
 
 				xhr.onload = () => {
-					if (xhr.readyState === xhr.DONE && xhr.status === 200) {
-						const result = JSON.parse(xhr.responseText);
-						this.set(
-							this.uploads.map((upload) => {
-								if (upload.id !== id) {
-									return upload;
-								}
+					if (xhr.readyState === xhr.DONE) {
+						if (xhr.status === 400) {
+							const error = JSON.parse(xhr.responseText);
+							this.set(this.uploads.map((upload) => ({ ...upload, error: new Error(error.error) })));
+							return;
+						}
 
-								return {
-									...upload,
-									id: result.file._id,
-									url: result.file.url,
-								};
-							}),
-						);
+						if (xhr.status === 200) {
+							const result = JSON.parse(xhr.responseText);
+							this.set(
+								this.uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										id: result.file._id,
+										url: result.file.url,
+									};
+								}),
+							);
+						}
 					}
 				};
 
