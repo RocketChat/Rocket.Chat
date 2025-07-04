@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders AppLogsItem without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-4jy2w6"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1w4asan"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1rfw4fq"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-label"
+            for="eventFilter"
+          >
+            Event
+          </label>
+          <label
+            class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+          >
+            <input
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+              id="eventFilter"
+              name="event"
+              size="1"
+              type="text"
+              value=""
+            />
+            <span
+              class="rcx-box rcx-box--full rcx-input-box__addon"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1bepdyv"
+              >
+                
+              </i>
+            </span>
+          </label>
+        </div>
+        <button
+          class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-css-qv9v2f"
+          type="button"
+        >
+          <span
+            class="rcx-button--content"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-1hdf9ok"
+            >
+              
+            </i>
+            Filters
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+`;
