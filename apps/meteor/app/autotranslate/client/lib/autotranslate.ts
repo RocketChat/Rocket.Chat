@@ -15,7 +15,7 @@ import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
-import { hasPermission } from '../../../authorization/client';
+import { hasPermission } from '../../../authorization/client/hasPermission';
 import { Subscriptions, Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
@@ -103,7 +103,7 @@ export const AutoTranslate = {
 
 		Tracker.autorun(async (c) => {
 			const uid = Meteor.userId();
-			if (!settings.get('AutoTranslate_Enabled') || !uid || !hasPermission('auto-translate')) {
+			if (!settings.get('AutoTranslate_Enabled') || !uid || !hasPermission(Meteor.user(), 'auto-translate')) {
 				return;
 			}
 

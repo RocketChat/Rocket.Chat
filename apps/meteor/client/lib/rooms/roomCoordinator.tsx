@@ -3,7 +3,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../app/authorization/client';
+import { hasPermission } from '../../../app/authorization/client/hasPermission';
 import { Rooms, Subscriptions } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import type {
@@ -144,7 +144,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 				return false;
 			}
 
-			if (hasPermission('post-readonly', room._id)) {
+			if (hasPermission(Meteor.user(), 'post-readonly', room._id)) {
 				return false;
 			}
 

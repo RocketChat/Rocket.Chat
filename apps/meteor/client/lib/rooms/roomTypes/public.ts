@@ -82,7 +82,8 @@ roomCoordinator.add(
 			const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
 			return (
 				groupByType &&
-				(hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true)
+				(hasAtLeastOnePermission(Meteor.user(), ['view-c-room', 'view-joined-room']) ||
+					settings.get('Accounts_AllowAnonymousRead') === true)
 			);
 		},
 
