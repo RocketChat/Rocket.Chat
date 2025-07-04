@@ -692,6 +692,18 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	setFnameByIds(_ids: IRoom['_id'][], fname: IRoom['fname']): Promise<UpdateResult | Document> {
+		const query: Filter<IRoom> = { _id: { $in: _ids } };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				fname,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
 	setRoomTopicById(roomId: IRoom['_id'], topic: IRoom['description']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { description: topic } });
 	}

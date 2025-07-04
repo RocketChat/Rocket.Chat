@@ -7,6 +7,7 @@ import type {
 	IOmnichannelRoomExtraData,
 	IOmnichannelRoom,
 	TransferData,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import {
 	LivechatRooms,
@@ -37,6 +38,8 @@ import {
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChanged,
 	notifyOnSubscriptionChanged,
+	notifyOnManyLivechatInquiriesChangedByRooms,
+	notifyOnManySubscriptionChangedByRoomIds,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
@@ -205,6 +208,32 @@ export async function saveRoomInfo(
 	void notifyOnRoomChangedById(roomData._id);
 
 	return true;
+}
+
+export async function updateRoomsInfoFromVisitorUpdate(roomIds: string[], guestData: AtLeast<ILivechatVisitor, 'name'>) {
+	if (!guestData?.name?.trim()) {
+		return;
+	}
+
+	if (!roomIds.length) {
+		return;
+	}
+
+	const { name } = guestData;
+
+	const responses = await Promise.all([
+		Rooms.setFnameByIds(roomIds, name),
+		LivechatInquiry.setNameByRoomIds(roomIds, name),
+		Subscriptions.updateDisplayNameByRoomIds(roomIds, name),
+	]);
+
+	if (responses[1]?.modifiedCount) {
+		void notifyOnManyLivechatInquiriesChangedByRooms(roomIds, 'updated', { name });
+	}
+
+	if (responses[2]?.modifiedCount) {
+		void notifyOnManySubscriptionChangedByRoomIds(roomIds);
+	}
 }
 
 export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: Partial<TransferData> = {}) {

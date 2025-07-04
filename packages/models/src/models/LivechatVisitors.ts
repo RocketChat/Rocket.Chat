@@ -269,6 +269,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.updateOne(query, update);
 	}
 
+	updateAllLivechatDataByToken(token: string, livechatDataToUpdate: Record<string, string>): Promise<UpdateResult> {
+		return this.updateOne({ token }, { $set: livechatDataToUpdate });
+	}
+
 	updateLastAgentByToken(token: string, lastAgent: ILivechatVisitor['lastAgent']): Promise<Document | UpdateResult> {
 		const query = {
 			token,

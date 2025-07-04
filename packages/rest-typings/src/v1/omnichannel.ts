@@ -3812,6 +3812,63 @@ export type ILivechatContactWithManagerData = Omit<ILivechatContact, 'contactMan
 	contactManager?: Pick<IUser, '_id' | 'name' | 'username'>;
 };
 
+const isPOSTLivechatVisitorSchema = {
+	type: 'object',
+	properties: {
+		visitor: {
+			type: 'object',
+			properties: {
+				id: { type: 'string' },
+				token: { type: 'string', minLength: 1 },
+				name: { type: 'string' },
+				email: { type: 'string' },
+				department: { type: 'string' },
+				phone: { type: 'string' },
+				username: { type: 'string' },
+				customFields: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							key: { type: 'string' },
+							value: { type: 'string' },
+							overwrite: { type: 'boolean' },
+						},
+						required: ['key', 'value', 'overwrite'],
+						additionalProperties: false,
+					},
+				},
+				connectionData: {
+					type: 'object',
+					properties: {
+						httpHeaders: {
+							type: 'object',
+							additionalProperties: {
+								anyOf: [
+									{ type: 'string' },
+									{
+										type: 'array',
+										items: { type: 'string' },
+									},
+									{ type: 'null' },
+								],
+							},
+						},
+					},
+					required: ['httpHeaders'],
+					additionalProperties: false,
+				},
+			},
+			required: ['token'],
+			additionalProperties: false,
+		},
+	},
+	required: ['visitor'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatVisitor = ajv.compile<{ visitor: ILivechatVisitorDTO }>(isPOSTLivechatVisitorSchema);
+
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
 		GET: () => {
