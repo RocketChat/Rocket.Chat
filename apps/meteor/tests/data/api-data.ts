@@ -5,7 +5,7 @@ import supertest from 'supertest';
 
 import { adminUsername, adminPassword } from './user';
 
-const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
+export const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
 
 export const request = supertest(apiUrl);
 const prefix = '/api/v1/';
