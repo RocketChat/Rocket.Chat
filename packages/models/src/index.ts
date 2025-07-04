@@ -89,7 +89,6 @@ import type {
 	IMigrationsModel,
 	IModerationReportsModel,
 	IWorkspaceCredentialsModel,
-	IFreeSwitchChannelEventDeltaModel,
 	IScheduledMessagesModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
