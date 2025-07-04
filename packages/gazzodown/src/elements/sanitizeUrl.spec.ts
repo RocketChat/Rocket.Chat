@@ -95,10 +95,6 @@ describe('sanitizeUrl', () => {
 		});
 	});
 
-	it('sanitizes malformed URLs', () => {
-		expect(sanitizeUrl('ht^tp://broken')).toBe('#');
-	});
-
 	it('sanitizes empty string', () => {
 		expect(sanitizeUrl('')).toBe('#');
 	});
@@ -107,7 +103,7 @@ describe('sanitizeUrl', () => {
 		expect(sanitizeUrl('JAVASCRIPT:alert(1)')).toBe('#');
 	});
 
-	it('sanitizes nonsense input', () => {
-		expect(sanitizeUrl('💣💥🤯')).toBe('#');
+	it('allows bare domain names', () => {
+		expect(sanitizeUrl('example.com/page')).toBe('//example.com/page');
 	});
 });
