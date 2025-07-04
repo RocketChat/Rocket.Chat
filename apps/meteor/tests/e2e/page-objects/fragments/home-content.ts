@@ -156,6 +156,14 @@ export class HomeContent {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
 
+	get btnModalConfirmDelete(): Locator {
+		return this.page.getByRole('button', { name: 'Yes, delete', exact: true });
+	}
+
+	get btnCancelQuotePreview(): Locator {
+		return this.page.getByRole('button').locator('.rcx-icon--name-cross');
+	}
+
 	get descriptionInput(): Locator {
 		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
 	}
@@ -249,7 +257,7 @@ export class HomeContent {
 	}
 
 	get btnOptionDeleteMessage(): Locator {
-		return this.page.locator('[data-qa-id="delete-message"]');
+		return this.page.getByRole('menuitem', { name: 'Delete' });
 	}
 
 	get btnOptionPinMessage(): Locator {
@@ -544,5 +552,9 @@ export class HomeContent {
 
 	async expectLastMessageToHaveText(text: string): Promise<void> {
 		await expect(this.lastUserMessageBody).toHaveText(text);
+	}
+
+	get btnOptionStartDiscussion(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Start a Discussion' });
 	}
 }
