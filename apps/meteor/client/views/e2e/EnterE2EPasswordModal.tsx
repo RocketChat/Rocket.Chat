@@ -12,7 +12,7 @@ const EnterE2EPasswordModal = ({
 	onClose,
 	onCancel,
 }: {
-	onConfirm: (password: string) => void;
+	onConfirm: (password: string, errorFn: (msg: string) => void, errorMsg: string) => void;
 	onClose: () => void;
 	onCancel: () => void;
 }): ReactElement => {
@@ -34,8 +34,7 @@ const EnterE2EPasswordModal = ({
 			setPasswordError(t('Invalid_pass'));
 			return;
 		}
-
-		return onConfirm(password);
+		onConfirm(password, setPasswordError, t('Your_E2EE_password_is_incorrect'));
 	});
 
 	return (
