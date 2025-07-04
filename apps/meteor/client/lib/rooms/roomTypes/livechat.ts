@@ -54,7 +54,7 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			return Rooms.findOne({ _id: identifier });
+			return Rooms.state.get(identifier);
 		},
 
 		isLivechatRoom() {
@@ -62,12 +62,12 @@ roomCoordinator.add(
 		},
 
 		canSendMessage(rid) {
-			const room = Rooms.findOne({ _id: rid }, { fields: { open: 1 } });
+			const room = Rooms.state.get(rid);
 			return Boolean(room?.open);
 		},
 
 		readOnly(rid, _user) {
-			const room = Rooms.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
+			const room = Rooms.state.get(rid);
 			if (!room?.open) {
 				return true;
 			}

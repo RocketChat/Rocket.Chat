@@ -79,7 +79,7 @@ Meteor.startup(() => {
 				return message;
 			}
 
-			const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
+			const subscription = await waitUntilFind(() => Rooms.state.get(message.rid));
 
 			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 

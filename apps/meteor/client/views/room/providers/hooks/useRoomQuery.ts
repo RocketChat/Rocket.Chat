@@ -29,15 +29,7 @@ export function useRoomQuery(
 	const { refetch } = queryResult;
 
 	useEffect(() => {
-		const liveQueryHandle = Rooms.find({ _id: rid }).observe({
-			added: () => refetch(),
-			changed: () => refetch(),
-			removed: () => refetch(),
-		});
-
-		return () => {
-			liveQueryHandle.stop();
-		};
+		Rooms.use.subscribe(() => refetch());
 	}, [refetch, rid]);
 
 	return queryResult;
