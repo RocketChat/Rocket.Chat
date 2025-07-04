@@ -70,7 +70,10 @@ const AppInstances = ({ id }: { id: string }): ReactElement => {
 										</Box>
 									</GenericTableCell>
 									<GenericTableCell>
-										<Menu options={{ viewLogs: { label: t('Logs'), action: handleSelectLogs, type: 'option' } }}></Menu>
+										<Menu
+											aria-label='actions'
+											options={{ viewLogs: { label: t('Logs'), action: handleSelectLogs, type: 'option' } }}
+										></Menu>
 									</GenericTableCell>
 								</GenericTableRow>
 							))}

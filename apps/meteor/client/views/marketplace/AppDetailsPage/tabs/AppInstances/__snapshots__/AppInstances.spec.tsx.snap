@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders AppInstances without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-vkstbu"
+    >
+      <span
+        class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
+      />
+      <span
+        class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
+      />
+      <span
+        class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
+      />
+    </div>
+  </div>
+</body>
+`;
