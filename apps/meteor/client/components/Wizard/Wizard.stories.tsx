@@ -13,6 +13,13 @@ import { useWizard } from './useWizard';
 const meta = {
 	title: 'Components/Wizard',
 	component: Wizard,
+	subcomponents: {
+		WizardActions,
+		WizardBackButton,
+		WizardContent,
+		WizardNextButton,
+		WizardTabs,
+	},
 	parameters: {
 		layout: 'centered',
 	},
