@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/instance-status",
-	"version": "0.1.27",
+	"version": "0.1.28",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",

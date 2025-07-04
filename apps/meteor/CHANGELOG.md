@@ -1,5 +1,43 @@
 # @rocket.chat/meteor
 
+## 7.7.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36360](https://github.com/RocketChat/Rocket.Chat/pull/36360) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
+- <details><summary>Updated dependencies [46662d78192b438914b2aedb974faa2367225fa5]:</summary>
+
+  - @rocket.chat/apps-engine@1.52.1
+  - @rocket.chat/presence@0.2.28
+  - @rocket.chat/apps@0.5.7
+  - @rocket.chat/core-services@0.9.7
+  - @rocket.chat/core-typings@7.7.4
+  - @rocket.chat/fuselage-ui-kit@19.0.4
+  - @rocket.chat/rest-typings@7.7.4
+  - @rocket.chat/license@1.0.19
+  - @rocket.chat/omnichannel-services@0.3.25
+  - @rocket.chat/pdf-worker@0.3.7
+  - @rocket.chat/api-client@0.2.28
+  - @rocket.chat/cron@0.1.28
+  - @rocket.chat/freeswitch@1.2.15
+  - @rocket.chat/gazzodown@19.0.4
+  - @rocket.chat/model-typings@1.6.7
+  - @rocket.chat/ui-contexts@19.0.4
+  - @rocket.chat/models@1.5.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.7
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@15.0.4
+  - @rocket.chat/ui-client@19.0.4
+  - @rocket.chat/ui-video-conf@19.0.4
+  - @rocket.chat/ui-voip@9.0.4
+  - @rocket.chat/web-ui-registration@19.0.4
+  - @rocket.chat/instance-status@0.1.28
+  </details>
+
 ## 7.7.3
 
 ### Patch Changes

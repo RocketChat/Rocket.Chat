@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-voip",
-	"version": "9.0.3",
+	"version": "9.0.4",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
