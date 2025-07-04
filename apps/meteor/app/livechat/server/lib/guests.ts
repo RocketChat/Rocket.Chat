@@ -100,8 +100,6 @@ export async function removeContactsByVisitorId({ _id }: { _id: string }) {
 
 		await LivechatContacts.disableByVisitorId(_id);
 	}
-
-	return true;
 }
 
 export async function registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {

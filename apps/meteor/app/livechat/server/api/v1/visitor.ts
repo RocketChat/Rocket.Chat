@@ -141,17 +141,18 @@ API.v1.addRoute('livechat/visitor/:token', {
 		}
 
 		const { _id } = visitor;
-		const result = await removeContactsByVisitorId({ _id });
-		if (!result) {
+		try {
+			await removeContactsByVisitorId({ _id });
+			return API.v1.success({
+				visitor: {
+					_id,
+					ts: new Date().toISOString(),
+				},
+			});
+		} catch (e) {
+			livechatLogger.error(e);
 			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
-
-		return API.v1.success({
-			visitor: {
-				_id,
-				ts: new Date().toISOString(),
-			},
-		});
 	},
 });
 
