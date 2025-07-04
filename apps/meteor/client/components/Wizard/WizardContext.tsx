@@ -1,10 +1,11 @@
 import { createContext } from 'react';
 
-import type { StepMetadata, StepNode, StepsLinkedList } from './lib/StepsLinkedList';
+import type { StepNode, StepMetadata } from './lib/StepNode';
+import type StepsLinkedList from './lib/StepsLinkedList';
 
 export type WizardAPI = {
 	steps: StepsLinkedList;
-	register(metadata: StepMetadata): void;
+	register(metadata: StepMetadata): () => void;
 	currentStep: StepNode | null;
 	next(): void;
 	previous(): void;
