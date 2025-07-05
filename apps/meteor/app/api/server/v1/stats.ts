@@ -36,23 +36,23 @@ const statisticsEndpoints = API.v1.get(
 					wizard: {
 						type: 'object',
 						properties: {
-							organizationType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-							industry: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-							size: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-							country: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-							language: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-							serverType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-							registerServer: { anyOf: [{ type: 'boolean' }, { type: 'null' }] },
+							organizationType: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+							industry: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+							size: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+							country: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+							language: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+							serverType: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+							registerServer: { oneOf: [{ type: 'boolean' }, { type: 'null' }] },
 						},
 						additionalProperties: false,
 					},
 					uniqueId: { type: 'string' },
 					deploymentFingerprintHash: { type: 'string' },
 					deploymentFingerprintVerified: { type: 'boolean' },
-					installedAt: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-					version: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-					tag: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-					branch: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+					installedAt: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+					version: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+					tag: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+					branch: { oneOf: [{ type: 'string' }, { type: 'null' }] },
 					totalUsers: { type: 'integer' },
 					activeUsers: { type: 'integer' },
 					activeGuests: { type: 'integer' },
@@ -104,7 +104,7 @@ const statisticsEndpoints = API.v1.get(
 					federatedServers: { type: 'integer' },
 					federatedUsers: { type: 'integer' },
 					lastLogin: { type: 'string' },
-					lastMessageSentAt: { anyOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
+					lastMessageSentAt: { oneOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
 					lastSeenSubscription: { type: 'string' },
 					os: {
 						type: 'object',
@@ -150,14 +150,14 @@ const statisticsEndpoints = API.v1.get(
 					migration: {
 						type: 'object',
 						properties: {
-							_id: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+							_id: { oneOf: [{ type: 'string' }, { type: 'null' }] },
 							locked: { type: 'boolean' },
 							version: { type: 'integer' },
 							buildAt: {
-								anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+								oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
 							},
 							lockedAt: {
-								anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+								oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
 							},
 						},
 						required: ['locked', 'version'],
@@ -175,7 +175,7 @@ const statisticsEndpoints = API.v1.get(
 						items: {
 							type: 'object',
 							patternProperties: {
-								'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
+								'^.*': { oneOf: [{ type: 'string' }, { type: 'integer' }] },
 							},
 						},
 					},
@@ -275,7 +275,7 @@ const statisticsEndpoints = API.v1.get(
 					BusinessHours: {
 						type: 'object',
 						patternProperties: {
-							'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
+							'^.*': { oneOf: [{ type: 'string' }, { type: 'integer' }] },
 						},
 					},
 					lastChattedAgentPreferred: { type: 'boolean' },
@@ -558,13 +558,13 @@ const statisticsEndpoints = API.v1.get(
 						properties: {
 							engineVersion: { type: 'string' },
 							totalInstalled: {
-								anyOf: [{ type: 'integer' }, { const: false }],
+								oneOf: [{ type: 'integer' }, { const: false }],
 							},
 							totalActive: {
-								anyOf: [{ type: 'integer' }, { const: false }],
+								oneOf: [{ type: 'integer' }, { const: false }],
 							},
 							totalFailed: {
-								anyOf: [{ type: 'integer' }, { const: false }],
+								oneOf: [{ type: 'integer' }, { const: false }],
 							},
 						},
 						required: ['engineVersion', 'totalInstalled', 'totalActive', 'totalFailed'],
@@ -823,7 +823,7 @@ const statisticsEndpoints = API.v1.get(
 						additionalProperties: false,
 					},
 					createdAt: {
-						anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+						oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
 					},
 					totalOTR: { type: 'integer' },
 					totalOTRRooms: { type: 'integer' },
@@ -918,7 +918,7 @@ const statisticsEndpoints = API.v1.get(
 							enabled: { type: 'boolean' },
 							maximumSizeOfPublicRoomsUsers: { type: 'integer' },
 							biggestRoom: {
-								anyOf: [
+								oneOf: [
 									{
 										type: 'object',
 										properties: {
@@ -933,7 +933,7 @@ const statisticsEndpoints = API.v1.get(
 								],
 							},
 							smallestRoom: {
-								anyOf: [
+								oneOf: [
 									{
 										type: 'object',
 										properties: {
@@ -966,7 +966,7 @@ const statisticsEndpoints = API.v1.get(
 					webRTCEnabled: { type: 'boolean' },
 					webRTCEnabledForOmnichannel: { type: 'boolean' },
 					omnichannelWebRTCCalls: { type: 'integer' },
-					statsToken: { anyOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
+					statsToken: { oneOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
 					contactVerification: {
 						type: 'object',
 						properties: {
@@ -1083,23 +1083,23 @@ const statisticsListEndpoints = API.v1.get(
 								wizard: {
 									type: 'object',
 									properties: {
-										organizationType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-										industry: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-										size: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-										country: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-										language: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-										serverType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-										registerServer: { anyOf: [{ type: 'boolean' }, { type: 'null' }] },
+										organizationType: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+										industry: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+										size: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+										country: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+										language: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+										serverType: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+										registerServer: { oneOf: [{ type: 'boolean' }, { type: 'null' }] },
 									},
 									additionalProperties: false,
 								},
 								uniqueId: { type: 'string' },
 								deploymentFingerprintHash: { type: 'string' },
 								deploymentFingerprintVerified: { type: 'boolean' },
-								installedAt: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-								version: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-								tag: { anyOf: [{ type: 'string' }, { type: 'null' }] },
-								branch: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+								installedAt: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+								version: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+								tag: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+								branch: { oneOf: [{ type: 'string' }, { type: 'null' }] },
 								totalUsers: { type: 'integer' },
 								activeUsers: { type: 'integer' },
 								activeGuests: { type: 'integer' },
@@ -1151,7 +1151,7 @@ const statisticsListEndpoints = API.v1.get(
 								federatedServers: { type: 'integer' },
 								federatedUsers: { type: 'integer' },
 								lastLogin: { type: 'string' },
-								lastMessageSentAt: { anyOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
+								lastMessageSentAt: { oneOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
 								lastSeenSubscription: { type: 'string' },
 								os: {
 									type: 'object',
@@ -1197,14 +1197,14 @@ const statisticsListEndpoints = API.v1.get(
 								migration: {
 									type: 'object',
 									properties: {
-										_id: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+										_id: { oneOf: [{ type: 'string' }, { type: 'null' }] },
 										locked: { type: 'boolean' },
 										version: { type: 'integer' },
 										buildAt: {
-											anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+											oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
 										},
 										lockedAt: {
-											anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+											oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
 										},
 									},
 									required: ['locked', 'version'],
@@ -1222,7 +1222,7 @@ const statisticsListEndpoints = API.v1.get(
 									items: {
 										type: 'object',
 										patternProperties: {
-											'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
+											'^.*': { oneOf: [{ type: 'string' }, { type: 'integer' }] },
 										},
 									},
 								},
@@ -1322,7 +1322,7 @@ const statisticsListEndpoints = API.v1.get(
 								BusinessHours: {
 									type: 'object',
 									patternProperties: {
-										'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
+										'^.*': { oneOf: [{ type: 'string' }, { type: 'integer' }] },
 									},
 								},
 								lastChattedAgentPreferred: { type: 'boolean' },
@@ -1605,13 +1605,13 @@ const statisticsListEndpoints = API.v1.get(
 									properties: {
 										engineVersion: { type: 'string' },
 										totalInstalled: {
-											anyOf: [{ type: 'integer' }, { const: false }],
+											oneOf: [{ type: 'integer' }, { const: false }],
 										},
 										totalActive: {
-											anyOf: [{ type: 'integer' }, { const: false }],
+											oneOf: [{ type: 'integer' }, { const: false }],
 										},
 										totalFailed: {
-											anyOf: [{ type: 'integer' }, { const: false }],
+											oneOf: [{ type: 'integer' }, { const: false }],
 										},
 									},
 									required: ['engineVersion', 'totalInstalled', 'totalActive', 'totalFailed'],
@@ -1870,7 +1870,7 @@ const statisticsListEndpoints = API.v1.get(
 									additionalProperties: false,
 								},
 								createdAt: {
-									anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+									oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
 								},
 								totalOTR: { type: 'integer' },
 								totalOTRRooms: { type: 'integer' },
@@ -1965,7 +1965,7 @@ const statisticsListEndpoints = API.v1.get(
 										enabled: { type: 'boolean' },
 										maximumSizeOfPublicRoomsUsers: { type: 'integer' },
 										biggestRoom: {
-											anyOf: [
+											oneOf: [
 												{
 													type: 'object',
 													properties: {
@@ -1980,7 +1980,7 @@ const statisticsListEndpoints = API.v1.get(
 											],
 										},
 										smallestRoom: {
-											anyOf: [
+											oneOf: [
 												{
 													type: 'object',
 													properties: {
@@ -2013,7 +2013,7 @@ const statisticsListEndpoints = API.v1.get(
 								webRTCEnabled: { type: 'boolean' },
 								webRTCEnabledForOmnichannel: { type: 'boolean' },
 								omnichannelWebRTCCalls: { type: 'integer' },
-								statsToken: { anyOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
+								statsToken: { oneOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
 								contactVerification: {
 									type: 'object',
 									properties: {
