@@ -1,18 +1,28 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { WizardActions } from '@rocket.chat/ui-client';
+import { useMutation } from '@tanstack/react-query';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type ReviewStepProps = {
-	onSend(): void;
+import OutboundMessagePreview from '../../OutboundMessagePreview';
+
+type ReviewStepProps = ComponentProps<typeof OutboundMessagePreview> & {
+	onSend(): Promise<void>;
 };
 
-const ReviewStep = ({ onSend }: ReviewStepProps) => {
+const ReviewStep = ({ onSend, ...props }: ReviewStepProps) => {
 	const { t } = useTranslation();
+
+	const sendMutation = useMutation({ mutationFn: onSend });
+
 	return (
 		<div>
-			Review Content
+			<Box maxHeight={500} overflowX='hidden' overflowY='auto'>
+				<OutboundMessagePreview {...props} />
+			</Box>
+
 			<WizardActions>
-				<Button primary icon='send' onClick={onSend}>
+				<Button primary icon='send' loading={sendMutation.isPending} onClick={() => sendMutation.mutate()}>
 					{t('Send')}
 				</Button>
 			</WizardActions>

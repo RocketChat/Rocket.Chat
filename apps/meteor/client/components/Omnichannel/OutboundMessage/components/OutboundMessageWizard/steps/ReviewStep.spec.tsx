@@ -6,8 +6,8 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import type { ComponentProps } from 'react';
 
-import PreviewStep from './PreviewStep';
-import * as stories from './PreviewStep.stories';
+import ReviewStep from './ReviewStep';
+import * as stories from './ReviewStep.stories';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -23,10 +23,10 @@ const appRoot = mockAppRoot()
 	})
 	.build();
 
-describe('PreviewStep', () => {
+describe('ReviewStep', () => {
 	const onSendMock = jest.fn();
 
-	const defaultProps: ComponentProps<typeof PreviewStep> = {
+	const defaultProps: ComponentProps<typeof ReviewStep> = {
 		onSend: onSendMock,
 	};
 
@@ -47,21 +47,21 @@ describe('PreviewStep', () => {
 	});
 
 	it('renders correctly with OutboundMessagePreview and a send button', () => {
-		render(<PreviewStep {...defaultProps} />, { wrapper: appRoot });
+		render(<ReviewStep {...defaultProps} />, { wrapper: appRoot });
 
 		expect(screen.getByTestId('outbound-message-preview')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Send' })).toBeInTheDocument();
 	});
 
 	it('should pass accessibility tests', async () => {
-		const { container } = render(<PreviewStep {...defaultProps} />, { wrapper: appRoot });
+		const { container } = render(<ReviewStep {...defaultProps} />, { wrapper: appRoot });
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
 	});
 
 	it('calls onSend when the send button is clicked', async () => {
 		onSendMock.mockResolvedValue(undefined);
-		render(<PreviewStep {...defaultProps} />, { wrapper: appRoot });
+		render(<ReviewStep {...defaultProps} />, { wrapper: appRoot });
 
 		const sendButton = screen.getByRole('button', { name: 'Send' });
 		await userEvent.click(sendButton);
@@ -77,7 +77,7 @@ describe('PreviewStep', () => {
 			}),
 		);
 
-		render(<PreviewStep {...defaultProps} />, { wrapper: appRoot });
+		render(<ReviewStep {...defaultProps} />, { wrapper: appRoot });
 
 		const sendButton = screen.getByRole('button', { name: 'Send' });
 		await userEvent.click(sendButton);
@@ -97,7 +97,7 @@ describe('PreviewStep', () => {
 			}),
 		);
 
-		render(<PreviewStep {...defaultProps} />, { wrapper: appRoot });
+		render(<ReviewStep {...defaultProps} />, { wrapper: appRoot });
 
 		const sendButton = screen.getByRole('button', { name: 'Send' });
 		await userEvent.click(sendButton);
