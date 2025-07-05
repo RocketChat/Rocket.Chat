@@ -1,4 +1,5 @@
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
+import type { Route, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
@@ -37,8 +38,7 @@ import type {
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
-import type { Route } from './router';
-import { Router } from './router';
+import { RocketChatAPIRouter } from './router';
 import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
@@ -71,9 +71,21 @@ export type ExtractRoutesFromAPI<T> =
 
 type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
-		[K2 in TRoute['method']]: K2 extends 'GET'
-			? (params: ExtractValidation<TRoute['query']>) => ExtractValidation<TRoute['response'][200]>
-			: (params: ExtractValidation<TRoute['body']>) => ExtractValidation<TRoute['response'][200 | 201]>;
+		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET'
+			? (
+					params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>,
+				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
+			: K2 extends 'POST'
+				? (
+						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
+					) => ExtractValidation<
+						200 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
+							? Extract<TRoute, { path: K; method: K2 }>['response'][200]
+							: 201 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
+								? Extract<TRoute, { path: K; method: K2 }>['response'][201]
+								: never
+					>
+				: never;
 	};
 };
 
@@ -171,7 +183,7 @@ export class APIClass<
 		inviteToken: number;
 	};
 
-	readonly router: Router<any>;
+	readonly router: Router<any, any, any>;
 
 	constructor({ useDefaultAuth, ...properties }: IAPIProperties) {
 		this.version = properties.version;
@@ -206,7 +218,7 @@ export class APIClass<
 			services: 0,
 			inviteToken: 0,
 		};
-		this.router = new Router(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
+		this.router = new RocketChatAPIRouter(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
 		if (useDefaultAuth) {
 			this._initAuth();
@@ -622,10 +634,12 @@ export class APIClass<
 	): APIClass<
 		TBasePath,
 		| TOperations
-		| ({
-				method: Method;
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: Method;
+					path: TPathPattern;
+				} & Omit<TOptions, 'response'>
+		  >
 	> {
 		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		this.registerTypedRoutes(method, subpath, options);
@@ -660,6 +674,12 @@ export class APIClass<
 				method: 'POST';
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'POST';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('POST', subpath, options, action);
 	}

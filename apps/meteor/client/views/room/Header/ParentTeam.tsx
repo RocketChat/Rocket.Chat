@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -56,6 +57,8 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		goToRoomById(rid);
 	};
 
+	const buttonProps = useButtonPattern(redirectToMainRoom);
+
 	if (teamInfoLoading || userTeamsLoading) {
 		return <HeaderTagSkeleton />;
 	}
@@ -65,12 +68,7 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 	}
 
 	return (
-		<HeaderTag
-			role='button'
-			tabIndex={0}
-			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && redirectToMainRoom()}
-			onClick={redirectToMainRoom}
-		>
+		<HeaderTag {...buttonProps}>
 			<HeaderTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
 			{teamInfoData?.teamInfo.name}
 		</HeaderTag>
