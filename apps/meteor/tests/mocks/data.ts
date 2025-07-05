@@ -18,6 +18,7 @@ import type {
 	ILivechatMonitor,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
+import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 
 import type { MessageWithMdEnforced } from '../../client/lib/parseMessageTextToAstMarkdown';
 
@@ -318,6 +319,22 @@ export function createFakeContactChannel(overrides?: Partial<Serialized<ILivecha
 			type: OmnichannelSourceType.WIDGET,
 			destination: '',
 			...overrides?.details,
+		},
+	};
+}
+
+export function createFakeContactWithManagerData(
+	overrides?: Partial<Serialized<ILivechatContactWithManagerData>>,
+): Serialized<ILivechatContactWithManagerData> {
+	const { contactManager: contactManagerOverwrites, ...contactOverwrites } = overrides || {};
+	const contact = createFakeContact(contactOverwrites);
+	return {
+		...contact,
+		contactManager: {
+			_id: faker.string.uuid(),
+			name: faker.person.fullName(),
+			username: faker.internet.userName(),
+			...contactManagerOverwrites,
 		},
 	};
 }
