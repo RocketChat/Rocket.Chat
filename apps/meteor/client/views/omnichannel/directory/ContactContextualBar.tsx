@@ -1,20 +1,20 @@
-import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 
 import ContactInfo from '../contactInfo/ContactInfo';
 import ContactInfoError from '../contactInfo/ContactInfoError';
 import EditContactInfo from '../contactInfo/EditContactInfo';
 import EditContactInfoWithData from '../contactInfo/EditContactInfoWithData';
+import { ContactInfoActivityRouter } from '../contactInfo/tabs/ContactInfoActivity';
 
 const ContactContextualBar = () => {
-	const directoryRoute = useRoute('omnichannel-directory');
+	const router = useRouter();
 	const contactId = useRouteParameter('id');
 	const context = useRouteParameter('context');
+	const contextId = useRouteParameter('contextId');
 
-	const handleClose = () => {
-		directoryRoute.push({ tab: 'contacts' });
-	};
-
-	const handleCancel = () => contactId && directoryRoute.push({ tab: 'contacts', context: 'details', id: contactId });
+	const handleClose = () => router.navigate('/omnichannel-directory/contacts');
+	const handleCancel = () => contactId && router.navigate(`/omnichannel-directory/contacts/${contactId}/details`);
+	const handleActivityBack = () => contactId && router.navigate(`/omnichannel-directory/contacts/${contactId}/activity`);
 
 	if (context === 'edit' && contactId) {
 		return <EditContactInfoWithData id={contactId} onClose={handleClose} onCancel={handleCancel} />;
@@ -22,6 +22,10 @@ const ContactContextualBar = () => {
 
 	if (context === 'new' && !contactId) {
 		return <EditContactInfo onClose={handleClose} onCancel={handleClose} />;
+	}
+
+	if (context === 'activity' && contextId !== undefined) {
+		return <ContactInfoActivityRouter onClickBack={handleActivityBack} onClose={handleClose} />;
 	}
 
 	if (!contactId) {
