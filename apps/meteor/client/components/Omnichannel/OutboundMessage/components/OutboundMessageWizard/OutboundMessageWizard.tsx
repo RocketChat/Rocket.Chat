@@ -4,13 +4,10 @@ import { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
+import type { SubmitPayload } from './forms';
+import { RecipientStep } from './steps';
 import GenericError from '../../../../GenericError';
 import Wizard, { useWizard, WizardContent, WizardTabs } from '../../../../Wizard';
-
-type SubmitPayload = {
-	contactId: string;
-	providerId: string;
-};
 
 type OutboundMessageWizardProps = {
 	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId'>>;
@@ -29,9 +26,12 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 		],
 	});
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const handleSubmit = useEffectEvent((values: SubmitPayload) => {
 		setState((state) => ({ ...state, ...values }));
+	});
+
+	const handleDirtyStep = useEffectEvent(() => {
+		wizardApi.resetNextSteps();
 	});
 
 	return (
@@ -40,7 +40,10 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 				<WizardTabs />
 
 				<Box mbs={16}>
-					<WizardContent id='recipient'>Recipient Content</WizardContent>
+					<WizardContent id='recipient'>
+						<RecipientStep defaultValues={state} onDirty={handleDirtyStep} onSubmit={handleSubmit} />
+					</WizardContent>
+
 					<WizardContent id='message'>Message Content</WizardContent>
 					<WizardContent id='replies'>Replies Content</WizardContent>
 					<WizardContent id='preview'>Preview Content</WizardContent>
