@@ -6,11 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { WizardActions } from '../../../../../Wizard';
 import OutboundMessagePreview from '../../OutboundMessagePreview';
 
-type PreviewStepProps = ComponentProps<typeof OutboundMessagePreview> & {
+type ReviewStepProps = ComponentProps<typeof OutboundMessagePreview> & {
 	onSend(): Promise<void>;
 };
 
-const PreviewStep = ({ onSend, ...props }: PreviewStepProps) => {
+const ReviewStep = ({ onSend, ...props }: ReviewStepProps) => {
 	const { t } = useTranslation();
 
 	const sendMutation = useMutation({ mutationFn: onSend });
@@ -30,4 +30,4 @@ const PreviewStep = ({ onSend, ...props }: PreviewStepProps) => {
 	);
 };
 
-export default PreviewStep;
+export default ReviewStep;

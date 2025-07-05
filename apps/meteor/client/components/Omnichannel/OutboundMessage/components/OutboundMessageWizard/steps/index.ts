@@ -1,1 +1,1 @@
-export { default as PreviewStep } from './PreviewStep';
+export { default as ReviewStep } from './ReviewStep';
