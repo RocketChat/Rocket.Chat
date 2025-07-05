@@ -1,6 +1,5 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
-import type { FindOptions, SchemaMember } from 'mongodb';
 
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
 import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
@@ -37,23 +36,23 @@ const statisticsEndpoints = API.v1.get(
 					wizard: {
 						type: 'object',
 						properties: {
-							organizationType: { type: 'string' },
-							industry: { type: 'string' },
-							size: { type: 'string' },
-							country: { type: 'string' },
-							language: { type: 'string' },
-							serverType: { type: 'string' },
-							registerServer: { type: 'boolean' },
+							organizationType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+							industry: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+							size: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+							country: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+							language: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+							serverType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+							registerServer: { anyOf: [{ type: 'boolean' }, { type: 'null' }] },
 						},
 						additionalProperties: false,
 					},
 					uniqueId: { type: 'string' },
 					deploymentFingerprintHash: { type: 'string' },
 					deploymentFingerprintVerified: { type: 'boolean' },
-					installedAt: { type: 'string' },
-					version: { type: 'string' },
-					tag: { type: 'string' },
-					branch: { type: 'string' },
+					installedAt: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+					version: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+					tag: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+					branch: { anyOf: [{ type: 'string' }, { type: 'null' }] },
 					totalUsers: { type: 'integer' },
 					activeUsers: { type: 'integer' },
 					activeGuests: { type: 'integer' },
@@ -105,7 +104,7 @@ const statisticsEndpoints = API.v1.get(
 					federatedServers: { type: 'integer' },
 					federatedUsers: { type: 'integer' },
 					lastLogin: { type: 'string' },
-					lastMessageSentAt: { anyOf: [{ type: 'object' }, { type: undefined }] }, // TODO: convert [`lastMessageSentAt`](https://github.com/ahmed-n-abdeltwab/Rocket.Chat/blob/feat/OpenAPI/apps/meteor/node_modules/%40rocket.chat/core-typings/dist/IStats.d.ts#L74) from JavaScript `Date` object to string
+					lastMessageSentAt: { anyOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
 					lastSeenSubscription: { type: 'string' },
 					os: {
 						type: 'object',
@@ -151,14 +150,19 @@ const statisticsEndpoints = API.v1.get(
 					migration: {
 						type: 'object',
 						properties: {
-							_id: { type: 'string' },
+							_id: { anyOf: [{ type: 'string' }, { type: 'null' }] },
 							locked: { type: 'boolean' },
 							version: { type: 'integer' },
-							buildAt: { type: 'string' },
-							lockedAt: { type: 'object' }, // TODO: convert `lockedAt` from JavaScript `Date` object to string
+							buildAt: {
+								anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+							},
+							lockedAt: {
+								anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+							},
 						},
 						required: ['locked', 'version'],
-						additionalProperties: false,
+						// TODO: remove this when we have a proper migration schema
+						// additionalProperties: false,
 					},
 					instanceCount: { type: 'integer' },
 					oplogEnabled: { type: 'boolean' },
@@ -170,8 +174,8 @@ const statisticsEndpoints = API.v1.get(
 						type: 'array',
 						items: {
 							type: 'object',
-							additionalProperties: {
-								anyOf: [{ type: 'string' }, { type: 'integer' }, { type: undefined }], // FIXME: when refresh = true some values are undefined
+							patternProperties: {
+								'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
 							},
 						},
 					},
@@ -270,11 +274,8 @@ const statisticsEndpoints = API.v1.get(
 					emailInboxes: { type: 'integer' },
 					BusinessHours: {
 						type: 'object',
-						items: {
-							type: 'object',
-							additionalProperties: {
-								anyOf: [{ type: 'string' }, { type: 'integer' }],
-							},
+						patternProperties: {
+							'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
 						},
 					},
 					lastChattedAgentPreferred: { type: 'boolean' },
@@ -567,7 +568,8 @@ const statisticsEndpoints = API.v1.get(
 							},
 						},
 						required: ['engineVersion', 'totalInstalled', 'totalActive', 'totalFailed'],
-						additionalProperties: false,
+						// TODO : remove this when we have a proper apps schema
+						// additionalProperties: false,
 					},
 					services: { type: 'object' },
 					importer: { type: 'object' },
@@ -821,7 +823,7 @@ const statisticsEndpoints = API.v1.get(
 						additionalProperties: false,
 					},
 					createdAt: {
-						anyOf: [{ type: 'object' }, { type: 'string' }],
+						anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
 					},
 					totalOTR: { type: 'integer' },
 					totalOTRRooms: { type: 'integer' },
@@ -893,7 +895,8 @@ const statisticsEndpoints = API.v1.get(
 									groups: { type: 'boolean' },
 									teams: { type: 'boolean' },
 								},
-								required: ['provider'], // FIXME: dms and channels, groups, teams should be on becouse its not optional in the parant interface [IStats]
+								// FIXME: dms and channels, groups, teams should be on becouse its not optional in the parant interface [IStats]
+								required: ['provider'],
 								additionalProperties: false,
 							},
 						},
@@ -952,7 +955,7 @@ const statisticsEndpoints = API.v1.get(
 									quantity: { type: 'integer' },
 									servers: {
 										type: 'array',
-										// items: { type: 'string' },
+										items: { type: 'string' },
 									},
 								},
 								required: ['quantity', 'servers'],
@@ -963,7 +966,7 @@ const statisticsEndpoints = API.v1.get(
 					webRTCEnabled: { type: 'boolean' },
 					webRTCEnabledForOmnichannel: { type: 'boolean' },
 					omnichannelWebRTCCalls: { type: 'integer' },
-					statsToken: { type: 'string' },
+					statsToken: { anyOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
 					contactVerification: {
 						type: 'object',
 						properties: {
@@ -989,12 +992,14 @@ const statisticsEndpoints = API.v1.get(
 					},
 				},
 				required: ['success'],
-				additionalProperties: false,
+				// TODO: remove this when we have a proper statistics schema
+				// additionalProperties: false,
 			}),
 			400: ajv.compile<{
 				error?: string;
 				errorType?: string;
 				stack?: string;
+				details?: string;
 			}>({
 				type: 'object',
 				properties: {
@@ -1002,6 +1007,7 @@ const statisticsEndpoints = API.v1.get(
 					stack: { type: 'string' },
 					error: { type: 'string' },
 					errorType: { type: 'string' },
+					details: { type: 'string' },
 				},
 				required: ['success'],
 				additionalProperties: false,
@@ -1037,9 +1043,6 @@ const statisticsEndpoints = API.v1.get(
 type StatisticsListProps = {
 	offset: number;
 	count?: number;
-	sort?: FindOptions<IStats>['sort'];
-	fields?: SchemaMember<IStats, number | boolean>;
-	query?: Record<string, any>;
 };
 
 const StatisticsListSchema = {
@@ -1055,29 +1058,8 @@ const StatisticsListSchema = {
 			default: 100,
 			minimum: 1,
 		},
-		sort: {
-			type: 'object',
-			nullable: true,
-			additionalProperties: {
-				type: 'integer',
-				enum: [1, -1],
-			},
-		},
-		fields: {
-			type: 'object',
-			nullable: true,
-			additionalProperties: {
-				type: 'integer',
-				enum: [0, 1],
-			},
-		},
-		query: {
-			type: 'object',
-			nullable: true,
-			additionalProperties: true,
-		},
 	},
-	required: ['offset'],
+	required: [],
 	additionalProperties: false,
 };
 
@@ -1101,23 +1083,23 @@ const statisticsListEndpoints = API.v1.get(
 								wizard: {
 									type: 'object',
 									properties: {
-										organizationType: { type: 'string' },
-										industry: { type: 'string' },
-										size: { type: 'string' },
-										country: { type: 'string' },
-										language: { type: 'string' },
-										serverType: { type: 'string' },
-										registerServer: { type: 'boolean' },
+										organizationType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+										industry: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+										size: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+										country: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+										language: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+										serverType: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+										registerServer: { anyOf: [{ type: 'boolean' }, { type: 'null' }] },
 									},
 									additionalProperties: false,
 								},
 								uniqueId: { type: 'string' },
 								deploymentFingerprintHash: { type: 'string' },
 								deploymentFingerprintVerified: { type: 'boolean' },
-								installedAt: { type: 'string' },
-								version: { type: 'string' },
-								tag: { type: 'string' },
-								branch: { type: 'string' },
+								installedAt: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+								version: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+								tag: { anyOf: [{ type: 'string' }, { type: 'null' }] },
+								branch: { anyOf: [{ type: 'string' }, { type: 'null' }] },
 								totalUsers: { type: 'integer' },
 								activeUsers: { type: 'integer' },
 								activeGuests: { type: 'integer' },
@@ -1169,7 +1151,7 @@ const statisticsListEndpoints = API.v1.get(
 								federatedServers: { type: 'integer' },
 								federatedUsers: { type: 'integer' },
 								lastLogin: { type: 'string' },
-								lastMessageSentAt: { anyOf: [{ type: 'object' }, { type: undefined }] }, // TODO: convert [`lastMessageSentAt`](https://github.com/ahmed-n-abdeltwab/Rocket.Chat/blob/feat/OpenAPI/apps/meteor/node_modules/%40rocket.chat/core-typings/dist/IStats.d.ts#L74) from JavaScript `Date` object to string
+								lastMessageSentAt: { anyOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
 								lastSeenSubscription: { type: 'string' },
 								os: {
 									type: 'object',
@@ -1215,14 +1197,19 @@ const statisticsListEndpoints = API.v1.get(
 								migration: {
 									type: 'object',
 									properties: {
-										_id: { type: 'string' },
+										_id: { anyOf: [{ type: 'string' }, { type: 'null' }] },
 										locked: { type: 'boolean' },
 										version: { type: 'integer' },
-										buildAt: { type: 'string' },
-										lockedAt: { type: 'object' }, // TODO: convert `lockedAt` from JavaScript `Date` object to string
+										buildAt: {
+											anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+										},
+										lockedAt: {
+											anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+										},
 									},
 									required: ['locked', 'version'],
-									additionalProperties: false,
+									// TODO: remove this when we have a proper migration schema
+									// additionalProperties: false,
 								},
 								instanceCount: { type: 'integer' },
 								oplogEnabled: { type: 'boolean' },
@@ -1234,8 +1221,8 @@ const statisticsListEndpoints = API.v1.get(
 									type: 'array',
 									items: {
 										type: 'object',
-										additionalProperties: {
-											anyOf: [{ type: 'string' }, { type: 'integer' }, { type: undefined }], // FIXME: when refresh = true some values are undefined
+										patternProperties: {
+											'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
 										},
 									},
 								},
@@ -1334,11 +1321,8 @@ const statisticsListEndpoints = API.v1.get(
 								emailInboxes: { type: 'integer' },
 								BusinessHours: {
 									type: 'object',
-									items: {
-										type: 'object',
-										additionalProperties: {
-											anyOf: [{ type: 'string' }, { type: 'integer' }],
-										},
+									patternProperties: {
+										'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
 									},
 								},
 								lastChattedAgentPreferred: { type: 'boolean' },
@@ -1631,7 +1615,8 @@ const statisticsListEndpoints = API.v1.get(
 										},
 									},
 									required: ['engineVersion', 'totalInstalled', 'totalActive', 'totalFailed'],
-									additionalProperties: false,
+									// TODO : remove this when we have a proper apps schema
+									// additionalProperties: false,
 								},
 								services: { type: 'object' },
 								importer: { type: 'object' },
@@ -1885,7 +1870,7 @@ const statisticsListEndpoints = API.v1.get(
 									additionalProperties: false,
 								},
 								createdAt: {
-									anyOf: [{ type: 'object' }, { type: 'string' }],
+									anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
 								},
 								totalOTR: { type: 'integer' },
 								totalOTRRooms: { type: 'integer' },
@@ -1957,7 +1942,8 @@ const statisticsListEndpoints = API.v1.get(
 												groups: { type: 'boolean' },
 												teams: { type: 'boolean' },
 											},
-											required: ['provider'], // FIXME: dms and channels, groups, teams should be on becouse its not optional in the parant interface [IStats]
+											// FIXME: dms and channels, groups, teams should be on becouse its not optional in the parant interface [IStats]
+											required: ['provider'],
 											additionalProperties: false,
 										},
 									},
@@ -2016,7 +2002,7 @@ const statisticsListEndpoints = API.v1.get(
 												quantity: { type: 'integer' },
 												servers: {
 													type: 'array',
-													// items: { type: 'string' },
+													items: { type: 'string' },
 												},
 											},
 											required: ['quantity', 'servers'],
@@ -2027,7 +2013,7 @@ const statisticsListEndpoints = API.v1.get(
 								webRTCEnabled: { type: 'boolean' },
 								webRTCEnabledForOmnichannel: { type: 'boolean' },
 								omnichannelWebRTCCalls: { type: 'integer' },
-								statsToken: { type: 'string' },
+								statsToken: { anyOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
 								contactVerification: {
 									type: 'object',
 									properties: {
@@ -2048,13 +2034,14 @@ const statisticsListEndpoints = API.v1.get(
 									},
 								},
 							},
-							additionalProperties: false,
+							// TODO: remove this when we have a proper stats schema
+							// additionalProperties: false,
 						},
 					},
-					count: { type: 'integer', minimum: 1, default: 25 },
+					count: { type: 'integer', minimum: 1 },
 					offset: { type: 'integer', minimum: 0, default: 0 },
-					total: { type: 'integer', minimum: 1, default: 25 },
-					success: { type: 'boolean' },
+					total: { type: 'integer', minimum: 1 },
+					success: { type: 'boolean', enum: [true] },
 				},
 				additionalProperties: false,
 				required: ['statistics', 'count', 'offset', 'total', 'success'],
@@ -2063,6 +2050,7 @@ const statisticsListEndpoints = API.v1.get(
 				error?: string;
 				errorType?: string;
 				stack?: string;
+				details?: string;
 			}>({
 				type: 'object',
 				properties: {
@@ -2070,6 +2058,7 @@ const statisticsListEndpoints = API.v1.get(
 					stack: { type: 'string' },
 					error: { type: 'string' },
 					errorType: { type: 'string' },
+					details: { type: 'string' },
 				},
 				required: ['success'],
 				additionalProperties: false,
@@ -2177,6 +2166,7 @@ const statisticsTelemetryEndpoints = API.v1.post(
 				error?: string;
 				errorType?: string;
 				stack?: string;
+				details?: string;
 			}>({
 				type: 'object',
 				properties: {
@@ -2184,6 +2174,7 @@ const statisticsTelemetryEndpoints = API.v1.post(
 					stack: { type: 'string' },
 					error: { type: 'string' },
 					errorType: { type: 'string' },
+					details: { type: 'string' },
 				},
 				required: ['success'],
 				additionalProperties: false,
