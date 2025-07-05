@@ -1,7 +1,8 @@
 import { WizardActions, WizardBackButton, WizardNextButton } from '../../../../../Wizard';
+import type { MessageFormSubmitPayload } from '../forms/MessageForm';
 
 type MessageStepProps = {
-	onSubmit(values: Record<string, string>): void;
+	onSubmit(values: MessageFormSubmitPayload): void;
 };
 
 const MessageStep = (_: MessageStepProps) => {
