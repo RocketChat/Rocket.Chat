@@ -23,7 +23,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 			{ id: 'recipient', title: t('Recipient') },
 			{ id: 'message', title: t('Message') },
 			{ id: 'replies', title: t('Replies') },
-			{ id: 'preview', title: t('Preview') },
+			{ id: 'review', title: t('Review') },
 		],
 	});
 
@@ -53,7 +53,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 						<RepliesStep onSubmit={handleSubmit} />
 					</WizardContent>
 
-					<WizardContent id='preview'>
+					<WizardContent id='review'>
 						<ReviewStep
 							sender={sender}
 							recipient={recipient}

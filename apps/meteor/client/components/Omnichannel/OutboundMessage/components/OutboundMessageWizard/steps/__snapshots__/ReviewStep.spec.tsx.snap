@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`PreviewStep renders Default without crashing 1`] = `
+exports[`ReviewStep renders Default without crashing 1`] = `
 <body>
   <div>
     <div
@@ -16,7 +16,6 @@ exports[`PreviewStep renders Default without crashing 1`] = `
             contactname="Jane Smith"
             data-testid="outbound-message-preview"
             departmentname="Support"
-            lepetiotarrio="olar"
             providername="Rocket.Chat"
             providertype="phone"
             recipient="+0987654321"
