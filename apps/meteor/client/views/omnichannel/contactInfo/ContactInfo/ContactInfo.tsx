@@ -34,7 +34,18 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const formatDate = useFormatDate();
 	const canEditContact = usePermission('edit-omnichannel-contact');
 
-	const { name, emails, phones, conflictingFields, createdAt, lastChat, contactManager, customFields: userCustomFields } = contact;
+	const {
+		_id: contactId,
+		name,
+		emails,
+		phones,
+		conflictingFields,
+		createdAt,
+		lastChat,
+		contactManager,
+		customFields: userCustomFields,
+		channels,
+	} = contact;
 
 	const hasConflicts = conflictingFields && conflictingFields?.length > 0;
 	const customFieldEntries = useValidCustomFields(userCustomFields);
@@ -96,6 +107,8 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 			</Tabs>
 			{context === 'details' && (
 				<ContactInfoDetails
+					channels={channels}
+					contactId={contactId}
 					createdAt={createdAt}
 					contactManager={contactManager}
 					phones={phones?.map(({ phoneNumber }) => phoneNumber)}
