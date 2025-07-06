@@ -1,5 +1,5 @@
 import type { IOutboundProviderTemplate, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Field, FieldError, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { forwardRef, useId, useImperativeHandle, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
@@ -109,6 +109,12 @@ const MessageForm = forwardRef<MessageFormRef, MessageFormProps>((props, ref) =>
 							{errors.templateId.message}
 						</FieldError>
 					)}
+					<FieldHint>
+						{/* TODO: Change to the correct address */}
+						<a href='https://rocket.chat' target='_blank' rel='noopener noreferrer'>
+							{t('Learn_more')}
+						</a>
+					</FieldHint>
 				</Field>
 
 				{template ? (
