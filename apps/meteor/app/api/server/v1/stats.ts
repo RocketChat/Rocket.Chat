@@ -104,7 +104,7 @@ const statisticsEndpoints = API.v1.get(
 					federatedServers: { type: 'integer' },
 					federatedUsers: { type: 'integer' },
 					lastLogin: { type: 'string' },
-					lastMessageSentAt: { oneOf: [{ type: 'string' }, { type: 'object' }] },
+					lastMessageSentAt: { anyOf: [{ type: 'string' }, { type: 'object' }] },
 					lastSeenSubscription: { type: 'string' },
 					os: {
 						type: 'object',
@@ -155,10 +155,10 @@ const statisticsEndpoints = API.v1.get(
 							version: { type: 'integer' },
 							hash: { type: 'string' },
 							buildAt: {
-								oneOf: [{ type: 'string' }, { type: 'object' }],
+								anyOf: [{ type: 'string' }, { type: 'object' }],
 							},
 							lockedAt: {
-								oneOf: [{ type: 'string' }, { type: 'object' }],
+								anyOf: [{ type: 'string' }, { type: 'object' }],
 							},
 						},
 						required: ['locked', 'version'],
@@ -176,7 +176,7 @@ const statisticsEndpoints = API.v1.get(
 						items: {
 							type: 'object',
 							patternProperties: {
-								'^.*': { oneOf: [{ type: 'string' }, { type: 'integer' }] },
+								'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
 							},
 						},
 					},
@@ -276,7 +276,7 @@ const statisticsEndpoints = API.v1.get(
 					BusinessHours: {
 						type: 'object',
 						patternProperties: {
-							'^.*': { oneOf: [{ type: 'string' }, { type: 'integer' }] },
+							'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
 						},
 					},
 					lastChattedAgentPreferred: { type: 'boolean' },
@@ -559,19 +559,19 @@ const statisticsEndpoints = API.v1.get(
 						properties: {
 							engineVersion: { type: 'string' },
 							totalInstalled: {
-								oneOf: [{ type: 'integer' }, { const: false }],
+								anyOf: [{ type: 'integer' }, { const: false }],
 							},
 							totalActive: {
-								oneOf: [{ type: 'integer' }, { const: false }],
+								anyOf: [{ type: 'integer' }, { const: false }],
 							},
 							totalFailed: {
-								oneOf: [{ type: 'integer' }, { const: false }],
+								anyOf: [{ type: 'integer' }, { const: false }],
 							},
 							totalPrivateApps: {
-								oneOf: [{ type: 'integer' }, { const: false }],
+								anyOf: [{ type: 'integer' }, { const: false }],
 							},
 							totalPrivateAppsEnabled: {
-								oneOf: [{ type: 'integer' }, { const: false }],
+								anyOf: [{ type: 'integer' }, { const: false }],
 							},
 						},
 						required: ['engineVersion', 'totalInstalled', 'totalActive', 'totalFailed', 'totalPrivateApps', 'totalPrivateAppsEnabled'],
@@ -837,7 +837,7 @@ const statisticsEndpoints = API.v1.get(
 						additionalProperties: false,
 					},
 					createdAt: {
-						oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
+						anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
 					},
 					totalOTR: { type: 'integer' },
 					totalOTRRooms: { type: 'integer' },
@@ -932,7 +932,7 @@ const statisticsEndpoints = API.v1.get(
 							enabled: { type: 'boolean' },
 							maximumSizeOfPublicRoomsUsers: { type: 'integer' },
 							biggestRoom: {
-								oneOf: [
+								anyOf: [
 									{
 										type: 'object',
 										properties: {
@@ -947,7 +947,7 @@ const statisticsEndpoints = API.v1.get(
 								],
 							},
 							smallestRoom: {
-								oneOf: [
+								anyOf: [
 									{
 										type: 'object',
 										properties: {
@@ -1165,7 +1165,7 @@ const statisticsListEndpoints = API.v1.get(
 								federatedServers: { type: 'integer' },
 								federatedUsers: { type: 'integer' },
 								lastLogin: { type: 'string' },
-								lastMessageSentAt: { oneOf: [{ type: 'string' }, { type: 'object' }] },
+								lastMessageSentAt: { anyOf: [{ type: 'string' }, { type: 'object' }] },
 								lastSeenSubscription: { type: 'string' },
 								os: {
 									type: 'object',
@@ -1216,10 +1216,10 @@ const statisticsListEndpoints = API.v1.get(
 										version: { type: 'integer' },
 										hash: { type: 'string' },
 										buildAt: {
-											oneOf: [{ type: 'string' }, { type: 'object' }],
+											anyOf: [{ type: 'string' }, { type: 'object' }],
 										},
 										lockedAt: {
-											oneOf: [{ type: 'string' }, { type: 'object' }],
+											anyOf: [{ type: 'string' }, { type: 'object' }],
 										},
 									},
 									required: ['locked', 'version'],
@@ -1237,7 +1237,7 @@ const statisticsListEndpoints = API.v1.get(
 									items: {
 										type: 'object',
 										patternProperties: {
-											'^.*': { oneOf: [{ type: 'string' }, { type: 'integer' }] },
+											'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
 										},
 									},
 								},
@@ -1337,7 +1337,7 @@ const statisticsListEndpoints = API.v1.get(
 								BusinessHours: {
 									type: 'object',
 									patternProperties: {
-										'^.*': { oneOf: [{ type: 'string' }, { type: 'integer' }] },
+										'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
 									},
 								},
 								lastChattedAgentPreferred: { type: 'boolean' },
@@ -1620,19 +1620,19 @@ const statisticsListEndpoints = API.v1.get(
 									properties: {
 										engineVersion: { type: 'string' },
 										totalInstalled: {
-											oneOf: [{ type: 'integer' }, { const: false }],
+											anyOf: [{ type: 'integer' }, { const: false }],
 										},
 										totalActive: {
-											oneOf: [{ type: 'integer' }, { const: false }],
+											anyOf: [{ type: 'integer' }, { const: false }],
 										},
 										totalFailed: {
-											oneOf: [{ type: 'integer' }, { const: false }],
+											anyOf: [{ type: 'integer' }, { const: false }],
 										},
 										totalPrivateApps: {
-											oneOf: [{ type: 'integer' }, { const: false }],
+											anyOf: [{ type: 'integer' }, { const: false }],
 										},
 										totalPrivateAppsEnabled: {
-											oneOf: [{ type: 'integer' }, { const: false }],
+											anyOf: [{ type: 'integer' }, { const: false }],
 										},
 									},
 									required: [
@@ -1905,7 +1905,7 @@ const statisticsListEndpoints = API.v1.get(
 									additionalProperties: false,
 								},
 								createdAt: {
-									oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
+									anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
 								},
 								totalOTR: { type: 'integer' },
 								totalOTRRooms: { type: 'integer' },
@@ -2000,7 +2000,7 @@ const statisticsListEndpoints = API.v1.get(
 										enabled: { type: 'boolean' },
 										maximumSizeOfPublicRoomsUsers: { type: 'integer' },
 										biggestRoom: {
-											oneOf: [
+											anyOf: [
 												{
 													type: 'object',
 													properties: {
@@ -2015,7 +2015,7 @@ const statisticsListEndpoints = API.v1.get(
 											],
 										},
 										smallestRoom: {
-											oneOf: [
+											anyOf: [
 												{
 													type: 'object',
 													properties: {
