@@ -35,6 +35,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
+			// TODO: do on one shot instead of multiple calls
 			const fields = await Promise.all(
 				this.bodyParams.customFields.map(
 					async (customField: {
