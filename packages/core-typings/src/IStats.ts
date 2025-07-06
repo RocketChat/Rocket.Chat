@@ -4,6 +4,7 @@ import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics'
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
+import type { IControl } from './migrations/IControl.ts';
 import type { MACStats } from './omnichannel';
 
 export interface IVoIPPeriodStats {
@@ -99,13 +100,7 @@ export interface IStats {
 	enterpriseReady: boolean;
 	uploadsTotal: number;
 	uploadsTotalSize: number;
-	migration: {
-		_id?: string;
-		locked: boolean;
-		version: number;
-		buildAt?: string | Date;
-		lockedAt?: string | Date;
-	};
+	migration: IControl;
 	instanceCount: number;
 	oplogEnabled: boolean;
 	msEnabled: boolean;
@@ -154,6 +149,8 @@ export interface IStats {
 		totalInstalled: number | false;
 		totalActive: number | false;
 		totalFailed: number | false;
+		totalPrivateApps: number | false;
+		totalPrivateAppsEnabled: number | false;
 	};
 	services: Record<string, unknown>;
 	importer: Record<string, unknown>;
