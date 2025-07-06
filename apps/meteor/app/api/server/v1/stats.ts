@@ -36,23 +36,23 @@ const statisticsEndpoints = API.v1.get(
 					wizard: {
 						type: 'object',
 						properties: {
-							organizationType: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-							industry: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-							size: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-							country: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-							language: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-							serverType: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-							registerServer: { oneOf: [{ type: 'boolean' }, { type: 'null' }] },
+							organizationType: { type: 'string' },
+							industry: { type: 'string' },
+							size: { type: 'string' },
+							country: { type: 'string' },
+							language: { type: 'string' },
+							serverType: { type: 'string' },
+							registerServer: { type: 'boolean' },
 						},
 						additionalProperties: false,
 					},
 					uniqueId: { type: 'string' },
 					deploymentFingerprintHash: { type: 'string' },
 					deploymentFingerprintVerified: { type: 'boolean' },
-					installedAt: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-					version: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-					tag: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-					branch: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+					installedAt: { type: 'string' },
+					version: { type: 'string' },
+					tag: { type: 'string' },
+					branch: { type: 'string' },
 					totalUsers: { type: 'integer' },
 					activeUsers: { type: 'integer' },
 					activeGuests: { type: 'integer' },
@@ -104,7 +104,7 @@ const statisticsEndpoints = API.v1.get(
 					federatedServers: { type: 'integer' },
 					federatedUsers: { type: 'integer' },
 					lastLogin: { type: 'string' },
-					lastMessageSentAt: { oneOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
+					lastMessageSentAt: { oneOf: [{ type: 'string' }, { type: 'object' }] },
 					lastSeenSubscription: { type: 'string' },
 					os: {
 						type: 'object',
@@ -150,18 +150,19 @@ const statisticsEndpoints = API.v1.get(
 					migration: {
 						type: 'object',
 						properties: {
-							_id: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+							_id: { type: 'string' },
 							locked: { type: 'boolean' },
 							version: { type: 'integer' },
+							hash: { type: 'string' },
 							buildAt: {
-								oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+								oneOf: [{ type: 'string' }, { type: 'object' }],
 							},
 							lockedAt: {
-								oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+								oneOf: [{ type: 'string' }, { type: 'object' }],
 							},
 						},
 						required: ['locked', 'version'],
-						// TODO: remove this when we have a proper migration schema
+						// FIXME: remove this when we have a proper migration schema
 						// additionalProperties: false,
 					},
 					instanceCount: { type: 'integer' },
@@ -189,16 +190,16 @@ const statisticsEndpoints = API.v1.get(
 								items: {
 									type: 'object',
 									properties: {
-										source: { type: 'string' },
+										source: { type: 'array' },
 										contactsCount: { type: 'integer' },
 										conversationsCount: { type: 'integer' },
 									},
-									required: ['source', 'contactsCount', 'conversationsCount'],
+									required: ['contactsCount', 'conversationsCount'],
 									additionalProperties: false,
 								},
 							},
 						},
-						required: ['contactsCount', 'conversationsCount', 'sources'],
+						required: ['contactsCount', 'conversationsCount'],
 						additionalProperties: false,
 					},
 					uniqueContactsOfLastMonth: {
@@ -215,12 +216,12 @@ const statisticsEndpoints = API.v1.get(
 										contactsCount: { type: 'integer' },
 										conversationsCount: { type: 'integer' },
 									},
-									required: ['source', 'contactsCount', 'conversationsCount'],
+									required: ['contactsCount', 'conversationsCount'],
 									additionalProperties: false,
 								},
 							},
 						},
-						required: ['contactsCount', 'conversationsCount', 'sources'],
+						required: ['contactsCount', 'conversationsCount'],
 						additionalProperties: false,
 					},
 					uniqueContactsOfLastWeek: {
@@ -242,7 +243,7 @@ const statisticsEndpoints = API.v1.get(
 								},
 							},
 						},
-						required: ['contactsCount', 'conversationsCount', 'sources'],
+						required: ['contactsCount', 'conversationsCount'],
 						additionalProperties: false,
 					},
 					uniqueContactsOfYesterday: {
@@ -259,12 +260,12 @@ const statisticsEndpoints = API.v1.get(
 										contactsCount: { type: 'integer' },
 										conversationsCount: { type: 'integer' },
 									},
-									required: ['source', 'contactsCount', 'conversationsCount'],
+									required: ['contactsCount', 'conversationsCount'],
 									additionalProperties: false,
 								},
 							},
 						},
-						required: ['contactsCount', 'conversationsCount', 'sources'],
+						required: ['contactsCount', 'conversationsCount'],
 						additionalProperties: false,
 					},
 					departments: { type: 'integer' },
@@ -566,10 +567,15 @@ const statisticsEndpoints = API.v1.get(
 							totalFailed: {
 								oneOf: [{ type: 'integer' }, { const: false }],
 							},
+							totalPrivateApps: {
+								oneOf: [{ type: 'integer' }, { const: false }],
+							},
+							totalPrivateAppsEnabled: {
+								oneOf: [{ type: 'integer' }, { const: false }],
+							},
 						},
-						required: ['engineVersion', 'totalInstalled', 'totalActive', 'totalFailed'],
-						// TODO : remove this when we have a proper apps schema
-						// additionalProperties: false,
+						required: ['engineVersion', 'totalInstalled', 'totalActive', 'totalFailed', 'totalPrivateApps', 'totalPrivateAppsEnabled'],
+						additionalProperties: false,
 					},
 					services: { type: 'object' },
 					importer: { type: 'object' },
@@ -703,6 +709,14 @@ const statisticsEndpoints = API.v1.get(
 								},
 								additionalProperties: false,
 							},
+							videoConference: {
+								type: 'object',
+								properties: {
+									videoConference: { type: 'boolean' },
+									jitsiEnabled: { type: 'boolean' },
+								},
+								additionalProperties: false,
+							},
 							webRTC: {
 								type: 'object',
 								properties: {
@@ -823,7 +837,7 @@ const statisticsEndpoints = API.v1.get(
 						additionalProperties: false,
 					},
 					createdAt: {
-						oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+						oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
 					},
 					totalOTR: { type: 'integer' },
 					totalOTRRooms: { type: 'integer' },
@@ -966,7 +980,7 @@ const statisticsEndpoints = API.v1.get(
 					webRTCEnabled: { type: 'boolean' },
 					webRTCEnabledForOmnichannel: { type: 'boolean' },
 					omnichannelWebRTCCalls: { type: 'integer' },
-					statsToken: { oneOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
+					statsToken: { type: 'string' },
 					contactVerification: {
 						type: 'object',
 						properties: {
@@ -1083,23 +1097,23 @@ const statisticsListEndpoints = API.v1.get(
 								wizard: {
 									type: 'object',
 									properties: {
-										organizationType: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-										industry: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-										size: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-										country: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-										language: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-										serverType: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-										registerServer: { oneOf: [{ type: 'boolean' }, { type: 'null' }] },
+										organizationType: { type: 'string' },
+										industry: { type: 'string' },
+										size: { type: 'string' },
+										country: { type: 'string' },
+										language: { type: 'string' },
+										serverType: { type: 'string' },
+										registerServer: { type: 'boolean' },
 									},
 									additionalProperties: false,
 								},
 								uniqueId: { type: 'string' },
 								deploymentFingerprintHash: { type: 'string' },
 								deploymentFingerprintVerified: { type: 'boolean' },
-								installedAt: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-								version: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-								tag: { oneOf: [{ type: 'string' }, { type: 'null' }] },
-								branch: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+								installedAt: { type: 'string' },
+								version: { type: 'string' },
+								tag: { type: 'string' },
+								branch: { type: 'string' },
 								totalUsers: { type: 'integer' },
 								activeUsers: { type: 'integer' },
 								activeGuests: { type: 'integer' },
@@ -1151,7 +1165,7 @@ const statisticsListEndpoints = API.v1.get(
 								federatedServers: { type: 'integer' },
 								federatedUsers: { type: 'integer' },
 								lastLogin: { type: 'string' },
-								lastMessageSentAt: { oneOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
+								lastMessageSentAt: { oneOf: [{ type: 'string' }, { type: 'object' }] },
 								lastSeenSubscription: { type: 'string' },
 								os: {
 									type: 'object',
@@ -1197,18 +1211,19 @@ const statisticsListEndpoints = API.v1.get(
 								migration: {
 									type: 'object',
 									properties: {
-										_id: { oneOf: [{ type: 'string' }, { type: 'null' }] },
+										_id: { type: 'string' },
 										locked: { type: 'boolean' },
 										version: { type: 'integer' },
+										hash: { type: 'string' },
 										buildAt: {
-											oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+											oneOf: [{ type: 'string' }, { type: 'object' }],
 										},
 										lockedAt: {
-											oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+											oneOf: [{ type: 'string' }, { type: 'object' }],
 										},
 									},
 									required: ['locked', 'version'],
-									// TODO: remove this when we have a proper migration schema
+									// FIXME: remove this when we have a proper migration schema
 									// additionalProperties: false,
 								},
 								instanceCount: { type: 'integer' },
@@ -1236,16 +1251,16 @@ const statisticsListEndpoints = API.v1.get(
 											items: {
 												type: 'object',
 												properties: {
-													source: { type: 'string' },
+													source: { type: 'array' },
 													contactsCount: { type: 'integer' },
 													conversationsCount: { type: 'integer' },
 												},
-												required: ['source', 'contactsCount', 'conversationsCount'],
+												required: ['contactsCount', 'conversationsCount'],
 												additionalProperties: false,
 											},
 										},
 									},
-									required: ['contactsCount', 'conversationsCount', 'sources'],
+									required: ['contactsCount', 'conversationsCount'],
 									additionalProperties: false,
 								},
 								uniqueContactsOfLastMonth: {
@@ -1262,12 +1277,12 @@ const statisticsListEndpoints = API.v1.get(
 													contactsCount: { type: 'integer' },
 													conversationsCount: { type: 'integer' },
 												},
-												required: ['source', 'contactsCount', 'conversationsCount'],
+												required: ['contactsCount', 'conversationsCount'],
 												additionalProperties: false,
 											},
 										},
 									},
-									required: ['contactsCount', 'conversationsCount', 'sources'],
+									required: ['contactsCount', 'conversationsCount'],
 									additionalProperties: false,
 								},
 								uniqueContactsOfLastWeek: {
@@ -1289,7 +1304,7 @@ const statisticsListEndpoints = API.v1.get(
 											},
 										},
 									},
-									required: ['contactsCount', 'conversationsCount', 'sources'],
+									required: ['contactsCount', 'conversationsCount'],
 									additionalProperties: false,
 								},
 								uniqueContactsOfYesterday: {
@@ -1306,12 +1321,12 @@ const statisticsListEndpoints = API.v1.get(
 													contactsCount: { type: 'integer' },
 													conversationsCount: { type: 'integer' },
 												},
-												required: ['source', 'contactsCount', 'conversationsCount'],
+												required: ['contactsCount', 'conversationsCount'],
 												additionalProperties: false,
 											},
 										},
 									},
-									required: ['contactsCount', 'conversationsCount', 'sources'],
+									required: ['contactsCount', 'conversationsCount'],
 									additionalProperties: false,
 								},
 								departments: { type: 'integer' },
@@ -1613,10 +1628,22 @@ const statisticsListEndpoints = API.v1.get(
 										totalFailed: {
 											oneOf: [{ type: 'integer' }, { const: false }],
 										},
+										totalPrivateApps: {
+											oneOf: [{ type: 'integer' }, { const: false }],
+										},
+										totalPrivateAppsEnabled: {
+											oneOf: [{ type: 'integer' }, { const: false }],
+										},
 									},
-									required: ['engineVersion', 'totalInstalled', 'totalActive', 'totalFailed'],
-									// TODO : remove this when we have a proper apps schema
-									// additionalProperties: false,
+									required: [
+										'engineVersion',
+										'totalInstalled',
+										'totalActive',
+										'totalFailed',
+										'totalPrivateApps',
+										'totalPrivateAppsEnabled',
+									],
+									additionalProperties: false,
 								},
 								services: { type: 'object' },
 								importer: { type: 'object' },
@@ -1750,6 +1777,14 @@ const statisticsListEndpoints = API.v1.get(
 											},
 											additionalProperties: false,
 										},
+										videoConference: {
+											type: 'object',
+											properties: {
+												videoConference: { type: 'boolean' },
+												jitsiEnabled: { type: 'boolean' },
+											},
+											additionalProperties: false,
+										},
 										webRTC: {
 											type: 'object',
 											properties: {
@@ -1870,7 +1905,7 @@ const statisticsListEndpoints = API.v1.get(
 									additionalProperties: false,
 								},
 								createdAt: {
-									oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }, { type: undefined }],
+									oneOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
 								},
 								totalOTR: { type: 'integer' },
 								totalOTRRooms: { type: 'integer' },
@@ -2013,7 +2048,7 @@ const statisticsListEndpoints = API.v1.get(
 								webRTCEnabled: { type: 'boolean' },
 								webRTCEnabledForOmnichannel: { type: 'boolean' },
 								omnichannelWebRTCCalls: { type: 'integer' },
-								statsToken: { oneOf: [{ type: 'string' }, { type: 'null' }, { type: undefined }] },
+								statsToken: { type: 'string' },
 								contactVerification: {
 									type: 'object',
 									properties: {
@@ -2034,7 +2069,7 @@ const statisticsListEndpoints = API.v1.get(
 									},
 								},
 							},
-							// TODO: remove this when we have a proper stats schema
+							// TODO: remove this when we have a proper statistics schema
 							// additionalProperties: false,
 						},
 					},
