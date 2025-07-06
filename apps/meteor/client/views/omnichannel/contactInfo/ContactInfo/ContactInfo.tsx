@@ -107,6 +107,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 			{context === 'details' && (
 				<ContactInfoDetails
 					channels={channels}
+					contactId={contact._id}
 					createdAt={createdAt}
 					contactManager={contactManager}
 					phones={phones?.map(({ phoneNumber }) => phoneNumber)}
