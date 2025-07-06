@@ -1,4 +1,9 @@
-import { createDocumentMatcherFromFilter, createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
+import {
+	createDocumentMatcherFromFilter,
+	createPredicateFromFilter,
+	createTransformFromUpdateFilter,
+	createUpsertDocument,
+} from '@rocket.chat/mongo-adapter';
 import type { ArrayIndices } from '@rocket.chat/mongo-adapter';
 import { Meteor } from 'meteor/meteor';
 import type { CountDocumentsOptions, FilterOperators, Filter, UpdateFilter } from 'mongodb';
@@ -11,8 +16,7 @@ import type { IdMap } from './IdMap';
 import { MinimongoError } from './MinimongoError';
 import type { Query } from './Query';
 import { SynchronousQueue } from './SynchronousQueue';
-import { Updater } from './Updater';
-import { _selectorIsId, clone, assertHasValidFieldNames } from './common';
+import { clone, assertHasValidFieldNames } from './common';
 
 /**
  * Forked from Meteor's Mongo.Collection, this class implements a local collection over a Zustand store.
@@ -677,8 +681,8 @@ export class LocalCollection<T extends { _id: string }> {
 		const matchedBefore = this._getMatchedDocAndModify(doc);
 
 		const oldDoc = clone(doc);
-		const updater = new Updater(clone(mod));
-		doc = updater.modify(doc, { arrayIndices });
+		const updater = createTransformFromUpdateFilter(clone(mod));
+		doc = updater(doc, { arrayIndices });
 		this.store.setState((state) => {
 			const records = new Map(state.records);
 			records.set(doc._id, doc);
@@ -712,8 +716,8 @@ export class LocalCollection<T extends { _id: string }> {
 		const matchedBefore = this._getMatchedDocAndModify(doc);
 
 		const oldDoc = clone(doc);
-		const updater = new Updater(clone(mod));
-		doc = updater.modify(doc, { arrayIndices });
+		const updater = createTransformFromUpdateFilter(clone(mod));
+		doc = updater(doc, { arrayIndices });
 		this.store.setState((state) => {
 			const records = new Map(state.records);
 			records.set(doc._id, doc);
@@ -794,8 +798,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private _createUpsertDocument(selector: Filter<T>, modifier: UpdateFilter<T>): T {
-		const updater = new Updater(modifier);
-		return updater.createUpsertDocument(selector);
+		return createUpsertDocument(selector, modifier);
 	}
 
 	private _findInOrderedResults(query: Query<T>, doc: T): number {
@@ -813,7 +816,7 @@ export class LocalCollection<T extends { _id: string }> {
 	}
 
 	private _idsMatchedBySelector(selector: Filter<T> | T['_id']): readonly T['_id'][] | null {
-		if (_selectorIsId(selector)) {
+		if (typeof selector === 'string') {
 			return [selector];
 		}
 
@@ -822,7 +825,7 @@ export class LocalCollection<T extends { _id: string }> {
 		}
 
 		if ('_id' in selector) {
-			if (_selectorIsId(selector._id)) {
+			if (typeof selector._id === 'string') {
 				return [selector._id];
 			}
 
@@ -830,7 +833,7 @@ export class LocalCollection<T extends { _id: string }> {
 				selector._id &&
 				Array.isArray((selector._id as FilterOperators<T['_id']>).$in) &&
 				(selector._id as FilterOperators<T['_id']>).$in?.length &&
-				(selector._id as FilterOperators<T['_id']>).$in?.every(_selectorIsId)
+				(selector._id as FilterOperators<T['_id']>).$in?.every((id) => typeof id === 'string')
 			) {
 				return (selector._id as FilterOperators<T['_id']>).$in!;
 			}

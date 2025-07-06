@@ -1,12 +1,5 @@
-import { getBSONType } from './bson';
+import { isIndexable, isNumericKey, isPlainObject } from './common';
 import type { ArrayIndices, LookupBranch } from './types';
-import { BSONType } from './types';
-
-const isNumericKey = (s: string) => /^\d+$/.test(s);
-
-const isPlainObject = (x: unknown): x is Record<string, any> => !!x && getBSONType(x) === BSONType.Object;
-
-const isIndexable = (obj: unknown): obj is Record<string | number, any> => Array.isArray(obj) || isPlainObject(obj);
 
 const buildResult = (arrayIndices: ArrayIndices | undefined, dontIterate: boolean, value: unknown): [LookupBranch] => {
 	if (arrayIndices?.length) {

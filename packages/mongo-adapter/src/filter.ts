@@ -1,19 +1,15 @@
 import type { Filter, FilterOperators } from 'mongodb';
 
 import { compareBSONValues, getBSONType } from './bson';
+import { isBinary, isIndexable, isPlainObject } from './common';
 import { equals, isTruthy } from './comparisons';
 import { createLookupFunction } from './lookups';
-import { BSONType } from './types';
 import type { ArrayIndices, LookupBranch } from './types';
 
 type Match = {
 	readonly result: boolean;
 	arrayIndices?: ArrayIndices;
 };
-
-const isIndexable = (obj: any): obj is { [index: string | number]: any } => Array.isArray(obj) || isPlainObject(obj);
-
-const isBinary = (x: unknown): x is Uint8Array => typeof x === 'object' && x !== null && x instanceof Uint8Array;
 
 const everyMatches = <T>(arr: T[], fn: (item: T) => Match): Match =>
 	arr.reduce((acc: Match, item) => (acc.result ? fn(item) : acc), { result: true });
@@ -499,8 +495,6 @@ const logicalOperators = {
 } as const;
 
 const isLogicalOperator = (operator: string): operator is keyof typeof logicalOperators => operator in logicalOperators;
-
-const isPlainObject = (x: any): x is Record<string, any> => x && getBSONType(x) === BSONType.Object;
 
 const isOperatorObject = <TOperator extends `$${string}`>(
 	valueSelector: unknown,
