@@ -1,7 +1,8 @@
 import { Divider, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import ContactInfoDetailsGroup from './ContactInfoDetailsGroup';
+import ContactInfoDetailsEntry from './ContactInfoDetailsEntry';
+import ContactInfoPhoneEntry from './ContactInfoPhoneEntry';
 import ContactManagerInfo from './ContactManagerInfo';
 import { ContextualbarScrollableContent } from '../../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -11,6 +12,8 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 
 type ContactInfoDetailsProps = {
+	channels: Serialized<ILivechatContactChannel>[];
+	contactId: string;
 	emails?: string[];
 	phones?: string[];
 	createdAt: string;
@@ -18,15 +21,40 @@ type ContactInfoDetailsProps = {
 	contactManager?: string;
 };
 
-const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
+const ContactInfoDetails = ({
+	contactId,
+	channels,
+	emails,
+	phones,
+	createdAt,
+	customFieldEntries,
+	contactManager,
+}: ContactInfoDetailsProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 
 	return (
 		<ContextualbarScrollableContent>
-			{emails?.length ? <ContactInfoDetailsGroup type='email' label={t('Email')} values={emails} /> : null}
-			{phones?.length ? <ContactInfoDetailsGroup type='phone' label={t('Phone_number')} values={phones} /> : null}
+			{emails?.length ? (
+				<Field>
+					<Label is='span'>{t('Email')}</Label>
+					{emails.map((email, index) => (
+						<ContactInfoDetailsEntry key={index} icon='mail' value={email} />
+					))}
+				</Field>
+			) : null}
+
+			{phones?.length ? (
+				<Field>
+					<Label is='span'>{t('Phone')}</Label>
+					{phones.map((phone, index) => (
+						<ContactInfoPhoneEntry key={index} contactId={contactId} value={phone} />
+					))}
+				</Field>
+			) : null}
+
 			{contactManager && <ContactManagerInfo userId={contactManager} />}
+
 			<Margins block={4}>
 				{createdAt && (
 					<Field>
