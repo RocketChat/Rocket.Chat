@@ -12,9 +12,11 @@ const getMockAppManager = (senderFn: AppAccessors['senderFn']) => ({
 				return senderFn({
 					method: 'bridges:getInternalBridge:doGetUsernamesOfRoomById',
 					params: [roomId],
-				}).then((result) => result.result).catch((err) => {
-					throw new JsonRpcError(`Error getting usernames of room: ${err}`, -32000);
-				});
+				})
+					.then((result) => result.result)
+					.catch((err) => {
+						throw new JsonRpcError(`Error getting usernames of room: ${err}`, -32000);
+					});
 			},
 		}),
 	}),

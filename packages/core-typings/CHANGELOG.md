@@ -10,6 +10,12 @@
 
 - ([#36153](https://github.com/RocketChat/Rocket.Chat/pull/36153)) Adds a new setting to override outlook calendar settings per user email domain
 
+## 7.7.4
+
+## 7.7.3
+
+## 7.7.2
+
 ## 7.7.1
 
 ## 7.7.0

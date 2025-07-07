@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/gazzodown@20.0.0-rc.1
   </details>
 
@@ -19,8 +18,34 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/gazzodown@20.0.0-rc.0
+
+  </details>
+
+## 1.22.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@19.0.4
+  </details>
+
+## 1.22.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@19.0.3
+  </details>
+
+## 1.22.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@19.0.2
+
   </details>
 
 ## 1.22.12
