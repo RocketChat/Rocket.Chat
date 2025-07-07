@@ -86,7 +86,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 				}
 				// Anonnymous users don't have subscriptions. Fetch Rooms instead.
 				const predicate = createPredicateFromFilter(query);
-				const rooms = Rooms.state.filter(predicate) as unknown as SubscriptionWithRoom[]; // FIXME: this is a hack to make the typings work. How was it working before?
+				const rooms = Rooms.state.filter(predicate);
 
 				if (options?.sort || options?.limit) {
 					return applyQueryOptions(rooms, options);
