@@ -98,6 +98,7 @@ describe('createComparatorFromSort', () => {
 		});
 
 		it('should handle mix of string and array formats', () => {
+			// @ts-expect-error - mixing string and array formats is allowed
 			const sorter = createComparatorFromSort(['age', ['name', 'desc']]);
 
 			const a = { age: 30, name: 'Alice' };

@@ -1,8 +1,7 @@
 import type { Filter, FilterOperators } from 'mongodb';
 
 import { compareBSONValues, getBSONType } from './bson';
-import { isBinary, isIndexable, isPlainObject } from './common';
-import { equals, isTruthy } from './comparisons';
+import { isBinary, isIndexable, isPlainObject, isTruthy, equals } from './common';
 import { createLookupFunction } from './lookups';
 import type { ArrayIndices, LookupBranch } from './types';
 

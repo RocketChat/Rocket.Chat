@@ -1,8 +1,7 @@
 import type { Document, Filter, FilterOperators, Sort, UpdateFilter } from 'mongodb';
 
 import { getBSONType } from './bson';
-import { assertHasValidFieldNames, assertIsValidFieldName, clone, isIndexable, isNumericKey, isPlainObject } from './common';
-import { equals } from './comparisons';
+import { assertHasValidFieldNames, assertIsValidFieldName, clone, isIndexable, isNumericKey, isPlainObject, equals } from './common';
 import { createPredicateFromFilter } from './filter';
 import { createComparatorFromSort } from './sort';
 import { BSONType, type ArrayIndices } from './types';

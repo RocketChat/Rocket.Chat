@@ -1,7 +1,7 @@
 import type { Sort } from 'mongodb';
 
 import { compareBSONValues } from './bson';
-import { isEmptyArray } from './comparisons';
+import { isEmptyArray } from './common';
 import { createLookupFunction } from './lookups';
 import type { LookupBranch } from './types';
 
