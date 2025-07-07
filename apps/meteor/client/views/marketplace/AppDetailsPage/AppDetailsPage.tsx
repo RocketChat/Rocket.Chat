@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { App, SettingValue } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
-import { useBreakpoints, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useRouteParameter, useToastMessageDispatch, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo, useCallback } from 'react';
@@ -19,6 +19,7 @@ import AppReleases from './tabs/AppReleases';
 import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
+import { useCompactMode } from './useCompactMode';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
@@ -49,8 +50,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	const context = useRouteParameter('context');
 	const contextualBar = useRouteParameter('contextualBar');
 	const appData = useAppInfo(id, context || '');
-	const breakpoint = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
-	const compactMode = !breakpoint.includes('lg');
+	const compactMode = useCompactMode();
 
 	const handleReturn = useEffectEvent((): void => {
 		if (!context) {

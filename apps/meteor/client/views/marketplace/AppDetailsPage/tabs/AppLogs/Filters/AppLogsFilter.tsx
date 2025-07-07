@@ -1,5 +1,4 @@
 import { Box, Button, Icon, Label, Palette, TextInput } from '@rocket.chat/fuselage';
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
+import { useCompactMode } from '../../../useCompactMode';
 
 export const AppLogsFilter = () => {
 	const { t } = useTranslation();
@@ -25,8 +25,7 @@ export const AppLogsFilter = () => {
 		);
 	};
 
-	const breakpoint = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
-	const compactMode = !breakpoint.includes('lg');
+	const compactMode = useCompactMode();
 
 	return (
 		<Box display='flex' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
