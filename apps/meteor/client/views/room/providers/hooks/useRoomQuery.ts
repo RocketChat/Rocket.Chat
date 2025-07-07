@@ -28,9 +28,7 @@ export function useRoomQuery(
 
 	const { refetch } = queryResult;
 
-	useEffect(() => {
-		Rooms.use.subscribe(() => refetch());
-	}, [refetch, rid]);
+	useEffect(() => Rooms.use.subscribe(() => refetch()), [refetch, rid]);
 
 	return queryResult;
 }
