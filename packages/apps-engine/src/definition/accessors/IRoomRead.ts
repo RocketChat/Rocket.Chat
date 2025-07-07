@@ -49,6 +49,8 @@ export interface IRoomRead {
 	 *                - skip: The number of messages to skip (for pagination).
 	 *                - sort: An object defining the sorting order of the messages. Each key is a field to sort by, and the value is either "asc" for ascending order or "desc" for descending order.
 	 *                - showThreadMessages: Whether to include thread messages in the results. Defaults to true.
+	 * 			  	  - createdAt: An object with optional start and end properties, both of which should be Date objects, to filter messages by creation time.
+	 * 			      - updatedAt: An object with optional start and end properties, both of which should be Date objects, to filter messages by last update time.
 	 * @returns A Promise that resolves to an array of IMessage objects representing the messages in the room.
 	 */
 	getMessages(roomId: string, options?: Partial<GetMessagesOptions>): Promise<Array<IMessageRaw>>;
