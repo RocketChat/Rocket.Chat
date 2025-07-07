@@ -11,6 +11,7 @@ import { registerGuest, notifyGuestStatusChanged, removeContactsByVisitorId } fr
 import { saveRoomInfo } from '../../lib/rooms';
 import { updateCallStatus } from '../../lib/utils';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
+import { livechatLogger } from '../../lib/logger';
 
 API.v1.addRoute(
 	'livechat/visitor',
