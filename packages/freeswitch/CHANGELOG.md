@@ -65,11 +65,12 @@
 
 ## 1.2.13-rc.1
 
+## 1.2.16-rc.1
+
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
-  - @rocket.chat/core-typings@7.8.0-rc.1
+- @rocket.chat/core-typings@7.8.0-rc.1
   </details>
 
 ## 1.2.13-rc.0
@@ -79,6 +80,34 @@
 - <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
 
   - @rocket.chat/core-typings@7.8.0-rc.0
+
+  </details>
+
+## 1.2.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.7.4
+  </details>
+
+## 1.2.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.3
+  </details>
+
+## 1.2.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.2
+
   </details>
 
 ## 1.2.12

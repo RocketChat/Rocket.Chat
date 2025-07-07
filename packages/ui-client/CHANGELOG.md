@@ -75,7 +75,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@20.0.0-rc.1
   - @rocket.chat/ui-avatar@16.0.0-rc.1
   </details>
@@ -85,9 +84,37 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@20.0.0-rc.0
   - @rocket.chat/ui-avatar@16.0.0-rc.0
+  </details>
+
+## 19.0.4
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@19.0.4
+- @rocket.chat/ui-avatar@15.0.4
+</details>
+
+## 19.0.3
+
+- <details><summary>Updated dependencies []:</summary>
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@19.0.3
+  - @rocket.chat/ui-avatar@15.0.3
+  </details>
+
+## 19.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.2
+  - @rocket.chat/ui-avatar@15.0.2
   </details>
 
 ## 19.0.1

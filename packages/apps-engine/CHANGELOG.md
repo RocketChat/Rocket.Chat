@@ -12,6 +12,12 @@
 
 - ([#36169](https://github.com/RocketChat/Rocket.Chat/pull/36169)) Fix an issue where action buttons registered by apps would be displayed even if their apps were disabled
 
+## 1.52.1
+
+### Patch Changes
+
+- ([#36360](https://github.com/RocketChat/Rocket.Chat/pull/36360) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
 ## 1.52.0
 
 ### Minor Changes

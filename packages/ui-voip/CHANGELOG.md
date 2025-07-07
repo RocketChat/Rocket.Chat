@@ -83,20 +83,54 @@
 
 - <details><summary>Updated dependencies []:</summary>
 
-  - @rocket.chat/ui-contexts@20.0.0-rc.1
-  - @rocket.chat/ui-avatar@16.0.0-rc.1
-  - @rocket.chat/ui-client@20.0.0-rc.1
-  </details>
+## 10.0.0-rc.1
+
+- @rocket.chat/ui-contexts@20.0.0-rc.1
+- @rocket.chat/ui-avatar@16.0.0-rc.1
+- @rocket.chat/ui-client@20.0.0-rc.1
+</details>
 
 ## 10.0.0-rc.0
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@20.0.0-rc.0
   - @rocket.chat/ui-avatar@16.0.0-rc.0
   - @rocket.chat/ui-client@20.0.0-rc.0
+
+  </details>
+
+## 9.0.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@19.0.4
+  - @rocket.chat/ui-avatar@15.0.4
+  - @rocket.chat/ui-client@19.0.4
+  </details>
+
+## 9.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@19.0.3
+  - @rocket.chat/ui-avatar@15.0.3
+  - @rocket.chat/ui-client@19.0.3
+  </details>
+
+## 9.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.2
+  - @rocket.chat/ui-avatar@15.0.2
+  - @rocket.chat/ui-client@19.0.2
+
   </details>
 
 ## 9.0.1
