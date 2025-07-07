@@ -167,7 +167,7 @@ test.describe.serial('Quote Messages', () => {
 		});
 	});
 
-	test('should cancel quote preview', async ({ page }) => {
+	test('should cancel quote preview', async () => {
 		const messageText = faker.lorem.sentence();
 
 		await test.step('Send initial message', async () => {
