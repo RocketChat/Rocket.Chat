@@ -51,15 +51,13 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			</Box>
 			{isLoading && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
-			{isSuccess && (
+			{isSuccess && data?.logs?.length === 0 ? (
+				<GenericNoResults />
+			) : (
 				<CustomScrollbars>
-					{data?.logs?.length === 0 ? (
-						<GenericNoResults />
-					) : (
-						<CollapsiblePanel width='100%' alignSelf='center'>
-							{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
-						</CollapsiblePanel>
-					)}
+					<CollapsiblePanel width='100%' alignSelf='center'>
+						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
+					</CollapsiblePanel>
 				</CustomScrollbars>
 			)}
 			<Pagination
