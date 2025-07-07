@@ -70,9 +70,9 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 	const onModalSave = (values: { startDate: string; startTime: string; endDate: string; endTime: string }): void => {
 		const { startDate, startTime, endDate, endTime } = values;
 		setValue('startDate', startDate);
-		setValue('startTime', startTime);
+		setValue('startTime', startTime || '00:00');
 		setValue('endDate', endDate);
-		setValue('endTime', endTime);
+		setValue('endTime', endTime || '00:00');
 
 		const formattedStartDate = format(new Date(startDate), 'MMM dd, yyyy');
 		const formattedEndDate = format(new Date(endDate), 'MMM dd, yyyy');
