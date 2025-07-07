@@ -9,12 +9,15 @@ type DateTimeModalProps = {
 	onClose: () => void;
 	onSave: (value: { startDate: string; startTime: string; endDate: string; endTime: string }) => void;
 	confirmDisabled?: boolean;
+	defaultValues?: { startDate: string; startTime: string; endDate: string; endTime: string };
 };
 
-export const DateTimeModal = ({ onSave, onClose }: DateTimeModalProps): ReactNode => {
+export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalProps): ReactNode => {
 	const { t } = useTranslation();
 
-	const { control, getValues, watch } = useForm();
+	const { control, getValues, watch } = useForm({
+		defaultValues,
+	});
 
 	const handleSave = (): void => {
 		onSave({

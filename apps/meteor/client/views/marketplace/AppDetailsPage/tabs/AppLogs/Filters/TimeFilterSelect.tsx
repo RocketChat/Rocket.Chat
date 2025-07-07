@@ -18,7 +18,7 @@ type DateRangeAction = 'all' | 'today' | 'last5Minutes' | 'last15Minutes' | 'las
 type TimeFilterSelectProps = { compactView?: boolean } & Omit<ComponentProps<typeof Select>, 'onChange' | 'options'>;
 
 export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSelectProps) => {
-	const { setValue, control } = useFormContext();
+	const { setValue, control, getValues } = useFormContext();
 	const { t } = useTranslation();
 
 	const setModal = useSetModal();
@@ -101,7 +101,9 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 		}
 
 		if (action === 'custom') {
-			setModal(<DateTimeModal onSave={onModalSave} onClose={onModalClose} />);
+			const { startDate, startTime, endDate, endTime } = getValues();
+			// Doing this since the modal is not in the form context, and it is simpler just to pass the default values to a new useForm call
+			setModal(<DateTimeModal onSave={onModalSave} onClose={onModalClose} defaultValues={{ startDate, startTime, endDate, endTime }} />);
 			return;
 		}
 

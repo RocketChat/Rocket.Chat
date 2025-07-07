@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 type DateTimeFilterProps = {
 	type: 'start' | 'end';
 	id?: string;
-	control: Control;
+	control: Control<{ startDate: string; startTime: string; endDate: string; endTime: string }>;
 	error?: boolean;
 };
 
