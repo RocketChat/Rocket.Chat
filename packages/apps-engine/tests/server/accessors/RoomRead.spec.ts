@@ -113,7 +113,7 @@ export class RoomReadAccessorTestFixture {
 	public async getMessages_withCreatedAtFilter() {
 		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
 		const date = new Date();
-		const messages = await rr.getMessages('testing', { createdAt: date });
+		const messages = await rr.getMessages('testing', { createdAt: { start: date, end: date } });
 		Expect(messages).toBe(this.messages);
 	}
 
@@ -121,7 +121,7 @@ export class RoomReadAccessorTestFixture {
 	public async getMessages_withUpdatedAtFilter() {
 		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
 		const date = new Date();
-		const messages = await rr.getMessages('testing', { updatedAt: date });
+		const messages = await rr.getMessages('testing', { updatedAt: { start: date, end: date } });
 		Expect(messages).toBe(this.messages);
 	}
 

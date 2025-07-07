@@ -39,12 +39,24 @@ export class RoomRead implements IRoomRead {
 			this.validateSort(options.sort);
 		}
 
-		// Ensure that date fields are Date objects
-		if (options.createdAt && !(options.createdAt instanceof Date)) {
-			throw new Error('Invalid createdAt: must be a Date object');
+		if (options.createdAt) {
+			if (typeof options.createdAt === 'object') {
+				const { start, end } = options.createdAt as any;
+				if (start && !(start instanceof Date)) throw new Error('createdAt.start must be a Date');
+				if (end && !(end instanceof Date)) throw new Error('createdAt.end must be a Date');
+			} else {
+				throw new Error('Invalid createdAt: must be a { start, end }');
+			}
 		}
-		if (options.updatedAt && !(options.updatedAt instanceof Date)) {
-			throw new Error('Invalid updatedAt: must be a Date object');
+
+		if (options.updatedAt) {
+			if (typeof options.updatedAt === 'object') {
+				const { start, end } = options.updatedAt as any;
+				if (start && !(start instanceof Date)) throw new Error('updatedAt.start must be a Date');
+				if (end && !(end instanceof Date)) throw new Error('updatedAt.end must be a Date');
+			} else {
+				throw new Error('Invalid updatedAt: must be a { start, end }');
+			}
 		}
 
 		return this.roomBridge.doGetMessages(roomId, options as GetMessagesOptions, this.appId);

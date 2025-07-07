@@ -135,26 +135,26 @@ export class AppRoomBridge extends RoomBridge {
 
 		// Add timestamp filters if provided
 		if (createdAt) {
-			// createdAt: { $gte, $lte }
-			if (createdAt.$gte || createdAt.$lte) {
+			// createdAt: { start, end }
+			if (createdAt.start || createdAt.end) {
 				query.ts = {};
-				if (createdAt.$gte) {
-					query.ts.$gte = createdAt.$gte;
+				if (createdAt.start) {
+					query.ts.$gte = createdAt.start;
 				}
-				if (createdAt.$lte) {
-					query.ts.$lte = createdAt.$lte;
+				if (createdAt.end) {
+					query.ts.$lte = createdAt.end;
 				}
 			}
 		}
 		if (updatedAt) {
-			// updatedAt: { $gte, $lte }
-			if (updatedAt.$gte || updatedAt.$lte) {
+			// updatedAt: { start, end }
+			if (updatedAt.start || updatedAt.end) {
 				query._updatedAt = {};
-				if (updatedAt.$gte) {
-					query._updatedAt.$gte = updatedAt.$gte;
+				if (updatedAt.start) {
+					query._updatedAt.$gte = updatedAt.start;
 				}
-				if (updatedAt.$lte) {
-					query._updatedAt.$lte = updatedAt.$lte;
+				if (updatedAt.end) {
+					query._updatedAt.$lte = updatedAt.end;
 				}
 			}
 		}
