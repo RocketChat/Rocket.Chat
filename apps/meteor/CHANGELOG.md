@@ -1,5 +1,44 @@
 # @rocket.chat/meteor
 
+## 7.3.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36254](https://github.com/RocketChat/Rocket.Chat/pull/36254) by [@dionisio-bot](https://github.com/dionisio-bot)) fix: Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#36266](https://github.com/RocketChat/Rocket.Chat/pull/36266) by [@dionisio-bot](https://github.com/dionisio-bot)) fixes a very rare issue where switching from a DM to a regular room would show an error page
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.6
+  - @rocket.chat/rest-typings@7.3.6
+  - @rocket.chat/license@1.0.10
+  - @rocket.chat/omnichannel-services@0.3.16
+  - @rocket.chat/pdf-worker@0.2.16
+  - @rocket.chat/presence@0.2.19
+  - @rocket.chat/api-client@0.2.19
+  - @rocket.chat/apps@0.2.10
+  - @rocket.chat/core-services@0.7.11
+  - @rocket.chat/cron@0.1.19
+  - @rocket.chat/freeswitch@1.2.6
+  - @rocket.chat/fuselage-ui-kit@15.0.6
+  - @rocket.chat/gazzodown@15.0.6
+  - @rocket.chat/model-typings@1.3.6
+  - @rocket.chat/ui-contexts@15.0.6
+  - @rocket.chat/models@1.2.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.11
+  - @rocket.chat/ui-theming@0.4.2
+  - @rocket.chat/ui-avatar@11.0.6
+  - @rocket.chat/ui-client@15.0.6
+  - @rocket.chat/ui-video-conf@15.0.6
+  - @rocket.chat/ui-voip@5.0.6
+  - @rocket.chat/web-ui-registration@15.0.6
+  - @rocket.chat/instance-status@0.1.19
+  </details>
+
 ## 7.3.5
 
 ### Patch Changes
