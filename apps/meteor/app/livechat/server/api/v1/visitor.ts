@@ -8,10 +8,10 @@ import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { setMultipleVisitorCustomFields } from '../../lib/custom-fields';
 import { registerGuest, notifyGuestStatusChanged, removeContactsByVisitorId } from '../../lib/guests';
+import { livechatLogger } from '../../lib/logger';
 import { saveRoomInfo } from '../../lib/rooms';
 import { updateCallStatus } from '../../lib/utils';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
-import { livechatLogger } from '../../lib/logger';
 
 API.v1.addRoute(
 	'livechat/visitor',
