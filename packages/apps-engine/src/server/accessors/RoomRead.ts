@@ -45,7 +45,7 @@ export class RoomRead implements IRoomRead {
 				if (start && !(start instanceof Date)) throw new Error('createdAt.start must be a Date');
 				if (end && !(end instanceof Date)) throw new Error('createdAt.end must be a Date');
 			} else {
-				throw new Error('Invalid createdAt: must be a { start, end }');
+				throw new Error('createdAt filter must be an object with optional `start` and `end` Date properties.');
 			}
 		}
 
@@ -55,7 +55,7 @@ export class RoomRead implements IRoomRead {
 				if (start && !(start instanceof Date)) throw new Error('updatedAt.start must be a Date');
 				if (end && !(end instanceof Date)) throw new Error('updatedAt.end must be a Date');
 			} else {
-				throw new Error('Invalid updatedAt: must be a { start, end }');
+				throw new Error('updatedAt filter must be an object with optional `start` and `end` Date properties.');
 			}
 		}
 
