@@ -1,5 +1,5 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { useMemo, type ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -7,6 +7,8 @@ import AppLogsItem from './AppLogsItem';
 import { CollapsiblePanel } from './Components/CollapsiblePanel';
 import { AppLogsFilter } from './Filters/AppLogsFilter';
 import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
+import GenericError from '../../../../../components/GenericError';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
@@ -20,7 +22,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const { data, isSuccess, isError, isLoading } = useLogs({
+	const { data, isSuccess, isError, isLoading, error } = useLogs({
 		appId: id,
 		current,
 		itemsPerPage,
@@ -31,22 +33,33 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
 	});
 
+	const parsedError = useMemo(() => {
+		if (error) {
+			// TODO: Check why tanstack expects a default Error but we return {error: string}
+			if ((error as unknown as { error: string }).error === 'Invalid date range') {
+				return t('error-invalid-dates');
+			}
+
+			return t('Something_Went_Wrong');
+		}
+	}, [error, t]);
+
 	return (
 		<>
 			<Box pb={16}>
 				<AppLogsFilter />
 			</Box>
 			{isLoading && <AccordionLoading />}
-			{isError && (
-				<Box maxWidth='x600' alignSelf='center'>
-					{t('App_not_found')}
-				</Box>
-			)}
+			{isError && <GenericError title={parsedError} />}
 			{isSuccess && (
 				<CustomScrollbars>
-					<CollapsiblePanel width='100%' alignSelf='center'>
-						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
-					</CollapsiblePanel>
+					{data?.logs?.length === 0 ? (
+						<GenericNoResults />
+					) : (
+						<CollapsiblePanel width='100%' alignSelf='center'>
+							{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
+						</CollapsiblePanel>
+					)}
 				</CustomScrollbars>
 			)}
 			<Pagination
