@@ -145,6 +145,7 @@ function createDeleteQuery({
 
 	return query;
 }
+
 const openRoom = (typeName: string, record: OpenedRoom) => {
 	if (record.ready === true && record.streamActive === true) {
 		return;
@@ -211,20 +212,11 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 			}),
 			sdk.stream('notify-room', [`${record.rid}/deleteMessageBulk`], async (params) => {
 				const query = createDeleteQuery(params);
+				const predicate = createPredicateFromFilter(query);
 
 				if (params.filesOnly) {
-					const msgs = Messages.find(query, { projection: { attachments: 1, _id: 1 } });
-					for await (const msg of msgs) {
-						const { files, attachments } = modifyMessageOnFilesDelete(msg, params.replaceFileAttachmentsWith);
-						Messages.update(msg._id, {
-							$set: { files, attachments },
-							$unset: { file: 1 },
-						});
-					}
-					return;
+					return Messages.state.update(predicate, (record) => modifyMessageOnFilesDelete(record, params.replaceFileAttachmentsWith));
 				}
-
-				const predicate = createPredicateFromFilter(query);
 
 				if (params.showDeletedStatus) {
 					return Messages.state.update(predicate, (record) => ({
