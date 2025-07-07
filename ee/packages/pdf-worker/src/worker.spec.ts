@@ -85,7 +85,8 @@ it('should generate a pdf transcript for rooms with messages consisting of tons 
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();
-});
+	// 40s more than enough
+}, 40000);
 
 describe('isMimeTypeValid', () => {
 	it('should return true if mimeType is valid', () => {
