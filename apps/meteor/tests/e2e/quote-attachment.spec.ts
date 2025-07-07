@@ -30,8 +30,7 @@ test.describe.parallel('Quote Attachment', () => {
 		const imageFileName = 'test-image.jpeg';
 		await test.step('Send message with attachment in the channel', async () => {
 			await poHomeChannel.content.sendFileMessage(imageFileName);
-			await poHomeChannel.content.inputFileUploadName.fill(imageFileName);
-			await poHomeChannel.content.btnModalConfirm.click();
+			await poHomeChannel.content.sendMessage(fileDescription);
 
 			// Wait for the file to be uploaded and message to be sent
 			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
@@ -57,7 +56,7 @@ test.describe.parallel('Quote Attachment', () => {
 	});
 
 	test('should show file preview and description when quoting attachment file within a thread', async ({ page }) => {
-		const textFileName = 'any_file1.txt';
+		const textFileName = 'any_file.txt';
 
 		await test.step('Send initial message in channel', async () => {
 			await poHomeChannel.content.sendMessage('Initial message for thread test');
@@ -70,8 +69,7 @@ test.describe.parallel('Quote Attachment', () => {
 			await expect(page).toHaveURL(/.*thread/);
 
 			await poHomeChannel.content.dragAndDropTxtFileToThread();
-			await poHomeChannel.content.inputFileUploadName.fill(textFileName);
-			await poHomeChannel.content.btnModalConfirm.click();
+			await poHomeChannel.content.sendMessageInThread(fileDescription);
 
 			await expect(poHomeChannel.content.lastThreadMessageFileDescription).toHaveText(fileDescription);
 			await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText(textFileName);
