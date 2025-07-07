@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 type InstanceFilterSelectProps = Omit<ComponentProps<typeof Select>, 'options'>;
 
-// TODO: Requires endpoint to fetch instances
 export const InstanceFilterSelect = ({ ...props }: InstanceFilterSelectProps) => {
 	const { t } = useTranslation();
 	const getOptions = useEndpoint('GET', '/apps/logs/instanceIds');
