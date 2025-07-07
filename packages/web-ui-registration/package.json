@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/web-ui-registration",
-	"version": "18.0.3",
+	"version": "18.0.4",
 	"private": true,
 	"homepage": "https://rocket.chat",
 	"main": "./dist/index.js",
