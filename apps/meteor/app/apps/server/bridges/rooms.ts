@@ -108,7 +108,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
-		const { limit, skip = 0, sort: _sort, showThreadMessages } = options;
+		const { limit, skip = 0, sort: _sort, showThreadMessages, createdAt, updatedAt } = options;
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
@@ -126,12 +126,38 @@ export class AppRoomBridge extends RoomBridge {
 			sort,
 		};
 
-		const query = {
+		const query: Record<string, any> = {
 			rid: roomId,
 			_hidden: { $ne: true },
 			t: { $exists: false },
 			...threadFilterQuery,
 		};
+
+		// Add timestamp filters if provided
+		if (createdAt) {
+			// createdAt: { $gte, $lte }
+			if (createdAt.$gte || createdAt.$lte) {
+				query.ts = {};
+				if (createdAt.$gte) {
+					query.ts.$gte = createdAt.$gte;
+				}
+				if (createdAt.$lte) {
+					query.ts.$lte = createdAt.$lte;
+				}
+			}
+		}
+		if (updatedAt) {
+			// updatedAt: { $gte, $lte }
+			if (updatedAt.$gte || updatedAt.$lte) {
+				query._updatedAt = {};
+				if (updatedAt.$gte) {
+					query._updatedAt.$gte = updatedAt.$gte;
+				}
+				if (updatedAt.$lte) {
+					query._updatedAt.$lte = updatedAt.$lte;
+				}
+			}
+		}
 
 		const cursor = Messages.find(query, messageQueryOptions);
 

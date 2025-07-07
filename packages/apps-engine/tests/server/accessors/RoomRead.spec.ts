@@ -101,4 +101,51 @@ export class RoomReadAccessorTestFixture {
 		Expect((await rr.getMembers('testing')) as Array<IUser>).not.toBeEmpty();
 		Expect((await rr.getMembers('testing'))[0]).toBe(this.user);
 	}
+
+	@AsyncTest()
+	public async getMessages_withLimitAndSort() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+		const messages = await rr.getMessages('testing', { limit: 1, sort: { createdAt: 'asc' } });
+		Expect(messages).toBe(this.messages);
+	}
+
+	@AsyncTest()
+	public async getMessages_withCreatedAtFilter() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+		const date = new Date();
+		const messages = await rr.getMessages('testing', { createdAt: date });
+		Expect(messages).toBe(this.messages);
+	}
+
+	@AsyncTest()
+	public async getMessages_withUpdatedAtFilter() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+		const date = new Date();
+		const messages = await rr.getMessages('testing', { updatedAt: date });
+		Expect(messages).toBe(this.messages);
+	}
+
+	@AsyncTest()
+	public async getMessages_invalidLimitThrows() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+		await Expect(async () => rr.getMessages('testing', { limit: 101 })).toThrowAsync();
+	}
+
+	@AsyncTest()
+	public async getMessages_invalidSortThrows() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+		await Expect(async () => rr.getMessages('testing', { sort: { invalidField: 'asc' } as any })).toThrowAsync();
+	}
+
+	@AsyncTest()
+	public async getMessages_invalidCreatedAtThrows() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+		await Expect(async () => rr.getMessages('testing', { createdAt: 'not-a-date' as any })).toThrowAsync();
+	}
+
+	@AsyncTest()
+	public async getMessages_invalidUpdatedAtThrows() {
+		const rr = new RoomRead(this.mockRoomBridgeWithRoom, 'testing-app');
+		await Expect(async () => rr.getMessages('testing', { updatedAt: 'not-a-date' as any })).toThrowAsync();
+	}
 }
