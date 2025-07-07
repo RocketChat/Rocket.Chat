@@ -7,7 +7,7 @@ import { AppLogsFilterContextualBar } from './AppLogsFilterContextualBar';
 import { Contextualbar } from '../../../../../../components/Contextualbar';
 
 export default {
-	title: 'Components/AppLogsFilterContextualBar',
+	title: 'Marketplace/AppDetailsPage/AppLogs/Filters/AppLogsFilterContextualBar',
 	component: AppLogsFilterContextualBar,
 	args: {},
 	decorators: [

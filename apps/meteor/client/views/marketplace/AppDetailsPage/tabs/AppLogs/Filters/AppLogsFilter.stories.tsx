@@ -6,7 +6,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { AppLogsFilter } from './AppLogsFilter';
 
 export default {
-	title: 'Components/AppLogsFilter',
+	title: 'Marketplace/AppDetailsPage/AppLogs/Filters/AppLogsFilter',
 	component: AppLogsFilter,
 	args: {},
 	decorators: [

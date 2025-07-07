@@ -8,7 +8,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { DateTimeModal } from './DateTimeModal';
 
 export default {
-	title: 'Components/DateTimeModal',
+	title: 'Marketplace/AppDetailsPage/AppLogs/Filters/DateTimeModal',
 	component: DateTimeModal,
 	decorators: [
 		mockAppRoot().buildStoryDecorator(),
