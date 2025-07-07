@@ -51,10 +51,6 @@ test.describe.serial('Image Gallery', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannelLargeImage);
 			await poHomeChannel.content.sendFileMessage(largeFileName);
 
-			await poHomeChannel.page.waitForResponse(
-				(response) => /api\/v1\/rooms.media/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-			);
-
 			await poHomeChannel.content.btnSendMainComposer.click();
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(largeFileName);
 

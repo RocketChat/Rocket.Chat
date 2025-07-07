@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 
 import type { Locator, Page } from '@playwright/test';
 
+import waitForMediaResponse from '../../fixtures/responses/mediaResponse';
 import { expect } from '../../utils/test';
 
 export class HomeContent {
@@ -406,6 +407,7 @@ export class HomeContent {
 
 	async sendFileMessage(fileName: string): Promise<void> {
 		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
+		await waitForMediaResponse(this.page);
 	}
 
 	async openLastMessageMenu(): Promise<void> {
