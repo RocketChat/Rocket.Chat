@@ -45,10 +45,15 @@ test.describe.serial('file-upload', () => {
 	test('should send file with name updated', async () => {
 		const updatedFileName = 'any_file1.txt';
 		await poHomeChannel.content.dragAndDropTxtFile();
-		await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
-		await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
-		await poHomeChannel.content.btnUpdateFileUpload.click();
-		await poHomeChannel.content.btnSendMainComposer.click();
+
+		await test.step('update file name and send', async () => {
+			await poHomeChannel.content.getFileComposerByName('any_file.txt').click();
+			await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
+			await poHomeChannel.content.btnUpdateFileUpload.click();
+
+			expect(poHomeChannel.content.getFileComposerByName(updatedFileName));
+			await poHomeChannel.content.btnSendMainComposer.click();
+		});
 
 		await expect(poHomeChannel.content.getFileDescription).not.toBeVisible();
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText(updatedFileName);
@@ -77,7 +82,7 @@ test.describe.serial('file-upload', () => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream');
 
 		await page.reload();
-		await poHomeChannel.content.sendFileMessage(fileName);
+		await poHomeChannel.content.sendFileMessage(fileName, { waitForResponse: false });
 
 		await expect(poHomeChannel.content.getFileComposerByName(fileName)).toHaveAttribute('readonly');
 	});

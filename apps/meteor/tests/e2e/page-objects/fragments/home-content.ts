@@ -405,9 +405,11 @@ export class HomeContent {
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
-	async sendFileMessage(fileName: string): Promise<void> {
+	async sendFileMessage(fileName: string, { waitForResponse = true } = {}): Promise<void> {
 		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
-		await waitForMediaResponse(this.page);
+		if (waitForResponse) {
+			await waitForMediaResponse(this.page);
+		}
 	}
 
 	async openLastMessageMenu(): Promise<void> {
