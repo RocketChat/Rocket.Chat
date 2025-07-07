@@ -45,6 +45,14 @@ export const AppLogsFilter = () => {
 			</Box>
 			{!compactMode && (
 				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+					<Label id='timeFilterLabel' htmlFor='timeFilter'>
+						{t('Time')}
+					</Label>
+					<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
+				</Box>
+			)}
+			{!compactMode && (
+				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 					<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
 						{t('Instance')}
 					</Label>
@@ -53,14 +61,6 @@ export const AppLogsFilter = () => {
 						name='instance'
 						render={({ field }) => <InstanceFilterSelect aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />}
 					/>
-				</Box>
-			)}
-			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label id='timeFilterLabel' htmlFor='timeFilter'>
-						{t('Time')}
-					</Label>
-					<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
 				</Box>
 			)}
 			{!compactMode && (
