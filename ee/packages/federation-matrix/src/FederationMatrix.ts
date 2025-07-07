@@ -1,12 +1,15 @@
+import 'reflect-metadata';
+
+import type { HomeserverEventSignatures, HomeserverServices, DependencyContainer } from '@hs/federation-sdk';
+import { getAllServices } from '@hs/federation-sdk';
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures, HomeserverServices } from '@rocket.chat/homeserver';
-import { setupHomeserver, getAllRoutes, getAllServices } from '@rocket.chat/homeserver';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
 import { registerEvents } from './events';
+import { setup } from './setupContainers';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -17,16 +20,24 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private matrixDomain: string;
 
+	private diContainer: DependencyContainer;
+
 	private readonly logger = new Logger(this.name);
 
-	constructor(emitter?: Emitter<HomeserverEventSignatures>) {
+	private constructor(emitter?: Emitter<HomeserverEventSignatures>) {
 		super();
 		this.eventHandler = emitter || new Emitter<HomeserverEventSignatures>();
 	}
 
+	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
+		const instance = new FederationMatrix(emitter);
+		instance.diContainer = await setup(instance.eventHandler);
+
+		return instance;
+	}
+
 	async created(): Promise<void> {
 		try {
-			setupHomeserver({ emitter: this.eventHandler });
 			registerEvents(this.eventHandler);
 		} catch (error) {
 			this.logger.warn('Homeserver module not available, running in limited mode');
@@ -47,11 +58,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async started(): Promise<void> {
-		this.homeserverServices = getAllServices();
+		this.homeserverServices = getAllServices(this.diContainer);
 	}
 
 	getAllRoutes() {
-		return getAllRoutes();
+		return [];
 	}
 
 	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<void> {
