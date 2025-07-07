@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/network-broker",
-	"version": "0.1.12",
+	"version": "0.1.13",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
