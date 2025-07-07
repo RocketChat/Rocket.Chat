@@ -17,7 +17,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				sender: data.sender,
 			});
 
-			const message = data.event.content?.body?.toString();
+			const message = data.content?.body?.toString();
 			if (!message) {
 				logger.debug('No message found in event content');
 				return;
