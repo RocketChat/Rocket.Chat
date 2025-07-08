@@ -107,10 +107,12 @@ type TemplateParameter =
 export type IOutboundProvider = {
 	providerId: string;
 	providerName: string;
-	supportsTemplates: boolean;
+	supportsTemplates?: boolean;
 	providerType: 'phone' | 'email';
 };
 
 export type IOutboundProviderMetadata = IOutboundProvider & {
 	templates: Record<string, IOutboundProviderTemplate[]>;
 };
+
+export type ValidOutboundProvider = 'phone' | 'email';
