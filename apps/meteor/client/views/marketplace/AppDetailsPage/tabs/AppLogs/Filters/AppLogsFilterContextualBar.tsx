@@ -1,5 +1,5 @@
 import { Box, Label } from '@rocket.chat/fuselage';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import DateTimeFilter from './DateTimeFilter';
@@ -14,6 +14,7 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
 } from '../../../../../../components/Contextualbar';
+import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
 type AppLogsFilterContextualBarProps = {
 	onClose: () => void;
@@ -22,7 +23,7 @@ type AppLogsFilterContextualBarProps = {
 export const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLogsFilterContextualBarProps) => {
 	const { t } = useTranslation();
 
-	const { control } = useFormContext();
+	const { control } = useAppLogsFilterFormContext();
 
 	return (
 		<ContextualbarDialog onClose={onClose}>

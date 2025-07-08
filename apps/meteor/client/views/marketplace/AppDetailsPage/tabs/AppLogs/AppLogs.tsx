@@ -1,11 +1,11 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useMemo, type ReactElement } from 'react';
-import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
 import { CollapsiblePanel } from './Components/CollapsiblePanel';
 import { AppLogsFilter } from './Filters/AppLogsFilter';
+import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
 import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
 import GenericError from '../../../../../components/GenericError';
 import GenericNoResults from '../../../../../components/GenericNoResults';
@@ -16,7 +16,7 @@ import { useLogs } from '../../../hooks/useLogs';
 const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { t } = useTranslation();
 
-	const { watch } = useFormContext();
+	const { watch } = useAppLogsFilterFormContext();
 
 	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
 

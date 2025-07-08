@@ -6,12 +6,13 @@ import { useTranslation } from 'react-i18next';
 type DateTimeFilterProps = {
 	type: 'start' | 'end';
 	id?: string;
-	control: Control<{ startDate: string; startTime: string; endDate: string; endTime: string }>;
+	control: Control<{ startDate?: string; startTime?: string; endDate?: string; endTime?: string }>;
 	error?: boolean;
 };
 
 const DateTimeFilter = ({ type, control, id, error }: DateTimeFilterProps) => {
 	const { t } = useTranslation();
+
 	return (
 		<Box display='flex' flexDirection='row' id={id}>
 			<Margins inlineEnd={4}>

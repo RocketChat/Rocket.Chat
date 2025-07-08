@@ -1,17 +1,18 @@
 import { Box, Button, Icon, Label, Palette, TextInput } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
 import { useCompactMode } from '../../../useCompactMode';
+import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
 export const AppLogsFilter = () => {
 	const { t } = useTranslation();
 
-	const { control } = useFormContext();
+	const { control } = useAppLogsFilterFormContext();
 
 	const router = useRouter();
 

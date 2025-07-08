@@ -3,10 +3,12 @@ import { Select } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { endOfDay, endOfWeek, startOfDay, startOfWeek, subMinutes, format } from 'date-fns';
 import { useState, type ComponentProps } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import type { DateTimeModalFormData } from './DateTimeModal';
 import { DateTimeModal } from './DateTimeModal';
+import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
 type DateRange = {
 	start: Date;
@@ -18,7 +20,7 @@ type DateRangeAction = 'all' | 'today' | 'last5Minutes' | 'last15Minutes' | 'las
 type TimeFilterSelectProps = { compactView?: boolean } & Omit<ComponentProps<typeof Select>, 'onChange' | 'options'>;
 
 export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSelectProps) => {
-	const { setValue, control, getValues } = useFormContext();
+	const { setValue, control, getValues } = useAppLogsFilterFormContext();
 	const { t } = useTranslation();
 
 	const setModal = useSetModal();
@@ -67,8 +69,15 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 		}
 	};
 
-	const onModalSave = (values: { startDate: string; startTime: string; endDate: string; endTime: string }): void => {
+	const onModalSave = (values: DateTimeModalFormData): void => {
 		const { startDate, startTime, endDate, endTime } = values;
+
+		if (!startDate || !endDate) {
+			setCustomTimeRangeOptionLabel(t('Custom_time_range'));
+			setModal(null);
+			return;
+		}
+
 		setValue('startDate', startDate);
 		setValue('startTime', startTime || '00:00');
 		setValue('endDate', endDate);
@@ -101,7 +110,7 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 		}
 
 		if (action === 'custom') {
-			const { startDate, startTime, endDate, endTime } = getValues();
+			const { startDate = '', startTime = '00:00', endDate = '', endTime = '00:00' } = getValues();
 			// Doing this since the modal is not in the form context, and it is simpler just to pass the default values to a new useForm call
 			setModal(<DateTimeModal onSave={onModalSave} onClose={onModalClose} defaultValues={{ startDate, startTime, endDate, endTime }} />);
 			return;

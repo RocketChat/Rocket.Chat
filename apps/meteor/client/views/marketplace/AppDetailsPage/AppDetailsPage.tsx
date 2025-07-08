@@ -15,6 +15,7 @@ import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
 import AppLogs from './tabs/AppLogs';
 import { AppLogsFilterContextualBar } from './tabs/AppLogs/Filters/AppLogsFilterContextualBar';
+import { useAppLogsFilterForm } from './tabs/AppLogs/useAppLogsFilterForm';
 import AppReleases from './tabs/AppReleases';
 import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
@@ -24,17 +25,6 @@ import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 type AppDetailsPageFormData = Record<string, SettingValue>;
-
-type AppLogsFilterFormData = {
-	startDate?: string;
-	endDate?: string;
-	startTime?: string;
-	endTime?: string;
-	instance?: string;
-	severity?: string;
-	event?: string;
-	timeFilter?: string;
-};
 
 type AppDetailsPageProps = {
 	id: App['id'];
@@ -94,7 +84,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 		formState: { isDirty, isSubmitting },
 	} = settingsFormMethods;
 
-	const logsFilterFormMethods = useForm<AppLogsFilterFormData>({ defaultValues: { severity: 'all', instance: 'all', timeFilter: 'all' } });
+	const logsFilterFormMethods = useAppLogsFilterForm();
 
 	const saveAppSettings = useCallback(
 		async (data: AppDetailsPageFormData) => {

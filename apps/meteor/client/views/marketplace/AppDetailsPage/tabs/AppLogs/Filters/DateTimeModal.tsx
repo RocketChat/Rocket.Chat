@@ -5,19 +5,24 @@ import { useTranslation } from 'react-i18next';
 
 import DateTimeFilter from './DateTimeFilter';
 
+export type DateTimeModalFormData = {
+	startDate?: string;
+	startTime?: string;
+	endDate?: string;
+	endTime?: string;
+};
+
 type DateTimeModalProps = {
 	onClose: () => void;
-	onSave: (value: { startDate: string; startTime: string; endDate: string; endTime: string }) => void;
+	onSave: (value: DateTimeModalFormData) => void;
 	confirmDisabled?: boolean;
-	defaultValues?: { startDate: string; startTime: string; endDate: string; endTime: string };
+	defaultValues?: DateTimeModalFormData;
 };
 
 export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalProps): ReactNode => {
 	const { t } = useTranslation();
 
-	const { control, getValues, watch } = useForm({
-		defaultValues,
-	});
+	const { control, getValues, watch } = useForm<DateTimeModalFormData>({ defaultValues });
 
 	const handleSave = (): void => {
 		onSave({

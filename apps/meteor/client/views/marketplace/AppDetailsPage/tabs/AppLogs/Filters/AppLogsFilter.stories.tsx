@@ -1,9 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta } from '@storybook/react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider } from 'react-hook-form';
 
 import { AppLogsFilter } from './AppLogsFilter';
+import { useAppLogsFilterForm } from '../useAppLogsFilterForm';
 
 export default {
 	title: 'Marketplace/AppDetailsPage/AppLogs/Filters/AppLogsFilter',
@@ -17,7 +18,7 @@ export default {
 			}))
 			.buildStoryDecorator(),
 		(fn) => {
-			const methods = useForm({});
+			const methods = useAppLogsFilterForm();
 
 			return (
 				<FormProvider {...methods}>
