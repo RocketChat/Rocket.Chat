@@ -8169,6 +8169,7 @@ __metadata:
     jschardet: "npm:^3.1.4"
     jsdom: "npm:^26.1.0"
     jsdom-global: "npm:^3.0.2"
+    json-2-csv: "npm:^5.5.9"
     jsrsasign: "npm:^11.1.0"
     juice: "npm:^8.1.0"
     katex: "npm:~0.16.22"
@@ -17754,6 +17755,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"deeks@npm:3.1.0":
+  version: 3.1.0
+  resolution: "deeks@npm:3.1.0"
+  checksum: 10/4297893cb792bc207b1fdac6090094c8c666669227b385bc69d98ea751294614948288a39a38faa0a44d7045d1bf05eacd188eea7516a1a7d0fee9a7faa34e7d
+  languageName: node
+  linkType: hard
+
 "deep-eql@npm:^4.1.3":
   version: 4.1.3
   resolution: "deep-eql@npm:4.1.3"
@@ -18144,6 +18152,13 @@ __metadata:
   dependencies:
     "@leichtgewicht/ip-codec": "npm:^2.0.1"
   checksum: 10/5726c63b83a085ecd9b4a2bd0434a69b500aec30ed9aaf51cc3ff270081e2543a6fc096edcba88905ee5f6b304c5ab5e4139fdbcbc777d35cabe74e34378c295
+  languageName: node
+  linkType: hard
+
+"doc-path@npm:4.1.1":
+  version: 4.1.1
+  resolution: "doc-path@npm:4.1.1"
+  checksum: 10/455dd7458d4fa9ec0662fc307c4c3a7112bd0d554b8a6e0e86a6c6554f125727b4f80af430c1038f5d471ed5586c95354260928a31b80e632519480d745af713
   languageName: node
   linkType: hard
 
@@ -24743,6 +24758,16 @@ __metadata:
   bin:
     jsesc: bin/jsesc
   checksum: 10/8e5a7de6b70a8bd71f9cb0b5a7ade6a73ae6ab55e697c74cc997cede97417a3a65ed86c36f7dd6125fe49766e8386c845023d9e213916ca92c9dfdd56e2babf3
+  languageName: node
+  linkType: hard
+
+"json-2-csv@npm:^5.5.9":
+  version: 5.5.9
+  resolution: "json-2-csv@npm:5.5.9"
+  dependencies:
+    deeks: "npm:3.1.0"
+    doc-path: "npm:4.1.1"
+  checksum: 10/fa80a1a99e9c7e6844e6e13a48e3d0f11e6e98e90dc46e47fdc46b0fde2ecef324f8e13c68e11dbd0645f714c5089dc46e605a22f25c659294347a3426506947
   languageName: node
   linkType: hard
 

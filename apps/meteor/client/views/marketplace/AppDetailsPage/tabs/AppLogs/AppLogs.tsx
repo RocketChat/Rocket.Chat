@@ -25,7 +25,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const debouncedEvent = useDebouncedValue(event, 500);
 
-	const { data, isSuccess, isError, isFetching, error } = useLogs({
+	const { data, isSuccess, isError, error, isFetching } = useLogs({
 		appId: id,
 		current,
 		itemsPerPage,
@@ -50,13 +50,12 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	return (
 		<>
 			<Box pb={16}>
-				<AppLogsFilter />
+				<AppLogsFilter isLoading={isFetching} />
 			</Box>
 			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
-			{isSuccess && data?.logs?.length === 0 ? (
-				<GenericNoResults />
-			) : (
+			{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}
+			{!isFetching && isSuccess && data?.logs?.length > 0 && (
 				<CustomScrollbars>
 					<CollapsiblePanel aria-busy={isFetching || event !== debouncedEvent} width='100%' alignSelf='center'>
 						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
