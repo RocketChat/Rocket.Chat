@@ -8,12 +8,10 @@ type WizardProps = {
 	children: ReactNode;
 };
 
-const Wizard = ({ children, api }: WizardProps) => {
-	return (
-		<WizardContext.Provider value={api}>
-			<div className='steps-wizard'>{children}</div>
-		</WizardContext.Provider>
-	);
-};
+const Wizard = ({ children, api }: WizardProps) => (
+	<WizardContext.Provider value={api}>
+		<div className='steps-wizard'>{children}</div>
+	</WizardContext.Provider>
+);
 
 export default memo(Wizard);

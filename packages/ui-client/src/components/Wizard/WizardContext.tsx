@@ -1,6 +1,7 @@
 import { createContext } from 'react';
 
-import type { StepNode, StepMetadata } from './lib/StepNode';
+import type { StepMetadata } from './lib/StepNode';
+import type StepNode from './lib/StepNode';
 import type StepsLinkedList from './lib/StepsLinkedList';
 
 export type WizardAPI = {

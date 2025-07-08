@@ -2,7 +2,8 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useMemo, useState } from 'react';
 
 import type { WizardAPI } from './WizardContext';
-import type { StepNode, StepMetadata } from './lib/StepNode';
+import type { StepMetadata } from './lib/StepNode';
+import type StepNode from './lib/StepNode';
 import StepsLinkedList from './lib/StepsLinkedList';
 
 type UseWizardProps = {
