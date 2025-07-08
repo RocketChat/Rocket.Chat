@@ -18,7 +18,7 @@ const SidePanelFavorites = () => {
 		<SidePanel
 			title={t(sidePanelFiltersConfig[SIDE_PANEL_GROUPS.FAVORITES].title)}
 			currentTab={SIDE_PANEL_GROUPS.FAVORITES}
-			onlyUnreads={unreadOnly}
+			unreadOnly={unreadOnly}
 			toggleOnlyUnreads={toggleOnlyUnreads}
 			rooms={rooms as SubscriptionWithRoom[]}
 		/>

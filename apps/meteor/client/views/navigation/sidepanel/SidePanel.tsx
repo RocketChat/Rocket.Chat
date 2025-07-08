@@ -15,13 +15,13 @@ import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 type SidePanelProps = {
 	title: string;
 	currentTab: AllGroupsKeys;
-	onlyUnreads: boolean;
+	unreadOnly: boolean;
 	toggleOnlyUnreads: () => void;
 	// TODO: This can also be of type ILivechatInquiryRecord[]
 	rooms: SubscriptionWithRoom[];
 };
 
-const SidePanel = ({ title, currentTab, onlyUnreads, toggleOnlyUnreads, rooms }: SidePanelProps) => {
+const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: SidePanelProps) => {
 	const { t } = useTranslation();
 	const ref = useRef(null);
 	const unreadFieldId = useId();
@@ -42,11 +42,11 @@ const SidePanel = ({ title, currentTab, onlyUnreads, toggleOnlyUnreads, rooms }:
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 						{t('Unread')}
 					</Box>
-					<ToggleSwitch id={unreadFieldId} defaultChecked={onlyUnreads} onChange={toggleOnlyUnreads} />
+					<ToggleSwitch id={unreadFieldId} defaultChecked={unreadOnly} onChange={toggleOnlyUnreads} />
 				</Box>
 			</SidepanelHeader>
 			<Box pb={8} h='full' ref={ref}>
-				{rooms && rooms.length === 0 && <SidePanelNoResults currentTab={currentTab} onlyUnreads={onlyUnreads} />}
+				{rooms && rooms.length === 0 && <SidePanelNoResults currentTab={currentTab} unreadOnly={unreadOnly} />}
 				<VirtualizedScrollbars>
 					<Virtuoso
 						totalCount={rooms.length}

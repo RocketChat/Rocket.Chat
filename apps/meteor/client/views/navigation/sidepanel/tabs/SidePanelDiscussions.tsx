@@ -18,7 +18,7 @@ const SidePanelDiscussions = () => {
 		<SidePanel
 			title={t(sidePanelFiltersConfig[SIDE_PANEL_GROUPS.DISCUSSIONS].title)}
 			currentTab={SIDE_PANEL_GROUPS.DISCUSSIONS}
-			onlyUnreads={unreadOnly}
+			unreadOnly={unreadOnly}
 			toggleOnlyUnreads={toggleOnlyUnreads}
 			rooms={rooms as SubscriptionWithRoom[]}
 		/>

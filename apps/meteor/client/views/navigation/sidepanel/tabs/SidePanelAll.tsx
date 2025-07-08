@@ -18,7 +18,7 @@ const SidePanelAll = () => {
 		<SidePanel
 			title={t(sidePanelFiltersConfig[SIDE_PANEL_GROUPS.ALL].title)}
 			currentTab={SIDE_PANEL_GROUPS.ALL}
-			onlyUnreads={unreadOnly}
+			unreadOnly={unreadOnly}
 			toggleOnlyUnreads={toggleOnlyUnreads}
 			rooms={rooms as SubscriptionWithRoom[]}
 		/>
