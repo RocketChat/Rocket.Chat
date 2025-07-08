@@ -4,9 +4,10 @@ import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { Messages } from '../../../../../app/models/client';
-import { LegacyRoomManager, RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useOpenedRoomUnreadSince } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { useChat } from '../../contexts/ChatContext';
@@ -22,7 +23,7 @@ const useUnreadMessages = (room: IRoom): readonly [data: IUnreadMessages | undef
 
 	const count = useMemo(() => notLoadedCount + loadedCount, [notLoadedCount, loadedCount]);
 
-	const since = useReactiveValue(useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.unreadSince.get(), [room._id]));
+	const since = useOpenedRoomUnreadSince();
 
 	return useMemo(() => {
 		if (count && since) {
@@ -73,8 +74,9 @@ export const useHandleUnread = (
 			return;
 		}
 		setMessageJumpQueryStringParameter(message?._id);
+		chat.readStateManager.markAsRead();
 		setUnreadCount(0);
-	}, [room._id, setUnreadCount, findFirstMessage, unread?.since]);
+	}, [room._id, setUnreadCount, findFirstMessage, unread?.since, chat.readStateManager]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
 		chat.readStateManager.markAsRead();
@@ -90,7 +92,8 @@ export const useHandleUnread = (
 		const count = filterMessages(
 			(record) =>
 				record.rid === room._id &&
-				record.ts.getTime() <= (lastMessageDate?.getTime() ?? Infinity) &&
+				!!lastMessageDate &&
+				record.ts.getTime() <= lastMessageDate?.getTime() &&
 				record.ts.getTime() > (subscription?.ls?.getTime() ?? -Infinity),
 		).length;
 

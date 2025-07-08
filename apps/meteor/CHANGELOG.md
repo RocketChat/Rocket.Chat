@@ -1,5 +1,302 @@
 # @rocket.chat/meteor
 
+## 7.8.0-rc.9
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.9
+  - @rocket.chat/rest-typings@7.8.0-rc.9
+  - @rocket.chat/license@1.0.20-rc.9
+  - @rocket.chat/omnichannel-services@0.3.26-rc.9
+  - @rocket.chat/pdf-worker@0.3.8-rc.9
+  - @rocket.chat/presence@0.2.29-rc.9
+  - @rocket.chat/api-client@0.2.29-rc.9
+  - @rocket.chat/apps@0.5.8-rc.9
+  - @rocket.chat/core-services@0.9.8-rc.9
+  - @rocket.chat/cron@0.1.29-rc.9
+  - @rocket.chat/freeswitch@1.2.16-rc.9
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.9
+  - @rocket.chat/gazzodown@20.0.0-rc.9
+  - @rocket.chat/http-router@7.8.0-rc.9
+  - @rocket.chat/model-typings@1.6.8-rc.9
+  - @rocket.chat/ui-contexts@20.0.0-rc.9
+  - @rocket.chat/models@1.5.8-rc.9
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.8-rc.9
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.9
+  - @rocket.chat/ui-client@20.0.0-rc.9
+  - @rocket.chat/ui-video-conf@20.0.0-rc.9
+  - @rocket.chat/ui-voip@10.0.0-rc.9
+  - @rocket.chat/web-ui-registration@20.0.0-rc.9
+  - @rocket.chat/instance-status@0.1.29-rc.9
+  </details>
+
+## 7.8.0-rc.8
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
+- <details><summary>Updated dependencies [de4293a1ca5af138437bf01a78e7c0450f437dc7]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.0-rc.1
+  - @rocket.chat/presence@0.2.26-rc.8
+  - @rocket.chat/apps@0.5.5-rc.8
+  - @rocket.chat/core-services@0.9.5-rc.8
+  - @rocket.chat/core-typings@7.8.0-rc.8
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.8
+  - @rocket.chat/rest-typings@7.8.0-rc.8
+  - @rocket.chat/license@1.0.17-rc.8
+  - @rocket.chat/omnichannel-services@0.3.23-rc.8
+  - @rocket.chat/pdf-worker@0.3.5-rc.8
+  - @rocket.chat/api-client@0.2.26-rc.8
+  - @rocket.chat/cron@0.1.26-rc.8
+  - @rocket.chat/freeswitch@1.2.13-rc.8
+  - @rocket.chat/gazzodown@20.0.0-rc.8
+  - @rocket.chat/http-router@7.8.0-rc.8
+  - @rocket.chat/model-typings@1.6.5-rc.8
+  - @rocket.chat/ui-contexts@20.0.0-rc.8
+  - @rocket.chat/models@1.5.5-rc.8
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.8
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.8
+  - @rocket.chat/ui-client@20.0.0-rc.8
+  - @rocket.chat/ui-video-conf@20.0.0-rc.8
+  - @rocket.chat/ui-voip@10.0.0-rc.8
+  - @rocket.chat/web-ui-registration@20.0.0-rc.8
+  - @rocket.chat/instance-status@0.1.26-rc.8
+  </details>
+
+## 7.8.0-rc.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.7
+  - @rocket.chat/rest-typings@7.8.0-rc.7
+  - @rocket.chat/license@1.0.17-rc.7
+  - @rocket.chat/omnichannel-services@0.3.23-rc.7
+  - @rocket.chat/pdf-worker@0.3.5-rc.7
+  - @rocket.chat/presence@0.2.26-rc.7
+  - @rocket.chat/api-client@0.2.26-rc.7
+  - @rocket.chat/apps@0.5.5-rc.7
+  - @rocket.chat/core-services@0.9.5-rc.7
+  - @rocket.chat/cron@0.1.26-rc.7
+  - @rocket.chat/freeswitch@1.2.13-rc.7
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.7
+  - @rocket.chat/gazzodown@20.0.0-rc.7
+  - @rocket.chat/http-router@7.8.0-rc.7
+  - @rocket.chat/model-typings@1.6.5-rc.7
+  - @rocket.chat/ui-contexts@20.0.0-rc.7
+  - @rocket.chat/models@1.5.5-rc.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.7
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.7
+  - @rocket.chat/ui-client@20.0.0-rc.7
+  - @rocket.chat/ui-video-conf@20.0.0-rc.7
+  - @rocket.chat/ui-voip@10.0.0-rc.7
+  - @rocket.chat/web-ui-registration@20.0.0-rc.7
+  - @rocket.chat/instance-status@0.1.26-rc.7
+  </details>
+
+## 7.8.0-rc.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.6
+  - @rocket.chat/rest-typings@7.8.0-rc.6
+  - @rocket.chat/license@1.0.17-rc.6
+  - @rocket.chat/omnichannel-services@0.3.23-rc.6
+  - @rocket.chat/pdf-worker@0.3.5-rc.6
+  - @rocket.chat/presence@0.2.26-rc.6
+  - @rocket.chat/api-client@0.2.26-rc.6
+  - @rocket.chat/apps@0.5.5-rc.6
+  - @rocket.chat/core-services@0.9.5-rc.6
+  - @rocket.chat/cron@0.1.26-rc.6
+  - @rocket.chat/freeswitch@1.2.13-rc.6
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.6
+  - @rocket.chat/gazzodown@20.0.0-rc.6
+  - @rocket.chat/http-router@7.8.0-rc.6
+  - @rocket.chat/model-typings@1.6.5-rc.6
+  - @rocket.chat/ui-contexts@20.0.0-rc.6
+  - @rocket.chat/models@1.5.5-rc.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.6
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.6
+  - @rocket.chat/ui-client@20.0.0-rc.6
+  - @rocket.chat/ui-video-conf@20.0.0-rc.6
+  - @rocket.chat/ui-voip@10.0.0-rc.6
+  - @rocket.chat/web-ui-registration@20.0.0-rc.6
+  - @rocket.chat/instance-status@0.1.26-rc.6
+  </details>
+
+## 7.8.0-rc.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36105](https://github.com/RocketChat/Rocket.Chat/pull/36105)) Fixes an issue that was causing ddp-streamer process to break if the communication with presence service was interrupted for any reason.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.5
+  - @rocket.chat/rest-typings@7.8.0-rc.5
+  - @rocket.chat/license@1.0.17-rc.5
+  - @rocket.chat/omnichannel-services@0.3.23-rc.5
+  - @rocket.chat/pdf-worker@0.3.5-rc.5
+  - @rocket.chat/presence@0.2.26-rc.5
+  - @rocket.chat/api-client@0.2.26-rc.5
+  - @rocket.chat/apps@0.5.5-rc.5
+  - @rocket.chat/core-services@0.9.5-rc.5
+  - @rocket.chat/cron@0.1.26-rc.5
+  - @rocket.chat/freeswitch@1.2.13-rc.5
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.5
+  - @rocket.chat/gazzodown@20.0.0-rc.5
+  - @rocket.chat/http-router@7.8.0-rc.5
+  - @rocket.chat/model-typings@1.6.5-rc.5
+  - @rocket.chat/ui-contexts@20.0.0-rc.5
+  - @rocket.chat/models@1.5.5-rc.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.5
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.5
+  - @rocket.chat/ui-client@20.0.0-rc.5
+  - @rocket.chat/ui-video-conf@20.0.0-rc.5
+  - @rocket.chat/ui-voip@10.0.0-rc.5
+  - @rocket.chat/web-ui-registration@20.0.0-rc.5
+  - @rocket.chat/instance-status@0.1.26-rc.5
+  </details>
+
+## 7.8.0-rc.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.4
+  - @rocket.chat/rest-typings@7.8.0-rc.4
+  - @rocket.chat/license@1.0.17-rc.4
+  - @rocket.chat/omnichannel-services@0.3.23-rc.4
+  - @rocket.chat/pdf-worker@0.3.5-rc.4
+  - @rocket.chat/presence@0.2.26-rc.4
+  - @rocket.chat/api-client@0.2.26-rc.4
+  - @rocket.chat/apps@0.5.5-rc.4
+  - @rocket.chat/core-services@0.9.5-rc.4
+  - @rocket.chat/cron@0.1.26-rc.4
+  - @rocket.chat/freeswitch@1.2.13-rc.4
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.4
+  - @rocket.chat/gazzodown@20.0.0-rc.4
+  - @rocket.chat/http-router@7.8.0-rc.4
+  - @rocket.chat/model-typings@1.6.5-rc.4
+  - @rocket.chat/ui-contexts@20.0.0-rc.4
+  - @rocket.chat/models@1.5.5-rc.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.4
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.4
+  - @rocket.chat/ui-client@20.0.0-rc.4
+  - @rocket.chat/ui-video-conf@20.0.0-rc.4
+  - @rocket.chat/ui-voip@10.0.0-rc.4
+  - @rocket.chat/web-ui-registration@20.0.0-rc.4
+  - @rocket.chat/instance-status@0.1.26-rc.4
+  </details>
+
+## 7.8.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36256](https://github.com/RocketChat/Rocket.Chat/pull/36256)) Fixes an issue that caused the queue worker to stop processing if something failed when checking MAC limits or while fetching the list of queues
+
+- ([#36258](https://github.com/RocketChat/Rocket.Chat/pull/36258)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
+
+- <details><summary>Updated dependencies [d58457d25a9a899ebcc7fd0e1fe11d9d370c50d8]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.3
+  - @rocket.chat/omnichannel-services@0.3.23-rc.3
+  - @rocket.chat/presence@0.2.26-rc.3
+  - @rocket.chat/api-client@0.2.26-rc.3
+  - @rocket.chat/core-services@0.9.5-rc.3
+  - @rocket.chat/http-router@7.8.0-rc.3
+  - @rocket.chat/models@1.5.5-rc.3
+  - @rocket.chat/ui-contexts@20.0.0-rc.3
+  - @rocket.chat/network-broker@0.2.5-rc.3
+  - @rocket.chat/cron@0.1.26-rc.3
+  - @rocket.chat/instance-status@0.1.26-rc.3
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.3
+  - @rocket.chat/gazzodown@20.0.0-rc.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.3
+  - @rocket.chat/ui-client@20.0.0-rc.3
+  - @rocket.chat/ui-video-conf@20.0.0-rc.3
+  - @rocket.chat/ui-voip@10.0.0-rc.3
+  - @rocket.chat/web-ui-registration@20.0.0-rc.3
+  - @rocket.chat/core-typings@7.8.0-rc.3
+  - @rocket.chat/license@1.0.17-rc.3
+  - @rocket.chat/pdf-worker@0.3.5-rc.3
+  - @rocket.chat/apps@0.5.5-rc.3
+  - @rocket.chat/freeswitch@1.2.13-rc.3
+  - @rocket.chat/model-typings@1.6.5-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
+## 7.8.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.2
+  - @rocket.chat/rest-typings@7.8.0-rc.2
+  - @rocket.chat/license@1.0.17-rc.2
+  - @rocket.chat/omnichannel-services@0.3.23-rc.2
+  - @rocket.chat/pdf-worker@0.3.5-rc.2
+  - @rocket.chat/presence@0.2.26-rc.2
+  - @rocket.chat/api-client@0.2.26-rc.2
+  - @rocket.chat/apps@0.5.5-rc.2
+  - @rocket.chat/core-services@0.9.5-rc.2
+  - @rocket.chat/cron@0.1.26-rc.2
+  - @rocket.chat/freeswitch@1.2.13-rc.2
+  - @rocket.chat/fuselage-ui-kit@20.0.0-rc.2
+  - @rocket.chat/gazzodown@20.0.0-rc.2
+  - @rocket.chat/http-router@7.8.0-rc.2
+  - @rocket.chat/model-typings@1.6.5-rc.2
+  - @rocket.chat/ui-contexts@20.0.0-rc.2
+  - @rocket.chat/models@1.5.5-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.5-rc.2
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.0-rc.2
+  - @rocket.chat/ui-client@20.0.0-rc.2
+  - @rocket.chat/ui-video-conf@20.0.0-rc.2
+  - @rocket.chat/ui-voip@10.0.0-rc.2
+  - @rocket.chat/web-ui-registration@20.0.0-rc.2
+  - @rocket.chat/instance-status@0.1.26-rc.2
+  </details>
+
 ## 7.8.0-rc.1
 
 - ([#36263](https://github.com/RocketChat/Rocket.Chat/pull/36263)) Fixes an issue, where multiple reconnections would subscribe multiple times to the same stream, only a frontend issue, since the stream cache prevents sending multiple times to the backend, but does not prevent running the callback multiple times
