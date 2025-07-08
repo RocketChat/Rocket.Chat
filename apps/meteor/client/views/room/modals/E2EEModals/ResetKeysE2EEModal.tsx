@@ -1,9 +1,8 @@
 import { Box, Modal } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
 import { dispatchToastMessage } from '../../../../lib/toast';
 import { useE2EEResetRoomKey } from '../../hooks/useE2EEResetRoomKey';
 

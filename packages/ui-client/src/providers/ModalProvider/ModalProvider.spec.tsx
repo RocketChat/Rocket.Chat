@@ -5,9 +5,9 @@ import { Suspense, createContext, createRef, forwardRef, useContext, useImperati
 
 import ModalProvider from './ModalProvider';
 import ModalProviderWithRegion from './ModalProviderWithRegion';
-import GenericModal from '../../components/GenericModal';
-import { imperativeModal } from '../../lib/imperativeModal';
-import ModalRegion from '../../views/modal/ModalRegion';
+import GenericModal from '../../components/Modal/GenericModal';
+import ModalRegion from '../../components/Modal/ModalRegion';
+import { imperativeModal } from '../../helpers/imperativeModal';
 
 const renderWithSuspense = (ui: ReactElement) =>
 	render(ui, {
