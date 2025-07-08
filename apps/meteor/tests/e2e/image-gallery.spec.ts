@@ -38,17 +38,21 @@ test.describe.serial('Image Gallery', async () => {
 
 	test.describe('When sending an image as a file', () => {
 		test.beforeAll(async () => {
+			const largeFileName = 'test-large-image.jpeg';
+
 			await poHomeChannel.sidenav.openChat(targetChannel);
+
 			for await (const imageName of imageNames) {
 				await poHomeChannel.content.sendFileMessage(imageName);
-				await poHomeChannel.content.btnModalConfirm.click();
+				await poHomeChannel.content.btnSendMainComposer.click();
 				await expect(poHomeChannel.content.lastUserMessage).toContainText(imageName);
 			}
 
 			await poHomeChannel.sidenav.openChat(targetChannelLargeImage);
-			await poHomeChannel.content.sendFileMessage('test-large-image.jpeg');
-			await poHomeChannel.content.btnModalConfirm.click();
-			await expect(poHomeChannel.content.lastUserMessage).toContainText('test-large-image.jpeg');
+			await poHomeChannel.content.sendFileMessage(largeFileName);
+
+			await poHomeChannel.content.btnSendMainComposer.click();
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(largeFileName);
 
 			await poHomeChannel.content.lastUserMessage.locator('img.gallery-item').click();
 		});
