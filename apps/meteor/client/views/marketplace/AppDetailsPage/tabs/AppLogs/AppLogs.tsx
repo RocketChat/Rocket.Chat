@@ -1,5 +1,5 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useMemo, type ReactElement } from 'react';
+import { useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
@@ -21,6 +21,10 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+
+	const [expandOverride, setExpandOverride] = useState(false);
+
+	const expandAll = () => setExpandOverride(true);
 
 	const { data, isSuccess, isError, isLoading, error } = useLogs({
 		appId: id,
@@ -47,7 +51,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	return (
 		<>
 			<Box pb={16}>
-				<AppLogsFilter />
+				<AppLogsFilter expandAll={expandAll} />
 			</Box>
 			{isLoading && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
@@ -56,7 +60,15 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			) : (
 				<CustomScrollbars>
 					<CollapsiblePanel width='100%' alignSelf='center'>
-						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
+						{data?.logs?.map((log, index) => (
+							<AppLogsItem
+								regionId={log._id}
+								setExpandOverride={setExpandOverride}
+								expandOverride={expandOverride}
+								key={`${index}-${log._createdAt}`}
+								{...log}
+							/>
+						))}
 					</CollapsiblePanel>
 				</CustomScrollbars>
 			)}
