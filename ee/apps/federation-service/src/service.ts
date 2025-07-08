@@ -52,7 +52,7 @@ function handleHealthCheck(app: Hono) {
 	api.setBroker(startBroker());
 
 	const { FederationMatrix } = await import('@rocket.chat/federation-matrix');
-	const federationMatrix = new FederationMatrix();
+	const federationMatrix = await FederationMatrix.create();
 	api.registerService(federationMatrix);
 
 	const app = new Hono();
