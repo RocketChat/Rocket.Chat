@@ -1,8 +1,7 @@
-import type { IOutboundProvider, ValidOutboundProvider } from '@rocket.chat/core-typings';
+import { ProviderTypeEnum } from '@rocket.chat/core-typings';
+import type { IOutboundProvider, OutboundProviderTypes as ValidProviderTypes } from '@rocket.chat/core-typings';
 
 import { OutboundMessageProvider } from '../../../../../../server/lib/OutboundMessageProvider';
-
-const PROVIDER_TYPES = ['phone', 'email'] as const;
 
 export class OutboundMessageProviderService {
 	private readonly provider: OutboundMessageProvider;
@@ -12,7 +11,7 @@ export class OutboundMessageProviderService {
 	}
 
 	private isProviderValid(type?: string): type is ValidProviderTypes {
-		return PROVIDER_TYPES.includes(type as ValidProviderTypes);
+		return !!type && type in ProviderTypeEnum;
 	}
 
 	public listOutboundProviders(type?: string): IOutboundProvider[] {

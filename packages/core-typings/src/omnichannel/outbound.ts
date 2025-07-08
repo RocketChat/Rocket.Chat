@@ -115,4 +115,9 @@ export type IOutboundProviderMetadata = IOutboundProvider & {
 	templates: Record<string, IOutboundProviderTemplate[]>;
 };
 
-export type ValidOutboundProvider = 'phone' | 'email';
+export const ProviderTypeEnum = {
+	phone: true,
+	email: true,
+} as const;
+
+export type OutboundProviderTypes = keyof typeof ProviderTypeEnum;
