@@ -1,22 +1,18 @@
 import 'reflect-metadata';
 
 import { toUnpaddedBase64 } from '@hs/core';
-import {
-	ConfigService,
-	createFederationContainer,
-	DependencyContainer,
-	type FederationContainerOptions,
-	type HomeserverEventSignatures,
-} from '@hs/federation-sdk';
+import { ConfigService, createFederationContainer } from '@hs/federation-sdk';
+import type { DependencyContainer, type FederationContainerOptions, type HomeserverEventSignatures } from '@hs/federation-sdk';
 import { Emitter } from '@rocket.chat/emitter';
 
 let container: DependencyContainer | undefined;
 
-export async function setup(emitter: Emitter<HomeserverEventSignatures> = new Emitter<HomeserverEventSignatures>()): Promise<DependencyContainer> {
+export async function setup(
+	emitter: Emitter<HomeserverEventSignatures> = new Emitter<HomeserverEventSignatures>(),
+): Promise<DependencyContainer> {
 	const config = new ConfigService();
 	const matrixConfig = config.getMatrixConfig();
 	const serverConfig = config.getServerConfig();
-	console.log('Matrix Config:', matrixConfig)
 	const signingKeys = await config.getSigningKey();
 	const signingKey = signingKeys[0];
 
@@ -32,7 +28,7 @@ export async function setup(emitter: Emitter<HomeserverEventSignatures> = new Em
 	};
 
 	container = createFederationContainer(containerOptions);
-	
+
 	return container;
 }
 
