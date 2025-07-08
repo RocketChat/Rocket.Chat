@@ -1,4 +1,4 @@
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -9,6 +9,7 @@ import { imperativeModal } from '../../../lib/imperativeModal';
 export const useEscapeKeyStroke = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
+	const router = useRouter();
 
 	const clearUnreadAllMessagesMutation = useClearUnreadAllMessagesMutation({
 		onError: (error) => {
@@ -48,4 +49,23 @@ export const useEscapeKeyStroke = () => {
 			document.body.removeEventListener('keydown', handleKeyDown);
 		};
 	}, [clearUnreadAllMessagesMutation.mutate, dispatchToastMessage, t]);
+
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (event.key !== 'h' || !event.ctrlKey === true) {
+				return;
+			}
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			router.navigate('/home');
+		};
+
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [router]);
 };
