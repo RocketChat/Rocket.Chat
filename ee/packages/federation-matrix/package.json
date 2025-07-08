@@ -41,6 +41,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"mongodb": "6.10.0",
-		"pino": "8.21.0"
+		"pino": "8.21.0",
+		"reflect-metadata": "^0.2.2"
 	}
 }
