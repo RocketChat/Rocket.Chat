@@ -1,15 +1,14 @@
 import SidePanelAll from './tabs/SidePanelAll';
-import { ALL_GROUPS, useSidePanelFilter } from '../contexts/RoomsNavigationContext';
-import SidePanelChannels from './tabs/SidePanelChannels';
+import { ALL_GROUPS, useRoomsListContext, useSidePanelFilter } from '../contexts/RoomsNavigationContext';
 import SidePanelDiscussions from './tabs/SidePanelDiscussions';
 import SidePanelFavorites from './tabs/SidePanelFavorites';
 import SidePanelMentions from './tabs/SidePanelMentions';
-import SidePanelTeams from './tabs/SidePanelTeams';
+import SidePanelRooms from './tabs/SidePanelRooms';
 
 const SidePanelRouter = () => {
 	const [currentTab] = useSidePanelFilter();
+	const { parentRid } = useRoomsListContext();
 
-	// TODO: figure out if we need this switch
 	switch (currentTab) {
 		case ALL_GROUPS.ALL:
 			return <SidePanelAll />;
@@ -20,11 +19,9 @@ const SidePanelRouter = () => {
 		case ALL_GROUPS.DISCUSSIONS:
 			return <SidePanelDiscussions />;
 		case ALL_GROUPS.TEAMS:
-			return <SidePanelTeams />;
 		case ALL_GROUPS.CHANNELS:
-			return <SidePanelChannels />;
 		case ALL_GROUPS.DIRECT_MESSAGES:
-			return <SidePanelChannels />;
+			return parentRid ? <SidePanelRooms parentRid={parentRid} /> : null;
 		default:
 			return null;
 	}
