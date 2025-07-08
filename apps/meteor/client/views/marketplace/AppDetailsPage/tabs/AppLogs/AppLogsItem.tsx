@@ -1,6 +1,6 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Divider } from '@rocket.chat/fuselage';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItemEntry from './AppLogsItemEntry';
@@ -11,9 +11,11 @@ import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime'
 
 export type AppLogsItemProps = {
 	regionId: string;
+	expandOverride?: boolean;
+	setExpandOverride: (value: boolean) => void;
 } & ILogItem;
 
-const AppLogsItem = ({ regionId, ...props }: AppLogsItemProps) => {
+const AppLogsItem = ({ regionId, expandOverride, setExpandOverride, ...props }: AppLogsItemProps) => {
 	const { t } = useTranslation();
 	const [expanded, setExpanded] = useState(false);
 	const title = (
@@ -32,13 +34,24 @@ const AppLogsItem = ({ regionId, ...props }: AppLogsItemProps) => {
 		</>
 	);
 
+	const handleClick = () => {
+		setExpandOverride(false);
+		setExpanded(!expanded);
+	};
+	// Not Ideal :P
+	useEffect(() => {
+		if (expandOverride) {
+			setExpanded(expandOverride);
+		}
+	}, [expandOverride]);
+
 	const anchorRef = useRef<HTMLDivElement>(null);
 
 	const formatDateAndTime = useFormatDateAndTime();
 
 	return (
 		<>
-			<CollapseButton regionId={regionId} expanded={expanded} onClick={() => setExpanded(!expanded)}>
+			<CollapseButton regionId={regionId} expanded={expanded} onClick={handleClick}>
 				<Box ref={anchorRef}>{title}</Box>
 			</CollapseButton>
 

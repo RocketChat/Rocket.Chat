@@ -1,6 +1,5 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useMemo, type ReactElement } from 'react';
+import { useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
@@ -23,9 +22,11 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const debouncedEvent = useDebouncedValue(event, 500);
+	const [expandOverride, setExpandOverride] = useState(false);
 
-	const { data, isSuccess, isError, isFetching, error } = useLogs({
+	const expandAll = () => setExpandOverride(true);
+
+	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
 		appId: id,
 		current,
 		itemsPerPage,
@@ -50,16 +51,23 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	return (
 		<>
 			<Box pb={16}>
-				<AppLogsFilter />
+				<AppLogsFilter expandAll={expandAll} refetchLogs={() => refetch()} isLoading={isFetching} />
 			</Box>
 			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
-			{isSuccess && data?.logs?.length === 0 ? (
-				<GenericNoResults />
-			) : (
+			{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}
+			{!isFetching && isSuccess && data?.logs?.length > 0 && (
 				<CustomScrollbars>
-					<CollapsiblePanel aria-busy={isFetching || event !== debouncedEvent} width='100%' alignSelf='center'>
-						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
+					<CollapsiblePanel width='100%' alignSelf='center'>
+						{data?.logs?.map((log, index) => (
+							<AppLogsItem
+								regionId={log._id}
+								setExpandOverride={setExpandOverride}
+								expandOverride={expandOverride}
+								key={`${index}-${log._createdAt}`}
+								{...log}
+							/>
+						))}
 					</CollapsiblePanel>
 				</CustomScrollbars>
 			)}
