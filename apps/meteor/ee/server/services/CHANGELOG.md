@@ -1,5 +1,19 @@
 # rocketchat-services
 
+## 2.0.20-rc.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.9
+  - @rocket.chat/rest-typings@7.8.0-rc.9
+  - @rocket.chat/core-services@0.9.8-rc.9
+  - @rocket.chat/model-typings@1.6.8-rc.9
+  - @rocket.chat/models@1.5.8-rc.9
+  - @rocket.chat/network-broker@0.2.8-rc.9
+  </details>
+
 ## 2.0.17-rc.8
 
 ### Patch Changes

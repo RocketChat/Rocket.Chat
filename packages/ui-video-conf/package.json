@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-video-conf",
-	"version": "20.0.0-rc.8",
+	"version": "20.0.0-rc.9",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
