@@ -1,3 +1,4 @@
+import type express from 'express';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 export interface IRouteContext {
@@ -11,10 +12,9 @@ export interface IRouteContext {
 
 export interface IFederationMatrixService {
 	getAllRoutes(): {
-		method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-		path: string;
-		handler: (ctx: IRouteContext) => Promise<any>;
-	}[];
+		matrix: express.Router;
+		wellKnown: express.Router; 
+	};
 	createRoom(room: IRoom, owner: IUser, members: string[]): Promise<void>;
 	sendMessage(message: IMessage, room: IRoom, user: IUser): Promise<void>;
 }
