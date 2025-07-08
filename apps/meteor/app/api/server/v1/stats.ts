@@ -176,7 +176,7 @@ const statisticsEndpoints = API.v1.get(
 						items: {
 							type: 'object',
 							patternProperties: {
-								'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
+								'^.*': { anyOf: [{ type: 'string' }, { type: 'number' }] },
 							},
 						},
 					},
@@ -276,7 +276,7 @@ const statisticsEndpoints = API.v1.get(
 					BusinessHours: {
 						type: 'object',
 						patternProperties: {
-							'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
+							'^.*': { anyOf: [{ type: 'string' }, { type: 'number' }] },
 						},
 					},
 					lastChattedAgentPreferred: { type: 'boolean' },
@@ -1237,7 +1237,7 @@ const statisticsListEndpoints = API.v1.get(
 									items: {
 										type: 'object',
 										patternProperties: {
-											'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
+											'^.*': { anyOf: [{ type: 'string' }, { type: 'number' }] },
 										},
 									},
 								},
@@ -1337,7 +1337,7 @@ const statisticsListEndpoints = API.v1.get(
 								BusinessHours: {
 									type: 'object',
 									patternProperties: {
-										'^.*': { anyOf: [{ type: 'string' }, { type: 'integer' }] },
+										'^.*': { anyOf: [{ type: 'string' }, { type: 'number' }] },
 									},
 								},
 								lastChattedAgentPreferred: { type: 'boolean' },
