@@ -1,13 +1,12 @@
 import type { IRoom, IMessage, IUser, UserPresence } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-import GenericModal from '../../../client/components/GenericModal';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';

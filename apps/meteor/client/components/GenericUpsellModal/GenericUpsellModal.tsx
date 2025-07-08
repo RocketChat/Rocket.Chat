@@ -1,8 +1,7 @@
 import { Box, Modal } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement, ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../GenericModal';
 
 type GenericUpsellModalProps = Omit<ComponentProps<typeof GenericModal>, 'variant' | 'children' | 'onClose' | 'onDismiss'> & {
 	subtitle?: string | ReactElement;
