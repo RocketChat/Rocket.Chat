@@ -127,7 +127,7 @@ const PublicRoomsPostBodySchema = {
 const isPublicRoomsPostBodyProps = ajv.compile(PublicRoomsPostBodySchema);
 
 export const getMatrixRoomsRoutes = (router: Router<'/_matrix'>) => {
-    const {  } = getAllServicesFromFederationSDK();
+    const { state } = getAllServicesFromFederationSDK();
     
     return router
         .get('/federation/v1/publicRooms', {
