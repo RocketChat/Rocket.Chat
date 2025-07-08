@@ -32,7 +32,6 @@ import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
-import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
@@ -254,8 +253,24 @@ class E2E extends Emitter {
 		);
 	}
 
+	private waitForRoom(rid: IRoom['_id']): Promise<IRoom> {
+		return new Promise((resolve) => {
+			const room = Rooms.state.get(rid);
+
+			if (room) resolve(room);
+
+			const unsubscribe = Rooms.use.subscribe((state) => {
+				const room = state.get(rid);
+				if (room) {
+					unsubscribe();
+					resolve(room);
+				}
+			});
+		});
+	}
+
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => Rooms.state.get(rid));
+		const room = await this.waitForRoom(rid);
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
