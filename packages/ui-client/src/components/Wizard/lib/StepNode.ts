@@ -14,7 +14,7 @@ export type StepMetadata = {
  * Represents a node in the linked list for managing wizard steps.
  * It contains the step metadata and pointers to the next and previous nodes.
  */
-export class StepNode {
+class StepNode {
 	public value: StepMetadata;
 
 	public next: StepNode | null = null;
