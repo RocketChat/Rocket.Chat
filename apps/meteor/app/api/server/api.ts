@@ -11,7 +11,6 @@ import { metricsMiddleware } from './middlewares/metrics';
 import { remoteAddressMiddleware } from './middlewares/remoteAddressMiddleware';
 import { tracerSpanMiddleware } from './middlewares/tracer';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
-import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
 

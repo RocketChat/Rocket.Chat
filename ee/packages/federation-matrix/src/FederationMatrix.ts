@@ -1,16 +1,16 @@
 import 'reflect-metadata';
 
+import type { HomeserverEventSignatures, HomeserverServices, DependencyContainer } from '@hs/federation-sdk';
+import { getAllServices } from '@hs/federation-sdk';
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures, HomeserverServices, DependencyContainer } from '@hs/federation-sdk';
-import { getAllServices } from '@hs/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
+import { getAllMatrixRoutes } from './api/api';
 import { registerEvents } from './events';
 import { setup } from './setupContainers';
-import { getAllMatrixRoutes } from './api/api';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -33,7 +33,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
 		instance.diContainer = await setup(instance.eventHandler);
-		
+
 		return instance;
 	}
 

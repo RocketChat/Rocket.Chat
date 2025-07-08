@@ -1,9 +1,9 @@
-import type express from 'express';
 import type { IFederationMatrixService } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
+import type express from 'express';
+import { WebApp } from 'meteor/webapp';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';
-import { WebApp } from 'meteor/webapp';
 
 const logger = new Logger('FederationRoutes');
 
@@ -14,16 +14,9 @@ export async function registerFederationRoutes(federationService: IFederationMat
 
 	try {
 		const routes = federationService.getAllRoutes();
-		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>)
-			.use(
-				routes.matrix
-			)
-			.use(
-				routes.wellKnown
-			);
+		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix).use(routes.wellKnown);
 
-
-		logger.log('[Federation] Registered', routes.length, 'federation routes');
+		logger.log('[Federation] Registered federation routes');
 	} catch (error) {
 		logger.error('[Federation] Failed to register routes:', error);
 		throw error;

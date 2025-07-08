@@ -11,8 +11,7 @@ const WellKnownServerResponseSchema = {
             description: 'Matrix server address with port'
         }
     },
-    required: ['m.server'],
-    additionalProperties: false
+    required: ['m.server']
 };
 
 const isWellKnownServerResponseProps = ajv.compile(WellKnownServerResponseSchema);
