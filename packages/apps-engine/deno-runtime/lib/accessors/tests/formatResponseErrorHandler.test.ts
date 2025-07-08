@@ -70,7 +70,10 @@ describe('formatErrorResponse', () => {
 
 		it('returns custom Error subclasses unchanged', () => {
 			class CustomError extends Error {
-				constructor(message: string, public code: number) {
+				constructor(
+					message: string,
+					public code: number,
+				) {
 					super(message);
 					this.name = 'CustomError';
 				}
@@ -188,15 +191,7 @@ describe('formatErrorResponse', () => {
 	});
 
 	it('ensures all returned values are proper Error instances', () => {
-		const testCases = [
-			'string error',
-			123,
-			null,
-			undefined,
-			{ error: { message: 'test' } },
-			new Error('test'),
-			{ plain: 'object' },
-		];
+		const testCases = ['string error', 123, null, undefined, { error: { message: 'test' } }, new Error('test'), { plain: 'object' }];
 
 		for (const testCase of testCases) {
 			const result = formatErrorResponse(testCase);

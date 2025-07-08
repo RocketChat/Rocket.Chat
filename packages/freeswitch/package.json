@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/freeswitch",
-	"version": "1.2.12",
+	"version": "1.2.16",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:*",

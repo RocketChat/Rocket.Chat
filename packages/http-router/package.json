@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/http-router",
-	"version": "7.8.0-develop",
+	"version": "7.8.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:*",

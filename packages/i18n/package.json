@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/i18n",
-	"version": "1.7.0",
+	"version": "1.8.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:*",
