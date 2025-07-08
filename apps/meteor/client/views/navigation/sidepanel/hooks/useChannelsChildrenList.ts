@@ -4,12 +4,18 @@ import { useShallow } from 'zustand/shallow';
 import { Subscriptions } from '../../../../../app/models/client';
 import { pipe } from '../../../../lib/cachedCollections';
 
-export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean) => {
+export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: string) => {
 	return Subscriptions.use(
 		useShallow((state) => {
 			const records = state.filter((subscription) => {
 				if (subscription.prid !== parentRid && subscription.rid !== parentRid) {
-					return false;
+					if (!teamId) {
+						return false;
+					}
+
+					if (teamId && subscription.teamId !== teamId) {
+						return false;
+					}
 				}
 				if (unreadOnly && subscription.unread === 0) {
 					return false;

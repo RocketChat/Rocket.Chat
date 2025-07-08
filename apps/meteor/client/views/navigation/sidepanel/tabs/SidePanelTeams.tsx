@@ -3,11 +3,11 @@ import { type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { SIDE_BAR_GROUPS, useUnreadOnlyToggle } from '../../contexts/RoomsNavigationContext';
 import SidePanel from '../SidePanel';
-import { useTeamsChildrenList } from '../hooks/useTeamsChildrenList';
+import { useChannelsChildrenList } from '../hooks/useChannelsChildrenList';
 
 const SidePanelTeams = ({ parentRid, subscription }: { parentRid: string; subscription: ISubscription }) => {
 	const [unreadOnly, toggleOnlyUnreads] = useUnreadOnlyToggle();
-	const rooms = useTeamsChildrenList(parentRid, unreadOnly, subscription?.teamId);
+	const rooms = useChannelsChildrenList(parentRid, unreadOnly, subscription?.teamId);
 
 	return (
 		<SidePanel
