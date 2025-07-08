@@ -1,30 +1,11 @@
 import { OutboundMessageProviderService } from '../../../../../../ee/app/livechat-enterprise/server/api/lib/outbound';
 
-jest.mock('./outbound', () => {
-	return {
-		OutboundMessageProvider: jest.fn().mockImplementation(() => {
-			return {
-				getOutboundMessageProviders: jest.fn((type?: string) => {
-					if (type === 'phone') {
-						return [{ appId: '1', name: 'PhoneProvider', type: 'phone' }];
-					}
-					if (type === 'email') {
-						return [{ appId: '2', name: 'EmailProvider', type: 'email' }];
-					}
-					return [
-						{ appId: '1', name: 'PhoneProvider', type: 'phone' },
-						{ appId: '2', name: 'EmailProvider', type: 'email' },
-					];
-				}),
-			};
-		}),
-	};
-});
+
 
 describe('OutboundMessageProviderService', () => {
 	let service: OutboundMessageProviderService;
 
-	beforeEach(() => {
+	beforeAll(() => {
 		service = new OutboundMessageProviderService();
 	});
 
