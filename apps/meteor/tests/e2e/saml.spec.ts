@@ -25,9 +25,15 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	const usernamesToDelete = [Users.userForSamlMerge, Users.userForSamlMerge2, Users.samluser1, Users.samluser2, Users.samluser4].map(
-		({ data: { username } }) => username,
-	);
+	const usernamesToDelete = [
+		Users.userForSamlMerge,
+		Users.userForSamlMerge2,
+		Users.samluser1,
+		Users.samluser2,
+		Users.samluser4,
+		Users.samluser5,
+		Users.samluser6,
+	].map((user) => user.data.username);
 	await connection
 		.db()
 		.collection('users')
@@ -83,6 +89,7 @@ test.describe('SAML', () => {
 	let targetInviteGroupId: string;
 	let targetInviteGroupName: string;
 	let inviteId: string;
+	let targetChannel: string;
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
@@ -117,6 +124,9 @@ test.describe('SAML', () => {
 		expect(inviteResponse.status()).toBe(200);
 		const { _id } = await inviteResponse.json();
 		inviteId = _id;
+
+		targetChannel = 'saml-channel-1';
+		expect((await api.post('/channels.create', { name: targetChannel })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -144,6 +154,7 @@ test.describe('SAML', () => {
 
 	test.afterAll(async ({ api }) => {
 		expect((await api.post('/groups.delete', { roomId: targetInviteGroupId })).status()).toBe(200);
+		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -483,12 +494,58 @@ test.describe('SAML', () => {
 		// Test different variations of the Immutable Property setting
 	});
 
-	test.fixme('Login - User without name', async () => {
-		// Test login with a SAML user with no name
+	test('Login - User without name', async ({ page, api }) => {
+		await doLoginStep(page, 'samluser5');
+
+		await test.step('expect user data to have been mapped correctly without name', async () => {
+			const user = await getUserInfo(api, 'samluser5');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('samluser5');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser5@example.com');
+			// When name is not provided, it should fall back to username
+			expect(user?.name).toBe('samluser5');
+		});
 	});
 
-	test.fixme('Login - User with channels attribute', async () => {
-		// Test login with a SAML user with a "channels" attribute
+	test('Login - User with channels attribute', async ({ page, api }) => {
+		await test.step('Configure SAML to enable channels attribute updates', async () => {
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_channels_update', true)).status()).toBe(200);
+		});
+
+		await doLoginStep(page, 'samluser6');
+
+		await test.step('expect user data to have been mapped correctly with channels attribute', async () => {
+			const user = await getUserInfo(api, 'samluser6');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('samluser6');
+			expect(user?.name).toBe('Saml User 6');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser6@example.com');
+		});
+
+		await test.step('expect user to be subscribed to channels from SAML assertion', async () => {
+			// First get the user info to get the user ID
+			const user = await getUserInfo(api, 'samluser6');
+			expect(user).toBeDefined();
+
+			const membershipCheckPromises = [targetChannel].map(async (channelName) => {
+				// Get channel info to get the room ID
+				const channelInfoResponse = await api.get(`/channels.info?roomName=${channelName}`);
+				expect(channelInfoResponse.status()).toBe(200);
+				const { channel } = await channelInfoResponse.json();
+
+				// Check if user is a member of this channel
+				const membershipResponse = await api.get(`/rooms.isMember?roomId=${channel._id}&userId=${user?._id}`);
+				expect(membershipResponse.status()).toBe(200);
+				const { isMember } = await membershipResponse.json();
+
+				expect(isMember).toBe(true);
+			});
+			await Promise.all(membershipCheckPromises);
+		});
 	});
 
 	test.fixme('Data Sync - Custom Field Map', async () => {
