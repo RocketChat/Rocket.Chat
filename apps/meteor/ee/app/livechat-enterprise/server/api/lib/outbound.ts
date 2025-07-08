@@ -3,6 +3,8 @@ import { ValidOutboundProviderList } from '@rocket.chat/core-typings';
 
 import { OutboundMessageProvider } from '../../../../../../server/lib/OutboundMessageProvider';
 
+const PROVIDER_TYPES = ['phone', 'email'] as const;
+
 export class OutboundMessageProviderService {
 	private readonly provider: OutboundMessageProvider;
 
