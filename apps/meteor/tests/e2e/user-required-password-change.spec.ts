@@ -8,7 +8,7 @@ import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser } from './utils/user-helpers';
 
-test.describe.parallel('User - Password change required', () => {
+test.describe('User - Password change required', () => {
 	let poRegistration: Registration;
 	let poSidenav: HomeSidenav;
 	let userRequiringPasswordChange: ITestUser;
@@ -126,7 +126,7 @@ test.describe.parallel('User - Password change required', () => {
 	});
 });
 
-test.describe.parallel('User - Password change not required', () => {
+test.describe('User - Password change not required', () => {
 	let poRegistration: Registration;
 	let poSidenav: HomeSidenav;
 	let userNotRequiringPasswordChange: ITestUser;
@@ -150,7 +150,7 @@ test.describe.parallel('User - Password change not required', () => {
 		]);
 	});
 
-	test('should not require password change if the setting is disabled', async ({ page }) => {
+	test('should not require password change if the requirePasswordChange is disabled', async ({ page }) => {
 		await test.step('login with user not requiring password change', async () => {
 			await poRegistration.username.fill(userNotRequiringPasswordChange.data.username);
 			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
