@@ -7734,6 +7734,7 @@ __metadata:
     jest: "npm:~30.0.0"
     mongodb: "npm:6.10.0"
     pino: "npm:8.21.0"
+    reflect-metadata: "npm:^0.2.2"
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
