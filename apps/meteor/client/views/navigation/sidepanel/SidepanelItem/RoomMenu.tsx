@@ -4,7 +4,7 @@ import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
-import { useRoomMenuActions } from './hooks/useRoomMenuActions';
+import { useRoomMenuActions } from '../hooks/useRoomMenuActions';
 
 type RoomMenuProps = {
 	rid: string;

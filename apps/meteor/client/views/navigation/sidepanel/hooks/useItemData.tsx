@@ -9,9 +9,9 @@ import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
-import RoomMenu from '../../../../sidebarv2/RoomMenu';
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
+import RoomMenu from '../SidepanelItem/RoomMenu';
 
 export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { openedRoom: string | undefined }) => {
 	const { t } = useTranslation();

@@ -9,15 +9,12 @@ import { memo, useCallback, useMemo } from 'react';
 import SidebarItem from './SidebarItem';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { isIOsDevice } from '../../lib/utils/isIOsDevice';
-import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannelPriorities';
 import {
 	useSwitchSidePanelTab,
 	SIDE_BAR_GROUPS,
 	useRoomsListContext,
 	useSidePanelFilter,
 } from '../../views/navigation/contexts/RoomsNavigationContext';
-import RoomMenu from '../RoomMenu';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -36,15 +33,10 @@ type RoomListRowProps = {
 	};
 };
 
-const SidebarItemWithData = ({ room, id, style, t, isAnonymous, videoConfActions }: RoomListRowProps) => {
+const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
-
-	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
-
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
-
-	const { unread = 0, alert, rid, t: type, cl } = room;
 
 	const icon = (
 		<SidebarV2ItemIcon
@@ -64,9 +56,6 @@ const SidebarItemWithData = ({ room, id, style, t, isAnonymous, videoConfActions
 		[videoConfActions],
 	);
 
-	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
-	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
-
 	const badges = (
 		<>
 			{showUnread && (
@@ -81,24 +70,6 @@ const SidebarItemWithData = ({ room, id, style, t, isAnonymous, videoConfActions
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
 		</>
-	);
-
-	const menu = useMemo(
-		() =>
-			!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
-				<RoomMenu
-					alert={alert}
-					threadUnread={unreadCount.threads > 0}
-					rid={rid}
-					unread={!!unread}
-					type={type}
-					cl={cl}
-					name={title}
-					hideDefaultOptions={isQueued}
-					href={href || undefined}
-				/>
-			) : undefined,
-		[isAnonymous, isQueued, isPriorityEnabled, alert, unreadCount.threads, rid, unread, type, cl, title, href],
 	);
 
 	const switchSidePanelTab = useSwitchSidePanelTab();
@@ -140,7 +111,6 @@ const SidebarItemWithData = ({ room, id, style, t, isAnonymous, videoConfActions
 			badges={badges}
 			room={room}
 			actions={actions}
-			menu={menu}
 		/>
 	);
 };
