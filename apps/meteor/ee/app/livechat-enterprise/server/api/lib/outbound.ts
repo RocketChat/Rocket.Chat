@@ -1,4 +1,5 @@
 import type { IOutboundProvider, ValidOutboundProvider } from '@rocket.chat/core-typings';
+import { ValidOutboundProviderList } from '@rocket.chat/core-typings';
 
 import { OutboundMessageProvider } from '../../../../../../server/lib/OutboundMessageProvider';
 
@@ -9,8 +10,8 @@ export class OutboundMessageProviderService {
 		this.provider = new OutboundMessageProvider();
 	}
 
-	private isProviderValid(type: string): type is ValidOutboundProvider {
-		return ['phone', 'email'].includes(type);
+	private isProviderValid(type: any): type is ValidOutboundProvider {
+		return ValidOutboundProviderList.includes(type);
 	}
 
 	public listOutboundProviders(type?: string): IOutboundProvider[] {
