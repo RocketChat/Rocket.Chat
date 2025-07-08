@@ -1,5 +1,4 @@
-import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundComunication';
-import type { IOutboundProvider } from '@rocket.chat/core-typings';
+import type { IOutboundProvider, ValidOutboundProvider } from '@rocket.chat/core-typings';
 
 import { OutboundMessageProvider } from '../../../../../../server/lib/OutboundMessageProvider';
 
@@ -10,8 +9,8 @@ export class OutboundMessageProviderService {
 		this.provider = new OutboundMessageProvider();
 	}
 
-	private isProviderValid(type?: string): type is 'phone' | 'email' {
-		return type === 'phone' || type === 'email';
+	private isProviderValid(type: string): type is ValidOutboundProvider {
+		return ['phone', 'email'].includes(type);
 	}
 
 	public listOutboundProviders(type?: string): IOutboundProvider[] {
@@ -19,15 +18,8 @@ export class OutboundMessageProviderService {
 			throw new Error('Invalid type');
 		}
 
-		const providers = this.provider.getOutboundMessageProviders(type);
-
-		return providers.map<IOutboundProvider>((provider: IOutboundMessageProviders) => {
-			return {
-				providerId: provider.appId,
-				providerName: provider.name,
-				supportsTemplates: true,
-				providerType: provider.type,
-			};
-		});
+		return this.provider.getOutboundMessageProviders(type);
 	}
 }
+
+export const outboundMessageProvider = new OutboundMessageProviderService();

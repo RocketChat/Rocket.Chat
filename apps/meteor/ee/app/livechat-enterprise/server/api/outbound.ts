@@ -1,8 +1,6 @@
 import { API } from '../../../../../app/api/server';
 import { isGETOutboundProviderParams } from '../outboundcomms/rest';
-import { OutboundMessageProviderService } from './lib/outbound';
-
-const outboundMessageProvider = new OutboundMessageProviderService();
+import { outboundMessageProvider } from './lib/outbound';
 
 API.v1.addRoute(
 	'omnichannel/outbound/providers',
@@ -12,14 +10,9 @@ API.v1.addRoute(
 			const { type } = this.queryParams;
 
 			const providers = outboundMessageProvider.listOutboundProviders(type);
-
-			try {
-				return API.v1.success({
-					providers,
-				});
-			} catch (error) {
-				return API.v1.failure(error);
-			}
+			return API.v1.success({
+				providers,
+			});
 		},
 	},
 );
