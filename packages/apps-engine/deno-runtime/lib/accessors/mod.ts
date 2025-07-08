@@ -54,24 +54,28 @@ export class AppAccessors {
 			new Proxy(
 				{ __kind: `accessor:${namespace}` },
 				{
-					get: (_target: unknown, prop: string) => (...params: unknown[]) => {
-						// We don't want to send a request for this prop
-						if (prop === 'toJSON') {
-							return {};
-						}
+					get:
+						(_target: unknown, prop: string) =>
+						(...params: unknown[]) => {
+							// We don't want to send a request for this prop
+							if (prop === 'toJSON') {
+								return {};
+							}
 
-						// If the prop is inteded to be overriden by the caller
-						if (prop in overrides) {
-							return overrides[prop].apply(undefined, params);
-						}
+							// If the prop is inteded to be overriden by the caller
+							if (prop in overrides) {
+								return overrides[prop].apply(undefined, params);
+							}
 
-						return senderFn({
-							method: `accessor:${namespace}:${prop}`,
-							params,
-						})
-							.then((response) => response.result)
-							.catch((err) => { throw formatErrorResponse(err) });
-					},
+							return senderFn({
+								method: `accessor:${namespace}:${prop}`,
+								params,
+							})
+								.then((response) => response.result)
+								.catch((err) => {
+									throw formatErrorResponse(err);
+								});
+						},
 				},
 			) as T;
 
