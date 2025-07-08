@@ -28,7 +28,7 @@
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.15.33",
+		"@types/node": "~22.16.1",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"event-loop-stats": "^1.4.1",

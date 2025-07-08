@@ -10,7 +10,7 @@
 	"main": "dist/index.js",
 	"packageManager": "yarn@3.5.1",
 	"devDependencies": {
-		"@types/node": "~22.15.33",
+		"@types/node": "~22.16.1",
 		"typescript": "~5.8.3"
 	},
 	"dependencies": {
