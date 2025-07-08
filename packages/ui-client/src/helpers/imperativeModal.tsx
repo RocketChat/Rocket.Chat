@@ -37,13 +37,11 @@ class ImperativeModalEmmiter extends Emitter<{ update: ModalDescriptor }> {
 		this.store = store;
 	}
 
-	open = <TComponent extends ComponentType<any>>(descriptor: ReactModalDescriptor<TComponent>): ModalInstance => {
-		return this.store.open(mapCurrentModal(descriptor as ModalDescriptor));
-	};
+	open = <TComponent extends ComponentType<any>>(descriptor: ReactModalDescriptor<TComponent>): ModalInstance =>
+		this.store.open(mapCurrentModal(descriptor as ModalDescriptor));
 
-	push = <TComponent extends ComponentType<any>>(descriptor: ReactModalDescriptor<TComponent>): ModalInstance => {
-		return this.store.push(mapCurrentModal(descriptor as ModalDescriptor));
-	};
+	push = <TComponent extends ComponentType<any>>(descriptor: ReactModalDescriptor<TComponent>): ModalInstance =>
+		this.store.push(mapCurrentModal(descriptor as ModalDescriptor));
 
 	close = () => {
 		this.store.close();
