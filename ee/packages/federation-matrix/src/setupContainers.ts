@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { toUnpaddedBase64 } from '@hs/core';
 import { ConfigService, createFederationContainer } from '@hs/federation-sdk';
-import type { DependencyContainer, type FederationContainerOptions, type HomeserverEventSignatures } from '@hs/federation-sdk';
+import type { DependencyContainer, FederationContainerOptions, HomeserverEventSignatures } from '@hs/federation-sdk';
 import { Emitter } from '@rocket.chat/emitter';
 
 let container: DependencyContainer | undefined;
