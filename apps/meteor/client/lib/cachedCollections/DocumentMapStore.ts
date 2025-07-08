@@ -250,8 +250,9 @@ export const createDocumentMapStore = <T extends { _id: string }>({
 				const records = new Map<T['_id'], T>();
 				for (const record of state.records.values()) {
 					if (predicate(record)) {
-						if (onInvalidate) affected.push(record);
-						records.set(record._id, modifier(record));
+						const newRecord = modifier(record);
+						records.set(record._id, newRecord);
+						if (onInvalidate) affected.push(newRecord);
 					} else {
 						records.set(record._id, record);
 					}
@@ -268,8 +269,9 @@ export const createDocumentMapStore = <T extends { _id: string }>({
 
 			for await (const record of get().records.values()) {
 				if (predicate(record)) {
-					if (onInvalidate) affected.push(record);
-					records.set(record._id, await modifier(record));
+					const newRecord = await modifier(record);
+					records.set(record._id, newRecord);
+					if (onInvalidate) affected.push(newRecord);
 				} else {
 					records.set(record._id, record);
 				}
