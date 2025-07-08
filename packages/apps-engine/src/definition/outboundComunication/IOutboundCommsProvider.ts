@@ -1,12 +1,10 @@
 import type { IOutboundMessage } from './IOutboundMessage';
 import type { IOutboundProviderTemplate } from './IOutboundProviderTemplate';
 
-export type ProviderType = 'phone' | 'email';
-
 type ProviderMetadata = {
 	appId: string;
 	appName: string;
-	providerType: ProviderType;
+	providerType: 'phone' | 'email';
 	supportsTemplates: boolean; // Indicates if the provider uses templates or not
 	templates: Record<string, IOutboundProviderTemplate[]>; // Format: { '+1121221212': [{ template }] }
 };
