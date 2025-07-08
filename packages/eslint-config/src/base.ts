@@ -6,14 +6,61 @@ import type { FlatConfig } from '@typescript-eslint/utils/ts-eslint';
 import { ignore } from './config/ignore.js';
 
 import javascript from './rules/javascript.js';
-import security from './security.js';
-import prettier from './prettier.js';
+import security from './configs/security.js';
+import prettier from './configs/prettier.js';
+
+interface Plugin {
+	rules?: Record<
+		string,
+		| {
+				create: unknown;
+				meta?: {
+					message?: string;
+					/**
+					 * URL to more information about this deprecation in general.
+					 */
+					url?: string;
+					/**
+					 * An empty array explicitly states that there is no replacement.
+					 */
+					replacedBy?: unknown[];
+					/**
+					 * The package version since when the rule is deprecated (should use full
+					 * semver without a leading "v").
+					 */
+					deprecatedSince?: string;
+					/**
+					 * The estimated version when the rule is removed (probably the next major
+					 * version). null means the rule is "frozen" (will be available but will not
+					 * be changed).
+					 */
+					availableUntil?: string | null;
+				};
+		  }
+		| ((...args: unknown[]) => unknown)
+	>;
+}
+
+const getDeprecatedRules = (plugins: Record<string, Omit<Plugin, 'configs'>>) => {
+	const deprecated: string[] = [];
+	for (const [pluginName, plugin] of Object.entries(plugins)) {
+		if (plugin.rules) {
+			for (const [ruleName, rule] of Object.entries(plugin.rules)) {
+				if ('meta' in rule && rule.meta && 'deprecated' in rule.meta && rule.meta.deprecated) {
+					deprecated.push(`${pluginName}/${ruleName}`);
+				}
+			}
+		}
+	}
+	return deprecated;
+};
 
 export default async function base(
 	...configs: (Promise<InfiniteDepthConfigWithExtends> | InfiniteDepthConfigWithExtends)[]
 ): Promise<FlatConfig.ConfigArray> {
 	const resolvedConfigs = await Promise.all(configs);
-	return tseslint.config(
+
+	const resultConfigs = tseslint.config(
 		{
 			name: 'base',
 		},
@@ -59,10 +106,16 @@ export default async function base(
 		},
 		{
 			rules: {
+				/**
+				 * {@link tseslintPlugin.rules}
+				 */
 				'@typescript-eslint/ban-ts-comment': 'warn',
 				'@typescript-eslint/no-explicit-any': 'warn',
 				'@typescript-eslint/no-empty-object-type': 'warn',
-				'@typescript-eslint/no-empty-interface': 'warn',
+				/**
+				 * @deprecated in favor of `@typescript-eslint/no-empty-object-type`
+				 */
+				'@typescript-eslint/no-empty-interface': 'off',
 				'@typescript-eslint/no-unsafe-declaration-merging': 'warn',
 				'@typescript-eslint/no-require-imports': 'warn',
 				'@typescript-eslint/no-this-alias': 'warn',
@@ -159,4 +212,38 @@ export default async function base(
 			extends: [tseslint.configs.disableTypeChecked],
 		},
 	);
+
+	const allDeprecatedRules = new Set<string>();
+
+	for (const config of resultConfigs) {
+		if (config.plugins) {
+			const deprecatedRules = getDeprecatedRules(config.plugins);
+			for (const rule of deprecatedRules) {
+				allDeprecatedRules.add(rule);
+			}
+		}
+	}
+
+	const usedDeprecatedRules = new Set<string>();
+
+	for (const config of resultConfigs) {
+		if (config.rules) {
+			const keys = Object.keys(config.rules);
+			for (const key of keys) {
+				if (allDeprecatedRules.has(key)) {
+					if (config.rules[key] !== 'off') {
+						console.warn(`Deprecated rule "${key}" is used in the config. It has been turned off.`);
+						config.rules[key] = 'off';
+						usedDeprecatedRules.add(key);
+					}
+				}
+			}
+		}
+	}
+
+	if (usedDeprecatedRules.size > 0) {
+		throw new Error(`The following deprecated rules are used in the config: \n\t- ${Array.from(usedDeprecatedRules).join('\n\t- ')}`);
+	}
+
+	return resultConfigs;
 }

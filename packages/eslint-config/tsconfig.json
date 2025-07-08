@@ -3,11 +3,10 @@
 	"compilerOptions": {
 		"module": "nodenext",
 		"moduleResolution": "nodenext",
-		"rootDir": "./src",
+		"rootDir": ".",
 		"outDir": "./dist",
 		"declaration": true,
 		"declarationMap": true,
-		"isolatedDeclarations": true,
 		"isolatedModules": true,
 		"target": "es2024",
 		"lib": ["es2024"],
@@ -15,7 +14,16 @@
 		"erasableSyntaxOnly": true,
 		"verbatimModuleSyntax": true,
 		"types": [],
-		"libReplacement": false
+		"libReplacement": false,
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"noEmit": true,
+		"maxNodeModuleJsDepth": 2,
+		"esModuleInterop": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"checkJs": false
 	},
-	"include": ["./src"]
+	"include": ["./src", "./scripts"],
+	"exclude": ["node_modules", "dist"]
 }

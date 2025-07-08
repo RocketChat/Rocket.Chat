@@ -1,7 +1,7 @@
 import type { Linter } from 'eslint';
 
-interface Rule {
-	[K: string]: Linter.RuleSeverity;
+interface Rule<T extends unknown[] = unknown[]> {
+	[K: string]: Linter.RuleEntry<T>;
 }
 
 export type ExtractRules<T extends Rule> = {

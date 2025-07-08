@@ -1,5 +1,4 @@
 import tseslint, { type ConfigWithExtends } from 'typescript-eslint';
-// @ts-expect-error jsx-a11y plugin is not typed
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';

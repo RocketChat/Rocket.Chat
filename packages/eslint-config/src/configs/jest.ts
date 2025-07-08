@@ -2,9 +2,9 @@ import type { Linter } from 'eslint';
 import jestPlugin from 'eslint-plugin-jest';
 import globals from 'globals';
 import type { ConfigWithExtends } from 'typescript-eslint';
-import rules from './rules/jest.js';
-import type { MergeRules } from './types/rules.js';
-import type { Config } from './types/config.js';
+import rules from '../rules/jest.js';
+import type { MergeRules } from '../types/rules.js';
+import type { Config } from '../types/config.js';
 import { readConfig } from 'jest-config';
 type Rules = MergeRules<[typeof rules.recommended, typeof rules.style]>;
 
