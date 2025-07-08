@@ -47,7 +47,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-1rfw4fq"
+                class="rcx-box rcx-box--full rcx-css-6ua2r5"
               >
                 <label
                   class="rcx-box rcx-box--full rcx-label"

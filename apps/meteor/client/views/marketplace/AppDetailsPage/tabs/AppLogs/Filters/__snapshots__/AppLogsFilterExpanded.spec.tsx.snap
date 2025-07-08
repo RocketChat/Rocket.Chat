@@ -46,26 +46,6 @@ exports[`renders AppLogsItem without crashing 1`] = `
         >
           <label
             class="rcx-box rcx-box--full rcx-label"
-            for="instanceFilter"
-            id="instanceFilterLabel"
-          >
-            Instance
-          </label>
-          <div
-            aria-busy="true"
-            aria-labelledby="instanceFilterLabel"
-            class="rcx-box rcx-box--full rcx-skeleton__input"
-          >
-            <span
-              class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
-            />
-          </div>
-        </div>
-        <div
-          class="rcx-box rcx-box--full rcx-css-1rfw4fq"
-        >
-          <label
-            class="rcx-box rcx-box--full rcx-label"
             for="timeFilter"
             id="timeFilterLabel"
           >
@@ -136,9 +116,11 @@ exports[`renders AppLogsItem without crashing 1`] = `
               </label>
             </div>
             <span
-              class="rcx-box rcx-box--full rcx-css-uyvtjh"
+              class="rcx-box rcx-box--full rcx-css-4w7o7u"
               id="react-aria-:r7:"
-            />
+            >
+              All_time
+            </span>
             <i
               aria-hidden="true"
               class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
@@ -146,6 +128,26 @@ exports[`renders AppLogsItem without crashing 1`] = `
               
             </i>
           </button>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1rfw4fq"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-label"
+            for="instanceFilter"
+            id="instanceFilterLabel"
+          >
+            Instance
+          </label>
+          <div
+            aria-busy="true"
+            aria-labelledby="instanceFilterLabel"
+            class="rcx-box rcx-box--full rcx-skeleton__input"
+          >
+            <span
+              class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+            />
+          </div>
         </div>
         <div
           class="rcx-box rcx-box--full rcx-css-1rfw4fq"
@@ -201,9 +203,11 @@ exports[`renders AppLogsItem without crashing 1`] = `
               </label>
             </div>
             <span
-              class="rcx-box rcx-box--full rcx-css-uyvtjh"
+              class="rcx-box rcx-box--full rcx-css-4w7o7u"
               id="react-aria-:rf:"
-            />
+            >
+              All
+            </span>
             <i
               aria-hidden="true"
               class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
