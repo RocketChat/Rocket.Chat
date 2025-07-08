@@ -1,5 +1,13 @@
 # @rocket.chat/core-typings
 
+## 7.8.0
+
+### Minor Changes
+
+- ([#36037](https://github.com/RocketChat/Rocket.Chat/pull/36037)) Adds a new setting to select which algorithm to use when signing SAML requests and responses
+
+- ([#36153](https://github.com/RocketChat/Rocket.Chat/pull/36153)) Adds a new setting to override outlook calendar settings per user email domain
+
 ## 7.8.0-rc.9
 
 ## 7.8.0-rc.8

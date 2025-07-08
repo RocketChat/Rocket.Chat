@@ -1,5 +1,16 @@
 # @rocket.chat/web-ui-registration
 
+## 20.0.0
+
+### Patch Changes
+
+- ([#36062](https://github.com/RocketChat/Rocket.Chat/pull/36062)) Removes the `Change to Default` language button from the login page
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0
+  </details>
+
 ## 20.0.0-rc.9
 
 ### Patch Changes

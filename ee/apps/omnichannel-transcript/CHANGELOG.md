@@ -1,5 +1,21 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.4.29
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8033bdb1f611eb8954a2626aca2583a285a94b27, 2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, c77056f1d5d7269d9fb4bb16d86711b037ec547f, dc26071ba3e0242d1ea7cf819f05c76ab307b229, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/i18n@1.8.0
+  - @rocket.chat/model-typings@1.6.8
+  - @rocket.chat/models@1.5.8
+  - @rocket.chat/core-typings@7.8.0
+  - @rocket.chat/omnichannel-services@0.3.26
+  - @rocket.chat/core-services@0.9.8
+  - @rocket.chat/pdf-worker@0.3.8
+  - @rocket.chat/network-broker@0.2.8
+  </details>
+
 ## 0.4.29-rc.9
 
 ### Patch Changes

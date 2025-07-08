@@ -1,5 +1,17 @@
 # @rocket.chat/i18n
 
+## 1.8.0
+
+### Minor Changes
+
+- ([#35315](https://github.com/RocketChat/Rocket.Chat/pull/35315) by [@xmaxlad](https://github.com/xmaxlad)) Prevents creation of unnamed Personal Access Tokens by requiring the form's `name` field fullfilment.
+
+- ([#36013](https://github.com/RocketChat/Rocket.Chat/pull/36013)) Resolves some accessibility violations in the rooms file list context bar, including issues with ARIA attributes and focus management.
+
+- ([#36037](https://github.com/RocketChat/Rocket.Chat/pull/36037)) Adds a new setting to select which algorithm to use when signing SAML requests and responses
+
+- ([#36153](https://github.com/RocketChat/Rocket.Chat/pull/36153)) Adds a new setting to override outlook calendar settings per user email domain
+
 ## 1.8.0-rc.0
 
 ### Minor Changes

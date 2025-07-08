@@ -1,5 +1,22 @@
 # @rocket.chat/rest-typings
 
+## 7.8.0
+
+### Patch Changes
+
+- ([#36154](https://github.com/RocketChat/Rocket.Chat/pull/36154)) Fixes an issue that prevented the action of saving an agent when editing a department to work.
+
+- ([#36035](https://github.com/RocketChat/Rocket.Chat/pull/36035)) Fixes file filtering by name or type not working for non-private channels.
+
+- ([#36111](https://github.com/RocketChat/Rocket.Chat/pull/36111)) Fixes Omnichannel Rest API validation schemas that were flagging `Pagination` properties as invalid
+
+- ([#36258](https://github.com/RocketChat/Rocket.Chat/pull/36258)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
+
+- <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/core-typings@7.8.0
+  </details>
+
 ## 7.8.0-rc.9
 
 ### Patch Changes
