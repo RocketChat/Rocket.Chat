@@ -3,6 +3,7 @@ import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import CompactFilterOptions from './AppsLogsFilterOptionsCompact';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
@@ -103,6 +104,7 @@ export const AppLogsFilter = ({ expandAll }: AppsLogsFilterProps) => {
 					{t('Filters')}
 				</Button>
 			)}
+			{compactMode && <CompactFilterOptions handleExpandAll={openAllLogs} handleExportLogs={openExportModal} />}
 		</Box>
 	);
 };
