@@ -7,6 +7,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { getUserInfo } from '../../app/api/server/helpers/getUserInfo';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
@@ -160,7 +161,7 @@ async function saveUserProfile(
 	// App IPostUserUpdated event hook
 	const updatedUser = await Users.findOneById(this.userId);
 
-	void notifyOnUserChange({ clientAction: 'updated', id: updatedUser!._id, diff: updatedUser! });
+	void notifyOnUserChange({ clientAction: 'updated', id: updatedUser!._id, diff: getUserInfo(updatedUser!) });
 
 	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
