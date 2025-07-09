@@ -26,7 +26,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const expandAll = () => setExpandOverride(true);
 
-	const { data, isSuccess, isError, isLoading, error } = useLogs({
+	const { data, isSuccess, isError, isLoading, error, refetch, isFetching } = useLogs({
 		appId: id,
 		current,
 		itemsPerPage,
@@ -51,7 +51,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	return (
 		<>
 			<Box pb={16}>
-				<AppLogsFilter expandAll={expandAll} />
+				<AppLogsFilter expandAll={expandAll} refetchLogs={() => refetch()} isLoading={isFetching} />
 			</Box>
 			{isLoading && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}

@@ -13,9 +13,11 @@ import { ExportLogsModal } from './ExportLogsModal';
 
 type AppsLogsFilterProps = {
 	expandAll: () => void;
+	refetchLogs: () => void;
+	isLoading: boolean;
 };
 
-export const AppLogsFilter = ({ expandAll }: AppsLogsFilterProps) => {
+export const AppLogsFilter = ({ expandAll, refetchLogs, isLoading }: AppsLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues } = useAppLogsFilterFormContext();
@@ -38,6 +40,10 @@ export const AppLogsFilter = ({ expandAll }: AppsLogsFilterProps) => {
 
 	const openExportModal = () => {
 		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} />);
+	};
+
+	const refreshLogs = () => {
+		refetchLogs();
 	};
 
 	const compactMode = useCompactMode();
@@ -99,12 +105,30 @@ export const AppLogsFilter = ({ expandAll }: AppsLogsFilterProps) => {
 					onClick={() => openExportModal()}
 				/>
 			)}
+			{!compactMode && (
+				<IconButton
+					title={isLoading ? t('Loading') : t('Refresh_logs')}
+					alignSelf='flex-end'
+					disabled={isLoading}
+					icon='refresh'
+					secondary
+					mie={10}
+					onClick={() => refreshLogs()}
+				/>
+			)}
 			{compactMode && (
 				<Button alignSelf='flex-end' icon='customize' secondary mie={10} onClick={() => openContextualBar()}>
 					{t('Filters')}
 				</Button>
 			)}
-			{compactMode && <CompactFilterOptions handleExpandAll={openAllLogs} handleExportLogs={openExportModal} />}
+			{compactMode && (
+				<CompactFilterOptions
+					isLoading={isLoading}
+					handleExpandAll={openAllLogs}
+					handleExportLogs={openExportModal}
+					handleRefreshLogs={refreshLogs}
+				/>
+			)}
 		</Box>
 	);
 };

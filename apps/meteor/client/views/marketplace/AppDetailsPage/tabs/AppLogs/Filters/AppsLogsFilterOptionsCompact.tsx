@@ -4,9 +4,11 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 type CompactFilterOptionsProps = {
 	handleExpandAll: () => void;
 	handleExportLogs: () => void;
+	handleRefreshLogs: () => void;
+	isLoading: boolean;
 };
 
-const CompactFilterOptions = ({ handleExpandAll, handleExportLogs, ...props }: CompactFilterOptionsProps) => {
+const CompactFilterOptions = ({ handleExpandAll, handleExportLogs, handleRefreshLogs, isLoading, ...props }: CompactFilterOptionsProps) => {
 	const t = useTranslation();
 
 	const menuOptions = {
@@ -27,6 +29,16 @@ const CompactFilterOptions = ({ handleExpandAll, handleExportLogs, ...props }: C
 				</Box>
 			),
 			action: handleExportLogs,
+		},
+		refreshLogs: {
+			label: (
+				<Box data-qa='current-chats-options-clearFilters'>
+					<Icon name='refresh' size='x16' marginInlineEnd={4} />
+					{t('Refresh_logs')}
+				</Box>
+			),
+			action: handleRefreshLogs,
+			disabled: isLoading,
 		},
 	};
 	return <Menu small={false} alignSelf='flex-end' options={menuOptions} {...props} />;
