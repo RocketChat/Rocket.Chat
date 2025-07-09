@@ -176,6 +176,7 @@ const statisticsEndpoints = API.v1.get(
 						items: {
 							type: 'object',
 							properties: {
+								id: { type: 'string' },
 								type: { type: 'string' },
 								count: { type: 'number' },
 								alias: { type: 'string' },
@@ -1245,6 +1246,7 @@ const statisticsListEndpoints = API.v1.get(
 									items: {
 										type: 'object',
 										properties: {
+											id: { type: 'string' },
 											type: { type: 'string' },
 											count: { type: 'number' },
 											alias: { type: 'string' },
