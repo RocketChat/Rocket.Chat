@@ -60,7 +60,7 @@ const ResetPasswordPage = (): ReactElement => {
 		}
 	}, []);
 
-	const handleResetPassword = async ({ password }: { password: string }) => {
+	const handleResetPassword = async ({ password }: { password: string }): Promise<void> => {
 		try {
 			if (token) {
 				const result = await resetPassword(token, password);

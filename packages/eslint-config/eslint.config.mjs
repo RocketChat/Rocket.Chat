@@ -8,6 +8,12 @@ export default tseslint.config(
 	js.configs.recommended,
 	tseslint.configs.recommendedTypeChecked,
 	{
+		/** @type {import('./src/typegen').RuleOptions} */
+		rules: {
+			'@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }],
+		},
+	},
+	{
 		languageOptions: {
 			parserOptions: { projectService: true },
 		},

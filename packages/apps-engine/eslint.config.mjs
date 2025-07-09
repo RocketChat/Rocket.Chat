@@ -8,6 +8,9 @@ export default base(
 	{
 		rules: {
 			'import-x/order': 'off',
+			'import-x/namespace': 'off',
+			'prefer-const': 'off',
+			'no-prototype-builtins': 'off',
 		},
 	},
 );

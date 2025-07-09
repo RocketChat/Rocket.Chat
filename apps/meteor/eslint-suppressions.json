@@ -1,0 +1,1143 @@
+{
+  "app/2fa/server/MethodInvocationOverride.js": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/2fa/server/loginHandler.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/api/server/ApiClass.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 1
+    }
+  },
+  "app/api/server/ApiClass.ts": {
+    "import-x/no-unresolved": {
+      "count": 2
+    }
+  },
+  "app/api/server/definition.ts": {
+    "@stylistic/operator-linebreak": {
+      "count": 1
+    }
+  },
+  "app/api/server/v1/integrations.ts": {
+    "no-case-declarations": {
+      "count": 2
+    }
+  },
+  "app/api/server/v1/misc.ts": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "app/api/server/v1/users.ts": {
+    "no-unsafe-optional-chaining": {
+      "count": 1
+    }
+  },
+  "app/apps/server/bridges/listeners.js": {
+    "no-case-declarations": {
+      "count": 11
+    }
+  },
+  "app/authorization/client/hasPermission.ts": {
+    "import-x/namespace": {
+      "count": 1
+    }
+  },
+  "app/authorization/server/functions/getUsersInRole.ts": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "app/autotranslate/server/functions/saveSettings.ts": {
+    "no-case-declarations": {
+      "count": 3
+    }
+  },
+  "app/custom-oauth/client/CustomOAuth.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/custom-oauth/server/custom_oauth_server.js": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/federation/server/endpoints/dispatch.js": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "app/file-upload/server/config/Webdav.ts": {
+    "no-async-promise-executor": {
+      "count": 1
+    }
+  },
+  "app/file-upload/server/lib/FileUpload.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    },
+    "prettier/prettier": {
+      "count": 1
+    }
+  },
+  "app/file/server/file.server.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/google-oauth/server/index.js": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/iframe-login/server/iframe_server.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/importer-csv/server/CsvImporter.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/importer-omnichannel-contacts/server/ContactImporter.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/importer-slack-users/server/SlackUsersImporter.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/integrations/server/api/api.ts": {
+    "no-constant-binary-expression": {
+      "count": 1
+    }
+  },
+  "app/integrations/server/lib/isolated-vm/buildSandbox.ts": {
+    "no-async-promise-executor": {
+      "count": 1
+    }
+  },
+  "app/integrations/server/lib/triggerHandler.ts": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "app/integrations/server/lib/validateOutgoingIntegration.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/integrations/server/methods/incoming/addIncomingIntegration.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/integrations/server/methods/incoming/updateIncomingIntegration.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/irc/server/irc-bridge/index.js": {
+    "import-x/namespace": {
+      "count": 5
+    }
+  },
+  "app/lib/client/OAuthProxy.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/lib/server/functions/deleteUser.ts": {
+    "no-case-declarations": {
+      "count": 2
+    }
+  },
+  "app/lib/server/lib/RateLimiter.js": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/lib/server/oauth/facebook.js": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/lib/server/oauth/google.js": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/lib/server/oauth/proxy.js": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/lib/server/startup/rateLimiter.js": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/livechat/server/lib/contacts/resolveContactConflicts.spec.ts": {
+    "jest/no-identical-title": {
+      "count": 3
+    },
+    "mocha/no-identical-title": {
+      "count": 3
+    },
+    "mocha/no-nested-tests": {
+      "count": 2
+    }
+  },
+  "app/meteor-accounts-saml/server/listener.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/metrics/server/lib/collectMetrics.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/notifications/server/lib/Notifications.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/otr/client/OTRRoom.ts": {
+    "no-case-declarations": {
+      "count": 3
+    }
+  },
+  "app/ui-master/server/index.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/ui-master/server/inject.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "app/utils/client/lib/SDKClient.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "client/NavBarV2/NavBarSearch/hooks/useSearchItems.ts": {
+    "no-unsafe-optional-chaining": {
+      "count": 1
+    }
+  },
+  "client/components/CustomScrollbars/BaseScrollbars.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/components/FeaturePreviewSidePanelNavigation.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/components/ImageGallery/ImageGallery.tsx": {
+    "no-unsafe-optional-chaining": {
+      "count": 1
+    }
+  },
+  "client/components/InfoPanel/RetentionPolicyCallout.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "client/components/MarkdownText.spec.tsx": {
+    "jest/no-conditional-expect": {
+      "count": 15
+    }
+  },
+  "client/components/MarkdownText.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/components/Omnichannel/OmnichannelSortingDisclaimer.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/components/Omnichannel/hooks/useAgentsList.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 3
+    }
+  },
+  "client/components/Omnichannel/hooks/useAvailableAgentsList.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 1
+    }
+  },
+  "client/components/Omnichannel/hooks/useDepartmentsList.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 6
+    }
+  },
+  "client/components/Omnichannel/hooks/useMonitorsList.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 1
+    }
+  },
+  "client/components/Omnichannel/hooks/useTagsList.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 1
+    }
+  },
+  "client/components/Omnichannel/hooks/useUnitsList.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 1
+    }
+  },
+  "client/components/Omnichannel/modals/ForwardChatModal.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/components/Page/Page.stories.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/components/PageSkeleton.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/components/RoomIcon/OmnichannelRoomIcon/index.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/components/RoomIcon/index.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/components/Sidebar/SidebarItemsAssembler.tsx": {
+    "react/prop-types": {
+      "count": 13
+    }
+  },
+  "client/components/TwoFactorModal/TwoFactorModal.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/components/UserAutoCompleteMultiple/UserAutoCompleteMultipleOption.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/components/UserAutoCompleteMultiple/UserAutoCompleteMultipleOptions.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/components/UserCard/UserCardRole.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/components/connectionStatus/ConnectionStatusBar.stories.tsx": {
+    "react/display-name": {
+      "count": 1
+    }
+  },
+  "client/components/dashboards/getClosedPeriod.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 4
+    }
+  },
+  "client/components/message/content/attachments/default/hooks/usePerformActionMutation.ts": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "client/components/message/content/attachments/structure/AttachmentBlock.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/components/message/content/urlPreviews/UrlVideoPreview.tsx": {
+    "react/no-unescaped-entities": {
+      "count": 1
+    }
+  },
+  "client/hooks/roomActions/useContactProfileRoomAction.ts": {
+    "@stylistic/array-bracket-spacing": {
+      "count": 1
+    }
+  },
+  "client/lib/cachedCollections/LocalCollection.spec.ts": {
+    "jest/no-done-callback": {
+      "count": 3
+    },
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "client/lib/convertTimeUnit.spec.ts": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "client/lib/download.spec.ts": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "client/lib/federation/Federation.spec.ts": {
+    "jest/no-identical-title": {
+      "count": 3
+    },
+    "mocha/max-top-level-suites": {
+      "count": 1
+    },
+    "mocha/no-identical-title": {
+      "count": 3
+    }
+  },
+  "client/lib/getUserDisplayName.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 2
+    }
+  },
+  "client/lib/parseMessageTextToAstMarkdown.spec.ts": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "client/lib/userData.ts": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "client/lib/userStatuses.ts": {
+    "@stylistic/generator-star-spacing": {
+      "count": 2
+    }
+  },
+  "client/lib/utils/fireGlobalEventBase.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 2
+    }
+  },
+  "client/lib/utils/waitForElement.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 2
+    }
+  },
+  "client/lib/wrapRequestCredentialFn.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "client/main.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "client/meteorOverrides/ddpOverREST.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "client/meteorOverrides/login/facebook.ts": {
+    "import-x/no-unresolved": {
+      "count": 2
+    }
+  },
+  "client/meteorOverrides/login/github.ts": {
+    "import-x/no-unresolved": {
+      "count": 2
+    }
+  },
+  "client/meteorOverrides/login/google.ts": {
+    "import-x/no-unresolved": {
+      "count": 2
+    }
+  },
+  "client/meteorOverrides/login/meteorDeveloperAccount.ts": {
+    "import-x/no-unresolved": {
+      "count": 2
+    }
+  },
+  "client/meteorOverrides/login/oauth.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "client/meteorOverrides/login/twitter.ts": {
+    "import-x/no-unresolved": {
+      "count": 2
+    }
+  },
+  "client/meteorOverrides/oauthRedirectUri.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "client/omnichannel/additionalForms/MaxChatsPerAgentDisplay.tsx": {
+    "react/prop-types": {
+      "count": 1
+    }
+  },
+  "client/omnichannel/cannedResponses/contextualBar/CannedResponse/CannedResponse.tsx": {
+    "react/no-unescaped-entities": {
+      "count": 2
+    }
+  },
+  "client/omnichannel/cannedResponses/contextualBar/CannedResponse/Item.tsx": {
+    "react/no-unescaped-entities": {
+      "count": 2
+    }
+  },
+  "client/omnichannel/priorities/PriorityIcon.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/polyfills/customEventPolyfill.ts": {
+    "@stylistic/type-generic-spacing": {
+      "count": 1
+    }
+  },
+  "client/providers/AppsProvider/AppsProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/AttachmentProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/AuthenticationProvider/AuthenticationProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/AuthorizationProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/AvatarUrlProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/ConnectionStatusProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/CustomSoundProvider/CustomSoundProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/DeviceProvider/DeviceProvider.tsx": {
+    "no-constant-binary-expression": {
+      "count": 1
+    }
+  },
+  "client/providers/LayoutProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/OmnichannelProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/RouterProvider.tsx": {
+    "import-x/no-unresolved": {
+      "count": 1
+    },
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/ServerProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/SessionProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/SettingsProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/ToastMessagesProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 2
+    }
+  },
+  "client/providers/TranslationProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 2
+    }
+  },
+  "client/providers/UserProvider/UserProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/providers/VideoConfProvider.tsx": {
+    "react/prop-types": {
+      "count": 5
+    }
+  },
+  "client/sidebar/header/MatrixFederationSearch/FederatedRoomListErrorBoundary.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/sidebar/search/SearchList.tsx": {
+    "no-unsafe-optional-chaining": {
+      "count": 1
+    }
+  },
+  "client/sidebarv2/RoomList/SidebarItemTemplateWithData.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/sidebarv2/header/MatrixFederationSearch/FederatedRoomListErrorBoundary.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/sidebarv2/hooks/useRoomList.spec.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/startup/audit.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/startup/startup.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "client/stories/contexts/ModalContextMock.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/stories/contexts/RouterContextMock.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/stories/contexts/ServerContextMock.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/stories/contexts/TranslationContextMock.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/customUserStatus/CustomUserStatusDisabledModal.tsx": {
+    "react/no-children-prop": {
+      "count": 2
+    }
+  },
+  "client/views/admin/engagementDashboard/EngagementDashboardCardErrorBoundary.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/engagementDashboard/EngagementDashboardPage.stories.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/engagementDashboard/channels/ChannelsTab.stories.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/engagementDashboard/dataView/LegendSymbol.stories.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/engagementDashboard/messages/MessagesTab.stories.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/engagementDashboard/messages/useMessagesSent.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 2
+    }
+  },
+  "client/views/admin/engagementDashboard/users/UsersTab.stories.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/engagementDashboard/users/useHourlyChatActivity.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 2
+    }
+  },
+  "client/views/admin/engagementDashboard/users/useNewUsers.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 2
+    }
+  },
+  "client/views/admin/invites/InvitesPage.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/permissions/helpers/mapPermissionKeys.spec.ts": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "client/views/admin/settings/Setting/inputs/TimespanSettingInput.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/views/admin/settings/SettingsGroupPage/SettingsGroupPage.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/settings/SettingsSection/SettingsSection.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/admin/settings/groups/LDAPGroupPage.tsx": {
+    "react/no-children-prop": {
+      "count": 3
+    }
+  },
+  "client/views/admin/users/voip/AssignExtensionModal.spec.tsx": {
+    "jest/no-identical-title": {
+      "count": 1
+    }
+  },
+  "client/views/admin/users/voip/RemoveExtensionModal.spec.tsx": {
+    "jest/no-identical-title": {
+      "count": 1
+    }
+  },
+  "client/views/admin/workspace/VersionCard/getVersionStatus.spec.ts": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "client/views/admin/workspace/VersionCard/modals/RegisterWorkspaceTokenModal.tsx": {
+    "react/no-unescaped-entities": {
+      "count": 2
+    }
+  },
+  "client/views/audit/components/forms/DateRangePicker.tsx": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "client/views/banners/BannerRegion.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "client/views/composer/EmojiPicker/EmojiCategoryRow.tsx": {
+    "@stylistic/array-bracket-spacing": {
+      "count": 1
+    }
+  },
+  "client/views/directory/tabs/users/UsersTable/UsersTable.tsx": {
+    "react/prop-types": {
+      "count": 1
+    }
+  },
+  "client/views/home/cards/AddUsersCard.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/home/cards/CreateChannelsCard.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/home/cards/DesktopAppsCard.tsx": {
+    "react/no-children-prop": {
+      "count": 3
+    }
+  },
+  "client/views/home/cards/DocumentationCard.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/home/cards/JoinRoomsCard.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/home/cards/MobileAppsCard.tsx": {
+    "react/no-children-prop": {
+      "count": 2
+    }
+  },
+  "client/views/marketplace/AppsPage/NoInstalledAppMatchesEmptyState.tsx": {
+    "react/no-unescaped-entities": {
+      "count": 2
+    }
+  },
+  "client/views/marketplace/AppsPage/NoMarketplaceOrInstalledAppMatchesEmptyState.tsx": {
+    "react/no-unescaped-entities": {
+      "count": 2
+    }
+  },
+  "client/views/modal/uikit/ModalBlock.tsx": {
+    "no-case-declarations": {
+      "count": 3
+    }
+  },
+  "client/views/omnichannel/agents/AgentInfo.tsx": {
+    "no-unsafe-optional-chaining": {
+      "count": 1
+    }
+  },
+  "client/views/omnichannel/directory/providers/ChatsProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/omnichannel/triggers/EditTrigger.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/views/room/BubbleDate/index.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/views/room/Header/Omnichannel/QuickActions/hooks/useQuickActions.tsx": {
+    "no-case-declarations": {
+      "count": 2
+    }
+  },
+  "client/views/room/HeaderV2/Omnichannel/QuickActions/hooks/useQuickActions.tsx": {
+    "no-case-declarations": {
+      "count": 2
+    }
+  },
+  "client/views/room/MessageList/MessageListErrorBoundary.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/room/MessageList/contexts/MessageHighlightContext.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/views/room/MessageList/hooks/useKatex.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 4
+    }
+  },
+  "client/views/room/MessageList/lib/autoTranslate.spec.ts": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "client/views/room/MessageList/lib/isMessageNewDay.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 4
+    }
+  },
+  "client/views/room/MessageList/lib/isMessageSequential.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 12
+    }
+  },
+  "client/views/room/MessageList/lib/isOwnUserMessage.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 3
+    }
+  },
+  "client/views/room/MessageList/lib/isParsedMessage.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 2
+    }
+  },
+  "client/views/room/body/RetentionPolicyWarning.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "client/views/room/contextualBar/Discussions/components/DiscussionsListItem.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "client/views/room/contextualBar/PruneMessages/PruneMessagesWithData.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/views/room/contextualBar/RoomMembers/RoomMembersItem.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "client/views/room/hooks/useAppsContextualBar.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 2
+    }
+  },
+  "client/views/room/hooks/useRetentionPolicy.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 4
+    }
+  },
+  "client/views/room/hooks/useToggleFavoriteMutation.spec.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/room/lib/getRoomGroup.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 3
+    }
+  },
+  "client/views/room/modals/FileUploadModal/FilePreview.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/views/room/providers/ComposerPopupProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/room/providers/DateListProvider.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 2
+    }
+  },
+  "client/views/room/providers/SelectedMessagesProvider.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    }
+  },
+  "client/views/room/webdav/WebdavFilePickerModal/lib/getNodeIconType.spec.ts": {
+    "mocha/no-global-tests": {
+      "count": 2
+    }
+  },
+  "client/views/root/MainLayout/AuthenticationCheck.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "client/views/root/MainLayout/LoginPage.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "ee/app/api-enterprise/server/voip-freeswitch.ts": {
+    "no-case-declarations": {
+      "count": 5
+    }
+  },
+  "ee/app/authorization/server/validateUserRoles.spec.ts": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "ee/app/license/server/canEnableApp.ts": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "ee/server/apps/storage/AppGridFSSourceStorage.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "lib/oauthRedirectUriServer.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "server/configuration/cas.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "server/lib/dataExport/makeZipFile.ts": {
+    "no-async-promise-executor": {
+      "count": 1
+    }
+  },
+  "server/lib/http/call.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "server/modules/notifications/notifications.module.ts": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "server/modules/watchers/watchers.module.ts": {
+    "no-case-declarations": {
+      "count": 1
+    }
+  },
+  "server/routes/avatar/middlewares/browserVersion.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "server/routes/avatar/room.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "server/routes/avatar/utils.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "server/routes/userDataDownload.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "server/services/federation/infrastructure/matrix/Bridge.ts": {
+    "no-async-promise-executor": {
+      "count": 1
+    }
+  },
+  "server/services/image/service.ts": {
+    "no-constant-binary-expression": {
+      "count": 1
+    }
+  },
+  "server/services/meteor/service.ts": {
+    "no-case-declarations": {
+      "count": 2
+    }
+  },
+  "server/ufs/ufs-gridfs.ts": {
+    "import-x/no-unresolved": {
+      "count": 1
+    }
+  },
+  "server/ufs/ufs-methods.ts": {
+    "no-async-promise-executor": {
+      "count": 1
+    }
+  },
+  "tests/mocks/client/FakeChatProvider.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "tests/mocks/client/ModalContextMock.tsx": {
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "tests/mocks/client/ServerProviderMock.tsx": {
+    "react-refresh/only-export-components": {
+      "count": 1
+    },
+    "react/no-children-prop": {
+      "count": 1
+    }
+  },
+  "tests/unit/app/custom-oauth/server/transform_helpers.tests.js": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "tests/unit/app/lib/server/functions/setUsername.spec.ts": {
+    "jest/no-identical-title": {
+      "count": 1
+    },
+    "mocha/no-identical-title": {
+      "count": 1
+    }
+  },
+  "tests/unit/app/markdown/client.tests.js": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "tests/unit/app/mentions/client.tests.js": {
+    "mocha/max-top-level-suites": {
+      "count": 1
+    }
+  },
+  "tests/unit/app/settings/server/functions/settings.tests.ts": {
+    "no-async-promise-executor": {
+      "count": 2
+    }
+  },
+  "tests/unit/app/utils/lib/getURL.tests.js": {
+    "mocha/no-identical-title": {
+      "count": 3
+    }
+  },
+  "tests/unit/definition/rest/v1/teams/TeamsRemoveMemberProps.spec.ts": {
+    "jest/no-identical-title": {
+      "count": 1
+    },
+    "mocha/no-identical-title": {
+      "count": 1
+    }
+  },
+  "tests/unit/server/federation/application/room/message/sender/MessageServiceSender.spec.ts": {
+    "jest/no-identical-title": {
+      "count": 1
+    },
+    "mocha/no-identical-title": {
+      "count": 1
+    }
+  }
+}

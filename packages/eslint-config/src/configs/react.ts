@@ -1,12 +1,11 @@
-import tseslint, { type ConfigWithExtends } from 'typescript-eslint';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import testingLibrary from 'eslint-plugin-testing-library';
-import storybook from 'eslint-plugin-storybook';
+
 import globals from 'globals';
-import type { FlatConfig } from '@typescript-eslint/utils/ts-eslint';
+import type { Linter } from 'eslint';
 
 const configs = {
 	'testing-library': {
@@ -58,71 +57,25 @@ const configs = {
 			},
 		},
 	},
-} satisfies Record<string, ConfigWithExtends>;
+} satisfies Record<string, Linter.Config>;
 
-function react({ languageOptions, ...config }: ConfigWithExtends = {}): FlatConfig.ConfigArray {
-	return tseslint.config(
-		{
-			name: 'react',
-			plugins: {
-				react: reactPlugin,
-			},
-			languageOptions: {
-				parserOptions: {
-					ecmaFeatures: {
-						jsx: true,
-					},
-					jsxPragma: null,
-				},
-			},
-			rules: {
-				...reactPlugin.configs.flat.recommended.rules,
-				...reactPlugin.configs.flat['jsx-runtime'].rules,
-				'react/no-unescaped-entities': 'warn',
-				'react/no-children-prop': 'warn',
-				'react/prop-types': 'warn',
-				'react/display-name': 'warn',
-				'react/jsx-curly-brace-presence': 'warn',
-				'react/jsx-fragments': ['warn', 'syntax'],
-				'react/jsx-key': ['warn', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
-				'react/jsx-no-undef': 'warn',
-				'react/jsx-uses-vars': 'warn',
-				'react/jsx-no-target-blank': 'warn',
-				'react/no-multi-comp': 'warn',
-				'react/no-direct-mutation-state': 'warn',
-				'react/no-unknown-property': 'warn',
-			},
-		},
+type ReactRules = {
+	[Key in keyof (typeof reactPlugin)['rules'] as `react/${Key}`]?: Linter.RuleEntry<unknown[]>;
+};
+
+export default function react(config: Linter.Config<ReactRules> = {}): Linter.Config[] {
+	return [
+		reactPlugin.configs.flat['recommended']!,
+		reactPlugin.configs.flat['jsx-runtime']!,
 		reactHooks.configs['recommended-latest'],
-		{
-			rules: {
-				'react-hooks/exhaustive-deps': 'warn',
-				'react-hooks/rules-of-hooks': 'warn',
-			},
-		},
 		reactRefresh.configs.recommended,
-		{
-			rules: {
-				'react-refresh/only-export-components': 'warn',
-			},
-		},
-
-		(storybook as unknown as (typeof import('eslint-plugin-storybook/'))['default']).configs['flat/recommended'],
-		{
-			rules: {
-				'storybook/no-renderer-packages': 'warn',
-			},
-		},
 		configs['jsx-a11y'],
 		configs['testing-library'],
 		{
 			languageOptions: {
 				globals: globals.browser,
-				...languageOptions,
 			},
 		},
 		config,
-	);
+	];
 }
-
-export default react;

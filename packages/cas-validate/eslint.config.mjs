@@ -1,3 +1,8 @@
+// @ts-check
 import { base, jest } from '@rocket.chat/eslint-config';
 
-export default base(jest());
+export default base(jest(), {
+	rules: {
+		'no-case-declarations': 'off',
+	},
+});

@@ -1,13 +1,9 @@
 import mochaPlugin from 'eslint-plugin-mocha';
 import globals from 'globals';
-import type { ConfigWithExtends } from 'typescript-eslint';
-import rules from '../rules/mocha.js';
-import type { MergeRules } from '../types/rules.js';
-import type { Config } from '../types/config.js';
+import type { Linter } from 'eslint';
+import { getRules } from './helpers/plugin.js';
 
-type Rules = MergeRules<[typeof rules.all, typeof rules.recommended]>;
-
-export default function mocha(config: Config<Rules> = {}): ConfigWithExtends {
+export default function mocha(config: Linter.Config = {}): Linter.Config {
 	return {
 		name: 'mocha',
 		files: config.files ?? [
@@ -25,8 +21,7 @@ export default function mocha(config: Config<Rules> = {}): ConfigWithExtends {
 			globals: config.languageOptions?.globals ?? globals.mocha,
 		},
 		rules: {
-			...rules.recommended,
-			'@typescript-eslint/no-unused-expressions': 'off',
+			...getRules(mochaPlugin, 'recommended'),
 			...config.rules,
 		},
 	};

@@ -1,14 +1,9 @@
 import type { Linter } from 'eslint';
 import jestPlugin from 'eslint-plugin-jest';
 import globals from 'globals';
-import type { ConfigWithExtends } from 'typescript-eslint';
-import rules from '../rules/jest.js';
-import type { MergeRules } from '../types/rules.js';
-import type { Config } from '../types/config.js';
 import { readConfig } from 'jest-config';
-type Rules = MergeRules<[typeof rules.recommended, typeof rules.style]>;
 
-async function jest(config: Config<Rules> = {}): Promise<Linter.Config & ConfigWithExtends> {
+async function jest(config: Linter.Config = {}): Promise<Linter.Config> {
 	const jestConfig = await readConfig(
 		{
 			$0: 'yarn jest',
@@ -23,8 +18,7 @@ async function jest(config: Config<Rules> = {}): Promise<Linter.Config & ConfigW
 		files: config.files,
 		plugins: { jest: jestPlugin },
 		rules: {
-			...rules.recommended,
-			...rules.style,
+			...jestPlugin.configs['flat/recommended'].rules,
 			...config.rules,
 		},
 		languageOptions: {

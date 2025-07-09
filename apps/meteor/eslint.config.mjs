@@ -5,10 +5,17 @@ export default base(
 	{
 		ignores: ['packages/**/*', 'definition/**/*', '.scripts/**/*', 'imports/**/*'],
 	},
-	jest(),
+	jest({
+		rules: {
+			'jest/valid-title': 'warn',
+		},
+	}),
 	mocha({
 		rules: {
-			'mocha/no-mocha-arrows': 'off', // Allow arrow functions in tests
+			'mocha/no-mocha-arrows': 'warn',
+			'mocha/consistent-spacing-between-blocks': 'warn',
+			'mocha/no-sibling-hooks': 'warn',
+			'mocha/no-setup-in-describe': 'warn',
 		},
 	}),
 	react({
