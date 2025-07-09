@@ -70,10 +70,6 @@ export type AppsEndpoints = {
 		}>;
 	};
 
-	'/apps/logs/instanceIds': {
-		GET: () => { success: boolean; instanceIds: string[] };
-	};
-
 	'/apps/public/:appId/get-sidebar-icon': {
 		GET: (params: { icon: string }) => unknown;
 	};
@@ -108,6 +104,10 @@ export type AppsEndpoints = {
 		GET: (params: Omit<AppLogsProps, 'appId'>) => PaginatedResult<{
 			logs: ILogItem[];
 		}>;
+	};
+
+	'/apps/:id/logs/distinctValues': {
+		GET: () => { success: boolean; instanceIds: string[]; methods: string[] };
 	};
 
 	'/apps/:id/apis': {

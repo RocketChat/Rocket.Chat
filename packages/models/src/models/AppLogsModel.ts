@@ -38,18 +38,22 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 				},
 				name: 'general_logs_index_v2',
 			},
-			// Index for distinct instanceId values
-			{
-				key: {
-					instanceId: 1,
-				},
-				name: 'distinct_instanceId',
-			},
 		];
 	}
 
-	distinctInstanceIds(): Promise<string[]> {
-		return this.col.distinct('instanceId');
+	async getDistinctFieldsForFilters(appId: string): Promise<{ instanceIds: string[]; methods: string[] }> {
+		/**
+		 * The following aggregation uses the 'appId_indexed_query_v2' index to retrieve the distinct values
+		 * The execution is fully covered by the index, meaning the database should not need to scan any documents.
+		 */
+		const [{ instanceIds, methods }] = await this.col
+			.aggregate([
+				{ $match: { appId } },
+				{ $group: { _id: null, instanceIds: { $addToSet: '$instanceId' }, methods: { $addToSet: '$method' } } },
+			])
+			.toArray();
+
+		return { instanceIds, methods };
 	}
 
 	remove(query: Filter<any>): Promise<DeleteResult> {

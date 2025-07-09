@@ -25,8 +25,8 @@ export class AppRealLogStorage extends AppLogStorage {
 		};
 	}
 
-	async distinctInstanceIds(): Promise<string[]> {
-		return this.db.distinctInstanceIds();
+	async distinctValues(appId: string) {
+		return this.db.getDistinctFieldsForFilters(appId);
 	}
 
 	async storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry> {

@@ -5,5 +5,5 @@ import type { IBaseModel } from './IBaseModel';
 // TODO: type for AppLogs
 export interface IAppLogsModel extends IBaseModel<any> {
 	remove(query: Filter<any>): Promise<DeleteResult>;
-	distinctInstanceIds(): Promise<string[]>;
+	getDistinctFieldsForFilters(appId: string): Promise<{ instanceIds: string[]; methods: string[] }>;
 }
