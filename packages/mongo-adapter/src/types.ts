@@ -54,7 +54,7 @@ export type FieldExpression<T> = {
 	$near?: unknown;
 	$nearSphere?: unknown;
 	$all?: T[];
-	$elemMatch?: T extends Record<string, unknown> ? Query<T> : FieldExpression<T>;
+	$elemMatch?: T extends Record<string, unknown> ? Filter<T> : FieldExpression<T>;
 	$size?: number;
 	$bitsAllClear?: unknown;
 	$bitsAllSet?: unknown;
@@ -65,14 +65,14 @@ export type FieldExpression<T> = {
 
 type Flatten<T> = T extends unknown[] ? T[0] : T;
 
-export type Query<T> = {
+export type Filter<T> = {
 	[P in keyof T]?: Flatten<T[P]> | RegExp | FieldExpression<Flatten<T[P]>>;
 } & {
 	[P in keyof T as P extends string ? `${P}.${Extract<keyof T[P], string>}` : never]?: Flatten<T[P]> | RegExp | FieldExpression<unknown>;
 } & {
-	$or?: Query<T>[];
-	$and?: Query<T>[];
-	$nor?: Query<T>[];
+	$or?: Filter<T>[];
+	$and?: Filter<T>[];
+	$nor?: Filter<T>[];
 };
 
 export type Sort =

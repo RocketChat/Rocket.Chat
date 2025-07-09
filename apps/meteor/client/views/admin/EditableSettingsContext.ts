@@ -1,5 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
-import { createFilterFromQuery } from '@rocket.chat/mongo-adapter';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { createContext, useContext } from 'react';
 import { create, type StoreApi, type UseBoundStore } from 'zustand';
 import { useShallow } from 'zustand/shallow';
@@ -41,7 +41,7 @@ export const performSettingQuery = (
 	}
 
 	const queries = [].concat(typeof query === 'string' ? JSON.parse(query) : query);
-	return queries.every((query) => settings.some(createFilterFromQuery(query)));
+	return queries.every((query) => settings.some(createPredicateFromFilter(query)));
 };
 
 type EditableSettingsContextQuery =

@@ -7,7 +7,6 @@ import { LayoutContext, useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import { Suspense, useMemo } from 'react';
 
-import { ContextualbarDialog } from '../../../components/Contextualbar';
 import HeaderSkeleton from '../Header/HeaderSkeleton';
 import HeaderSkeletonV2 from '../HeaderV2/HeaderSkeleton';
 
@@ -81,11 +80,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 						</Box>
 						{footer && <Suspense fallback={null}>{footer}</Suspense>}
 					</Box>
-					{aside && (
-						<ContextualbarDialog position={contextualbarPosition}>
-							<Suspense fallback={null}>{aside}</Suspense>
-						</ContextualbarDialog>
-					)}
+					{aside && <Suspense fallback={null}>{aside}</Suspense>}
 				</Box>
 			</Box>
 		</LayoutContext.Provider>
