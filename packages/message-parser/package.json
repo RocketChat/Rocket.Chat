@@ -19,9 +19,11 @@
   "main": "messageParser.js",
   "exports": {
     ".": {
+      "types": "./index.d.ts",
       "default": "./messageParser.js"
     },
     "./index": {
+      "types": "./index.d.ts",
       "default": "./messageParser.js"
     }
   },

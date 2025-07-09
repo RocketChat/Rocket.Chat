@@ -3,14 +3,7 @@ import type {
 	IOutboundMessageProviders,
 	IOutboundPhoneMessageProvider,
 } from '@rocket.chat/apps-engine/definition/outboundComunication';
-import type { ValidOutboundProvider, IOutboundProvider } from '@rocket.chat/core-typings';
-
-interface IOutboundMessageProvider {
-	registerPhoneProvider(provider: IOutboundPhoneMessageProvider): void;
-	registerEmailProvider(provider: IOutboundEmailMessageProvider): void;
-	getOutboundMessageProviders(type?: ValidOutboundProvider): IOutboundProvider[];
-	unregisterProvider(appId: string, providerType: string): void;
-}
+import type { ValidOutboundProvider, IOutboundProvider, IOutboundMessageProvider } from '@rocket.chat/core-typings';
 
 export class OutboundMessageProvider implements IOutboundMessageProvider {
 	private readonly outboundMessageProviders: Map<ValidOutboundProvider, IOutboundMessageProviders[]>;
