@@ -1045,12 +1045,14 @@ const statisticsEndpoints = API.v1.get(
 	},
 	async function action() {
 		const { refresh = 'false' } = this.queryParams;
-		return API.v1.success(
-			await getLastStatistics({
-				userId: this.userId,
-				refresh: refresh === 'true',
-			}),
-		);
+		const statistics = await getLastStatistics({
+			userId: this.userId,
+			refresh: refresh === 'true',
+		});
+		console.log(`refresh : ${refresh}`);
+		console.log(`omnichannelSources : ${JSON.stringify(statistics.omnichannelSources)}`);
+		console.log(`BusinessHours : ${JSON.stringify(statistics.BusinessHours)}`);
+		return API.v1.success(statistics);
 	},
 );
 
