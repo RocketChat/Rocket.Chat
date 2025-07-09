@@ -74,8 +74,9 @@ export const useHandleUnread = (
 			return;
 		}
 		setMessageJumpQueryStringParameter(message?._id);
+		chat.readStateManager.markAsRead();
 		setUnreadCount(0);
-	}, [room._id, setUnreadCount, findFirstMessage, unread?.since]);
+	}, [room._id, setUnreadCount, findFirstMessage, unread?.since, chat.readStateManager]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
 		chat.readStateManager.markAsRead();
@@ -91,7 +92,8 @@ export const useHandleUnread = (
 		const count = filterMessages(
 			(record) =>
 				record.rid === room._id &&
-				record.ts.getTime() <= (lastMessageDate?.getTime() ?? Infinity) &&
+				!!lastMessageDate &&
+				record.ts.getTime() <= lastMessageDate?.getTime() &&
 				record.ts.getTime() > (subscription?.ls?.getTime() ?? -Infinity),
 		).length;
 
