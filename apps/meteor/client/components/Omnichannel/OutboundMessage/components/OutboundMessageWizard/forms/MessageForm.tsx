@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import type { TemplateParameters } from '../../../definitions/template';
 import TemplateEditor from '../../TemplateEditor';
 import TemplateSelect from '../../TemplateSelect';
+import { useFormKeyboardSubmit } from '../hooks/useFormKeyboardSubmit';
 import { FormFetchError } from '../utils/errors';
 
 export type MessageFormData = {
@@ -69,8 +70,10 @@ const MessageForm = (props: MessageFormProps) => {
 		return { templateId, templateParameters, template };
 	});
 
+	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
+
 	return (
-		<form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
+		<form ref={formRef} id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<Field>
 					<FieldLabel is='span' required id={`${messageFormId}-template`}>
