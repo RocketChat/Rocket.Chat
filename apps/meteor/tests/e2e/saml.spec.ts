@@ -90,6 +90,7 @@ test.describe('SAML', () => {
 	let targetInviteGroupName: string;
 	let inviteId: string;
 	let targetChannel: string;
+	let autoCreatedChannel: string;
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
@@ -155,6 +156,7 @@ test.describe('SAML', () => {
 	test.afterAll(async ({ api }) => {
 		expect((await api.post('/groups.delete', { roomId: targetInviteGroupId })).status()).toBe(200);
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
+		await api.post('/channels.delete', { roomName: autoCreatedChannel });
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -510,6 +512,8 @@ test.describe('SAML', () => {
 	});
 
 	test('Login - User with channels attribute', async ({ page, api }) => {
+		autoCreatedChannel = 'saml-channel-2';
+
 		await test.step('Configure SAML to enable channels attribute updates', async () => {
 			expect((await setSettingValueById(api, 'SAML_Custom_Default_channels_update', true)).status()).toBe(200);
 		});
@@ -526,25 +530,25 @@ test.describe('SAML', () => {
 			expect(user?.emails?.[0].address).toBe('samluser6@example.com');
 		});
 
-		await test.step('expect user to be subscribed to channels from SAML assertion', async () => {
-			// First get the user info to get the user ID
-			const user = await getUserInfo(api, 'samluser6');
-			expect(user).toBeDefined();
+		await test.step('expect auto-created channel to be created automatically', async () => {
+			const channelInfoResponse = await api.get(`/channels.info?roomName=${autoCreatedChannel}`);
+			expect(channelInfoResponse.status()).toBe(200);
+			const { channel } = await channelInfoResponse.json();
+			expect(channel.name).toBe(autoCreatedChannel);
+		});
 
-			const membershipCheckPromises = [targetChannel].map(async (channelName) => {
-				// Get channel info to get the room ID
-				const channelInfoResponse = await api.get(`/channels.info?roomName=${channelName}`);
-				expect(channelInfoResponse.status()).toBe(200);
-				const { channel } = await channelInfoResponse.json();
+		await test.step('expect user to be member of existing channel from SAML assertion', async () => {
+			const existingChannelMembersResponse = await api.get(`/channels.members?roomName=${targetChannel}`);
+			expect(existingChannelMembersResponse.status()).toBe(200);
+			const { members: existingMembers } = await existingChannelMembersResponse.json();
+			expect(existingMembers.some((member: { username: string }) => member.username === 'samluser6')).toBe(true);
+		});
 
-				// Check if user is a member of this channel
-				const membershipResponse = await api.get(`/rooms.isMember?roomId=${channel._id}&userId=${user?._id}`);
-				expect(membershipResponse.status()).toBe(200);
-				const { isMember } = await membershipResponse.json();
-
-				expect(isMember).toBe(true);
-			});
-			await Promise.all(membershipCheckPromises);
+		await test.step('expect user to be member of auto-created channel from SAML assertion', async () => {
+			const autoCreatedChannelMembersResponse = await api.get(`/channels.members?roomName=${autoCreatedChannel}`);
+			expect(autoCreatedChannelMembersResponse.status()).toBe(200);
+			const { members: autoCreatedMembers } = await autoCreatedChannelMembersResponse.json();
+			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser6')).toBe(true);
 		});
 	});
 
