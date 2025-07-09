@@ -1,28 +1,49 @@
+import type { IOutboundProvider } from '@rocket.chat/core-typings';
+import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+
 import { API } from '../../../../../app/api/server';
 import { isGETOutboundProviderParams } from '../outboundcomms/rest';
 import { outboundMessageProvider } from './lib/outbound';
+import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
 
-API.v1.addRoute(
+const outboundCommsEndpoints = API.v1.get(
 	'omnichannel/outbound/providers',
-	{ authRequired: true, validateParams: isGETOutboundProviderParams },
 	{
-		async get() {
-			const { type } = this.queryParams;
-
-			const providers = outboundMessageProvider.listOutboundProviders(type);
-			return API.v1.success({
-				providers,
-			});
+		response: {
+			200: ajv.compile<IOutboundProvider[]>({
+				providers: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							providerId: {
+								type: 'string',
+							},
+							providerName: {
+								type: 'string',
+							},
+							supportsTemplates: {
+								type: 'boolean',
+							},
+							providerType: {
+								type: 'string',
+							},
+						},
+					},
+				},
+			}),
 		},
+		query: isGETOutboundProviderParams,
+		authRequired: true,
+	},
+	async function action() {
+		const { type } = this.queryParams;
+
+		const providers = outboundMessageProvider.listOutboundProviders(type);
+		return API.v1.success({
+			providers,
+		});
 	},
 );
 
-API.v1.addRoute(
-	'omnichannel/outbound/providers/:id/metadata',
-	{ authRequired: true },
-	{
-		async get() {
-			return API.v1.success();
-		},
-	},
-);
+export type OutboundCommsEndpoints = ExtractRoutesFromAPI<typeof outboundCommsEndpoints>;
