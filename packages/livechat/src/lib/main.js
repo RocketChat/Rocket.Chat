@@ -36,7 +36,7 @@ export const updateBusinessUnit = async (newBusinessUnit) => {
 };
 
 export const loadConfig = async () => {
-	const { token, businessUnit = null, iframe: { guest: { department } = {} } = {} } = store.state;
+	const { token, businessUnit = null, iframe: { guest: { department } = {} } = {}, widgetId } = store.state;
 
 	Livechat.credentials.token = token;
 
@@ -51,6 +51,7 @@ export const loadConfig = async () => {
 		token,
 		...(businessUnit && { businessUnit }),
 		...(department && { department }),
+		widgetId
 	});
 
 	await store.setState({

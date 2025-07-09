@@ -47,7 +47,7 @@ const renderCustomFields = (customFields, { loading, handleFieldChange = () => {
 const validations = {
 	name: [Validations.nonEmpty],
 	email: [Validations.nonEmpty, Validations.email],
-	department: [],
+	// department: [], // Ultatel: We dont need department validation, as we removed department selection.
 };
 
 const getCustomValidations = ({ customFields = [] }) =>
@@ -173,9 +173,9 @@ class Register extends Component {
 
 		if (this.props.onSubmit) {
 			const values = Object.entries(this.state)
-				.filter(([, state]) => state !== null)
-				.map(([name, { value }]) => ({ [name]: value }))
-				.reduce((values, entry) => ({ ...values, ...entry }), {});
+			.filter(([, state]) => state !== null)
+			.map(([name, { value }]) => ({ [name]: value }))
+			.reduce((values, entry) => ({ ...values, ...entry }), {});
 			this.props.onSubmit(values);
 		}
 	};
@@ -215,8 +215,9 @@ class Register extends Component {
 								/>
 							</FormField>
 						) : null}
-
-						{department ? (
+						
+						{/* Ultatel: We wont need this departments drop down menu as each widget will have its own department.*/}
+						{/* {department ? (
 							<FormField label={t('i_need_help_with')} error={department.showError && department.error}>
 								<SelectInput
 									name='department'
@@ -227,7 +228,7 @@ class Register extends Component {
 									onInput={this.handleFieldChange}
 								/>
 							</FormField>
-						) : null}
+						) : null} */}
 
 						{customFields && renderCustomFields(customFields, { loading, handleFieldChange: this.handleFieldChange }, state, t)}
 

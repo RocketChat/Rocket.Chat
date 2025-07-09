@@ -118,7 +118,8 @@ class LeaveMessage extends Component {
 				</FormField>
 			) : null}
 
-			{department ? (
+			{/* Ultatel: We wont let the user choose a department even for offline forms. */}
+			{/* {department ? (
 				<FormField label={t('i_need_help_with')} error={department.showError && department.error}>
 					<SelectInput
 						name='department'
@@ -130,7 +131,7 @@ class LeaveMessage extends Component {
 						onInput={this.handleDepartmentChange}
 					/>
 				</FormField>
-			) : null}
+			) : null} */}
 
 			{message ? (
 				<FormField required label={t('message')} error={message.showError && message.error}>

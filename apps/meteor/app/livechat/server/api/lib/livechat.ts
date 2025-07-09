@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { HTTP } from 'meteor/http';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors } from '@rocket.chat/models';
@@ -132,21 +133,27 @@ export function normalizeHttpHeaderData(headers: Record<string, string | string[
 	return { httpHeaders };
 }
 
-export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
+export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}, widgetId: number): Promise<Record<string, string | number | any>> {
 	// Putting this ugly conversion while we type the livechat service
 	const initSettings = Livechat.getInitSettings() as unknown as Record<string, string | number | any>;
+	// Ultatel: Fetching external settings from HUB API.
+	const initExternalSettings = getHubConfig(widgetId);
+
 	const triggers = await findTriggers();
-	const departments = findDepartments(businessUnit);
+	// Ultatel: Map company department with rocketchat department.
+	const departments = await findDepartments(businessUnit);
+	const department = departments.find(dep => dep.name === initExternalSettings?.department) || departments[0];
+	const departmentsExternal = [department];
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
 	return {
 		enabled: initSettings.Livechat_enabled,
 		settings: {
-			registrationForm: initSettings.Livechat_registration_form,
+			registrationForm: initExternalSettings.registrationFormEnabled,
 			allowSwitchingDepartments: initSettings.Livechat_allow_switching_departments,
-			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
-			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
-			displayOfflineForm: initSettings.Livechat_display_offline_form,
+			nameFieldRegistrationForm: initExternalSettings.registrationFormShowNameField,
+			emailFieldRegistrationForm: initExternalSettings.registrationFormShowEmailField,
+			displayOfflineForm: initExternalSettings.omnichannelOfflineDisplayOfflineForm,
 			videoCall: initSettings.Omnichannel_call_provider === 'Jitsi',
 			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
 			language: initSettings.Language,
@@ -154,17 +161,17 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
-			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
+			agentHiddenInfo: initExternalSettings.omnichannelOnline_ShowAgentInformation === false,
 			clearLocalStorageWhenChatEnded: initSettings.Livechat_clear_local_storage_when_chat_ended,
 			limitTextLength:
-				initSettings.Livechat_enable_message_character_limit &&
-				(initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+				initExternalSettings.omnichannelOnlineMessageCharacterLimitEnabled &&
+				(initExternalSettings.omnichannelOnlineMessageCharacterLimit || initSettings.Message_MaxAllowedSize),
 		},
 		theme: {
-			title: initSettings.Livechat_title,
-			color: initSettings.Livechat_title_color,
-			offlineTitle: initSettings.Livechat_offline_title,
-			offlineColor: initSettings.Livechat_offline_title_color,
+			title: initExternalSettings.omnichannelOnlineTitle,
+			color: initExternalSettings.omnichannelOnlineTitleBarColor,
+			offlineTitle: initExternalSettings.omnichannelOfflineTitleOffline,
+			offlineColor: initExternalSettings.omnichannelOfflineTitleBarColorOffline,
 			actionLinks: {
 				webrtc: [
 					{
@@ -187,13 +194,13 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			},
 		},
 		messages: {
-			offlineMessage: initSettings.Livechat_offline_message,
+			offlineMessage: initExternalSettings.omnichannelOfflineOfflineMessage,
 			offlineSuccessMessage: initSettings.Livechat_offline_success_message,
-			offlineUnavailableMessage: initSettings.Livechat_offline_form_unavailable,
-			conversationFinishedMessage: initSettings.Livechat_conversation_finished_message,
-			conversationFinishedText: initSettings.Livechat_conversation_finished_text,
+			offlineUnavailableMessage: initExternalSettings.omnichannelOfflineOfflineFormUnavailableMessage,
+			conversationFinishedMessage: initExternalSettings.conversationFinishedConversationFinishedMessage,
+			conversationFinishedText: initExternalSettings.conversationFinishedConversationFinishedText,
 			transcriptMessage: initSettings.Livechat_transcript_message,
-			registrationFormMessage: initSettings.Livechat_registration_form_message,
+			registrationFormMessage: initExternalSettings.registrationFormRegistrationFormMessage,
 			dataProcessingConsentText: initSettings.Livechat_data_processing_consent_text,
 		},
 		survey: {
@@ -201,7 +208,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			values: ['1', '2', '3', '4', '5'],
 		},
 		triggers,
-		departments,
+		departments: departmentsExternal,
 		resources: {
 			sound,
 			emojis,
@@ -216,4 +223,14 @@ export async function getExtraConfigInfo(room: IOmnichannelRoom): Promise<any> {
 // TODO: please forgive me for this. Still finding the good types for these callbacks
 export function onCheckRoomParams(params: any): any {
 	return callbacks.run('livechat.onCheckRoomApiParams', params);
+}
+
+// External settings from HUB
+function getHubConfig(id: number) {
+	try {
+		const { data } = HTTP.get(`https://xvf309bg-52357.use.devtunnels.ms/api/livechat-widgets/config/${id}`);
+		return data;
+	} catch (err: any) {
+		console.error('Error fetching external config:', err.message);
+	}
 }

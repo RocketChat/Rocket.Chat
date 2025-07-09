@@ -5,6 +5,7 @@ import MinimizeIcon from '../../icons/arrowDown.svg';
 import RestoreIcon from '../../icons/arrowUp.svg';
 import NotificationsEnabledIcon from '../../icons/bell.svg';
 import NotificationsDisabledIcon from '../../icons/bellOff.svg';
+import FinishIcon from '../../icons/finish.svg';
 import OpenWindowIcon from '../../icons/newWindow.svg';
 import Alert from '../Alert';
 import { Avatar } from '../Avatar';
@@ -43,6 +44,7 @@ class ScreenHeader extends Component {
 		onMinimize,
 		onRestore,
 		onOpenWindow,
+		onFinishChat,
 		t,
 	}) => (
 		<Header
@@ -78,6 +80,14 @@ class ScreenHeader extends Component {
 			</Header.Content>
 			<Tooltip.Container>
 				<Header.Actions>
+					{/* Ultatel: Finish chat icon is moved here. */}
+					{onFinishChat && (
+						<Tooltip.Trigger content={t('finish_this_chat')}>
+							<Header.Action aria-label={t('finish_this_chat')} onClick={onFinishChat}>
+								<FinishIcon width={20} height={20}></FinishIcon>
+							</Header.Action>
+						</Tooltip.Trigger>
+					)}
 					<Tooltip.Trigger content={notificationsEnabled ? t('sound_is_on') : t('sound_is_off')}>
 						<Header.Action
 							aria-label={notificationsEnabled ? t('disable_notifications') : t('enable_notifications')}

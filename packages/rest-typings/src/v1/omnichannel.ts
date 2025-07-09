@@ -1504,6 +1504,7 @@ type GETLivechatConfigParams = {
 	token?: string;
 	department?: string;
 	businessUnit?: string;
+	widgetId: number;
 };
 
 const GETLivechatConfigParamsSchema = {
@@ -1520,6 +1521,10 @@ const GETLivechatConfigParamsSchema = {
 		businessUnit: {
 			type: 'string',
 			nullable: true,
+		},
+		widgetId: {
+			type: 'number',
+			nullable: false,
 		},
 	},
 	additionalProperties: false,

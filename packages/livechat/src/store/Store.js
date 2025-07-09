@@ -45,6 +45,7 @@ export default class Store {
 			sessionStorage.setItem('sessionId', sessionId);
 			const { openSessionIds = [] } = this._state;
 			this.setState({ openSessionIds: [sessionId, ...openSessionIds] });
+			this.setWidgetId();
 		});
 
 		window.addEventListener('visibilitychange', () => {
@@ -95,5 +96,12 @@ export default class Store {
 		}
 		this._state = { ...storedState, ...nonPeristable };
 		this.emit('change', [this._state, prevState]);
+	}
+
+	// Get widget ID from URL parameters
+	setWidgetId() {
+		const params = new URLSearchParams(window.location.search);
+		const id = params.get('id');
+		this.setState({ widgetId: id });
 	}
 }
