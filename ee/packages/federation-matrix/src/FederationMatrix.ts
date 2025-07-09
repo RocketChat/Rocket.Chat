@@ -8,6 +8,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
+import { getAllMatrixRoutes } from './api/api';
 import { registerEvents } from './events';
 import { setup } from './setupContainers';
 
@@ -62,7 +63,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	getAllRoutes() {
-		return [];
+		return getAllMatrixRoutes();
 	}
 
 	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<void> {
