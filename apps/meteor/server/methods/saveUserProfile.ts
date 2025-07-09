@@ -166,7 +166,7 @@ async function saveUserProfile(
 		throw new Error('Unexpected error after saving user profile: user not found');
 	}
 
-	void notifyOnUserChange({ clientAction: 'updated', id: updatedUser._id, diff: getUserInfo(updatedUser!) });
+	void notifyOnUserChange({ clientAction: 'updated', id: updatedUser._id, diff: getUserInfo(updatedUser) });
 
 	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
