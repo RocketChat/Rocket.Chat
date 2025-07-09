@@ -1,9 +1,10 @@
 import type { IOutboundProviderMetadata, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { forwardRef, useEffect, useId, useImperativeHandle, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useId, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -15,7 +16,6 @@ import AutoCompleteOutboundProvider from '../../AutoCompleteOutboundProvider';
 import RecipientSelect from '../../RecipientSelect';
 import SenderSelect from '../../SenderSelect';
 import RetryButton from '../components/RetryButton';
-import { createSubmitHandler } from '../utils/createSubmitHandler';
 import { cxp } from '../utils/cx';
 import { FormFetchError } from '../utils/errors';
 
@@ -35,17 +35,15 @@ export type RecipientFormSubmitPayload = {
 	sender: string;
 };
 
-export type RecipientFormRef = {
-	submit: () => Promise<RecipientFormSubmitPayload>;
-};
-
 type RecipientFormProps = {
 	defaultValues?: Partial<RecipientFormData>;
 	onDirty?(): void;
+	onSubmit(values: RecipientFormSubmitPayload): void;
+	renderActions?(state: { isSubmitting: boolean }): ReactNode;
 };
 
-const RecipientForm = forwardRef<RecipientFormRef, RecipientFormProps>((props, ref) => {
-	const { defaultValues, onDirty } = props;
+const RecipientForm = (props: RecipientFormProps) => {
+	const { defaultValues, renderActions, onDirty, onSubmit } = props;
 	const getTimeFromNow = useTimeFromNow(true);
 
 	const { trigger, control, handleSubmit, formState, clearErrors } = useForm<RecipientFormData>({
@@ -59,7 +57,7 @@ const RecipientForm = forwardRef<RecipientFormRef, RecipientFormProps>((props, r
 		},
 	});
 
-	const { errors, isDirty } = formState;
+	const { errors, isDirty, isSubmitting } = formState;
 
 	const recipientFormId = useId();
 
@@ -71,6 +69,8 @@ const RecipientForm = forwardRef<RecipientFormRef, RecipientFormProps>((props, r
 
 	const getContact = useEndpoint('GET', '/v1/omnichannel/contacts.get');
 	const getProvider = useEndpoint('GET', '/v1/omnichannel/outbound/providers/:id/metadata', { id: providerId });
+
+	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
 
 	const {
 		data: provider,
@@ -141,13 +141,11 @@ const RecipientForm = forwardRef<RecipientFormRef, RecipientFormProps>((props, r
 			throw new FormFetchError('error--provider-not-found');
 		}
 
-		return { ...values, provider: updatedProvider, contact: updatedContact };
+		onSubmit({ ...values, provider: updatedProvider, contact: updatedContact });
 	});
 
-	useImperativeHandle(ref, () => ({ submit: createSubmitHandler(submit, handleSubmit) }), [submit, handleSubmit]);
-
 	return (
-		<form id={recipientFormId}>
+		<form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<Field>
 					<FieldLabel is='span' required id={`${recipientFormId}-contact`}>
@@ -310,9 +308,17 @@ const RecipientForm = forwardRef<RecipientFormRef, RecipientFormProps>((props, r
 					)}
 				</Field>
 			</FieldGroup>
+
+			{customActions ?? (
+				<Box mbs={24} display='flex' justifyContent='end'>
+					<Button type='submit' primary loading={isSubmitting}>
+						{t('Submit')}
+					</Button>
+				</Box>
+			)}
 		</form>
 	);
-});
+};
 
 RecipientForm.displayName = 'RecipientForm';
 
