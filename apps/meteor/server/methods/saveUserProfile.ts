@@ -161,7 +161,15 @@ async function saveUserProfile(
 	// App IPostUserUpdated event hook
 	const updatedUser = await Users.findOneById(this.userId);
 
-	void notifyOnUserChange({ clientAction: 'updated', id: updatedUser!._id, diff: getUserInfo(updatedUser!) });
+	// This should never happen, but since `Users.findOneById` might return null, we'll handle it just in case
+	if (!updatedUser) {
+		throw new Error('Unexpected error after saving user profile: user not found');
+	}
+
+
+	void notifyOnUserChange({ clientAction: 'updated', id: updatedUser._id, diff: getUserInfo(updatedUser!) });
+
+
 
 	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
