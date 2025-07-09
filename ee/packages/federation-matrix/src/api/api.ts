@@ -9,23 +9,23 @@ import { getMatrixSendJoinRoutes } from './_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './_matrix/transactions';
 import { getFederationVersionsRoutes } from './_matrix/versions';
 
-const matrixRoutes = new Router('/_matrix');
-const wellknownRoutes = new Router('/.well-known');
+const matrix = new Router('/_matrix');
+const wellKnown = new Router('/.well-known');
 
 export const getAllMatrixRoutes = () => {
-	matrixRoutes
-		.use(getMatrixInviteRoutes(matrixRoutes))
-		.use(getMatrixProfilesRoutes(matrixRoutes))
-		.use(getMatrixRoomsRoutes(matrixRoutes))
-		.use(getMatrixSendJoinRoutes(matrixRoutes))
-		.use(getMatrixTransactionsRoutes(matrixRoutes))
-		.use(getFederationVersionsRoutes(matrixRoutes))
-		.use(getKeyServerRoutes(matrixRoutes));
+	matrix
+		.use(getMatrixInviteRoutes(matrix))
+		.use(getMatrixProfilesRoutes(matrix))
+		.use(getMatrixRoomsRoutes(matrix))
+		.use(getMatrixSendJoinRoutes(matrix))
+		.use(getMatrixTransactionsRoutes(matrix))
+		.use(getFederationVersionsRoutes(matrix))
+		.use(getKeyServerRoutes(matrix));
 
-	wellknownRoutes.use(getWellKnownRoutes(wellknownRoutes));
+	wellKnown.use(getWellKnownRoutes(wellKnown));
 
 	return {
-		matrix: matrixRoutes.router,
-		wellKnown: wellknownRoutes.router,
+		matrix,
+		wellKnown,
 	};
 };

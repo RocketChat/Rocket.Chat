@@ -14,7 +14,7 @@ export async function registerFederationRoutes(federationService: IFederationMat
 
 	try {
 		const routes = federationService.getAllRoutes();
-		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix).use(routes.wellKnown);
+		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix.router).use(routes.wellKnown.router);
 
 		logger.log('[Federation] Registered federation routes');
 	} catch (error) {
