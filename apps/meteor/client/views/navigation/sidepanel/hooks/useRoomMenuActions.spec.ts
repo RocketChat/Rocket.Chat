@@ -8,7 +8,7 @@ import { createFakeRoom, createFakeSubscription } from '../../../../../tests/moc
 const mockRoom = createFakeRoom({ _id: 'room1', t: 'c', name: 'room1', fname: 'Room 1' });
 const mockSubscription = createFakeSubscription({ name: 'room1', t: 'c', disableNotifications: false, rid: 'room1' });
 
-jest.mock('../../../client/lib/rooms/roomCoordinator', () => ({
+jest.mock('../../../../../client/lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
 		getRoomDirectives: () => ({
 			getUiText: () => 'leaveWarning',
@@ -16,14 +16,14 @@ jest.mock('../../../client/lib/rooms/roomCoordinator', () => ({
 	},
 }));
 
-jest.mock('../../../app/ui-utils/client', () => ({
+jest.mock('../../../../../app/ui-utils/client', () => ({
 	LegacyRoomManager: {
 		close: jest.fn(),
 	},
 }));
 
 // TODO: Update this mock when we get the mocked OmnichannelContext working
-jest.mock('../../omnichannel/hooks/useOmnichannelPrioritiesMenu', () => ({
+jest.mock('../../../../omnichannel/hooks/useOmnichannelPrioritiesMenu', () => ({
 	useOmnichannelPrioritiesMenu: jest.fn(() => [{ id: 'priority', content: 'Priority', icon: 'priority', onClick: jest.fn() }]),
 }));
 
