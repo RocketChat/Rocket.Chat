@@ -1059,7 +1059,7 @@ const statisticsEndpoints = API.v1.get(
 			refresh: refresh === 'true',
 		});
 		console.log(`refresh : ${refresh}`);
-		console.log(`statistics : ${JSON.stringify(statistics)}`);
+		console.log(`statistics : `, statistics);
 		return API.v1.success(statistics);
 	},
 );
