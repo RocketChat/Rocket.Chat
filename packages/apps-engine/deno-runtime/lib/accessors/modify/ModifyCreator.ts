@@ -28,6 +28,7 @@ import { UserBuilder } from '../builders/UserBuilder.ts';
 import { AppVideoConference, VideoConferenceBuilder } from '../builders/VideoConferenceBuilder.ts';
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 import { require } from '../../../lib/require.ts';
+import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
 
 const { UIHelper } = require('@rocket.chat/apps-engine/server/misc/UIHelper.js') as { UIHelper: typeof _UIHelper };
 const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
@@ -60,13 +61,7 @@ export class ModifyCreator implements IModifyCreator {
 						})
 							.then((response) => response.result)
 							.catch((err) => {
-								if (err instanceof Error) {
-									throw err;
-								}
-								if (err?.error?.message) {
-									throw new Error(err.error.message);
-								}
-								throw new Error(err.error);
+								throw formatErrorResponse(err);
 							});
 				},
 			},
@@ -77,21 +72,19 @@ export class ModifyCreator implements IModifyCreator {
 		return new Proxy(
 			{ __kind: 'getUploadCreator' },
 			{
-				get: (_target: unknown, prop: string) => (...params: unknown[]) =>
-					prop === 'toJSON' ? {} : this.senderFn({
-						method: `accessor:getModifier:getCreator:getUploadCreator:${prop}`,
-						params,
-					})
-						.then((response) => response.result)
-						.catch((err) => {
-							if (err instanceof Error) {
-								throw err;
-							}
-							if (err?.error?.message) {
-								throw new Error(err.error.message);
-							}
-							throw new Error(err.error);
-						}),
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getCreator:getUploadCreator:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
 			},
 		) as IUploadCreator;
 	}
@@ -100,21 +93,19 @@ export class ModifyCreator implements IModifyCreator {
 		return new Proxy(
 			{ __kind: 'getEmailCreator' },
 			{
-				get: (_target: unknown, prop: string) => (...params: unknown[]) =>
-					prop === 'toJSON' ? {} : this.senderFn({
-						method: `accessor:getModifier:getCreator:getEmailCreator:${prop}`,
-						params,
-					})
-						.then((response) => response.result)
-						.catch((err) => {
-							if (err instanceof Error) {
-								throw err;
-							}
-							if (err?.error?.message) {
-								throw new Error(err.error.message);
-							}
-							throw new Error(err.error);
-						}),
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getCreator:getEmailCreator:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
 			},
 		);
 	}
@@ -123,21 +114,19 @@ export class ModifyCreator implements IModifyCreator {
 		return new Proxy(
 			{ __kind: 'getContactCreator' },
 			{
-				get: (_target: unknown, prop: string) => (...params: unknown[]) =>
-					prop === 'toJSON' ? {} : this.senderFn({
-						method: `accessor:getModifier:getCreator:getContactCreator:${prop}`,
-						params,
-					})
-						.then((response) => response.result)
-						.catch((err) => {
-							if (err instanceof Error) {
-								throw err;
-							}
-							if (err?.error?.message) {
-								throw new Error(err.error.message);
-							}
-							throw new Error(err.error);
-						}),
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getCreator:getContactCreator:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
 			},
 		);
 	}
@@ -236,6 +225,8 @@ export class ModifyCreator implements IModifyCreator {
 			const response = await this.senderFn({
 				method: 'bridges:getUserBridge:doGetAppUser',
 				params: ['APP_ID'],
+			}).catch((err) => {
+				throw formatErrorResponse(err);
 			});
 
 			const appUser = response.result;
@@ -255,6 +246,8 @@ export class ModifyCreator implements IModifyCreator {
 		const response = await this.senderFn({
 			method: 'bridges:getMessageBridge:doCreate',
 			params: [result, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 
 		return String(response.result);
@@ -277,6 +270,8 @@ export class ModifyCreator implements IModifyCreator {
 		const response = await this.senderFn({
 			method: 'bridges:getLivechatBridge:doCreateMessage',
 			params: [result, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 
 		return String(response.result);
@@ -311,6 +306,8 @@ export class ModifyCreator implements IModifyCreator {
 		const response = await this.senderFn({
 			method: 'bridges:getRoomBridge:doCreate',
 			params: [result, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 
 		return String(response.result);
@@ -339,6 +336,8 @@ export class ModifyCreator implements IModifyCreator {
 		const response = await this.senderFn({
 			method: 'bridges:getRoomBridge:doCreateDiscussion',
 			params: [room, builder.getParentMessage(), builder.getReply(), builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 
 		return String(response.result);
@@ -362,6 +361,8 @@ export class ModifyCreator implements IModifyCreator {
 		const response = await this.senderFn({
 			method: 'bridges:getVideoConferenceBridge:doCreate',
 			params: [videoConference, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 
 		return String(response.result);
@@ -373,6 +374,8 @@ export class ModifyCreator implements IModifyCreator {
 		const response = await this.senderFn({
 			method: 'bridges:getUserBridge:doCreate',
 			params: [user, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 
 		return String(response.result);
