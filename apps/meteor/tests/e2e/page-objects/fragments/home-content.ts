@@ -161,7 +161,7 @@ export class HomeContent {
 	}
 
 	get btnCancelQuotePreview(): Locator {
-		return this.page.getByRole('button').locator('.rcx-icon--name-cross');
+		return this.page.getByRole('button', { name: 'Dismiss quoted message' });
 	}
 
 	get descriptionInput(): Locator {
