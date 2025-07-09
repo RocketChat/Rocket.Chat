@@ -8,14 +8,12 @@ import { expect, test } from './utils/test';
 test.use({ storageState: Users.admin.state });
 test.describe.serial('Quote Messages', () => {
 	let poHomeChannel: HomeChannel;
-	// let poHomeDiscussion: HomeDiscussion;
 	let targetChannel: string;
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		// poHomeDiscussion = new HomeDiscussion(page);
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
@@ -28,17 +26,9 @@ test.describe.serial('Quote Messages', () => {
 		const messageText = faker.lorem.sentence();
 		const quoteText = faker.lorem.sentence();
 
-		await test.step('Send initial message', async () => {
+		await test.step('Send initial message and quote it', async () => {
 			await poHomeChannel.content.sendMessage(messageText);
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
-		});
-
-		await test.step('Quote the message', async () => {
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.btnQuoteMessage.click();
-			await expect(poHomeChannel.content.quotePreview).toBeVisible();
-			await expect(poHomeChannel.content.quotePreview).toContainText(messageText);
-			await poHomeChannel.content.sendMessage(quoteText);
+			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
 		await test.step('Verify quoted message appears', async () => {
@@ -56,10 +46,7 @@ test.describe.serial('Quote Messages', () => {
 
 		await test.step('Send initial message and quote it', async () => {
 			await poHomeChannel.content.sendMessage(messageText);
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.btnQuoteMessage.click();
-			await poHomeChannel.content.sendMessage(quoteText);
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(quoteText);
+			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
 		await test.step('Edit the quoted message', async () => {
@@ -82,17 +69,11 @@ test.describe.serial('Quote Messages', () => {
 
 		await test.step('Send initial message and quote it', async () => {
 			await poHomeChannel.content.sendMessage(messageText);
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.btnQuoteMessage.click();
-			await poHomeChannel.content.sendMessage(quoteText);
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(quoteText);
+			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
 		await test.step('Delete the quoted message', async () => {
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.openLastMessageMenu();
-			await poHomeChannel.content.btnOptionDeleteMessage.click();
-			await poHomeChannel.content.btnModalConfirmDelete.click();
+			await poHomeChannel.content.deleteLastMessage();
 		});
 
 		await test.step('Verify message is deleted', async () => {
@@ -104,15 +85,9 @@ test.describe.serial('Quote Messages', () => {
 		const messageText = faker.lorem.sentence();
 		const quoteText = 'Quote with emoji :smile:';
 
-		await test.step('Send initial message', async () => {
+		await test.step('Send initial message and quote it with emoji', async () => {
 			await poHomeChannel.content.sendMessage(messageText);
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
-		});
-
-		await test.step('Quote the message with emoji', async () => {
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.btnQuoteMessage.click();
-			await poHomeChannel.content.sendMessage(quoteText);
+			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
 		await test.step('Verify quoted message with emoji appears', async () => {
@@ -126,15 +101,9 @@ test.describe.serial('Quote Messages', () => {
 		const messageText = faker.lorem.sentence();
 		const quoteText = '*Bold* and _italics_ text';
 
-		await test.step('Send initial message', async () => {
+		await test.step('Send initial message and quote it with markdown formatting', async () => {
 			await poHomeChannel.content.sendMessage(messageText);
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
-		});
-
-		await test.step('Quote the message with markdown', async () => {
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.btnQuoteMessage.click();
-			await poHomeChannel.content.sendMessage(quoteText);
+			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
 		await test.step('Verify quoted message with markdown appears', async () => {
@@ -149,15 +118,9 @@ test.describe.serial('Quote Messages', () => {
 		const messageText = faker.lorem.sentence();
 		const quoteText = '```javascript\nconsole.log("Hello World");\n```';
 
-		await test.step('Send initial message', async () => {
+		await test.step('Send initial message and quote it with code block', async () => {
 			await poHomeChannel.content.sendMessage(messageText);
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
-		});
-
-		await test.step('Quote the message with code block', async () => {
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.btnQuoteMessage.click();
-			await poHomeChannel.content.sendMessage(quoteText);
+			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
 		await test.step('Verify quoted message with code block appears', async () => {
@@ -175,7 +138,7 @@ test.describe.serial('Quote Messages', () => {
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
 		});
 
-		await test.step('Start quote and cancel', async () => {
+		await test.step('cancel quote', async () => {
 			await poHomeChannel.content.lastUserMessage.hover();
 			await poHomeChannel.content.btnQuoteMessage.click();
 			await expect(poHomeChannel.content.quotePreview).toBeVisible();
@@ -190,24 +153,15 @@ test.describe.serial('Quote Messages', () => {
 	test('should quote message in Direct Message', async () => {
 		const messageText = faker.lorem.sentence();
 		const quoteText = faker.lorem.sentence();
-		const dmUserName = 'user1';
 
 		await test.step('Open DM with user', async () => {
-			await poHomeChannel.sidenav.openChat(dmUserName);
-			await expect(poHomeChannel.content.channelHeader).toContainText(dmUserName);
+			await poHomeChannel.sidenav.openChat(Users.user1.data.username);
+			await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
 		});
 
-		await test.step('Send message in DM', async () => {
+		await test.step('Send initial message and quote it', async () => {
 			await poHomeChannel.content.sendMessage(messageText);
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
-		});
-
-		await test.step('Quote message in DM', async () => {
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.btnQuoteMessage.click();
-			await expect(poHomeChannel.content.quotePreview).toBeVisible();
-			await expect(poHomeChannel.content.quotePreview).toContainText(messageText);
-			await poHomeChannel.content.sendMessage(quoteText);
+			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
 		await test.step('Verify quoted message appears in DM', async () => {
@@ -240,11 +194,7 @@ test.describe.serial('Quote Messages', () => {
 		});
 
 		await test.step('Quote message in discussion', async () => {
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.btnQuoteMessage.click();
-			await expect(poHomeChannel.content.quotePreview).toBeVisible();
-			await expect(poHomeChannel.content.quotePreview).toContainText(discussionMessage);
-			await poHomeChannel.content.sendMessage(quoteText);
+			await poHomeChannel.content.quoteMessage(quoteText, discussionMessage);
 		});
 
 		await test.step('Verify quoted message appears in discussion', async () => {
@@ -259,10 +209,9 @@ test.describe.serial('Quote Messages', () => {
 		const messageText = faker.lorem.sentence();
 		const threadMessage = faker.lorem.sentence();
 		const quoteText = faker.lorem.sentence();
-		const dmUserName = 'user1';
 
 		await test.step('Open DM and create thread', async () => {
-			await poHomeChannel.sidenav.openChat(dmUserName);
+			await poHomeChannel.sidenav.openChat(Users.user1.data.username);
 			await poHomeChannel.content.sendMessage(messageText);
 			await poHomeChannel.content.openReplyInThread();
 			await expect(page).toHaveURL(/.*thread/);

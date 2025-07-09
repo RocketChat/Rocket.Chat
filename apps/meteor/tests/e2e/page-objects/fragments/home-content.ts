@@ -534,6 +534,13 @@ export class HomeContent {
 		await this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
 	}
 
+	async deleteLastMessage(): Promise<void> {
+		await this.lastUserMessage.hover();
+		await this.openLastMessageMenu();
+		await this.btnOptionDeleteMessage.click();
+		await this.btnModalConfirmDelete.click();
+	}
+
 	get btnClearSelection() {
 		return this.page.getByRole('button', { name: 'Clear selection' });
 	}
@@ -556,5 +563,15 @@ export class HomeContent {
 
 	get btnOptionStartDiscussion(): Locator {
 		return this.page.getByRole('menuitem', { name: 'Start a Discussion' });
+	}
+
+	async quoteMessage(quoteText: string, originalMessageText?: string): Promise<void> {
+		await this.lastUserMessage.hover();
+		await this.btnQuoteMessage.click();
+		if (originalMessageText) {
+			await expect(this.quotePreview).toBeVisible();
+			await expect(this.quotePreview).toContainText(originalMessageText);
+		}
+		await this.sendMessage(quoteText);
 	}
 }
