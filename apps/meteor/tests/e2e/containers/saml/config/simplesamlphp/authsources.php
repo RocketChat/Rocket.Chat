@@ -51,5 +51,12 @@ $config = array(
 			'email' => 'samluser6@example.com',
 			'channels' => array('saml-channel-1', 'saml-channel-2'),
 		),
+		'samluser7:password' => array(
+			'uid' => array('7'),
+			'username' => 'samluser7',
+			'displayName' => 'Saml User 7 Display Name',
+			'eduPersonAffiliation' => array('group7'),
+			'email' => 'samluser7@example.com',
+		),
 	),
 );

@@ -127,6 +127,7 @@ export const Users = {
 	samluser4: generateContext('samluser4'),
 	samluser5: generateContext('samluser5'),
 	samluser6: generateContext('samluser6'),
+	samluser7: generateContext('samluser7'),
 	userForSamlMerge: generateContext('user_for_saml_merge'),
 	userForSamlMerge2: generateContext('user_for_saml_merge2'),
 	admin: generateContext('rocketchat.internal.admin.test'),
