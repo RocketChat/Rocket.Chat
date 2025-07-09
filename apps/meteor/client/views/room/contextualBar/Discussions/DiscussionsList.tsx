@@ -16,6 +16,7 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarTitle,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
@@ -55,7 +56,7 @@ function DiscussionsList({
 	});
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='discussion' />
 				<ContextualbarTitle>{t('Discussions')}</ContextualbarTitle>
@@ -104,7 +105,7 @@ function DiscussionsList({
 					)}
 				</Box>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 }
 

@@ -68,7 +68,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			},
 			{ key: { 'livechatData.$**': 1 } },
-			{ key: { pdfTranscriptRequested: 1 }, sparse: true },
+			// TODO: Remove index on next major
+			// { key: { pdfTranscriptRequested: 1 }, sparse: true },
 			{ key: { pdfTranscriptFileId: 1 }, sparse: true }, // used on statistics
 			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
 			{ key: { priorityId: 1 }, sparse: true },
@@ -1577,30 +1578,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		]);
 	}
 
-	// These 3 methods shouldn't be here :( but current EE model has a meteor dependency
-	// And refactoring it could take time
-	setTranscriptRequestedPdfById(rid: string) {
-		return this.updateOne(
-			{
-				_id: rid,
-			},
-			{
-				$set: { pdfTranscriptRequested: true },
-			},
-		);
-	}
-
-	unsetTranscriptRequestedPdfById(rid: string) {
-		return this.updateOne(
-			{
-				_id: rid,
-			},
-			{
-				$unset: { pdfTranscriptRequested: 1 },
-			},
-		);
-	}
-
 	setPdfTranscriptFileIdById(rid: string, fileId: string) {
 		return this.updateOne(
 			{
@@ -2705,10 +2682,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	countRoomsWithSla(): Promise<number> {
-		throw new Error('Method not implemented.');
-	}
-
-	countRoomsWithPdfTranscriptRequested(): Promise<number> {
 		throw new Error('Method not implemented.');
 	}
 

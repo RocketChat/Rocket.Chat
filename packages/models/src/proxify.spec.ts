@@ -18,7 +18,7 @@ describe('non lazy proxify', () => {
 	});
 	it('should throw an error if the model is not found', () => {
 		const collectionMocked = proxify('collection-not-found') as MockedModel;
-		expect(() => collectionMocked.method()).toThrowError('Model collection-not-found not found');
+		expect(() => collectionMocked.method()).toThrow('Model collection-not-found not found');
 	});
 
 	it('should return a proxified property', () => {
@@ -42,7 +42,7 @@ describe('non lazy proxify', () => {
 		registerModel<any>('collection-prop', collection);
 		expect(() => {
 			collectionMocked.prop = 'new value';
-		}).toThrowError('Models accessed via proxify are read-only, use the model instance directly to modify it.');
+		}).toThrow('Models accessed via proxify are read-only, use the model instance directly to modify it.');
 	});
 });
 
@@ -62,7 +62,7 @@ describe('lazy proxify', () => {
 
 	it('should throw an error if the model is not found', () => {
 		const collectionMocked = proxify('collection-not-found') as MockedModel;
-		expect(() => collectionMocked.method()).toThrowError('Model collection-not-found not found');
+		expect(() => collectionMocked.method()).toThrow('Model collection-not-found not found');
 	});
 
 	it('should return a proxified property', () => {
@@ -86,6 +86,6 @@ describe('lazy proxify', () => {
 		registerModel<any>('collection-prop', () => collection);
 		expect(() => {
 			collectionMocked.prop = 'new value';
-		}).toThrowError('Models accessed via proxify are read-only, use the model instance directly to modify it.');
+		}).toThrow('Models accessed via proxify are read-only, use the model instance directly to modify it.');
 	});
 });

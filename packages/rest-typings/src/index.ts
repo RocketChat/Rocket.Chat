@@ -13,7 +13,6 @@ import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CommandsEndpoints } from './v1/commands';
-import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
@@ -50,7 +49,6 @@ import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
-import type { WebdavEndpoints } from './v1/webdav';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
@@ -91,10 +89,8 @@ export interface Endpoints
 		InvitesEndpoints,
 		E2eEndpoints,
 		AssetsEndpoints,
-		CustomSoundEndpoint,
 		EmailInboxEndpoints,
 		MailerEndpoints,
-		WebdavEndpoints,
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
@@ -217,6 +213,7 @@ export type UrlParams<T extends string> = string extends T
 
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
+export * from './apps';
 export * from './v1/permissions';
 export * from './v1/presence';
 export * from './v1/roles';
@@ -226,7 +223,6 @@ export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/channels';
 export * from './v1/customUserStatus';
-export * from './v1/customSounds';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/mailer';
 export * from './v1/mailer/MailerParamsPOST';

@@ -1,6 +1,7 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents, ILivechatAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { updateDepartmentAgents } from './Helper';
@@ -25,7 +26,7 @@ export async function saveDepartment(
 	departmentData: LivechatDepartmentDTO,
 	departmentAgents?: {
 		upsert?: { agentId: string; count?: number; order?: number }[];
-		remove?: { agentId: string; count?: number; order?: number };
+		remove?: { agentId: string; count?: number; order?: number }[];
 	},
 	departmentUnit?: { _id?: string },
 ) {
@@ -182,30 +183,13 @@ export async function unarchiveDepartment(_id: string) {
 export async function saveDepartmentAgents(
 	_id: string,
 	departmentAgents: {
-		upsert?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order' | 'username'>[];
-		remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
+		upsert?: (Pick<ILivechatDepartmentAgents, 'agentId' | 'username'> & {
+			count?: number;
+			order?: number;
+		})[];
+		remove?: Pick<ILivechatDepartmentAgents, 'agentId' | 'username'>[];
 	},
 ) {
-	check(_id, String);
-	check(departmentAgents, {
-		upsert: Match.Maybe([
-			Match.ObjectIncluding({
-				agentId: String,
-				username: String,
-				count: Match.Maybe(Match.Integer),
-				order: Match.Maybe(Match.Integer),
-			}),
-		]),
-		remove: Match.Maybe([
-			Match.ObjectIncluding({
-				agentId: String,
-				username: Match.Maybe(String),
-				count: Match.Maybe(Match.Integer),
-				order: Match.Maybe(Match.Integer),
-			}),
-		]),
-	});
-
 	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'enabled'>>(_id, { projection: { enabled: 1 } });
 	if (!department) {
 		throw new Meteor.Error('error-department-not-found', 'Department not found');

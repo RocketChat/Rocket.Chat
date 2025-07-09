@@ -63,9 +63,9 @@
   "API_Upper_Count_Limit_Description": "Qual é o número máximo de registos que a REST API deve retornar (quando não ilimitada)?",
   "API_User_Limit": "Limite de utilizadores para adicionar todos os utilizadores ao canal",
   "API_Wordpress_URL": "URL do WordPress",
-  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Um novo dono será atribuído automaticamente a  <span style=\"font-weight: bold;\">{{count}}</span> salas.",
-  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Um novo dono será atribuído automaticamente à sala <span style=\"font-weight: bold;\">{{roomName}}</span>.",
-  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Um novo dono será atribuído automaticamente a estas  <span style=\"font-weight: bold;\">{{count}}</span> salas:<br/> {{rooms}}.",
+  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Um novo dono será atribuído automaticamente a  <bold>{{count}}</bold> salas.",
+  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Um novo dono será atribuído automaticamente à sala <bold>{{roomName}}</bold>.",
+  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Um novo dono será atribuído automaticamente a estas  <bold>{{count}}</bold> salas:<br/> {{rooms}}.",
   "Accept": "Aceitar",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Aceitar pedidos de livechat mesmo se não houverem agentes online",
   "Accept_new_livechats_when_agent_is_idle": "Aceitar novas solicitações de chat ao vivo quando o agente estiver desocupado",
@@ -3173,7 +3173,7 @@
   "your_message": "sua mensagem",
   "your_message_optional": "sua mensagem (opcional)",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} salas vazias serão removidas automáticamente.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} salas vazias serão removidas automáticamente:<br/> {{rooms}}.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> salas vazias serão removidas automáticamente:<br/> {{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} já não pertence a {{role}}, por {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} foi definido como {{role}} por {{user_by}}"
 }

@@ -37,7 +37,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { token } = this.urlParams;
-			const room = await findOpenRoom(token);
+			const room = await findOpenRoom(token, undefined, this.userId);
 			if (room) {
 				return API.v1.success();
 			}

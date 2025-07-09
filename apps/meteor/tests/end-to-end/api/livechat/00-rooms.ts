@@ -22,7 +22,12 @@ import type { SuccessResult } from '../../../../app/api/server/definition';
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
 import { apps, APP_URL } from '../../../data/apps/apps-data';
 import { createCustomField } from '../../../data/livechat/custom-fields';
-import { createDepartmentWithAnOfflineAgent, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
+import {
+	createDepartmentWithAnAwayAgent,
+	createDepartmentWithAnOfflineAgent,
+	createDepartmentWithAnOnlineAgent,
+	deleteDepartment,
+} from '../../../data/livechat/department';
 import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import {
 	createVisitor,
@@ -1197,6 +1202,88 @@ describe('LIVECHAT - rooms', () => {
 			await deleteDepartment(initialDepartment._id);
 			await deleteDepartment(forwardToOfflineDepartment._id);
 		});
+
+		(IS_EE ? it : it.skip)(
+			'when manager forward to offline (agent away, accept when agent idle off) department the inquiry should be set to the queue',
+			async () => {
+				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+				await updateSetting('Livechat_enabled_when_agent_idle', false);
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({
+					allowReceiveForwardOffline: true,
+				});
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				const manager = await createUser();
+				const managerCredentials = await login(manager.username, password);
+				await createManager(manager.username);
+
+				await request.post(api('livechat/room.forward')).set(managerCredentials).send({
+					roomId: newRoom._id,
+					departmentId: forwardToOfflineDepartment._id,
+					clientAction: true,
+					comment: 'test comment',
+				});
+
+				await request
+					.get(api(`livechat/queue`))
+					.set(credentials)
+					.query({
+						count: 1,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.queue).to.be.an('array');
+						expect(res.body.queue[0].chats).not.to.undefined;
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					});
+
+				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(forwardToOfflineDepartment._id)]);
+			},
+		);
+
+		(IS_EE ? it : it.skip)(
+			'when manager forward to online (agent away, accept when agent idle on) department the inquiry should not be set to the queue',
+			async () => {
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+				await updateSetting('Livechat_enabled_when_agent_idle', true);
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment, agent } = await createDepartmentWithAnAwayAgent({
+					allowReceiveForwardOffline: true,
+				});
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				const manager = await createUser();
+				const managerCredentials = await login(manager.username, password);
+				await createManager(manager.username);
+
+				await request.post(api('livechat/room.forward')).set(managerCredentials).send({
+					roomId: newRoom._id,
+					departmentId: forwardToOfflineDepartment._id,
+					clientAction: true,
+					comment: 'test comment',
+				});
+
+				const roomInfo = await getLivechatRoomInfo(newRoom._id);
+
+				expect(roomInfo.servedBy).to.have.property('_id', agent.user._id);
+				expect(roomInfo.departmentId).to.be.equal(forwardToOfflineDepartment._id);
+
+				await Promise.all([
+					deleteDepartment(initialDepartment._id),
+					deleteDepartment(forwardToOfflineDepartment._id),
+					updateSetting('Livechat_enabled_when_agent_idle', false),
+				]);
+			},
+		);
 
 		(IS_EE ? it : it.skip)(
 			'should update inquiry last message when manager forward to offline department and the inquiry returns to queued',
@@ -2788,7 +2875,7 @@ describe('LIVECHAT - rooms', () => {
 
 			roomWithTranscriptGenerated = roomId;
 		});
-		it('should return immediately if transcript was already requested', async () => {
+		it('should return when transcript was already requested', async () => {
 			await request
 				.post(api(`omnichannel/${roomWithTranscriptGenerated}/request-transcript`))
 				.set(credentials)

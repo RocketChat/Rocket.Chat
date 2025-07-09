@@ -27,7 +27,7 @@ export const executeSetUserActiveStatus = async (
 		});
 	}
 
-	await setUserActiveStatus(userId, active, confirmRelinquish);
+	await setUserActiveStatus(userId, active, confirmRelinquish, fromUserId);
 
 	return true;
 };

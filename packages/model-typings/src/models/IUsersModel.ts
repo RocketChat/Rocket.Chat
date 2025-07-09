@@ -89,7 +89,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 
-	findLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
+	findActiveLDAPUsersExceptIds<T extends Document = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
 
 	findConnectedLDAPUsers<T extends Document = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 
@@ -304,8 +304,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setLivechatStatus(userId: string, status: ILivechatAgentStatus): Promise<UpdateResult>;
 	makeAgentUnavailableAndUnsetExtension(userId: string): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
-	closeOffice(): Promise<void>;
-	openOffice(): Promise<void>;
 	getAgentInfo(
 		agentId: IUser['_id'],
 		showAgentEmail?: boolean,
@@ -444,4 +442,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
 	findOneByIdAndRole(userId: IUser['_id'], role: string, options: FindOptions<IUser>): Promise<IUser | null>;
+	countActiveUsersInNonDMRoom(rid: string): Promise<number>;
+	countActiveUsersInDMRoom(rid: string): Promise<number>;
 }

@@ -43,7 +43,6 @@ declare module '@rocket.chat/model-typings' {
 		unsetPriorityByRoomId(roomId: string): Promise<UpdateResult>;
 		countPrioritizedRooms(): Promise<number>;
 		countRoomsWithSla(): Promise<number>;
-		countRoomsWithPdfTranscriptRequested(): Promise<number>;
 		countRoomsWithTranscriptSent(): Promise<number>;
 		getConversationsBySource(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult>;
 		getConversationsByStatus(start: Date, end: Date, extraQuery: Filter<IOmnichannelRoom>): AggregationCursor<ReportResult>;
@@ -87,10 +86,6 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 
 	countRoomsWithSla(): Promise<number> {
 		return this.countDocuments({ slaId: { $exists: true } });
-	}
-
-	countRoomsWithPdfTranscriptRequested(): Promise<number> {
-		return this.countDocuments({ pdfTranscriptRequested: true });
 	}
 
 	countRoomsWithTranscriptSent(): Promise<number> {

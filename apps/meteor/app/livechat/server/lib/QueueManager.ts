@@ -23,10 +23,10 @@ import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepare
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { checkOnlineForDepartment } from './departmentsLib';
+import { afterInquiryQueued, afterRoomQueued, beforeDelegateAgent, beforeRouteChat, onNewRoom } from './hooks';
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
-import { callbacks } from '../../../../lib/callbacks';
 import { client, shouldRetryTransaction } from '../../../../server/database/utils';
 import { sendNotification } from '../../../lib/server';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
@@ -42,13 +42,16 @@ export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 		return;
 	}
 
-	await callbacks.run('livechat.afterInquiryQueued', queuedInquiry);
+	// After inquiry queued does not modify the inquiry, its safe to return the return of queueInquiry
+	await afterInquiryQueued(queuedInquiry);
 
 	void notifyOnLivechatInquiryChanged(queuedInquiry, 'updated', {
 		status: LivechatInquiryStatus.QUEUED,
 		queuedAt: new Date(),
 		takenAt: undefined,
 	});
+
+	return queuedInquiry;
 };
 
 /**
@@ -98,7 +101,7 @@ export class QueueManager {
 
 		const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 		logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
-		const dbInquiry = await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
+		const dbInquiry = await beforeRouteChat(inquiry, inquiryAgent);
 
 		if (!dbInquiry) {
 			throw new Error('inquiry-not-found');
@@ -171,8 +174,7 @@ export class QueueManager {
 		}
 
 		if (inquiry.status === LivechatInquiryStatus.QUEUED) {
-			await callbacks.run('livechat.afterInquiryQueued', inquiry);
-			await callbacks.run('livechat.chatQueued', room);
+			await Promise.all([afterInquiryQueued(inquiry), afterRoomQueued(room)]);
 
 			if (defaultAgent) {
 				logger.debug(`Setting default agent for inquiry ${inquiry._id} to ${defaultAgent.username}`);
@@ -295,7 +297,7 @@ export class QueueManager {
 		);
 
 		const defaultAgent =
-			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
+			(await beforeDelegateAgent(agent, {
 				department: guest.department,
 			})) || undefined;
 
@@ -352,7 +354,7 @@ export class QueueManager {
 		// All the actions that happened inside createLivechatRoom are now outside this transaction
 		const { room, inquiry } = await this.startConversation(rid, insertionRoom, guest, roomInfo, defaultAgent, message, extraData);
 
-		await callbacks.run('livechat.newRoom', room);
+		await onNewRoom(room);
 		await Message.saveSystemMessageAndNotifyUser(
 			'livechat-started',
 			rid,
@@ -422,10 +424,14 @@ export class QueueManager {
 		};
 
 		let defaultAgent: SelectedAgent | undefined;
-		if (servedBy?.username && (await Users.findOneOnlineAgentByUserList(servedBy.username))) {
+		const isAgentAvailable = (username: string) =>
+			Users.findOneOnlineAgentByUserList(username, { projection: { _id: 1 } }, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+
+		if (servedBy?.username && (await isAgentAvailable(servedBy.username))) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 
+		// TODO: unarchive to return updated room
 		await LivechatRooms.unarchiveOneById(rid);
 		const room = await LivechatRooms.findOneById(rid);
 		if (!room) {

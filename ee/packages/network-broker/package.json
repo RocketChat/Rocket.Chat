@@ -1,18 +1,19 @@
 {
 	"name": "@rocket.chat/network-broker",
-	"version": "0.2.0-rc.6",
+	"version": "0.2.8",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/chai": "~4.3.20",
 		"@types/ejson": "^2.2.2",
-		"@types/node": "~22.14.0",
+		"@types/node": "~22.16.1",
 		"@types/sinon": "^10.0.20",
 		"chai": "^4.5.0",
 		"eslint": "~8.45.0",
-		"jest": "~29.7.0",
-		"sinon": "^19.0.2",
-		"typescript": "~5.7.2"
+		"jest": "~30.0.2",
+		"sinon": "^19.0.5",
+		"typescript": "~5.8.3"
 	},
 	"scripts": {
 		"lint": "eslint src",

@@ -16,7 +16,7 @@ const config = {
 	accessTokenParam: 'access_token',
 };
 
-const Dolphin = new CustomOAuth('dolphin', config);
+const Dolphin = CustomOAuth.configureOAuthService('dolphin', config);
 
 export const useDolphin = () => {
 	const enabled = useSetting('Accounts_OAuth_Dolphin');

@@ -31,13 +31,13 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 			pending: {
 				hasLoggedIn: false,
 				type: 'user',
+				status: 'active',
 			},
 			active: {
 				hasLoggedIn: true,
 				status: 'active',
 			},
 			deactivated: {
-				hasLoggedIn: true,
 				status: 'deactivated',
 			},
 		};
