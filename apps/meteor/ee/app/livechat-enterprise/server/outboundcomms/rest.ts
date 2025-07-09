@@ -1,14 +1,14 @@
 import type { IOutboundMessage } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-import type { OutboundCommsEndpoints } from '/ee/app/livechat-enterprise/server/api/outbound';
+import type { OutboundCommsEndpoints } from '../api/outbound';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OutboundCommsEndpoints {}
 }
 

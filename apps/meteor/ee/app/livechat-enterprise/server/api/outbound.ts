@@ -10,7 +10,7 @@ const outboundCommsEndpoints = API.v1.get(
 	'omnichannel/outbound/providers',
 	{
 		response: {
-			200: ajv.compile<IOutboundProvider[]>({
+			200: ajv.compile<{ providers: IOutboundProvider[] }>({
 				providers: {
 					type: 'array',
 					items: {
