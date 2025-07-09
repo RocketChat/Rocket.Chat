@@ -28,7 +28,7 @@ const errorResponse = ajv.compile({
 
 export const registerAppLogsDistinctInstanceHandler = ({ api, _orch }: AppsRestApi) =>
 	void api.get(
-		'logs/instanceIds',
+		':id/logs/instanceIds',
 		{
 			authRequired: true,
 			permissionsRequired: ['manage-apps'],
@@ -37,18 +37,19 @@ export const registerAppLogsDistinctInstanceHandler = ({ api, _orch }: AppsRestA
 					type: 'object',
 					properties: {
 						instanceIds: { type: 'array', items: { type: 'string' } },
+						methods: { type: 'array', items: { type: 'string' } },
 						success: { type: 'boolean' },
 					},
-					required: ['instanceIds', 'success'],
+					required: ['instanceIds', 'methods', 'success'],
 					additionalProperties: false,
 				}),
 				401: errorResponse,
 				403: errorResponse,
 			},
 		},
-		async () => {
-			const result = await _orch.getLogStorage().distinctInstanceIds();
+		async function action() {
+			const result = await _orch.getLogStorage().distinctValues(this.urlParams.id);
 
-			return api.success({ instanceIds: result });
+			return api.success(result);
 		},
 	);
