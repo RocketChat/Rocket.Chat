@@ -11,7 +11,6 @@ import { metricsMiddleware } from './middlewares/metrics';
 import { remoteAddressMiddleware } from './middlewares/remoteAddressMiddleware';
 import { tracerSpanMiddleware } from './middlewares/tracer';
 import { type APIActionHandler, RocketChatAPIRouter } from './router';
-import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
 
@@ -107,14 +106,6 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 });
 
 export const startRestAPI = () => {
-	// Register federation routes at root level if enabled and not running in MS mode
-	if (settings.get('Federation_Service_Enabled') && !isRunningMs()) {
-		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>)
-			.use(API._matrix.router)
-			.use(API.wellKnown.router)
-			.use(API.matrixInternal.router);
-	}
-
 	// Register main API routes under /api prefix
 	(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
 		API.api
