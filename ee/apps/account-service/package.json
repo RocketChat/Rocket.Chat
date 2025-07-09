@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/account-service",
 	"private": true,
-	"version": "0.4.25",
+	"version": "0.4.29",
 	"description": "Rocket.Chat Account service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -26,7 +26,7 @@
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.14.0",
+		"@types/node": "~22.16.1",
 		"bcrypt": "^5.1.1",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "patch:event-loop-stats@npm%3A1.4.1#~/.yarn/patches/event-loop-stats-npm-1.4.1-2e76123f7d.patch",

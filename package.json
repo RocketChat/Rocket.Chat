@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "7.8.0-develop",
+	"version": "7.8.0",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -21,8 +21,10 @@
 		"@changesets/cli": "^2.27.11",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
+		"@types/node": "~22.14.1",
 		"ts-node": "^10.9.2",
-		"turbo": "^2.5.3"
+		"turbo": "^2.5.4",
+		"typescript": "~5.8.3"
 	},
 	"workspaces": [
 		"apps/*",
@@ -42,11 +44,10 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
-		"yarn": "4.9.1",
-		"node": "22.14.0",
-		"npm": "Use yarn instead"
+		"yarn": "4.9.2",
+		"node": "22.16.0"
 	},
-	"packageManager": "yarn@4.9.1",
+	"packageManager": "yarn@4.9.2",
 	"houston": {
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
@@ -55,7 +56,7 @@
 		]
 	},
 	"volta": {
-		"node": "22.14.0",
+		"node": "22.16.0",
 		"yarn": "1.22.18"
 	},
 	"resolutions": {
