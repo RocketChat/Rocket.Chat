@@ -173,16 +173,18 @@ const statisticsEndpoints = API.v1.get(
 					pushQueue: { type: 'integer' },
 					omnichannelSources: {
 						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								id: { type: 'string' },
-								type: { type: 'string' },
-								count: { type: 'number' },
-								alias: { type: 'string' },
+						items: [
+							{
+								type: 'object',
+								properties: {
+									id: { type: 'string' },
+									type: { type: 'string' },
+									count: { type: 'number' },
+									alias: { type: 'string' },
+								},
+								additionalProperties: false,
 							},
-							additionalProperties: false,
-						},
+						],
 					},
 					omnichannelContactsBySource: {
 						type: 'object',
@@ -1243,16 +1245,18 @@ const statisticsListEndpoints = API.v1.get(
 								pushQueue: { type: 'integer' },
 								omnichannelSources: {
 									type: 'array',
-									items: {
-										type: 'object',
-										properties: {
-											id: { type: 'string' },
-											type: { type: 'string' },
-											count: { type: 'number' },
-											alias: { type: 'string' },
+									items: [
+										{
+											type: 'object',
+											properties: {
+												id: { type: 'string' },
+												type: { type: 'string' },
+												count: { type: 'number' },
+												alias: { type: 'string' },
+											},
+											additionalProperties: false,
 										},
-										additionalProperties: false,
-									},
+									],
 								},
 								omnichannelContactsBySource: {
 									type: 'object',
