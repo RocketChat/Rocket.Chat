@@ -175,9 +175,12 @@ const statisticsEndpoints = API.v1.get(
 						type: 'array',
 						items: {
 							type: 'object',
-							patternProperties: {
-								'^.*': { anyOf: [{ type: 'string' }, { type: 'number' }] },
+							properties: {
+								type: { type: 'string' },
+								count: { type: 'number' },
+								alias: { type: 'string' },
 							},
+							additionalProperties: false,
 						},
 					},
 					omnichannelContactsBySource: {
@@ -275,9 +278,12 @@ const statisticsEndpoints = API.v1.get(
 					emailInboxes: { type: 'integer' },
 					BusinessHours: {
 						type: 'object',
-						patternProperties: {
-							'^.*': { anyOf: [{ type: 'string' }, { type: 'number' }] },
+						properties: {
+							total: { type: 'number' },
+							strategy: { type: 'string' },
 						},
+						required: ['total', 'strategy'],
+						additionalProperties: false,
 					},
 					lastChattedAgentPreferred: { type: 'boolean' },
 					assignNewConversationsToContactManager: { type: 'boolean' },
@@ -1238,9 +1244,12 @@ const statisticsListEndpoints = API.v1.get(
 									type: 'array',
 									items: {
 										type: 'object',
-										patternProperties: {
-											'^.*': { anyOf: [{ type: 'string' }, { type: 'number' }] },
+										properties: {
+											type: { type: 'string' },
+											count: { type: 'number' },
+											alias: { type: 'string' },
 										},
+										additionalProperties: false,
 									},
 								},
 								omnichannelContactsBySource: {
@@ -1338,9 +1347,12 @@ const statisticsListEndpoints = API.v1.get(
 								emailInboxes: { type: 'integer' },
 								BusinessHours: {
 									type: 'object',
-									patternProperties: {
-										'^.*': { anyOf: [{ type: 'string' }, { type: 'number' }] },
+									properties: {
+										total: { type: 'number' },
+										strategy: { type: 'string' },
 									},
+									required: ['total', 'strategy'],
+									additionalProperties: false,
 								},
 								lastChattedAgentPreferred: { type: 'boolean' },
 								assignNewConversationsToContactManager: { type: 'boolean' },
