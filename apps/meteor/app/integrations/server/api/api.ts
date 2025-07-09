@@ -13,6 +13,7 @@ import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
 import { API, defaultRateLimiterOptions } from '../../../api/server/api';
 import type { FailureResult, PartialThis, SuccessResult, UnavailableResult } from '../../../api/server/definition';
+import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
@@ -115,7 +116,12 @@ async function removeIntegration(options: { target_url: string }, user: IUser): 
 
 async function executeIntegrationRest(
 	this: IntegrationThis,
-): Promise<SuccessResult<Record<string, string> | undefined | void> | FailureResult<string> | UnavailableResult<string>> {
+): Promise<
+	| SuccessResult<Record<string, string> | { responses: WebhookResponseItem[] } | undefined | void>
+	| FailureResult<string>
+	| FailureResult<{ responses: WebhookResponseItem[] }>
+	| UnavailableResult<string>
+> {
 	incomingLogger.info({ msg: 'Post integration:', integration: this.request.integration.name });
 	incomingLogger.debug({ urlParams: this.urlParams, bodyParams: this.bodyParams });
 
@@ -217,16 +223,23 @@ async function executeIntegrationRest(
 	bodyParams.bot = { i: this.request.integration._id };
 
 	try {
-		const message = await processWebhookMessage(bodyParams, this.user, defaultValues);
-		if (_.isEmpty(message)) {
+		const messageResponse = await processWebhookMessage(bodyParams, this.user, defaultValues);
+		if (_.isEmpty(messageResponse)) {
 			return API.v1.failure('unknown-error');
 		}
 
 		if (scriptResponse) {
 			incomingLogger.debug({ msg: 'response', response: scriptResponse });
+			return API.v1.success(scriptResponse);
 		}
-
-		return API.v1.success(scriptResponse);
+		if (bodyParams.separateResponse) {
+			const allFailed = messageResponse.every((response) => 'error' in response && response.error);
+			if (allFailed) {
+				return API.v1.failure({ responses: messageResponse });
+			}
+			return API.v1.success({ responses: messageResponse });
+		}
+		return API.v1.success();
 	} catch ({ error, message }: any) {
 		return API.v1.failure(error || message);
 	}
