@@ -9,7 +9,7 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:*",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@types/node": "~22.14.1",
+		"@types/node": "~22.16.1",
 		"babel-jest": "~30.0.2",
 		"eslint": "^9.30.1",
 		"jest": "~30.0.2",

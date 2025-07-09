@@ -58,7 +58,7 @@
     "@rocket.chat/prettier-config": "~0.31.25",
     "@rocket.chat/tsconfig": "workspace:*",
     "@types/jest": "~29.5.14",
-    "@types/node": "~22.14.1",
+    "@types/node": "~22.16.1",
     "babel-loader": "~9.2.1",
     "eslint": "^9.30.1",
     "jest": "~30.0.2",

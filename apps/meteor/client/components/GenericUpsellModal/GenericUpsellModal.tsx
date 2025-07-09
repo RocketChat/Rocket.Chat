@@ -7,11 +7,26 @@ type GenericUpsellModalProps = Omit<ComponentProps<typeof GenericModal>, 'varian
 	subtitle?: string | ReactElement;
 	description?: string | ReactElement;
 	img: ComponentProps<typeof Modal.HeroImage>['src'];
+
+	imgWidth?: ComponentProps<typeof Modal.HeroImage>['width'];
+	imgHeight?: ComponentProps<typeof Modal.HeroImage>['height'];
+	imgAlt?: string;
 	onClose: () => void;
 	onConfirm?: () => void;
 };
 
-const GenericUpsellModal = ({ tagline, subtitle, img, description, confirmText, icon = null, ...props }: GenericUpsellModalProps) => {
+const GenericUpsellModal = ({
+	tagline,
+	subtitle,
+	img,
+	imgAlt = '',
+	imgWidth,
+	imgHeight,
+	description,
+	confirmText,
+	icon = null,
+	...props
+}: GenericUpsellModalProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -22,7 +37,7 @@ const GenericUpsellModal = ({ tagline, subtitle, img, description, confirmText, 
 			variant='upsell'
 			confirmText={confirmText ?? t('Upgrade')}
 		>
-			<Modal.HeroImage src={img} alt='' />
+			<Modal.HeroImage src={img} alt={imgAlt} width={imgWidth} height={imgHeight} />
 			{subtitle && (
 				<Box is='h3' fontScale='h3'>
 					{subtitle}
