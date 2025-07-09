@@ -1059,8 +1059,7 @@ const statisticsEndpoints = API.v1.get(
 			refresh: refresh === 'true',
 		});
 		console.log(`refresh : ${refresh}`);
-		console.log(`omnichannelSources : ${JSON.stringify(statistics.omnichannelSources)}`);
-		console.log(`BusinessHours : ${JSON.stringify(statistics.BusinessHours)}`);
+		console.log(`statistics : ${JSON.stringify(statistics)}`);
 		return API.v1.success(statistics);
 	},
 );
