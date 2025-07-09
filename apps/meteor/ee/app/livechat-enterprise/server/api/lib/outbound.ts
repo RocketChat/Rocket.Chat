@@ -10,7 +10,7 @@ export class OutboundMessageProviderService {
 		this.provider = new OutboundMessageProvider();
 	}
 
-	private isProviderValid(type: unknown): type is ValidOutboundProvider {
+	private isProviderValid(type: any): type is ValidOutboundProvider {
 		return ValidOutboundProviderList.includes(type);
 	}
 
