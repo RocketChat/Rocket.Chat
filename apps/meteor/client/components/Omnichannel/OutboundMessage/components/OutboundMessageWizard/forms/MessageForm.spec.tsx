@@ -1,13 +1,16 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { createRef } from 'react';
 
-import type { MessageFormRef } from './MessageForm';
 import MessageForm from './MessageForm';
 import { createFakeContactWithManagerData } from '../../../../../../../tests/mocks/data';
 import { createFakeOutboundTemplate } from '../../../../../../../tests/mocks/data/outbound-message';
+
+jest.mock('tinykeys', () => ({
+	__esModule: true,
+	default: jest.fn().mockReturnValue(() => () => undefined),
+}));
 
 const component = {
 	header: { type: 'HEADER', text: 'New {{1}} appointment' },
@@ -37,12 +40,14 @@ const appRoot = mockAppRoot().withTranslations('en', 'core', {
 	Template_message: 'Template message',
 	No_templates_available: 'No templates available',
 	Error_loading__name__information: 'Error loading {{name}} information',
+	Submit: 'Submit',
 });
 
 describe('MessageForm', () => {
 	const defaultProps = {
 		templates: mockTemplates,
 		contact: mockContact,
+		onSubmit: jest.fn(),
 	};
 
 	beforeEach(() => {
@@ -82,14 +87,16 @@ describe('MessageForm', () => {
 	});
 
 	it('should call onSubmit with correct data on successful submission', async () => {
-		const formRef = createRef<MessageFormRef>();
-		render(<MessageForm ref={formRef} {...defaultProps} />, { wrapper: appRoot.build() });
+		const handleSubmit = jest.fn();
+		render(<MessageForm {...defaultProps} onSubmit={handleSubmit} />, { wrapper: appRoot.build() });
 
 		await userEvent.click(screen.getByLabelText('Template*'));
 		await userEvent.click(await screen.findByRole('option', { name: 'Template One' }));
 
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
 		await waitFor(() => {
-			expect(formRef.current?.submit()).resolves.toEqual(
+			expect(handleSubmit).toHaveBeenCalledWith(
 				expect.objectContaining({
 					templateId: 'template-1',
 					template: template1,
@@ -100,32 +107,44 @@ describe('MessageForm', () => {
 	});
 
 	it('should show required error when submitting without a template', async () => {
-		const formRef = createRef<MessageFormRef>();
-		render(<MessageForm ref={formRef} {...defaultProps} />, { wrapper: appRoot.build() });
+		const handleSubmit = jest.fn();
+		render(<MessageForm {...defaultProps} onSubmit={handleSubmit} />, { wrapper: appRoot.build() });
 
-		await act(() => expect(formRef.current?.submit()).rejects.toThrow('error-form-validation'));
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
 		expect(await screen.findByText('Template message is required')).toBeInTheDocument();
+		expect(handleSubmit).not.toHaveBeenCalled();
 	});
 
 	it('should show "no templates available" error if templates array is empty', async () => {
-		const formRef = createRef<MessageFormRef>();
-		render(<MessageForm ref={formRef} {...defaultProps} templates={[]} />, { wrapper: appRoot.build() });
+		const handleSubmit = jest.fn();
+		render(<MessageForm {...defaultProps} templates={[]} onSubmit={handleSubmit} />, { wrapper: appRoot.build() });
 
-		await act(() => expect(formRef.current?.submit()).rejects.toThrow('error-form-validation'));
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
 		expect(await screen.findByText('No templates available')).toBeInTheDocument();
+		expect(handleSubmit).not.toHaveBeenCalled();
 	});
 
 	it('should throw an error if the selected template is not found on submit', async () => {
-		const formRef = createRef<MessageFormRef>();
+		const handleSubmit = jest.fn();
 		const defaultValues = { templateId: 'template-1' };
-		render(<MessageForm ref={formRef} {...defaultProps} templates={[template2]} defaultValues={defaultValues} />, {
+		render(<MessageForm {...defaultProps} templates={[template2]} defaultValues={defaultValues} onSubmit={handleSubmit} />, {
 			wrapper: appRoot.build(),
 		});
 
-		await act(() => expect(formRef.current?.submit()).rejects.toThrow('error-form-validation'));
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
 		expect(await screen.findByText('Error loading template information')).toBeInTheDocument();
+		expect(handleSubmit).not.toHaveBeenCalled();
+	});
+
+	it('should render custom actions via renderActions prop', async () => {
+		const renderActions = jest.fn(({ isSubmitting }) => <button disabled={isSubmitting}>Custom Action</button>);
+		render(<MessageForm {...defaultProps} renderActions={renderActions} />, { wrapper: appRoot.build() });
+
+		expect(screen.getByRole('button', { name: 'Custom Action' })).toBeInTheDocument();
+		expect(screen.queryByRole('button', { name: 'Submit' })).not.toBeInTheDocument();
+		expect(renderActions).toHaveBeenCalledWith({ isSubmitting: false });
 	});
 });
