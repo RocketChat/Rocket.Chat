@@ -1,18 +1,12 @@
+import type { ISubscription } from '@rocket.chat/core-typings';
 import { isPrivateRoom } from '@rocket.chat/core-typings';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import { useUserSubscription } from '@rocket.chat/ui-contexts';
 
-import SidePanelTag from './SidePanelTag';
-import SidePanelTagIcon from './SidePanelTagIcon';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import SidePanelTag from '../SidePanelTag';
+import SidePanelTagIcon from '../SidePanelTagIcon';
 
-const SidePanelParentDiscussion = ({ prid }: { prid: string }) => {
-	const subscription = useUserSubscription(prid);
-
-	if (!subscription) {
-		throw new Error('No subscription was found');
-	}
-
+const SidePanelParentRoom = ({ subscription }: { subscription: ISubscription }) => {
 	const icon = isPrivateRoom(subscription) ? 'hashtag-lock' : 'hashtag';
 	const roomName = roomCoordinator.getRoomName(subscription?.t, subscription);
 
@@ -29,4 +23,4 @@ const SidePanelParentDiscussion = ({ prid }: { prid: string }) => {
 	);
 };
 
-export default SidePanelParentDiscussion;
+export default SidePanelParentRoom;

@@ -8,19 +8,17 @@ import {
 	SidebarV2ItemRow,
 	SidebarV2ItemTimestamp,
 	SidebarV2ItemTitle,
-	// Tag,
 } from '@rocket.chat/fuselage';
 import { useLayout, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo, useState } from 'react';
 
-import SidePanelParentRoom from './SidePanelParentRoom';
+import SidePanelParent from './SidePanelParent';
 import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
 import { useItemData } from '../hooks/useItemData';
 
 type SidepanelItemProps = {
-	openedRoom?: string;
 	room: SubscriptionWithRoom;
-	parentRid?: string;
+	openedRoom?: string;
 };
 
 const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
@@ -46,7 +44,7 @@ const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
 			<SidebarV2ItemCol>
 				{parentRoomId && (
 					<SidebarV2ItemRow>
-						<SidePanelParentRoom room={room} />
+						<SidePanelParent room={room} />
 					</SidebarV2ItemRow>
 				)}
 				<SidebarV2ItemRow>

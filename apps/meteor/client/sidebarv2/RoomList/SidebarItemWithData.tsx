@@ -1,17 +1,20 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isOmnichannelRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 
 import SidebarItem from './SidebarItem';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { isIOsDevice } from '../../lib/utils/isIOsDevice';
-import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannelPriorities';
-import RoomMenu from '../RoomMenu';
+import {
+	useSwitchSidePanelTab,
+	SIDE_BAR_GROUPS,
+	useRoomsListContext,
+	useSidePanelFilter,
+} from '../../views/navigation/contexts/RoomsNavigationContext';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
@@ -25,22 +28,15 @@ type RoomListRowProps = {
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
 
-	selected?: boolean;
-
 	videoConfActions?: {
 		[action: string]: () => void;
 	};
 };
 
-const SidebarItemWithData = ({ room, id, selected, style, t, isAnonymous, videoConfActions }: RoomListRowProps) => {
+const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
-
-	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
-
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
-
-	const { unread = 0, alert, rid, t: type, cl } = room;
 
 	const icon = (
 		<SidebarV2ItemIcon
@@ -60,9 +56,6 @@ const SidebarItemWithData = ({ room, id, selected, style, t, isAnonymous, videoC
 		[videoConfActions],
 	);
 
-	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
-	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
-
 	const badges = (
 		<>
 			{showUnread && (
@@ -79,24 +72,29 @@ const SidebarItemWithData = ({ room, id, selected, style, t, isAnonymous, videoC
 		</>
 	);
 
-	const menu = useMemo(
-		() =>
-			!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
-				<RoomMenu
-					alert={alert}
-					threadUnread={unreadCount.threads > 0}
-					rid={rid}
-					unread={!!unread}
-					roomOpen={selected}
-					type={type}
-					cl={cl}
-					name={title}
-					hideDefaultOptions={isQueued}
-					href={href || undefined}
-				/>
-			) : undefined,
-		[isAnonymous, isQueued, isPriorityEnabled, alert, unreadCount.threads, rid, unread, selected, type, cl, title, href],
-	);
+	const switchSidePanelTab = useSwitchSidePanelTab();
+	const { parentRid } = useRoomsListContext();
+
+	const [currentTab] = useSidePanelFilter();
+	const selected = Object.values(SIDE_BAR_GROUPS).some((group) => currentTab === group) && room.rid === parentRid;
+
+	const handleClick = useCallback(() => {
+		if (!selected) {
+			sidebar.toggle();
+		}
+
+		if (isTeamRoom(room)) {
+			switchSidePanelTab(SIDE_BAR_GROUPS.TEAMS, { parentRid: room.rid });
+			return;
+		}
+
+		if (isDirectMessageRoom(room)) {
+			switchSidePanelTab(SIDE_BAR_GROUPS.DIRECT_MESSAGES, { parentRid: room.rid });
+			return;
+		}
+
+		switchSidePanelTab(SIDE_BAR_GROUPS.CHANNELS, { parentRid: room.rid });
+	}, [room, selected, sidebar, switchSidePanelTab]);
 
 	return (
 		<SidebarItem
@@ -105,10 +103,7 @@ const SidebarItemWithData = ({ room, id, selected, style, t, isAnonymous, videoC
 			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}
-			href={href}
-			onClick={(): void => {
-				!selected && sidebar.toggle();
-			}}
+			onClick={handleClick}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			icon={icon}
@@ -116,7 +111,6 @@ const SidebarItemWithData = ({ room, id, selected, style, t, isAnonymous, videoC
 			badges={badges}
 			room={room}
 			actions={actions}
-			menu={menu}
 		/>
 	);
 };
@@ -128,7 +122,7 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'selected', 't', 'videoConfActions'];
+const keys: (keyof RoomListRowProps)[] = ['id', 'style', 't', 'videoConfActions'];
 
 // eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemWithData, (prevProps, nextProps) => {

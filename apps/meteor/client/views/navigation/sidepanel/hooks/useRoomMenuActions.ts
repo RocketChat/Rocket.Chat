@@ -5,12 +5,12 @@ import type { Fields, LocationPathname } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useLeaveRoomAction } from '../../hooks/menuActions/useLeaveRoom';
-import { useToggleFavoriteAction } from '../../hooks/menuActions/useToggleFavoriteAction';
-import { useToggleNotificationAction } from '../../hooks/menuActions/useToggleNotificationsAction';
-import { useToggleReadAction } from '../../hooks/menuActions/useToggleReadAction';
-import { useHideRoomAction } from '../../hooks/useHideRoomAction';
-import { useOmnichannelPrioritiesMenu } from '../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
+import { useLeaveRoomAction } from '../../../../hooks/menuActions/useLeaveRoom';
+import { useToggleFavoriteAction } from '../../../../hooks/menuActions/useToggleFavoriteAction';
+import { useToggleNotificationAction } from '../../../../hooks/menuActions/useToggleNotificationsAction';
+import { useToggleReadAction } from '../../../../hooks/menuActions/useToggleReadAction';
+import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
+import { useOmnichannelPrioritiesMenu } from '../../../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 const fields: Fields = {
 	f: true,
