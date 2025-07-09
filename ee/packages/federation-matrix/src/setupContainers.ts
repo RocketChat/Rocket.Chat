@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
 import { toUnpaddedBase64 } from '@hs/core';
-import { ConfigService, createFederationContainer } from '@hs/federation-sdk';
-import type { DependencyContainer, FederationContainerOptions, HomeserverEventSignatures } from '@hs/federation-sdk';
+import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
+import type { DependencyContainer, FederationContainerOptions, HomeserverEventSignatures, HomeserverServices } from '@hs/federation-sdk';
 import { Emitter } from '@rocket.chat/emitter';
 
 let container: DependencyContainer | undefined;
@@ -32,9 +32,10 @@ export async function setup(
 	return container;
 }
 
-export function getContainer(): DependencyContainer {
+export function getAllServicesFromFederationSDK(): HomeserverServices {
 	if (!container) {
 		throw new Error('Federation container is not initialized. Call setup() first.');
 	}
-	return container;
+
+	return getAllServices(container);
 }
