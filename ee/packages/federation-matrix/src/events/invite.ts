@@ -1,8 +1,7 @@
-
+import type { HomeserverEventSignatures } from '@hs/federation-sdk';
 import { Room } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { HomeserverEventSignatures } from '@hs/federation-sdk';
 import { MatrixBridgedRoom, MatrixBridgedUser, Users } from '@rocket.chat/models';
 
 export function invite(emitter: Emitter<HomeserverEventSignatures>) {
