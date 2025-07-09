@@ -131,7 +131,11 @@ describe('ModifyExtender', () => {
 			});
 
 			it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
-				const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+				const _stub = stub(
+					extender,
+					'senderFn' as keyof ModifyExtender,
+					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+				);
 
 				await assertRejects(() => extender.extendMessage('message-id', { _id: 'user-id' } as any), Error, 'unit-test-error');
 
@@ -157,7 +161,11 @@ describe('ModifyExtender', () => {
 			});
 
 			it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
-				const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+				const _stub = stub(
+					extender,
+					'senderFn' as keyof ModifyExtender,
+					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+				);
 
 				await assertRejects(() => extender.extendRoom('room-id', { _id: 'user-id' } as any), Error, 'unit-test-error');
 
@@ -183,7 +191,11 @@ describe('ModifyExtender', () => {
 			});
 
 			it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
-				const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+				const _stub = stub(
+					extender,
+					'senderFn' as keyof ModifyExtender,
+					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+				);
 
 				await assertRejects(() => extender.extendVideoConference('video-conference-id'), Error, 'unit-test-error');
 
@@ -203,15 +215,19 @@ describe('ModifyExtender', () => {
 			it('throws an instance of Error when senderFn throws an error', async () => {
 				const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(new Error('unit-test-error')) as any);
 
-				await assertRejects(() => extender.finish({ kind: 'message', getMessage: () => ({})} as any), Error, 'unit-test-error');
+				await assertRejects(() => extender.finish({ kind: 'message', getMessage: () => ({}) } as any), Error, 'unit-test-error');
 
 				_stub.restore();
 			});
 
 			it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
-				const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+				const _stub = stub(
+					extender,
+					'senderFn' as keyof ModifyExtender,
+					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+				);
 
-				await assertRejects(() => extender.finish({ kind: 'message', getMessage: () => ({})} as any), Error, 'unit-test-error');
+				await assertRejects(() => extender.finish({ kind: 'message', getMessage: () => ({}) } as any), Error, 'unit-test-error');
 
 				_stub.restore();
 			});
@@ -219,7 +235,7 @@ describe('ModifyExtender', () => {
 			it('throws an instance of Error when senderFn throws an unknown value', async () => {
 				const _stub = stub(extender, 'senderFn' as keyof ModifyExtender, () => Promise.reject({}) as any);
 
-				await assertRejects(() => extender.finish({ kind: 'message', getMessage: () => ({})} as any), Error, 'An unknown error occurred');
+				await assertRejects(() => extender.finish({ kind: 'message', getMessage: () => ({}) } as any), Error, 'An unknown error occurred');
 
 				_stub.restore();
 			});

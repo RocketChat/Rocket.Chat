@@ -1,10 +1,9 @@
 import { IconButton } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../../../components/GenericModal';
 
 type InfoTextIconModalProps = {
 	title: string;

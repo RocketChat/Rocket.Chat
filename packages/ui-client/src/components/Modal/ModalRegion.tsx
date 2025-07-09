@@ -3,8 +3,8 @@ import { useCurrentModal, useModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { lazy, Suspense } from 'react';
 
-import ModalBackdrop from '../../components/ModalBackdrop';
-import ModalPortal from '../../portals/ModalPortal';
+import ModalBackdrop from './ModalBackdrop';
+import ModalPortal from './ModalPortal';
 
 const FocusScope = lazy(() => import('react-aria').then(({ FocusScope }) => ({ default: FocusScope })));
 

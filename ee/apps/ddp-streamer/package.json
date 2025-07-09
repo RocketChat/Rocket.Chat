@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
 	"private": true,
-	"version": "0.3.25",
+	"version": "0.3.29",
 	"description": "Rocket.Chat DDP-Streamer service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -49,7 +49,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.2",
 		"@types/gc-stats": "^1.4.3",
-		"@types/node": "~22.14.1",
+		"@types/node": "~22.16.1",
 		"@types/polka": "^0.5.7",
 		"@types/underscore": "^1.13.0",
 		"@types/uuid": "^10.0.0",
