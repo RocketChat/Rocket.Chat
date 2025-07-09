@@ -401,6 +401,14 @@ export class Router<
 		);
 		return router;
 	}
+
+	getHonoRouter(): Hono<{
+		Variables: {
+			remoteAddress: string;
+		};
+	}> {
+		return this.innerRouter;
+	}
 }
 
 type Prettify<T> = {
