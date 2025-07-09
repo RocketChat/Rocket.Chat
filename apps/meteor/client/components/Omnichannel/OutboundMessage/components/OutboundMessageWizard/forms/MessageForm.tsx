@@ -1,14 +1,14 @@
 import type { IOutboundProviderTemplate, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { forwardRef, useId, useImperativeHandle, useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { TemplateParameters } from '../../../definitions/template';
 import TemplateEditor from '../../TemplateEditor';
 import TemplateSelect from '../../TemplateSelect';
-import { createSubmitHandler } from '../utils/createSubmitHandler';
 import { FormFetchError } from '../utils/errors';
 
 export type MessageFormData = {
@@ -22,28 +22,25 @@ export type MessageFormSubmitPayload = {
 	templateParameters: TemplateParameters;
 };
 
-export type MessageFormRef = {
-	submit: () => Promise<MessageFormSubmitPayload>;
-};
-
 type MessageFormProps = {
 	contact?: Omit<Serialized<ILivechatContact>, 'contactManager'>;
 	templates?: IOutboundProviderTemplate[];
-	onSubmit?(values: MessageFormSubmitPayload): void;
+	onSubmit(values: MessageFormSubmitPayload): void;
+	renderActions?(state: { isSubmitting: boolean }): ReactNode;
 	defaultValues?: {
 		templateId?: string;
 		templateParameters?: TemplateParameters;
 	};
 };
 
-const MessageForm = forwardRef<MessageFormRef, MessageFormProps>((props, ref) => {
-	const { defaultValues, templates, contact } = props;
+const MessageForm = (props: MessageFormProps) => {
+	const { defaultValues, templates, contact, renderActions } = props;
 	const { t } = useTranslation();
 	const messageFormId = useId();
 
 	const {
 		control,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 		handleSubmit,
 	} = useForm<MessageFormData>({
 		mode: 'onChange',
@@ -58,6 +55,8 @@ const MessageForm = forwardRef<MessageFormRef, MessageFormProps>((props, ref) =>
 
 	const template = useMemo(() => templates?.find((template) => template.id === templateId), [templates, templateId]);
 
+	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
+
 	const submit = useEffectEvent(async (values: MessageFormData) => {
 		const { templateId, templateParameters } = values;
 
@@ -70,10 +69,8 @@ const MessageForm = forwardRef<MessageFormRef, MessageFormProps>((props, ref) =>
 		return { templateId, templateParameters, template };
 	});
 
-	useImperativeHandle(ref, () => ({ submit: createSubmitHandler(submit, handleSubmit) }), [submit, handleSubmit]);
-
 	return (
-		<form id={messageFormId}>
+		<form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<Field>
 					<FieldLabel is='span' required id={`${messageFormId}-template`}>
@@ -140,9 +137,17 @@ const MessageForm = forwardRef<MessageFormRef, MessageFormProps>((props, ref) =>
 					/>
 				) : null}
 			</FieldGroup>
+
+			{customActions ?? (
+				<Box mbs={24} display='flex' justifyContent='end'>
+					<Button type='submit' primary loading={isSubmitting}>
+						{t('Submit')}
+					</Button>
+				</Box>
+			)}
 		</form>
 	);
-});
+};
 
 MessageForm.displayName = 'MessageForm';
 
