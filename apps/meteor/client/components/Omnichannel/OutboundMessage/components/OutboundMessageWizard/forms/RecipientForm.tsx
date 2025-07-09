@@ -16,6 +16,7 @@ import AutoCompleteOutboundProvider from '../../AutoCompleteOutboundProvider';
 import RecipientSelect from '../../RecipientSelect';
 import SenderSelect from '../../SenderSelect';
 import RetryButton from '../components/RetryButton';
+import { useFormKeyboardSubmit } from '../hooks/useFormKeyboardSubmit';
 import { cxp } from '../utils/cx';
 import { FormFetchError } from '../utils/errors';
 
@@ -144,8 +145,10 @@ const RecipientForm = (props: RecipientFormProps) => {
 		onSubmit({ ...values, provider: updatedProvider, contact: updatedContact });
 	});
 
+	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
+
 	return (
-		<form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
+		<form ref={formRef} id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<Field>
 					<FieldLabel is='span' required id={`${recipientFormId}-contact`}>
