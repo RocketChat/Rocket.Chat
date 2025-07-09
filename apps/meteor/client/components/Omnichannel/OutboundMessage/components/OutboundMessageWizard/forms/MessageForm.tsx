@@ -35,7 +35,7 @@ type MessageFormProps = {
 };
 
 const MessageForm = (props: MessageFormProps) => {
-	const { defaultValues, templates, contact, renderActions } = props;
+	const { defaultValues, templates, contact, renderActions, onSubmit } = props;
 	const { t } = useTranslation();
 	const messageFormId = useId();
 
@@ -67,7 +67,7 @@ const MessageForm = (props: MessageFormProps) => {
 			throw new FormFetchError('error-template-not-found');
 		}
 
-		return { templateId, templateParameters, template };
+		onSubmit({ templateId, templateParameters, template });
 	});
 
 	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
