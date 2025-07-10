@@ -5,27 +5,32 @@ import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import type { ComponentProps } from 'react';
-import { forwardRef, useImperativeHandle } from 'react';
+import { act, type ComponentProps } from 'react';
 
 import MessageStep from './MessageStep';
 import * as stories from './MessageStep.stories';
 import { createFakeContact } from '../../../../../../../tests/mocks/data';
 import { createFakeOutboundTemplate } from '../../../../../../../tests/mocks/data/outbound-message';
-import type { MessageFormRef } from '../forms/MessageForm';
+import type { MessageFormSubmitPayload } from '../forms/MessageForm';
 import type MessageForm from '../forms/MessageForm';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-const mockSubmit = jest.fn();
+jest.mock('tinykeys', () => ({
+	__esModule: true,
+	default: jest.fn().mockReturnValue(() => () => undefined),
+}));
 
-const mockMessageFormRender = jest.fn((_props) => <form name='message-form' />);
+let isSubmitting = false;
+let currentOnSubmit: (payload: MessageFormSubmitPayload) => void = () => undefined;
+const mockMessageForm = jest.fn().mockImplementation((props) => {
+	currentOnSubmit = props.onSubmit;
+	return <div data-testid='message-form'>{props.renderActions?.({ isSubmitting })}</div>;
+});
+
 jest.mock('../forms/MessageForm', () => ({
 	__esModule: true,
-	default: forwardRef<MessageFormRef, ComponentProps<typeof MessageForm>>((props, ref) => {
-		useImperativeHandle(ref, () => ({ submit: mockSubmit }));
-		return mockMessageFormRender(props);
-	}),
+	default: (props: ComponentProps<typeof MessageForm>) => mockMessageForm(props),
 }));
 
 const steps = new StepsLinkedList([
@@ -52,6 +57,7 @@ const appRoot = mockAppRoot()
 
 describe('MessageStep', () => {
 	beforeEach(() => {
+		currentOnSubmit = () => undefined;
 		jest.clearAllMocks();
 	});
 
@@ -67,12 +73,6 @@ describe('MessageStep', () => {
 		expect(results).toHaveNoViolations();
 	});
 
-	it('should pass accessibility tests', async () => {
-		const { container } = render(<MessageStep onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
-		const results = await axe(container);
-		expect(results).toHaveNoViolations();
-	});
-
 	it('should render message form with correct props', () => {
 		const defaultValues = { templateId: 'test-template-id' };
 		const contact = createFakeContact();
@@ -82,8 +82,8 @@ describe('MessageStep', () => {
 			wrapper: appRoot.build(),
 		});
 
-		expect(screen.getByRole('form')).toBeInTheDocument();
-		expect(mockMessageFormRender).toHaveBeenCalledWith(
+		expect(screen.getByTestId('message-form')).toBeInTheDocument();
+		expect(mockMessageForm).toHaveBeenCalledWith(
 			expect.objectContaining({
 				defaultValues,
 				contact,
@@ -92,36 +92,8 @@ describe('MessageStep', () => {
 		);
 	});
 
-	it('should call onSubmit with form values when form submits successfully', async () => {
-		const expectedPayload = { templateId: 'test-template-id' };
-		mockSubmit.mockResolvedValue(expectedPayload);
-		const onSubmit = jest.fn();
-
-		render(<MessageStep onSubmit={onSubmit} />, { wrapper: appRoot.build() });
-
-		await userEvent.click(screen.getByRole('button', { name: 'Next' }));
-
-		await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expectedPayload));
-	});
-
-	it('should not call onSubmit and prevent default when form submission rejects', async () => {
-		mockSubmit.mockRejectedValueOnce(new Error('Submission Error'));
-		const onSubmit = jest.fn();
-
-		render(<MessageStep onSubmit={onSubmit} />, { wrapper: appRoot.build() });
-
-		const nextButton = screen.getByRole('button', { name: 'Next' });
-		const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
-
-		nextButton.dispatchEvent(clickEvent);
-
-		await waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
-		await waitFor(() => expect(clickEvent.defaultPrevented).toBeTruthy());
-	});
-
 	it('should call previous step when back button is clicked', async () => {
 		render(<MessageStep onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
-
 		const backButton = screen.getByRole('button', { name: 'Back' });
 		await userEvent.click(backButton);
 
@@ -129,43 +101,30 @@ describe('MessageStep', () => {
 	});
 
 	it('shows a loading state on the button while submit is pending', async () => {
-		let resolvePromise: (value: unknown) => void = jest.fn();
-		mockSubmit.mockImplementation(
-			() =>
-				new Promise((resolve) => {
-					resolvePromise = resolve;
-				}),
-		);
-
-		render(<MessageStep onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
+		isSubmitting = true;
+		const handleSubmit = jest.fn();
+		render(<MessageStep onSubmit={handleSubmit} />, { wrapper: appRoot.build() });
 
 		const nextButton = screen.getByRole('button', { name: 'Next' });
 		await userEvent.click(nextButton);
 
 		expect(nextButton).toBeDisabled();
-
-		resolvePromise(undefined);
-
-		await waitFor(() => expect(nextButton).not.toBeDisabled());
+		expect(handleSubmit).not.toHaveBeenCalled();
 	});
 
-	it('removes loading state if submit rejects', async () => {
-		let rejectPromise: (reason?: any) => void = jest.fn();
-		mockSubmit.mockReturnValue(
-			new Promise((_, reject) => {
-				rejectPromise = reject;
-			}),
-		);
+	it('should call onSubmit with form values when form submits successfully', async () => {
+		const expectedPayload = {
+			templateId: 'test-template-id',
+			template: createFakeOutboundTemplate({ id: 'test-template-id' }),
+			templateParameters: {},
+		};
+		const onSubmit = jest.fn();
 
-		render(<MessageStep onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
+		render(<MessageStep onSubmit={onSubmit} />, { wrapper: appRoot.build() });
 
-		const nextButton = screen.getByRole('button', { name: 'Next' });
-		await userEvent.click(nextButton);
+		act(() => currentOnSubmit(expectedPayload));
 
-		expect(nextButton).toBeDisabled();
-
-		rejectPromise(new Error('Failed to submit'));
-
-		await waitFor(() => expect(nextButton).not.toBeDisabled());
+		await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expectedPayload));
+		await waitFor(() => expect(mockWizardApi.next).toHaveBeenCalled());
 	});
 });

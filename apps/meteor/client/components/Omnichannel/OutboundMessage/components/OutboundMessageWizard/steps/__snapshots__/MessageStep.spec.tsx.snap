@@ -7,14 +7,11 @@ exports[`MessageStep renders Default without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-162rsse"
     >
       <div>
-        <form
-          name="message-form"
-        />
         <div
-          class="rcx-box rcx-box--full steps-wizard-footer rcx-css-h2s0k0"
+          data-testid="message-form"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-start"
+            class="rcx-button-group rcx-button-group--align-start rcx-box rcx-box--full steps-wizard-footer rcx-css-181ybla"
             role="group"
           >
             <button
@@ -29,7 +26,7 @@ exports[`MessageStep renders Default without crashing 1`] = `
             </button>
             <button
               class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-              type="button"
+              type="submit"
             >
               <span
                 class="rcx-button--content"
@@ -52,14 +49,11 @@ exports[`MessageStep renders WithDefaultValues without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-162rsse"
     >
       <div>
-        <form
-          name="message-form"
-        />
         <div
-          class="rcx-box rcx-box--full steps-wizard-footer rcx-css-h2s0k0"
+          data-testid="message-form"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-start"
+            class="rcx-button-group rcx-button-group--align-start rcx-box rcx-box--full steps-wizard-footer rcx-css-181ybla"
             role="group"
           >
             <button
@@ -74,7 +68,7 @@ exports[`MessageStep renders WithDefaultValues without crashing 1`] = `
             </button>
             <button
               class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-              type="button"
+              type="submit"
             >
               <span
                 class="rcx-button--content"
