@@ -1059,7 +1059,16 @@ const statisticsEndpoints = API.v1.get(
 			refresh: refresh === 'true',
 		});
 		console.log(`refresh : ${refresh}`);
-		console.log(`statistics : `, statistics);
+		console.log(`isArray`);
+		Object.entries(statistics).forEach((entry) => {
+			const [key, value] = entry;
+			if (Array.isArray(value)) console.log(`${key}: ${value}`);
+		});
+		console.log(`not isArray`);
+		Object.entries(statistics).forEach((entry) => {
+			const [key, value] = entry;
+			if (!Array.isArray(value)) console.log(`${key}: ${value}`);
+		});
 		return API.v1.success(statistics);
 	},
 );
