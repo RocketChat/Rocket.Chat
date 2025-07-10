@@ -1,16 +1,16 @@
 import type { Serialized, ILivechatDepartment, ILivechatAgent } from '@rocket.chat/core-typings';
-import { Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useId, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartment from '../../../../../AutoCompleteDepartment';
 import AutoCompleteAgent from '../../AutoCompleteDepartmentAgent';
 import RetryButton from '../components/RetryButton';
-import { createSubmitHandler } from '../utils/createSubmitHandler';
 import { cxp } from '../utils/cx';
 import { FormFetchError } from '../utils/errors';
 
@@ -32,19 +32,23 @@ export type RepliesFormRef = {
 
 type RepliesFormProps = {
 	defaultValues?: Partial<RepliesFormData>;
+	renderActions?(props: { isSubmitting: boolean }): ReactNode;
+	onSubmit: (data: RepliesFormSubmitPayload) => void;
 };
 
-const RepliesForm = forwardRef<RepliesFormRef, RepliesFormProps>((props, ref) => {
-	const { defaultValues } = props;
+const RepliesForm = (props: RepliesFormProps) => {
+	const { defaultValues, renderActions, onSubmit } = props;
 	const { t } = useTranslation();
 	const repliesFormId = useId();
 	const {
 		control,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 		trigger,
 		clearErrors,
 		handleSubmit,
 	} = useForm<RepliesFormData>({ defaultValues });
+
+	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
 
 	const [departmentId, agentId] = useWatch({ control, name: ['departmentId', 'agentId'] });
 
@@ -99,13 +103,11 @@ const RepliesForm = forwardRef<RepliesFormRef, RepliesFormProps>((props, ref) =>
 			throw new FormFetchError('error-agent-not-found');
 		}
 
-		return { departmentId, department: updatedDepartment, agentId, agent: updatedAgent };
+		onSubmit({ departmentId, department: updatedDepartment, agentId, agent: updatedAgent });
 	});
 
-	useImperativeHandle(ref, () => ({ submit: createSubmitHandler(submit, handleSubmit) }), [submit, handleSubmit]);
-
 	return (
-		<form id={repliesFormId} onSubmit={handleSubmit(submit)}>
+		<form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<Field>
 					<FieldLabel is='span' id={`${repliesFormId}-department`}>{`${t('Department')} (${t('optional')})`}</FieldLabel>
@@ -179,9 +181,17 @@ const RepliesForm = forwardRef<RepliesFormRef, RepliesFormProps>((props, ref) =>
 					<FieldHint id={`${repliesFormId}-agent-hint`}>{t('Outbound_message_agent_hint')}</FieldHint>
 				</Field>
 			</FieldGroup>
+
+			{customActions ?? (
+				<Box mbs={24} display='flex' justifyContent='end'>
+					<Button type='submit' primary loading={isSubmitting}>
+						{t('Submit')}
+					</Button>
+				</Box>
+			)}
 		</form>
 	);
-});
+};
 
 RepliesForm.displayName = 'RepliesForm';
 
