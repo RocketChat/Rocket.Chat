@@ -222,9 +222,10 @@ export const statistics = {
 			}),
 		);
 
+		// TODO: the routingAlgorithm is duplicated in L202 & L227
 		// Type of routing algorithm used on omnichannel
 		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
-
+		// TODO: the onHoldEnabled is duplicated in L205 & L230
 		// is on-hold active
 		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
 
