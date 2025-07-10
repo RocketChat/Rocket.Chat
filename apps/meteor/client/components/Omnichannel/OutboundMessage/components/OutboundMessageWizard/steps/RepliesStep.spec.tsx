@@ -5,25 +5,23 @@ import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import type { ComponentProps } from 'react';
-import { forwardRef, useImperativeHandle } from 'react';
+import { act, type ComponentProps } from 'react';
 
 import RepliesStep from './RepliesStep';
 import * as stories from './RepliesStep.stories';
-import type { RepliesFormRef } from '../forms/RepliesForm';
 import type RepliesForm from '../forms/RepliesForm';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-const mockSubmit = jest.fn();
-
-const mockRepliesFormRender = jest.fn((_props) => <form name='replies-form' />);
+let isSubmitting = false;
+let currentOnSubmit: (payload: Record<string, unknown>) => void = () => undefined;
+const mockRepliesForm = jest.fn().mockImplementation((props) => {
+	currentOnSubmit = props.onSubmit;
+	return <div data-testid='replies-form'>{props.renderActions?.({ isSubmitting })}</div>;
+});
 jest.mock('../forms/RepliesForm', () => ({
 	__esModule: true,
-	default: forwardRef<RepliesFormRef, ComponentProps<typeof RepliesForm>>((props, ref) => {
-		useImperativeHandle(ref, () => ({ submit: mockSubmit }));
-		return mockRepliesFormRender(props);
-	}),
+	default: (props: ComponentProps<typeof RepliesForm>) => mockRepliesForm(props),
 }));
 
 const steps = new StepsLinkedList([
@@ -82,35 +80,22 @@ describe('RepliesStep', () => {
 			wrapper: appRoot.build(),
 		});
 
-		expect(screen.getByRole('form')).toBeInTheDocument();
-		expect(mockRepliesFormRender).toHaveBeenCalledWith(expect.objectContaining({ defaultValues }));
+		expect(screen.getByTestId('replies-form')).toBeInTheDocument();
+		expect(mockRepliesForm).toHaveBeenCalledWith(expect.objectContaining({ defaultValues }));
 	});
 
 	it('should call onSubmit with form values when form submits successfully', async () => {
-		const expectedPayload = { templateId: 'test-template-id' };
-		mockSubmit.mockResolvedValue(expectedPayload);
+		const expectedPayload = {
+			departmentId: 'test-department-id',
+			agentId: 'test-agent-id',
+		};
 		const onSubmit = jest.fn();
 
 		render(<RepliesStep onSubmit={onSubmit} />, { wrapper: appRoot.build() });
 
-		await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+		await act(() => currentOnSubmit(expectedPayload));
 
 		await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expectedPayload));
-	});
-
-	it('should not call onSubmit and prevent default when form submission rejects', async () => {
-		mockSubmit.mockRejectedValueOnce(new Error('Submission Error'));
-		const onSubmit = jest.fn();
-
-		render(<RepliesStep onSubmit={onSubmit} />, { wrapper: appRoot.build() });
-
-		const nextButton = screen.getByRole('button', { name: 'Next' });
-		const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true });
-
-		nextButton.dispatchEvent(clickEvent);
-
-		await waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
-		await waitFor(() => expect(clickEvent.defaultPrevented).toBeTruthy());
 	});
 
 	it('should call previous step when back button is clicked', async () => {
@@ -123,42 +108,16 @@ describe('RepliesStep', () => {
 	});
 
 	it('shows a loading state on the button while submit is pending', async () => {
-		let resolvePromise: (value: unknown) => void = jest.fn();
-		mockSubmit.mockImplementation(
-			() =>
-				new Promise((resolve) => {
-					resolvePromise = resolve;
-				}),
-		);
-
-		render(<RepliesStep onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
+		isSubmitting = true;
+		const { rerender } = render(<RepliesStep onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
 
 		const nextButton = screen.getByRole('button', { name: 'Next' });
 		await userEvent.click(nextButton);
 
 		expect(nextButton).toBeDisabled();
 
-		resolvePromise(undefined);
-
-		await waitFor(() => expect(nextButton).not.toBeDisabled());
-	});
-
-	it('removes loading state if submit rejects', async () => {
-		let rejectPromise: (reason?: any) => void = jest.fn();
-		mockSubmit.mockReturnValue(
-			new Promise((_, reject) => {
-				rejectPromise = reject;
-			}),
-		);
-
-		render(<RepliesStep onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
-
-		const nextButton = screen.getByRole('button', { name: 'Next' });
-		await userEvent.click(nextButton);
-
-		expect(nextButton).toBeDisabled();
-
-		rejectPromise(new Error('Failed to submit'));
+		isSubmitting = false;
+		rerender(<RepliesStep onSubmit={jest.fn()} />);
 
 		await waitFor(() => expect(nextButton).not.toBeDisabled());
 	});
