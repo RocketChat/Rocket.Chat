@@ -288,4 +288,147 @@ test.describe('private-rooms-override', () => {
             
         });
     });
+
+    test('should allow admin to manage leader permissions in private room', async ({ page, api }) => {
+        await test.step('Navigate to directory and access the private room created by user1', async () => {
+            await poDirectory.goto();
+            await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
+            
+            // Search for the private room created by user1 (admin is NOT a member)
+            await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+            
+            const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+            await expect(otherRoomRow).toBeVisible();
+            
+            // Click to enter the room
+            await otherRoomRow.click();
+            await expect(page).toHaveURL(`/group/${otherPrivateRoom.name}`);
+        });
+
+        await test.step('Open members tab and verify initial state', async () => {
+            await poHomeChannel.tabs.btnTabMembers.click();
+            await expect(page.getByRole('heading', { name: 'Members' })).toBeVisible();
+            
+            // Check if filter is "Online" and switch to "All" if needed to see offline users
+            const onlineFilter = page.getByLabel('Online', { exact: true });
+            const isOnlineVisible = await onlineFilter.isVisible();
+            
+            if (isOnlineVisible) {
+                // If "Online" filter is active, switch to "All"
+                await onlineFilter.click();
+                await page.getByText('All', { exact: true }).click();
+            }
+            
+            // Verify initial state: user1 is owner, user3 is member
+            await expect(page.getByText('Owners')).toBeVisible();
+            await expect(page.getByLabel('Members').getByText('user1')).toBeVisible();
+            await expect(page.getByLabel('Members').getByText('user3')).toBeVisible();
+        });
+
+        await test.step('Set user3 as leader', async () => {
+            // Click "Set as leader" option
+            await page.getByLabel('Members').getByText('user3').hover();
+            await page.getByLabel('Members').getByText('user3').locator('..').getByRole('button', { name: 'More' }).click({ timeout: 10000});
+            await page.getByText('Set as leader').click();
+            
+        });
+
+        await test.step('Verify user3 is now leader', async () => {
+            // Wait for the UI to update and verify user3 is now in Leaders section
+            await expect(page.getByText('Leaders').locator('..').getByText('1', { exact: true })).toBeVisible();
+            
+            // Verify both users are still visible in the Members area
+            await expect(page.getByLabel('Members').getByText('user1')).toBeVisible();
+            await expect(page.getByLabel('Members').getByText('user3')).toBeVisible();
+            
+            // If user3 is now leader, should see "Remove as leader" option
+            await page.getByLabel('Members').getByText('user3').hover();
+            await page.getByLabel('Members').getByText('user3').locator('..').getByRole('button', { name: 'More' }).click({ timeout: 10000});
+            
+            await expect(page.getByText('Remove as leader')).toBeVisible();
+        });
+
+        await test.step('Remove user3 as leader', async () => {
+            // Click "Remove as leader" option
+            await page.getByText('Remove as leader').click();
+        });
+
+        await test.step('Verify user3 is back to member', async () => {
+            // Wait for the UI to update and verify the state is back to initial
+            await expect(page.getByText('Owners').locator('..').getByText('1', { exact: true })).toBeVisible();
+            await expect(page.getByText('Members').locator('..').getByText('1', { exact: true })).toBeVisible();
+            
+        });
+    });
+
+    test('should allow admin to manage moderator permissions in private room', async ({ page, api }) => {
+        await test.step('Navigate to directory and access the private room created by user1', async () => {
+            await poDirectory.goto();
+            await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
+            
+            // Search for the private room created by user1 (admin is NOT a member)
+            await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+            
+            const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+            await expect(otherRoomRow).toBeVisible();
+            
+            // Click to enter the room
+            await otherRoomRow.click();
+            await expect(page).toHaveURL(`/group/${otherPrivateRoom.name}`);
+        });
+
+        await test.step('Open members tab and verify initial state', async () => {
+            await poHomeChannel.tabs.btnTabMembers.click();
+            await expect(page.getByRole('heading', { name: 'Members' })).toBeVisible();
+            
+            // Check if filter is "Online" and switch to "All" if needed to see offline users
+            const onlineFilter = page.getByLabel('Online', { exact: true });
+            const isOnlineVisible = await onlineFilter.isVisible();
+            
+            if (isOnlineVisible) {
+                // If "Online" filter is active, switch to "All"
+                await onlineFilter.click();
+                await page.getByText('All', { exact: true }).click();
+            }
+            
+            // Verify initial state: user1 is owner, user3 is member
+            await expect(page.getByText('Owners')).toBeVisible();
+            await expect(page.getByLabel('Members').getByText('user1')).toBeVisible();
+            await expect(page.getByLabel('Members').getByText('user3')).toBeVisible();
+        });
+
+        await test.step('Set user3 as moderator', async () => {
+            // Click "Set as moderator" option
+            await page.getByLabel('Members').getByText('user3').hover();
+            await page.getByLabel('Members').getByText('user3').locator('..').getByRole('button', { name: 'More' }).click({ timeout: 10000});
+            await page.getByText('Set as moderator').click();
+        });
+
+        await test.step('Verify user3 is now moderator', async () => {
+            // Wait for the UI to update and verify user3 is now in Moderators section
+            await expect(page.getByText('Moderators').locator('..').getByText('1', { exact: true })).toBeVisible();
+            
+            // Verify both users are still visible in the Members area
+            await expect(page.getByLabel('Members').getByText('user1')).toBeVisible();
+            await expect(page.getByLabel('Members').getByText('user3')).toBeVisible();
+            
+            // If user3 is now moderator, should see "Remove as moderator" option
+            await page.getByLabel('Members').getByText('user3').hover();
+            await page.getByLabel('Members').getByText('user3').locator('..').getByRole('button', { name: 'More' }).click({ timeout: 10000});
+            
+            await expect(page.getByText('Remove as moderator')).toBeVisible();
+        });
+
+        await test.step('Remove user3 as moderator', async () => {
+            // Click "Remove as moderator" option
+            await page.getByText('Remove as moderator').click();
+        });
+
+        await test.step('Verify user3 is back to member', async () => {
+            // Wait for the UI to update and verify the state is back to initial
+            await expect(page.getByText('Owners').locator('..').getByText('1', { exact: true })).toBeVisible();
+            await expect(page.getByText('Members').locator('..').getByText('1', { exact: true })).toBeVisible();
+        });
+    });
 });
+
