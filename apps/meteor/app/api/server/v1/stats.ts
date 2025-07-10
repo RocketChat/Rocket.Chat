@@ -266,7 +266,7 @@ const statisticsEndpoints = API.v1.get(
 							},
 						},
 						required: ['locked', 'version'],
-						// FIXME: remove this when we have a proper migration schema
+						// ! remove this when we have a proper migration schema
 						// additionalProperties: false,
 					},
 					instanceCount: { type: 'integer' },
@@ -849,11 +849,13 @@ const statisticsEndpoints = API.v1.get(
 					statsToken: { type: 'string' },
 					success: {
 						type: 'boolean',
+						enum: [true],
 						description: 'Indicates if the request was successful.',
 					},
 				},
+				// TODO: add the required props from the IStats
 				required: ['success'],
-				// TODO: remove this when we have a proper statistics schema
+				// ! remove this when we have a proper statistics schema
 				// additionalProperties: false,
 			}),
 			400: ajv.compile<{
@@ -1174,7 +1176,7 @@ const statisticsListEndpoints = API.v1.get(
 										},
 									},
 									required: ['locked', 'version'],
-									// FIXME: remove this when we have a proper migration schema
+									// ! remove this when we have a proper migration schema
 									// additionalProperties: false,
 								},
 								instanceCount: { type: 'integer' },
@@ -1764,7 +1766,7 @@ const statisticsListEndpoints = API.v1.get(
 								statsToken: { type: 'string' },
 							},
 							required: [],
-							// TODO: remove this when we have a proper statistics schema
+							// ! remove this when we have a proper statistics schema
 							// additionalProperties: false,
 						},
 						minItems: 0,

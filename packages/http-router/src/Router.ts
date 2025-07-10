@@ -197,7 +197,6 @@ export class Router<
 			if (options.body) {
 				const validatorFn = options.body;
 				if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
-					console.log('validatorFn :', validatorFn);
 					return c.json(
 						{
 							success: false,
@@ -223,7 +222,6 @@ export class Router<
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
 				if (responseValidatorFn && !responseValidatorFn(body)) {
-					console.log('responseValidatorFn :', responseValidatorFn);
 					return c.json(
 						{
 							success: false,
