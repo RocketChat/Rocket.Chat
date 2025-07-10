@@ -74,7 +74,7 @@ describe('ModifyUpdater', () => {
 	it('correctly formats requests for the update room flow', async () => {
 		const _spy = spy(modifyUpdater, 'senderFn' as keyof ModifyUpdater);
 
-		const roomBuilder = await modifyUpdater.room('123', { id: '456' } as any) as RoomBuilder;
+		const roomBuilder = (await modifyUpdater.room('123', { id: '456' } as any)) as RoomBuilder;
 
 		assertSpyCall(_spy, 0, {
 			args: [
@@ -111,7 +111,7 @@ describe('ModifyUpdater', () => {
 	});
 
 	it('correctly formats requests to UserUpdater methods', async () => {
-		const result = await modifyUpdater.getUserUpdater().updateStatusText({ id: '123' } as any, 'Hello World') as any;
+		const result = (await modifyUpdater.getUserUpdater().updateStatusText({ id: '123' } as any, 'Hello World')) as any;
 
 		assertEquals(result, {
 			method: 'accessor:getModifier:getUpdater:getUserUpdater:updateStatusText',
@@ -120,7 +120,7 @@ describe('ModifyUpdater', () => {
 	});
 
 	it('correctly formats requests to LivechatUpdater methods', async () => {
-		const result = await modifyUpdater.getLivechatUpdater().closeRoom({ id: '123' } as any, 'close it!') as any;
+		const result = (await modifyUpdater.getLivechatUpdater().closeRoom({ id: '123' } as any, 'close it!')) as any;
 
 		assertEquals(result, {
 			method: 'accessor:getModifier:getUpdater:getLivechatUpdater:closeRoom',
@@ -139,7 +139,11 @@ describe('ModifyUpdater', () => {
 			});
 
 			it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
-				const _stub = stub(modifyUpdater, 'senderFn' as keyof ModifyUpdater, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+				const _stub = stub(
+					modifyUpdater,
+					'senderFn' as keyof ModifyUpdater,
+					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+				);
 
 				await assertRejects(() => modifyUpdater.message('message-id', { _id: 'user-id' } as any), Error, 'unit-test-error');
 
@@ -165,7 +169,11 @@ describe('ModifyUpdater', () => {
 			});
 
 			it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
-				const _stub = stub(modifyUpdater, 'senderFn' as keyof ModifyUpdater, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+				const _stub = stub(
+					modifyUpdater,
+					'senderFn' as keyof ModifyUpdater,
+					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+				);
 
 				await assertRejects(() => modifyUpdater.room('room-id', { _id: 'user-id' } as any), Error, 'unit-test-error');
 
@@ -203,7 +211,11 @@ describe('ModifyUpdater', () => {
 			});
 
 			it('throws an instance of Error when senderFn throws a jsonrpc error', async () => {
-				const _stub = stub(modifyUpdater, 'senderFn' as keyof ModifyUpdater, () => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any);
+				const _stub = stub(
+					modifyUpdater,
+					'senderFn' as keyof ModifyUpdater,
+					() => Promise.reject(jsonrpc.error('unit-test-error', new jsonrpc.JsonRpcError('unit-test-error', 1000))) as any,
+				);
 
 				await assertRejects(() => modifyUpdater.finish(messageUpdater), Error, 'unit-test-error');
 

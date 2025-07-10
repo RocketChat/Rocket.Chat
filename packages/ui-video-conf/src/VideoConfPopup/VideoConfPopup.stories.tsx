@@ -1,7 +1,6 @@
 import { Avatar, Icon } from '@rocket.chat/fuselage';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import VideoConfButton from '../VideoConfButton';
 import VideoConfController from '../VideoConfController';
@@ -19,7 +18,7 @@ export default {
 	title: 'Components/VideoConfPopup',
 	component: VideoConfPopup,
 	decorators: [
-		(Story): ReactElement => (
+		(Story) => (
 			<VideoConfPopupBackdrop>
 				<Story />
 			</VideoConfPopupBackdrop>

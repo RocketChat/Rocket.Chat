@@ -12,9 +12,11 @@ const getMockAppManager = (senderFn: AppAccessors['senderFn']) => ({
 				return senderFn({
 					method: 'bridges:getInternalBridge:doGetUsernamesOfRoomById',
 					params: [roomId],
-				}).then((result) => result.result).catch((err) => {
-					throw formatErrorResponse(err);
-				});
+				})
+					.then((result) => result.result)
+					.catch((err) => {
+						throw formatErrorResponse(err);
+					});
 			},
 		}),
 	}),

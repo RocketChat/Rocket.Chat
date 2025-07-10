@@ -27,7 +27,9 @@ export class ModifyExtender implements IModifyExtender {
 		const result = await this.senderFn({
 			method: 'bridges:getMessageBridge:doGetById',
 			params: [messageId, AppObjectRegistry.get('id')],
-		}).catch((err) => { throw formatErrorResponse(err) });
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
 		const msg = result.result as IMessage;
 
@@ -41,7 +43,9 @@ export class ModifyExtender implements IModifyExtender {
 		const result = await this.senderFn({
 			method: 'bridges:getRoomBridge:doGetById',
 			params: [roomId, AppObjectRegistry.get('id')],
-		}).catch((err) => { throw formatErrorResponse(err) });
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
 		const room = result.result as IRoom;
 
@@ -54,7 +58,9 @@ export class ModifyExtender implements IModifyExtender {
 		const result = await this.senderFn({
 			method: 'bridges:getVideoConferenceBridge:doGetById',
 			params: [id, AppObjectRegistry.get('id')],
-		}).catch((err) => { throw formatErrorResponse(err) });
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
 		const call = result.result as VideoConference;
 
@@ -69,7 +75,9 @@ export class ModifyExtender implements IModifyExtender {
 				await this.senderFn({
 					method: 'bridges:getMessageBridge:doUpdate',
 					params: [(extender as IMessageExtender).getMessage(), AppObjectRegistry.get('id')],
-				}).catch((err) => { throw formatErrorResponse(err) });
+				}).catch((err) => {
+					throw formatErrorResponse(err);
+				});
 				break;
 			case RocketChatAssociationModel.ROOM:
 				await this.senderFn({
@@ -79,13 +87,17 @@ export class ModifyExtender implements IModifyExtender {
 						(extender as IRoomExtender).getUsernamesOfMembersBeingAdded(),
 						AppObjectRegistry.get('id'),
 					],
-				}).catch((err) => { throw formatErrorResponse(err) });
+				}).catch((err) => {
+					throw formatErrorResponse(err);
+				});
 				break;
 			case RocketChatAssociationModel.VIDEO_CONFERENCE:
 				await this.senderFn({
 					method: 'bridges:getVideoConferenceBridge:doUpdate',
 					params: [(extender as IVideoConferenceExtender).getVideoConference(), AppObjectRegistry.get('id')],
-				}).catch((err) => { throw formatErrorResponse(err) });
+				}).catch((err) => {
+					throw formatErrorResponse(err);
+				});
 				break;
 			default:
 				throw new Error('Invalid extender passed to the ModifyExtender.finish function.');
