@@ -6,7 +6,7 @@ export default {
 	globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
 		channel: 'chromium',
-		headless: true,
+		headless: false,
 		ignoreHTTPSErrors: true,
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,

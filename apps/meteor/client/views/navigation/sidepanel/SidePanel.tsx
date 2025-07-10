@@ -10,7 +10,7 @@ import SidepanelListWrapper from './SidepanelListWrapper';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
-import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
+import { sidePanelFiltersConfig, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 
 type SidePanelProps = {
 	title: string;
@@ -28,21 +28,27 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: 
 	const openedRoom = useOpenedRoom();
 	const {
 		isTablet,
-		sidePanel: { closeSidePanel },
+		sidePanel: { closeSidePanel, displaySidePanel },
 	} = useLayout();
 
 	usePreventDefault(ref);
 
 	return (
-		<Sidepanel role='tabpanel'>
-			<SidepanelHeader>
+		<Sidepanel role='tabpanel' aria-label='sidepanel' aria-hidden={!displaySidePanel}>
+			<SidepanelHeader role='heading' aria-label={t(sidePanelFiltersConfig[currentTab].title)}>
 				{isTablet && <IconButton icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
 				<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
 				<Box display='flex' alignItems='center'>
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 						{t('Unread')}
 					</Box>
-					<ToggleSwitch id={unreadFieldId} defaultChecked={unreadOnly} onChange={toggleOnlyUnreads} />
+					<ToggleSwitch
+						role='switch'
+						aria-label={t('Unread_toggle')}
+						id={unreadFieldId}
+						defaultChecked={unreadOnly}
+						onChange={toggleOnlyUnreads}
+					/>
 				</Box>
 			</SidepanelHeader>
 			<Box pb={8} h='full' ref={ref}>

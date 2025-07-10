@@ -22,7 +22,9 @@ type SidepanelItemProps = {
 };
 
 const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
-	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, { openedRoom });
+	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, message, ...props } = useItemData(room, {
+		openedRoom,
+	});
 	const { sidebar } = useLayout();
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
@@ -40,6 +42,7 @@ const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
 			selected={selected}
 			onFocus={handleFocus}
 			onPointerEnter={handlePointerEnter}
+			aria-label={message || title}
 		>
 			<SidebarV2ItemCol>
 				{parentRoomId && (

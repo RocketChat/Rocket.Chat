@@ -11,7 +11,7 @@ export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, 
 	return Subscriptions.use(
 		useShallow((state) => {
 			const records = state.filter((subscription) => {
-				if (subscription.prid !== parentRid && subscription.rid !== parentRid) {
+				if (subscription.prid !== parentRid || subscription.rid !== parentRid) {
 					if (!teamId) {
 						return false;
 					}

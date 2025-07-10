@@ -12,6 +12,30 @@ export class Sidebar {
 		return this.page.getByRole('navigation', { name: 'sidebar' });
 	}
 
+	get teamCollabFilters(): Locator {
+		return this.sidebar.getByRole('tablist').first();
+	}
+
+	get omnichannelFilters(): Locator {
+		return this.sidebar.getByRole('tablist').nth(1);
+	}
+
+	get allTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'All' });
+	}
+
+	get mentionsTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'Mentions' });
+	}
+
+	get favoritesTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'Favorites' });
+	}
+
+	get discussionsTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'Discussions' });
+	}
+
 	get channelsList(): Locator {
 		return this.sidebar.getByRole('list', { name: 'Channels' });
 	}
