@@ -14,22 +14,24 @@ type DeviceProviderProps = {
 const defaultDevices = {
 	audioInput: [],
 	audioOutput: [],
+	defaultAudioOutputDevice: {
+		id: '',
+		label: '',
+		type: 'audiooutput',
+	},
+	defaultAudioInputDevice: {
+		id: '',
+		label: '',
+		type: 'audioinput',
+	},
 };
 
 const devicesQueryKey = ['media-devices-list'];
 
 export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement => {
 	const [enabled] = useState(typeof isSecureContext && isSecureContext);
-	const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState<Device>({
-		id: 'default',
-		label: '',
-		type: 'audio',
-	});
-	const [selectedAudioInputDevice, setSelectedAudioInputDevice] = useState<Device>({
-		id: 'default',
-		label: '',
-		type: 'audio',
-	});
+	const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState<Device | undefined>(undefined);
+	const [selectedAudioInputDevice, setSelectedAudioInputDevice] = useState<Device | undefined>(undefined);
 
 	const setAudioInputDevice = (device: Device): void => {
 		if (!isSecureContext) {
@@ -75,6 +77,8 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 			return {
 				audioInput,
 				audioOutput,
+				defaultAudioOutputDevice: audioOutput[0],
+				defaultAudioInputDevice: audioInput[0],
 			};
 		},
 		initialData: defaultDevices,
@@ -138,15 +142,15 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 				enabled,
 			};
 		}
-		const { audioInput, audioOutput } = data;
+		const { audioInput, audioOutput, defaultAudioOutputDevice, defaultAudioInputDevice } = data;
 
 		return {
 			enabled,
 			permissionStatus,
 			availableAudioOutputDevices: audioOutput,
 			availableAudioInputDevices: audioInput,
-			selectedAudioOutputDevice,
-			selectedAudioInputDevice,
+			selectedAudioOutputDevice: selectedAudioOutputDevice || defaultAudioOutputDevice,
+			selectedAudioInputDevice: selectedAudioInputDevice || defaultAudioInputDevice,
 			setAudioOutputDevice,
 			setAudioInputDevice,
 		};
