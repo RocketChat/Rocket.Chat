@@ -4442,7 +4442,7 @@ describe('[Rooms]', () => {
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should get room roles', async () => {
-			const response = await request.get(api('rooms.getRoles')).set(credentials).query({ roomId: testChannel._id }).expect(200);
+			const response = await request.get(api('rooms.getRoles')).set(credentials).query({ rid: testChannel._id }).expect(200);
 			expect(response.body.success).to.be.true;
 			// the schema is already validated in the server on TEST mode
 			expect(response.body.roles).to.be.an('array');

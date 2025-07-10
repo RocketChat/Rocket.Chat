@@ -106,7 +106,13 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
-	async getUsersFromPublicRoles(): Promise<(IRocketChatRecord & Pick<IUser, '_id' | 'username' | 'roles'>)[]> {
+	async getUsersFromPublicRoles(): Promise<
+		{
+			_id: string;
+			username: string;
+			roles: string[];
+		}[]
+	> {
 		const roleIds = await this.getPublicRoles();
 
 		return this.getUserFromRoles(roleIds);
@@ -114,19 +120,16 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private getPublicRoles = mem(
 		async (): Promise<string[]> => {
-			const roles = await Roles.find<Pick<IRole, '_id'>>(
-				{ scope: 'Users', description: { $exists: true, $ne: '' } },
-				{ projection: { _id: 1 } },
-			).toArray();
+			const roles = Roles.find<Pick<IRole, '_id'>>({ scope: 'Users', description: { $exists: true, $ne: '' } }, { projection: { _id: 1 } });
 
-			return roles.map(({ _id }) => _id);
+			return roles.map(({ _id }) => _id).toArray();
 		},
 		{ maxAge: 10000 },
 	);
 
 	private getUserFromRoles = mem(
 		async (roleIds: string[]) => {
-			const users = await Users.findUsersInRoles(roleIds, null, {
+			const users = Users.findUsersInRoles(roleIds, null, {
 				sort: {
 					username: 1,
 				},
@@ -134,12 +137,18 @@ export class Authorization extends ServiceClass implements IAuthorization {
 					username: 1,
 					roles: 1,
 				},
-			}).toArray();
+			});
 
-			return users.map((user) => ({
-				...user,
-				roles: user.roles.filter((roleId: string) => roleIds.includes(roleId)),
-			}));
+			return users
+				.map((user) => ({
+					...user,
+					roles: user.roles.filter((roleId: string) => roleIds.includes(roleId)),
+				}))
+				.toArray() as unknown as {
+				_id: string;
+				username: string;
+				roles: string[];
+			}[];
 		},
 		{ maxAge: 10000 },
 	);
