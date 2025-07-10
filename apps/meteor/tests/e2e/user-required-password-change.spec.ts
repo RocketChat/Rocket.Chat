@@ -39,7 +39,7 @@ test.describe('User - Password change required', () => {
 		]);
 	});
 
-	test.fail('should redirect to home after successful password change for new user', async ({ page }) => {
+	test('should redirect to home after successful password change for new user', async ({ page }) => {
 		await test.step('login with temporary password', async () => {
 			await poRegistration.username.fill(userRequiringPasswordChange.data.username);
 			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
