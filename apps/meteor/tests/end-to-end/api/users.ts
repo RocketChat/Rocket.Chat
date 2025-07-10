@@ -4619,4 +4619,19 @@ describe('[Users]', () => {
 				});
 		});
 	});
+	describe('[/users.getPublicRoles]', () => {
+		it('should return public roles', async () => {
+			await request
+				.get(api('users.getPublicRoles'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+					expect(res.body.users).to.be.an('array');
+					// payload schema is checked in the endpoint
+					expect(res.body.users.length).to.be.greaterThan(0);
+				});
+		});
+	});
 });

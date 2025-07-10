@@ -1,7 +1,8 @@
-import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import { MeteorError, Team, api, Calendar, Authorization } from '@rocket.chat/core-services';
+import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import {
+	ajv,
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
@@ -67,6 +68,7 @@ import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnAccount';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -1399,6 +1401,46 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const userRoutes = API.v1.get(
+	'users.getPublicRoles',
+	{
+		authRequired: true,
+		response: {
+			200: ajv.compile<{
+				users: {
+					_id: string;
+					username: string;
+					roles: string[];
+				}[];
+			}>({
+				type: 'object',
+				properties: {
+					users: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+						},
+					},
+				},
+			}),
+		},
+	},
+
+	async () => {
+		return API.v1.success({
+			users: await Authorization.getUsersFromPublicRoles(),
+		});
+	},
+);
+
+type UserEndpoints = ExtractRoutesFromAPI<typeof userRoutes>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends UserEndpoints {}
+}
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';
