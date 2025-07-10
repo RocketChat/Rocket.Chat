@@ -1,5 +1,22 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, Button, TextInput, Modal, Box, FieldGroup, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import {
+	Field,
+	Button,
+	TextInput,
+	Modal,
+	Box,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -59,12 +76,12 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 
 	return (
 		<Modal open wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(submit)} {...props} />} {...props}>
-			<Modal.Header>
-				<Modal.Icon name='mail-arrow-top-right' />
-				<Modal.Title>{t('Transcript')}</Modal.Title>
-				<Modal.Close onClick={onCancel} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>
+			<ModalHeader>
+				<ModalIcon name='mail-arrow-top-right' />
+				<ModalTitle>{t('Transcript')}</ModalTitle>
+				<ModalClose onClick={onCancel} />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 				<FieldGroup>
 					<Field>
@@ -92,9 +109,9 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 						<FieldError>{errors.subject?.message}</FieldError>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					{roomOpen && transcriptRequest && (
 						<Button danger onClick={handleDiscard}>
@@ -111,8 +128,8 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 							{t('Send')}
 						</Button>
 					)}
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
