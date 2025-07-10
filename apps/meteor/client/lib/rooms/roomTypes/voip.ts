@@ -32,7 +32,7 @@ roomCoordinator.add(
 			return Rooms.state.get(identifier);
 		},
 
-		canSendMessage(_rid) {
+		canSendMessage() {
 			return false;
 		},
 

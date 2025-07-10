@@ -1,11 +1,9 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { Rooms, Subscriptions } from '../../../app/models/client';
-import { settings } from '../../../app/settings/client';
+import { Subscriptions } from '../../../app/models/client';
 import type {
 	RoomSettingsEnum,
 	RoomMemberActions,
@@ -59,8 +57,8 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			isLivechatRoom(): boolean {
 				return false;
 			},
-			canSendMessage(rid: string): boolean {
-				return Subscriptions.find({ rid }).count() > 0;
+			canSendMessage(room: IRoom): boolean {
+				return Subscriptions.find({ rid: room._id }).count() > 0;
 			},
 			...directives,
 			config: roomConfig,
@@ -146,20 +144,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 
 		return false;
-	}
-
-	public verifyCanSendMessage(rid: string): boolean {
-		const room = Rooms.state.get(rid);
-		if (!room?.t) {
-			return false;
-		}
-		if (!this.getRoomDirectives(room.t).canSendMessage(rid)) {
-			return false;
-		}
-		if (isRoomFederated(room)) {
-			return settings.get('Federation_Matrix_enabled');
-		}
-		return true;
 	}
 
 	private validateRoute<TRouteName extends RouteName>(route: IRoomTypeRouteConfig<TRouteName>): void {
