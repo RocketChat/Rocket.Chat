@@ -13,6 +13,7 @@ interface IOutboundMessageProviderBase {
 	appId: string;
 	name: string;
 	documentationUrl?: string;
+	supportsTemplates?: boolean;
 	sendOutboundMessage(message: IOutboundMessage): Promise<void>;
 }
 
