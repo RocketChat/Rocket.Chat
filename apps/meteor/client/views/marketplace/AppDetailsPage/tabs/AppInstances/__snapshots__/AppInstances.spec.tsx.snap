@@ -117,16 +117,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:r0:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -160,16 +163,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:r2:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -203,16 +209,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:r4:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -246,16 +255,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:r6:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -289,16 +301,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:r8:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -332,16 +347,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:ra:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -375,16 +393,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:rc:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -418,16 +439,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:re:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -461,16 +485,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:rg:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -504,16 +531,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:ri:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -547,16 +577,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:rk:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
@@ -590,16 +623,19 @@ exports[`renders AppInstances without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-table__cell"
                         >
                           <button
-                            aria-label="actions"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Actions"
                             class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                            data-testid="menu"
+                            id="react-aria-:rm:"
+                            title="Actions"
                             type="button"
                           >
                             <i
                               aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+                              class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
                             >
-                              
+                              
                             </i>
                           </button>
                         </td>
