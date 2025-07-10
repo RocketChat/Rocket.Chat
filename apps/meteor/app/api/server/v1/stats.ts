@@ -33,6 +33,7 @@ const statisticsEndpoints = API.v1.get(
 				type: 'object',
 				properties: {
 					_id: { type: 'string' },
+					// Setup Wizard
 					wizard: {
 						type: 'object',
 						properties: {
@@ -46,13 +47,15 @@ const statisticsEndpoints = API.v1.get(
 						},
 						additionalProperties: false,
 					},
+					// Version
 					uniqueId: { type: 'string' },
+					installedAt: { type: 'string' },
 					deploymentFingerprintHash: { type: 'string' },
 					deploymentFingerprintVerified: { type: 'boolean' },
-					installedAt: { type: 'string' },
 					version: { type: 'string' },
 					tag: { type: 'string' },
 					branch: { type: 'string' },
+					// User statistics
 					totalUsers: { type: 'integer' },
 					activeUsers: { type: 'integer' },
 					activeGuests: { type: 'integer' },
@@ -67,6 +70,7 @@ const statisticsEndpoints = API.v1.get(
 						type: 'object',
 						additionalProperties: { type: 'integer' },
 					},
+					// Room statistics
 					totalRooms: { type: 'integer' },
 					totalChannels: { type: 'integer' },
 					totalPrivateGroups: { type: 'integer' },
@@ -74,33 +78,130 @@ const statisticsEndpoints = API.v1.get(
 					totalLivechat: { type: 'integer' },
 					totalDiscussions: { type: 'integer' },
 					totalThreads: { type: 'integer' },
-					teams: {
-						type: 'object',
-						properties: {
-							totalTeams: { type: 'integer' },
-							totalRoomsInsideTeams: { type: 'integer' },
-							totalDefaultRoomsInsideTeams: { type: 'integer' },
-						},
-						required: ['totalTeams', 'totalDefaultRoomsInsideTeams', 'totalRoomsInsideTeams'],
-						additionalProperties: false,
-					},
+					// livechat visitors
 					totalLivechatVisitors: { type: 'integer' },
+					// livechat agents
 					totalLivechatAgents: { type: 'integer' },
 					totalLivechatManagers: { type: 'integer' },
-					totalCustomFields: { type: 'integer' },
-					totalLivechatPublicCustomFields: { type: 'integer' },
-					livechatAutomaticForwardingUnansweredChats: { type: 'boolean' },
+					// livechat enabled
 					livechatEnabled: { type: 'boolean' },
+					// Count and types of omnichannel rooms
+					omnichannelSources: {
+						type: 'array',
+						items: [
+							{
+								type: 'object',
+								properties: {
+									id: { type: 'string' },
+									type: { type: 'string' },
+									count: { type: 'number' },
+									alias: { type: 'string' },
+								},
+								additionalProperties: false,
+							},
+						],
+						minItems: 0,
+					},
+					// Number of livechat rooms with department
+					totalLivechatRoomsWithDepartment: { type: 'integer' },
+					// Number of departments
+					departments: { type: 'integer' },
+					// Number of archived departments
+					archivedDepartments: { type: 'integer' },
+					// Workspace allows dpeartment removal
 					isDepartmentRemovalEnabled: { type: 'boolean' },
+					// Number of triggers
+					totalTriggers: { type: 'integer' },
+					// Number of custom fields
+					totalCustomFields: { type: 'integer' },
+					// Number of public custom fields
+					totalLivechatPublicCustomFields: { type: 'integer' },
+					// Livechat Automatic forwarding feature enabled
+					livechatAutomaticForwardingUnansweredChats: { type: 'boolean' },
+					// Type of routing algorithm used on omnichannel
+					routingAlgorithm: { type: 'string' },
+					// is on-hold active
+					onHoldEnabled: { type: 'boolean' },
+					// Number of Email Inboxes
+					emailInboxes: { type: 'integer' },
+					BusinessHours: {
+						type: 'object',
+						properties: {
+							// Number of Business Hours
+							total: { type: 'number' },
+							// Business Hours strategy
+							strategy: { type: 'string' },
+						},
+						required: ['total', 'strategy'],
+						additionalProperties: false,
+					},
+					// Last-Chatted Agent Preferred (enabled/disabled)
+					lastChattedAgentPreferred: { type: 'boolean' },
+					// Assign new conversations to the contact manager (enabled/disabled)
+					assignNewConversationsToContactManager: { type: 'boolean' },
+					// How to handle Visitor Abandonment setting
+					visitorAbandonment: { type: 'string' },
+					// Amount of chats placed on hold
+					chatsOnHold: { type: 'integer' },
+					// VoIP Enabled
+					voipEnabled: { type: 'boolean' },
+					// Amount of VoIP Calls
+					voipCalls: { type: 'integer' },
+					// Amount of VoIP Extensions connected
+					voipExtensions: { type: 'integer' },
+					// Amount of Calls that ended properly
+					voipSuccessfulCalls: { type: 'integer' },
+					// Amount of Calls that ended with an error
+					voipErrorCalls: { type: 'integer' },
+					// Amount of Calls that were put on hold
+					voipOnHoldCalls: { type: 'integer' },
+					omnichannelContactsBySource: {
+						type: 'object',
+						properties: {
+							contactsCount: { type: 'integer' },
+							conversationsCount: { type: 'integer' },
+							sources: { type: 'array' },
+						},
+						required: ['contactsCount', 'conversationsCount'],
+						additionalProperties: false,
+					},
+					uniqueContactsOfLastMonth: {
+						type: 'object',
+						properties: {
+							contactsCount: { type: 'integer' },
+							conversationsCount: { type: 'integer' },
+							sources: { type: 'array' },
+						},
+						required: ['contactsCount', 'conversationsCount'],
+						additionalProperties: false,
+					},
+					uniqueContactsOfLastWeek: {
+						type: 'object',
+						properties: {
+							contactsCount: { type: 'integer' },
+							conversationsCount: { type: 'integer' },
+							sources: { type: 'array' },
+						},
+						required: ['contactsCount', 'conversationsCount'],
+						additionalProperties: false,
+					},
+					uniqueContactsOfYesterday: {
+						type: 'object',
+						properties: {
+							contactsCount: { type: 'integer' },
+							conversationsCount: { type: 'integer' },
+							sources: { type: 'array' },
+						},
+						required: ['contactsCount', 'conversationsCount'],
+						additionalProperties: false,
+					},
 					totalChannelMessages: { type: 'integer' },
 					totalPrivateGroupMessages: { type: 'integer' },
-					totalDirectMessages: { type: 'integer' },
 					totalDiscussionsMessages: { type: 'integer' },
+					totalDirectMessages: { type: 'integer' },
 					totalLivechatMessages: { type: 'integer' },
-					totalLivechatRoomsWithPriority: { type: 'integer' },
-					totalLivechatRoomsWithDepartment: { type: 'integer' },
-					totalTriggers: { type: 'integer' },
 					totalMessages: { type: 'integer' },
+					// Federation statistics
 					federatedServers: { type: 'integer' },
 					federatedUsers: { type: 'integer' },
 					lastLogin: { type: 'string' },
@@ -116,7 +217,8 @@ const statisticsEndpoints = API.v1.get(
 							uptime: { type: 'number' },
 							loadavg: {
 								type: 'array',
-								items: { type: 'number' },
+								items: [{ type: 'number' }],
+								minItems: 0,
 							},
 							totalmem: { type: 'integer' },
 							freemem: { type: 'integer' },
@@ -144,6 +246,8 @@ const statisticsEndpoints = API.v1.get(
 						required: ['method', 'platform'],
 						additionalProperties: false,
 					},
+					readReceiptsEnabled: { type: 'boolean' },
+					readReceiptsDetailed: { type: 'boolean' },
 					enterpriseReady: { type: 'boolean' },
 					uploadsTotal: { type: 'integer' },
 					uploadsTotalSize: { type: 'integer' },
@@ -151,8 +255,8 @@ const statisticsEndpoints = API.v1.get(
 						type: 'object',
 						properties: {
 							_id: { type: 'string' },
-							locked: { type: 'boolean' },
 							version: { type: 'integer' },
+							locked: { type: 'boolean' },
 							hash: { type: 'string' },
 							buildAt: {
 								anyOf: [{ type: 'string' }, { type: 'object' }],
@@ -166,180 +270,28 @@ const statisticsEndpoints = API.v1.get(
 						// additionalProperties: false,
 					},
 					instanceCount: { type: 'integer' },
-					oplogEnabled: { type: 'boolean' },
 					msEnabled: { type: 'boolean' },
+					oplogEnabled: { type: 'boolean' },
 					mongoVersion: { type: 'string' },
 					mongoStorageEngine: { type: 'string' },
-					pushQueue: { type: 'integer' },
-					omnichannelSources: {
-						type: 'array',
-						items: [
-							{
-								type: 'object',
-								properties: {
-									id: { type: 'string' },
-									type: { type: 'string' },
-									count: { type: 'number' },
-									alias: { type: 'string' },
-								},
-								additionalProperties: false,
-							},
-						],
-					},
-					omnichannelContactsBySource: {
+					uniqueUsersOfYesterday: {
 						type: 'object',
 						properties: {
-							contactsCount: { type: 'integer' },
-							conversationsCount: { type: 'integer' },
-							sources: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										source: { type: 'array' },
-										contactsCount: { type: 'integer' },
-										conversationsCount: { type: 'integer' },
-									},
-									required: ['contactsCount', 'conversationsCount'],
-									additionalProperties: false,
-								},
-							},
+							year: { type: 'integer' },
+							month: { type: 'integer' },
+							day: { type: 'integer' },
+							data: { type: 'array' },
 						},
-						required: ['contactsCount', 'conversationsCount'],
+						required: ['year', 'month', 'day', 'data'],
 						additionalProperties: false,
 					},
-					uniqueContactsOfLastMonth: {
-						type: 'object',
-						properties: {
-							contactsCount: { type: 'integer' },
-							conversationsCount: { type: 'integer' },
-							sources: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										source: { type: 'string' },
-										contactsCount: { type: 'integer' },
-										conversationsCount: { type: 'integer' },
-									},
-									required: ['contactsCount', 'conversationsCount'],
-									additionalProperties: false,
-								},
-							},
-						},
-						required: ['contactsCount', 'conversationsCount'],
-						additionalProperties: false,
-					},
-					uniqueContactsOfLastWeek: {
-						type: 'object',
-						properties: {
-							contactsCount: { type: 'integer' },
-							conversationsCount: { type: 'integer' },
-							sources: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										source: { type: 'string' },
-										contactsCount: { type: 'integer' },
-										conversationsCount: { type: 'integer' },
-									},
-									required: ['source', 'contactsCount', 'conversationsCount'],
-									additionalProperties: false,
-								},
-							},
-						},
-						required: ['contactsCount', 'conversationsCount'],
-						additionalProperties: false,
-					},
-					uniqueContactsOfYesterday: {
-						type: 'object',
-						properties: {
-							contactsCount: { type: 'integer' },
-							conversationsCount: { type: 'integer' },
-							sources: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										source: { type: 'string' },
-										contactsCount: { type: 'integer' },
-										conversationsCount: { type: 'integer' },
-									},
-									required: ['contactsCount', 'conversationsCount'],
-									additionalProperties: false,
-								},
-							},
-						},
-						required: ['contactsCount', 'conversationsCount'],
-						additionalProperties: false,
-					},
-					departments: { type: 'integer' },
-					archivedDepartments: { type: 'integer' },
-					routingAlgorithm: { type: 'string' },
-					onHoldEnabled: { type: 'boolean' },
-					emailInboxes: { type: 'integer' },
-					BusinessHours: {
-						type: 'object',
-						properties: {
-							total: { type: 'number' },
-							strategy: { type: 'string' },
-						},
-						required: ['total', 'strategy'],
-						additionalProperties: false,
-					},
-					lastChattedAgentPreferred: { type: 'boolean' },
-					assignNewConversationsToContactManager: { type: 'boolean' },
-					visitorAbandonment: { type: 'string' },
-					chatsOnHold: { type: 'integer' },
-					voipEnabled: { type: 'boolean' },
-					voipCalls: { type: 'integer' },
-					voipExtensions: { type: 'integer' },
-					voipSuccessfulCalls: { type: 'integer' },
-					voipErrorCalls: { type: 'integer' },
-					voipOnHoldCalls: { type: 'integer' },
-					federationOverviewData: {
-						type: 'object',
-						properties: {
-							numberOfEvents: { type: 'integer' },
-							numberOfFederatedUsers: { type: 'integer' },
-							numberOfServers: { type: 'integer' },
-						},
-					},
-					readReceiptsEnabled: { type: 'boolean' },
-					readReceiptsDetailed: { type: 'boolean' },
 					uniqueUsersOfLastWeek: {
 						type: 'object',
 						properties: {
 							year: { type: 'integer' },
 							month: { type: 'integer' },
 							day: { type: 'integer' },
-							data: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										count: { type: 'integer' },
-										sessions: { type: 'integer' },
-										roles: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													role: { type: 'string' },
-													count: { type: 'integer' },
-													sessions: { type: 'integer' },
-													time: { type: 'integer' },
-												},
-												required: ['role', 'count', 'sessions', 'time'],
-												additionalProperties: false,
-											},
-										},
-									},
-									required: ['count', 'sessions', 'roles'],
-									additionalProperties: false,
-								},
-							},
+							data: { type: 'array' },
 						},
 						required: ['year', 'month', 'day', 'data'],
 						additionalProperties: false,
@@ -350,68 +302,7 @@ const statisticsEndpoints = API.v1.get(
 							year: { type: 'integer' },
 							month: { type: 'integer' },
 							day: { type: 'integer' },
-							data: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										count: { type: 'integer' },
-										sessions: { type: 'integer' },
-										roles: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													role: { type: 'string' },
-													count: { type: 'integer' },
-													sessions: { type: 'integer' },
-													time: { type: 'integer' },
-												},
-												required: ['role', 'count', 'sessions', 'time'],
-												additionalProperties: false,
-											},
-										},
-									},
-									required: ['count', 'sessions', 'roles'],
-									additionalProperties: false,
-								},
-							},
-						},
-						required: ['year', 'month', 'day', 'data'],
-						additionalProperties: false,
-					},
-					uniqueUsersOfYesterday: {
-						type: 'object',
-						properties: {
-							year: { type: 'integer' },
-							month: { type: 'integer' },
-							day: { type: 'integer' },
-							data: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										count: { type: 'integer' },
-										sessions: { type: 'integer' },
-										roles: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													role: { type: 'string' },
-													count: { type: 'integer' },
-													sessions: { type: 'integer' },
-													time: { type: 'integer' },
-												},
-												required: ['role', 'count', 'sessions', 'time'],
-												additionalProperties: false,
-											},
-										},
-									},
-									required: ['count', 'sessions', 'roles'],
-									additionalProperties: false,
-								},
-							},
+							data: { type: 'array' },
 						},
 						required: ['year', 'month', 'day', 'data'],
 						additionalProperties: false,
@@ -422,21 +313,7 @@ const statisticsEndpoints = API.v1.get(
 							year: { type: 'integer' },
 							month: { type: 'integer' },
 							day: { type: 'integer' },
-							data: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										type: { type: 'string' },
-										name: { type: 'string' },
-										version: { type: 'string' },
-										count: { type: 'integer' },
-										time: { type: 'integer' },
-									},
-									required: ['type', 'name', 'version', 'count', 'time'],
-									additionalProperties: false,
-								},
-							},
+							data: { type: 'array' },
 						},
 						required: ['year', 'month', 'day', 'data'],
 						additionalProperties: false,
@@ -447,21 +324,7 @@ const statisticsEndpoints = API.v1.get(
 							year: { type: 'integer' },
 							month: { type: 'integer' },
 							day: { type: 'integer' },
-							data: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										type: { type: 'string' },
-										name: { type: 'string' },
-										version: { type: 'string' },
-										count: { type: 'integer' },
-										time: { type: 'integer' },
-									},
-									required: ['type', 'name', 'version', 'count', 'time'],
-									additionalProperties: false,
-								},
-							},
+							data: { type: 'array' },
 						},
 						required: ['year', 'month', 'day', 'data'],
 						additionalProperties: false,
@@ -472,21 +335,7 @@ const statisticsEndpoints = API.v1.get(
 							year: { type: 'integer' },
 							month: { type: 'integer' },
 							day: { type: 'integer' },
-							data: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										type: { type: 'string' },
-										name: { type: 'string' },
-										version: { type: 'string' },
-										count: { type: 'integer' },
-										time: { type: 'integer' },
-									},
-									required: ['type', 'name', 'version', 'count', 'time'],
-									additionalProperties: false,
-								},
-							},
+							data: { type: 'array' },
 						},
 						required: ['year', 'month', 'day', 'data'],
 						additionalProperties: false,
@@ -497,20 +346,7 @@ const statisticsEndpoints = API.v1.get(
 							year: { type: 'integer' },
 							month: { type: 'integer' },
 							day: { type: 'integer' },
-							data: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										name: { type: 'string' },
-										version: { type: 'string' },
-										count: { type: 'integer' },
-										time: { type: 'integer' },
-									},
-									required: ['name', 'version', 'count', 'time'],
-									additionalProperties: false,
-								},
-							},
+							data: { type: 'array' },
 						},
 						required: ['year', 'month', 'day', 'data'],
 						additionalProperties: false,
@@ -521,20 +357,7 @@ const statisticsEndpoints = API.v1.get(
 							year: { type: 'integer' },
 							month: { type: 'integer' },
 							day: { type: 'integer' },
-							data: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										name: { type: 'string' },
-										version: { type: 'string' },
-										count: { type: 'integer' },
-										time: { type: 'integer' },
-									},
-									required: ['name', 'version', 'count', 'time'],
-									additionalProperties: false,
-								},
-							},
+							data: { type: 'array' },
 						},
 						required: ['year', 'month', 'day', 'data'],
 						additionalProperties: false,
@@ -545,20 +368,7 @@ const statisticsEndpoints = API.v1.get(
 							year: { type: 'integer' },
 							month: { type: 'integer' },
 							day: { type: 'integer' },
-							data: {
-								type: 'array',
-								items: {
-									type: 'object',
-									properties: {
-										name: { type: 'string' },
-										version: { type: 'string' },
-										count: { type: 'integer' },
-										time: { type: 'integer' },
-									},
-									required: ['name', 'version', 'count', 'time'],
-									additionalProperties: false,
-								},
-							},
+							data: { type: 'array' },
 						},
 						required: ['year', 'month', 'day', 'data'],
 						additionalProperties: false,
@@ -588,6 +398,73 @@ const statisticsEndpoints = API.v1.get(
 					},
 					services: { type: 'object' },
 					importer: { type: 'object' },
+					videoConf: {
+						type: 'object',
+						properties: {
+							videoConference: {
+								type: 'object',
+								properties: {
+									started: { type: 'integer' },
+									ended: { type: 'integer' },
+								},
+								required: ['started', 'ended'],
+								additionalProperties: false,
+							},
+							direct: {
+								type: 'object',
+								properties: {
+									calling: { type: 'integer' },
+									started: { type: 'integer' },
+									ended: { type: 'integer' },
+								},
+								required: ['calling', 'started', 'ended'],
+								additionalProperties: false,
+							},
+							livechat: {
+								type: 'object',
+								properties: {
+									started: { type: 'integer' },
+									ended: { type: 'integer' },
+								},
+								required: ['started', 'ended'],
+								additionalProperties: false,
+							},
+							settings: {
+								type: 'object',
+								properties: {
+									provider: { type: 'string' },
+									dms: { type: 'boolean' },
+									channels: { type: 'boolean' },
+									groups: { type: 'boolean' },
+									teams: { type: 'boolean' },
+								},
+								// FIXME: dms and channels, groups, teams should be on becouse its not optional in the parant interface [IStats]
+								required: ['provider'],
+								additionalProperties: false,
+							},
+						},
+						required: ['videoConference', 'direct', 'livechat', 'settings'],
+						additionalProperties: false,
+					},
+					contactVerification: {
+						type: 'object',
+						properties: {
+							totalContacts: { type: 'integer' },
+							totalUnknownContacts: { type: 'integer' },
+							totalMergedContacts: { type: 'integer' },
+							totalConflicts: { type: 'integer' },
+							totalResolvedConflicts: { type: 'integer' },
+							totalBlockedContacts: { type: 'integer' },
+							totalPartiallyBlockedContacts: { type: 'integer' },
+							totalFullyBlockedContacts: { type: 'integer' },
+							totalVerifiedContacts: { type: 'integer' },
+							avgChannelsPerContact: { type: 'number' },
+							totalContactsWithoutChannels: { type: 'integer' },
+							totalImportedContacts: { type: 'integer' },
+							totalUpsellViews: { type: 'integer' },
+							totalUpsellClicks: { type: 'integer' },
+						},
+					},
 					settings: {
 						type: 'object',
 						properties: {
@@ -721,7 +598,7 @@ const statisticsEndpoints = API.v1.get(
 							videoConference: {
 								type: 'object',
 								properties: {
-									videoConference: { type: 'boolean' },
+									bigBlueButton: { type: 'boolean' },
 									jitsiEnabled: { type: 'boolean' },
 								},
 								additionalProperties: false,
@@ -757,16 +634,19 @@ const statisticsEndpoints = API.v1.get(
 						],
 						additionalProperties: false,
 					},
+					pushQueue: { type: 'integer' },
 					enterprise: {
 						type: 'object',
 						properties: {
 							modules: {
 								type: 'array',
-								items: { type: 'string' },
+								items: [{ type: 'string' }],
+								minItems: 0,
 							},
 							tags: {
 								type: 'array',
-								items: { type: 'string' },
+								items: [{ type: 'string' }],
+								minItems: 0,
 							},
 							seatRequests: { type: 'integer' },
 							livechatTags: { type: 'integer' },
@@ -845,94 +725,53 @@ const statisticsEndpoints = API.v1.get(
 						required: ['modules', 'tags', 'seatRequests'],
 						additionalProperties: false,
 					},
-					createdAt: {
-						anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
+					teams: {
+						type: 'object',
+						properties: {
+							totalTeams: { type: 'integer' },
+							totalRoomsInsideTeams: { type: 'integer' },
+							totalDefaultRoomsInsideTeams: { type: 'integer' },
+						},
+						required: ['totalTeams', 'totalDefaultRoomsInsideTeams', 'totalRoomsInsideTeams'],
+						additionalProperties: false,
 					},
-					totalOTR: { type: 'integer' },
-					totalOTRRooms: { type: 'integer' },
-					slashCommandsJitsi: { type: 'integer' },
+					dashboardCount: { type: 'integer' },
 					messageAuditApply: { type: 'integer' },
 					messageAuditLoad: { type: 'integer' },
-					dashboardCount: { type: 'integer' },
 					joinJitsiButton: { type: 'integer' },
+					slashCommandsJitsi: { type: 'integer' },
+					totalOTRRooms: { type: 'integer' },
+					totalOTR: { type: 'integer' },
 					totalBroadcastRooms: { type: 'integer' },
 					totalTriggeredEmails: { type: 'integer' },
 					totalRoomsWithStarred: { type: 'integer' },
 					totalRoomsWithPinned: { type: 'integer' },
-					totalUserEmail2fa: { type: 'integer' },
 					totalUserTOTP: { type: 'integer' },
-					totalStarred: { type: 'integer' },
+					totalUserEmail2fa: { type: 'integer' },
 					totalPinned: { type: 'integer' },
+					totalStarred: { type: 'integer' },
 					totalLinkInvitation: { type: 'integer' },
+					totalLinkInvitationUses: { type: 'integer' },
 					totalEmailInvitation: { type: 'integer' },
 					totalE2ERooms: { type: 'integer' },
 					logoChange: { type: 'boolean' },
+					showHomeButton: { type: 'boolean' },
+					totalEncryptedMessages: { type: 'integer' },
+					totalManuallyAddedUsers: { type: 'integer' },
+					totalSubscriptionRoles: { type: 'integer' },
+					totalUserRoles: { type: 'integer' },
+					totalCustomRoles: { type: 'integer' },
+					totalWebRTCCalls: { type: 'integer' },
+					uncaughtExceptionsCount: { type: 'integer' },
+					// Push notification stats
+					push: { type: 'integer' },
+					pushSecured: { type: 'boolean' },
 					homeTitleChanged: { type: 'boolean' },
 					homeBodyChanged: { type: 'boolean' },
 					customCSSChanged: { type: 'boolean' },
 					onLogoutCustomScriptChanged: { type: 'boolean' },
 					loggedOutCustomScriptChanged: { type: 'boolean' },
 					loggedInCustomScriptChanged: { type: 'boolean' },
-					roomsInsideTeams: { type: 'integer' },
-					showHomeButton: { type: 'boolean' },
-					totalEncryptedMessages: { type: 'integer' },
-					totalLinkInvitationUses: { type: 'integer' },
-					totalManuallyAddedUsers: { type: 'integer' },
-					videoConf: {
-						type: 'object',
-						properties: {
-							videoConference: {
-								type: 'object',
-								properties: {
-									started: { type: 'integer' },
-									ended: { type: 'integer' },
-								},
-								required: ['started', 'ended'],
-								additionalProperties: false,
-							},
-							direct: {
-								type: 'object',
-								properties: {
-									calling: { type: 'integer' },
-									started: { type: 'integer' },
-									ended: { type: 'integer' },
-								},
-								required: ['calling', 'started', 'ended'],
-								additionalProperties: false,
-							},
-							livechat: {
-								type: 'object',
-								properties: {
-									started: { type: 'integer' },
-									ended: { type: 'integer' },
-								},
-								required: ['started', 'ended'],
-								additionalProperties: false,
-							},
-							settings: {
-								type: 'object',
-								properties: {
-									provider: { type: 'string' },
-									dms: { type: 'boolean' },
-									channels: { type: 'boolean' },
-									groups: { type: 'boolean' },
-									teams: { type: 'boolean' },
-								},
-								// FIXME: dms and channels, groups, teams should be on becouse its not optional in the parant interface [IStats]
-								required: ['provider'],
-								additionalProperties: false,
-							},
-						},
-						required: ['videoConference', 'direct', 'livechat', 'settings'],
-						additionalProperties: false,
-					},
-					totalSubscriptionRoles: { type: 'integer' },
-					totalUserRoles: { type: 'integer' },
-					totalCustomRoles: { type: 'integer' },
-					totalWebRTCCalls: { type: 'integer' },
-					uncaughtExceptionsCount: { type: 'integer' },
-					push: { type: 'integer' },
-					pushSecured: { type: 'boolean' },
 					dailyPeakConnections: { type: 'integer' },
 					maxMonthlyPeakConnections: { type: 'integer' },
 					matrixFederation: {
@@ -978,7 +817,8 @@ const statisticsEndpoints = API.v1.get(
 									quantity: { type: 'integer' },
 									servers: {
 										type: 'array',
-										items: { type: 'string' },
+										items: [{ type: 'string' }],
+										minItems: 0,
 									},
 								},
 								required: ['quantity', 'servers'],
@@ -986,29 +826,27 @@ const statisticsEndpoints = API.v1.get(
 							},
 						},
 					},
+					// Omnichannel call stats
 					webRTCEnabled: { type: 'boolean' },
 					webRTCEnabledForOmnichannel: { type: 'boolean' },
 					omnichannelWebRTCCalls: { type: 'integer' },
-					statsToken: { type: 'string' },
-					contactVerification: {
+					// FIX: totalLivechatRoomsWithPriority created in the interface and used in server lib
+					totalLivechatRoomsWithPriority: { type: 'integer' },
+					// FIX: federationOverviewData created in the interface and used in server lib
+					federationOverviewData: {
 						type: 'object',
 						properties: {
-							totalContacts: { type: 'integer' },
-							totalUnknownContacts: { type: 'integer' },
-							totalMergedContacts: { type: 'integer' },
-							totalConflicts: { type: 'integer' },
-							totalResolvedConflicts: { type: 'integer' },
-							totalBlockedContacts: { type: 'integer' },
-							totalPartiallyBlockedContacts: { type: 'integer' },
-							totalFullyBlockedContacts: { type: 'integer' },
-							totalVerifiedContacts: { type: 'integer' },
-							avgChannelsPerContact: { type: 'number' },
-							totalContactsWithoutChannels: { type: 'integer' },
-							totalImportedContacts: { type: 'integer' },
-							totalUpsellViews: { type: 'integer' },
-							totalUpsellClicks: { type: 'integer' },
+							numberOfEvents: { type: 'integer' },
+							numberOfFederatedUsers: { type: 'integer' },
+							numberOfServers: { type: 'integer' },
 						},
 					},
+					createdAt: {
+						anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
+					},
+					// FIX: roomsInsideTeams created in the interface and used in server lib
+					roomsInsideTeams: { type: 'integer' },
+					statsToken: { type: 'string' },
 					success: {
 						type: 'boolean',
 						description: 'Indicates if the request was successful.',
@@ -1054,22 +892,12 @@ const statisticsEndpoints = API.v1.get(
 	},
 	async function action() {
 		const { refresh = 'false' } = this.queryParams;
-		const statistics = await getLastStatistics({
-			userId: this.userId,
-			refresh: refresh === 'true',
-		});
-		console.log(`refresh : ${refresh}`);
-		console.log(`isArray`);
-		Object.entries(statistics).forEach((entry) => {
-			const [key, value] = entry;
-			if (Array.isArray(value)) console.log(`${key}: ${value}`);
-		});
-		console.log(`not isArray`);
-		Object.entries(statistics).forEach((entry) => {
-			const [key, value] = entry;
-			if (!Array.isArray(value)) console.log(`${key}: ${value}`);
-		});
-		return API.v1.success(statistics);
+		return API.v1.success(
+			await getLastStatistics({
+				userId: this.userId,
+				refresh: refresh === 'true',
+			}),
+		);
 	},
 );
 
@@ -1113,6 +941,7 @@ const statisticsListEndpoints = API.v1.get(
 							type: 'object',
 							properties: {
 								_id: { type: 'string' },
+								// Setup Wizard
 								wizard: {
 									type: 'object',
 									properties: {
@@ -1126,13 +955,15 @@ const statisticsListEndpoints = API.v1.get(
 									},
 									additionalProperties: false,
 								},
+								// Version
 								uniqueId: { type: 'string' },
+								installedAt: { type: 'string' },
 								deploymentFingerprintHash: { type: 'string' },
 								deploymentFingerprintVerified: { type: 'boolean' },
-								installedAt: { type: 'string' },
 								version: { type: 'string' },
 								tag: { type: 'string' },
 								branch: { type: 'string' },
+								// User statistics
 								totalUsers: { type: 'integer' },
 								activeUsers: { type: 'integer' },
 								activeGuests: { type: 'integer' },
@@ -1147,6 +978,7 @@ const statisticsListEndpoints = API.v1.get(
 									type: 'object',
 									additionalProperties: { type: 'integer' },
 								},
+								// Room statistics
 								totalRooms: { type: 'integer' },
 								totalChannels: { type: 'integer' },
 								totalPrivateGroups: { type: 'integer' },
@@ -1154,33 +986,130 @@ const statisticsListEndpoints = API.v1.get(
 								totalLivechat: { type: 'integer' },
 								totalDiscussions: { type: 'integer' },
 								totalThreads: { type: 'integer' },
-								teams: {
-									type: 'object',
-									properties: {
-										totalTeams: { type: 'integer' },
-										totalRoomsInsideTeams: { type: 'integer' },
-										totalDefaultRoomsInsideTeams: { type: 'integer' },
-									},
-									required: ['totalTeams', 'totalDefaultRoomsInsideTeams', 'totalRoomsInsideTeams'],
-									additionalProperties: false,
-								},
+								// livechat visitors
 								totalLivechatVisitors: { type: 'integer' },
+								// livechat agents
 								totalLivechatAgents: { type: 'integer' },
 								totalLivechatManagers: { type: 'integer' },
-								totalCustomFields: { type: 'integer' },
-								totalLivechatPublicCustomFields: { type: 'integer' },
-								livechatAutomaticForwardingUnansweredChats: { type: 'boolean' },
+								// livechat enabled
 								livechatEnabled: { type: 'boolean' },
+								// Count and types of omnichannel rooms
+								omnichannelSources: {
+									type: 'array',
+									items: [
+										{
+											type: 'object',
+											properties: {
+												id: { type: 'string' },
+												type: { type: 'string' },
+												count: { type: 'number' },
+												alias: { type: 'string' },
+											},
+											additionalProperties: false,
+										},
+									],
+									minItems: 0,
+								},
+								// Number of livechat rooms with department
+								totalLivechatRoomsWithDepartment: { type: 'integer' },
+								// Number of departments
+								departments: { type: 'integer' },
+								// Number of archived departments
+								archivedDepartments: { type: 'integer' },
+								// Workspace allows dpeartment removal
 								isDepartmentRemovalEnabled: { type: 'boolean' },
+								// Number of triggers
+								totalTriggers: { type: 'integer' },
+								// Number of custom fields
+								totalCustomFields: { type: 'integer' },
+								// Number of public custom fields
+								totalLivechatPublicCustomFields: { type: 'integer' },
+								// Livechat Automatic forwarding feature enabled
+								livechatAutomaticForwardingUnansweredChats: { type: 'boolean' },
+								// Type of routing algorithm used on omnichannel
+								routingAlgorithm: { type: 'string' },
+								// is on-hold active
+								onHoldEnabled: { type: 'boolean' },
+								// Number of Email Inboxes
+								emailInboxes: { type: 'integer' },
+								BusinessHours: {
+									type: 'object',
+									properties: {
+										// Number of Business Hours
+										total: { type: 'number' },
+										// Business Hours strategy
+										strategy: { type: 'string' },
+									},
+									required: ['total', 'strategy'],
+									additionalProperties: false,
+								},
+								// Last-Chatted Agent Preferred (enabled/disabled)
+								lastChattedAgentPreferred: { type: 'boolean' },
+								// Assign new conversations to the contact manager (enabled/disabled)
+								assignNewConversationsToContactManager: { type: 'boolean' },
+								// How to handle Visitor Abandonment setting
+								visitorAbandonment: { type: 'string' },
+								// Amount of chats placed on hold
+								chatsOnHold: { type: 'integer' },
+								// VoIP Enabled
+								voipEnabled: { type: 'boolean' },
+								// Amount of VoIP Calls
+								voipCalls: { type: 'integer' },
+								// Amount of VoIP Extensions connected
+								voipExtensions: { type: 'integer' },
+								// Amount of Calls that ended properly
+								voipSuccessfulCalls: { type: 'integer' },
+								// Amount of Calls that ended with an error
+								voipErrorCalls: { type: 'integer' },
+								// Amount of Calls that were put on hold
+								voipOnHoldCalls: { type: 'integer' },
+								omnichannelContactsBySource: {
+									type: 'object',
+									properties: {
+										contactsCount: { type: 'integer' },
+										conversationsCount: { type: 'integer' },
+										sources: { type: 'array' },
+									},
+									required: ['contactsCount', 'conversationsCount'],
+									additionalProperties: false,
+								},
+								uniqueContactsOfLastMonth: {
+									type: 'object',
+									properties: {
+										contactsCount: { type: 'integer' },
+										conversationsCount: { type: 'integer' },
+										sources: { type: 'array' },
+									},
+									required: ['contactsCount', 'conversationsCount'],
+									additionalProperties: false,
+								},
+								uniqueContactsOfLastWeek: {
+									type: 'object',
+									properties: {
+										contactsCount: { type: 'integer' },
+										conversationsCount: { type: 'integer' },
+										sources: { type: 'array' },
+									},
+									required: ['contactsCount', 'conversationsCount'],
+									additionalProperties: false,
+								},
+								uniqueContactsOfYesterday: {
+									type: 'object',
+									properties: {
+										contactsCount: { type: 'integer' },
+										conversationsCount: { type: 'integer' },
+										sources: { type: 'array' },
+									},
+									required: ['contactsCount', 'conversationsCount'],
+									additionalProperties: false,
+								},
 								totalChannelMessages: { type: 'integer' },
 								totalPrivateGroupMessages: { type: 'integer' },
-								totalDirectMessages: { type: 'integer' },
 								totalDiscussionsMessages: { type: 'integer' },
+								totalDirectMessages: { type: 'integer' },
 								totalLivechatMessages: { type: 'integer' },
-								totalLivechatRoomsWithPriority: { type: 'integer' },
-								totalLivechatRoomsWithDepartment: { type: 'integer' },
-								totalTriggers: { type: 'integer' },
 								totalMessages: { type: 'integer' },
+								// Federation statistics
 								federatedServers: { type: 'integer' },
 								federatedUsers: { type: 'integer' },
 								lastLogin: { type: 'string' },
@@ -1196,7 +1125,8 @@ const statisticsListEndpoints = API.v1.get(
 										uptime: { type: 'number' },
 										loadavg: {
 											type: 'array',
-											items: { type: 'number' },
+											items: [{ type: 'number' }],
+											minItems: 0,
 										},
 										totalmem: { type: 'integer' },
 										freemem: { type: 'integer' },
@@ -1224,6 +1154,8 @@ const statisticsListEndpoints = API.v1.get(
 									required: ['method', 'platform'],
 									additionalProperties: false,
 								},
+								readReceiptsEnabled: { type: 'boolean' },
+								readReceiptsDetailed: { type: 'boolean' },
 								enterpriseReady: { type: 'boolean' },
 								uploadsTotal: { type: 'integer' },
 								uploadsTotalSize: { type: 'integer' },
@@ -1231,8 +1163,8 @@ const statisticsListEndpoints = API.v1.get(
 									type: 'object',
 									properties: {
 										_id: { type: 'string' },
-										locked: { type: 'boolean' },
 										version: { type: 'integer' },
+										locked: { type: 'boolean' },
 										hash: { type: 'string' },
 										buildAt: {
 											anyOf: [{ type: 'string' }, { type: 'object' }],
@@ -1246,180 +1178,28 @@ const statisticsListEndpoints = API.v1.get(
 									// additionalProperties: false,
 								},
 								instanceCount: { type: 'integer' },
-								oplogEnabled: { type: 'boolean' },
 								msEnabled: { type: 'boolean' },
+								oplogEnabled: { type: 'boolean' },
 								mongoVersion: { type: 'string' },
 								mongoStorageEngine: { type: 'string' },
-								pushQueue: { type: 'integer' },
-								omnichannelSources: {
-									type: 'array',
-									items: [
-										{
-											type: 'object',
-											properties: {
-												id: { type: 'string' },
-												type: { type: 'string' },
-												count: { type: 'number' },
-												alias: { type: 'string' },
-											},
-											additionalProperties: false,
-										},
-									],
-								},
-								omnichannelContactsBySource: {
+								uniqueUsersOfYesterday: {
 									type: 'object',
 									properties: {
-										contactsCount: { type: 'integer' },
-										conversationsCount: { type: 'integer' },
-										sources: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													source: { type: 'array' },
-													contactsCount: { type: 'integer' },
-													conversationsCount: { type: 'integer' },
-												},
-												required: ['contactsCount', 'conversationsCount'],
-												additionalProperties: false,
-											},
-										},
+										year: { type: 'integer' },
+										month: { type: 'integer' },
+										day: { type: 'integer' },
+										data: { type: 'array' },
 									},
-									required: ['contactsCount', 'conversationsCount'],
+									required: ['year', 'month', 'day', 'data'],
 									additionalProperties: false,
 								},
-								uniqueContactsOfLastMonth: {
-									type: 'object',
-									properties: {
-										contactsCount: { type: 'integer' },
-										conversationsCount: { type: 'integer' },
-										sources: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													source: { type: 'string' },
-													contactsCount: { type: 'integer' },
-													conversationsCount: { type: 'integer' },
-												},
-												required: ['contactsCount', 'conversationsCount'],
-												additionalProperties: false,
-											},
-										},
-									},
-									required: ['contactsCount', 'conversationsCount'],
-									additionalProperties: false,
-								},
-								uniqueContactsOfLastWeek: {
-									type: 'object',
-									properties: {
-										contactsCount: { type: 'integer' },
-										conversationsCount: { type: 'integer' },
-										sources: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													source: { type: 'string' },
-													contactsCount: { type: 'integer' },
-													conversationsCount: { type: 'integer' },
-												},
-												required: ['source', 'contactsCount', 'conversationsCount'],
-												additionalProperties: false,
-											},
-										},
-									},
-									required: ['contactsCount', 'conversationsCount'],
-									additionalProperties: false,
-								},
-								uniqueContactsOfYesterday: {
-									type: 'object',
-									properties: {
-										contactsCount: { type: 'integer' },
-										conversationsCount: { type: 'integer' },
-										sources: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													source: { type: 'string' },
-													contactsCount: { type: 'integer' },
-													conversationsCount: { type: 'integer' },
-												},
-												required: ['contactsCount', 'conversationsCount'],
-												additionalProperties: false,
-											},
-										},
-									},
-									required: ['contactsCount', 'conversationsCount'],
-									additionalProperties: false,
-								},
-								departments: { type: 'integer' },
-								archivedDepartments: { type: 'integer' },
-								routingAlgorithm: { type: 'string' },
-								onHoldEnabled: { type: 'boolean' },
-								emailInboxes: { type: 'integer' },
-								BusinessHours: {
-									type: 'object',
-									properties: {
-										total: { type: 'number' },
-										strategy: { type: 'string' },
-									},
-									required: ['total', 'strategy'],
-									additionalProperties: false,
-								},
-								lastChattedAgentPreferred: { type: 'boolean' },
-								assignNewConversationsToContactManager: { type: 'boolean' },
-								visitorAbandonment: { type: 'string' },
-								chatsOnHold: { type: 'integer' },
-								voipEnabled: { type: 'boolean' },
-								voipCalls: { type: 'integer' },
-								voipExtensions: { type: 'integer' },
-								voipSuccessfulCalls: { type: 'integer' },
-								voipErrorCalls: { type: 'integer' },
-								voipOnHoldCalls: { type: 'integer' },
-								federationOverviewData: {
-									type: 'object',
-									properties: {
-										numberOfEvents: { type: 'integer' },
-										numberOfFederatedUsers: { type: 'integer' },
-										numberOfServers: { type: 'integer' },
-									},
-								},
-								readReceiptsEnabled: { type: 'boolean' },
-								readReceiptsDetailed: { type: 'boolean' },
 								uniqueUsersOfLastWeek: {
 									type: 'object',
 									properties: {
 										year: { type: 'integer' },
 										month: { type: 'integer' },
 										day: { type: 'integer' },
-										data: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													count: { type: 'integer' },
-													sessions: { type: 'integer' },
-													roles: {
-														type: 'array',
-														items: {
-															type: 'object',
-															properties: {
-																role: { type: 'string' },
-																count: { type: 'integer' },
-																sessions: { type: 'integer' },
-																time: { type: 'integer' },
-															},
-															required: ['role', 'count', 'sessions', 'time'],
-															additionalProperties: false,
-														},
-													},
-												},
-												required: ['count', 'sessions', 'roles'],
-												additionalProperties: false,
-											},
-										},
+										data: { type: 'array' },
 									},
 									required: ['year', 'month', 'day', 'data'],
 									additionalProperties: false,
@@ -1430,68 +1210,7 @@ const statisticsListEndpoints = API.v1.get(
 										year: { type: 'integer' },
 										month: { type: 'integer' },
 										day: { type: 'integer' },
-										data: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													count: { type: 'integer' },
-													sessions: { type: 'integer' },
-													roles: {
-														type: 'array',
-														items: {
-															type: 'object',
-															properties: {
-																role: { type: 'string' },
-																count: { type: 'integer' },
-																sessions: { type: 'integer' },
-																time: { type: 'integer' },
-															},
-															required: ['role', 'count', 'sessions', 'time'],
-															additionalProperties: false,
-														},
-													},
-												},
-												required: ['count', 'sessions', 'roles'],
-												additionalProperties: false,
-											},
-										},
-									},
-									required: ['year', 'month', 'day', 'data'],
-									additionalProperties: false,
-								},
-								uniqueUsersOfYesterday: {
-									type: 'object',
-									properties: {
-										year: { type: 'integer' },
-										month: { type: 'integer' },
-										day: { type: 'integer' },
-										data: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													count: { type: 'integer' },
-													sessions: { type: 'integer' },
-													roles: {
-														type: 'array',
-														items: {
-															type: 'object',
-															properties: {
-																role: { type: 'string' },
-																count: { type: 'integer' },
-																sessions: { type: 'integer' },
-																time: { type: 'integer' },
-															},
-															required: ['role', 'count', 'sessions', 'time'],
-															additionalProperties: false,
-														},
-													},
-												},
-												required: ['count', 'sessions', 'roles'],
-												additionalProperties: false,
-											},
-										},
+										data: { type: 'array' },
 									},
 									required: ['year', 'month', 'day', 'data'],
 									additionalProperties: false,
@@ -1502,21 +1221,7 @@ const statisticsListEndpoints = API.v1.get(
 										year: { type: 'integer' },
 										month: { type: 'integer' },
 										day: { type: 'integer' },
-										data: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													type: { type: 'string' },
-													name: { type: 'string' },
-													version: { type: 'string' },
-													count: { type: 'integer' },
-													time: { type: 'integer' },
-												},
-												required: ['type', 'name', 'version', 'count', 'time'],
-												additionalProperties: false,
-											},
-										},
+										data: { type: 'array' },
 									},
 									required: ['year', 'month', 'day', 'data'],
 									additionalProperties: false,
@@ -1527,21 +1232,7 @@ const statisticsListEndpoints = API.v1.get(
 										year: { type: 'integer' },
 										month: { type: 'integer' },
 										day: { type: 'integer' },
-										data: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													type: { type: 'string' },
-													name: { type: 'string' },
-													version: { type: 'string' },
-													count: { type: 'integer' },
-													time: { type: 'integer' },
-												},
-												required: ['type', 'name', 'version', 'count', 'time'],
-												additionalProperties: false,
-											},
-										},
+										data: { type: 'array' },
 									},
 									required: ['year', 'month', 'day', 'data'],
 									additionalProperties: false,
@@ -1552,21 +1243,7 @@ const statisticsListEndpoints = API.v1.get(
 										year: { type: 'integer' },
 										month: { type: 'integer' },
 										day: { type: 'integer' },
-										data: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													type: { type: 'string' },
-													name: { type: 'string' },
-													version: { type: 'string' },
-													count: { type: 'integer' },
-													time: { type: 'integer' },
-												},
-												required: ['type', 'name', 'version', 'count', 'time'],
-												additionalProperties: false,
-											},
-										},
+										data: { type: 'array' },
 									},
 									required: ['year', 'month', 'day', 'data'],
 									additionalProperties: false,
@@ -1577,20 +1254,7 @@ const statisticsListEndpoints = API.v1.get(
 										year: { type: 'integer' },
 										month: { type: 'integer' },
 										day: { type: 'integer' },
-										data: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													name: { type: 'string' },
-													version: { type: 'string' },
-													count: { type: 'integer' },
-													time: { type: 'integer' },
-												},
-												required: ['name', 'version', 'count', 'time'],
-												additionalProperties: false,
-											},
-										},
+										data: { type: 'array' },
 									},
 									required: ['year', 'month', 'day', 'data'],
 									additionalProperties: false,
@@ -1601,20 +1265,7 @@ const statisticsListEndpoints = API.v1.get(
 										year: { type: 'integer' },
 										month: { type: 'integer' },
 										day: { type: 'integer' },
-										data: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													name: { type: 'string' },
-													version: { type: 'string' },
-													count: { type: 'integer' },
-													time: { type: 'integer' },
-												},
-												required: ['name', 'version', 'count', 'time'],
-												additionalProperties: false,
-											},
-										},
+										data: { type: 'array' },
 									},
 									required: ['year', 'month', 'day', 'data'],
 									additionalProperties: false,
@@ -1625,20 +1276,7 @@ const statisticsListEndpoints = API.v1.get(
 										year: { type: 'integer' },
 										month: { type: 'integer' },
 										day: { type: 'integer' },
-										data: {
-											type: 'array',
-											items: {
-												type: 'object',
-												properties: {
-													name: { type: 'string' },
-													version: { type: 'string' },
-													count: { type: 'integer' },
-													time: { type: 'integer' },
-												},
-												required: ['name', 'version', 'count', 'time'],
-												additionalProperties: false,
-											},
-										},
+										data: { type: 'array' },
 									},
 									required: ['year', 'month', 'day', 'data'],
 									additionalProperties: false,
@@ -1675,6 +1313,73 @@ const statisticsListEndpoints = API.v1.get(
 								},
 								services: { type: 'object' },
 								importer: { type: 'object' },
+								videoConf: {
+									type: 'object',
+									properties: {
+										videoConference: {
+											type: 'object',
+											properties: {
+												started: { type: 'integer' },
+												ended: { type: 'integer' },
+											},
+											required: ['started', 'ended'],
+											additionalProperties: false,
+										},
+										direct: {
+											type: 'object',
+											properties: {
+												calling: { type: 'integer' },
+												started: { type: 'integer' },
+												ended: { type: 'integer' },
+											},
+											required: ['calling', 'started', 'ended'],
+											additionalProperties: false,
+										},
+										livechat: {
+											type: 'object',
+											properties: {
+												started: { type: 'integer' },
+												ended: { type: 'integer' },
+											},
+											required: ['started', 'ended'],
+											additionalProperties: false,
+										},
+										settings: {
+											type: 'object',
+											properties: {
+												provider: { type: 'string' },
+												dms: { type: 'boolean' },
+												channels: { type: 'boolean' },
+												groups: { type: 'boolean' },
+												teams: { type: 'boolean' },
+											},
+											// FIXME: dms and channels, groups, teams should be on becouse its not optional in the parant interface [IStats]
+											required: ['provider'],
+											additionalProperties: false,
+										},
+									},
+									required: ['videoConference', 'direct', 'livechat', 'settings'],
+									additionalProperties: false,
+								},
+								contactVerification: {
+									type: 'object',
+									properties: {
+										totalContacts: { type: 'integer' },
+										totalUnknownContacts: { type: 'integer' },
+										totalMergedContacts: { type: 'integer' },
+										totalConflicts: { type: 'integer' },
+										totalResolvedConflicts: { type: 'integer' },
+										totalBlockedContacts: { type: 'integer' },
+										totalPartiallyBlockedContacts: { type: 'integer' },
+										totalFullyBlockedContacts: { type: 'integer' },
+										totalVerifiedContacts: { type: 'integer' },
+										avgChannelsPerContact: { type: 'number' },
+										totalContactsWithoutChannels: { type: 'integer' },
+										totalImportedContacts: { type: 'integer' },
+										totalUpsellViews: { type: 'integer' },
+										totalUpsellClicks: { type: 'integer' },
+									},
+								},
 								settings: {
 									type: 'object',
 									properties: {
@@ -1808,7 +1513,7 @@ const statisticsListEndpoints = API.v1.get(
 										videoConference: {
 											type: 'object',
 											properties: {
-												videoConference: { type: 'boolean' },
+												bigBlueButton: { type: 'boolean' },
 												jitsiEnabled: { type: 'boolean' },
 											},
 											additionalProperties: false,
@@ -1844,16 +1549,19 @@ const statisticsListEndpoints = API.v1.get(
 									],
 									additionalProperties: false,
 								},
+								pushQueue: { type: 'integer' },
 								enterprise: {
 									type: 'object',
 									properties: {
 										modules: {
 											type: 'array',
-											items: { type: 'string' },
+											items: [{ type: 'string' }],
+											minItems: 0,
 										},
 										tags: {
 											type: 'array',
-											items: { type: 'string' },
+											items: [{ type: 'string' }],
+											minItems: 0,
 										},
 										seatRequests: { type: 'integer' },
 										livechatTags: { type: 'integer' },
@@ -1932,94 +1640,53 @@ const statisticsListEndpoints = API.v1.get(
 									required: ['modules', 'tags', 'seatRequests'],
 									additionalProperties: false,
 								},
-								createdAt: {
-									anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
+								teams: {
+									type: 'object',
+									properties: {
+										totalTeams: { type: 'integer' },
+										totalRoomsInsideTeams: { type: 'integer' },
+										totalDefaultRoomsInsideTeams: { type: 'integer' },
+									},
+									required: ['totalTeams', 'totalDefaultRoomsInsideTeams', 'totalRoomsInsideTeams'],
+									additionalProperties: false,
 								},
-								totalOTR: { type: 'integer' },
-								totalOTRRooms: { type: 'integer' },
-								slashCommandsJitsi: { type: 'integer' },
+								dashboardCount: { type: 'integer' },
 								messageAuditApply: { type: 'integer' },
 								messageAuditLoad: { type: 'integer' },
-								dashboardCount: { type: 'integer' },
 								joinJitsiButton: { type: 'integer' },
+								slashCommandsJitsi: { type: 'integer' },
+								totalOTRRooms: { type: 'integer' },
+								totalOTR: { type: 'integer' },
 								totalBroadcastRooms: { type: 'integer' },
 								totalTriggeredEmails: { type: 'integer' },
 								totalRoomsWithStarred: { type: 'integer' },
 								totalRoomsWithPinned: { type: 'integer' },
-								totalUserEmail2fa: { type: 'integer' },
 								totalUserTOTP: { type: 'integer' },
-								totalStarred: { type: 'integer' },
+								totalUserEmail2fa: { type: 'integer' },
 								totalPinned: { type: 'integer' },
+								totalStarred: { type: 'integer' },
 								totalLinkInvitation: { type: 'integer' },
+								totalLinkInvitationUses: { type: 'integer' },
 								totalEmailInvitation: { type: 'integer' },
 								totalE2ERooms: { type: 'integer' },
 								logoChange: { type: 'boolean' },
+								showHomeButton: { type: 'boolean' },
+								totalEncryptedMessages: { type: 'integer' },
+								totalManuallyAddedUsers: { type: 'integer' },
+								totalSubscriptionRoles: { type: 'integer' },
+								totalUserRoles: { type: 'integer' },
+								totalCustomRoles: { type: 'integer' },
+								totalWebRTCCalls: { type: 'integer' },
+								uncaughtExceptionsCount: { type: 'integer' },
+								// Push notification stats
+								push: { type: 'integer' },
+								pushSecured: { type: 'boolean' },
 								homeTitleChanged: { type: 'boolean' },
 								homeBodyChanged: { type: 'boolean' },
 								customCSSChanged: { type: 'boolean' },
 								onLogoutCustomScriptChanged: { type: 'boolean' },
 								loggedOutCustomScriptChanged: { type: 'boolean' },
 								loggedInCustomScriptChanged: { type: 'boolean' },
-								roomsInsideTeams: { type: 'integer' },
-								showHomeButton: { type: 'boolean' },
-								totalEncryptedMessages: { type: 'integer' },
-								totalLinkInvitationUses: { type: 'integer' },
-								totalManuallyAddedUsers: { type: 'integer' },
-								videoConf: {
-									type: 'object',
-									properties: {
-										videoConference: {
-											type: 'object',
-											properties: {
-												started: { type: 'integer' },
-												ended: { type: 'integer' },
-											},
-											required: ['started', 'ended'],
-											additionalProperties: false,
-										},
-										direct: {
-											type: 'object',
-											properties: {
-												calling: { type: 'integer' },
-												started: { type: 'integer' },
-												ended: { type: 'integer' },
-											},
-											required: ['calling', 'started', 'ended'],
-											additionalProperties: false,
-										},
-										livechat: {
-											type: 'object',
-											properties: {
-												started: { type: 'integer' },
-												ended: { type: 'integer' },
-											},
-											required: ['started', 'ended'],
-											additionalProperties: false,
-										},
-										settings: {
-											type: 'object',
-											properties: {
-												provider: { type: 'string' },
-												dms: { type: 'boolean' },
-												channels: { type: 'boolean' },
-												groups: { type: 'boolean' },
-												teams: { type: 'boolean' },
-											},
-											// FIXME: dms and channels, groups, teams should be on becouse its not optional in the parant interface [IStats]
-											required: ['provider'],
-											additionalProperties: false,
-										},
-									},
-									required: ['videoConference', 'direct', 'livechat', 'settings'],
-									additionalProperties: false,
-								},
-								totalSubscriptionRoles: { type: 'integer' },
-								totalUserRoles: { type: 'integer' },
-								totalCustomRoles: { type: 'integer' },
-								totalWebRTCCalls: { type: 'integer' },
-								uncaughtExceptionsCount: { type: 'integer' },
-								push: { type: 'integer' },
-								pushSecured: { type: 'boolean' },
 								dailyPeakConnections: { type: 'integer' },
 								maxMonthlyPeakConnections: { type: 'integer' },
 								matrixFederation: {
@@ -2065,7 +1732,8 @@ const statisticsListEndpoints = API.v1.get(
 												quantity: { type: 'integer' },
 												servers: {
 													type: 'array',
-													items: { type: 'string' },
+													items: [{ type: 'string' }],
+													minItems: 0,
 												},
 											},
 											required: ['quantity', 'servers'],
@@ -2073,33 +1741,33 @@ const statisticsListEndpoints = API.v1.get(
 										},
 									},
 								},
+								// Omnichannel call stats
 								webRTCEnabled: { type: 'boolean' },
 								webRTCEnabledForOmnichannel: { type: 'boolean' },
 								omnichannelWebRTCCalls: { type: 'integer' },
-								statsToken: { type: 'string' },
-								contactVerification: {
+								// FIX: totalLivechatRoomsWithPriority created in the interface and used in server lib
+								totalLivechatRoomsWithPriority: { type: 'integer' },
+								// FIX: federationOverviewData created in the interface and used in server lib
+								federationOverviewData: {
 									type: 'object',
 									properties: {
-										totalContacts: { type: 'integer' },
-										totalUnknownContacts: { type: 'integer' },
-										totalMergedContacts: { type: 'integer' },
-										totalConflicts: { type: 'integer' },
-										totalResolvedConflicts: { type: 'integer' },
-										totalBlockedContacts: { type: 'integer' },
-										totalPartiallyBlockedContacts: { type: 'integer' },
-										totalFullyBlockedContacts: { type: 'integer' },
-										totalVerifiedContacts: { type: 'integer' },
-										avgChannelsPerContact: { type: 'number' },
-										totalContactsWithoutChannels: { type: 'integer' },
-										totalImportedContacts: { type: 'integer' },
-										totalUpsellViews: { type: 'integer' },
-										totalUpsellClicks: { type: 'integer' },
+										numberOfEvents: { type: 'integer' },
+										numberOfFederatedUsers: { type: 'integer' },
+										numberOfServers: { type: 'integer' },
 									},
 								},
+								createdAt: {
+									anyOf: [{ type: 'string' }, { type: 'null' }, { type: 'object' }],
+								},
+								// FIX: roomsInsideTeams created in the interface and used in server lib
+								roomsInsideTeams: { type: 'integer' },
+								statsToken: { type: 'string' },
 							},
+							required: [],
 							// TODO: remove this when we have a proper statistics schema
 							// additionalProperties: false,
 						},
+						minItems: 0,
 					},
 					count: { type: 'integer', minimum: 1 },
 					offset: { type: 'integer', minimum: 0, default: 0 },
