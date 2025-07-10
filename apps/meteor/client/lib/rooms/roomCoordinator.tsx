@@ -111,15 +111,14 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return this.getRoomDirectives(roomType).roomName(roomData) ?? '';
 	}
 
-	public readOnly(rid: string, user: AtLeast<IUser, 'username'>): boolean {
-		const room = Rooms.state.get(rid);
+	readOnly(room?: IRoom, user?: AtLeast<IUser, 'username'> | null): boolean {
 		if (!room) {
 			return false;
 		}
 
 		const directives = this.getRoomDirectives(room.t);
 		if (directives?.readOnly) {
-			return directives.readOnly(rid, user);
+			return directives.readOnly(room, user);
 		}
 
 		if (!user?.username) {
