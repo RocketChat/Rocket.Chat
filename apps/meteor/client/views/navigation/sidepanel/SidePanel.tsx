@@ -28,13 +28,13 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: 
 	const openedRoom = useOpenedRoom();
 	const {
 		isTablet,
-		sidePanel: { closeSidePanel, displaySidePanel },
+		sidePanel: { closeSidePanel },
 	} = useLayout();
 
 	usePreventDefault(ref);
 
 	return (
-		<Sidepanel role='tabpanel' aria-label='sidepanel' aria-hidden={!displaySidePanel}>
+		<Sidepanel role='tabpanel' aria-label='sidepanel'>
 			<SidepanelHeader role='heading' aria-label={t(sidePanelFiltersConfig[currentTab].title)}>
 				{isTablet && <IconButton icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
 				<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
