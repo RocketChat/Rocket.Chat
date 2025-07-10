@@ -148,12 +148,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return false;
 	}
 
-	// #ToDo: Move this out of the RoomCoordinator
-	public archived(rid: string): boolean {
-		const room = Rooms.state.get(rid);
-		return Boolean(room?.archived);
-	}
-
 	public verifyCanSendMessage(rid: string): boolean {
 		const room = Rooms.state.get(rid);
 		if (!room?.t) {
