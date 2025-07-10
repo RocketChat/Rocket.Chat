@@ -145,11 +145,43 @@ export class AccountProfile {
 		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 
-	get enableEmail2FAButton(): Locator {
-		return this.page.locator('role=button[name="Enable two-factor authentication via Email"]');
+	get email2FASwitch(): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Two-factor authentication via email' }) });
 	}
 
-	get disableEmail2FAButton(): Locator {
-		return this.page.locator('role=button[name="Disable two-factor authentication via Email"]');
+	get totp2FASwitch(): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Two-factor authentication via TOTP' }) });
+	}
+
+	get required2faModalSetUpButton(): Locator {
+		return this.page.locator('dialog >> button');
+	}
+
+	get btnDeleteMyAccount(): Locator {
+		return this.page.getByRole('button', { name: 'Delete my account' });
+	}
+
+	get deleteAccountDialog(): Locator {
+		return this.page.getByRole('dialog', { name: 'Delete account?' });
+	}
+
+	get deleteAccountDialogMessageWithPassword(): Locator {
+		return this.deleteAccountDialog.getByText('Enter your password to delete your account. This cannot be undone.');
+	}
+
+	get inputDeleteAccountPassword(): Locator {
+		return this.deleteAccountDialog.getByRole('textbox', { name: 'Enter your password to delete your account. This cannot be undone.' });
+	}
+
+	get btnDeleteAccountConfirm(): Locator {
+		return this.deleteAccountDialog.getByRole('button', { name: 'Delete Account' });
+	}
+
+	get btnDeleteAccountCancel(): Locator {
+		return this.deleteAccountDialog.getByRole('button', { name: 'Cancel' });
+	}
+
+	get profileTitle(): Locator {
+		return this.page.getByRole('heading', { name: 'Profile' });
 	}
 }

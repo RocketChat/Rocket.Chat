@@ -1,8 +1,10 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
+import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
@@ -10,37 +12,37 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useClearRemovedRoomsHistory } from './hooks/useClearRemovedRoomsHistory';
 import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
+import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
 import { Subscriptions, Rooms } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
+import { useIdleConnection } from '../../hooks/useIdleConnection';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { useCreateFontStyleElement } from '../../views/account/accessibility/hooks/useCreateFontStyleElement';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
 
 const getUserId = (): string | null => Meteor.userId();
 
-const logout = (): Promise<void> =>
-	new Promise((resolve, reject) => {
-		const user = getUser();
-
-		if (!user) {
-			return resolve();
-		}
-
-		Meteor.logout(async () => {
-			await afterLogoutCleanUpCallback.run(user);
-			sdk.call('logoutCleanUp', user).then(resolve, reject);
-		});
-	});
-
 type UserProviderProps = {
 	children: ReactNode;
 };
+
+const ee = new Emitter();
+Accounts.onLogout(() => ee.emit('logout'));
+
+ee.on('logout', async () => {
+	const user = getUser();
+
+	if (!user) {
+		return;
+	}
+	await afterLogoutCleanUpCallback.run(user);
+	await sdk.call('logoutCleanUp', user);
+});
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const user = useReactiveValue(getUser);
@@ -54,14 +56,13 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
-	const createFontStyleElement = useCreateFontStyleElement();
-	createFontStyleElement(user?.settings?.preferences?.fontSize);
-
 	useEmailVerificationWarning(user ?? undefined);
 	useClearRemovedRoomsHistory(userId);
 
 	useDeleteUser();
 	useUpdateAvatar();
+	useIdleConnection(userId);
+	useReloadAfterLogin(user);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
@@ -81,7 +82,10 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 				return Rooms.find(query, options).fetch();
 			}),
-			logout,
+			logout: async () => Meteor.logout(),
+			onLogout: (cb) => {
+				return ee.on('logout', cb);
+			},
 		}),
 		[userId, user],
 	);

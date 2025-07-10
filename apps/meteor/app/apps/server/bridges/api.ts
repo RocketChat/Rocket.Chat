@@ -3,17 +3,13 @@ import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessor
 import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
 import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
 import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
-import bodyParser from 'body-parser';
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
+import { apiServer } from './router';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
-
-const apiServer = express();
-
-apiServer.disable('x-powered-by');
 
 WebApp.rawConnectHandlers.use(apiServer);
 
@@ -29,7 +25,7 @@ export class AppApisBridge extends ApiBridge {
 		super();
 		this.appRouters = new Map();
 
-		apiServer.use('/api/apps/private/:appId/:hash', bodyParser.json(), (req: IRequestWithPrivateHash, res: Response) => {
+		apiServer.use('/api/apps/private/:appId/:hash', (req: IRequestWithPrivateHash, res: Response) => {
 			const notFound = (): Response => res.sendStatus(404);
 
 			const router = this.appRouters.get(req.params.appId);
@@ -42,7 +38,7 @@ export class AppApisBridge extends ApiBridge {
 			notFound();
 		});
 
-		apiServer.use('/api/apps/public/:appId', bodyParser.json(), (req: Request, res: Response) => {
+		apiServer.use('/api/apps/public/:appId', (req: Request, res: Response) => {
 			const notFound = (): Response => res.sendStatus(404);
 
 			const router = this.appRouters.get(req.params.appId);

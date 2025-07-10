@@ -71,7 +71,7 @@ test.describe.serial('settings-account-profile', () => {
 	test.describe('Security', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('account/security');
-			await page.waitForSelector('.main-content');
+			await page.waitForSelector('#main-content');
 		});
 
 		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
@@ -81,22 +81,15 @@ test.describe.serial('settings-account-profile', () => {
 			expect(results.violations).toEqual([]);
 		});
 
-		test('expect to disable email 2FA', async () => {
+		test('should disable and enable email 2FA', async () => {
 			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
-			await poAccountProfile.disableEmail2FAButton.click();
-
+			await expect(poAccountProfile.email2FASwitch).toBeVisible();
+			await poAccountProfile.email2FASwitch.click();
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
-			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
-		});
+			await poHomeChannel.dismissToast();
 
-		test('expect to enable email 2FA', async () => {
-			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
-			await poAccountProfile.enableEmail2FAButton.click();
-
+			await poAccountProfile.email2FASwitch.click();
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
-			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
 		});
 	});
 
@@ -115,6 +108,11 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.btnTokensAdd.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
 			await poAccountProfile.btnTokenAddedOk.click();
+		});
+
+		await test.step('should not allow add new personal with no name', async () => {
+			await poAccountProfile.btnTokensAdd.click();
+			await expect(page.getByRole('alert').filter({ hasText: 'Please provide a name for your token' })).toBeVisible();
 		});
 
 		await test.step('should not allow add new personal token with same name', async () => {

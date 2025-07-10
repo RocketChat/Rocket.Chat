@@ -20,8 +20,8 @@ import type {
 	IExportOperationsModel,
 	IFederationKeysModel,
 	IFederationServersModel,
-	IFreeSwitchCallModel,
-	IFreeSwitchEventModel,
+	IFreeSwitchChannelModel,
+	IFreeSwitchChannelEventModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -89,6 +89,7 @@ import type {
 	IMigrationsModel,
 	IModerationReportsModel,
 	IWorkspaceCredentialsModel,
+	IFreeSwitchChannelEventDeltaModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -125,9 +126,7 @@ export function getCollectionName(name: string): string {
 
 const disabledEnvVar = String(process.env.DISABLE_DB_WATCHERS).toLowerCase();
 
-export const dbWatchersDisabled =
-	(process.env.NODE_ENV === 'production' && ['yes', 'true'].includes(disabledEnvVar)) ||
-	(process.env.NODE_ENV !== 'production' && !['no', 'false'].includes(disabledEnvVar));
+export const dbWatchersDisabled = !['no', 'false'].includes(disabledEnvVar);
 
 export * from './modelClasses';
 export * from './DatabaseWatcher';
@@ -156,8 +155,9 @@ export const ExportOperations = proxify<IExportOperationsModel>('IExportOperatio
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
-export const FreeSwitchCall = proxify<IFreeSwitchCallModel>('IFreeSwitchCallModel');
-export const FreeSwitchEvent = proxify<IFreeSwitchEventModel>('IFreeSwitchEventModel');
+export const FreeSwitchChannel = proxify<IFreeSwitchChannelModel>('IFreeSwitchChannelModel');
+export const FreeSwitchChannelEvent = proxify<IFreeSwitchChannelEventModel>('IFreeSwitchChannelEventModel');
+export const FreeSwitchChannelEventDelta = proxify<IFreeSwitchChannelEventDeltaModel>('IFreeSwitchChannelEventDeltaModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
@@ -256,4 +256,10 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
+}
+
+if (!dbWatchersDisabled) {
+	console.warn(
+		`Database watchers is enabled and this is not the default option.\nRocket.Chat deprecated the usage of \`oplog/change streams\` and are going to remove it the next major version (8.0.0).`,
+	);
 }

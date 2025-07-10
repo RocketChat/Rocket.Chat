@@ -28,4 +28,6 @@ export interface ILDAPConnectionOptions {
 	authenticationUserDN: string;
 	authenticationPassword: string;
 	attributesToQuery: Array<string>;
+	useVariables: boolean;
+	variableMap: string;
 }

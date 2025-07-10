@@ -6,6 +6,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import RoomFileItemWrapper from './RoomFileItemWrapper';
+import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
 import {
 	ContextualbarHeader,
@@ -14,6 +16,7 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarEmptyContent,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 
@@ -57,7 +60,7 @@ const RoomFiles = ({
 	);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='attachment' />
 				<ContextualbarTitle>{t('Files')}</ContextualbarTitle>
@@ -92,15 +95,19 @@ const RoomFiles = ({
 								}}
 								totalCount={total}
 								endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
-								overscan={50}
+								overscan={100}
 								data={filesItems}
 								itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
+								components={{
+									List: RoomFilesListWrapper,
+									Item: RoomFileItemWrapper,
+								}}
 							/>
 						</VirtualizedScrollbars>
 					</Box>
 				)}
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

@@ -1,3 +1,4 @@
+import { ModalProvider } from '@rocket.chat/ui-client';
 import { VoipProvider } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 
@@ -11,7 +12,6 @@ import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
-import ModalProvider from './ModalProvider/ModalProvider';
 import OmnichannelProvider from './OmnichannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
@@ -38,9 +38,9 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 						<SessionProvider>
 							<TooltipProvider>
 								<ToastMessagesProvider>
-									<LayoutProvider>
-										<AvatarUrlProvider>
-											<UserProvider>
+									<AvatarUrlProvider>
+										<UserProvider>
+											<LayoutProvider>
 												<AuthenticationProvider>
 													<CustomSoundProvider>
 														<DeviceProvider>
@@ -66,9 +66,9 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 														</DeviceProvider>
 													</CustomSoundProvider>
 												</AuthenticationProvider>
-											</UserProvider>
-										</AvatarUrlProvider>
-									</LayoutProvider>
+											</LayoutProvider>
+										</UserProvider>
+									</AvatarUrlProvider>
 								</ToastMessagesProvider>
 							</TooltipProvider>
 						</SessionProvider>

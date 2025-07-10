@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: rharkor/caching-for-turbo@v1.6
+      - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 22.13.1
+          node-version: 22.16.0
           deno-version: 1.43.5
           cache-modules: true
           install: true

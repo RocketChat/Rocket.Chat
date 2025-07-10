@@ -47,7 +47,7 @@ jobs:
       #     docker rmi $(docker image ls -aq)
       #     df -h
 
-      - uses: rharkor/caching-for-turbo@v1.6
+      - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore turbo build
         uses: actions/download-artifact@v4

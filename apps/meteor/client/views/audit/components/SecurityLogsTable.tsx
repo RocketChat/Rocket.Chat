@@ -172,7 +172,7 @@ const SecurityLogsTable = (): ReactElement => {
 									onClick={() =>
 										handleItemClick({
 											actor: item.actor,
-											timestamp: new Date(item.ts).toDateString(),
+											timestamp: item.ts,
 											setting,
 											changedFrom: String(previous),
 											changedTo: String(current),

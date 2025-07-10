@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 		// These are not debug logs since we want to know when the action is performed
 		logger.info(`User ${Meteor.userId()} is removing all closed rooms`);
 
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: user });
 		const promises: Promise<void>[] = [];
 		await LivechatRooms.findClosedRooms(departmentIds, {}, extraQuery).forEach(({ _id }: IOmnichannelRoom) => {
 			promises.push(removeOmnichannelRoom(_id));

@@ -22,6 +22,7 @@ import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSett
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
+import { addOAuthServiceMethod } from '../../../lib/server/methods/addOAuthService';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 import { API } from '../api';
@@ -123,7 +124,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
 
-			await Meteor.callAsync('addOAuthService', this.bodyParams.name, this.userId);
+			await addOAuthServiceMethod(this.userId, this.bodyParams.name);
 
 			return API.v1.success();
 		},

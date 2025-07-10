@@ -21,4 +21,11 @@ $metadata['http://localhost:3000/_saml/metadata/test-sp'] = array (
 		),
 	),
 	'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+	// Other settings that may be useful for testing, but are not compatible with the existing e2e tests
+	// 'privatekey' => 'server.pem',
+	// 'certificate' => 'server.crt',
+	// 'redirect.sign' => true,
+	// 'redirect.validate' => true,
+	// 'validate.logout' => true,
+	// 'assertion.encryption' => true,
 );

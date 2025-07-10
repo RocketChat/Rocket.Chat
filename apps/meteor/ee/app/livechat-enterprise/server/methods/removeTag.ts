@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
@@ -18,6 +19,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeTag' });
 		}
 
+		check(id, String);
 		return (await LivechatEnterprise.removeTag(id)).deletedCount > 0;
 	},
 });

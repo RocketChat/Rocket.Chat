@@ -3,12 +3,20 @@ import { LivechatDepartment } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
 import { cbLogger } from './logger';
-import { getUnitsFromUser } from './units';
+import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
-export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelRoom> = {}, unitsFilter?: string[]) => {
+export const restrictQuery = async ({
+	originalQuery = {},
+	unitsFilter,
+	userId,
+}: {
+	originalQuery?: FilterOperators<IOmnichannelRoom>;
+	unitsFilter?: string[];
+	userId?: string;
+}) => {
 	const query = { ...originalQuery };
 
-	let userUnits = await getUnitsFromUser();
+	let userUnits = await getUnitsFromUser(userId);
 	if (!Array.isArray(userUnits)) {
 		if (Array.isArray(unitsFilter) && unitsFilter.length) {
 			return { ...query, departmentAncestors: { $in: unitsFilter } };

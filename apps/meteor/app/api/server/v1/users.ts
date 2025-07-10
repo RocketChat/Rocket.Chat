@@ -30,6 +30,7 @@ import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/persona
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
+import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { registerUser } from '../../../../server/methods/registerUser';
@@ -43,6 +44,7 @@ import { executeSetUserActiveStatus } from '../../../../server/methods/setUserAc
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { checkEmailAvailability } from '../../../lib/server/functions/checkEmailAvailability';
 import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
@@ -662,7 +664,9 @@ API.v1.addRoute(
 			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
 			}
-
+			if (!(await checkEmailAvailability(this.bodyParams.email))) {
+				return API.v1.failure('Email already exists');
+			}
 			if (this.bodyParams.customFields) {
 				try {
 					await validateCustomFields(this.bodyParams.customFields);
@@ -1135,7 +1139,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			return API.v1.success(await Meteor.callAsync('removeOtherTokens'));
+			return API.v1.success(await removeOtherTokens(this.userId, this.connection.id));
 		},
 	},
 );
