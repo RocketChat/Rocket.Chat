@@ -57,7 +57,7 @@ const getFooter = (
 				<Button key='cancel' onClick={onClose}>
 					{t('Cancel')}
 				</Button>,
-				<Button key='confirm' success onClick={onConfirm}>
+				<Button key='confirm' primary onClick={onConfirm}>
 					{t('Allow')}
 				</Button>,
 			];
