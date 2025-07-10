@@ -1,4 +1,5 @@
-import { useMediaDeviceMicrophonePermission, useSetModal } from '@rocket.chat/ui-contexts';
+import { useMediaDeviceMicrophonePermission, useSetInputMediaDevice, useSetModal } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
 import PermissionFlowModal, { type PermissionFlowModalType } from '../components/PermissionFlow/PermissionFlowModal';
@@ -46,35 +47,76 @@ const getModalType = (
 	return 'incomingPrompt';
 };
 
-export const useDevicePermissionPrompt = ({ onAccept, onReject, actionType }: UseDevicePermissionPromptProps) => {
+export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actionType }: UseDevicePermissionPromptProps) => {
 	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
 	const setModal = useSetModal();
+	const setInputMediaDevice = useSetInputMediaDevice();
+	const queryClient = useQueryClient();
 
-	return useCallback(() => {
-		if (state === 'granted') {
-			requestDevice({
-				onAccept,
-			});
-			return;
-		}
+	return useCallback(
+		(stopTracks = true) => {
+			const onAccept = (stream: MediaStream) => {
+				// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
+				queryClient.invalidateQueries({ queryKey: ['media-devices-list'], exact: true });
 
-		const onConfirm = () => {
-			requestDevice?.({
-				onReject,
-				onAccept: (...args) => {
-					onAccept(...args);
-					setModal(null);
-				},
-			});
-		};
+				stream.getTracks().forEach((track) => {
+					const { deviceId } = track.getSettings();
+					if (!deviceId) {
+						return;
+					}
 
-		const onCancel = () => {
-			if (onReject) {
-				onReject();
+					if (track.kind === 'audio' && navigator.mediaDevices.enumerateDevices) {
+						navigator.mediaDevices.enumerateDevices().then((devices) => {
+							const device = devices.find((device) => device.deviceId === deviceId);
+							if (!device) {
+								return;
+							}
+							setInputMediaDevice({
+								id: device.deviceId,
+								label: device.label,
+								type: 'audioinput',
+							});
+						});
+					}
+				});
+				_onAccept(stream);
+
+				// For now we only need this stream to be able to list the devices (firefox doesn't list devices without a stream)
+				// and also to get the selected device from the tracks settings (firefox requests permission per device)
+				// This is set as a flag in case we need to use the stream in the future.
+				if (stopTracks) {
+					stream.getTracks().forEach((track) => {
+						track.stop();
+					});
+				}
+			};
+
+			if (state === 'granted') {
+				requestDevice({
+					onAccept,
+				});
+				return;
 			}
-			setModal(null);
-		};
 
-		setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
-	}, [state, actionType, onAccept, setModal, onReject, requestDevice]);
+			const onConfirm = () => {
+				requestDevice?.({
+					onReject,
+					onAccept: (...args) => {
+						onAccept(...args);
+						setModal(null);
+					},
+				});
+			};
+
+			const onCancel = () => {
+				if (onReject) {
+					onReject();
+				}
+				setModal(null);
+			};
+
+			setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
+		},
+		[state, setModal, actionType, queryClient, _onAccept, setInputMediaDevice, requestDevice, onReject],
+	);
 };

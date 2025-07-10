@@ -2,7 +2,6 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useQueryClient } from '@tanstack/react-query';
 import type { ComponentProps, Ref } from 'react';
 import { forwardRef, useCallback, useState } from 'react';
 
@@ -21,20 +20,10 @@ const VoipSettingsButton = ({ mini = false }: { mini?: boolean }) => {
 	const [isOpen, setIsOpen] = useSafely(useState(false));
 	const menu = useVoipDeviceSettings();
 
-	const queryClient = useQueryClient();
-
 	const _onOpenChange = useDevicePermissionPrompt({
 		actionType: 'device-change',
-		onAccept: (stream) => {
-			// Firefox doesn't allow to get the media devices list without an active stream for each session.
-			// This is a workaround to get the media devices list before answering the call.
-			queryClient.invalidateQueries({ queryKey: ['media-devices-list'], exact: true });
-
-			stream?.getTracks().forEach((track) => {
-				track.stop();
-			});
-
-			return setIsOpen(true);
+		onAccept: () => {
+			setIsOpen(true);
 		},
 		onReject: () => {
 			setIsOpen(false);

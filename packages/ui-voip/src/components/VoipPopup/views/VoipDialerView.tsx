@@ -42,7 +42,7 @@ const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(function 
 			<Footer>
 				<ButtonGroup large>
 					<SettingsButton />
-					<Button medium success icon='phone' disabled={!number} flexGrow={1} onClick={handleCall}>
+					<Button medium success icon='phone' disabled={!number} flexGrow={1} onClick={() => handleCall()}>
 						{t('Call')}
 					</Button>
 				</ButtonGroup>
