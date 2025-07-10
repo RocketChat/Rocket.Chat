@@ -1,10 +1,10 @@
 import { Box, TextInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../GenericModal';
 import type { OnConfirm } from './TwoFactorModal';
 import { Method } from './TwoFactorModal';
 
