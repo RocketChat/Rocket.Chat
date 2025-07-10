@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/presence-service",
 	"private": true,
-	"version": "0.4.25",
+	"version": "0.4.29",
 	"description": "Rocket.Chat Presence service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -25,7 +25,7 @@
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.14.1",
+		"@types/node": "~22.16.1",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
