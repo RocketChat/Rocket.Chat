@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import AutoCompleteDepartment from '../../../../../AutoCompleteDepartment';
 import AutoCompleteAgent from '../../AutoCompleteDepartmentAgent';
 import RetryButton from '../components/RetryButton';
+import { useFormKeyboardSubmit } from '../hooks/useFormKeyboardSubmit';
 import { cxp } from '../utils/cx';
 import { FormFetchError } from '../utils/errors';
 
@@ -106,8 +107,10 @@ const RepliesForm = (props: RepliesFormProps) => {
 		onSubmit({ departmentId, department: updatedDepartment, agentId, agent: updatedAgent });
 	});
 
+	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
+
 	return (
-		<form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
+		<form ref={formRef} id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<FieldGroup>
 				<Field>
 					<FieldLabel is='span' id={`${repliesFormId}-department`}>{`${t('Department')} (${t('optional')})`}</FieldLabel>
