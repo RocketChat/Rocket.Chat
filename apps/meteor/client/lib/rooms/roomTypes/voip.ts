@@ -36,7 +36,7 @@ roomCoordinator.add(
 			return false;
 		},
 
-		readOnly(_rid, _user) {
+		readOnly() {
 			return true;
 		},
 

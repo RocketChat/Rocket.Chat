@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (roomCoordinator.readOnly(room._id, user)) {
+		if (roomCoordinator.readOnly(room, user)) {
 			return false;
 		}
 

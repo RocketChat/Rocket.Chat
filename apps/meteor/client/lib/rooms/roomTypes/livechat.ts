@@ -66,13 +66,12 @@ roomCoordinator.add(
 			return Boolean(room?.open);
 		},
 
-		readOnly(rid, _user) {
-			const room = Rooms.state.get(rid);
+		readOnly(room) {
 			if (!room?.open) {
 				return true;
 			}
 
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.findOne({ rid: room._id });
 			return !subscription;
 		},
 
