@@ -1,13 +1,16 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { screen, render, waitFor, act } from '@testing-library/react';
+import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { createRef } from 'react';
 
-import type { RecipientFormRef } from './RecipientForm';
 import RecipientForm from './RecipientForm';
 import { createFakeContactChannel, createFakeContactWithManagerData } from '../../../../../../../tests/mocks/data';
 import { createFakeOutboundTemplate, createFakeProviderMetadata } from '../../../../../../../tests/mocks/data/outbound-message';
+
+jest.mock('tinykeys', () => ({
+	__esModule: true,
+	default: jest.fn().mockReturnValue(() => () => undefined),
+}));
 
 const recipientPhoneNumber = '+12125554567';
 const senderPhoneNumber = '+12127774567';
@@ -40,8 +43,8 @@ const providerMock = createFakeProviderMetadata({
 		[senderPhoneNumber]: [createFakeOutboundTemplate({ phoneNumber: senderPhoneNumber })],
 	},
 });
-const getProvidersMock = jest.fn().mockImplementation(() => [providerMock]);
-const getProviderMock = jest.fn().mockImplementation(() => providerMock);
+const getProvidersMock = jest.fn().mockImplementation(() => ({ providers: [providerMock] }));
+const getProviderMock = jest.fn().mockImplementation(() => ({ metadata: providerMock }));
 
 const appRoot = mockAppRoot()
 	.withJohnDoe()
@@ -54,6 +57,7 @@ const appRoot = mockAppRoot()
 		Last_contact__time__: 'Last contact {{time, relativeTime}}',
 		No_phone_number_yet_edit_contact: 'No phone number yet <1>Edit contact</1>',
 		No_phone_number_available_for_selected_channel: 'No phone number available for the selected channel',
+		Submit: 'Submit',
 	});
 
 describe('RecipientForm', () => {
@@ -204,6 +208,7 @@ describe('RecipientForm', () => {
 	});
 
 	it('should call onSubmit with correct values when form is submitted', async () => {
+		const handleSubmit = jest.fn();
 		const defaultValues = {
 			contactId: 'contact-1',
 			providerId: 'provider-1',
@@ -211,14 +216,14 @@ describe('RecipientForm', () => {
 			sender: senderPhoneNumber,
 		};
 
-		const formRef = createRef<RecipientFormRef>();
-
-		render(<RecipientForm ref={formRef} defaultValues={defaultValues} {...defaultProps} />, {
+		render(<RecipientForm {...defaultProps} defaultValues={defaultValues} onSubmit={handleSubmit} />, {
 			wrapper: appRoot.build(),
 		});
 
-		await act(() =>
-			expect(formRef.current?.submit()).resolves.toEqual({
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+		await waitFor(() =>
+			expect(handleSubmit).toHaveBeenCalledWith({
 				contactId: 'contact-1',
 				providerId: 'provider-1',
 				recipient: recipientPhoneNumber,
@@ -230,6 +235,7 @@ describe('RecipientForm', () => {
 	});
 
 	it('should display no phone number error when contact has no phones', async () => {
+		const handleSubmit = jest.fn();
 		getContactMock.mockImplementationOnce(() => ({
 			contact: createFakeContactWithManagerData({ ...contactMock, phones: undefined }),
 		}));
@@ -239,13 +245,11 @@ describe('RecipientForm', () => {
 			providerId: 'provider-1',
 		};
 
-		const formRef = createRef<RecipientFormRef>();
-
-		render(<RecipientForm ref={formRef} defaultValues={defaultValues} {...defaultProps} />, {
+		render(<RecipientForm {...defaultProps} defaultValues={defaultValues} onSubmit={handleSubmit} />, {
 			wrapper: appRoot.build(),
 		});
 
-		await act(() => expect(formRef.current?.submit()).rejects.toThrow('error-form-validation'));
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
 		const errorMessage = await screen.findByText(/No phone number yet/);
 		expect(errorMessage).toBeInTheDocument();
@@ -277,7 +281,10 @@ describe('RecipientForm', () => {
 	});
 
 	it('should show correct error when no phone numbers available for selected channel', async () => {
-		getProviderMock.mockImplementationOnce(() => createFakeProviderMetadata({ ...providerMock, templates: {} }));
+		const handleSubmit = jest.fn();
+		getProviderMock.mockImplementationOnce(() => ({
+			metadata: createFakeProviderMetadata({ ...providerMock, templates: {} }),
+		}));
 
 		const defaultValues = {
 			contactId: 'contact-1',
@@ -285,12 +292,11 @@ describe('RecipientForm', () => {
 			recipient: recipientPhoneNumber,
 		};
 
-		const formRef = createRef<RecipientFormRef>();
-		render(<RecipientForm ref={formRef} defaultValues={defaultValues} {...defaultProps} />, {
+		render(<RecipientForm {...defaultProps} defaultValues={defaultValues} onSubmit={handleSubmit} />, {
 			wrapper: appRoot.build(),
 		});
 
-		await act(() => expect(formRef.current?.submit()).rejects.toThrow('error-form-validation'));
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
 		const errorMessage = await screen.findByText('No phone number available for the selected channel');
 		expect(errorMessage).toBeInTheDocument();
