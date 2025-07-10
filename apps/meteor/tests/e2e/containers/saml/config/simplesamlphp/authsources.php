@@ -46,17 +46,17 @@ $config = array(
 		'samluser6:password' => array(
 			'uid' => array('6'),
 			'username' => 'samluser6',
-			'cn' => 'Saml User 6',
+			'displayName' => 'Saml User 6 Display Name',
 			'eduPersonAffiliation' => array('group6'),
 			'email' => 'samluser6@example.com',
-			'channels' => array('saml-channel-1', 'saml-channel-2'),
 		),
 		'samluser7:password' => array(
 			'uid' => array('7'),
 			'username' => 'samluser7',
-			'displayName' => 'Saml User 7 Display Name',
+			'cn' => 'Saml User 7',
 			'eduPersonAffiliation' => array('group7'),
 			'email' => 'samluser7@example.com',
+			'channels' => array('saml-channel-1', 'saml-channel-2'),
 		),
 	),
 );

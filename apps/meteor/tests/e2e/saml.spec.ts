@@ -116,19 +116,23 @@ test.describe('SAML', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		const groupResponse = await api.post('/groups.create', { name: faker.string.uuid() });
+		const [groupResponse, channelResponse] = await Promise.all([
+			api.post('/groups.create', { name: faker.string.uuid() }),
+			api.post('/channels.create', { name: 'saml-channel-1' }),
+		]);
+
 		expect(groupResponse.status()).toBe(200);
+		expect(channelResponse.status()).toBe(200);
+
 		const { group } = await groupResponse.json();
 		targetInviteGroupId = group._id;
 		targetInviteGroupName = group.name;
+		targetChannel = 'saml-channel-1';
 
 		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 0 });
 		expect(inviteResponse.status()).toBe(200);
 		const { _id } = await inviteResponse.json();
 		inviteId = _id;
-
-		targetChannel = 'saml-channel-1';
-		expect((await api.post('/channels.create', { name: targetChannel })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -155,9 +159,11 @@ test.describe('SAML', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/groups.delete', { roomId: targetInviteGroupId })).status()).toBe(200);
-		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
-		await api.post('/channels.delete', { roomName: autoCreatedChannel });
+		await Promise.all([
+			api.post('/groups.delete', { roomId: targetInviteGroupId }).then((response) => expect(response.status()).toBe(200)),
+			api.post('/channels.delete', { roomName: targetChannel }).then((response) => expect(response.status()).toBe(200)),
+			api.post('/channels.delete', { roomName: autoCreatedChannel }),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -513,16 +519,16 @@ test.describe('SAML', () => {
 		});
 
 		await test.step('expect user name to fallback to displayName when provided', async () => {
-			await doLoginStep(page, 'samluser7');
+			await doLoginStep(page, 'samluser6');
 
-			const user = await getUserInfo(api, 'samluser7');
+			const user = await getUserInfo(api, 'samluser6');
 
 			expect(user).toBeDefined();
-			expect(user?.username).toBe('samluser7');
+			expect(user?.username).toBe('samluser6');
 			expect(user?.emails).toBeDefined();
-			expect(user?.emails?.[0].address).toBe('samluser7@example.com');
+			expect(user?.emails?.[0].address).toBe('samluser6@example.com');
 			// When displayName is provided, it should fall back to displayName
-			expect(user?.name).toBe('Saml User 7 Display Name');
+			expect(user?.name).toBe('Saml User 6 Display Name');
 		});
 	});
 
@@ -533,16 +539,16 @@ test.describe('SAML', () => {
 			expect((await setSettingValueById(api, 'SAML_Custom_Default_channels_update', true)).status()).toBe(200);
 		});
 
-		await doLoginStep(page, 'samluser6');
+		await doLoginStep(page, 'samluser7');
 
 		await test.step('expect user data to have been mapped correctly', async () => {
-			const user = await getUserInfo(api, 'samluser6');
+			const user = await getUserInfo(api, 'samluser7');
 
 			expect(user).toBeDefined();
-			expect(user?.username).toBe('samluser6');
-			expect(user?.name).toBe('Saml User 6');
+			expect(user?.username).toBe('samluser7');
+			expect(user?.name).toBe('Saml User 7');
 			expect(user?.emails).toBeDefined();
-			expect(user?.emails?.[0].address).toBe('samluser6@example.com');
+			expect(user?.emails?.[0].address).toBe('samluser7@example.com');
 		});
 
 		await test.step('expect auto-created channel to be created automatically', async () => {
@@ -558,7 +564,7 @@ test.describe('SAML', () => {
 			expect(existingChannelMembersResponse.status()).toBe(200);
 			const { members: existingMembers } = await existingChannelMembersResponse.json();
 			expect(existingMembers).toBeDefined();
-			expect(existingMembers.some((member: { username: string }) => member.username === 'samluser6')).toBe(true);
+			expect(existingMembers.some((member: { username: string }) => member.username === 'samluser7')).toBe(true);
 		});
 
 		await test.step('expect user to be member of auto-created channel', async () => {
@@ -566,7 +572,7 @@ test.describe('SAML', () => {
 			expect(autoCreatedChannelMembersResponse.status()).toBe(200);
 			const { members: autoCreatedMembers } = await autoCreatedChannelMembersResponse.json();
 			expect(autoCreatedMembers).toBeDefined();
-			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser6')).toBe(true);
+			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser7')).toBe(true);
 		});
 	});
 
