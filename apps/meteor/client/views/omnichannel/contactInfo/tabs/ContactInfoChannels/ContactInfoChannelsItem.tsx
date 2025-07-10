@@ -7,19 +7,24 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useBlockChannel } from './useBlockChannel';
+import { useOutboundMessageModal } from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 
-type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel>;
+type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel> & {
+	contactId?: string;
+};
 
-const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
+const ContactInfoChannelsItem = ({ contactId, visitor, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
 	const { t } = useTranslation();
 	const { getSourceLabel, getSourceName } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 
 	const [showButton, setShowButton] = useState(false);
 	const handleBlockContact = useBlockChannel({ association: visitor, blocked });
+	const outboundMessageModal = useOutboundMessageModal();
+	const isOutboundMessageEnabled = true;
 
 	const customClass = css`
 		&:hover,
@@ -29,6 +34,13 @@ const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: Contac
 	`;
 
 	const menuItems: GenericMenuItemProps[] = [
+		{
+			id: 'outbound-message',
+			icon: 'send',
+			content: t('Outbound_message'),
+			disabled: !isOutboundMessageEnabled,
+			onClick: () => outboundMessageModal.open({ contactId, providerId: details.id }),
+		},
 		{
 			id: 'block',
 			icon: 'ban',
@@ -40,12 +52,11 @@ const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: Contac
 
 	return (
 		<Box
+			role='listitem'
 			tabIndex={0}
-			borderBlockEndWidth={1}
-			borderBlockEndColor='stroke-extra-light'
-			borderBlockEndStyle='solid'
 			className={['rcx-box--animated', customClass]}
-			pi={24}
+			flexGrow={1}
+			pi={16}
 			pb={12}
 			display='flex'
 			flexDirection='column'
@@ -56,7 +67,7 @@ const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: Contac
 			<Box display='flex' alignItems='center'>
 				{details && <OmnichannelRoomIcon source={details} size='x18' placement='default' />}
 				{details && (
-					<Box mi={4} fontScale='p2b'>
+					<Box mi={4} fontScale='p2m'>
 						{getSourceName(details)} {blocked && `(${t('Blocked')})`}
 					</Box>
 				)}
