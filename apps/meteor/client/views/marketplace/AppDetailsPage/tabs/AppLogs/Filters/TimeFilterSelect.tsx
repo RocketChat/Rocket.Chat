@@ -27,6 +27,12 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 
 	const [customTimeRangeLabel, setCustomTimeRangeOptionLabel] = useState<string>(t('Custom_time_range'));
 
+	const getTimeZoneOffset = (): string => {
+		const offset = new Date().getTimezoneOffset();
+		const absOffset = Math.abs(offset);
+		return `${offset < 0 ? '+' : '-'}${`00${Math.floor(absOffset / 60)}`.slice(-2)}:${`00${absOffset % 60}`.slice(-2)}`;
+	};
+
 	const dateRangeReducer = (action: DateRangeAction): DateRange | undefined => {
 		const now = new Date();
 		switch (action) {
@@ -83,8 +89,10 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 		setValue('endDate', endDate);
 		setValue('endTime', endTime || '00:00');
 
-		const formattedStartDate = format(new Date(startDate), 'MMM dd, yyyy');
-		const formattedEndDate = format(new Date(endDate), 'MMM dd, yyyy');
+		const startIso = new Date(`${startDate}T${startTime || '00:00'}${getTimeZoneOffset()}`);
+		const endIso = new Date(`${endDate}T${endTime || '00:00'}${getTimeZoneOffset()}`);
+		const formattedStartDate = format(new Date(startIso), 'MMM dd, yyyy');
+		const formattedEndDate = format(new Date(endIso), 'MMM dd, yyyy');
 
 		setCustomTimeRangeOptionLabel(
 			`${formattedStartDate}${startTime && startTime !== '00:00' ? `, ${startTime}` : ''} - ${formattedEndDate}${endTime && endTime !== '00:00' ? `, ${endTime}` : ''}`,
