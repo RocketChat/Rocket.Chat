@@ -1,6 +1,7 @@
 import type { AppStatus } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { Box, Menu, Palette, Tag } from '@rocket.chat/fuselage';
+import { Box, Palette, Tag } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -70,10 +71,17 @@ const AppInstances = ({ id }: { id: string }): ReactElement => {
 										</Box>
 									</GenericTableCell>
 									<GenericTableCell>
-										<Menu
-											aria-label='actions'
-											options={{ viewLogs: { label: t('Logs'), action: handleSelectLogs, type: 'option' } }}
-										></Menu>
+										<GenericMenu
+											title='Actions'
+											items={[
+												{
+													content: t('View_logs'),
+													onClick: handleSelectLogs,
+													id: 'view-logs',
+													icon: 'desktop-text',
+												},
+											]}
+										/>
 									</GenericTableCell>
 								</GenericTableRow>
 							))}
