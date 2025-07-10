@@ -26,7 +26,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const expandAll = () => setExpandOverride(true);
 
-	const { data, isSuccess, isError, isLoading, error, refetch, isFetching } = useLogs({
+	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
 		appId: id,
 		current,
 		itemsPerPage,
@@ -53,11 +53,10 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 			<Box pb={16}>
 				<AppLogsFilter expandAll={expandAll} refetchLogs={() => refetch()} isLoading={isFetching} />
 			</Box>
-			{isLoading && <AccordionLoading />}
+			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
-			{isSuccess && data?.logs?.length === 0 ? (
-				<GenericNoResults />
-			) : (
+			{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}
+			{!isFetching && isSuccess && data?.logs?.length > 0 && (
 				<CustomScrollbars>
 					<CollapsiblePanel width='100%' alignSelf='center'>
 						{data?.logs?.map((log, index) => (
