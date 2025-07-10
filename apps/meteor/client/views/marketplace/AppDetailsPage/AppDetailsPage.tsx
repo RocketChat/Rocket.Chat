@@ -100,6 +100,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 								isSecurityVisible={isSecurityVisible}
 								settings={settings}
 								tab={tab}
+								hasCluster={!!appData.clusterStatus}
 							/>
 							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 							{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}
