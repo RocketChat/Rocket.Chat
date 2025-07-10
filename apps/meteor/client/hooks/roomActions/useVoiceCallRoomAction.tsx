@@ -1,6 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useMediaDeviceMicrophonePermission, usePermission, useUserId } from '@rocket.chat/ui-contexts';
-import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
+import { useVoipAPI, useVoipState, useDevicePermissionPrompt } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -47,9 +47,16 @@ export const useVoiceCallRoomAction = () => {
 		return disabled ? t('Voice_calling_disabled') : '';
 	}, [disabled, isInCall, isMicPermissionDenied, t]);
 
+	const promptPermission = useDevicePermissionPrompt({
+		actionType: 'outgoing',
+		onAccept: () => {
+			makeCall(remoteUser?.freeSwitchExtension as string);
+		},
+	});
+
 	const handleOnClick = useEffectEvent(() => {
 		if (canMakeVoipCall) {
-			return makeCall(remoteUser?.freeSwitchExtension as string);
+			return promptPermission();
 		}
 		dispatchWarning();
 	});

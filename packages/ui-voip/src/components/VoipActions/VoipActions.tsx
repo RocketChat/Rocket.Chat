@@ -40,8 +40,8 @@ const VoipActions = ({ isMuted, isHeld, isDTMFActive, isTransferActive, ...event
 
 	const onAcceptIncoming = useDevicePermissionPrompt({
 		actionType: 'incoming',
-		onAccept: events.onAccept,
-		onReject: events.onDecline,
+		onAccept: events.onAccept ?? (() => undefined),
+		onReject: events.onDecline ?? (() => undefined),
 	});
 
 	return (

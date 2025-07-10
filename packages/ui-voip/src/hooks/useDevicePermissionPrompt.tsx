@@ -1,99 +1,80 @@
-import { Modal } from '@rocket.chat/fuselage';
 import { useMediaDeviceMicrophonePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-type UseDevicePermissionPromptProps = {
-	onAccept?: (stream?: MediaStream) => void;
-	onReject?: (error: DOMException) => void;
-	actionType: 'outgoing' | 'incoming' | 'device-change';
+import PermissionFlowModal, { type PermissionFlowModalType } from '../components/PermissionFlow/PermissionFlowModal';
+
+type OnAccept = (stream: MediaStream) => void;
+type OnReject = (error?: DOMException) => void;
+
+type DeviceChangePromptProps = {
+	onAccept: OnAccept;
+	onReject?: OnReject;
+	actionType: 'device-change';
 };
 
-const getOutgoingModal = (
-	state: PermissionState,
-	{ onAccept, onReject }: Pick<UseDevicePermissionPromptProps, 'onAccept' | 'onReject'>,
-) => {
-	console.log(onAccept, onReject);
-	if (state === 'denied') {
-		return <Modal></Modal>;
-	}
-
-	if (state === 'prompt') {
-		return <Modal></Modal>;
-	}
-
-	throw new Error('ui-voip - useDevicePermissionPrompt - getOutgoingModal - invalid permission state');
+type OutgoingPromptProps = {
+	onAccept: OnAccept;
+	onReject?: OnReject;
+	actionType: 'outgoing';
 };
 
-const getIncomingModal = (
-	state: PermissionState,
-	{ onAccept, onReject }: Pick<UseDevicePermissionPromptProps, 'onAccept' | 'onReject'>,
-) => {
-	console.log(onAccept, onReject);
-
-	if (state === 'denied') {
-		return <Modal></Modal>;
-	}
-
-	if (state === 'prompt') {
-		return <Modal></Modal>;
-	}
-
-	throw new Error('ui-voip - useDevicePermissionPrompt - getIncomingModal - invalid permission state');
+type IncomingPromptProps = {
+	onAccept: OnAccept;
+	onReject: OnReject;
+	actionType: 'incoming';
 };
 
-const getDeviceChangeModal = (
-	state: PermissionState,
-	{ onAccept, onReject }: Pick<UseDevicePermissionPromptProps, 'onAccept' | 'onReject'>,
-) => {
-	console.log(onAccept, onReject);
+type UseDevicePermissionPromptProps = DeviceChangePromptProps | OutgoingPromptProps | IncomingPromptProps;
 
-	if (state === 'granted') {
-		onAccept?.();
-		return;
-	}
-
+const getModalType = (
+	actionType: UseDevicePermissionPromptProps['actionType'],
+	state: Exclude<PermissionState, 'granted'>,
+): PermissionFlowModalType => {
 	if (state === 'denied') {
-		return <Modal></Modal>;
+		return 'denied';
 	}
 
-	if (state === 'prompt') {
-		return <Modal></Modal>;
+	if (actionType === 'device-change') {
+		return 'deviceChangePrompt';
 	}
 
-	throw new Error('ui-voip - useDevicePermissionPrompt - getDeviceChangeModal - invalid permission state');
+	if (actionType === 'outgoing') {
+		return 'outgoingPrompt';
+	}
+
+	// actionType === 'incoming'
+	return 'incomingPrompt';
 };
 
 export const useDevicePermissionPrompt = ({ onAccept, onReject, actionType }: UseDevicePermissionPromptProps) => {
-	const { state, requestPrompt } = useMediaDeviceMicrophonePermission();
+	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
 	const setModal = useSetModal();
 
 	return useCallback(() => {
-		if (state === 'granted' && actionType !== 'device-change') {
-			onAccept?.();
+		if (state === 'granted') {
+			requestDevice({
+				onAccept,
+			});
 			return;
 		}
 
-		const onAcceptCallback = () => {
-			if (!requestPrompt) {
-				return;
-			}
-
-			requestPrompt({
+		const onConfirm = () => {
+			requestDevice?.({
 				onReject,
-				onAccept,
+				onAccept: (...args) => {
+					onAccept(...args);
+					setModal(null);
+				},
 			});
 		};
 
-		if (actionType === 'device-change') {
-			setModal(getDeviceChangeModal(state, { onAccept: onAcceptCallback, onReject }));
-		}
+		const onCancel = () => {
+			if (onReject) {
+				onReject();
+			}
+			setModal(null);
+		};
 
-		if (actionType === 'outgoing') {
-			setModal(getOutgoingModal(state, { onAccept: onAcceptCallback, onReject }));
-		}
-
-		if (actionType === 'incoming') {
-			setModal(getIncomingModal(state, { onAccept: onAcceptCallback, onReject }));
-		}
-	}, [state, actionType, onAccept, setModal, onReject, requestPrompt]);
+		setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
+	}, [state, actionType, onAccept, setModal, onReject, requestDevice]);
 };

@@ -36,12 +36,16 @@ const VoipSettingsButton = ({ mini = false }: { mini?: boolean }) => {
 
 			return setIsOpen(true);
 		},
+		onReject: () => {
+			setIsOpen(false);
+		},
 	});
 
 	const onOpenChange = useCallback(
 		(isOpen: boolean) => {
 			if (isOpen) {
 				_onOpenChange();
+				return;
 			}
 
 			setIsOpen(isOpen);
