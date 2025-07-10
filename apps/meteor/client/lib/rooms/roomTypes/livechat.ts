@@ -61,8 +61,7 @@ roomCoordinator.add(
 			return true;
 		},
 
-		canSendMessage(rid) {
-			const room = Rooms.state.get(rid);
+		canSendMessage(room) {
 			return Boolean(room?.open);
 		},
 
