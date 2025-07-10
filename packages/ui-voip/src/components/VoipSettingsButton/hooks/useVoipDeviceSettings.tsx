@@ -46,7 +46,10 @@ export const useVoipDeviceSettings = () => {
 			}
 
 			return {
-				id: device.id,
+				// We need to change the id because in some cases, the id is the same for input and output devices.
+				// For example, in chrome, the `id` for the default input and output devices is the same ('default').
+				// Also, some devices can have different functions for the same device (such as a webcam that has a microphone)
+				id: `${device.id}-input`,
 				content: (
 					<Box is='span' title={device.label} fontSize={14}>
 						{device.label}
@@ -65,7 +68,8 @@ export const useVoipDeviceSettings = () => {
 			}
 
 			return {
-				id: device.id,
+				// Same here, the id's might not be unique.
+				id: `${device.id}-output`,
 				content: (
 					<Box is='span' title={device.label} fontSize={14}>
 						{device.label}
@@ -83,12 +87,12 @@ export const useVoipDeviceSettings = () => {
 
 	const micSection = {
 		title: t('Microphone'),
-		items: availableInputDevice.length > 0 ? availableInputDevice : getDefaultDeviceItem(t('Default'), 'input'),
+		items: availableInputDevice,
 	};
 
 	const speakerSection = {
 		title: t('Speaker'),
-		items: availableOutputDevice.length > 0 ? availableOutputDevice : getDefaultDeviceItem(t('Default'), 'output'),
+		items: availableOutputDevice,
 	};
 
 	const disabled = availableOutputDevice.length === 0 && availableInputDevice.length === 0;
