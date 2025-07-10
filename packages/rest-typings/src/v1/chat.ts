@@ -1,4 +1,12 @@
-import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	MessageAttachment,
+	IReadReceiptWithUser,
+	MessageUrl,
+	IThreadMainMessage,
+	IScheduledMessage,
+} from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -886,6 +894,98 @@ const ChatGetURLPreviewSchema = {
 
 export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
+// Type for scheduling a message
+type ChatScheduleMessage = {
+	rid: IRoom['_id'];
+	msg: string;
+	scheduledAt: string;
+	tmid?: string;
+};
+
+const ChatScheduleMessageSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+			minLength: 1,
+		},
+		msg: {
+			type: 'string',
+			minLength: 1,
+		},
+		scheduledAt: {
+			type: 'string',
+			format: 'iso-date-time',
+		},
+		tmid: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['rid', 'msg', 'scheduledAt'],
+	additionalProperties: false,
+};
+
+export const isChatScheduleMessageProps = ajv.compile<ChatScheduleMessage>(ChatScheduleMessageSchema);
+
+// Type for updating a scheduled message
+type ChatUpdateScheduledMessage = {
+	scheduledMessageId: IScheduledMessage['_id'];
+	rid: IRoom['_id'];
+	msg: string;
+	scheduledAt: string;
+	tmid?: string;
+};
+
+const ChatUpdateScheduledMessageSchema = {
+	type: 'object',
+	properties: {
+		scheduledMessageId: {
+			type: 'string',
+			minLength: 1,
+		},
+		rid: {
+			type: 'string',
+			minLength: 1,
+		},
+		msg: {
+			type: 'string',
+			minLength: 1,
+		},
+		scheduledAt: {
+			type: 'string',
+			format: 'iso-date-time',
+		},
+		tmid: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['scheduledMessageId', 'rid', 'msg', 'scheduledAt'],
+	additionalProperties: false,
+};
+
+export const isChatUpdateScheduledMessageProps = ajv.compile<ChatUpdateScheduledMessage>(ChatUpdateScheduledMessageSchema);
+
+// Type for deleting a scheduled message
+type ChatDeleteScheduledMessage = {
+	scheduledMessageId: IScheduledMessage['_id'];
+};
+
+const ChatDeleteScheduledMessageSchema = {
+	type: 'object',
+	properties: {
+		scheduledMessageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['scheduledMessageId'],
+	additionalProperties: false,
+};
+
+export const isChatDeleteScheduledMessageProps = ajv.compile<ChatDeleteScheduledMessage>(ChatDeleteScheduledMessageSchema);
+
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
 		POST: (params: ChatSendMessage) => {
@@ -1015,5 +1115,22 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };
+	};
+	'/v1/chat.scheduleMessage': {
+		POST: (params: ChatScheduleMessage) => {
+			message: IScheduledMessage;
+		};
+	};
+	'/v1/chat.updateScheduledMessage': {
+		POST: (params: ChatUpdateScheduledMessage) => {
+			message: IScheduledMessage;
+		};
+	};
+	'/v1/chat.deleteScheduledMessage': {
+		POST: (params: ChatDeleteScheduledMessage) => {
+			_id: string;
+			ts: string;
+			message: IScheduledMessage;
+		};
 	};
 };

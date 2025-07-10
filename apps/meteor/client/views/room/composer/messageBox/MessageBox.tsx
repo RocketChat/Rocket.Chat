@@ -44,6 +44,8 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
+import { imperativeModal } from '@rocket.chat/ui-client';
+import ScheduleComposerModal from './ScheduleComposerModal/ScheduleComposerModal';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -383,6 +385,36 @@ const MessageBox = ({
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
+
+	const scheduleAction = {
+		label: 'Schedule' as const,
+		icon: 'clock' as const,
+		prompt: (composerApi: ComposerAPI) => {
+			const onClose = () => {
+				imperativeModal.close();
+				composerApi.focus();
+			};
+
+			const onConfirm = () => {
+				composerApi.clear();
+			};
+
+			imperativeModal.open({
+				component: ScheduleComposerModal,
+				props: {
+					onConfirm,
+					onClose,
+					value: composerApi.text ?? '',
+					rid: room._id,
+					tmid,
+					tshow: composerApi.tshow,
+					previewUrls: composerApi.previewUrls,
+					isSlashCommandAllowed: composerApi.isSlashCommandAllowed,
+				},
+			});
+		},
+	};
+
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
@@ -471,6 +503,15 @@ const MessageBox = ({
 						{canSend && (
 							<>
 								{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
+								{/* Schedule (clock) icon */}
+								<MessageComposerAction
+									aria-label={scheduleAction.label}
+									icon={scheduleAction.icon}
+									disabled={!canSend || (!typing && !isEditing)}
+									onClick={() => scheduleAction.prompt?.(chat.composer!)}
+									secondary={typing || isEditing}
+									info={typing || isEditing}
+								/>
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'

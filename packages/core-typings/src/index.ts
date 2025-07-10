@@ -133,3 +133,4 @@ export type * from './ServerAudit/IAuditServerAbacAction';
 export type * from './ServerAudit/IAuditUserChangedEvent';
 
 export { schemas } from './Ajv';
+export * from './IScheduledMessage';

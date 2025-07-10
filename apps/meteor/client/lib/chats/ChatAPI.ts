@@ -12,6 +12,9 @@ type Subscribable<T> = {
 };
 
 export type ComposerAPI = {
+	tshow: boolean | undefined;
+	previewUrls: string[] | undefined;
+	isSlashCommandAllowed: boolean | undefined;
 	release(): void;
 	readonly text: string;
 	readonly selection: { readonly start: number; readonly end: number };
