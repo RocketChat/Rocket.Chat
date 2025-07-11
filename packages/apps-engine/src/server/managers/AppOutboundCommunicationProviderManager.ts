@@ -1,10 +1,9 @@
-import type { ValidOutboundProvider } from '@rocket.chat/core-typings';
-
 import type { AppAccessorManager } from '.';
 import type {
 	IOutboundMessageProviders,
 	IOutboundEmailMessageProvider,
 	IOutboundPhoneMessageProvider,
+	ValidOutboundProvider,
 } from '../../definition/outboundComunication';
 import type { AppManager } from '../AppManager';
 import type { OutboundMessageBridge } from '../bridges';
