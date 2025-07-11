@@ -3,6 +3,7 @@ import type {
 	IOutboundPhoneMessageProvider,
 } from '@rocket.chat/apps-engine/definition/outboundComunication';
 import { expect } from 'chai';
+import { describe, it, beforeEach } from 'mocha';
 import sinon from 'sinon';
 
 import { OutboundMessageProvider } from '../../../../server/lib/OutboundMessageProvider';
@@ -28,7 +29,11 @@ describe('OutboundMessageProvider', () => {
 		const providers = outboundMessageProvider.getOutboundMessageProviders('phone');
 
 		expect(providers).to.have.lengthOf(1);
-		expect(providers[0]).to.deep.equal(phoneProvider);
+		expect(providers[0]).to.deep.equal({
+			providerId: '123',
+			providerName: 'Test Phone Provider',
+			providerType: 'phone',
+		});
 	});
 
 	it('should successfully register a email provider', () => {
@@ -44,7 +49,11 @@ describe('OutboundMessageProvider', () => {
 		const providers = outboundMessageProvider.getOutboundMessageProviders('email');
 
 		expect(providers).to.have.lengthOf(1);
-		expect(providers[0]).to.deep.equal(emailProvider);
+		expect(providers[0]).to.deep.equal({
+			providerId: '123',
+			providerName: 'Test Email Provider',
+			providerType: 'email',
+		});
 	});
 
 	it('should list currently registered providers [unfiltered]', () => {
@@ -69,8 +78,8 @@ describe('OutboundMessageProvider', () => {
 		const providers = outboundMessageProvider.getOutboundMessageProviders();
 
 		expect(providers).to.have.lengthOf(2);
-		expect(providers.some((provider) => provider.type === 'phone')).to.be.true;
-		expect(providers.some((provider) => provider.type === 'email')).to.be.true;
+		expect(providers.some((provider) => provider.providerType === 'phone')).to.be.true;
+		expect(providers.some((provider) => provider.providerType === 'email')).to.be.true;
 	});
 
 	it('should list currently registered providers [filtered by type]', () => {
@@ -95,7 +104,7 @@ describe('OutboundMessageProvider', () => {
 		const providers = outboundMessageProvider.getOutboundMessageProviders('phone');
 
 		expect(providers).to.have.lengthOf(1);
-		expect(providers[0].type).to.equal('phone');
+		expect(providers[0].providerType).to.equal('phone');
 	});
 
 	it('should unregister a provider', () => {
@@ -127,6 +136,6 @@ describe('OutboundMessageProvider', () => {
 		registeredProviders = outboundMessageProvider.getOutboundMessageProviders('phone');
 
 		expect(registeredProviders).to.have.lengthOf(1);
-		expect(registeredProviders.some((provider) => provider.appId !== '123')).to.be.true;
+		expect(registeredProviders.some((provider) => provider.providerId !== '123')).to.be.true;
 	});
 });
