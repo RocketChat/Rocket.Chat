@@ -1,5 +1,5 @@
 import type { IOutboundProvider } from '@rocket.chat/core-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
 import { isGETOutboundProviderParams } from '../outboundcomms/rest';

@@ -7118,8 +7118,12 @@ __metadata:
     "@types/express": "npm:^4.17.23"
     eslint: "npm:~8.45.0"
     mongodb: "npm:6.10.0"
+    npm-run-all: "npm:~4.1.5"
     prettier: "npm:~3.3.3"
+    rimraf: "npm:^6.0.1"
+    ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.8.3"
+    typia: "npm:~9.3.1"
   languageName: unknown
   linkType: soft
 
@@ -7671,6 +7675,8 @@ __metadata:
     "@types/whatwg-fetch": "npm:~0.0.33"
     "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
     "@typescript-eslint/parser": "npm:~5.60.1"
+    ajv: "npm:^8.17.1"
+    ajv-formats: "npm:^3.0.1"
     autoprefixer: "npm:^9.8.8"
     babel-loader: "npm:^9.2.1"
     cross-env: "npm:^7.0.3"
