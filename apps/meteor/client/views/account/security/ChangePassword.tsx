@@ -1,6 +1,6 @@
 import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
-import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -40,12 +40,15 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const passwordIsValid = useValidatePassword(password);
 	const { allowPasswordChange } = useAllowPasswordChange();
 
-	// FIXME: replace to endpoint
-	const updatePassword = useMethod('saveUserProfile');
+	const updatePassword = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 
 	const handleSave = async ({ password }: { password?: string }) => {
 		try {
-			await updatePassword({ newPassword: password }, {});
+			await updatePassword({
+				data: {
+					newPassword: password,
+				},
+			});
 			dispatchToastMessage({ type: 'success', message: t('Password_changed_successfully') });
 			reset();
 		} catch (error) {

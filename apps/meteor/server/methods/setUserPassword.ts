@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import type { UpdateResult } from 'mongodb';
 
 import { passwordPolicy } from '../../app/lib/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import { compareUserPassword } from '../lib/compareUserPassword';
 
@@ -49,6 +50,7 @@ export const executeResetPassword = async (user: IUser, password: string) => {
 
 Meteor.methods<ServerMethods>({
 	async setUserPassword(password) {
+		methodDeprecationLogger.method('setUserPassword', '8.0.0', 'Use the endpoint /v1/users.updateOwnBasicInfo instead');
 		check(password, String);
 
 		const userId = Meteor.userId();
