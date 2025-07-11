@@ -15,19 +15,24 @@ type OutboundMessageWizardProps = {
 
 const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
-	const [, setState] = useState<Partial<SubmitPayload>>(defaultValues);
+	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
+	const { contact, sender, provider, department, agent, template, templateParameters, recipient } = state;
 
 	const wizardApi = useWizard({
 		steps: [
 			{ id: 'recipient', title: t('Recipient') },
 			{ id: 'message', title: t('Message') },
 			{ id: 'replies', title: t('Replies') },
-			{ id: 'preview', title: t('Preview') },
+			{ id: 'review', title: t('Review') },
 		],
 	});
 
 	const handleSubmit = useEffectEvent((values: SubmitPayload) => {
 		setState((state) => ({ ...state, ...values }));
+	});
+
+	const handleSend = useEffectEvent(async () => {
+		console.log('Message sent with values:', state);
 	});
 
 	return (
@@ -48,8 +53,20 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 						<RepliesStep onSubmit={handleSubmit} />
 					</WizardContent>
 
-					<WizardContent id='preview'>
-						<ReviewStep onSubmit={handleSubmit} />
+					<WizardContent id='review'>
+						<ReviewStep
+							sender={sender}
+							recipient={recipient}
+							contactName={contact?.name}
+							departmentName={department?.name}
+							providerType={provider?.providerType}
+							providerName={provider?.providerName}
+							agentName={agent?.name}
+							agentUsername={agent?.username}
+							template={template}
+							templateParameters={templateParameters}
+							onSend={handleSend}
+						/>
 					</WizardContent>
 				</Box>
 			</Wizard>

@@ -1,7 +1,8 @@
 import { WizardActions, WizardBackButton, WizardNextButton } from '../../../../../Wizard';
+import type { RepliesFormSubmitPayload } from '../forms/RepliesForm';
 
 type RepliesStepProps = {
-	onSubmit(values: Record<string, string>): void;
+	onSubmit(values: RepliesFormSubmitPayload): void;
 };
 
 const RepliesStep = (_: RepliesStepProps) => {
