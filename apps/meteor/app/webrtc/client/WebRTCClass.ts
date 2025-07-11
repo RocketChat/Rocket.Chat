@@ -1,14 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChromeScreenShare } from './screenShare';
-import GenericModal from '../../../client/components/GenericModal';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { Subscriptions } from '../../models/client';
+import { Subscriptions, Users } from '../../models/client';
 import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
@@ -821,7 +820,7 @@ class WebRTCClass {
 			return;
 		}
 
-		const user = Meteor.users.findOne(data.from);
+		const user = Users.findOne(data.from);
 		let fromUsername = undefined;
 		if (user?.username) {
 			fromUsername = user.username;

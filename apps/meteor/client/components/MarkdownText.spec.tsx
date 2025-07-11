@@ -1,16 +1,83 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 
-import MarkdownText from './MarkdownText';
+import MarkdownText, { supportedURISchemes } from './MarkdownText';
 
 import '@testing-library/jest-dom';
+
+const MOCKED_BASE_URI = 'http://localhost/';
 
 // Mock getBaseURI from @rocket.chat/ui-client to ensure consistent behavior in tests
 // This will affect the isExternal function imported above.
 jest.mock('@rocket.chat/ui-client', () => ({
 	...jest.requireActual('@rocket.chat/ui-client'), // Import and retain default behavior for other exports
-	getBaseURI: jest.fn(() => 'http://localhost/'), // Mock getBaseURI for consistent test behavior
+	getBaseURI: jest.fn(() => MOCKED_BASE_URI), // Mock getBaseURI for consistent test behavior
 }));
+
+// List of common URI schemes. This list was taken from https://en.wikipedia.org/wiki/List_of_URI_schemes
+const commonUriSchemes = [
+	'file',
+	'ftp',
+	'http',
+	'https',
+	'mailto',
+	'tel',
+	'imap',
+	'irc',
+	'nntp',
+	'acap',
+	'icap',
+	'mtqp',
+	'wss',
+	'admin',
+	'app',
+	'freeplane',
+	'geo',
+	'javascript',
+	'jdbc',
+	'msteams',
+	'ms-access',
+	'ms-excel',
+	'ms-infopath',
+	'ms-powerpoint',
+	'ms-project',
+	'ms-publisher',
+	'ms-spd',
+	'ms-visio',
+	'ms-word',
+	'odbc',
+	'psns',
+	'rdar',
+	's3',
+	'shortcuts',
+	'slack',
+	'stratum',
+	'trueconf',
+	'viber',
+	'zoommtgzoomus',
+];
+
+const nonSupportedUriSchemes = commonUriSchemes.filter((scheme) => !supportedURISchemes.includes(scheme));
+
+const testUris = [
+	'example.com',
+	'example.com/path',
+	'example.com/path/to/resource',
+	'localhost/home',
+	'localhost/path/to/',
+	'localhost/path/to/resource',
+];
+
+const getTestCases = (schemes: string[], uris: string[]): { scheme: string; links: string[] }[] => {
+	return schemes.map((scheme) => {
+		return {
+			scheme,
+			links: uris.map((uri) => `${scheme}://${uri}`),
+		};
+	});
+};
+
+const isExternal = (link: string): boolean => link.indexOf(MOCKED_BASE_URI) !== 0;
 
 const normalizeHtml = (html: any) => {
 	return html.replace(/\s+/g, ' ').trim();
@@ -266,5 +333,102 @@ describe('links handling', () => {
 
 		if (expectedTitleAttribute !== undefined) expect(anchorElement).toHaveAttribute('title', expectedTitleAttribute);
 		else expect(anchorElement).not.toHaveAttribute('title');
+	});
+
+	describe('multiple links', () => {
+		it.each(getTestCases(supportedURISchemes, testUris))('supported scheme: $scheme', ({ scheme, links }) => {
+			const getTextContent = (link: string) => `Test link - ${link}`;
+			const markdownContent = links.map((link) => `[${getTextContent(link)}](${link})`).join('\n');
+
+			render(<MarkdownText content={markdownContent} variant='document' />, {
+				wrapper: mockAppRoot().withTranslations('en', 'core', { Go_to_href: 'Go to: {{href}}' }).build(),
+			});
+
+			links.forEach((link) => {
+				const text = getTextContent(link);
+				const title = `Go to: ${link.replace(MOCKED_BASE_URI, '')}`;
+				const anchorElement = screen.getByText(text);
+
+				expect(anchorElement).toBeInTheDocument();
+				expect(anchorElement.tagName).toBe('A');
+				expect(anchorElement).toHaveTextContent(text);
+				expect(anchorElement).toHaveAttribute('href', link);
+
+				if (scheme === 'mailto') {
+					expect(anchorElement).toHaveAttribute('rel', 'nofollow noopener noreferrer');
+					expect(anchorElement).toHaveAttribute('target', '_blank');
+					expect(anchorElement).toHaveAttribute('href', link);
+					expect(anchorElement).toHaveAttribute('title', link);
+					return;
+				}
+
+				if (isExternal(link)) {
+					expect(anchorElement).toHaveAttribute('rel', 'nofollow noopener noreferrer');
+					expect(anchorElement).toHaveAttribute('target', '_blank');
+					expect(anchorElement).toHaveAttribute('title', '');
+					return;
+				}
+
+				expect(anchorElement).toHaveAttribute('title', title);
+			});
+		});
+
+		it.each(getTestCases(nonSupportedUriSchemes, testUris))('unsupported scheme: $scheme', ({ links }) => {
+			const getTextContent = (link: string) => `Test link - ${link}`;
+			const markdownContent = links.map((link) => `[${getTextContent(link)}](${link})`).join('\n');
+
+			render(<MarkdownText content={markdownContent} variant='document' />, {
+				wrapper: mockAppRoot().withTranslations('en', 'core', { Go_to_href: 'Go to: {{href}}' }).build(),
+			});
+
+			links.forEach((link) => {
+				const text = getTextContent(link);
+				const anchorElement = screen.getByText(text);
+
+				expect(anchorElement).toBeInTheDocument();
+				expect(anchorElement.tagName).toBe('A');
+				expect(anchorElement).toHaveTextContent(text);
+				expect(anchorElement).not.toHaveAttribute('href');
+
+				expect(anchorElement).toHaveAttribute('rel', 'nofollow noopener noreferrer');
+				expect(anchorElement).toHaveAttribute('target', '_blank');
+				expect(anchorElement).toHaveAttribute('title', '');
+			});
+		});
+	});
+});
+
+describe('code handling', () => {
+	it.each([
+		{
+			caseName: 'inline with special characters',
+			content: '`2 < 3 > 1 & 4 "Test"`',
+			expected: '<code>2 &lt; 3 &gt; 1 &amp; 4 "Test"</code>',
+		},
+		{
+			caseName: 'inline with encoded special characters',
+			content: '`< = &lt; > = &gt; & = &amp;`',
+			expected: '<code>&lt; = &amp;lt; &gt; = &amp;gt; &amp; = &amp;amp;</code>',
+		},
+		{
+			caseName: 'block with language',
+			content: "```typescript\nconst test = 'this is code'\n```",
+			expected: '<code class="language-typescript">const test = \'this is code\' </code>',
+		},
+		{
+			caseName: 'block without language',
+			content: '```\nTwo < Three > One & Four "Test"\n```',
+			expected: '<code>Two &lt; Three &gt; One &amp; Four "Test" </code>',
+		},
+		{
+			caseName: 'block with encoded special characters',
+			content: '```\nTwo &lt; Three &gt; One &amp; Four "Test"\n```',
+			expected: '<code>Two &amp;lt; Three &amp;gt; One &amp;amp; Four "Test" </code>',
+		},
+	] as const)('should render $caseName', ({ content, expected }) => {
+		render(<MarkdownText content={`${content}`} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+		expect(screen.getByRole('code').outerHTML).toEqual(expected);
 	});
 });
