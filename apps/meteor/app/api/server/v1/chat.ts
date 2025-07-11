@@ -492,46 +492,49 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'chat.getPinnedMessages',
-	{ authRequired: true, validateParams: isChatGetPinnedMessagesProps },
-	{
-		async get() {
-			const { roomId, sort } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
+  'chat.getPinnedMessages',
+  { authRequired: true, validateParams: isChatGetPinnedMessagesProps },
+  {
+    async get() {
+      const { roomId, sort } = this.queryParams;
+      const { offset, count } = await getPaginationItems(this.queryParams);
 
-			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
+      if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+        throw new Meteor.Error('error-not-allowed', 'Not allowed');
+      }
 
-			let sortParam: Record<string, 1 | -1> = {};
+      let sortParam: Record<string, 1 | -1> = {};  // Inicializa o parâmetro de ordenação
 
-			try {
-				if (sort) {
-					sortParam = JSON.parse(sort);
-				}
-			} catch (e) {
-				throw new Meteor.Error('error-invalid-sort', 'Invalid sort parameter. Must be a JSON string.', {
-					function: 'chat.getPinnedMessages',
-				});
-			}
+      // Agora, a ordenação está sendo aplicada
+      try {
+        if (sort) {
+          sortParam = JSON.parse(sort);  // Converte o parâmetro 'sort' da string JSON para um objeto
+        }
+      } catch (e) {
+        throw new Meteor.Error('error-invalid-sort', 'Invalid sort parameter. Must be a JSON string.', {
+          function: 'chat.getPinnedMessages',
+        });
+      }
 
-			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
-				skip: offset,
-				limit: count,
-				sort: sortParam,
-			});
+      // Consulta com ordenação aplicada
+      const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
+        skip: offset,
+        limit: count,
+        sort: sortParam,  // Aplica o parâmetro de ordenação
+      });
 
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+      const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(messages, this.userId),
-				count: messages.length,
-				offset,
-				total,
-			});
-		},
-	},
+      return API.v1.success({
+        messages: await normalizeMessagesForUser(messages, this.userId),
+        count: messages.length,
+        offset,
+        total,
+      });
+    },
+  }
 );
+
 
 
 

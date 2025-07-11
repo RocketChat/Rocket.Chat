@@ -22,6 +22,9 @@
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.14.1",
+		"chai": "^5.2.1",
+		"mocha": "^11.7.1",
+		"supertest": "^7.1.3",
 		"ts-node": "^10.9.2",
 		"turbo": "^2.5.4",
 		"typescript": "~5.8.3"
