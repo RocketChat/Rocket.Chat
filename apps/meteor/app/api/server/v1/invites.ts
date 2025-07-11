@@ -13,53 +13,20 @@ import { removeInvite } from '../../../invites/server/functions/removeInvite';
 import { sendInvitationEmail } from '../../../invites/server/functions/sendInvitationEmail';
 import { useInviteToken } from '../../../invites/server/functions/useInviteToken';
 import { validateInviteToken } from '../../../invites/server/functions/validateInviteToken';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
-API.v1
+const invites = API.v1
 	.get(
 		'listInvites',
 		{
 			authRequired: true,
 			response: {
-				200: ajv.compile({
+				200: ajv.compile<IInvite[]>({
 					additionalProperties: false,
 					type: 'array',
 					items: {
-						type: 'object',
-						properties: {
-							_id: {
-								type: 'string',
-							},
-							days: {
-								type: 'number',
-							},
-							rid: {
-								type: 'string',
-							},
-							userId: {
-								type: 'string',
-							},
-							createdAt: {
-								type: 'object',
-							},
-							expires: {
-								type: 'object',
-								nullable: true,
-							},
-							url: {
-								type: 'string',
-							},
-							_updatedAt: {
-								type: 'object',
-							},
-							maxUses: {
-								type: 'number',
-							},
-							uses: {
-								type: 'number',
-							},
-						},
-						required: ['_id', 'days', 'rid', 'userId', 'createdAt', 'url', '_updatedAt', 'maxUses', 'uses'],
+						$ref: '#/components/schemas/IInvite',
 					},
 				}),
 				401: ajv.compile({
@@ -267,3 +234,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type InvitesEndpoints = ExtractRoutesFromAPI<typeof invites>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends InvitesEndpoints {}
+}
