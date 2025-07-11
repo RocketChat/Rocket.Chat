@@ -71,13 +71,17 @@ export class Http implements IHttp {
 
 		let { result: response } = await this.senderFn({
 			method: `bridges:getHttpBridge:doCall`,
-			params: [{
-				appId: AppObjectRegistry.get<string>('id'),
-				method,
-				url,
-				request,
-			}],
-		}).catch((error) => { throw formatErrorResponse(error); });
+			params: [
+				{
+					appId: AppObjectRegistry.get<string>('id'),
+					method,
+					url,
+					request,
+				},
+			],
+		}).catch((error) => {
+			throw formatErrorResponse(error);
+		});
 
 		for (const handler of this.httpExtender.getPreResponseHandlers()) {
 			response = await handler.executePreHttpResponse(response as IHttpResponse, this.read, this.persistence);

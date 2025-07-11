@@ -7,9 +7,11 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { getUserInfo } from '../../app/api/server/helpers/getUserInfo';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
+import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
 import { setEmailFunction } from '../../app/lib/server/methods/setEmail';
 import { settings as rcSettings } from '../../app/settings/server';
@@ -158,6 +160,14 @@ async function saveUserProfile(
 
 	// App IPostUserUpdated event hook
 	const updatedUser = await Users.findOneById(this.userId);
+
+	// This should never happen, but since `Users.findOneById` might return null, we'll handle it just in case
+	if (!updatedUser) {
+		throw new Error('Unexpected error after saving user profile: user not found');
+	}
+
+	void notifyOnUserChange({ clientAction: 'updated', id: updatedUser._id, diff: await getUserInfo(updatedUser) });
+
 	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
 	return true;

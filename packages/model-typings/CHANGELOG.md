@@ -1,5 +1,139 @@
 # @rocket.chat/model-typings
 
+## 1.6.8
+
+### Patch Changes
+
+- ([#36116](https://github.com/RocketChat/Rocket.Chat/pull/36116)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
+
+- ([#36236](https://github.com/RocketChat/Rocket.Chat/pull/36236)) Fixes the `channels.counters`, `groups.counters` and `im.counters` endpoint to include only active users in members count.
+
+- <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/core-typings@7.8.0
+  </details>
+
+## 1.6.8-rc.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.9
+  </details>
+
+## 1.6.5-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.8
+  </details>
+
+## 1.6.5-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.7
+  </details>
+
+## 1.6.5-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.6
+  </details>
+
+## 1.6.5-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.5
+  </details>
+
+## 1.6.5-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.4
+  </details>
+
+## 1.6.5-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.3
+  </details>
+
+## 1.6.5-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.2
+  </details>
+
+## 1.6.5-rc.1
+
+## 1.6.8-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.8.0-rc.1
+  </details>
+
+## 1.6.5-rc.0
+
+### Patch Changes
+
+- ([#36116](https://github.com/RocketChat/Rocket.Chat/pull/36116)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
+
+- ([#36236](https://github.com/RocketChat/Rocket.Chat/pull/36236)) Fixes the `channels.counters`, `groups.counters` and `im.counters` endpoint to include only active users in members count.
+
+- <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.0
+  </details>
+
+## 1.6.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.7.4
+  </details>
+
+## 1.6.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.3
+  </details>
+
+## 1.6.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.2
+  </details>
+
 ## 1.6.4
 
 ### Patch Changes
