@@ -26,6 +26,7 @@ import { UiInteractionBridge } from './uiInteraction';
 import { AppUploadBridge } from './uploads';
 import { AppUserBridge } from './users';
 import { AppVideoConferenceBridge } from './videoConferences';
+import { OutboundCommunicationBridge } from './outboundCommunication';
 
 export class RealAppBridges extends AppBridges {
 	constructor(orch) {
@@ -57,6 +58,7 @@ export class RealAppBridges extends AppBridges {
 		this._roleBridge = new AppRoleBridge(orch);
 		this._emailBridge = new AppEmailBridge(orch);
 		this._contactBridge = new AppContactBridge(orch);
+		this._outboundMessageBridge = new OutboundCommunicationBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -137,6 +139,10 @@ export class RealAppBridges extends AppBridges {
 
 	getVideoConferenceBridge() {
 		return this._videoConfBridge;
+	}
+
+	getOutboundMessageBridge() {
+		return this._outboundMessageBridge;
 	}
 
 	getOAuthAppsBridge() {

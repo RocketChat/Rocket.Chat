@@ -1,0 +1,30 @@
+import { JsonRpcError, Defined } from 'jsonrpc-lite';
+import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider.ts';
+
+import { AppObjectRegistry } from '../AppObjectRegistry.ts';
+import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
+import { Logger } from '../lib/logger.ts';
+
+export default async function outboundMessageHandler(call: string, params: unknown): Promise<JsonRpcError | Defined> {
+	const [, providerName, methodName] = call.split(':');
+	const provider = AppObjectRegistry.get<IOutboundMessageProviders>(`outboundCommunication:${providerName}`);
+	const method = provider[methodName as keyof IOutboundMessageProviders];
+	const logger = AppObjectRegistry.get<Logger>('logger');
+
+	const args = (params as Array<unknown>) ?? [];
+
+	try {
+		logger?.debug(`Executing ${methodName} on outbound communication provider...`);
+
+		return await (method as Function).apply(provider, [
+			...args,
+			// Example, we may need more/less accessors
+			AppAccessorsInstance.getReader(),
+			AppAccessorsInstance.getModifier(),
+			AppAccessorsInstance.getHttp(),
+			AppAccessorsInstance.getPersistence(),
+		]);
+	} catch (e) {
+		return new JsonRpcError(e.message, -32000);
+	}
+}

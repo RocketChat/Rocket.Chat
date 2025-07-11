@@ -13,6 +13,7 @@ import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcom
 import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
 import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi.ts';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider.ts';
+import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider.ts';
 
 import { Http } from './http.ts';
 import { HttpExtend } from './extenders/HttpExtender.ts';
@@ -184,6 +185,15 @@ export class AppAccessors {
 					provideVideoConfProvider(provider: IVideoConfProvider) {
 						// Store the videoConfProvider instance to use when the Apps-Engine calls the videoConfProvider
 						AppObjectRegistry.set(`videoConfProvider:${provider.name}`, provider);
+
+						return this._proxy.provideVideoConfProvider(provider);
+					},
+				},
+				outboundCommunicationProviders: {
+					_proxy: this.proxify('getConfigurationExtend:outboundCommunicationProviders'),
+					provideOutboundCommunicationProvider(provider: IOutboundMessageProviders) {
+						// Store the videoConfProvider instance to use when the Apps-Engine calls the videoConfProvider
+						AppObjectRegistry.set(`outboundCommunication:${provider.name}`, provider);
 
 						return this._proxy.provideVideoConfProvider(provider);
 					},
