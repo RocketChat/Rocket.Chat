@@ -16,11 +16,11 @@ type AppDetailsPageTabsProps = {
 
 const AppDetailsPageTabs = ({
 	context,
-	installed,
+	installed = false,
 	isSecurityVisible,
 	settings,
 	tab,
-	hasCluster,
+	hasCluster = false,
 }: AppDetailsPageTabsProps): ReactElement => {
 	const { t } = useTranslation();
 	const isAdminUser = usePermission('manage-apps');
@@ -57,17 +57,17 @@ const AppDetailsPageTabs = ({
 					{t('Releases')}
 				</Tabs.Item>
 			)}
-			{Boolean(installed && settings && Object.values(settings).length) && isAdminUser && (
+			{installed && Boolean(settings && Object.values(settings).length) && isAdminUser && (
 				<Tabs.Item onClick={() => handleTabClick('settings')} selected={tab === 'settings'}>
 					{t('Settings')}
 				</Tabs.Item>
 			)}
-			{Boolean(installed) && isAdminUser && (
+			{installed && isAdminUser && (
 				<Tabs.Item onClick={() => handleTabClick('logs')} selected={tab === 'logs'}>
 					{t('Logs')}
 				</Tabs.Item>
 			)}
-			{hasCluster && Boolean(installed) && isAdminUser && (
+			{hasCluster && installed && isAdminUser && (
 				<Tabs.Item onClick={() => handleTabClick('instances')} selected={tab === 'instances'}>
 					{t('Instances')}
 				</Tabs.Item>
