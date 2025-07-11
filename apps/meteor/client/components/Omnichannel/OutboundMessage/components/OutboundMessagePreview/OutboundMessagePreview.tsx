@@ -56,11 +56,11 @@ const OutboundMessagePreview = ({
 	const sender = useMemo(() => formatContact(rawSender, providerType), [providerType, rawSender]);
 	const replies = useMemo(() => {
 		if (agentName) {
-			return `${agentName || agentUsername} (${agentUsername}) ${departmentName ? `at ${departmentName}` : ''}`;
+			return `${agentName || agentUsername} ${agentUsername ? `(${agentUsername})` : ''} ${departmentName ? `at ${departmentName}` : ''}`;
 		}
 
-		return departmentName ?? t('None');
-	}, [agentName, agentUsername, departmentName, t]);
+		return departmentName;
+	}, [agentName, agentUsername, departmentName]);
 
 	return (
 		<div>
@@ -73,12 +73,12 @@ const OutboundMessagePreview = ({
 					</Box>
 					<Box is='li'>
 						<PreviewItem icon='user' label={t('To')}>
-							{contactName ? `${contactName} ${recipient ? `(${recipient})` : ''}` : t('None')}
+							{contactName && `${contactName} ${recipient ? `(${recipient})` : ''}`}
 						</PreviewItem>
 					</Box>
 					<Box is='li'>
 						<PreviewItem icon='send' label={t('From')}>
-							{providerName ? `${providerName} ${sender ? `(${sender})` : ''}` : t('None')}
+							{providerName && `${providerName} ${sender ? `(${sender})` : ''}`}
 						</PreviewItem>
 					</Box>
 					<Box is='li'>
