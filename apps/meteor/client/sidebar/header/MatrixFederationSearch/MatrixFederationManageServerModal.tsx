@@ -1,4 +1,20 @@
-import { Divider, Modal, ButtonGroup, Button, Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput } from '@rocket.chat/fuselage';
+import {
+	Divider,
+	Modal,
+	ButtonGroup,
+	Button,
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	TextInput,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+} from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -66,11 +82,11 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 
 	return (
 		<Modal maxHeight='x600' open aria-labelledby={titleId}>
-			<Modal.Header>
-				<Modal.Title id={titleId}>{t('Manage_servers')}</Modal.Title>
-				<Modal.Close onClick={onClickClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle id={titleId}>{t('Manage_servers')}</ModalTitle>
+				<ModalClose onClick={onClickClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Field>
 					<FieldLabel htmlFor={serverNameId}>{t('Server_name')}</FieldLabel>
 					<FieldRow>
@@ -95,12 +111,12 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 				</Field>
 				<Divider mb={16} />
 				{!isLoadingServerList && data?.servers && <MatrixFederationRemoveServerList servers={data.servers} />}
-			</Modal.Content>
-			<Modal.Footer>
+			</ModalContent>
+			<ModalFooter>
 				<ButtonGroup>
 					<Button onClick={onClickClose}>{t('Cancel')}</Button>
 				</ButtonGroup>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };

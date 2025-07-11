@@ -1,11 +1,11 @@
 import type { IInvite } from '@rocket.chat/core-typings';
 import {
+	ajv,
 	isFindOrCreateInviteParams,
 	isUseInviteTokenProps,
 	isValidateInviteTokenProps,
 	isSendInvitationEmailParams,
 } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 import { listInvites } from '../../../invites/server/functions/listInvites';
