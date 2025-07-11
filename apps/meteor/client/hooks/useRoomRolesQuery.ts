@@ -100,7 +100,7 @@ export const useRoomRolesQuery = <TData = RoomRoles[]>(rid: IRoom['_id'], option
 		});
 	}, [enabled, queryClient, rid, subscribeToNotifyLogged]);
 
-	const getRoomRoles = useEndpoint('GET', '/v1/rooms.getRoles');
+	const getRoomRoles = useEndpoint('GET', '/v1/rooms.roles');
 
 	return useQuery({
 		queryKey: roomsQueryKeys.roles(rid),

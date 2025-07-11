@@ -1,7 +1,7 @@
-import { api } from '@rocket.chat/core-services';
+import { Authorization } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
+import { ajv, isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -13,6 +13,7 @@ import { addUserToRole } from '../../../authorization/server/methods/addUserToRo
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -243,3 +244,43 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const rolesRoutes = API.v1.get(
+	'roles.getUsersInPublicRoles',
+	{
+		authRequired: true,
+		response: {
+			200: ajv.compile<{
+				users: {
+					_id: string;
+					username: string;
+					roles: string[];
+				}[];
+			}>({
+				type: 'object',
+				properties: {
+					users: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+						},
+					},
+				},
+			}),
+		},
+	},
+
+	async () => {
+		return API.v1.success({
+			users: await Authorization.getUsersFromPublicRoles(),
+		});
+	},
+);
+
+type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends RolesEndpoints {}
+}
