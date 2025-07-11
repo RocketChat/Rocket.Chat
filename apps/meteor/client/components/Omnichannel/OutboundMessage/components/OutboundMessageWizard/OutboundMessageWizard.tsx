@@ -10,12 +10,12 @@ import GenericError from '../../../../GenericError';
 import Wizard, { useWizard, WizardContent, WizardTabs } from '../../../../Wizard';
 
 type OutboundMessageWizardProps = {
-	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId'>>;
+	defaultValues?: Partial<SubmitPayload>;
 };
 
 const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
-	const [, setState] = useState<Partial<SubmitPayload>>(defaultValues);
+	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
 
 	const wizardApi = useWizard({
 		steps: [
@@ -45,7 +45,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 					</WizardContent>
 
 					<WizardContent id='replies'>
-						<RepliesStep onSubmit={handleSubmit} />
+						<RepliesStep defaultValues={state} onSubmit={handleSubmit} />
 					</WizardContent>
 
 					<WizardContent id='preview'>
