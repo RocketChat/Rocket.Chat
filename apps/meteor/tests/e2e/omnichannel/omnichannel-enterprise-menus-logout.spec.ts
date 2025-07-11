@@ -14,7 +14,7 @@ test.describe('OC - Enterprise Menu Items After Relogin', () => {
 		await page.locator('[name=password]').fill(ADMIN_CREDENTIALS.password);
 		await page.locator('role=button[name="Login"]').click();
 
-		await page.locator('.main-content').waitFor();
+		await page.locator('#main-content').waitFor();
 	});
 
 	// Delete all data

@@ -44,32 +44,19 @@ const getLastRecentUsers = (rid: string, uid: string) => {
 			suggestion?: boolean;
 		}
 	>();
-	Messages.find(
-		{
-			rid,
-			'u._id': { $ne: uid },
-			't': { $exists: false },
-			'ts': { $exists: true },
-		},
-		{
-			fields: {
-				'u.username': 1,
-				'u.name': 1,
-				'u._id': 1,
-				'ts': 1,
-			},
-			sort: { ts: -1 },
-		},
-	).forEach(({ u: { username, name, _id }, ts }) => {
-		if (!uniqueUsers.has(username)) {
-			uniqueUsers.set(username, {
-				_id,
-				username,
-				name,
-				ts,
-			});
-		}
-	});
+	Messages.state
+		.filter((record) => record.rid === rid && record.u && record.u._id !== uid && !record.t && !!record.ts)
+		.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+		.forEach(({ u: { username, name, _id }, ts }) => {
+			if (!uniqueUsers.has(username)) {
+				uniqueUsers.set(username, {
+					_id,
+					username,
+					name,
+					ts,
+				});
+			}
+		});
 
 	return Array.from(uniqueUsers.values());
 };

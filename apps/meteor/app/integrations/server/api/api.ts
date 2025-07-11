@@ -9,8 +9,9 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
+import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server/api';
+import { API, defaultRateLimiterOptions } from '../../../api/server/api';
 import type { FailureResult, PartialThis, SuccessResult, UnavailableResult } from '../../../api/server/definition';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';

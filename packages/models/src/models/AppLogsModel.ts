@@ -16,7 +16,6 @@ export class AppsLogsModel extends BaseRaw<any> implements IAppLogsModel {
 					_updatedAt: 1,
 				},
 				expireAfterSeconds: 60 * 60 * 24 * 30,
-				name: 'ttl_30_days',
 			},
 			// Index for specific queries from the logs screen (most common)
 			{

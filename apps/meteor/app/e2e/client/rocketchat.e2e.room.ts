@@ -303,7 +303,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptPendingMessages() {
-		await Messages.store.updateAsync(
+		await Messages.state.updateAsync(
 			(record) => record.rid === this.roomId && record.t === 'e2e' && record.e2e === 'pending',
 			(record) => this.decryptMessage(record),
 		);

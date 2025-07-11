@@ -1,4 +1,5 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { OffCallbackHandler } from '@rocket.chat/emitter';
 import type { ObjectId, Filter, FindOptions as MongoFindOptions, Document } from 'mongodb';
 import { createContext } from 'react';
 
@@ -47,6 +48,7 @@ export type UserContextValue = {
 		options?: FindOptions,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom[]];
 	logout: () => Promise<void>;
+	onLogout: (callback: () => void) => OffCallbackHandler;
 };
 
 export const UserContext = createContext<UserContextValue>({
@@ -57,4 +59,5 @@ export const UserContext = createContext<UserContextValue>({
 	queryRoom: () => [() => (): void => undefined, (): undefined => undefined],
 	querySubscriptions: () => [() => (): void => undefined, (): [] => []],
 	logout: () => Promise.resolve(),
+	onLogout: () => (): void => undefined,
 });

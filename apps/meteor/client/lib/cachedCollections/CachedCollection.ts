@@ -109,7 +109,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			this.updatedAt = new Date(updatedAt);
 		}
 
-		this.collection.store.replaceAll(deserializedRecords.filter(hasId));
+		this.collection.state.replaceAll(deserializedRecords.filter(hasId));
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
@@ -147,28 +147,32 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		const data = await this.callLoad();
 		this.log(`${data.length} records loaded from server`);
 
-		const newRecords = data.map((record) => this.handleLoadFromServer(record)).filter((record) => hasId(record));
+		const newRecords = data.map((record) => {
+			const mapped = this.mapRecord(record);
 
-		newRecords.forEach((record) => {
-			if (hasUpdatedAt(record) && record._updatedAt > this.updatedAt) {
-				this.updatedAt = record._updatedAt;
+			if (hasUpdatedAt(mapped) && mapped._updatedAt > this.updatedAt) {
+				this.updatedAt = mapped._updatedAt;
 			}
+
+			return mapped;
 		});
 
-		this.collection.store.storeMany(newRecords);
+		this.collection.state.storeMany(newRecords);
+		this.handleLoadedFromServer(newRecords);
+
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
 
-	protected handleLoadFromServer(record: U): T {
+	protected mapRecord(record: U): T {
 		return record as unknown as T;
 	}
 
-	protected handleReceived(record: U, _action: 'removed' | 'changed'): T {
-		return record as unknown as T;
+	protected handleLoadedFromServer(_records: T[]): void {
+		// This method can be overridden to handle records after they are loaded from the server
 	}
 
-	protected handleSync(record: U, _action: 'removed' | 'changed'): T {
-		return record as unknown as T;
+	protected handleSyncEvent(_action: 'removed' | 'changed', _record: T): void {
+		// This method can be overridden to handle sync events
 	}
 
 	private async loadFromServerAndPopulate() {
@@ -178,12 +182,11 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 
 	private save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
-		const data = this.collection.store.records;
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
 			token: this.getToken(),
-			records: data,
+			records: Array.from(this.collection.state.records.values()),
 		});
 		this.log('saving cache (done)');
 	});
@@ -193,30 +196,25 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	protected async clearCache() {
 		this.log('clearing cache');
 		await localforage.removeItem(this.name);
-		this.collection.store.replaceAll([]);
+		this.collection.state.replaceAll([]);
 	}
 
-	protected async setupListener() {
-		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: any) => {
+	protected setupListener() {
+		return sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: U) => {
 			this.log('record received', action, record);
 			await this.handleRecordEvent(action, record);
 		}) as (...args: unknown[]) => void);
 	}
 
-	protected async handleRecordEvent(action: 'removed' | 'changed', record: any) {
-		const newRecord = this.handleReceived(record, action);
-
-		if (!hasId(newRecord)) {
-			return;
-		}
+	protected async handleRecordEvent(action: 'removed' | 'changed', record: U) {
+		const newRecord = this.mapRecord(record);
 
 		if (action === 'removed') {
-			this.collection.store.delete(newRecord);
+			this.collection.state.delete(newRecord._id);
 		} else {
-			const { _id } = newRecord;
-			if (!_id) return;
-			this.collection.store.store(newRecord);
+			this.collection.state.store(newRecord);
 		}
+
 		await this.save();
 	}
 
@@ -247,20 +245,16 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		if (data.update && data.update.length > 0) {
 			this.log(`${data.update.length} records updated in sync`);
 			for (const record of data.update) {
-				const action = 'changed';
-				const newRecord = this.handleSync(record, action);
-
-				if (!hasId(newRecord)) {
-					continue;
-				}
+				const newRecord = this.mapRecord(record);
 
 				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
 				changes.push({
 					action: () => {
-						this.collection.store.store(newRecord);
+						this.collection.state.store(newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
+						this.handleSyncEvent('changed', newRecord);
 					},
 					timestamp: actionTime.getTime(),
 				});
@@ -270,20 +264,20 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		if (data.remove && data.remove.length > 0) {
 			this.log(`${data.remove.length} records removed in sync`);
 			for (const record of data.remove) {
-				const action = 'removed';
-				const newRecord = this.handleSync(record, action);
+				const newRecord = this.mapRecord(record);
 
-				if (!hasId(newRecord) || !hasDeletedAt(newRecord)) {
+				if (!hasDeletedAt(newRecord)) {
 					continue;
 				}
 
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						this.collection.store.delete(newRecord);
+						this.collection.state.delete(newRecord._id);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
+						this.handleSyncEvent('removed', newRecord);
 					},
 					timestamp: actionTime.getTime(),
 				});
@@ -301,7 +295,9 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		return true;
 	}
 
-	async init() {
+	private listenerUnsubscriber: (() => void) | undefined;
+
+	private async performInitialization() {
 		if (await this.loadFromCache()) {
 			this.trySync();
 		} else {
@@ -324,7 +320,34 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			}
 		});
 
-		return this.setupListener();
+		const subscription = this.setupListener();
+		this.listenerUnsubscriber = () => {
+			subscription.stop();
+			this.listenerUnsubscriber = undefined;
+		};
+	}
+
+	private initializationPromise: Promise<void> | undefined;
+
+	init() {
+		if (this.initializationPromise) {
+			return this.initializationPromise;
+		}
+
+		this.initializationPromise = this.performInitialization().finally(() => {
+			this.initializationPromise = undefined;
+		});
+
+		return this.initializationPromise;
+	}
+
+	async release() {
+		if (this.initializationPromise) {
+			await this.initializationPromise;
+		}
+
+		this.listenerUnsubscriber?.();
+		this.ready.set(false);
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
@@ -359,7 +382,7 @@ export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends
 		});
 
 		Accounts.onLogout(() => {
-			this.ready.set(false);
+			this.release();
 		});
 	}
 }

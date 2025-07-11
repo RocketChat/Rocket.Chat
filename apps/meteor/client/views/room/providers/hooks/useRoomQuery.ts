@@ -14,7 +14,7 @@ export function useRoomQuery(
 	const queryResult = useQuery({
 		queryKey: roomsQueryKeys.room(rid),
 		queryFn: async () => {
-			const room = Rooms.store.get(rid);
+			const room = Rooms.state.get(rid);
 
 			if (!room) {
 				throw new RoomNotFoundError(undefined, { rid });

@@ -1,8 +1,8 @@
 import { Mongo } from 'meteor/mongo';
-import { create } from 'zustand';
 
-import type { IDocumentMapStore } from './DocumentMapStore';
+import { createDocumentMapStore } from './DocumentMapStore';
 import { LocalCollection } from './LocalCollection';
+import type { Query } from './Query';
 
 /**
  * Implements a minimal version of a MongoDB collection using Zustand for state management.
@@ -10,68 +10,55 @@ import { LocalCollection } from './LocalCollection';
  * It's a middle layer between the Mongo.Collection and Zustand aiming for complete migration to Zustand.
  */
 export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collection<T> {
+	private pendingRecomputations = new Set<Query<T>>();
+
+	private recomputeAll() {
+		this.pendingRecomputations.clear();
+
+		for (const query of this._collection.queries) {
+			this._collection.recomputeQuery(query);
+		}
+	}
+
+	private scheduleRecomputationsFor(docs: T[]) {
+		for (const query of this._collection.queries) {
+			if (this.pendingRecomputations.has(query)) continue;
+
+			if (docs.some((doc) => query.predicate(doc))) {
+				this.scheduleRecomputation(query);
+			}
+		}
+	}
+
+	private scheduleRecomputation(query: Query<T>) {
+		this.pendingRecomputations.add(query);
+
+		queueMicrotask(() => {
+			if (this.pendingRecomputations.size === 0) return;
+
+			this.pendingRecomputations.forEach((query) => {
+				this._collection.recomputeQuery(query);
+			});
+			this.pendingRecomputations.clear();
+		});
+	}
+
 	/**
 	 * A Zustand store that holds the records of the collection.
 	 *
 	 * It should be used as a hook in React components to access the collection's records and methods.
+	 *
+	 * Beware mutating the store will **asynchronously** trigger recomputations of all Minimongo
+	 * queries that depend on the changed documents.
 	 */
-	readonly use = create<IDocumentMapStore<T>>()((set, get) => ({
-		records: [],
-		has: (id: T['_id']) => get().records.some((record) => record._id === id),
-		get: (id: T['_id']) => get().records.find((record) => record._id === id),
-		find: (predicate: (record: T) => boolean) => get().records.find(predicate),
-		filter: (predicate: (record: T) => boolean) => get().records.filter(predicate),
-		replaceAll: (records: T[]) => {
-			set({ records: records.map<T>(Object.freeze) });
-			this.recomputeQueries();
+	readonly use = createDocumentMapStore<T>({
+		onInvalidateAll: () => {
+			this.recomputeAll();
 		},
-		store: (doc) => {
-			set((state) => {
-				const records = [...state.records];
-				const index = records.findIndex((r) => r._id === doc._id);
-				if (index !== -1) {
-					records[index] = Object.freeze(doc);
-				} else {
-					records.push(Object.freeze(doc));
-				}
-				return { records };
-			});
-			this.recomputeQueries();
+		onInvalidate: (...docs) => {
+			this.scheduleRecomputationsFor(docs);
 		},
-		storeMany: (docs) => {
-			const records = [...get().records];
-
-			for (const doc of docs) {
-				const index = records.findIndex((r) => r._id === doc._id);
-				if (index !== -1) {
-					records[index] = Object.freeze(doc);
-				} else {
-					records.push(Object.freeze(doc));
-				}
-			}
-			set({ records });
-			this.recomputeQueries();
-		},
-		delete: (doc) => {
-			set((state) => {
-				const records = state.records.filter((r) => r._id !== doc._id);
-				return { records };
-			});
-			this.recomputeQueries();
-		},
-		update: (predicate: (record: T) => boolean, modifier: (record: T) => T) => {
-			set({
-				records: get().records.map((record) => (predicate(record) ? modifier(record) : record)),
-			});
-			this._collection.recomputeAllResults();
-		},
-		updateAsync: async (predicate: (record: T) => boolean, modifier: (record: T) => Promise<T>) => {
-			set({
-				records: await Promise.all(get().records.map((record) => (predicate(record) ? modifier(record) : record))),
-			});
-			this._collection.recomputeAllResults();
-		},
-	}));
+	});
 
 	/**
 	 * The internal collection that manages the queries and results.
@@ -88,12 +75,11 @@ export class MinimongoCollection<T extends { _id: string }> extends Mongo.Collec
 	 * Returns the Zustand store state that holds the records of the collection.
 	 *
 	 * It's a convenience method to access the Zustand store directly i.e. outside of React components.
+	 *
+	 * Beware mutating the store will **asynchronously** trigger recomputations of all Minimongo
+	 * queries that depend on the changed documents.
 	 */
-	get store() {
+	get state() {
 		return this.use.getState();
-	}
-
-	private recomputeQueries() {
-		this._collection.recomputeAllResults();
 	}
 }

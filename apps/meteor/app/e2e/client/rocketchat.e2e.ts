@@ -4,6 +4,7 @@ import URL from 'url';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
@@ -29,7 +30,6 @@ import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
 import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
@@ -40,6 +40,7 @@ import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { isTruthy } from '../../../lib/isTruthy';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { settings } from '../../settings/client';
+import { limitQuoteChain } from '../../ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
@@ -716,7 +717,7 @@ class E2E extends Emitter {
 	}
 
 	async decryptPendingMessages(): Promise<void> {
-		await Messages.store.updateAsync(
+		await Messages.state.updateAsync(
 			(record) => record.t === 'e2e' && record.e2e === 'pending',
 			(record) => this.decryptMessage(record),
 		);
@@ -785,7 +786,7 @@ class E2E extends Emitter {
 					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
 				);
 
-				message.attachments.push(quoteAttachment);
+				message.attachments.push(limitQuoteChain(quoteAttachment, settings.get('Message_QuoteChainLimit') ?? 2));
 			}),
 		);
 
