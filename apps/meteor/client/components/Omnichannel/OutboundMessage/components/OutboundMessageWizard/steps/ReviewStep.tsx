@@ -1,5 +1,5 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import { WizardActions } from '@rocket.chat/ui-client';
+import { WizardActions, WizardBackButton } from '@rocket.chat/ui-client';
 import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +25,8 @@ const ReviewStep = ({ onSend, ...props }: ReviewStepProps) => {
 				<Box mie='auto' fontScale='c1' color='annotation'>
 					{t('Messages_cannot_be_unsent')}
 				</Box>
+
+				<WizardBackButton />
 
 				<Button primary icon='send' loading={sendMutation.isPending} onClick={() => sendMutation.mutate()}>
 					{t('Send')}
