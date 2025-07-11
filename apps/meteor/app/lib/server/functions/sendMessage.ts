@@ -278,9 +278,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		message._id = _id;
 	} else {
 		const messageAlreadyExists = message._id && (await Messages.findOneById(message._id, { projection: { _id: 1 } }));
-		console.log(`Checking if message exists with _id ${message._id}:`, messageAlreadyExists);
 		if (messageAlreadyExists) {
-			console.log(`Message with _id ${message._id} already exists, skipping insertion`);
 			return;
 		}
 		const { insertedId } = await Messages.insertOne(message);
