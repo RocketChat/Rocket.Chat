@@ -7411,6 +7411,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/fuselage@npm:^0.0.0-dev-20250528192456":
+  version: 0.0.0-dev-20250528192456
+  resolution: "@rocket.chat/fuselage@npm:0.0.0-dev-20250528192456"
+  dependencies:
+    "@rocket.chat/css-in-js": "npm:^0.31.25"
+    "@rocket.chat/css-supports": "npm:^0.31.25"
+    "@rocket.chat/fuselage-tokens": "npm:^0.33.2"
+    "@rocket.chat/memo": "npm:^0.31.25"
+    "@rocket.chat/styled": "npm:^0.32.0"
+    invariant: "npm:^2.2.4"
+    react-aria: "npm:~3.37.0"
+    react-keyed-flatten-children: "npm:^1.3.0"
+    react-stately: "npm:~3.35.0"
+  peerDependencies:
+    "@rocket.chat/fuselage-hooks": "*"
+    "@rocket.chat/fuselage-polyfills": "*"
+    "@rocket.chat/icons": "*"
+    react: "*"
+    react-dom: "*"
+    react-virtuoso: 1.2.4
+  checksum: 10/4d9fabcb17dc33f2230f4b68b5cbf9d821676f420188feae81959861300ee723a8eb2102711afffc5e32009c3025c067b3fd8c583d6c45f9928cd7a6bb78451d
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/fuselage@npm:^0.64.0":
   version: 0.64.0
   resolution: "@rocket.chat/fuselage@npm:0.64.0"
@@ -7861,7 +7885,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/freeswitch": "workspace:^"
-    "@rocket.chat/fuselage": "npm:^0.64.0"
+    "@rocket.chat/fuselage": "npm:^0.0.0-dev-20250528192456"
     "@rocket.chat/fuselage-hooks": "npm:^0.36.0"
     "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
     "@rocket.chat/fuselage-toastbar": "npm:^0.35.0"

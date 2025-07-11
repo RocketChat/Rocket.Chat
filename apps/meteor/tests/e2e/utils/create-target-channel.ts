@@ -56,10 +56,7 @@ export async function createTargetPrivateChannel(api: BaseTest['api'], options?:
 	return name;
 }
 
-export async function createTargetTeam(
-	api: BaseTest['api'],
-	options?: { sidepanel?: IRoom['sidepanel'] } & Omit<GroupsCreateProps, 'name'>,
-): Promise<string> {
+export async function createTargetTeam(api: BaseTest['api'], options?: Omit<GroupsCreateProps, 'name'>): Promise<string> {
 	const name = faker.string.uuid();
 	await api.post('/teams.create', { name, type: 1, members: ['user2', 'user1'], ...options });
 
