@@ -50,6 +50,7 @@ const RoomList = () => {
 								onClick={() => handleClick(group)}
 								onKeyDown={(e) => handleKeyDown(e, group)}
 								groupTitle={sidePanelFiltersConfig[group].title}
+								group={group}
 								unreadCount={unreadInfo}
 							/>
 						);
