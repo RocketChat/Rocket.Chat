@@ -146,4 +146,8 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	return userData;
 };
 
-export const removeLocalUserData = (): number => Users.remove({});
+export const removeLocalUserData = (): number => {
+	const removed = Users.remove({});
+	localStorage.clear();
+	return removed;
+};
