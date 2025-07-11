@@ -1,8 +1,36 @@
-import { getBSONType } from '@rocket.chat/mongo-adapter';
+import { getBSONType } from './bson';
+import { BSONType } from './types';
 
-export const hasOwn = Object.prototype.hasOwnProperty;
+export function assertHasValidFieldNames(doc: unknown) {
+	if (doc && typeof doc === 'object') {
+		JSON.stringify(doc, (key, value) => {
+			assertIsValidFieldName(key);
+			return value;
+		});
+	}
+}
 
-const isBinary = (x: unknown): x is Uint8Array => typeof x === 'object' && x !== null && x instanceof Uint8Array;
+export function assertIsValidFieldName(key: string) {
+	if (typeof key !== 'string') {
+		return;
+	}
+
+	const match = key.match(/^\$|\.|\0/);
+	if (match) {
+		switch (match[0]) {
+			case '$':
+				throw new Error(`Key ${key} must not start with '$'`);
+			case '.':
+				throw new Error(`Key ${key} must not contain '.'`);
+			case '\0':
+				throw new Error(`Key ${key} must not contain null bytes`);
+			default:
+				throw new Error(`Key ${key} contains invalid character: ${match[0]}`);
+		}
+	}
+}
+
+export const isBinary = (x: unknown): x is Uint8Array => typeof x === 'object' && x !== null && x instanceof Uint8Array;
 
 const isArguments = (x: unknown): x is IArguments => Object.prototype.toString.call(x) === '[object Arguments]';
 
@@ -36,15 +64,21 @@ export const clone: <T>(v: T) => T = (v: unknown) => {
 	}
 
 	if (isArguments(v)) {
-		return Array.from(v).map(clone);
+		return Array.from(v, clone);
 	}
 
 	if ('clone' in v && typeof v.clone === 'function') {
 		return v.clone();
 	}
 
-	return Object.fromEntries(entriesOf(v).map(([key, value]) => [key, clone(value)]));
+	return Object.fromEntries(Object.entries(v).map(([key, value]) => [key, clone(value)]));
 };
+
+export const isNumericKey = (s: string) => /^\d+$/.test(s);
+
+export const isPlainObject = (x: unknown): x is Record<string, any> => !!x && getBSONType(x) === BSONType.Object;
+
+export const isIndexable = (obj: unknown): obj is Record<string | number, any> => Array.isArray(obj) || isPlainObject(obj);
 
 export const equals = <T>(a: T, b: T): boolean => {
 	if (a === b) {
@@ -109,30 +143,6 @@ export const equals = <T>(a: T, b: T): boolean => {
 	return true;
 };
 
-export const isPlainObject = (x: any): x is Record<string, any> => x && getBSONType(x) === 3;
+export const isEmptyArray = <T>(value: unknown): value is T[] & { length: 0 } => Array.isArray(value) && value.length === 0;
 
-export function entriesOf<T extends Record<string, any>>(obj: T): [keyof T, T[keyof T]][] {
-	return Object.entries(obj) as [keyof T, T[keyof T]][];
-}
-
-const invalidCharMsg = {
-	'$': "start with '$'",
-	'.': "contain '.'",
-	'\0': 'contain null bytes',
-};
-
-export function assertHasValidFieldNames(doc: unknown) {
-	if (doc && typeof doc === 'object') {
-		JSON.stringify(doc, (key, value) => {
-			assertIsValidFieldName(key);
-			return value;
-		});
-	}
-}
-
-function assertIsValidFieldName(key: string) {
-	let match;
-	if (typeof key === 'string' && (match = key.match(/^\$|\.|\0/))) {
-		throw new Error(`Key ${key} must not ${invalidCharMsg[match[0] as keyof typeof invalidCharMsg]}`);
-	}
-}
+export const isTruthy = <T>(x: T | null | undefined | 0 | false | ''): x is T => Boolean(x);
