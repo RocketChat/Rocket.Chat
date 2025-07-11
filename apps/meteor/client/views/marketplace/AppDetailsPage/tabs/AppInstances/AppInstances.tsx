@@ -19,7 +19,11 @@ import {
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useAppInstances } from '../../../hooks/useAppInstances';
 
-const AppInstances = ({ id }: { id: string }): ReactElement => {
+type AppInstanceProps = {
+	id: string;
+};
+
+const AppInstances = ({ id }: AppInstanceProps): ReactElement => {
 	const { t } = useTranslation();
 	const { data, isSuccess, isError, isLoading } = useAppInstances({ appId: id });
 
