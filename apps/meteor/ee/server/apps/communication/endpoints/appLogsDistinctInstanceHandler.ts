@@ -1,9 +1,9 @@
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import type { AppsRestApi } from '../rest';
 
 // This might be a good candidate for a default validator function exported by @rocket.chat/rest-typings
-const errorResponse = ajv.compile({
+const errorResponse = ajv.compile<unknown>({
 	additionalProperties: false,
 	type: 'object',
 	properties: {
@@ -28,7 +28,7 @@ const errorResponse = ajv.compile({
 
 export const registerAppLogsDistinctInstanceHandler = ({ api, _orch }: AppsRestApi) =>
 	void api.get(
-		':id/logs/instanceIds',
+		':id/logs/distinctValues',
 		{
 			authRequired: true,
 			permissionsRequired: ['manage-apps'],
@@ -45,9 +45,16 @@ export const registerAppLogsDistinctInstanceHandler = ({ api, _orch }: AppsRestA
 				}),
 				401: errorResponse,
 				403: errorResponse,
+				404: errorResponse,
 			},
 		},
 		async function action() {
+			const app = await _orch.getManager()?.getOneById(this.urlParams.id);
+
+			if (!app) {
+				return api.notFound(`No app found with id: ${this.urlParams.id}`);
+			}
+
 			const result = await _orch.getLogStorage().distinctValues(this.urlParams.id);
 
 			return api.success(result);
