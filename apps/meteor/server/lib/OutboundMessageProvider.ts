@@ -3,16 +3,17 @@ import type {
 	IOutboundMessageProviders,
 	IOutboundPhoneMessageProvider,
 } from '@rocket.chat/apps-engine/definition/outboundComunication';
+import type { ValidOutboundProvider, IOutboundProvider } from '@rocket.chat/core-typings';
 
 interface IOutboundMessageProvider {
 	registerPhoneProvider(provider: IOutboundPhoneMessageProvider): void;
 	registerEmailProvider(provider: IOutboundEmailMessageProvider): void;
-	getOutboundMessageProviders(type?: 'phone' | 'email'): IOutboundMessageProviders[];
+	getOutboundMessageProviders(type?: ValidOutboundProvider): IOutboundProvider[];
 	unregisterProvider(appId: string, providerType: string): void;
 }
 
 export class OutboundMessageProvider implements IOutboundMessageProvider {
-	private readonly outboundMessageProviders: Map<'phone' | 'email', IOutboundMessageProviders[]>;
+	private readonly outboundMessageProviders: Map<ValidOutboundProvider, IOutboundMessageProviders[]>;
 
 	constructor() {
 		this.outboundMessageProviders = new Map([
@@ -29,15 +30,27 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 		this.outboundMessageProviders.set('email', [...(this.outboundMessageProviders.get('email') || []), provider]);
 	}
 
-	public getOutboundMessageProviders(type?: 'phone' | 'email'): IOutboundMessageProviders[] {
+	public getOutboundMessageProviders(type?: ValidOutboundProvider): IOutboundProvider[] {
 		if (type) {
-			return Array.from(this.outboundMessageProviders.get(type)?.values() || []);
+			return Array.from(this.outboundMessageProviders.get(type)?.values() || []).map((provider) => ({
+				providerId: provider.appId,
+				providerName: provider.name,
+				providerType: provider.type,
+				...(provider.supportsTemplates && { supportsTemplates: provider.supportsTemplates }),
+			}));
 		}
 
-		return Array.from(this.outboundMessageProviders.values()).flatMap((providers) => providers);
+		return Array.from(this.outboundMessageProviders.values())
+			.flatMap((providers) => providers)
+			.map((provider) => ({
+				providerId: provider.appId,
+				providerName: provider.name,
+				supportsTemplates: provider.supportsTemplates,
+				providerType: provider.type,
+			}));
 	}
 
-	public unregisterProvider(appId: string, providerType: 'phone' | 'email'): void {
+	public unregisterProvider(appId: string, providerType: ValidOutboundProvider): void {
 		const providers = this.outboundMessageProviders.get(providerType);
 		if (!providers) {
 			return;
