@@ -1,3 +1,4 @@
+import './ajv';
 import './livechat';
 import './startup';
 import '../lib/messageTypes';

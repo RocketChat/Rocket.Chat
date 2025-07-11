@@ -98,7 +98,7 @@ export const prepareLivechatRoom = async (
 	const contactId = await migrateVisitorIfMissingContact(_id, source);
 	const contact =
 		contactId &&
-		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
+		(await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
 			projection: { name: 1, channels: 1, activity: 1 },
 		}));
 	if (!contact) {
