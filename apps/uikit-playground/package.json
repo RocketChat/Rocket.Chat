@@ -7,7 +7,7 @@
     "dev": "vite",
     "build-preview": "tsc && vite build",
     ".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./dist ../../.preview/uikit-playground",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts,tsx",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
@@ -43,17 +43,14 @@
   },
   "devDependencies": {
     "@rocket.chat/emitter": "~0.31.25",
+    "@rocket.chat/eslint-config": "workspace:*",
     "@rocket.chat/tsconfig": "workspace:*",
     "@types/lodash": "~4.17.18",
     "@types/react": "~18.3.23",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "~18.3.7",
-    "@typescript-eslint/eslint-plugin": "~5.60.1",
-    "@typescript-eslint/parser": "~5.60.1",
     "@vitejs/plugin-react": "~4.5.2",
-    "eslint": "~8.45.0",
-    "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
+    "eslint": "^9.30.1",
     "typescript": "~5.8.3",
     "vite": "^6.2.4"
   },

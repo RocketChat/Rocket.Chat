@@ -1,4 +1,5 @@
 {
+  "extends": "@rocket.chat/tsconfig/base.json",
   "compilerOptions": {
     "rootDir": ".",
     "target": "es5",
@@ -14,6 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "noImplicitThis": true,
-    "alwaysStrict": true
+    "alwaysStrict": true,
+    "allowJs": true
   }
 }
