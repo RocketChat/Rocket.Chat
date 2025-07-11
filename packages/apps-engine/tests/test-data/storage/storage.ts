@@ -1,4 +1,4 @@
-import * as Datastore from 'nedb';
+import Datastore from '@seald-io/nedb';
 
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { AppMetadataStorage } from '../../../src/server/storage';
@@ -17,13 +17,13 @@ export class TestsAppStorage extends AppMetadataStorage {
 			item.createdAt = new Date();
 			item.updatedAt = new Date();
 
-			this.db.findOne({ $or: [{ id: item.id }, { 'info.nameSlug': item.info.nameSlug }] }, (err: Error, doc: IAppStorageItem) => {
+			this.db.findOne({ $or: [{ id: item.id }, { 'info.nameSlug': item.info.nameSlug }] }, (err, doc: IAppStorageItem) => {
 				if (err) {
 					reject(err);
 				} else if (doc) {
 					reject(new Error('App already exists.'));
 				} else {
-					this.db.insert(item, (err2: Error, doc2: IAppStorageItem) => {
+					this.db.insert(item, (err2, doc2: IAppStorageItem) => {
 						if (err2) {
 							reject(err2);
 						} else {
@@ -37,7 +37,7 @@ export class TestsAppStorage extends AppMetadataStorage {
 
 	public retrieveOne(id: string): Promise<IAppStorageItem> {
 		return new Promise((resolve, reject) => {
-			this.db.findOne({ id }, (err: Error, doc: IAppStorageItem) => {
+			this.db.findOne({ id }, (err, doc: IAppStorageItem) => {
 				if (err) {
 					reject(err);
 				} else if (doc) {
@@ -83,7 +83,7 @@ export class TestsAppStorage extends AppMetadataStorage {
 
 	public update(item: IAppStorageItem): Promise<IAppStorageItem> {
 		return new Promise((resolve, reject) => {
-			this.db.update({ id: item.id }, item, {}, (err: Error, numOfUpdated: number) => {
+			this.db.update({ id: item.id }, item, {}, (err, _numOfUpdated) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -97,7 +97,7 @@ export class TestsAppStorage extends AppMetadataStorage {
 
 	public remove(id: string): Promise<{ success: boolean }> {
 		return new Promise((resolve, reject) => {
-			this.db.remove({ id }, (err: Error) => {
+			this.db.remove({ id }, (err) => {
 				if (err) {
 					reject(err);
 				} else {
