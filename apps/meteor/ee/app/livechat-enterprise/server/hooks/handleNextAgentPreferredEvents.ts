@@ -95,7 +95,7 @@ checkDefaultAgentOnNewRoom.patch(async (_next, defaultAgent, { visitorId, source
 	}
 
 	const contactId = await migrateVisitorIfMissingContact(visitorId, source);
-	const contact = contactId ? await LivechatContacts.findOneById(contactId, { projection: { contactManager: 1 } }) : undefined;
+	const contact = contactId ? await LivechatContacts.findOneEnabledById(contactId, { projection: { contactManager: 1 } }) : undefined;
 
 	const contactManagerPreferred = settings.get<boolean>('Omnichannel_contact_manager_routing');
 	const guestManager = contactManagerPreferred && (await getDefaultAgent({ id: contact?.contactManager }));
