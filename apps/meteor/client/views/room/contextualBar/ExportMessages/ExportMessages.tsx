@@ -111,8 +111,8 @@ const ExportMessages = () => {
 	// Remove HTML from download options
 	const downloadOutputOptions = outputOptions.slice(1);
 
-	const roomExportMutation = useRoomExportMutation();
-	const downloadExportMutation = useDownloadExportMutation();
+	const { mutateAsync: exportRoom } = useRoomExportMutation();
+	const { mutateAsync: exportAndDownload } = useDownloadExportMutation();
 
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const messageCount = useCountSelected();
@@ -145,32 +145,43 @@ const ExportMessages = () => {
 
 	const { mutateAsync: exportAsPDF } = useExportMessagesAsPDFMutation();
 
-	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
+	const handleExport = async ({
+		type,
+		toUsers,
+		dateFrom,
+		dateTo,
+		format,
+		subject,
+		additionalEmails,
+	}: ExportMessagesFormValues): Promise<void> => {
 		const messages = selectedMessageStore.getSelectedMessages();
 
 		if (type === 'download') {
 			if (format === 'pdf') {
-				return exportAsPDF(messages);
+				await exportAsPDF(messages);
+				return;
 			}
 
 			if (format === 'json') {
-				return downloadExportMutation.mutateAsync({
+				await exportAndDownload({
 					mids: messages,
 				});
+				return;
 			}
 		}
 
 		if (type === 'file') {
-			return roomExportMutation.mutateAsync({
+			await exportRoom({
 				rid: room._id,
 				type: 'file',
 				...(dateFrom && { dateFrom }),
 				...(dateTo && { dateTo }),
 				format: format as 'html' | 'json',
 			});
+			return;
 		}
 
-		roomExportMutation.mutateAsync({
+		await exportRoom({
 			rid: room._id,
 			type: 'email',
 			toUsers,

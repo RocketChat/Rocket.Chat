@@ -107,22 +107,27 @@ export const useExportMessagesAsPDFMutation = () => {
 
 			const instance = pdf();
 
-			const callback = async () => {
-				const link = document.createElement('a');
-				link.href = URL.createObjectURL(await instance.toBlob());
-				link.download = `exportedMessages-${new Date().toISOString()}.pdf`;
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-				URL.revokeObjectURL(link.href);
-			};
+			await new Promise<void>((resolve, reject) => {
+				const callback = async () => {
+					const link = document.createElement('a');
+					link.href = URL.createObjectURL(await instance.toBlob());
+					link.download = `exportedMessages-${new Date().toISOString()}.pdf`;
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+					URL.revokeObjectURL(link.href);
+					resolve();
+				};
 
-			try {
-				instance.on('change', callback);
-				instance.updateContainer(jsx);
-			} finally {
-				instance.removeListener('change', callback);
-			}
+				try {
+					instance.on('change', callback);
+					instance.updateContainer(jsx);
+				} catch (error) {
+					reject(error);
+				} finally {
+					instance.removeListener('change', callback);
+				}
+			});
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
