@@ -96,6 +96,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 										aria-describedby={`${usersAndRoomsField}-hint`}
 										name={name}
 										value={value}
+										limit={10}
 										onChange={onChange}
 									/>
 								)}
