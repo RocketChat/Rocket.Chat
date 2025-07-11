@@ -496,16 +496,29 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChatGetPinnedMessagesProps },
 	{
 		async get() {
-			const { roomId } = this.queryParams;
+			const { roomId, sort } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
+			let sortParam: Record<string, 1 | -1> = {};
+
+			try {
+				if (sort) {
+					sortParam = JSON.parse(sort);
+				}
+			} catch (e) {
+				throw new Meteor.Error('error-invalid-sort', 'Invalid sort parameter. Must be a JSON string.', {
+					function: 'chat.getPinnedMessages',
+				});
+			}
+
 			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
 				skip: offset,
 				limit: count,
+				sort: sortParam,
 			});
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
@@ -519,6 +532,8 @@ API.v1.addRoute(
 		},
 	},
 );
+
+
 
 API.v1.addRoute(
 	'chat.getThreadsList',
