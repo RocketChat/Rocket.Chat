@@ -30,3 +30,7 @@ export interface IOutboundEmailMessageProvider extends IOutboundMessageProviderB
 }
 
 export type IOutboundMessageProviders = IOutboundPhoneMessageProvider | IOutboundEmailMessageProvider;
+
+export const ValidOutboundProviderList = ['phone', 'email'] as const;
+
+export type ValidOutboundProvider = (typeof ValidOutboundProviderList)[number];
