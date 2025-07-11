@@ -28,7 +28,7 @@ const TemplatePreview = ({ template, parameters }: TemplatePreviewProps) => {
 			<Box is='p' fontScale='p2m' mbe={2} id={previewId}>
 				{t('Message_preview')}
 			</Box>
-			<Callout type='info' title={header?.text || ''} aria-labelledby={previewId}>
+			<Callout type='info' icon='balloon-text' title={header?.text || ''} aria-labelledby={previewId}>
 				<MarkdownText preserveHtml content={body?.text || ''} />
 				<MarkdownText preserveHtml content={footer?.text || ''} />
 			</Callout>
