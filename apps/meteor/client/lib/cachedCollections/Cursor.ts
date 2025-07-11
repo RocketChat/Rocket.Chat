@@ -1,5 +1,6 @@
-import { createComparatorFromSort, createPredicateFromFilter, type Filter, type Sort } from '@rocket.chat/mongo-adapter';
+import { createComparatorFromSort, createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { Tracker } from 'meteor/tracker';
+import type { Filter, Sort } from 'mongodb';
 
 import { DiffSequence } from './DiffSequence';
 import { IdMap } from './IdMap';
@@ -8,7 +9,7 @@ import { MinimongoError } from './MinimongoError';
 import { ObserveHandle, ReactiveObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
 import type { Query, OrderedQuery, UnorderedQuery } from './Query';
-import { _isPlainObject, clone, hasOwn } from './common';
+import { isPlainObject, clone, hasOwn } from './common';
 import type { OrderedObserver, UnorderedObserver } from './observers';
 
 type Transform<T> = ((doc: T) => any) | null | undefined;
@@ -83,7 +84,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 		selector: Filter<T> | T['_id'],
 		options?: TOptions,
 	) {
-		this.predicate = createPredicateFromFilter(typeof selector === 'string' ? ({ _id: selector } as Filter<T>) : selector);
+		this.predicate = createPredicateFromFilter<T>(typeof selector === 'string' ? ({ _id: selector } as Filter<T>) : selector);
 		this.comparator = options?.sort ? createComparatorFromSort(options.sort) : null;
 		this.skip = options?.skip ?? 0;
 		this.limit = options?.limit;
@@ -253,7 +254,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 
 			const transformed = Tracker.nonreactive(() => transform(doc));
 
-			if (!_isPlainObject(transformed)) {
+			if (!isPlainObject(transformed)) {
 				throw new MinimongoError('transform must return object');
 			}
 
