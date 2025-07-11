@@ -33,7 +33,7 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
+		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
 		await deleteRoom(api, targetDiscussion._id);
 	});
@@ -64,16 +64,16 @@ test.describe.serial('feature preview', () => {
 			});
 		});
 
-		// test.afterAll(async ({ api }) => {
-		// 	await setUserPreferences(api, {
-		// 		featuresPreview: [
-		// 			{
-		// 				name: 'newNavigation',
-		// 				value: false,
-		// 			},
-		// 		],
-		// 	});
-		// });
+		test.afterAll(async ({ api }) => {
+			await setUserPreferences(api, {
+				featuresPreview: [
+					{
+						name: 'newNavigation',
+						value: false,
+					},
+				],
+			});
+		});
 
 		// After moving `Enhanced navigation` out of feature preview, move these tests to sidebar.spec.ts
 		test('should be able to toggle "Enhanced navigation" feature', async ({ page }) => {
