@@ -7,6 +7,8 @@ import type { ComponentProps } from 'react';
 
 import ReviewStep from './ReviewStep';
 import * as stories from './ReviewStep.stories';
+import { WizardContext } from '../../../../../Wizard/WizardContext';
+import { StepsLinkedList } from '../../../../../Wizard/lib/StepsLinkedList';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -15,10 +17,29 @@ jest.mock('../../OutboundMessagePreview', () => ({
 	default: (props: any) => <div data-testid='outbound-message-preview' {...props} />,
 }));
 
+const steps = new StepsLinkedList([
+	{ id: 'test-step-1', title: 'Test Step 1' },
+	{ id: 'test-step-2', title: 'Test Step 2' },
+	{ id: 'test-step-3', title: 'Test Step 3' },
+]);
+
+const mockWizardApi = {
+	steps,
+	currentStep: steps.head?.next ?? null,
+	next: jest.fn(),
+	previous: jest.fn(),
+	register: jest.fn(),
+	goTo: jest.fn(),
+	resetNextSteps: jest.fn(),
+};
+
 const appRoot = mockAppRoot()
 	.withJohnDoe()
 	.withTranslations('en', 'core', {
 		Send: 'Send',
+	})
+	.wrap((children) => {
+		return <WizardContext.Provider value={mockWizardApi}>{children}</WizardContext.Provider>;
 	})
 	.build();
 
@@ -56,6 +77,14 @@ describe('ReviewStep', () => {
 		const { container } = render(<ReviewStep {...defaultProps} />, { wrapper: appRoot });
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
+	});
+
+	it('should call previous step when back button is clicked', async () => {
+		render(<ReviewStep {...defaultProps} />, { wrapper: appRoot });
+		const backButton = screen.getByRole('button', { name: 'Back' });
+		await userEvent.click(backButton);
+
+		await waitFor(() => expect(mockWizardApi.previous).toHaveBeenCalled());
 	});
 
 	it('calls onSend when the send button is clicked', async () => {

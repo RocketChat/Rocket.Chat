@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { WizardActions } from '../../../../../Wizard';
+import { WizardActions, WizardBackButton } from '../../../../../Wizard';
 import OutboundMessagePreview from '../../OutboundMessagePreview';
 
 type ReviewStepProps = ComponentProps<typeof OutboundMessagePreview> & {
@@ -25,6 +25,8 @@ const ReviewStep = ({ onSend, ...props }: ReviewStepProps) => {
 				<Box mie='auto' fontScale='c1' color='annotation'>
 					{t('Messages_cannot_be_unsent')}
 				</Box>
+
+				<WizardBackButton />
 
 				<Button primary icon='send' loading={sendMutation.isPending} onClick={() => sendMutation.mutate()}>
 					{t('Send')}
