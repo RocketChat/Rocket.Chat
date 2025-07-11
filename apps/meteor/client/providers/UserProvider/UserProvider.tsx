@@ -1,14 +1,13 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { Filter } from '@rocket.chat/mongo-adapter';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import type { Filter as MongoFilter } from 'mongodb';
+import type { Filter } from 'mongodb';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
 import type { StoreApi, UseBoundStore } from 'zustand';
@@ -51,10 +50,9 @@ ee.on('logout', async () => {
 });
 
 const queryRoom = (
-	// TODO: this type is a mismatch that might be fixed by adopting only types from `mongodb` instead of `@rocket.chat/mongo-adapter`
-	query: MongoFilter<Pick<IRoom, '_id'>>,
+	query: Filter<Pick<IRoom, '_id'>>,
 ): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => IRoom | undefined] => {
-	const predicate = createPredicateFromFilter(query as Filter<Pick<IRoom, '_id'>>);
+	const predicate = createPredicateFromFilter(query);
 	let snapshot = Rooms.state.find(predicate);
 
 	const subscribe = (onStoreChange: () => void) =>
