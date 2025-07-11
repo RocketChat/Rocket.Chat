@@ -3,7 +3,16 @@ import { Button, FieldGroup, Field, FieldLabel, ButtonGroup, PasswordInput, Fiel
 import { Form } from '@rocket.chat/layout';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useRouter, useRouteParameter, useUser, useMethod, useTranslation, useLoginWithToken } from '@rocket.chat/ui-contexts';
+import {
+	useSetting,
+	useRouter,
+	useRouteParameter,
+	useUser,
+	useMethod,
+	useTranslation,
+	useLoginWithToken,
+	useEndpoint,
+} from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect, useId, useRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -15,10 +24,20 @@ const getChangePasswordReason = ({
 	requirePasswordChangeReason = requirePasswordChange ? 'You_need_to_change_your_password' : 'Please_enter_your_new_password_below',
 }: Pick<IUser, 'requirePasswordChange' | 'requirePasswordChangeReason'> = {}) => requirePasswordChangeReason as TranslationKey;
 
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints {
+		// check file: apps/meteor/app/api/server/v1/users.ts
+		'/v1/users.setPassword': {
+			POST: ({ password }: { password: string }) => Promise<void>;
+		};
+	}
+}
+
 const ResetPasswordPage = (): ReactElement => {
 	const user = useUser();
 	const t = useTranslation();
-	const setUserPassword = useMethod('setUserPassword');
+	const setBasicInfo = useEndpoint('POST', '/v1/users.setPassword');
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
 
@@ -67,7 +86,7 @@ const ResetPasswordPage = (): ReactElement => {
 				await loginWithToken(result.token);
 				router.navigate('/home');
 			} else {
-				await setUserPassword(password);
+				await setBasicInfo({ password });
 			}
 		} catch ({ error, reason }: any) {
 			const _error = reason ?? error;

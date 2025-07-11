@@ -11,6 +11,7 @@ import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 
 export const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
@@ -161,6 +162,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setReaction(reaction, messageId, shouldReact) {
+		methodDeprecationLogger.method('setReaction', '8.0.0', 'Use the endpoint /v1/chat.react instead');
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
