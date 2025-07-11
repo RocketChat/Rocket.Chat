@@ -89,6 +89,7 @@ import type {
 	IMigrationsModel,
 	IModerationReportsModel,
 	IWorkspaceCredentialsModel,
+	IMediaCallsModel,
 } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -178,6 +179,7 @@ export const LivechatUnit = proxify<ILivechatUnitModel>('ILivechatUnitModel');
 export const LivechatUnitMonitors = proxify<ILivechatUnitMonitorsModel>('ILivechatUnitMonitorsModel');
 export const LoginServiceConfiguration = proxify<ILoginServiceConfigurationModel>('ILoginServiceConfigurationModel');
 export const Messages = proxify<IMessagesModel>('IMessagesModel');
+export const MediaCalls = proxify<IMediaCallsModel>('IMediaCallsModel');
 export const NotificationQueue = proxify<INotificationQueueModel>('INotificationQueueModel');
 export const Nps = proxify<INpsModel>('INpsModel');
 export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');
