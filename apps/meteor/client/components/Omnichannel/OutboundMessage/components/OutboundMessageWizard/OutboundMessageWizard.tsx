@@ -10,12 +10,12 @@ import GenericError from '../../../../GenericError';
 import Wizard, { useWizard, WizardContent, WizardTabs } from '../../../../Wizard';
 
 type OutboundMessageWizardProps = {
-	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId'>>;
+	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId' | 'recipient' | 'sender'>>;
 };
 
 const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
-	const [, setState] = useState<Partial<SubmitPayload>>(defaultValues);
+	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
 
 	const wizardApi = useWizard({
 		steps: [
@@ -30,6 +30,10 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 		setState((state) => ({ ...state, ...values }));
 	});
 
+	const handleDirtyStep = useEffectEvent(() => {
+		wizardApi.resetNextSteps();
+	});
+
 	return (
 		<ErrorBoundary fallbackRender={() => <GenericError icon='circle-exclamation' />}>
 			<Wizard api={wizardApi}>
@@ -37,7 +41,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 
 				<Box mbs={16}>
 					<WizardContent id='recipient'>
-						<RecipientStep onSubmit={handleSubmit} />
+						<RecipientStep defaultValues={state} onDirty={handleDirtyStep} onSubmit={handleSubmit} />
 					</WizardContent>
 
 					<WizardContent id='message'>

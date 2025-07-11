@@ -1,16 +1,35 @@
-import { WizardActions, WizardNextButton } from '../../../../../Wizard';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+
+import { useWizardContext, WizardActions, WizardNextButton } from '../../../../../Wizard';
+import type { RecipientFormData, RecipientFormSubmitPayload } from '../forms/RecipientForm';
+import RecipientForm from '../forms/RecipientForm';
 
 type RecipientStepProps = {
-	onSubmit(values: Record<string, string>): void;
+	defaultValues?: Partial<RecipientFormData>;
+	onDirty?: () => void;
+	onSubmit(values: RecipientFormSubmitPayload): void;
 };
 
-const RecipientStep = (_: RecipientStepProps) => {
+const RecipientStep = ({ defaultValues, onDirty, onSubmit }: RecipientStepProps) => {
+	const { next } = useWizardContext();
+
+	const handleSubmit = useEffectEvent((values: RecipientFormSubmitPayload) => {
+		onSubmit(values);
+		next();
+	});
+
 	return (
 		<div>
-			Recipient Content
-			<WizardActions>
-				<WizardNextButton />
-			</WizardActions>
+			<RecipientForm
+				defaultValues={defaultValues}
+				onDirty={onDirty}
+				onSubmit={handleSubmit}
+				renderActions={({ isSubmitting }) => (
+					<WizardActions>
+						<WizardNextButton type='submit' loading={isSubmitting} />
+					</WizardActions>
+				)}
+			/>
 		</div>
 	);
 };
