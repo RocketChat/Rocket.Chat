@@ -1,11 +1,11 @@
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { AppMetadataStorage } from '../../../src/server/storage';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Datastore = require('@seald-io/nedb');
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/consistent-type-imports
+const Datastore = require('@seald-io/nedb') as typeof import('@seald-io/nedb').default;
 
 export class TestsAppStorage extends AppMetadataStorage {
-	private db: typeof Datastore;
+	private db: InstanceType<typeof Datastore>;
 
 	constructor() {
 		super('nedb');
@@ -84,7 +84,7 @@ export class TestsAppStorage extends AppMetadataStorage {
 
 	public update(item: IAppStorageItem): Promise<IAppStorageItem> {
 		return new Promise((resolve, reject) => {
-			this.db.update({ id: item.id }, item, {}, (err, _numOfUpdated) => {
+			this.db.update({ id: item.id }, item, {}, (err, _numOfUpdated: number) => {
 				if (err) {
 					reject(err);
 				} else {
