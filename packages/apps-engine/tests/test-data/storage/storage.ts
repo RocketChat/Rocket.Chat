@@ -1,10 +1,11 @@
-import Datastore from '@seald-io/nedb';
-
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { AppMetadataStorage } from '../../../src/server/storage';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Datastore = require('@seald-io/nedb');
+
 export class TestsAppStorage extends AppMetadataStorage {
-	private db: Datastore;
+	private db: typeof Datastore;
 
 	constructor() {
 		super('nedb');
