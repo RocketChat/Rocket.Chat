@@ -13,10 +13,6 @@ export class Navbar {
 		return this.page.getByRole('navigation', { name: 'header' });
 	}
 
-	get btnSidebarToggler(): Locator {
-		return this.navbar.getByRole('button', { name: 'Open sidebar' });
-	}
-
 	get btnVoiceAndOmnichannel(): Locator {
 		return this.navbar.getByRole('button', { name: 'Voice and omnichannel' });
 	}
@@ -51,6 +47,24 @@ export class Navbar {
 
 	get searchList(): Locator {
 		return this.navbarSearchSection.getByRole('listbox', { name: 'Channels' });
+	}
+
+	get workspaceGroup(): Locator {
+		return this.navbar.getByRole('group', { name: 'Workspace and user preferences' });
+	}
+
+	get manageWorkspaceButton(): Locator {
+		return this.workspaceGroup.getByRole('button', { name: 'Manage' });
+	}
+
+	btnSidebarToggler(closeSidebar?: boolean): Locator {
+		return this.navbar.getByRole('button', { name: closeSidebar ? 'Close sidebar' : 'Open sidebar' });
+	}
+
+	async openAdminPanel(): Promise<void> {
+		await this.manageWorkspaceButton.click();
+		await this.page.getByRole('menuitem', { name: 'Workspace' }).click();
+		await this.page.waitForURL(/\/admin/);
 	}
 
 	async typeSearch(name: string): Promise<void> {

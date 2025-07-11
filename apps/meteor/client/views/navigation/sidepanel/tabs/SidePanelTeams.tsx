@@ -9,6 +9,8 @@ const SidePanelTeams = ({ parentRid, subscription }: { parentRid: string; subscr
 	const [unreadOnly, toggleOnlyUnreads] = useUnreadOnlyToggle();
 	const rooms = useChannelsChildrenList(parentRid, unreadOnly, subscription?.teamId);
 
+	console.log('SidePanelTeams', { parentRid, subscription, unreadOnly, rooms });
+
 	return (
 		<SidePanel
 			title={subscription?.fname || subscription?.name}

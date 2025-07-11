@@ -545,4 +545,20 @@ export class HomeContent {
 	async expectLastMessageToHaveText(text: string): Promise<void> {
 		await expect(this.lastUserMessageBody).toHaveText(text);
 	}
+
+	get clearAllUnreadsModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Clear all unreads?' });
+	}
+
+	async waitForHome(): Promise<void> {
+		await this.page.waitForSelector('main');
+	}
+
+	async markAllRoomsAsRead(): Promise<void> {
+		await this.page.keyboard.down('Shift');
+		await this.page.keyboard.press('Escape');
+		await this.page.keyboard.up('Shift');
+		await expect(this.clearAllUnreadsModal).toBeVisible();
+		await this.clearAllUnreadsModal.getByRole('button', { name: 'Yes, clear all!' }).click();
+	}
 }

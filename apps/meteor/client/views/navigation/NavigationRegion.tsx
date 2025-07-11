@@ -81,10 +81,15 @@ const NavigationRegion = () => {
 
 	const showSideBar = !displaySidePanel || !isTablet;
 	const isSidebarOpen = !sidebar.isCollapsed && isTablet;
+	const isNavRegionHidden = sidebar.isCollapsed && isTablet;
 
 	return (
 		<>
-			<Box id='navigation-region' className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && navMobileStyle].filter(Boolean)}>
+			<Box
+				id='navigation-region'
+				className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && navMobileStyle].filter(Boolean)}
+				aria-hidden={isNavRegionHidden}
+			>
 				{showSideBar && (
 					<Box className={[sidebarWrapStyle, sidebar.overlayed && !isSidebarOpen && 'collapsed']}>
 						<FocusScope>
