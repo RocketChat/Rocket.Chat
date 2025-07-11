@@ -1,18 +1,28 @@
-import { Box, Button, Icon, Label, Palette, TextInput } from '@rocket.chat/fuselage';
-import { useRouter } from '@rocket.chat/ui-contexts';
+import { Box, Button, Icon, IconButton, Label, Palette, TextInput } from '@rocket.chat/fuselage';
+import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import CompactFilterOptions from './AppsLogsFilterOptionsCompact';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
 import { useCompactMode } from '../../../useCompactMode';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
+import { ExportLogsModal } from './ExportLogsModal';
 
-export const AppLogsFilter = () => {
+type AppsLogsFilterProps = {
+	expandAll: () => void;
+	refetchLogs: () => void;
+	isLoading: boolean;
+};
+
+export const AppLogsFilter = ({ expandAll, refetchLogs, isLoading }: AppsLogsFilterProps) => {
 	const { t } = useTranslation();
 
-	const { control } = useAppLogsFilterFormContext();
+	const { control, getValues } = useAppLogsFilterFormContext();
+
+	const setModal = useSetModal();
 
 	const router = useRouter();
 
@@ -24,6 +34,16 @@ export const AppLogsFilter = () => {
 			},
 			{ replace: true },
 		);
+	};
+
+	const openAllLogs = () => expandAll();
+
+	const openExportModal = () => {
+		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} />);
+	};
+
+	const refreshLogs = () => {
+		refetchLogs();
 	};
 
 	const compactMode = useCompactMode();
@@ -70,10 +90,44 @@ export const AppLogsFilter = () => {
 					<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
 				</Box>
 			)}
+			{!compactMode && (
+				<Button alignSelf='flex-end' icon='arrow-expand' secondary mie={10} onClick={() => openAllLogs()}>
+					{t('Expand_all')}
+				</Button>
+			)}
+			{!compactMode && (
+				<IconButton
+					title={t('Export')}
+					alignSelf='flex-end'
+					icon='circle-arrow-down'
+					secondary
+					mie={10}
+					onClick={() => openExportModal()}
+				/>
+			)}
+			{!compactMode && (
+				<IconButton
+					title={isLoading ? t('Loading') : t('Refresh_logs')}
+					alignSelf='flex-end'
+					disabled={isLoading}
+					icon='refresh'
+					secondary
+					mie={10}
+					onClick={() => refreshLogs()}
+				/>
+			)}
 			{compactMode && (
 				<Button alignSelf='flex-end' icon='customize' secondary mie={10} onClick={() => openContextualBar()}>
 					{t('Filters')}
 				</Button>
+			)}
+			{compactMode && (
+				<CompactFilterOptions
+					isLoading={isLoading}
+					handleExpandAll={openAllLogs}
+					handleExportLogs={openExportModal}
+					handleRefreshLogs={refreshLogs}
+				/>
 			)}
 		</Box>
 	);
