@@ -16,6 +16,7 @@ export default async function outboundMessageHandler(call: string, params: unkno
 	try {
 		logger?.debug(`Executing ${methodName} on outbound communication provider...`);
 
+		// deno-lint-ignore ban-types
 		return await (method as Function).apply(provider, [
 			...args,
 			// Example, we may need more/less accessors
