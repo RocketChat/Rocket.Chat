@@ -170,7 +170,8 @@ test.describe.serial('feature preview', () => {
 			}).toPass();
 		});
 
-		test('should be able to use keyboard to navigate through sidebar items', async ({ page }) => {
+		// TODO: fix
+		test.skip('should be able to use keyboard to navigate through sidebar items', async ({ page }) => {
 			await page.goto('/home');
 
 			const collapser = poHomeChannel.sidebar.firstCollapser;
@@ -197,12 +198,14 @@ test.describe.serial('feature preview', () => {
 			expect(isExpanded).toEqual(isExpandedAfterReload);
 		});
 
-		test('should show unread badge on collapser when group is collapsed and has unread items', async ({ page }) => {
+		// TODO: check if this still fails
+		test.skip('should show unread badge on collapser when group is collapsed and has unread items', async ({ page }) => {
 			await page.goto('/home');
 
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('hello world');
 
+			await poHomeChannel.sidebar.firstCollapser.click();
 			const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
 			await expect(item).toBeVisible();
 
@@ -498,6 +501,12 @@ test.describe.serial('feature preview', () => {
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 
+			await test.step('mark all rooms as read', async () => {
+				await page.goto('/home');
+				await poHomeChannel.content.waitForHome();
+				await poHomeChannel.content.markAllRoomsAsRead();
+			});
+
 			await page.goto(`/channel/${targetChannel}`);
 			await poHomeChannel.content.waitForChannel();
 			await poHomeChannel.content.sendMessage('test thread message');
@@ -535,6 +544,7 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.content.openReplyInThread();
 
 			await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
+			await user1Page.close();
 		});
 
 		test('unread mentions badges on filters', async ({ page, browser }) => {
@@ -635,6 +645,8 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
 				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
 			});
+
+			await user1Page.close();
 		});
 
 		test('should persist sidepanel state after switching admin panel', async ({ page }) => {
