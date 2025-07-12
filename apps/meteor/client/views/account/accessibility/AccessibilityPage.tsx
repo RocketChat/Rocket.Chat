@@ -143,7 +143,7 @@ const AccessibilityPage = () => {
 											control={control}
 											name='fontSize'
 											render={({ field: { onChange, value } }) => (
-												<Select id={fontSizeId} value={value} onChange={onChange} options={fontSizes} />
+												<Select id={fontSizeId} value={value} onChange={onChange} options={fontSizes(t)} />
 											)}
 										/>
 									</FieldRow>
