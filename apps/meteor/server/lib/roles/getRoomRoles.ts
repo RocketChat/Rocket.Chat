@@ -1,10 +1,20 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
 import _ from 'underscore';
 
 import { settings } from '../../../app/settings/server';
 
-export async function getRoomRoles(rid: IRoom['_id']): Promise<ISubscription[]> {
+export type RoomRoles = {
+	rid: IRoom['_id'];
+	u: {
+		_id: string;
+		username: string;
+		name?: string;
+	};
+	roles: string[];
+};
+
+export async function getRoomRoles(rid: IRoom['_id']): Promise<RoomRoles[]> {
 	const options = {
 		sort: {
 			'u.username': 1 as const,
@@ -22,13 +32,14 @@ export async function getRoomRoles(rid: IRoom['_id']): Promise<ISubscription[]> 
 	const subscriptions = await Subscriptions.findByRoomIdAndRoles(rid, _.pluck(roles, '_id'), options).toArray();
 
 	if (!useRealName) {
-		return subscriptions;
+		return subscriptions as unknown as RoomRoles[];
 	}
+
 	return Promise.all(
 		subscriptions.map(async (subscription) => {
 			const user = await Users.findOneById(subscription.u._id);
 			subscription.u.name = user?.name;
 			return subscription;
 		}),
-	);
+	) as unknown as RoomRoles[];
 }
