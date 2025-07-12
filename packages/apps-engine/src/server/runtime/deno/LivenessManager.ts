@@ -103,6 +103,11 @@ export class LivenessManager {
 	 * string the process is less intensive.
 	 */
 	private ping() {
+		if (this.controller.getOptions().inspect) {
+			this.debug('Skipping ping as the process is in inspect mode');
+			return;
+		}
+
 		const start = Date.now();
 
 		let aborted = false;
