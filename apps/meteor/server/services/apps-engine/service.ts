@@ -10,6 +10,12 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { isRunningMs } from '../../lib/isRunningMs';
 import { SystemLogger } from '../../lib/logger/system';
 
+export class AppsEngineNoNodesFoundError extends Error {
+	constructor(message = 'Not enough Apps-Engine nodes in deployment') {
+		super(message);
+	}
+}
+
 export class AppsEngineService extends ServiceClassInternal implements IAppsEngineService {
 	protected name = 'apps-engine';
 
@@ -169,7 +175,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		const availableNodes = services?.find((service) => service.name === 'apps-engine')?.nodes.filter((node) => node !== localNodeId);
 
 		if (!availableNodes || availableNodes.length < 1) {
-			throw new Error('Not enough Apps-Engine nodes in deployment');
+			throw new AppsEngineNoNodesFoundError();
 		}
 
 		const statusByApp: AppStatusReport = {};

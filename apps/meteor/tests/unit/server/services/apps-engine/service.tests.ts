@@ -1,6 +1,6 @@
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
+import { afterEach, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -34,7 +34,9 @@ const serviceMocks = {
 	'../../lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 };
 
-const { AppsEngineService } = proxyquire.noCallThru().load('../../../../../server/services/apps-engine/service', serviceMocks);
+const { AppsEngineService, AppsEngineNoNodesFoundError } = proxyquire
+	.noCallThru()
+	.load('../../../../../server/services/apps-engine/service', serviceMocks);
 
 describe('AppsEngineService', () => {
 	let service: IAppsEngineService;
@@ -160,7 +162,7 @@ describe('AppsEngineService', () => {
 			apiMock.nodeList.resolves([{ id: 'node1', local: true }]);
 			apiMock.call.resolves([{ name: 'apps-engine', nodes: ['node1'] }]);
 
-			await expect(service.getAppsStatusInNodes()).to.be.rejectedWith('Not enough Apps-Engine nodes in deployment');
+			await expect(service.getAppsStatusInNodes()).to.be.rejectedWith(AppsEngineNoNodesFoundError);
 		});
 
 		it('should not call the service for the local node', async () => {
