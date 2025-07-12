@@ -3,14 +3,19 @@ import { Meteor } from 'meteor/meteor';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
-import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
+import { hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
+import { hasPermission } from '../../app/authorization/client/hasPermission';
 import { Roles, AuthzCachedCollection } from '../../app/models/client';
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 
 const contextValue = {
-	queryPermission: createReactiveSubscriptionFactory((permission, scope, scopeRoles) => hasPermission(permission, scope, scopeRoles)),
-	queryAtLeastOnePermission: createReactiveSubscriptionFactory((permissions, scope) => hasAtLeastOnePermission(permissions, scope)),
-	queryAllPermissions: createReactiveSubscriptionFactory((permissions, scope) => hasAllPermission(permissions, scope)),
+	queryPermission: createReactiveSubscriptionFactory((permission, scope, scopeRoles) =>
+		hasPermission(Meteor.user(), permission, scope, scopeRoles),
+	),
+	queryAtLeastOnePermission: createReactiveSubscriptionFactory((permissions, scope) =>
+		hasAtLeastOnePermission(Meteor.user(), permissions, scope),
+	),
+	queryAllPermissions: createReactiveSubscriptionFactory((permissions, scope) => hasAllPermission(Meteor.user(), permissions, scope)),
 	queryRole: createReactiveSubscriptionFactory(
 		(role, scope?, ignoreSubscriptions = false) =>
 			!!Meteor.userId() && hasRole(Meteor.userId() as string, role, scope, ignoreSubscriptions),

@@ -63,7 +63,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 
 	const { permission, clientOnly, callback: handleOnClient, result: handleResult, appId, command: commandName } = command;
 
-	if (permission && !hasAtLeastOnePermission(permission, message.rid)) {
+	if (permission && !hasAtLeastOnePermission(Meteor.user(), permission, message.rid)) {
 		await warnUnrecognizedSlashCommand(chat, t('You_do_not_have_permission_to_execute_this_command', { command: escapeHTML(commandName) }));
 		return true;
 	}
