@@ -217,6 +217,7 @@ export class BusinessHourManager {
 				const jobName = `${time.format('dddd')}/${time.format('HH:mm')}/${type}`;
 				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${time.day()}`;
 				this.addToCache(jobName);
+				businessHourLogger.debug({ msg: 'Scheduling job', jobName, scheduleAt });
 				return this.cronJobs.add(jobName, scheduleAt, () => job(day, hour));
 			}),
 		);
