@@ -3,15 +3,16 @@ import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip } from '@r
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RoomAvatar, UserAvatar } from '@rocket.chat/ui-avatar';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & { limit?: number };
 
-const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndRoomAutoCompleteMultipleProps): ReactElement => {
+const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: UserAndRoomAutoCompleteMultipleProps): ReactElement => {
 	const user = useUser();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
@@ -27,17 +28,20 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndR
 			}),
 			[debouncedFilter],
 		),
-	).filter((room) => {
+	).reduce((acc, room) => {
+		if (acc.length === limit) return acc;
 		if (!user) {
-			return;
+			return acc;
 		}
 
 		if (isDirectMessageRoom(room) && (room.blocked || room.blocker)) {
-			return;
+			return acc;
 		}
 
-		return !roomCoordinator.readOnly(room.rid, user);
-	});
+		if (!roomCoordinator.readOnly(room.rid, user)) return [...acc, room];
+
+		return acc;
+	}, [] as Array<SubscriptionWithRoom>);
 
 	const options = useMemo(
 		() =>
