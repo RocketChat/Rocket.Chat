@@ -5,10 +5,12 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedCollectionManager } from './CachedCollectionManager';
+import type { IDocumentMapStore } from './DocumentMapStore';
 import { MinimongoCollection } from './MinimongoCollection';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
@@ -36,12 +38,16 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 
 localforage.config({ name: baseURI });
 
-export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
+export interface IWithManageableCache {
+	clearCacheOnLogout(): void;
+}
+
+export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements IWithManageableCache {
 	private static readonly MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
-	public collection = new MinimongoCollection<T>();
+	readonly store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>;
 
-	public ready = new ReactiveVar(false);
+	readonly ready = new ReactiveVar(false);
 
 	protected name: Name;
 
@@ -55,9 +61,10 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 
 	private timer: ReturnType<typeof setTimeout>;
 
-	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
+	constructor({ name, eventType, store }: { name: Name; eventType: StreamNames; store: UseBoundStore<StoreApi<IDocumentMapStore<T>>> }) {
 		this.name = name;
 		this.eventType = eventType;
+		this.store = store;
 
 		this.log = [getConfig(`debugCachedCollection-${this.name}`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true')
 			? console.log.bind(console, `%cCachedCollection ${this.name}`, `color: navy; font-weight: bold;`)
@@ -95,7 +102,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			data.updatedAt = new Date(data.updatedAt);
 		}
 
-		if (Date.now() - data.updatedAt.getTime() >= 1000 * CachedCollection.MAX_CACHE_TIME) {
+		if (Date.now() - data.updatedAt.getTime() >= 1000 * CachedStore.MAX_CACHE_TIME) {
 			return false;
 		}
 
@@ -109,7 +116,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			this.updatedAt = new Date(updatedAt);
 		}
 
-		this.collection.state.replaceAll(deserializedRecords.filter(hasId));
+		this.store.getState().replaceAll(deserializedRecords.filter(hasId));
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
@@ -157,7 +164,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			return mapped;
 		});
 
-		this.collection.state.storeMany(newRecords);
+		this.store.getState().storeMany(newRecords);
 		this.handleLoadedFromServer(newRecords);
 
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
@@ -186,7 +193,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			updatedAt: this.updatedAt,
 			version: this.version,
 			token: this.getToken(),
-			records: Array.from(this.collection.state.records.values()),
+			records: Array.from(this.store.getState().records.values()),
 		});
 		this.log('saving cache (done)');
 	});
@@ -196,7 +203,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	protected async clearCache() {
 		this.log('clearing cache');
 		await localforage.removeItem(this.name);
-		this.collection.state.replaceAll([]);
+		this.store.getState().replaceAll([]);
 	}
 
 	protected setupListener() {
@@ -210,9 +217,9 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		const newRecord = this.mapRecord(record);
 
 		if (action === 'removed') {
-			this.collection.state.delete(newRecord._id);
+			this.store.getState().delete(newRecord._id);
 		} else {
-			this.collection.state.store(newRecord);
+			this.store.getState().store(newRecord);
 		}
 
 		await this.save();
@@ -250,7 +257,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
 				changes.push({
 					action: () => {
-						this.collection.state.store(newRecord);
+						this.store.getState().store(newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -273,7 +280,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						this.collection.state.delete(newRecord._id);
+						this.store.getState().delete(newRecord._id);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -353,22 +360,72 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	private reconnectionComputation: Tracker.Computation | undefined;
 }
 
-export class PublicCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
-	protected getToken() {
+export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
+	protected override getToken() {
 		return undefined;
 	}
 
-	clearCacheOnLogout() {
+	override clearCacheOnLogout() {
+		// do nothing
+	}
+}
+
+export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
+	protected override getToken() {
+		return Accounts._storedLoginToken();
+	}
+
+	override clearCacheOnLogout() {
+		void this.clearCache();
+	}
+
+	listen() {
+		if (process.env.NODE_ENV === 'test') {
+			return;
+		}
+
+		onLoggedIn(() => {
+			void this.init();
+		});
+
+		Accounts.onLogout(() => {
+			this.release();
+		});
+	}
+}
+
+export abstract class CachedCollection<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
+	readonly collection;
+
+	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
+		const collection = new MinimongoCollection<T>();
+
+		super({
+			name,
+			eventType,
+			store: collection.use,
+		});
+
+		this.collection = collection;
+	}
+}
+
+export class PublicCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
+	protected override getToken() {
+		return undefined;
+	}
+
+	override clearCacheOnLogout() {
 		// do nothing
 	}
 }
 
 export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
-	protected getToken() {
+	protected override getToken() {
 		return Accounts._storedLoginToken();
 	}
 
-	clearCacheOnLogout() {
+	override clearCacheOnLogout() {
 		void this.clearCache();
 	}
 

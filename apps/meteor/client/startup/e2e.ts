@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -11,7 +11,6 @@ import { settings } from '../../app/settings/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';
-import { waitUntilFind } from '../lib/utils/waitUntilFind';
 import { router } from '../providers/RouterProvider';
 
 Meteor.startup(() => {
@@ -79,7 +78,21 @@ Meteor.startup(() => {
 				return message;
 			}
 
-			const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
+			// e2e.getInstanceByRoomId already waits for the room to be available which means this logic needs to be
+			// refactored to avoid waiting for the room again
+			const subscription = await new Promise<IRoom>((resolve) => {
+				const room = Rooms.state.get(message.rid);
+
+				if (room) resolve(room);
+
+				const unsubscribe = Rooms.use.subscribe((state) => {
+					const room = state.get(message.rid);
+					if (room) {
+						unsubscribe();
+						resolve(room);
+					}
+				});
+			});
 
 			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 

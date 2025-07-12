@@ -91,11 +91,14 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const isOverMacLimit = useShouldPreventAction('monthlyActiveContacts');
 
 	useEffect(() => {
+		console.log('isPrioritiesEnabled', isPrioritiesEnabled);
 		if (!isPrioritiesEnabled) {
 			return;
 		}
 
+		console.log('Subscribing to omnichannel priority changes');
 		return subscribe('omnichannel.priority-changed', () => {
+			console.log('Omnichannel priority changed, invalidating priorities query');
 			queryClient.invalidateQueries({
 				queryKey: ['/v1/livechat/priorities'],
 			});

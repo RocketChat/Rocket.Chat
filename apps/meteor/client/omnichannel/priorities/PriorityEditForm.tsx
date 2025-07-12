@@ -12,12 +12,8 @@ import StringSettingInput from '../../views/admin/settings/Setting/inputs/String
 
 export type PriorityFormData = { name: string; reset: boolean };
 
-type ILivechatClientPriority = Serialized<ILivechatPriority> & {
-	i18n: TranslationKey;
-};
-
 export type PriorityEditFormProps = {
-	data: ILivechatClientPriority;
+	data: Serialized<ILivechatPriority>;
 	onCancel: () => void;
 	onSave: (values: PriorityFormData) => Promise<void>;
 };

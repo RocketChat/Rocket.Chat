@@ -21,7 +21,7 @@ class CachedChatSubscription extends PrivateCachedCollection<SubscriptionWithRoo
 	}
 
 	protected override mapRecord(subscription: ISubscription): SubscriptionWithRoom {
-		const room = CachedChatRoom.collection.state.find((r) => r._id === subscription.rid);
+		const room = CachedChatRoom.store.getState().find((r) => r._id === subscription.rid);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 

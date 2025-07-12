@@ -4983,6 +4983,7 @@
   "Teams_removing__username__from_team": "You are removing {{username}} from this Team",
   "Teams_removing__username__from_team_and_channels": "You are removing {{username}} from this Team and all its Channels.",
   "Teams_removing_member": "Removing Member",
+  "Technology_Provider": "Technology Provider",
   "Technology_Services": "Technology Services",
   "Temporarily_unavailable": "Temporarily unavailable",
   "Terms": "Terms",

@@ -1,6 +1,7 @@
 import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel, HomeDiscussion } from './page-objects';
+import { HomeFlextab } from './page-objects/fragments';
 import { createTargetChannel, createTargetTeam } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
@@ -156,11 +157,12 @@ test.describe.serial('message-actions', () => {
 	});
 
 	test('expect star the message', async ({ page }) => {
+		const flextab = new HomeFlextab(page);
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Star"]').click();
 		await poHomeChannel.dismissToast();
-		await page.locator('role=button[name="Options"]').click();
+		await flextab.kebab.click();
 		await page.locator('[data-key="starred-messages"]').click();
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');
 	});
