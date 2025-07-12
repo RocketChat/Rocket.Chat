@@ -1,3 +1,3 @@
-import { useOmnichannel } from '../../hooks/omnichannel/useOmnichannel';
+import { useOmnichannel } from './useOmnichannel';
 
 export const useOmnichannelPriorities = () => useOmnichannel().livechatPriorities;

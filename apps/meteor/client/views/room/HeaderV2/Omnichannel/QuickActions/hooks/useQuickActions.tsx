@@ -11,6 +11,7 @@ import {
 	useTranslation,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
+import { useOmnichannelRouteConfig, useIsRoomOverMacLimit } from '@rocket.chat/ui-omnichannel';
 import { useCallback, useState, useEffect } from 'react';
 
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
@@ -22,8 +23,6 @@ import CloseChatModalData from '../../../../../../components/Omnichannel/modals/
 import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
 import ReturnChatQueueModal from '../../../../../../components/Omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../../components/Omnichannel/modals/TranscriptModal';
-import { useIsRoomOverMacLimit } from '../../../../../../hooks/omnichannel/useIsRoomOverMacLimit';
-import { useOmnichannelRouteConfig } from '../../../../../../hooks/omnichannel/useOmnichannelRouteConfig';
 import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
 import { quickActionHooks } from '../../../../../../ui';

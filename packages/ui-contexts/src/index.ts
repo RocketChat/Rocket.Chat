@@ -17,7 +17,6 @@ export { UserContext, UserContextValue } from './UserContext';
 export { UserPresenceContext, UserPresenceContextValue } from './UserPresenceContext';
 export { DeviceContext, Device, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
-
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
 export { useAssetPath } from './hooks/useAssetPath';
