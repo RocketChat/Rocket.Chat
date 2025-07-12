@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Box, Button, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
@@ -10,7 +9,7 @@ import WizardNextButton from './WizardNextButton';
 import WizardTabs from './WizardTabs';
 import { useWizard } from './useWizard';
 
-const meta = {
+export default {
 	title: 'Components/Wizard',
 	component: Wizard,
 	subcomponents: {
@@ -31,8 +30,6 @@ const meta = {
 		),
 	],
 } satisfies Meta<typeof Wizard>;
-
-export default meta;
 
 const WizardExample = ({ ordered = false }: { ordered?: boolean }) => {
 	const wizardApi = useWizard({
