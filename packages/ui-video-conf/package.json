@@ -21,7 +21,7 @@
 		"@rocket.chat/emitter": "~0.31.25"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.10",
+		"@babel/core": "~7.28.0",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage": "^0.64.0",

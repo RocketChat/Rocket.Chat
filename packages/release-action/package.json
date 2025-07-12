@@ -10,7 +10,7 @@
 	"main": "dist/index.js",
 	"packageManager": "yarn@3.5.1",
 	"devDependencies": {
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.3",
 		"typescript": "~5.8.3"
 	},
 	"dependencies": {
@@ -24,7 +24,10 @@
 		"mdast-util-to-string": "2.0.0",
 		"remark-parse": "9.0.0",
 		"remark-stringify": "9.0.1",
-		"semver": "^7.6.3",
+		"semver": "^7.7.2",
 		"unified": "9.2.2"
+	},
+	"volta": {
+		"node": "22.16.0"
 	}
 }

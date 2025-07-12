@@ -25,7 +25,7 @@
 		"sip.js": "^0.21.2"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.10",
+		"@babel/core": "~7.28.0",
 		"@faker-js/faker": "~8.0.2",
 		"@playwright/test": "^1.52.0",
 		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
@@ -54,7 +54,7 @@
 		"@storybook/test": "^8.6.14",
 		"@storybook/test-runner": "^0.22.1",
 		"@testing-library/dom": "~10.4.0",
-		"@testing-library/react": "~16.0.1",
+		"@testing-library/react": "~16.3.0",
 		"@testing-library/user-event": "~14.5.2",
 		"@types/jest": "~29.5.14",
 		"@types/jest-axe": "~3.5.9",
