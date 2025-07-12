@@ -216,7 +216,7 @@ API.v1.addRoute(
 
 			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
 
-			if (!messageReturn) {
+			if (!messageReturn?.message) {
 				return API.v1.failure('unknown-error');
 			}
 
