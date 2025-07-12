@@ -106,6 +106,10 @@ export type AppsEndpoints = {
 		}>;
 	};
 
+	'/apps/:id/logs/distinctValues': {
+		GET: () => { success: boolean; instanceIds: string[]; methods: string[] };
+	};
+
 	'/apps/:id/apis': {
 		GET: () => {
 			apis: IApiEndpointMetadata[];

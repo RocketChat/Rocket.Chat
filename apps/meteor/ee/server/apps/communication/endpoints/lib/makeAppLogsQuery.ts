@@ -36,6 +36,10 @@ export function makeAppLogsQuery(queryParams: AppLogsProps) {
 		query.method = queryParams.method;
 	}
 
+	if (queryParams.instanceId) {
+		query.instanceId = queryParams.instanceId;
+	}
+
 	if (queryParams.startDate) {
 		query._updatedAt = {
 			$gte: new Date(queryParams.startDate),
