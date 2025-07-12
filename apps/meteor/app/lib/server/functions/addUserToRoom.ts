@@ -154,29 +154,3 @@ export const addUserToRoom = async function (
 	void notifyOnRoomChangedById(rid);
 	return true;
 };
-
-/**
- * This function adds user to all private rooms.
- * Caution - It does not validates if the user has permission to join rooms
- */
-export const addUserToAllPrivateRooms = async function(
-	userId: IUser['_id'],
-): Promise<boolean | undefined> {
-	const user = await Users.findOneById(userId);
-	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-			method: 'addUserToAllPrivateRooms',
-		});
-	}
-
-	const privateRooms = await Rooms.find({ t: 'p' }).toArray();
-
-	for (const room of privateRooms) {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
-		if (!subscription) {
-			await addUserToRoom(room._id, user);
-		}
-	}
-
-	return true;
-};

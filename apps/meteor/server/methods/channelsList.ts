@@ -95,7 +95,7 @@ Meteor.methods<ServerMethods>({
 			}
 
 			const hasAllPrivateRoomsAccess = await hasPermissionAsync(userId, 'view-all-p-room');
-			
+
 			const userPref = await getUserPreference(user, 'sidebarGroupByType');
 			// needs to negate globalPref because userPref represents its opposite
 			const groupByType = userPref !== undefined ? userPref : settings.get('UI_Group_Channels_By_Type');
