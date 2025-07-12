@@ -8,7 +8,12 @@ export const usePriorityInfo = (priorityId: string) => {
 	const getPriority = useEndpoint('GET', `/v1/livechat/priorities/:priorityId`, { priorityId });
 	return useQuery({
 		queryKey: ['/v1/livechat/priorities', priorityId],
-		queryFn: () => getPriority(),
+		queryFn: async () => {
+			console.log('Fetching priority info for:', priorityId);
+			const priority = await getPriority();
+			console.log('Fetched priority:', priority);
+			return priority;
+		},
 		gcTime: 0,
 		enabled,
 	});
