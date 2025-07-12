@@ -15,6 +15,10 @@ export class HomeContent {
 		return this.page.locator('main header');
 	}
 
+	get burgerButton(): Locator {
+		return this.channelHeader.getByRole('button', { name: 'Open sidebar' });
+	}
+
 	get channelRetentionPolicyWarning(): Locator {
 		return this.page.locator('main').getByRole('alert', { name: 'Retention policy warning banner' });
 	}
