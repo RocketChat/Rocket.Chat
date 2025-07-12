@@ -10,6 +10,7 @@ import { useEditMessageAction } from './useEditMessageAction';
 import { useFollowMessageAction } from './useFollowMessageAction';
 import { useMarkAsUnreadMessageAction } from './useMarkAsUnreadMessageAction';
 import { useMessageActionAppsActionButtons } from './useMessageActionAppsActionButtons';
+import { useMoveDiscussionAction } from './useMoveDiscussionAction';
 import { useNewDiscussionMessageAction } from './useNewDiscussionMessageAction';
 import { usePermalinkAction } from './usePermalinkAction';
 import { usePinMessageAction } from './usePinMessageAction';
@@ -46,6 +47,7 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 	const menuItems = [
 		useWebDAVMessageAction(message, { subscription }),
 		useNewDiscussionMessageAction(message, { room, subscription }),
+		useMoveDiscussionAction(message),
 		useUnpinMessageAction(message, { room, subscription }),
 		usePinMessageAction(message, { room, subscription }),
 		useStarMessageAction(message, { room }),
