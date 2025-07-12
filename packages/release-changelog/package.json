@@ -8,9 +8,9 @@
 	},
 	"main": "dist/index.js",
 	"devDependencies": {
-		"@changesets/types": "^6.0.0",
+		"@changesets/types": "^6.1.0",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.3",
 		"eslint": "~8.45.0",
 		"typescript": "~5.8.3"
 	},

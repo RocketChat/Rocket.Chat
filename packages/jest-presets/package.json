@@ -13,8 +13,8 @@
 		"/server"
 	],
 	"dependencies": {
-		"@swc/core": "~1.12.4",
-		"@swc/jest": "~0.2.38",
+		"@swc/core": "~1.12.11",
+		"@swc/jest": "~0.2.39",
 		"@testing-library/jest-dom": "~6.6.3",
 		"@types/jest-axe": "~3.5.9",
 		"identity-obj-proxy": "~3.0.0",

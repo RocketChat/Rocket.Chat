@@ -34,7 +34,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"ajv": "^8.17.1",
 		"express": "^4.21.2",
-		"hono": "^4.6.19",
+		"hono": "^4.8.4",
 		"qs": "^6.14.0"
 	},
 	"volta": {

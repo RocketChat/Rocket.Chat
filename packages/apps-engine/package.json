@@ -75,7 +75,7 @@
 		"@types/adm-zip": "^0.5.7",
 		"@types/debug": "^4.1.12",
 		"@types/lodash.clonedeep": "^4.5.9",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.3",
 		"@types/semver": "^7.5.8",
 		"@types/stack-trace": "0.0.33",
 		"@types/uuid": "~10.0.0",
@@ -94,14 +94,14 @@
 		"uglify-es": "^3.3.10"
 	},
 	"dependencies": {
-		"@msgpack/msgpack": "3.0.0-beta2",
+		"@msgpack/msgpack": "3.1.2",
 		"adm-zip": "^0.5.16",
 		"debug": "^4.3.7",
 		"esbuild": "^0.25.5",
 		"jose": "^4.15.9",
 		"jsonrpc-lite": "^2.2.0",
 		"lodash.clonedeep": "^4.5.0",
-		"semver": "^7.6.3",
+		"semver": "^7.7.2",
 		"stack-trace": "0.0.10",
 		"uuid": "~11.0.5"
 	},
