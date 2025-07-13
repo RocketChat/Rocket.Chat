@@ -1,23 +1,27 @@
-import { type ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, SelectedAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
-import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { setDepartmentForGuest } from '../../../../../app/livechat/server/lib/departmentsLib';
+import { beforeRouteChat } from '../../../../../app/livechat/server/lib/hooks';
+import { online } from '../../../../../app/livechat/server/lib/service-status';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
-callbacks.add(
-	'livechat.beforeRouteChat',
-	async (inquiry, agent) => {
+beforeRouteChat.patch(
+	async (
+		originalFn: (inquiry: ILivechatInquiryRecord, _agent?: SelectedAgent | null) => Promise<ILivechatInquiryRecord | null | undefined>,
+		inquiry: ILivechatInquiryRecord,
+		agent?: SelectedAgent | null,
+	) => {
+		await originalFn(inquiry, agent);
+
 		if (!inquiry) {
 			return inquiry;
 		}
 
-		// check here if department has fallback before queueing
 		if (inquiry?.department && !(await online(inquiry.department, true, true))) {
 			const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(
 				inquiry.department,
@@ -30,27 +34,27 @@ callbacks.add(
 				return inquiry;
 			}
 			if (department.fallbackForwardDepartment) {
-				cbLogger.info(
-					`Inquiry ${inquiry._id} will be moved from department ${department._id} to fallback department ${department.fallbackForwardDepartment}`,
-				);
-
-				// update visitor
-				await setDepartmentForGuest({
-					token: inquiry?.v?.token,
-					department: department.fallbackForwardDepartment,
+				cbLogger.info({
+					msg: 'Moving inquiry to fallback department',
+					originalDepartment: inquiry.department,
+					fallbackDepartment: department.fallbackForwardDepartment,
+					inquiryId: inquiry._id,
 				});
 
-				// update inquiry
-				const updatedLivechatInquiry = await LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment);
+				const [, updatedLivechatInquiry] = await Promise.all([
+					setDepartmentForGuest({
+						visitorId: inquiry.v._id,
+						department: department.fallbackForwardDepartment,
+					}),
+					LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment),
+					LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment),
+				]);
 
 				if (updatedLivechatInquiry) {
 					void notifyOnLivechatInquiryChanged(updatedLivechatInquiry, 'updated', { department: updatedLivechatInquiry.department });
 				}
 
 				inquiry = updatedLivechatInquiry ?? inquiry;
-
-				// update room
-				await LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment);
 			}
 		}
 
@@ -62,10 +66,6 @@ callbacks.add(
 			return inquiry;
 		}
 
-		await saveQueueInquiry(inquiry);
-
-		return LivechatInquiry.findOneById(inquiry._id);
+		return saveQueueInquiry(inquiry);
 	},
-	callbacks.priority.HIGH,
-	'livechat-before-routing-chat',
 );

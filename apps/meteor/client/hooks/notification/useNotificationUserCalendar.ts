@@ -1,19 +1,17 @@
-import type { ICalendarNotification } from '@rocket.chat/core-typings';
+import type { ICalendarNotification, IUser } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useStream, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
+import { imperativeModal } from '@rocket.chat/ui-client';
+import { useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { imperativeModal } from '../../lib/imperativeModal';
 import OutlookCalendarEventModal from '../../views/outlookCalendar/OutlookCalendarEventModal';
 
-export const useNotificationUserCalendar = () => {
-	const user = useUser();
+export const useNotificationUserCalendar = (user: IUser) => {
 	const requireInteraction = useUserPreference('desktopNotificationRequireInteraction');
-	const outLookEnabled = useSetting('Outlook_Calendar_Enabled');
 	const notifyUserStream = useStream('notify-user');
 
 	const notifyUserCalendar = useEffectEvent(async (notification: ICalendarNotification) => {
-		if (!user || user.status === 'busy') {
+		if (user.status === 'busy') {
 			return;
 		}
 
@@ -35,10 +33,10 @@ export const useNotificationUserCalendar = () => {
 	});
 
 	useEffect(() => {
-		if (!user?._id || !outLookEnabled) {
+		if (!user?._id || !user.settings?.calendar?.outlook?.Enabled) {
 			return;
 		}
 
 		return notifyUserStream(`${user._id}/calendar`, notifyUserCalendar);
-	}, [notifyUserCalendar, notifyUserStream, outLookEnabled, user?._id]);
+	}, [notifyUserCalendar, notifyUserStream, user.settings?.calendar?.outlook?.Enabled, user?._id]);
 };

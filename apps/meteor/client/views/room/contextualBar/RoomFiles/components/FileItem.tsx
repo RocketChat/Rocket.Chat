@@ -1,19 +1,11 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
 import ImageItem from './ImageItem';
 import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFromServiceWorker';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
-
-const hoverClass = css`
-	&:hover {
-		cursor: pointer;
-		background: ${Palette.surface['surface-hover']};
-	}
-`;
 
 type FileItemProps = {
 	fileData: IUploadWithUser;
@@ -27,13 +19,14 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
 
 	return (
-		<Box display='flex' pb={12} pi={24} borderRadius={4} className={hoverClass}>
+		<>
 			{typeGroup === 'image' ? (
 				<ImageItem id={_id} url={path} name={name} username={user?.username} timestamp={format(uploadedAt)} />
 			) : (
 				<Box
 					is='a'
 					minWidth={0}
+					aria-label={name}
 					download
 					rel='noopener noreferrer'
 					target='_blank'
@@ -42,6 +35,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					flexGrow={1}
 					flexShrink={1}
 					href={path}
+					tabIndex={-1}
 					textDecorationLine='none'
 					{...(path?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
 				>
@@ -62,7 +56,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 				</Box>
 			)}
 			<FileItemMenu fileData={fileData} onClickDelete={onClickDelete} />
-		</Box>
+		</>
 	);
 };
 

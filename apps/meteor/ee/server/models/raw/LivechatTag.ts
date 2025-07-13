@@ -19,12 +19,6 @@ export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTa
 		];
 	}
 
-	findOneById(_id: string, options?: FindOptions<ILivechatTag>): Promise<ILivechatTag | null> {
-		const query = { _id };
-
-		return this.findOne(query, options);
-	}
-
 	findInIds(ids: string[], options?: FindOptions<ILivechatTag>): FindCursor<ILivechatTag> {
 		const query = { _id: { $in: ids } };
 

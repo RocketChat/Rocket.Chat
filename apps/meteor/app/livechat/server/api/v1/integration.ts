@@ -55,7 +55,7 @@ API.v1.addRoute(
 				_id: this.userId,
 				username: this.user.username!,
 				ip: this.requestIp,
-				useragent: this.request.headers['user-agent'] || '',
+				useragent: this.request.headers.get('user-agent') || '',
 			});
 
 			const promises = settingsIds.map((setting) => auditSettingOperation(Settings.updateValueById, setting._id, setting.value));

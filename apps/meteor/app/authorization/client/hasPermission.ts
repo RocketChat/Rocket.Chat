@@ -15,7 +15,7 @@ const hasIsUserInRole = (
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
 	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IPermission['_id'][]): boolean => {
-		const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
+		const user = Models.Users.findOne({ _id: userId }, { fields: { roles: 1 } });
 
 		const checkEachPermission = quantifier.bind(permissionIds);
 
@@ -26,14 +26,11 @@ const createPermissionValidator =
 				}
 			}
 
-			const permission = Models.Permissions.findOne(permissionId, {
-				fields: { roles: 1 },
-			});
+			const permission = Models.Permissions.state.get(permissionId);
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleId) => {
-				const role = Models.Roles.findOne(roleId, { fields: { scope: 1 } });
-				const roleScope = role?.scope;
+				const roleScope = Models.Roles.state.get(roleId)?.scope;
 
 				if (!isValidScope(roleScope)) {
 					return false;

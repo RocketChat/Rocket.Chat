@@ -30,6 +30,7 @@ import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/persona
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
+import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { registerUser } from '../../../../server/methods/registerUser';
@@ -43,6 +44,7 @@ import { executeSetUserActiveStatus } from '../../../../server/methods/setUserAc
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { checkEmailAvailability } from '../../../lib/server/functions/checkEmailAvailability';
 import {
 	checkUsernameAvailability,
 	checkUsernameAvailabilityWithValidation,
@@ -81,7 +83,7 @@ API.v1.addRoute(
 			const user = await getUserFromParams(this.queryParams);
 
 			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-			this.response.setHeader('Location', url);
+			this.response.headers.set('Location', url);
 
 			return {
 				statusCode: 307,
@@ -118,7 +120,7 @@ API.v1.addRoute(
 			const auditStore = new UserChangedAuditStore({
 				_id: this.user._id,
 				ip: this.requestIp,
-				useragent: this.request.headers['user-agent'] || '',
+				useragent: this.request.headers.get('user-agent') || '',
 				username: this.user.username || '',
 			});
 
@@ -662,7 +664,9 @@ API.v1.addRoute(
 			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
 			}
-
+			if (!(await checkEmailAvailability(this.bodyParams.email))) {
+				return API.v1.failure('Email already exists');
+			}
 			if (this.bodyParams.customFields) {
 				try {
 					await validateCustomFields(this.bodyParams.customFields);
@@ -892,7 +896,7 @@ API.v1.addRoute(
 			await Users.enableEmail2FAByUserId(this.userId);
 
 			// When 2FA is enable we logout all other clients
-			const xAuthToken = this.request.headers['x-auth-token'] as string;
+			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 			if (!xAuthToken) {
 				return API.v1.success();
 			}
@@ -1070,7 +1074,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const xAuthToken = this.request.headers['x-auth-token'] as string;
+			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 
 			if (!xAuthToken) {
 				throw new Meteor.Error('error-parameter-required', 'x-auth-token is required');
@@ -1135,7 +1139,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			return API.v1.success(await Meteor.callAsync('removeOtherTokens'));
+			return API.v1.success(await removeOtherTokens(this.userId, this.connection.id));
 		},
 	},
 );

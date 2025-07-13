@@ -14,5 +14,5 @@ import type { IRoomUserLeaveContext } from './IRoomUserLeaveContext';
  * check the `IPreRoomCreate` events
  */
 export interface IPreRoomUserLeave {
-    executePreRoomUserLeave(context: IRoomUserLeaveContext, read: IRead, http: IHttp, persistence: IPersistence): Promise<void>;
+	executePreRoomUserLeave(context: IRoomUserLeaveContext, read: IRead, http: IHttp, persistence: IPersistence): Promise<void>;
 }

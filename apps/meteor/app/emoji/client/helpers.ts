@@ -21,15 +21,17 @@ export const createEmojiListByCategorySubscription = (
 	actualTone: number,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
+	setQuickReactions: () => void,
 ): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ReturnType<typeof createPickerEmojis>] => {
 	let result: ReturnType<typeof createPickerEmojis> = [[], []];
 	updateRecent(recentEmojis);
 
 	const sub = (cb: () => void) => {
 		result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
-
+		setQuickReactions();
 		return emojiEmitter.on('updated', () => {
 			result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+			setQuickReactions();
 			cb();
 		});
 	};

@@ -307,7 +307,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 			<Page>
 				<PageHeader title={t('Current_Chats')} />
 				<PageContent>
-					<Callout type='warning' title={t('This_page_will_be_deprecated_soon')}>
+					<Callout type='warning' title={t('This_page_is_deprecated_will_be_removed_soon')}>
 						<Trans i18nKey='Manage_conversations_in_the_contact_center'>
 							Manage conversations in the
 							<a href={directoryPath}>contact center</a>.

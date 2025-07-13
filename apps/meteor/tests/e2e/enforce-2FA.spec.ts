@@ -49,12 +49,14 @@ test.describe('enforce two factor authentication', () => {
 
 	test('should redirect to 2FA setup page and setup email 2FA', async ({ page }) => {
 		await page.goto('/home');
+		await poAccountProfile.required2faModalSetUpButton.click();
 		await expect(poHomeChannel.sidenav.sidebarHomeAction).not.toBeVisible();
+
 		await expect(poAccountProfile.securityHeader).toBeVisible();
 
-		await poAccountProfile.security2FASection.click();
-		await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
-		await poAccountProfile.enableEmail2FAButton.click();
+		await expect(poAccountProfile.security2FASection).toHaveAttribute('aria-expanded', 'true');
+		await expect(poAccountProfile.email2FASwitch).toBeVisible();
+		await poAccountProfile.email2FASwitch.click();
 
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 		await expect(poHomeChannel.sidenav.sidebarHomeAction).toBeVisible();

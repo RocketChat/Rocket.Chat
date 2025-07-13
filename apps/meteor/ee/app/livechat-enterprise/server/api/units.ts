@@ -72,7 +72,7 @@ API.v1.addRoute(
 		},
 		async post() {
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
-			return API.v1.success(await LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments));
+			return API.v1.success(await LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments, this.userId));
 		},
 	},
 );
@@ -85,6 +85,7 @@ API.v1.addRoute(
 			const { id } = this.urlParams;
 			const unit = await findUnitById({
 				unitId: id,
+				userId: this.userId,
 			});
 
 			return API.v1.success(unit);
@@ -93,12 +94,12 @@ API.v1.addRoute(
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
 			const { id } = this.urlParams;
 
-			return API.v1.success(await LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments));
+			return API.v1.success(await LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments, this.userId));
 		},
 		async delete() {
 			const { id } = this.urlParams;
 
-			return API.v1.success((await LivechatEnterprise.removeUnit(id)).deletedCount);
+			return API.v1.success((await LivechatEnterprise.removeUnit(id, this.userId)).deletedCount);
 		},
 	},
 );

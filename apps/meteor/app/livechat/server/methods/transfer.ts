@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { normalizeTransferredByData } from '../lib/Helper';
-import { Livechat } from '../lib/LivechatTyped';
+import { transfer } from '../lib/transfer';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -100,6 +100,6 @@ Meteor.methods<ServerMethods>({
 			};
 		}
 
-		return Livechat.transfer(room, guest, normalizedTransferData);
+		return transfer(room, guest, normalizedTransferData);
 	},
 });

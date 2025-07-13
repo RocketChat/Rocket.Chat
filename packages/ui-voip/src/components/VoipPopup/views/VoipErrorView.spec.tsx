@@ -39,7 +39,7 @@ it('should properly render unknown error calls', async () => {
 	const session = createMockVoipErrorSession({ error: { status: -1, reason: '' } });
 	render(<VoipErrorView session={session} />, { wrapper: appRoot.build() });
 
-	expect(screen.getByText('Unable_to_complete_call')).toBeInTheDocument();
+	expect(screen.getByText('Unable_to_complete_call__code')).toBeInTheDocument();
 	await userEvent.click(screen.getByRole('button', { name: 'End_call' }));
 	expect(session.end).toHaveBeenCalled();
 });

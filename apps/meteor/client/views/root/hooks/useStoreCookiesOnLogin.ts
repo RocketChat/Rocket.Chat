@@ -1,15 +1,14 @@
-import { useConnectionStatus, useUserId } from '@rocket.chat/ui-contexts';
+import { useConnectionStatus } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { useEffect } from 'react';
 
-export const useStoreCookiesOnLogin = () => {
-	const userId = useUserId();
+export const useStoreCookiesOnLogin = (userId: string) => {
 	const { isLoggingIn } = useConnectionStatus();
 
 	useEffect(() => {
 		// Check for isLoggingIn to be reactive and ensure it will process only after login finishes
 		// preventing race condition setting the rc_token as null forever
-		if (userId && isLoggingIn === false) {
+		if (isLoggingIn === false) {
 			const secure = location.protocol === 'https:' ? '; secure' : '';
 
 			document.cookie = `rc_uid=${encodeURI(userId)}; path=/${secure}`;

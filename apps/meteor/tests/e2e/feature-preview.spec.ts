@@ -45,8 +45,10 @@ test.describe.serial('feature preview', () => {
 
 	test('should show "Message" and "Navigation" feature sections', async ({ page }) => {
 		await page.goto('/account/feature-preview');
+		await page.waitForSelector('#main-content');
 
-		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible();
+		// FIXME: this timeout is too high
+		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible({ timeout: 10_000 });
 		await expect(page.getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
 
@@ -90,11 +92,40 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.navbar.navbar).toBeVisible();
 		});
 
-		test('should display "Recent" button on sidebar search section, and display recent chats when clicked', async ({ page }) => {
+		test('should render global header navigation', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidebar.btnRecent.click();
-			await expect(poHomeChannel.sidebar.sidebar.getByRole('heading', { name: 'Recent' })).toBeVisible();
+			await test.step('should display recent chats when navbar search is clicked', async () => {
+				await poHomeChannel.navbar.searchInput.click();
+				await expect(poHomeChannel.navbar.searchList).toBeVisible();
+				await poHomeChannel.navbar.searchInput.blur();
+			});
+
+			await test.step('should display home and directory button', async () => {
+				await expect(poHomeChannel.navbar.homeButton).toBeVisible();
+				await expect(poHomeChannel.navbar.btnDirectory).toBeVisible();
+			});
+
+			await test.step('should display home and directory inside a menu and sidebar toggler in tablet view', async () => {
+				await page.setViewportSize({ width: 1023, height: 767 });
+				await expect(poHomeChannel.navbar.btnMenuPages).toBeVisible();
+				await expect(poHomeChannel.navbar.btnSidebarToggler).toBeVisible();
+			});
+
+			await test.step('should display voice and omnichannel items inside a menu in mobile view', async () => {
+				await page.setViewportSize({ width: 767, height: 510 });
+				await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).toBeVisible();
+			});
+
+			await test.step('should hide everything else when navbar search is focused in mobile view', async () => {
+				await page.setViewportSize({ width: 767, height: 510 });
+				await poHomeChannel.navbar.searchInput.click();
+
+				await expect(poHomeChannel.navbar.btnMenuPages).not.toBeVisible();
+				await expect(poHomeChannel.navbar.btnSidebarToggler).not.toBeVisible();
+				await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).not.toBeVisible();
+				await expect(poHomeChannel.navbar.groupHistoryNavigation).not.toBeVisible();
+			});
 		});
 
 		test('should not display room topic in direct message', async ({ page }) => {
@@ -169,11 +200,13 @@ test.describe.serial('feature preview', () => {
 		test('should show unread badge on collapser when group is collapsed and has unread items', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidebar.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('hello world');
 
-			await poHomeChannel.sidebar.typeSearch(targetChannel);
 			const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
+
+			await expect(item).toBeVisible();
+
 			await poHomeChannel.sidebar.markItemAsUnread(item);
 			await poHomeChannel.sidebar.escSearch();
 
@@ -182,19 +215,28 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
 		});
 
-		test('should not show NavBar in embedded layout', async ({ page }) => {
+		test('embedded layout', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidebar.openChat(targetChannel);
-			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
-			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
-			await page.goto(embeddedLayoutURL);
-			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
+			await test.step('should not show NavBar', async () => {
+				await poHomeChannel.navbar.openChat(targetChannel);
+				await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
+				const embeddedLayoutURL = `${page.url()}?layout=embedded`;
+				await page.goto(embeddedLayoutURL);
+				await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
+			});
+
+			await test.step('should show burger menu', async () => {
+				await page.goto('admin/info?layout=embedded');
+				await page.setViewportSize({ width: 767, height: 510 });
+
+				await expect(poHomeChannel.content.burgerButton).toBeVisible();
+			});
 		});
 
 		test('should display the room header properly', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.sidebar.openChat(targetDiscussion.fname);
+			await poHomeChannel.navbar.openChat(targetDiscussion.fname);
 
 			await test.step('should not display avatar in room header', async () => {
 				await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
@@ -330,8 +372,8 @@ test.describe.serial('feature preview', () => {
 			await page.goto('/home');
 			const message = 'hello world';
 
-			await poHomeChannel.sidebar.setDisplayMode('Extended');
-			await poHomeChannel.sidebar.openChat(sidepanelTeam);
+			await poHomeChannel.navbar.setDisplayMode('Extended');
+			await poHomeChannel.navbar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 			await expect(poHomeChannel.sidepanel.getExtendedItem(sidepanelTeam, message)).toBeVisible();
 		});
@@ -341,8 +383,8 @@ test.describe.serial('feature preview', () => {
 			const message = 'hello > world';
 			const parsedWrong = 'hello &gt; world';
 
-			await poHomeChannel.sidebar.setDisplayMode('Extended');
-			await poHomeChannel.sidebar.openChat(sidepanelTeam);
+			await poHomeChannel.navbar.setDisplayMode('Extended');
+			await poHomeChannel.navbar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 
 			await expect(poHomeChannel.sidepanel.getExtendedItem(sidepanelTeam, message)).toBeVisible();

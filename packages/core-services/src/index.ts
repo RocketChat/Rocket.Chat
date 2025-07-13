@@ -42,7 +42,6 @@ import type {
 	IListRoomsFilter,
 } from './types/ITeamService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
-import type { ITranslationService } from './types/ITranslationService';
 import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
@@ -50,13 +49,14 @@ import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVid
 import type { IVoipFreeSwitchService } from './types/IVoipFreeSwitchService';
 import type { IVoipService } from './types/IVoipService';
 
+export { AppStatusReport } from './types/IAppsEngineService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
 export { EventSignatures } from './events/Events';
 export { LocalBroker } from './LocalBroker';
 
-export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './types/IBroker';
+export { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker';
 
 export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
@@ -138,7 +138,6 @@ export {
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
-	ITranslationService,
 	IMessageService,
 	ISettingsService,
 	IOmnichannelEEService,
@@ -175,7 +174,6 @@ export const Calendar = proxify<ICalendarService>('calendar');
 export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxify<IMessageService>('message');
-export const Translation = proxify<ITranslationService>('translation');
 export const Settings = proxify<ISettingsService>('settings');
 export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxify<IFederationService>('federation');

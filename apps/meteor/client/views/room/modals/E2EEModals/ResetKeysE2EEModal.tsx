@@ -1,9 +1,8 @@
-import { Box, Modal } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { Box, ModalFooterAnnotation, ModalIcon } from '@rocket.chat/fuselage';
+import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
 import { dispatchToastMessage } from '../../../../lib/toast';
 import { useE2EEResetRoomKey } from '../../hooks/useE2EEResetRoomKey';
 
@@ -38,11 +37,11 @@ const ResetKeysE2EEModal = ({ roomType, roomId, onCancel }: ResetKeysE2EEModalPr
 
 	return (
 		<GenericModal
-			icon={<Modal.Icon color='danger' name='key' />}
+			icon={<ModalIcon color='danger' name='key' />}
 			title={t('E2E_reset_encryption_keys')}
 			variant='danger'
 			confirmText={t('E2E_reset_encryption_keys')}
-			dontAskAgain={<Modal.FooterAnnotation>{t('This_action_cannot_be_undone')}</Modal.FooterAnnotation>}
+			dontAskAgain={<ModalFooterAnnotation>{t('This_action_cannot_be_undone')}</ModalFooterAnnotation>}
 			onCancel={onCancel}
 			onConfirm={handleResetRoomKey}
 			onDismiss={() => undefined}

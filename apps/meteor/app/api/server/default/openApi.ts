@@ -1,3 +1,6 @@
+import { schemas } from '@rocket.chat/core-typings';
+import type { Route } from '@rocket.chat/http-router';
+import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import Ajv from 'ajv';
@@ -6,20 +9,14 @@ import type { ValidateFunction } from 'ajv';
 import { WebApp } from 'meteor/webapp';
 import swaggerUi from 'swagger-ui-express';
 
-
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { API } from '../api';
-import type { Route } from '../router';
 
 const app = express();
 
 // Enable CORS for JSON and UI endpoints
-app.use('/api/v1/docs/json', (_req: Request, _res: Response, _next: NextFunction)=> {
-  _res.setHeader('Access-Control-Allow-Origin', '*');
-  _next();
-});
-app.use('/api-docs',(_req: Request, _res: Response, _next: NextFunction)=> {
+app.use(['/api/v1/docs/json', '/api-docs'], (_req: Request, _res: Response, _next: NextFunction) => {
   _res.setHeader('Access-Control-Allow-Origin', '*');
   _next();
 });
@@ -77,6 +74,37 @@ const getTypedRoutes = (
   );
 };
 
+// Build OpenAPI-compliant spec object
+const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
+  openapi: '3.0.3',
+  info: {
+    title: 'Rocket.Chat API',
+    description: 'Rocket.Chat API',
+    version: Info.version,
+  },
+  servers: [
+    {
+      url: settings.get('Site_Url'),
+    },
+  ],
+  components: {
+    securitySchemes: {
+      userId: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'X-User-Id',
+      },
+      authToken: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'X-Auth-Token',
+      },
+    },
+    schemas: schemas.components.schemas,
+  },
+  paths,
+});
+
 // Define the OpenAPI JSON endpoint using the new API methods
 API.v1.get(
   'docs/json',
@@ -88,60 +116,16 @@ API.v1.get(
   async function (this: any) {
     const { withUndocumented = false } = this.queryParams;
     console.debug('[OpenAPI] Generating spec, withUndocumented=', withUndocumented);
-    const typedRoutes = getTypedRoutes(API.api.typedRoutes, { withUndocumented });
-    const spec = {
-      openapi: '3.0.3',
-      info: {
-        title: 'Rocket.Chat API',
-        description: 'Rocket.Chat API',
-        version: Info.version,
-      },
-      servers: [
-        {
-          url: settings.get('Site_Url'),
-        },
-      ],
-      components: {
-        securitySchemes: {
-          userId: {
-            type: 'apiKey',
-            in: 'header',
-            name: 'X-User-Id',
-          },
-          authToken: {
-            type: 'apiKey',
-            in: 'header',
-            name: 'X-Auth-Token',
-          },
-        },
-        schemas: {
-          BasicSuccessResponse: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              message: { type: 'string' },
-            },
-            required: ['success'],
-          },
-          ErrorResponse: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              error: { type: 'string' },
-            },
-            required: ['success', 'error'],
-          },
-        },
-      },
 
-    // Validate the generated spec
+    const typedRoutes = getTypedRoutes(API.api.typedRoutes, { withUndocumented });
+    const spec = makeOpenAPIResponse(typedRoutes);
+
     const valid = validateResponse[200](spec);
     if (!valid) {
       const errors = JSON.stringify(validateResponse[200].errors, null, 2);
       console.error('[OpenAPI] Response validation errors:\n', errors);
       throw new Error(`Invalid OpenAPI spec: ${errors}`);
     }
-    
 
     return API.v1.success(spec);
   },
@@ -157,7 +141,6 @@ app.use(
     },
   }),
 );
-
 
 // Mount Express app before Meteor's default handlers
 WebApp.rawConnectHandlers.use(app);

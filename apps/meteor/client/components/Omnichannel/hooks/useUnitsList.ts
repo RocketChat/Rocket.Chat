@@ -1,52 +1,50 @@
+import type { IOmnichannelBusinessUnit, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { RecordList } from '../../../lib/lists/RecordList';
-
 type UnitsListOptions = {
-	text: string;
+	filter: string;
 	haveNone?: boolean;
+	limit?: number;
 };
 
-export type UnitOption = { value: string; label: string; _id: string };
+export type UnitOption = {
+	_id: string;
+	value: string;
+	label: string;
+};
 
-export const useUnitsList = (
-	options: UnitsListOptions,
-): {
-	itemsList: RecordList<UnitOption>;
-	initialItemCount: number;
-	reload: () => void;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
+const DEFAULT_QUERY_LIMIT = 25;
+
+export const useUnitsList = (options: UnitsListOptions) => {
 	const { t } = useTranslation();
-	const { haveNone = false } = options;
-	const [itemsList, setItemsList] = useState(() => new RecordList<UnitOption>());
-	const reload = useCallback(() => setItemsList(new RecordList<UnitOption>()), []);
-
+	const { haveNone = false, filter, limit = DEFAULT_QUERY_LIMIT } = options;
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { text } = options;
 
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
+	const formatUnitItem = (u: Serialized<IOmnichannelBusinessUnit>): UnitOption => ({
+		_id: u._id,
+		label: u.name,
+		value: u._id,
+	});
 
-	const fetchData = useCallback(
-		async (start: number, end: number) => {
-			const { units, total } = await getUnits({
-				...(text && { text }),
-				offset: start,
-				count: end + start,
+	return useInfiniteQuery({
+		queryKey: ['/v1/livechat/units', options],
+		queryFn: async ({ pageParam: offset = 0 }) => {
+			const { units, ...data } = await getUnits({
+				...(filter && { text: filter }),
+				offset,
+				count: limit,
 				sort: `{ "name": 1 }`,
 			});
 
-			const items = units.map<UnitOption>((u) => ({
-				_id: u._id,
-				label: u.name,
-				value: u._id,
-			}));
+			return {
+				...data,
+				units: units.map(formatUnitItem),
+			};
+		},
+		select: (data) => {
+			const items = data.pages.flatMap<UnitOption>((page) => page.units);
 
 			haveNone &&
 				items.unshift({
@@ -55,20 +53,16 @@ export const useUnitsList = (
 					value: '',
 				});
 
-			return {
-				items,
-				itemCount: haveNone ? total + 1 : total,
-			};
+			return items;
 		},
-		[getUnits, haveNone, t, text],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
-
-	return {
-		reload,
-		itemsList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage) => {
+			const offset = lastPage.offset + lastPage.count;
+			return offset < lastPage.total ? offset : undefined;
+		},
+		initialData: () => ({
+			pages: [{ units: [], offset: 0, count: 0, total: Infinity }],
+			pageParams: [0],
+		}),
+	});
 };

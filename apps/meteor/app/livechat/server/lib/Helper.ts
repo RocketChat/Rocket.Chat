@@ -37,12 +37,13 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
-import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isVerifiedChannelInSource } from './contacts/isVerifiedChannelInSource';
 import { migrateVisitorIfMissingContact } from './contacts/migrateVisitorIfMissingContact';
-import { getOnlineAgents } from './getOnlineAgents';
+import { afterRoomQueued, beforeNewRoom } from './hooks';
+import { checkOnlineAgents, getOnlineAgents } from './service-status';
+import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
@@ -85,7 +86,7 @@ export const prepareLivechatRoom = async (
 		}),
 	);
 
-	const extraRoomInfo = await callbacks.run('livechat.beforeRoom', roomInfo, extraData);
+	const extraRoomInfo = await beforeNewRoom(roomInfo, extraData);
 	const { _id, username, token, department: departmentId, status = 'online' } = guest;
 	const newRoomAt = new Date();
 	const source = extraRoomInfo.source || roomInfo.source;
@@ -97,7 +98,7 @@ export const prepareLivechatRoom = async (
 	const contactId = await migrateVisitorIfMissingContact(_id, source);
 	const contact =
 		contactId &&
-		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
+		(await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
 			projection: { name: 1, channels: 1, activity: 1 },
 		}));
 	if (!contact) {
@@ -412,7 +413,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 		return;
 	}
 
-	setImmediate(() => callbacks.run('livechat.chatQueued', room));
+	void afterRoomQueued(room);
 
 	if (RoutingManager.getConfig()?.autoAssignAgent) {
 		return;
@@ -479,7 +480,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	if (!agentId) {
 		throw new Error('error-invalid-agent');
 	}
-	const user = await Users.findOneOnlineAgentById(agentId);
+	const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 	if (!user) {
 		logger.debug(`Agent ${agentId} is offline. Cannot forward`);
 		throw new Error('error-user-is-offline');
@@ -516,7 +517,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		return false;
 	}
 
-	await LivechatTyped.saveTransferHistory(room, transferData);
+	await saveTransferHistory(room, transferData);
 
 	const { servedBy } = roomTaken;
 	if (servedBy) {
@@ -602,7 +603,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	const { userId: agentId, clientAction } = transferData;
 	if (agentId) {
 		logger.debug(`Forwarding room ${room._id} to department ${departmentId} (to user ${agentId})`);
-		const user = await Users.findOneOnlineAgentById(agentId);
+		const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 		if (!user) {
 			throw new Error('error-user-is-offline');
 		}
@@ -629,10 +630,10 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	if (
 		!RoutingManager.getConfig()?.autoAssignAgent ||
 		!(await Omnichannel.isWithinMACLimit(room)) ||
-		(department?.allowReceiveForwardOffline && !(await LivechatTyped.checkOnlineAgents(departmentId)))
+		(department?.allowReceiveForwardOffline && !(await checkOnlineAgents(departmentId)))
 	) {
 		logger.debug(`Room ${room._id} will be on department queue`);
-		await LivechatTyped.saveTransferHistory(room, transferData);
+		await saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId, true);
 	}
 
@@ -692,7 +693,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		);
 	}
 
-	await LivechatTyped.saveTransferHistory(room, transferData);
+	await saveTransferHistory(room, transferData);
 	if (oldServedBy) {
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
@@ -749,7 +750,7 @@ const parseFromIntOrStr = (value: string | number) => {
 export const updateDepartmentAgents = async (
 	departmentId: string,
 	agents: {
-		upsert?: Pick<ILivechatDepartmentAgents, 'agentId' | 'count' | 'order'>[];
+		upsert?: (Pick<ILivechatDepartmentAgents, 'agentId'> & { count?: number; order?: number })[];
 		remove?: Pick<ILivechatDepartmentAgents, 'agentId'>[];
 	},
 	departmentEnabled: boolean,

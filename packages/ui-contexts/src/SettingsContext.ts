@@ -6,6 +6,8 @@ export type SettingsContextQuery = {
 	readonly group?: ISetting['_id'];
 	readonly section?: string;
 	readonly tab?: ISetting['_id'];
+	readonly skip?: number;
+	readonly limit?: number;
 };
 
 export type SettingsContextValue = {

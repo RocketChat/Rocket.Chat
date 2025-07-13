@@ -3,16 +3,20 @@ import type { Locator, Page } from '@playwright/test';
 import { OmnichannelTransferChatModal } from '../omnichannel-transfer-chat-modal';
 import { HomeContent } from './home-content';
 import { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
+import { OmnichannelContactReviewModal } from '../omnichannel-contact-review-modal';
 
 export class HomeOmnichannelContent extends HomeContent {
 	readonly closeChatModal: OmnichannelCloseChatModal;
 
 	readonly forwardChatModal: OmnichannelTransferChatModal;
 
+	readonly contactReviewModal: OmnichannelContactReviewModal;
+
 	constructor(page: Page) {
 		super(page);
 		this.closeChatModal = new OmnichannelCloseChatModal(page);
 		this.forwardChatModal = new OmnichannelTransferChatModal(page);
+		this.contactReviewModal = new OmnichannelContactReviewModal(page);
 	}
 
 	get btnReturnToQueue(): Locator {
@@ -73,5 +77,18 @@ export class HomeOmnichannelContent extends HomeContent {
 
 	get infoHeaderName(): Locator {
 		return this.page.locator('.rcx-room-header').getByRole('heading');
+	}
+
+	async closeChat() {
+		await this.btnCloseChat.click();
+		await this.closeChatModal.inputComment.fill('any_comment');
+		await this.closeChatModal.btnConfirm.click();
+	}
+
+	async useCannedResponse(cannedResponseName: string): Promise<void> {
+		await this.inputMessage.pressSequentially('!');
+		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
+		await this.inputMessage.pressSequentially(cannedResponseName);
+		await this.page.keyboard.press('Enter');
 	}
 }

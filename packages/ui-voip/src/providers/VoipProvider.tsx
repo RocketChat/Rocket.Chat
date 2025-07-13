@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-import VoipPopup from '../components/VoipPopup';
+import { VoipPopupDraggable } from '../components';
 import VoipPopupPortal from '../components/VoipPopupPortal';
 import type { VoipContextValue } from '../contexts/VoipContext';
 import { VoipContext } from '../contexts/VoipContext';
@@ -69,7 +69,12 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		};
 
 		const onOutgoingCallRinging = (): void => {
-			voipSounds.playDialer();
+			// VoipClient 'outgoingcall' event is emitted when the call is establishing
+			// and that event is also emitted when the call is accepted
+			// to avoid disrupting the VoipClient flow, we check if the call is outgoing here.
+			if (voipClient.isOutgoing()) {
+				voipSounds.playDialer();
+			}
 		};
 
 		const onIncomingCallRinging = (): void => {
@@ -78,7 +83,6 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 
 		const onCallTerminated = (): void => {
 			voipSounds.playCallEnded();
-			voipSounds.stopCallEnded();
 			voipSounds.stopDialer();
 			voipSounds.stopRinger();
 			window.removeEventListener('beforeunload', onBeforeUnload);
@@ -87,6 +91,16 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		const onRegistrationError = () => {
 			setStorageRegistered(false);
 			dispatchToastMessage({ type: 'error', message: t('Voice_calling_registration_failed') });
+		};
+
+		const onIncomingCallError = (reason: string) => {
+			console.error('incoming call canceled', reason);
+			if (reason === 'USER_NOT_REGISTERED') {
+				dispatchToastMessage({ type: 'error', message: t('Incoming_voice_call_canceled_user_not_registered') });
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: t('Incoming_voice_call_canceled_suddenly') });
 		};
 
 		const onRegistered = () => {
@@ -104,11 +118,13 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		voipClient.on('registrationerror', onRegistrationError);
 		voipClient.on('registered', onRegistered);
 		voipClient.on('unregistered', onUnregister);
+		voipClient.on('incomingcallerror', onIncomingCallError);
 		voipClient.networkEmitter.on('disconnected', onNetworkDisconnected);
 		voipClient.networkEmitter.on('connectionerror', onNetworkDisconnected);
 		voipClient.networkEmitter.on('localnetworkoffline', onNetworkDisconnected);
 
 		return (): void => {
+			voipSounds.stopCallEnded();
 			voipClient.off('incomingcall', onIncomingCallRinging);
 			voipClient.off('outgoingcall', onOutgoingCallRinging);
 			voipClient.off('callestablished', onCallEstablished);
@@ -116,6 +132,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 			voipClient.off('registrationerror', onRegistrationError);
 			voipClient.off('registered', onRegistered);
 			voipClient.off('unregistered', onUnregister);
+			voipClient.off('incomingcallerror', onIncomingCallError);
 			voipClient.networkEmitter.off('disconnected', onNetworkDisconnected);
 			voipClient.networkEmitter.off('connectionerror', onNetworkDisconnected);
 			voipClient.networkEmitter.off('localnetworkoffline', onNetworkDisconnected);
@@ -184,7 +201,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 				)}
 
 			<VoipPopupPortal>
-				<VoipPopup position={{ bottom: 132, right: 24 }} />
+				<VoipPopupDraggable initialPosition={{ bottom: 132, right: 24 }} />
 			</VoipPopupPortal>
 		</VoipContext.Provider>
 	);

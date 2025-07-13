@@ -1,7 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { ISMSProvider, ServiceData, SMSProviderResponse, SMSProviderResult } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import type { Request } from 'express';
 import filesize from 'filesize';
 import twilio from 'twilio';
 
@@ -245,7 +244,16 @@ export class Twilio implements ISMSProvider {
 		};
 	}
 
-	isRequestFromTwilio(signature: string, request: Request): boolean {
+	private getUrl(url: string, siteUrl: string): string {
+		const baseUrl = new URL(url);
+		const newUrl = new URL(siteUrl);
+		baseUrl.protocol = newUrl.protocol;
+		baseUrl.host = newUrl.host;
+
+		return baseUrl.toString();
+	}
+
+	async isRequestFromTwilio(signature: string, request: Request, requestBody: unknown): Promise<boolean> {
 		const authToken = settings.get<string>('SMS_Twilio_authToken');
 		let siteUrl = settings.get<string>('Site_Url');
 		if (siteUrl.endsWith('/')) {
@@ -257,19 +265,19 @@ export class Twilio implements ISMSProvider {
 			return false;
 		}
 
-		const twilioUrl = request.originalUrl ? `${siteUrl}${request.originalUrl}` : `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
+		const twilioUrl = request.url ? this.getUrl(request.url, siteUrl) : `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
 
-		return twilio.validateRequest(authToken, signature, twilioUrl, request.body);
+		return twilio.validateRequest(authToken, signature, twilioUrl, requestBody as Record<string, any>);
 	}
 
-	validateRequest(request: Request): boolean {
+	async validateRequest(request: Request, requestBody: unknown): Promise<boolean> {
 		// We're not getting original twilio requests on CI :p
 		if (process.env.TEST_MODE === 'true') {
 			return true;
 		}
-		const twilioHeader = request.headers['x-twilio-signature'] || '';
+		const twilioHeader = request.headers.get('x-twilio-signature') || '';
 		const twilioSignature = Array.isArray(twilioHeader) ? twilioHeader[0] : twilioHeader;
-		return this.isRequestFromTwilio(twilioSignature, request);
+		return this.isRequestFromTwilio(twilioSignature, request, requestBody);
 	}
 
 	error(error: Error & { reason?: string }): SMSProviderResponse {
