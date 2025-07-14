@@ -13,7 +13,10 @@ import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcom
 import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
 import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi.ts';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider.ts';
-import type { IOutboundMessageProviders } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider.ts';
+import type {
+	IOutboundPhoneMessageProvider,
+	IOutboundEmailMessageProvider,
+} from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider.ts';
 
 import { Http } from './http.ts';
 import { HttpExtend } from './extenders/HttpExtender.ts';
@@ -189,13 +192,17 @@ export class AppAccessors {
 						return this._proxy.provideVideoConfProvider(provider);
 					},
 				},
-				outboundCommunicationProviders: {
+				outboundCommunication: {
 					_proxy: this.proxify('getConfigurationExtend:outboundCommunication'),
-					provideOutboundCommunicationProvider(provider: IOutboundMessageProviders) {
-						// Store the videoConfProvider instance to use when the Apps-Engine calls the videoConfProvider
-						AppObjectRegistry.set(`outboundCommunication:${provider.name}`, provider);
-
-						return this._proxy.provideVideoConfProvider(provider);
+					registerEmailProvider(provider: IOutboundEmailMessageProvider) {
+						// Store the videoConfProvider instance to use when the Apps-Engine calls the outbound provider
+						AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
+						return this._proxy.registerEmailProvider(provider);
+					},
+					registerPhoneProvider(provider: IOutboundPhoneMessageProvider) {
+						// Store the videoConfProvider instance to use when the Apps-Engine calls the outbound provider
+						AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
+						return this._proxy.registerPhoneProvider(provider);
 					},
 				},
 				slashCommands: {

@@ -19,19 +19,11 @@ export class AppOutboundCommunicationProviderManager {
 
 	private outboundMessageProviders: Map<string, Map<ValidOutboundProvider, OutboundMessageProvider>>;
 
-	private providerApps: Map<string, boolean>;
-
 	constructor(private readonly manager: AppManager) {
 		this.bridge = this.manager.getBridges().getOutboundMessageBridge();
 		this.accessors = this.manager.getAccessorManager();
 
 		this.outboundMessageProviders = new Map<string, Map<ValidOutboundProvider, OutboundMessageProvider>>();
-		this.providerApps = new Map<string, boolean>();
-	}
-
-	public canProviderBeTouchedBy(appId: string, providerType: ValidOutboundProvider): boolean {
-		const key = `${appId}-${providerType}`;
-		return !this.providerApps.has(key) || false;
 	}
 
 	public isAlreadyDefined(providerId: string, providerType: ValidOutboundProvider): boolean {
@@ -58,23 +50,14 @@ export class AppOutboundCommunicationProviderManager {
 			});
 		}
 
-		if (!this.canProviderBeTouchedBy(appId, provider.type)) {
-			throw new Error('provider-already-exists');
-		}
-
 		if (!this.outboundMessageProviders.has(appId)) {
 			this.outboundMessageProviders.set(appId, new Map<ValidOutboundProvider, OutboundMessageProvider>());
 		}
 
 		this.outboundMessageProviders.get(appId).set(provider.type, new OutboundMessageProvider(app, provider));
-		this.linkAppProvider(appId, provider.type);
 	}
 
-	private linkAppProvider(appId: string, providerType: ValidOutboundProvider): void {
-		this.providerApps.set(`${appId}-${providerType}`, true);
-	}
-
-	public registerProviders(appId: string): void {
+	public async registerProviders(appId: string): Promise<void> {
 		if (!this.outboundMessageProviders.has(appId)) {
 			return;
 		}
@@ -84,11 +67,11 @@ export class AppOutboundCommunicationProviderManager {
 			return;
 		}
 
-		for (const [, providerInfo] of appProviders) {
+		for await (const [, providerInfo] of appProviders) {
 			if (providerInfo.provider.type === 'phone') {
-				this.registerPhoneProvider(appId, providerInfo.provider);
+				await this.registerPhoneProvider(appId, providerInfo.provider);
 			} else if (providerInfo.provider.type === 'email') {
-				this.registerEmailProvider(appId, providerInfo.provider);
+				await this.registerEmailProvider(appId, providerInfo.provider);
 			}
 		}
 	}
@@ -106,19 +89,18 @@ export class AppOutboundCommunicationProviderManager {
 		this.outboundMessageProviders.delete(appId);
 	}
 
-	private registerPhoneProvider(appId: string, provider: IOutboundPhoneMessageProvider): void {
-		this.bridge.doRegisterPhoneProvider(provider, appId);
+	private registerPhoneProvider(appId: string, provider: IOutboundPhoneMessageProvider): Promise<void> {
+		return this.bridge.doRegisterPhoneProvider(provider, appId);
 	}
 
-	private registerEmailProvider(appId: string, provider: IOutboundEmailMessageProvider): void {
-		this.bridge.doRegisterEmailProvider(provider, appId);
+	private registerEmailProvider(appId: string, provider: IOutboundEmailMessageProvider): Promise<void> {
+		return this.bridge.doRegisterEmailProvider(provider, appId);
 	}
 
 	private unregisterProvider(appId: string, info: OutboundMessageProvider): void {
 		const key = info.provider.type;
 
 		this.bridge.doUnRegisterProvider(info.provider, appId);
-		this.providerApps.delete(key);
 
 		info.isRegistered = false;
 

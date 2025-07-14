@@ -1157,7 +1157,7 @@ export class AppManager {
 			this.listenerManager.registerListeners(app);
 			this.listenerManager.releaseEssentialEvents(app);
 			this.videoConfProviderManager.registerProviders(app.getID());
-			this.outboundCommunicationProviderManager.registerProviders(app.getID());
+			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
 			await this.purgeAppConfig(app);
 		}

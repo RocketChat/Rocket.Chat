@@ -27,7 +27,7 @@ export class OutboundMessageProvider {
 		accessors: AppAccessorManager,
 		runContextArgs: Array<any>,
 	): Promise<string | boolean | Array<IBlock> | undefined> {
-		const provider = this.provider.name;
+		const provider = `${this.provider.name}-${this.provider.type}`;
 
 		try {
 			const result = await this.app.getDenoRuntime().sendRequest({
