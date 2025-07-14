@@ -16,6 +16,7 @@ import { AppLivechatBridge } from './livechat';
 import { AppMessageBridge } from './messages';
 import { AppModerationBridge } from './moderation';
 import { AppOAuthAppsBridge } from './oauthApps';
+import { OutboundCommunicationBridge } from './outboundCommunication';
 import { AppPersistenceBridge } from './persistence';
 import { AppRoleBridge } from './roles';
 import { AppRoomBridge } from './rooms';
@@ -26,7 +27,6 @@ import { UiInteractionBridge } from './uiInteraction';
 import { AppUploadBridge } from './uploads';
 import { AppUserBridge } from './users';
 import { AppVideoConferenceBridge } from './videoConferences';
-import { OutboundCommunicationBridge } from './outboundCommunication';
 
 export class RealAppBridges extends AppBridges {
 	constructor(orch) {
