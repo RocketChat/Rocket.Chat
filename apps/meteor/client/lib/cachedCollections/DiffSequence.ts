@@ -1,5 +1,5 @@
 import type { IdMap } from './IdMap';
-import { clone, entriesOf, hasOwn, isEqual } from './common';
+import { clone, entriesOf, hasOwn, equals } from './common';
 import type { Observer, OrderedObserver, UnorderedObserver } from './observers';
 
 function isObjEmpty(obj: Record<string, unknown>): boolean {
@@ -65,7 +65,7 @@ export class DiffSequence {
 		newResults.forEach((newDoc, id) => {
 			const oldDoc = oldResults.get(id);
 			if (oldDoc) {
-				if (observer.changed && !isEqual(oldDoc, newDoc as any)) {
+				if (observer.changed && !equals(oldDoc, newDoc as any)) {
 					const projectedNew = projectionFn(newDoc);
 					const projectedOld = projectionFn(oldDoc);
 					const changedFields = DiffSequence.makeChangedFields(projectedNew, projectedOld);
@@ -223,7 +223,7 @@ export class DiffSequence {
 				fields[key] = value;
 			},
 			both(key, leftValue, rightValue) {
-				if (!isEqual(leftValue, rightValue)) fields[key] = rightValue;
+				if (!equals(leftValue, rightValue)) fields[key] = rightValue;
 			},
 		});
 		return fields;

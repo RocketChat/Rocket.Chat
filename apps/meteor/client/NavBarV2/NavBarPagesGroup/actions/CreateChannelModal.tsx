@@ -14,6 +14,12 @@ import {
 	FieldDescription,
 	Accordion,
 	AccordionItem,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -206,11 +212,11 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 				<Box is='form' id={createChannelFormId} onSubmit={handleSubmit(handleCreateChannel)} {...props} />
 			)}
 		>
-			<Modal.Header>
-				<Modal.Title id={`${createChannelFormId}-title`}>{t('Create_channel')}</Modal.Title>
-				<Modal.Close tabIndex={-1} title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content mbe={2}>
+			<ModalHeader>
+				<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
+				<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
 				<FieldGroup mbe={24}>
 					<Field>
 						<FieldLabel required htmlFor={nameId}>
@@ -370,15 +376,15 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 						</FieldGroup>
 					</AccordionItem>
 				</Accordion>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button type='submit' primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

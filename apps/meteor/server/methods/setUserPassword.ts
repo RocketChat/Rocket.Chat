@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import type { UpdateResult } from 'mongodb';
 
 import { passwordPolicy } from '../../app/lib/server';
+import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import { compareUserPassword } from '../lib/compareUserPassword';
 
 declare module '@rocket.chat/ddp-client' {
@@ -52,6 +53,14 @@ Meteor.methods<ServerMethods>({
 			logout: false,
 		});
 
-		return Users.unsetRequirePasswordChange(userId);
+		const update = await Users.unsetRequirePasswordChange(userId);
+
+		void notifyOnUserChange({
+			clientAction: 'updated',
+			id: userId,
+			diff: { requirePasswordChange: false, requirePasswordChangeReason: false },
+		});
+
+		return update;
 	},
 });

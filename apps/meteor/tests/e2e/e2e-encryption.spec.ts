@@ -909,7 +909,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await page.goto('/home');
 
-		await page.waitForSelector('.main-content');
+		await page.waitForSelector('#main-content');
 
 		await expect(poHomeChannel.bannerSaveEncryptionPassword).toBeVisible();
 

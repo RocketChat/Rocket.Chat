@@ -1,9 +1,8 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRouter, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../components/GenericModal';
 
 export const useRemoveTag = () => {
 	const { t } = useTranslation();

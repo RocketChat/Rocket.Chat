@@ -1,5 +1,19 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Modal, Field, FieldLabel, FieldRow, Select, Button, Box } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	Field,
+	FieldLabel,
+	FieldRow,
+	Select,
+	Button,
+	Box,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import {
 	useTranslation,
 	useAvailableDevices,
@@ -58,11 +72,11 @@ const DeviceSettingsModal = (): ReactElement => {
 
 	return (
 		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Device_settings')}</Modal.Title>
-				<Modal.Close onClick={onCancel} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>
+			<ModalHeader>
+				<ModalTitle>{t('Device_settings')}</ModalTitle>
+				<ModalClose onClick={onCancel} />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>
 				{!setSinkIdAvailable && (
 					<Box color='status-font-on-danger' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available')}
@@ -100,15 +114,15 @@ const DeviceSettingsModal = (): ReactElement => {
 						/>
 					</FieldRow>
 				</Field>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={(): void => setModal()}>{t('Cancel')}</Button>
 					<Button disabled={!setSinkIdAvailable} primary onClick={handleSubmit(onSubmit)}>
 						{t('Save')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
