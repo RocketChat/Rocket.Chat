@@ -1231,6 +1231,27 @@ API.v1.addRoute(
 	},
 );
 
+API.v1.addRoute(
+	'chat.getScheduledMessages',
+	{ authRequired: true },
+	{
+		async get() {
+			const userId = this.userId;
+
+			if (!userId) {
+				return API.v1.unauthorized();
+			}
+
+			const scheduledMessages = await ScheduledMessages.find(
+				{ 'u._id': userId },
+				{ sort: { scheduledAt: 1 } },
+			).toArray();
+
+			return API.v1.success({ messages: scheduledMessages });
+		},
+	},
+);
+
 export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
