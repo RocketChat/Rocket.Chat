@@ -79,13 +79,13 @@ const invites = API.v1
 							type: 'string',
 						},
 						createdAt: {
-							type: 'object',
+							type: 'string',
 						},
 						_updatedAt: {
-							type: 'object',
+							type: 'string',
 						},
 						expires: {
-							type: 'object',
+							type: 'string',
 							nullable: true,
 						},
 						url: {
