@@ -273,3 +273,6 @@ export * from './v1/auth';
 export * from './v1/cloud';
 export * from './v1/banners';
 export * from './default';
+
+// Export the ajv instance for use in other packages
+export { ajv } from './v1/Ajv';

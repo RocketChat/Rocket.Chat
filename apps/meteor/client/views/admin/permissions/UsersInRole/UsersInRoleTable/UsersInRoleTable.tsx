@@ -1,6 +1,7 @@
 import type { IRole, IRoom, IUserInRole } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -9,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 import UsersInRoleTableRow from './UsersInRoleTableRow';
 import GenericError from '../../../../../components/GenericError';
-import GenericModal from '../../../../../components/GenericModal';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import {
 	GenericTable,

@@ -15,9 +15,12 @@ export type ResolveContactConflictsParams = {
 export async function resolveContactConflicts(params: ResolveContactConflictsParams): Promise<ILivechatContact> {
 	const { contactId, name, customFields, contactManager, wipeConflicts } = params;
 
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'customFields' | 'conflictingFields'>>(contactId, {
-		projection: { _id: 1, customFields: 1, conflictingFields: 1 },
-	});
+	const contact = await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'customFields' | 'conflictingFields'>>(
+		contactId,
+		{
+			projection: { _id: 1, customFields: 1, conflictingFields: 1 },
+		},
+	);
 
 	if (!contact) {
 		throw new Error('error-contact-not-found');
