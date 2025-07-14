@@ -19,9 +19,10 @@ import { useItemData } from '../hooks/useItemData';
 type SidepanelItemProps = {
 	room: SubscriptionWithRoom;
 	openedRoom?: string;
+	isRoomFilter?: boolean;
 };
 
-const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
+const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) => {
 	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, { openedRoom });
 	const { sidebar } = useLayout();
 	const formatDate = useShortTimeAgo();
@@ -42,7 +43,7 @@ const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
 			onPointerEnter={handlePointerEnter}
 		>
 			<SidebarV2ItemCol>
-				{parentRoomId && (
+				{!isRoomFilter && parentRoomId && (
 					<SidebarV2ItemRow>
 						<SidePanelParent room={room} />
 					</SidebarV2ItemRow>
