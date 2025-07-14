@@ -40,15 +40,15 @@
 		"prometheus-gc-stats": "^1.1.0",
 		"sharp": "^0.33.5",
 		"underscore": "^1.13.7",
-		"uuid": "^11.0.3",
-		"ws": "^8.18.2"
+		"uuid": "^11.1.0",
+		"ws": "^8.18.3"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.2",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.3",
 		"@types/polka": "^0.5.7",
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/underscore": "^1.13.0",

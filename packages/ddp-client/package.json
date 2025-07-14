@@ -10,7 +10,7 @@
 		"jest": "~30.0.2",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.8.3",
-		"ws": "^8.18.2"
+		"ws": "^8.18.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/emitter": "*"
