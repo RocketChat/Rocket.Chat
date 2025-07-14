@@ -244,7 +244,7 @@ export class Router<
 						{
 							success: false,
 							errorType: 'error-invalid-body',
-							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => `${error.message} - ${error.instancePath}`).join('\n ')}`,
 						},
 						400,
 					);
