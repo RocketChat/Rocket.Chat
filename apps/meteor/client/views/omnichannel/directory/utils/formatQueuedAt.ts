@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
-export const formatQueuedAt = (room: Serialized<IOmnichannelRoom>) => {
+export const formatQueuedAt = (room: Serialized<IOmnichannelRoom> | undefined) => {
 	const { servedBy, closedAt, open, queuedAt, ts } = room || {};
 	const queueStartedAt = queuedAt || ts;
 

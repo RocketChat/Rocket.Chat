@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -10,7 +11,7 @@ import { roomsQueryKeys } from '../../lib/queryKeys';
 import { dispatchToastMessage } from '../../lib/toast';
 import { PRIORITY_ICONS } from '../priorities/PriorityIcon';
 
-export const useOmnichannelPrioritiesMenu = (rid: string) => {
+export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const updateRoomPriority = useEndpoint('POST', '/v1/livechat/room/:rid/priority', { rid });
