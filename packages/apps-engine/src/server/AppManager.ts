@@ -36,6 +36,7 @@ import type { IAppStorageItem } from './storage';
 import { AppLogStorage, AppMetadataStorage } from './storage';
 import { AppSourceStorage } from './storage/AppSourceStorage';
 import { AppInstallationSource } from './storage/IAppStorageItem';
+import { AppOutboundCommunicationProviderManager } from './managers/AppOutboundCommunicationProviderManager';
 
 export interface IAppInstallParameters {
 	enable: boolean;
@@ -97,6 +98,8 @@ export class AppManager {
 
 	private readonly videoConfProviderManager: AppVideoConfProviderManager;
 
+	private readonly outboundCommunicationProviderManager: AppOutboundCommunicationProviderManager;
+
 	private readonly signatureManager: AppSignatureManager;
 
 	private readonly runtime: AppRuntimeManager;
@@ -147,6 +150,7 @@ export class AppManager {
 		this.schedulerManager = new AppSchedulerManager(this);
 		this.uiActionButtonManager = new UIActionButtonManager(this);
 		this.videoConfProviderManager = new AppVideoConfProviderManager(this);
+		this.outboundCommunicationProviderManager = new AppOutboundCommunicationProviderManager(this);
 		this.signatureManager = new AppSignatureManager(this);
 		this.runtime = new AppRuntimeManager(this);
 
@@ -196,6 +200,10 @@ export class AppManager {
 
 	public getVideoConfProviderManager(): AppVideoConfProviderManager {
 		return this.videoConfProviderManager;
+	}
+
+	public getOutboundCommunicationProviderManager(): AppOutboundCommunicationProviderManager {
+		return this.outboundCommunicationProviderManager;
 	}
 
 	public getLicenseManager(): AppLicenseManager {

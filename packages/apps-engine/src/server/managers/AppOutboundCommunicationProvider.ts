@@ -35,7 +35,7 @@ export class OutboundMessageProvider {
 				params: runContextArgs,
 			});
 
-			return result as any;
+			return result as string | boolean | Array<IBlock> | undefined;
 		} catch (e) {
 			console.error(e);
 		}

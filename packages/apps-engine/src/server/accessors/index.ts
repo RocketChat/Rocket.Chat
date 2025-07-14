@@ -44,6 +44,7 @@ import { VideoConfProviderExtend } from './VideoConfProviderExtend';
 import { VideoConferenceBuilder } from './VideoConferenceBuilder';
 import { VideoConferenceExtender } from './VideoConferenceExtend';
 import { VideoConferenceRead } from './VideoConferenceRead';
+import { OutboundMessageProviderExtend } from './OutboundCommunicationProviderExtend';}
 
 export {
 	ApiExtend,
@@ -92,4 +93,5 @@ export {
 	VideoConfProviderExtend,
 	OAuthAppsModify,
 	OAuthAppsReader,
+	OutboundMessageProviderExtend,
 };
