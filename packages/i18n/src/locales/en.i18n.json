@@ -4518,6 +4518,8 @@
   "Saving": "Saving",
   "Scan_QR_code": "Using an authenticator app like Google Authenticator, Authy or Duo, scan the QR code. It will display a 6 digit code which you need to enter below.",
   "Scan_QR_code_alternative_s": "If you cannot scan the QR code, you may enter the following code manually into the authenticator app instead:",
+  "Schedule_Message": "Schedule Message",
+  "Scheduled_Messages": "Scheduled Messages",
   "Scope": "Scope",
   "Score": "Score",
   "Screen_Lock": "Screen Lock",

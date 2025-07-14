@@ -1028,3 +1028,25 @@ API.v1.addRoute(
 		},
 	},
 )
+
+API.v1.addRoute(
+	'chat.getScheduledMessages',
+	{ authRequired: true },
+	{
+		async get() {
+			const userId = this.userId;
+
+			if (!userId) {
+				return API.v1.unauthorized();
+			}
+
+			// Optional: Filter only current user's scheduled messages
+			const scheduledMessages = await ScheduledMessages.find(
+				{ 'u._id': userId },
+				{ sort: { scheduledAt: 1 } } // sort by schedule time ascending
+			).toArray();
+
+			return API.v1.success({ messages: scheduledMessages });
+		},
+	}
+);
