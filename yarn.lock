@@ -6969,10 +6969,10 @@ __metadata:
     "@msgpack/msgpack": "npm:3.0.0-beta2"
     "@rocket.chat/eslint-config": "workspace:~"
     "@rocket.chat/ui-kit": "workspace:~"
+    "@seald-io/nedb": "npm:^4.1.2"
     "@types/adm-zip": "npm:^0.5.7"
     "@types/debug": "npm:^4.1.12"
     "@types/lodash.clonedeep": "npm:^4.5.9"
-    "@types/nedb": "npm:^1.8.16"
     "@types/node": "npm:~22.16.1"
     "@types/semver": "npm:^7.5.8"
     "@types/stack-trace": "npm:0.0.33"
@@ -6988,7 +6988,6 @@ __metadata:
     jose: "npm:^4.15.9"
     jsonrpc-lite: "npm:^2.2.0"
     lodash.clonedeep: "npm:^4.5.0"
-    nedb: "npm:^1.8.0"
     npm-run-all: "npm:^4.1.5"
     nyc: "npm:^17.1.0"
     rimraf: "npm:^6.0.1"
@@ -7971,7 +7970,6 @@ __metadata:
     "@types/meteor-collection-hooks": "npm:^0.8.9"
     "@types/mkdirp": "npm:^1.0.2"
     "@types/mocha": "github:whitecolor/mocha-types"
-    "@types/nedb": "npm:^1"
     "@types/node": "npm:~22.16.1"
     "@types/node-rsa": "npm:^1.1.4"
     "@types/nodemailer": "npm:^6.4.17"
@@ -8122,7 +8120,6 @@ __metadata:
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.10.0"
     nats: "npm:^2.28.2"
-    nedb: "npm:~1.8.0"
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
     node-rsa: "npm:^1.1.1"
@@ -9480,6 +9477,24 @@ __metadata:
   version: 1.4.0
   resolution: "@scarf/scarf@npm:1.4.0"
   checksum: 10/1b39a18fa29e91cfbc134c588e20c5f01a1b21ec4473614123801155b48378e9c3bf72adaca8c67e433ae951ab653268e9502cc5733230d8927532f74a6b89c9
+  languageName: node
+  linkType: hard
+
+"@seald-io/binary-search-tree@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@seald-io/binary-search-tree@npm:1.0.3"
+  checksum: 10/0eecd682f56b93557e0cbe4a5b55f48e31f217cae350a5000d397b3ea17a67da62e48dba665f1a9e28345a0d1eb92d287511c1af1dc9e32725157fd181ce7f19
+  languageName: node
+  linkType: hard
+
+"@seald-io/nedb@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "@seald-io/nedb@npm:4.1.2"
+  dependencies:
+    "@seald-io/binary-search-tree": "npm:^1.0.3"
+    localforage: "npm:^1.10.0"
+    util: "npm:^0.12.5"
+  checksum: 10/9d78476bb2af52b18fb781e385a48dd3d4e8f6c40846e47ec499c6ff9e0c7db2f597fd4fcb1bf0e2f6d6096a8c6153fb84106109de01cfcfa583eb77f2bc1e74
   languageName: node
   linkType: hard
 
@@ -11832,7 +11847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nedb@npm:^1, @types/nedb@npm:^1.8.16":
+"@types/nedb@npm:^1.8.16":
   version: 1.8.16
   resolution: "@types/nedb@npm:1.8.16"
   dependencies:
@@ -14080,13 +14095,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:0.2.10":
-  version: 0.2.10
-  resolution: "async@npm:0.2.10"
-  checksum: 10/b3b92bd0257dafc1b8c4b87dcf36aea70ed36fd179797d725d564b5deec07246d4afa222c3d5f1b6009e579aeab0a6aa03b56869906a7e8ff46e7d33e4f2e879
-  languageName: node
-  linkType: hard
-
 "async@npm:^3.2.3, async@npm:^3.2.4":
   version: 3.2.6
   resolution: "async@npm:3.2.6"
@@ -14777,15 +14785,6 @@ __metadata:
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
   checksum: 10/ccd267956c58d2315f5d3ea6757cf09863c5fc703e50fbeb13a7dc849b812ef76e3cf9ca8f35a0c48498776a7478d7b4a0418e1e2b8cb9cb9731f2922aaad7f8
-  languageName: node
-  linkType: hard
-
-"binary-search-tree@npm:0.2.5":
-  version: 0.2.5
-  resolution: "binary-search-tree@npm:0.2.5"
-  dependencies:
-    underscore: "npm:~1.4.4"
-  checksum: 10/3c54292fd5f58f31fb5ab267b0604552ee5da6f2098c2a0d4f57b56a32cb394d1d6db369eafef741719c210b48979d652ec964677593e52a0c4bd7061cd9824e
   languageName: node
   linkType: hard
 
@@ -25070,7 +25069,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"localforage@npm:^1.10.0, localforage@npm:^1.3.0":
+"localforage@npm:^1.10.0":
   version: 1.10.0
   resolution: "localforage@npm:1.10.0"
   dependencies:
@@ -26332,7 +26331,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mkdirp@npm:^0.5.1, mkdirp@npm:~0.5.1":
+"mkdirp@npm:^0.5.1":
   version: 0.5.6
   resolution: "mkdirp@npm:0.5.6"
   dependencies:
@@ -26744,19 +26743,6 @@ __metadata:
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
   checksum: 10/23ad088b08f898fc9b53011d7bb78ec48e79de7627e01ab5518e806033861bef68d5b0cd0e2205c2f36690ac9571ff6bcb05eb777ced2eeda8d4ac5b44592c3d
-  languageName: node
-  linkType: hard
-
-"nedb@npm:^1.8.0, nedb@npm:~1.8.0":
-  version: 1.8.0
-  resolution: "nedb@npm:1.8.0"
-  dependencies:
-    async: "npm:0.2.10"
-    binary-search-tree: "npm:0.2.5"
-    localforage: "npm:^1.3.0"
-    mkdirp: "npm:~0.5.1"
-    underscore: "npm:~1.4.4"
-  checksum: 10/192d6f5c59ca6ba739aa88a2466f4bdee7e9e3c3a4ffde0898ec6c01dd18e3e0f572d146d7333a6acf85ba59bd2ab8f1d621d561e02d048b0421783594a51fc6
   languageName: node
   linkType: hard
 
