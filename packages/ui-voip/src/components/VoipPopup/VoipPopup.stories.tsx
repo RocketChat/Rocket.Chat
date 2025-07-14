@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import VoipPopup from './VoipPopup';
 import { createMockVoipProviders } from '../../tests/mocks';
@@ -13,7 +12,7 @@ export default {
 	title: 'Components/VoipPopup',
 	component: VoipPopup,
 	decorators: [
-		(Story): ReactElement => (
+		(Story) => (
 			<MockedProviders>
 				<Story />
 			</MockedProviders>
