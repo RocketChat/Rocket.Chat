@@ -1,5 +1,22 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, FieldGroup, Button, TextAreaInput, Modal, Box, Divider, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldGroup,
+	Button,
+	TextAreaInput,
+	Modal,
+	Box,
+	Divider,
+	FieldLabel,
+	FieldRow,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect } from 'react';
@@ -68,12 +85,12 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 			{...props}
 			data-qa-id='forward-chat-modal'
 		>
-			<Modal.Header>
-				<Modal.Icon name='baloon-arrow-top-right' />
-				<Modal.Title>{t('Forward_chat')}</Modal.Title>
-				<Modal.Close onClick={onCancel} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>
+			<ModalHeader>
+				<ModalIcon name='baloon-arrow-top-right' />
+				<ModalTitle>{t('Forward_chat')}</ModalTitle>
+				<ModalClose onClick={onCancel} />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>
 				<FieldGroup>
 					<Field>
 						<FieldLabel>{t('Forward_to_department')}</FieldLabel>
@@ -118,15 +135,15 @@ const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatMo
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					<Button type='submit' disabled={!username && !department} primary loading={isSubmitting}>
 						{t('Forward')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
