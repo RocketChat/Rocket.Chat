@@ -12,6 +12,8 @@ import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnic
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
 import RoomMenu from '../SidepanelItem/RoomMenu';
+import SidePanelParentRoomWithData from '../SidepanelItem/SidePanelParentRoom';
+import SidePanelParentTeam from '../SidepanelItem/SidePanelParentTeam';
 
 export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { openedRoom: string | undefined }) => {
 	const { t } = useTranslation();
@@ -41,6 +43,18 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 		),
 		[showUnread, unreadCount.total, unreadTitle, unreadVariant],
 	);
+
+	const parentRoomIcon = useMemo(() => {
+		if (!room.prid && !(room.teamId && !room.teamMain)) {
+			return null;
+		}
+
+		if (room.prid) {
+			return <SidePanelParentRoomWithData prid={room.prid} />;
+		}
+
+		return <SidePanelParentTeam room={room} />;
+	}, [room]);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -76,8 +90,9 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 			avatar: <RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />,
 			subtitle: message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null,
 			menu,
+			parentRoomIcon,
 		}),
-		[badges, highlighted, icon, menu, message, openedRoom, rid, room, time, title, href],
+		[badges, highlighted, icon, menu, message, openedRoom, rid, room, time, title, href, parentRoomIcon],
 	);
 
 	return itemData;

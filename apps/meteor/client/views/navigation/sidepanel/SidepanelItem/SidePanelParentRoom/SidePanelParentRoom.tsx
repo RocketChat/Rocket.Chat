@@ -15,12 +15,7 @@ const SidePanelParentRoom = ({ subscription }: { subscription: ISubscription }) 
 		roomCoordinator.openRouteLink(subscription.t, { ...subscription });
 	});
 
-	return (
-		<SidePanelTag {...buttonProps}>
-			{icon && <SidePanelTagIcon icon={{ name: icon }} />}
-			{roomName}
-		</SidePanelTag>
-	);
+	return <SidePanelTag {...buttonProps} title={roomName} icon={<SidePanelTagIcon icon={{ name: icon }} />} />;
 };
 
 export default SidePanelParentRoom;

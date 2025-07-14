@@ -12,7 +12,6 @@ import {
 import { useLayout, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo, useState } from 'react';
 
-import SidePanelParent from './SidePanelParent';
 import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
 import { useItemData } from '../hooks/useItemData';
 
@@ -22,15 +21,15 @@ type SidepanelItemProps = {
 };
 
 const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
-	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, { openedRoom });
+	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, parentRoomIcon, ...props } = useItemData(room, {
+		openedRoom,
+	});
 	const { sidebar } = useLayout();
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const handleFocus = () => setMenuVisibility(true);
 	const handlePointerEnter = () => setMenuVisibility(true);
-
-	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
 
 	return (
 		<SidebarV2Item
@@ -42,11 +41,6 @@ const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
 			onPointerEnter={handlePointerEnter}
 		>
 			<SidebarV2ItemCol>
-				{parentRoomId && (
-					<SidebarV2ItemRow>
-						<SidePanelParent room={room} />
-					</SidebarV2ItemRow>
-				)}
 				<SidebarV2ItemRow>
 					{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 					{icon && icon}
@@ -55,6 +49,7 @@ const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					{parentRoomIcon && parentRoomIcon}
 					{badges && badges}
 					{menu && (
 						<SidebarV2ItemMenu>

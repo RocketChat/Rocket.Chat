@@ -18,10 +18,7 @@ const SidePanelParentTeam = ({ room }: { room: SubscriptionWithRoom }) => {
 	}
 
 	return (
-		<SidePanelTag {...buttonProps}>
-			<SidePanelTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-			{teamName}
-		</SidePanelTag>
+		<SidePanelTag {...buttonProps} title={teamName} icon={<SidePanelTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />} />
 	);
 };
 
