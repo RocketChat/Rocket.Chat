@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2024",
     "module": "ESNext",
     "declaration": true,
     "declarationMap": true,

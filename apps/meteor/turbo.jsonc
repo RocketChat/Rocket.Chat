@@ -1,0 +1,16 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"extends": ["//"],
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", "!tests/**"],
+			"cache": false
+		},
+		"build:ci": {
+			"dependsOn": ["^build"],
+			"env": ["BABEL_ENV"],
+			"cache": false
+		}
+	}
+}

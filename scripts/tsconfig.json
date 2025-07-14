@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"erasableSyntaxOnly": true,
+		"disableSolutionSearching": true,
+		"lib": [
+			"ESNext",
+			"ESNext.AsyncIterable"
+		],
+		"libReplacement": false,
+		"module": "nodenext",
+		"moduleDetection": "force",
+		"noEmit": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"target": "esnext",
+		"types": [
+			"node"
+		],
+		"verbatimModuleSyntax": true
+	}
+}

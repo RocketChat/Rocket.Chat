@@ -42,15 +42,6 @@
 		},
 		"ms": {
 			"dependsOn": ["^build"]
-		},
-		"@rocket.chat/meteor#build": {
-			"dependsOn": ["^build"],
-			"cache": false
-		},
-		"@rocket.chat/meteor#build:ci": {
-			"dependsOn": ["^build"],
-			"env": ["BABEL_ENV"],
-			"cache": false
 		}
 	}
 }
