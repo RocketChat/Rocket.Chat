@@ -37,11 +37,13 @@ export class Sidebar {
 	}
 
 	get channelsList(): Locator {
-		return this.sidebar.getByRole('list', { name: 'Channels' });
+		// TODO: fix this filter, workaround which is due to virtuoso
+		// return this.sidebar.getByRole('list', { name: 'Channels' }).filter({ has: this.page.getByRole('listitem') });
+		return this.sidebar.getByTestId('virtuoso-item-list');
 	}
 
 	getSearchRoomByName(name: string) {
-		return this.channelsList.getByRole('link', { name });
+		return this.channelsList.getByRole('button', { name });
 	}
 
 	get firstCollapser(): Locator {

@@ -30,12 +30,32 @@ test.describe.serial('feature preview', () => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 		targetDiscussion = await createTargetDiscussion(api);
+		// to check
+		sidepanelTeam = await createTargetTeam(api);
+
+		await setUserPreferences(api, {
+			featuresPreview: [
+				{
+					name: 'newNavigation',
+					value: true,
+				},
+			],
+		});
 	});
 
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
 		await deleteRoom(api, targetDiscussion._id);
+		await deleteTeam(api, sidepanelTeam);
+		await setUserPreferences(api, {
+			featuresPreview: [
+				{
+					name: 'newNavigation',
+					value: false,
+				},
+			],
+		});
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -282,7 +302,7 @@ test.describe.serial('feature preview', () => {
 
 	test.describe('Sidepanel', () => {
 		test.beforeEach(async ({ api }) => {
-			sidepanelTeam = await createTargetTeam(api);
+			// sidepanelTeam = await createTargetTeam(api);
 
 			await setUserPreferences(api, {
 				sidebarViewMode: 'Medium',
@@ -296,7 +316,7 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test.afterEach(async ({ api }) => {
-			await deleteTeam(api, sidepanelTeam);
+			// await deleteTeam(api, sidepanelTeam);
 
 			await setUserPreferences(api, {
 				sidebarViewMode: 'Medium',
@@ -736,6 +756,52 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
 				await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
 			});
+		});
+	});
+
+	test.describe('Sidebar room filters', () => {
+		test('should not open rooms when clicking on sidebar filters', async ({ page }) => {
+			await page.goto('/home');
+			await poHomeChannel.content.waitForHome();
+
+			await expect(poHomeChannel.sidebar.channelsList).toBeVisible();
+			// TODO: flaky
+			await poHomeChannel.sidebar.getSearchRoomByName(sidepanelTeam).click();
+
+			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
+			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Teams')).toContainText(new RegExp(sidepanelTeam));
+			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
+			await expect(page).toHaveURL('/home');
+			await expect(page.locator('main').getByRole('heading', { name: 'Home' })).toBeVisible();
+		});
+
+		test('should open room when clicking on sidepanel item', async ({ page }) => {
+			await page.goto('/home');
+
+			await poHomeChannel.content.waitForHome();
+			await poHomeChannel.sidebar.getSearchRoomByName(sidepanelTeam).click();
+
+			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
+			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Teams')).toContainText(new RegExp(sidepanelTeam));
+
+			await poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam).click();
+			await poHomeChannel.content.waitForChannel();
+			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
+		});
+
+		test('DM sidebar filter', async ({ page }) => {});
+
+		// TODO: To implement this fix on feature
+		test.skip('should not open rooms when clicking on sidebar filters in small viewport', async ({ page }) => {
+			await page.setViewportSize({ width: 640, height: 460 });
+			await page.goto('/home');
+
+			await poHomeChannel.content.waitForHome();
+
+			await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
+			await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
+			await poHomeChannel.navbar.btnSidebarToggler().click();
+			await expect(poHomeChannel.sidebar.sidebar).toBeVisible();
 		});
 	});
 });
