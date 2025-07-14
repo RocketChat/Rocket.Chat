@@ -1,5 +1,6 @@
 import { Expect, Setup, SetupFixture, Test } from 'alsatian';
 
+import type { AppOutboundCommunicationProviderManager } from '../../../server/managers/AppOutboundCommunicationProviderManager';
 import { AppStatus } from '../../../src/definition/AppStatus';
 import type { AppMethod } from '../../../src/definition/metadata';
 import type { AppManager } from '../../../src/server/AppManager';
@@ -21,7 +22,6 @@ import type { AppLogStorage } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
 import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
 import { TestData } from '../../test-data/utilities';
-import { AppOutboundCommunicationProviderManager } from '../../../server/managers/AppOutboundCommunicationProviderManager';
 
 export class AppAccessorsTestFixture {
 	public static doThrow = false;

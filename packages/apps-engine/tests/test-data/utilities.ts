@@ -4,6 +4,7 @@ import { TestsAppBridges } from './bridges/appBridges';
 import { TestSourceStorage } from './storage/TestSourceStorage';
 import { TestsAppLogStorage } from './storage/logStorage';
 import { TestsAppStorage } from './storage/storage';
+import type { AppOutboundCommunicationProviderManager } from '../../server/managers/AppOutboundCommunicationProviderManager';
 import { AppStatus } from '../../src/definition/AppStatus';
 import type { IHttp, IModify, IPersistence, IRead } from '../../src/definition/accessors';
 import { HttpStatusCode } from '../../src/definition/accessors';
@@ -48,7 +49,6 @@ import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeMana
 import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
 import type { DenoRuntimeSubprocessController } from '../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
-import { AppOutboundCommunicationProviderManager } from '../../server/managers/AppOutboundCommunicationProviderManager';
 
 export class TestInfastructureSetup {
 	private appStorage: TestsAppStorage;

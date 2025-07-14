@@ -1,7 +1,7 @@
 import type { IApiExtend } from './IApiExtend';
 import type { IExternalComponentsExtend } from './IExternalComponentsExtend';
 import type { IHttpExtend } from './IHttp';
-import { IOutboundCommunicationProviderExtend } from './IOutboundCommunicationProviderExtend';
+import type { IOutboundCommunicationProviderExtend } from './IOutboundCommunicationProviderExtend';
 import type { ISchedulerExtend } from './ISchedulerExtend';
 import type { ISettingsExtend } from './ISettingsExtend';
 import type { ISlashCommandsExtend } from './ISlashCommandsExtend';
