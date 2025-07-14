@@ -190,7 +190,7 @@ export class AppAccessors {
 					},
 				},
 				outboundCommunicationProviders: {
-					_proxy: this.proxify('getConfigurationExtend:outboundCommunicationProviders'),
+					_proxy: this.proxify('getConfigurationExtend:outboundCommunication'),
 					provideOutboundCommunicationProvider(provider: IOutboundMessageProviders) {
 						// Store the videoConfProvider instance to use when the Apps-Engine calls the videoConfProvider
 						AppObjectRegistry.set(`outboundCommunication:${provider.name}`, provider);

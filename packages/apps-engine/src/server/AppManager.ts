@@ -1083,6 +1083,7 @@ export class AppManager {
 		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		this.videoConfProviderManager.unregisterProviders(app.getID());
+		this.outboundCommunicationProviderManager.unregisterProviders(app.getID());
 	}
 
 	/**
