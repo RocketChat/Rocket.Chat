@@ -3,7 +3,6 @@ import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip } from '@r
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RoomAvatar, UserAvatar } from '@rocket.chat/ui-avatar';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
@@ -18,39 +17,50 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: U
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 
 	const rooms = useUserSubscriptions(
-		useMemo(
-			() => ({
-				open: { $ne: false },
-				$or: [
-					{ lowerCaseFName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
-					{ lowerCaseName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
-				],
-			}),
+		...useMemo<Parameters<typeof useUserSubscriptions>>(
+			() => [
+				{
+					open: { $ne: false },
+					$or: [
+						{ lowerCaseFName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
+						{ lowerCaseName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
+					],
+				},
+				// We are using a higher limit here to take advantage of the amount that
+				// will be filtered below into a smaller set respecting the limit prop.
+				{ limit: 100 },
+			],
 			[debouncedFilter],
 		),
-	).reduce((acc, room) => {
-		if (acc.length === limit) return acc;
-		if (!user) {
-			return acc;
-		}
-
-		if (isDirectMessageRoom(room) && (room.blocked || room.blocker)) {
-			return acc;
-		}
-
-		if (!roomCoordinator.readOnly(room.rid, user)) return [...acc, room];
-
-		return acc;
-	}, [] as Array<SubscriptionWithRoom>);
-
-	const options = useMemo(
-		() =>
-			rooms.map(({ rid, fname, name, avatarETag, t }) => ({
-				value: rid,
-				label: { name: fname || name, avatarETag, type: t },
-			})),
-		[rooms],
 	);
+
+	const options = useMemo(() => {
+		if (!user) {
+			return [];
+		}
+
+		return rooms.reduce<Exclude<UserAndRoomAutoCompleteMultipleProps['options'], undefined>>((acc, room) => {
+			if (acc.length === limit) return acc;
+
+			if (isDirectMessageRoom(room) && (room.blocked || room.blocker)) {
+				return acc;
+			}
+
+			if (roomCoordinator.readOnly(room.rid, user)) return acc;
+
+			return [
+				...acc,
+				{
+					value: room.rid,
+					label: {
+						name: room.fname || room.name,
+						avatarETag: room.avatarETag,
+						type: room.t,
+					},
+				},
+			];
+		}, []);
+	}, [limit, rooms, user]);
 
 	return (
 		<AutoComplete
