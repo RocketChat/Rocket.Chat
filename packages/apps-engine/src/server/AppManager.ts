@@ -26,6 +26,7 @@ import {
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
 } from './managers';
+import { AppOutboundCommunicationProviderManager } from './managers/AppOutboundCommunicationProviderManager';
 import { AppRuntimeManager } from './managers/AppRuntimeManager';
 import { AppSignatureManager } from './managers/AppSignatureManager';
 import { UIActionButtonManager } from './managers/UIActionButtonManager';
@@ -36,7 +37,6 @@ import type { IAppStorageItem } from './storage';
 import { AppLogStorage, AppMetadataStorage } from './storage';
 import { AppSourceStorage } from './storage/AppSourceStorage';
 import { AppInstallationSource } from './storage/IAppStorageItem';
-import { AppOutboundCommunicationProviderManager } from './managers/AppOutboundCommunicationProviderManager';
 
 export interface IAppInstallParameters {
 	enable: boolean;
