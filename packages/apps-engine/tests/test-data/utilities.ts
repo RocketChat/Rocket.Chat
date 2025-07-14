@@ -48,6 +48,7 @@ import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeMana
 import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
 import type { DenoRuntimeSubprocessController } from '../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
+import { AppOutboundCommunicationProviderManager } from '../../server/managers/AppOutboundCommunicationProviderManager';
 
 export class TestInfastructureSetup {
 	private appStorage: TestsAppStorage;
@@ -108,6 +109,9 @@ export class TestInfastructureSetup {
 			},
 			getVideoConfProviderManager() {
 				return {} as AppVideoConfProviderManager;
+			},
+			getOutboundCommunicationProviderManager() {
+				return {} as AppOutboundCommunicationProviderManager;
 			},
 			getSettingsManager() {
 				return {} as AppSettingsManager;

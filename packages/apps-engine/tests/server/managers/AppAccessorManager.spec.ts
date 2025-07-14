@@ -14,6 +14,7 @@ import type {
 import { AppAccessorManager } from '../../../src/server/managers';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
+import { AppOutboundCommunicationProviderManager } from '../../../server/managers/AppOutboundCommunicationProviderManager';
 
 export class AppAccessorManagerTestFixture {
 	private bridges: AppBridges;
@@ -52,7 +53,10 @@ export class AppAccessorManagerTestFixture {
 			getVideoConfProviderManager() {
 				return {} as AppVideoConfProviderManager;
 			},
-		} as AppManager;
+			getOutboundCommunicationProviderManager() {
+				return {} as AppOutboundCommunicationProviderManager;
+			},
+		} as unknown as AppManager;
 	}
 
 	@Setup

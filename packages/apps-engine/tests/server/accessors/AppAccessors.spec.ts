@@ -21,6 +21,7 @@ import type { AppLogStorage } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
 import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
 import { TestData } from '../../test-data/utilities';
+import { AppOutboundCommunicationProviderManager } from '../../../server/managers/AppOutboundCommunicationProviderManager';
 
 export class AppAccessorsTestFixture {
 	public static doThrow = false;
@@ -84,7 +85,10 @@ export class AppAccessorsTestFixture {
 			getSettingsManager() {
 				return {} as AppSettingsManager;
 			},
-		} as AppManager;
+			getOutboundCommunicationProviderManager() {
+				return {} as AppOutboundCommunicationProviderManager;
+			},
+		} as unknown as AppManager;
 
 		this.mockAccessors = new AppAccessorManager(this.mockManager);
 		const ac = this.mockAccessors;
