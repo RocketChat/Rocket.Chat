@@ -2,7 +2,7 @@ import type { IRoom, ITeam, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-// import { minutesToMilliseconds } from 'date-fns';
+import { minutesToMilliseconds } from 'date-fns';
 
 import { roomsQueryKeys } from '../lib/queryKeys';
 
@@ -40,12 +40,8 @@ export const useRoomInfoEndpoint = <
 	const uid = useUserId();
 	return useQuery({
 		queryKey: roomsQueryKeys.info(rid),
-		queryFn: async () => {
-			const result = await getRoomInfo({ roomId: rid });
-			console.log('useRoomInfoEndpoint queryFn', roomsQueryKeys.info(rid), JSON.stringify(result, null, 2));
-			return result;
-		},
-		// gcTime: minutesToMilliseconds(15),
+		queryFn: () => getRoomInfo({ roomId: rid }),
+		gcTime: minutesToMilliseconds(15),
 		retry: (count, error: { success: boolean; error: string }) => count <= 2 && error.error !== 'not-allowed',
 		enabled: !!uid,
 		...options,
