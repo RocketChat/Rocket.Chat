@@ -1,3 +1,4 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ReactElement } from 'react';
 
@@ -5,6 +6,8 @@ import VoipPopup from './VoipPopup';
 import { createMockVoipProviders } from '../../tests/mocks';
 
 const [MockedProviders, voipClient] = createMockVoipProviders();
+
+const appRoot = mockAppRoot().withMicrophonePermissionState({ state: 'granted' } as PermissionStatus);
 
 export default {
 	title: 'Components/VoipPopup',
@@ -15,6 +18,7 @@ export default {
 				<Story />
 			</MockedProviders>
 		),
+		appRoot.buildStoryDecorator(),
 	],
 } satisfies Meta<typeof VoipPopup>;
 
