@@ -1,16 +1,24 @@
 import 'reflect-metadata';
 
-import type { HomeserverEventSignatures, HomeserverServices, DependencyContainer } from '@hs/federation-sdk';
-import { getAllServices } from '@hs/federation-sdk';
+import { toUnpaddedBase64 } from '@hs/core';
+import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
+import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
-import { getAllMatrixRoutes } from './api/api';
+import { getWellKnownRoutes } from './api/.well-known/server';
+import { getMatrixInviteRoutes } from './api/_matrix/invite';
+import { getKeyServerRoutes } from './api/_matrix/key/server';
+import { getMatrixProfilesRoutes } from './api/_matrix/profiles';
+import { getMatrixRoomsRoutes } from './api/_matrix/rooms';
+import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
+import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
+import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
-import { setup } from './setupContainers';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -21,9 +29,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private matrixDomain: string;
 
-	private diContainer: DependencyContainer;
-
 	private readonly logger = new Logger(this.name);
+
+	private httpRoutes: { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> };
 
 	private constructor(emitter?: Emitter<HomeserverEventSignatures>) {
 		super();
@@ -32,9 +40,46 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
-		instance.diContainer = await setup(instance.eventHandler);
+		const config = new ConfigService();
+		const matrixConfig = config.getMatrixConfig();
+		const serverConfig = config.getServerConfig();
+		const signingKeys = await config.getSigningKey();
+		const signingKey = signingKeys[0];
+
+		const containerOptions: FederationContainerOptions = {
+			emitter,
+			federationOptions: {
+				serverName: matrixConfig.serverName,
+				signingKey: toUnpaddedBase64(signingKey.privateKey),
+				signingKeyId: `ed25519:${signingKey.version}`,
+				timeout: 30000,
+				baseUrl: serverConfig.baseUrl,
+			},
+		};
+
+		await createFederationContainer(containerOptions);
+		instance.homeserverServices = getAllServices();
+		instance.buildMatrixHTTPRoutes();
 
 		return instance;
+	}
+
+	private buildMatrixHTTPRoutes() {
+		const matrix = new Router('/_matrix');
+		const wellKnown = new Router('/.well-known');
+
+		matrix
+			.use(getMatrixInviteRoutes(this.homeserverServices))
+			.use(getMatrixProfilesRoutes(this.homeserverServices))
+			.use(getMatrixRoomsRoutes(this.homeserverServices))
+			.use(getMatrixSendJoinRoutes(this.homeserverServices))
+			.use(getMatrixTransactionsRoutes(this.homeserverServices))
+			.use(getKeyServerRoutes(this.homeserverServices))
+			.use(getFederationVersionsRoutes());
+
+		wellKnown.use(getWellKnownRoutes(this.homeserverServices));
+
+		this.httpRoutes = { matrix, wellKnown };
 	}
 
 	async created(): Promise<void> {
@@ -58,12 +103,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		return this.matrixDomain;
 	}
 
-	async started(): Promise<void> {
-		this.homeserverServices = getAllServices(this.diContainer);
-	}
-
 	getAllRoutes() {
-		return getAllMatrixRoutes();
+		return this.httpRoutes;
 	}
 
 	async createRoom(room: IRoom, owner: IUser, members: string[]): Promise<void> {

@@ -1,7 +1,6 @@
-import type { Router } from '@rocket.chat/http-router';
+import type { HomeserverServices } from '@hs/federation-sdk';
+import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
-
-import { getAllServicesFromFederationSDK } from '../../setupContainers';
 
 const SendTransactionParamsSchema = {
 	type: 'object',
@@ -155,11 +154,11 @@ const ErrorResponseSchema = {
 
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
-export const getMatrixTransactionsRoutes = (router: Router<'/_matrix'>) => {
-	const { event } = getAllServicesFromFederationSDK();
+export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
+	const { event } = services;
 
-	return router.put(
-		'/federation/v1/send/:txnId',
+	return new Router('/federation').put(
+		'/v1/send/:txnId',
 		{
 			params: isSendTransactionParamsProps,
 			body: isSendTransactionBodyProps,
