@@ -192,6 +192,7 @@ export class Router<
 		const convertedAction = this.convertActionToHandler(action);
 
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
+			console.log(process.env.NODE_ENV, process.env.TEST_MODE);
 			const { req, res } = c;
 
 			const queryParams = this.parseQueryParams(req);
@@ -244,7 +245,19 @@ export class Router<
 						{
 							success: false,
 							errorType: 'error-invalid-body',
-							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => `${error.message} - ${error.instancePath}`).join('\n ')}`,
+							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors
+								?.map(
+									(error: any) =>
+										`${error.message} (${[
+											error.instancePath,
+											Object.entries(error.params)
+												.map(([key, value]) => `${key}: ${value}`)
+												.join(', '),
+										]
+											.filter(Boolean)
+											.join(' - ')})`,
+								)
+								.join('\n')}`,
 						},
 						400,
 					);
