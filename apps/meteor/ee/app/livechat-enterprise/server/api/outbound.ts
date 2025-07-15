@@ -6,8 +6,8 @@ import { isGETOutboundProviderParams } from '../outboundcomms/rest';
 import { outboundMessageProvider } from './lib/outbound';
 import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
 
-const outboundCommsEndpoints = [
-	API.v1.get(
+const outboundCommsEndpoints = API.v1
+	.get(
 		'omnichannel/outbound/providers',
 		{
 			response: {
@@ -48,8 +48,8 @@ const outboundCommsEndpoints = [
 				providers,
 			});
 		},
-	),
-	API.v1.get(
+	)
+	.get(
 		'omnichannel/outbound/providers/:id/metadata',
 		{
 			response: {
@@ -59,19 +59,8 @@ const outboundCommsEndpoints = [
 						metadata: {
 							type: 'object',
 							properties: {
-								providerId: {
-									type: 'string',
-								},
-								providerName: {
-									type: 'string',
-								},
-								supportsTemplates: {
-									type: 'boolean',
-								},
-								providerType: {
-									type: 'string',
-								},
-								templates: {
+								// TODO: fix this type
+								metadata: {
 									type: 'object',
 								},
 							},
@@ -84,12 +73,11 @@ const outboundCommsEndpoints = [
 		async function action() {
 			const { id } = this.urlParams;
 
-			const providerMetadata = outboundMessageProvider.getProviderMetadata(id);
+			const providerMetadata = await outboundMessageProvider.getProviderMetadata(id);
 			return API.v1.success({
 				metadata: providerMetadata,
 			});
 		},
-	),
-];
+	);
 
 export type OutboundCommsEndpoints = ExtractRoutesFromAPI<typeof outboundCommsEndpoints>;
