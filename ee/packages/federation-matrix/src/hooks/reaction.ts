@@ -9,6 +9,11 @@ import type { ICallbacks } from '../types/ICallbacks';
 
 const logger = new Logger('federation-matrix:reaction');
 
+<<<<<<< HEAD
+=======
+let registeredCallbacks: Array<{ hook: string; id: string }> = [];
+
+>>>>>>> f72828efff (feat: adds set and unset reactions capabilities)
 export function reaction(federationMatrixService: FederationMatrix, callbacks: ICallbacks) {
 	callbacks.add(
 		'afterSetReaction',
@@ -18,6 +23,10 @@ export function reaction(federationMatrixService: FederationMatrix, callbacks: I
 		callbacks.priority.HIGH,
 		'federation-matrix-after-set-reaction',
 	);
+<<<<<<< HEAD
+=======
+	registeredCallbacks.push({ hook: 'afterSetReaction', id: 'federation-matrix-after-set-reaction' });
+>>>>>>> f72828efff (feat: adds set and unset reactions capabilities)
 
 	callbacks.add(
 		'afterUnsetReaction',
@@ -27,6 +36,21 @@ export function reaction(federationMatrixService: FederationMatrix, callbacks: I
 		callbacks.priority.HIGH,
 		'federation-matrix-after-unset-reaction',
 	);
+<<<<<<< HEAD
+=======
+	registeredCallbacks.push({ hook: 'afterUnsetReaction', id: 'federation-matrix-after-unset-reaction' });
+}
+
+export function removeReactionListeners(callbacks?: ICallbacks): void {
+	if (!callbacks) {
+		return;
+	}
+
+	for (const { hook, id } of registeredCallbacks) {
+		callbacks.remove(hook, id);
+	}
+	registeredCallbacks = [];
+>>>>>>> f72828efff (feat: adds set and unset reactions capabilities)
 }
 
 async function handleReactionAdded(
