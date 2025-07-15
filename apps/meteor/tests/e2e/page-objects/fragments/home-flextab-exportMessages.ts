@@ -19,6 +19,18 @@ export class HomeFlextabExportMessages {
 		return this.page.getByRole('option', { name });
 	}
 
+	get outputFormat() {
+		return this.page.getByRole('button', { name: 'JSON' });
+	}
+
+	get btnSelectMessages() {
+		return this.page.getByRole('button', { name: 'Select 1 messages' });
+	}
+
+	get btnDownloadExportMessages() {
+		return this.page.getByRole('button', { name: 'Download', exact: true });
+	}
+
 	get textboxAdditionalEmails() {
 		return this.page.getByRole('textbox', { name: 'To additional emails' });
 	}
