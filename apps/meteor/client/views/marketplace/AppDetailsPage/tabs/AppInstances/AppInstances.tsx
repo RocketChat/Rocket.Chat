@@ -79,7 +79,7 @@ const AppInstances = ({ id }: AppInstanceProps): ReactElement => {
 											title='Actions'
 											items={[
 												{
-													content: t('View_logs'),
+													content: t('View_Logs'),
 													onClick: handleSelectLogs,
 													id: 'view-logs',
 													icon: 'desktop-text',
