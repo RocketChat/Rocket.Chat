@@ -282,7 +282,7 @@ test.describe('basic features', () => {
 
 		await encryptedRoomPage.showExportMessagesTab();
 		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
-		await expect(exportMessagesTab.sendEmailMethod).not.toBeVisible();
+		await expect(exportMessagesTab.getMethod('Send email')).not.toBeVisible();
 	});
 });
 
