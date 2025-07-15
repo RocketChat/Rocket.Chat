@@ -71,25 +71,7 @@ const customSoundsEndpoints = API.v1.get(
 					sounds: {
 						type: 'array',
 						items: {
-							type: 'object',
-							properties: {
-								_id: {
-									type: 'string',
-								},
-								name: {
-									type: 'string',
-								},
-								extension: {
-									type: 'string',
-								},
-								createdAt: {
-									type: 'string',
-								},
-								_updatedAt: {
-									type: 'object',
-								},
-							},
-							required: ['_id', 'name', 'extension', '_updatedAt'],
+							$ref: '#/components/schemas/ICustomSound',
 						},
 					},
 				},
