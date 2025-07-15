@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import  {isRoomFederated,type IRoom, } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +7,10 @@ import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
 import { useHideRoomAction } from '../../../../../hooks/useHideRoomAction';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
-
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useReactiveValue } from '/client/hooks/useReactiveValue';
+import { useCallback } from 'react';
+import { roomCoordinator } from '/client/lib/rooms/roomCoordinator';
 type UseRoomActionsOptions = {
 	onClickEnterRoom?: () => void;
 	onClickEdit?: () => void;
@@ -18,7 +21,27 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { onClickEnterRoom, onClickEdit, resetState } = options;
 
 	const { t } = useTranslation();
+	const federationMatrixEnabled = useSetting('Federation_Matrix_enabled', false);
+	
+	const reactiveIsMember = useReactiveValue(
+		useCallback(() => {
+			if (!room.t) {
+				return false;
+			}
 
+			if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+				return false;
+			}
+
+			if (isRoomFederated(room)) {
+				return federationMatrixEnabled;
+			}
+			return true;
+		}, [federationMatrixEnabled, room]),
+	);
+	
+	const isMember = useReactiveValue(() => reactiveIsMember);
+	
 	const handleLeave = useRoomLeave(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
@@ -55,7 +78,7 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 							},
 						]
 					: []),
-				...(handleLeave
+				...(handleLeave && isMember
 					? [
 							{
 								id: 'leave',
@@ -100,5 +123,5 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 		};
 
 		return memoizedActions;
-	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
+	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t,isMember]);
 };
