@@ -54,23 +54,25 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			return Rooms.state.get(identifier);
+			return Rooms.findOne({ _id: identifier });
 		},
 
 		isLivechatRoom() {
 			return true;
 		},
 
-		canSendMessage(room) {
+		canSendMessage(rid) {
+			const room = Rooms.findOne({ _id: rid }, { fields: { open: 1 } });
 			return Boolean(room?.open);
 		},
 
-		readOnly(room) {
+		readOnly(rid, _user) {
+			const room = Rooms.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
 			if (!room?.open) {
 				return true;
 			}
 
-			const subscription = Subscriptions.findOne({ rid: room._id });
+			const subscription = Subscriptions.findOne({ rid });
 			return !subscription;
 		},
 

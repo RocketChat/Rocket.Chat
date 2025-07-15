@@ -6,8 +6,9 @@ import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
 import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
+import { useRoomQuery } from './hooks/useRoomQuery';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
-import { Rooms, Subscriptions } from '../../../../app/models/client';
+import { Subscriptions } from '../../../../app/models/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { omit } from '../../../../lib/utils/omit';
@@ -31,7 +32,8 @@ type RoomProviderProps = {
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const resultFromServer = useRoomInfoEndpoint(rid);
 
-	const room = Rooms.use((state) => state.get(rid));
+	const resultFromLocal = useRoomQuery(rid);
+
 	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
 
 	useRedirectOnSettingsChanged(subscritionFromLocal);
@@ -39,6 +41,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useUsersNameChanged();
 
 	const pseudoRoom: IRoomWithFederationOriginalName | null = useMemo(() => {
+		const room = resultFromLocal.data;
 		if (!room) {
 			return null;
 		}
@@ -49,7 +52,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			name: roomCoordinator.getRoomName(room.t, room),
 			federationOriginalName: room.name,
 		};
-	}, [room, subscritionFromLocal]);
+	}, [resultFromLocal.data, subscritionFromLocal]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
 		useCallback(() => {
@@ -83,10 +86,10 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const { mutate: fireRoomOpenedEvent } = useFireGlobalEvent('room-opened', rid);
 
 	useEffect(() => {
-		if (room) {
-			fireRoomOpenedEvent(omit(room, 'usernames'));
+		if (resultFromLocal.data) {
+			fireRoomOpenedEvent(omit(resultFromLocal.data, 'usernames'));
 		}
-	}, [rid, room, fireRoomOpenedEvent]);
+	}, [rid, resultFromLocal.data, fireRoomOpenedEvent]);
 
 	useEffect(() => {
 		if (isSidepanelFeatureEnabled) {
@@ -161,7 +164,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return !room ? <RoomNotFound /> : <RoomSkeleton />;
+		return !resultFromLocal.data ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (

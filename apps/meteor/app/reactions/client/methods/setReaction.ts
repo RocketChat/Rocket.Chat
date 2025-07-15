@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
@@ -23,7 +23,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const room = Rooms.state.get(message.rid);
+		const room: IRoom | undefined = Rooms.findOne({ _id: message.rid });
 		if (!room) {
 			return false;
 		}
@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (roomCoordinator.readOnly(room, user)) {
+		if (roomCoordinator.readOnly(room._id, user)) {
 			return false;
 		}
 

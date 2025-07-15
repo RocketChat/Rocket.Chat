@@ -30,11 +30,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	async getClientRoomInfo(): Promise<IExternalComponentRoomInfo> {
-		const room = RoomManager.opened ? Rooms.state.get(RoomManager.opened) : undefined;
-		if (!room) {
-			throw new Error('Room not found');
-		}
-		const { name: slugifiedName, _id: id } = room;
+		const { name: slugifiedName, _id: id } = Rooms.findOne(RoomManager.opened)!;
 
 		let cachedMembers: IExternalComponentUserInfo[] = [];
 		try {

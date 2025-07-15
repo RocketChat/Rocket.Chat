@@ -4082,7 +4082,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/priorities/:priorityId': {
-		GET: () => ILivechatPriority;
+		GET: () => ILivechatPriority | void;
 		PUT: (params: PUTLivechatPriority) => void;
 	};
 

@@ -60,10 +60,10 @@ type EditRoomInfoProps = {
 };
 
 const title = {
-	team: 'Edit_team',
-	channel: 'Edit_channel',
-	discussion: 'Edit_discussion',
-} as const;
+	team: 'Edit_team' as TranslationKey,
+	channel: 'Edit_channel' as TranslationKey,
+	discussion: 'Edit_discussion' as TranslationKey,
+};
 
 const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {

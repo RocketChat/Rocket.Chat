@@ -256,24 +256,20 @@ export class HomeContent {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="attachment-title-link"]');
 	}
 
-	get menuMore(): Locator {
-		return this.page.getByRole('menu', { name: 'More', exact: true });
-	}
-
 	get btnOptionEditMessage(): Locator {
-		return this.menuMore.getByRole('menuitem', { name: 'Edit', exact: true });
+		return this.page.locator('role=menu[name="More"] >> role=menuitem[name="Edit"]');
 	}
 
 	get btnOptionDeleteMessage(): Locator {
-		return this.menuMore.getByRole('menuitem', { name: 'Delete', exact: true });
+		return this.page.getByRole('menuitem', { name: 'Delete' });
 	}
 
 	get btnOptionPinMessage(): Locator {
-		return this.menuMore.getByRole('menuitem', { name: 'Pin', exact: true });
+		return this.page.locator('[data-qa-id="pin-message"]');
 	}
 
 	get btnOptionStarMessage(): Locator {
-		return this.menuMore.getByRole('menuitem', { name: 'Star', exact: true });
+		return this.page.locator('[data-qa-id="star-message"]');
 	}
 
 	get btnOptionFileUpload(): Locator {
@@ -428,14 +424,10 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
-	get threadMessageList(): Locator {
-		return this.page.getByRole('list', { name: 'Thread message list' });
-	}
-
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.threadMessageList.last().hover();
-		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).waitFor();
-		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).click();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
@@ -457,24 +449,8 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 
-	get primaryRoomActionsToolbar(): Locator {
-		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
-	}
-
 	get btnVideoCall(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
-	}
-
-	get btnToolbarOptions(): Locator {
-		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Options', exact: true });
-	}
-
-	get optionsMenu(): Locator {
-		return this.page.getByRole('menu', { name: 'Options', exact: true });
-	}
-
-	get starredMessagesMenuOption(): Locator {
-		return this.optionsMenu.getByRole('menuitem', { name: 'Starred Messages', exact: true });
 	}
 
 	getVideoConfPopup(name?: string): Locator {

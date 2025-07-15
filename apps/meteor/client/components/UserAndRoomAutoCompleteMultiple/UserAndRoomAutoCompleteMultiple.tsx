@@ -5,10 +5,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RoomAvatar, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 
-import { Rooms } from '../../../app/models/client';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
@@ -18,7 +16,7 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndR
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 
-	const subscriptions = useUserSubscriptions(
+	const rooms = useUserSubscriptions(
 		useMemo(
 			() => ({
 				open: { $ne: false },
@@ -29,25 +27,17 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndR
 			}),
 			[debouncedFilter],
 		),
-	);
+	).filter((room) => {
+		if (!user) {
+			return;
+		}
 
-	const rooms = useReactiveValue(
-		useCallback(
-			() =>
-				subscriptions.filter((subscription) => {
-					if (!user) {
-						return;
-					}
+		if (isDirectMessageRoom(room) && (room.blocked || room.blocker)) {
+			return;
+		}
 
-					if (isDirectMessageRoom(subscription) && (subscription.blocked || subscription.blocker)) {
-						return;
-					}
-
-					return !roomCoordinator.readOnly(Rooms.state.get(subscription.rid), user);
-				}),
-			[subscriptions, user],
-		),
-	);
+		return !roomCoordinator.readOnly(room.rid, user);
+	});
 
 	const options = useMemo(
 		() =>

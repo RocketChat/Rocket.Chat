@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import { isRoomFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
@@ -277,23 +277,7 @@ const MessageBox = ({
 
 	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
 
-	const federationMatrixEnabled = useSetting('Federation_Matrix_enabled', false);
-	const canSend = useReactiveValue(
-		useCallback(() => {
-			if (!room.t) {
-				return false;
-			}
-
-			if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
-				return false;
-			}
-
-			if (isRoomFederated(room)) {
-				return federationMatrixEnabled;
-			}
-			return true;
-		}, [federationMatrixEnabled, room]),
-	);
+	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
 
 	const sizes = useContentBoxSize(textareaRef);
 

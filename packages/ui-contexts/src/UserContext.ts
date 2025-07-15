@@ -24,8 +24,6 @@ export type Sort<TSchema extends Document = Document> = Exclude<MongoFindOptions
 export type FindOptions<TSchema extends Document = Document> = {
 	fields?: Fields<TSchema>;
 	sort?: Sort<TSchema>;
-	skip?: number;
-	limit?: number;
 };
 
 export type UserContextValue = {

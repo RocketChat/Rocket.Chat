@@ -45,11 +45,9 @@ const processInquiryEvent = async (args: unknown): Promise<void> => {
 };
 
 const invalidateRoomQueries = async (rid: string) => {
-	await Promise.all([
-		queryClient.invalidateQueries({ queryKey: ['rooms', { reference: rid, type: 'l' }] }),
-		queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(rid) }),
-		queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(rid) }),
-	]);
+	await queryClient.invalidateQueries({ queryKey: ['rooms', { reference: rid, type: 'l' }] });
+	queryClient.removeQueries({ queryKey: roomsQueryKeys.room(rid) });
+	queryClient.removeQueries({ queryKey: roomsQueryKeys.info(rid) });
 };
 
 const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
