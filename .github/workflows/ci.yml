@@ -218,7 +218,7 @@ jobs:
 
       - name: Create preview for PR
         uses: rossjrw/pr-preview-action@v1
-        if: github.repository == 'RocketChat/Rocket.Chat'
+        if: github.event.pull_request.head.repo.full_name == github.repository
         with:
           source-dir: .preview
           preview-branch: gh-pages
