@@ -1,6 +1,6 @@
 ---
-"@rocket.chat/meteor": patch
-"@rocket.chat/i18n": patch
+'@rocket.chat/meteor': patch
+'@rocket.chat/i18n': patch
 ---
 
-chore: Add missing Font and Sound translation keys
+add some missing translations for sound names and font sizes
