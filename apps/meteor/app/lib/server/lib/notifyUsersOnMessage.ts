@@ -98,7 +98,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const userMentionInc = getUserMentions(room.t, unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>);
 	const groupMentionInc = getGroupMentions(room.t, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
 
-	void Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
+	await Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
 		roomId: room._id,
 		uidsExclude: [message.u._id],
 		uidsInclude: userIds,
@@ -137,7 +137,6 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	]);
 
 	// update subscription of the message sender
-	await Subscriptions.setAsReadByRoomIdAndUserId(message.rid, message.u._id);
 	const setAsReadResponse = await Subscriptions.setAsReadByRoomIdAndUserId(message.rid, message.u._id);
 	if (setAsReadResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomIdAndUserId(message.rid, message.u._id);
