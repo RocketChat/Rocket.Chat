@@ -215,7 +215,9 @@ jobs:
           yarn turbo run .:build-preview-move
           npx indexifier .preview --html  --extensions .html  > .preview/index.html
 
-      - uses: rossjrw/pr-preview-action@v1
+      - name: Create PR Preview
+        uses: rossjrw/pr-preview-action@v1
+        if: github.repository_owner == 'RocketChat'
         with:
           source-dir: .preview
           preview-branch: gh-pages
