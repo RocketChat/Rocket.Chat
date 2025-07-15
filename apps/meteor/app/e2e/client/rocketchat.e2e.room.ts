@@ -222,7 +222,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSubscription() {
-		const subscription = Subscriptions.findOne({ rid: this.roomId });
+		const subscription = Subscriptions.state.find((record) => record.rid === this.roomId);
 
 		if (subscription?.lastMessage?.t !== 'e2e') {
 			this.log('decryptSubscriptions nothing to do');
@@ -245,7 +245,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptOldRoomKeys() {
-		const sub = Subscriptions.findOne({ rid: this.roomId });
+		const sub = Subscriptions.state.find((record) => record.rid === this.roomId);
 
 		if (!sub?.oldRoomKeys || sub?.oldRoomKeys.length === 0) {
 			this.log('decryptOldRoomKeys nothing to do');
@@ -322,7 +322,7 @@ export class E2ERoom extends Emitter {
 		this.setState(E2ERoomState.ESTABLISHING);
 
 		try {
-			const groupKey = Subscriptions.findOne({ rid: this.roomId })?.E2EKey;
+			const groupKey = Subscriptions.state.find((record) => record.rid === this.roomId)?.E2EKey;
 			if (groupKey) {
 				await this.importGroupKey(groupKey);
 				this.setState(E2ERoomState.READY);
@@ -475,7 +475,7 @@ export class E2ERoom extends Emitter {
 	async encryptKeyForOtherParticipants() {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
-			const mySub = Subscriptions.findOne({ rid: this.roomId });
+			const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 			const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
 			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
 
@@ -769,7 +769,7 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		const mySub = Subscriptions.findOne({ rid: this.roomId });
+		const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 		const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
 		const usersWithKeys = await Promise.all(
 			users.map(async (user) => {
