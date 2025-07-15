@@ -21,7 +21,6 @@ export default async function outboundMessageHandler(call: string, params: unkno
 		// deno-lint-ignore ban-types
 		return await (method as Function).apply(provider, [
 			...args,
-			// Example, we may need more/less accessors
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getModifier(),
 			AppAccessorsInstance.getHttp(),

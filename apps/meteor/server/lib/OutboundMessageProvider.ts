@@ -16,7 +16,6 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 	}
 
 	public findOneByProviderId(providerId: string) {
-		// it should find one from any of the types, phone or email without hardcoding as we may include more types in the future
 		for (const providers of this.outboundMessageProviders.values()) {
 			for (const provider of providers) {
 				if (provider.appId === providerId) {
@@ -41,6 +40,7 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 				providerId: provider.appId,
 				providerName: provider.name,
 				providerType: provider.type,
+				...(provider.documentationUrl && { documentationUrl: provider.documentationUrl }),
 				...(provider.supportsTemplates && { supportsTemplates: provider.supportsTemplates }),
 			}));
 		}
