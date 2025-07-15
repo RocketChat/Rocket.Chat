@@ -21,6 +21,10 @@ export class OutboundMessageProvider {
 		return this.runTheCode(AppMethod._OUTBOUND_GET_PROVIDER_METADATA, logStorage, accessors, []);
 	}
 
+	public async runSendOutboundMessage(logStorage: AppLogStorage, accessors: AppAccessorManager, body: any): Promise<void> {
+		await this.runTheCode(AppMethod._OUTBOUND_SEND_MESSAGE, logStorage, accessors, [body]);
+	}
+
 	private async runTheCode(
 		method: AppMethod._OUTBOUND_GET_PROVIDER_METADATA | AppMethod._OUTBOUND_SEND_MESSAGE,
 		logStorage: AppLogStorage,

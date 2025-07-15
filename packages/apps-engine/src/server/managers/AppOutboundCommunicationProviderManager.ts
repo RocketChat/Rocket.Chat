@@ -118,4 +118,14 @@ export class AppOutboundCommunicationProviderManager {
 
 		return providerInfo.runGetProviderMetadata(this.manager.getLogStorage(), this.accessors);
 	}
+
+	// Any for now
+	public sendOutboundMessage(appId: string, providerType: ValidOutboundProvider, body: any) {
+		const providerInfo = this.outboundMessageProviders.get(appId)?.get(providerType);
+		if (!providerInfo) {
+			throw new Error('provider-not-registered');
+		}
+
+		return providerInfo.runSendOutboundMessage(this.manager.getLogStorage(), this.accessors, body);
+	}
 }
