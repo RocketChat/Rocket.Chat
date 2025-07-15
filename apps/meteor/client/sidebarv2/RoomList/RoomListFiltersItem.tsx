@@ -27,7 +27,7 @@ const RoomListFiltersItem = ({ group, icon, onClick }: SidebarFiltersItemProps) 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(unreadGroupCount);
 
 	return (
-		<SidebarV2Item selected={group === currentTab} {...buttonProps}>
+		<SidebarV2Item selected={group === currentTab} aria-selected={group === currentTab} {...buttonProps}>
 			<Icon size='x20' name={icon} />
 			<SidebarV2ItemTitle unread={highlighted}>{t(roomTitle)}</SidebarV2ItemTitle>
 			{showUnread && (

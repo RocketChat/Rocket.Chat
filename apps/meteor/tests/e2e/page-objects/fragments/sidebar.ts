@@ -36,18 +36,35 @@ export class Sidebar {
 		return this.teamCollabFilters.getByRole('button', { name: 'Discussions' });
 	}
 
+	// TODO: fix this filter, workaround due to virtuoso
+	get topChannelList(): Locator {
+		return this.sidebar.getByTestId('virtuoso-top-item-list');
+	}
+
 	get channelsList(): Locator {
-		// TODO: fix this filter, workaround which is due to virtuoso
+		// TODO: fix this filter, workaround due to virtuoso
 		// return this.sidebar.getByRole('list', { name: 'Channels' }).filter({ has: this.page.getByRole('listitem') });
 		return this.sidebar.getByTestId('virtuoso-item-list');
 	}
 
 	getSearchRoomByName(name: string) {
-		return this.channelsList.getByRole('button', { name });
+		return this.channelsList.getByRole('button', { name, exact: true });
 	}
 
 	get firstCollapser(): Locator {
-		return this.channelsList.getByRole('button').first();
+		return this.topChannelList.getByRole('region').first();
+	}
+
+	get teamsCollapser(): Locator {
+		return this.topChannelList.getByRole('region', { name: 'Collapse Teams' });
+	}
+
+	get channelsCollapser(): Locator {
+		return this.channelsList.getByRole('region', { name: 'Collapse Channels' });
+	}
+
+	get directMessagesCollapser(): Locator {
+		return this.channelsList.getByRole('region', { name: 'Collapse Direct messages' });
 	}
 
 	get firstChannelFromList(): Locator {

@@ -550,10 +550,6 @@ export class HomeContent {
 		return this.page.getByRole('dialog', { name: 'Clear all unreads?' });
 	}
 
-	async waitForHome(): Promise<void> {
-		await this.page.waitForSelector('main');
-	}
-
 	async markAllRoomsAsRead(): Promise<void> {
 		await this.page.keyboard.down('Shift');
 		await this.page.keyboard.press('Escape');

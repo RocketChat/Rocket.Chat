@@ -27,8 +27,8 @@ export class Sidepanel {
 		return this.sidepanel.getByRole('button', { name: 'Back' });
 	}
 
-	getSidepanelHeader(heading: string): Locator {
-		return this.sidepanel.getByRole('heading', { exact: true, name: heading });
+	getSidepanelHeader(name: string): Locator {
+		return this.sidepanel.getByRole('heading', { name, exact: true });
 	}
 
 	getTeamItemByName(name: string): Locator {
@@ -38,8 +38,12 @@ export class Sidepanel {
 			.filter({ hasNot: this.page.getByRole('button', { name }) });
 	}
 
+	getMainRoomByName(name: string): Locator {
+		return this.getTeamItemByName(name);
+	}
+
 	getItemByName(name: string): Locator {
-		return this.sidepanelList.getByRole('link').filter({ hasText: name });
+		return this.sidepanelList.getByRole('link', { name });
 	}
 
 	getSidepanelItem(name: string, subtitle?: string): Locator {

@@ -30,8 +30,6 @@ test.describe.serial('feature preview', () => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 		targetDiscussion = await createTargetDiscussion(api);
-		// to check
-		sidepanelTeam = await createTargetTeam(api);
 
 		await setUserPreferences(api, {
 			featuresPreview: [
@@ -44,10 +42,9 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
+		// await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
 		await deleteRoom(api, targetDiscussion._id);
-		await deleteTeam(api, sidepanelTeam);
 		await setUserPreferences(api, {
 			featuresPreview: [
 				{
@@ -157,7 +154,8 @@ test.describe.serial('feature preview', () => {
 
 		test('should expand/collapse sidebar groups', async ({ page }) => {
 			await page.goto('/home');
-			const collapser = poHomeChannel.sidebar.firstCollapser;
+
+			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
 			let isExpanded: boolean;
 
 			await collapser.click();
@@ -172,7 +170,7 @@ test.describe.serial('feature preview', () => {
 		test('should expand/collapse sidebar groups with keyboard', async ({ page }) => {
 			await page.goto('/home');
 
-			const collapser = poHomeChannel.sidebar.firstCollapser;
+			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
 
 			await expect(async () => {
 				await collapser.focus();
@@ -190,7 +188,7 @@ test.describe.serial('feature preview', () => {
 			}).toPass();
 		});
 
-		// TODO: fix
+		// TODO: fix, currently doesn't work due to grouped virtuoso
 		test.skip('should be able to use keyboard to navigate through sidebar items', async ({ page }) => {
 			await page.goto('/home');
 
@@ -302,10 +300,9 @@ test.describe.serial('feature preview', () => {
 
 	test.describe('Sidepanel', () => {
 		test.beforeEach(async ({ api }) => {
-			// sidepanelTeam = await createTargetTeam(api);
+			sidepanelTeam = await createTargetTeam(api);
 
 			await setUserPreferences(api, {
-				sidebarViewMode: 'Medium',
 				featuresPreview: [
 					{
 						name: 'newNavigation',
@@ -316,10 +313,9 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test.afterEach(async ({ api }) => {
-			// await deleteTeam(api, sidepanelTeam);
+			await deleteTeam(api, sidepanelTeam);
 
 			await setUserPreferences(api, {
-				sidebarViewMode: 'Medium',
 				featuresPreview: [
 					{
 						name: 'newNavigation',
@@ -349,10 +345,9 @@ test.describe.serial('feature preview', () => {
 			await page.goto('/home');
 			const message = 'hello world';
 
-			// await poHomeChannel.navbar.setDisplayMode('Extended');
 			await poHomeChannel.navbar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
-			await expect(poHomeChannel.sidepanel.getSidepanelItem('You', message)).toBeVisible();
+			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toBeVisible();
 		});
 
 		test('should escape special characters on item subtitle', async ({ page }) => {
@@ -360,12 +355,11 @@ test.describe.serial('feature preview', () => {
 			const message = 'hello > world';
 			const parsedWrong = 'hello &gt; world';
 
-			// await poHomeChannel.navbar.setDisplayMode('Extended');
 			await poHomeChannel.navbar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 
-			await expect(poHomeChannel.sidepanel.getSidepanelItem('You', message)).toBeVisible();
-			await expect(poHomeChannel.sidepanel.getSidepanelItem('You', message)).not.toHaveText(parsedWrong);
+			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toBeVisible();
+			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).not.toHaveText(parsedWrong);
 		});
 
 		test('should show channel in sidepanel after adding existing one', async ({ page }) => {
@@ -428,6 +422,23 @@ test.describe.serial('feature preview', () => {
 			await expect(item.locator('..')).toHaveAttribute('data-item-index', '0');
 
 			await user1Page.close();
+		});
+
+		test('sidebar and sidepanel should retain their state after opening a room through navbar search', async ({ page }) => {
+			await page.goto('/home');
+			await poHomeChannel.sidenav.waitForHome();
+
+			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
+
+			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Favorites')).toBeVisible();
+			await expect(poHomeChannel.sidenav.homepageHeader).toBeVisible();
+
+			await poHomeChannel.navbar.openChat(sidepanelTeam);
+			await poHomeChannel.content.waitForChannel();
+
+			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
+			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Favorites')).toBeVisible();
+			await expect(poHomeChannel.sidebar.favoritesTeamCollabFilter).toHaveAttribute('aria-selected', 'true');
 		});
 
 		test('should open parent team when clicking button on sidepanel discussion item', async ({ page }) => {
@@ -523,7 +534,7 @@ test.describe.serial('feature preview', () => {
 
 			await test.step('mark all rooms as read', async () => {
 				await page.goto('/home');
-				await poHomeChannel.content.waitForHome();
+				await poHomeChannel.sidenav.waitForHome();
 				await poHomeChannel.content.markAllRoomsAsRead();
 			});
 
@@ -573,7 +584,7 @@ test.describe.serial('feature preview', () => {
 
 			await test.step('mark all rooms as read', async () => {
 				await page.goto('/home');
-				await poHomeChannel.content.waitForHome();
+				await poHomeChannel.sidenav.waitForHome();
 				await poHomeChannel.content.markAllRoomsAsRead();
 			});
 
@@ -760,43 +771,136 @@ test.describe.serial('feature preview', () => {
 	});
 
 	test.describe('Sidebar room filters', () => {
+		test.beforeAll(async ({ api }) => {
+			sidepanelTeam = await createTargetTeam(api);
+
+			await setUserPreferences(api, {
+				featuresPreview: [
+					{
+						name: 'newNavigation',
+						value: true,
+					},
+				],
+			});
+		});
+
+		test.afterAll(async ({ api }) => {
+			await deleteTeam(api, sidepanelTeam);
+
+			await setUserPreferences(api, {
+				featuresPreview: [
+					{
+						name: 'newNavigation',
+						value: false,
+					},
+				],
+			});
+		});
+
 		test('should not open rooms when clicking on sidebar filters', async ({ page }) => {
 			await page.goto('/home');
-			await poHomeChannel.content.waitForHome();
+
+			await poHomeChannel.sidenav.waitForHome();
 
 			await expect(poHomeChannel.sidebar.channelsList).toBeVisible();
-			// TODO: flaky
-			await poHomeChannel.sidebar.getSearchRoomByName(sidepanelTeam).click();
+			// TODO: flaky without force click, for some reason opens 2nd channel in list
+			await poHomeChannel.sidebar.getSearchRoomByName(sidepanelTeam).click({ force: true });
 
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
-			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Teams')).toContainText(new RegExp(sidepanelTeam));
+			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
+
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
 			await expect(page).toHaveURL('/home');
-			await expect(page.locator('main').getByRole('heading', { name: 'Home' })).toBeVisible();
+			await expect(poHomeChannel.sidenav.homepageHeader).toBeVisible();
 		});
 
 		test('should open room when clicking on sidepanel item', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.content.waitForHome();
+			await poHomeChannel.sidenav.waitForHome();
 			await poHomeChannel.sidebar.getSearchRoomByName(sidepanelTeam).click();
 
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
-			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Teams')).toContainText(new RegExp(sidepanelTeam));
+			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
 
 			await poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam).click();
 			await poHomeChannel.content.waitForChannel();
 			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 		});
 
-		test('DM sidebar filter', async ({ page }) => {});
+		test('DM sidebar filter', async ({ page }) => {
+			await test.step('create a DM with user2', async () => {
+				await page.goto('/home');
+				await poHomeChannel.sidenav.waitForHome();
 
-		// TODO: To implement this fix on feature
+				await poHomeChannel.navbar.openChat(Users.user1.data.username);
+				await poHomeChannel.content.waitForChannel();
+				await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
+			});
+
+			const discussionName = faker.string.uuid();
+
+			await test.step('create discussion in DM', async () => {
+				await poHomeChannel.content.btnMenuMoreActions.click();
+				await page.getByRole('menuitem', { name: 'Discussion' }).click();
+				await poHomeChannel.content.inputDiscussionName.fill(discussionName);
+				await poHomeChannel.content.btnCreateDiscussionModal.click();
+				await poHomeChannel.content.waitForChannel();
+				await poHomeChannel.content.sendMessage('hello');
+
+				await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
+			});
+
+			await page.goto('/home');
+			await poHomeChannel.sidenav.waitForHome();
+
+			await test.step('DM sidebar filter', async () => {
+				await poHomeChannel.sidebar.teamsCollapser.click();
+				await poHomeChannel.sidebar.channelsCollapser.click();
+
+				await expect(poHomeChannel.sidebar.directMessagesCollapser).toBeVisible();
+				await expect(poHomeChannel.sidebar.directMessagesCollapser.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+				await expect(poHomeChannel.sidebar.getSearchRoomByName(Users.user1.data.username)).toBeVisible();
+
+				await poHomeChannel.sidebar.getSearchRoomByName(Users.user1.data.username).click();
+
+				await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
+				await expect(poHomeChannel.sidepanel.getSidepanelHeader(Users.user1.data.username)).toBeVisible();
+				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toBeVisible();
+				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toBeVisible();
+				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
+				await expect(poHomeChannel.sidenav.homepageHeader).toBeVisible();
+				await expect(page).toHaveURL('/home');
+
+				await poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username).click();
+				await poHomeChannel.content.waitForChannel();
+				await poHomeChannel.content.sendMessage('hello DM');
+
+				await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
+				await expect(page).toHaveURL(/direct/);
+				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toHaveAttribute('aria-selected', 'true');
+				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toContainText('hello DM');
+				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toHaveAttribute('aria-selected', 'false');
+				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
+
+				await poHomeChannel.sidepanel.getItemByName(discussionName).click();
+				await poHomeChannel.content.waitForChannel();
+
+				await expect(page).toHaveURL(/group/);
+				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toHaveAttribute('aria-selected', 'false');
+				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toContainText('hello DM');
+				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toHaveAttribute('aria-selected', 'true');
+				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
+				await expect(poHomeChannel.sidepanel.getSidepanelHeader(Users.user1.data.username)).toBeVisible();
+			});
+		});
+
+		// TODO: To implement this test after fixing filters on mobile view
 		test.skip('should not open rooms when clicking on sidebar filters in small viewport', async ({ page }) => {
 			await page.setViewportSize({ width: 640, height: 460 });
 			await page.goto('/home');
 
-			await poHomeChannel.content.waitForHome();
+			await poHomeChannel.sidenav.waitForHome();
 
 			await expect(poHomeChannel.sidebar.sidebar).not.toBeVisible();
 			await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();

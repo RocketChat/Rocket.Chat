@@ -42,7 +42,8 @@ const SidepanelItem = ({ room, openedRoom }: SidepanelItemProps) => {
 			selected={selected}
 			onFocus={handleFocus}
 			onPointerEnter={handlePointerEnter}
-			aria-label={message || title}
+			aria-label={title}
+			aria-selected={selected}
 		>
 			<SidebarV2ItemCol>
 				{parentRoomId && (

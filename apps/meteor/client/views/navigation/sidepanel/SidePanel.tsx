@@ -10,7 +10,7 @@ import SidepanelListWrapper from './SidepanelListWrapper';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
-import { sidePanelFiltersConfig, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';
+import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 
 type SidePanelProps = {
 	title: string;
@@ -35,7 +35,7 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: 
 
 	return (
 		<Sidepanel role='tabpanel' aria-label='sidepanel'>
-			<SidepanelHeader role='heading' aria-label={t(sidePanelFiltersConfig[currentTab].title)}>
+			<SidepanelHeader role='heading' aria-label={title}>
 				{isTablet && <IconButton icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
 				<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
 				<Box display='flex' alignItems='center'>

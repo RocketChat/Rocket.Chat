@@ -81,18 +81,12 @@ export class Navbar {
 	}
 
 	getSearchRoomByName(name: string): Locator {
-		return this.searchList.getByRole('option', { name });
+		return this.searchList.getByRole('option', { name, exact: true });
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.typeSearch(name);
 		await this.getSearchRoomByName(name).click();
 		await this.waitForChannel();
-	}
-
-	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.pagesGroup.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.page.keyboard.press('Escape');
 	}
 }
