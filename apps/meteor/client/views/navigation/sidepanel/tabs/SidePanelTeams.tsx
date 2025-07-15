@@ -6,7 +6,7 @@ import SidePanel from '../SidePanel';
 import { useChannelsChildrenList } from '../hooks/useChannelsChildrenList';
 
 const SidePanelTeams = ({ parentRid, subscription }: { parentRid: string; subscription: ISubscription }) => {
-	const [unreadOnly, toggleOnlyUnreads] = useUnreadOnlyToggle();
+	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
 	const rooms = useChannelsChildrenList(parentRid, unreadOnly, subscription?.teamId);
 
 	console.log('SidePanelTeams', { parentRid, subscription, unreadOnly, rooms });
@@ -16,7 +16,7 @@ const SidePanelTeams = ({ parentRid, subscription }: { parentRid: string; subscr
 			title={subscription?.fname || subscription?.name}
 			currentTab={SIDE_BAR_GROUPS.TEAMS}
 			unreadOnly={unreadOnly}
-			toggleOnlyUnreads={toggleOnlyUnreads}
+			toggleUnreadOnly={toggleUnreadOnly}
 			rooms={rooms as SubscriptionWithRoom[]}
 		/>
 	);

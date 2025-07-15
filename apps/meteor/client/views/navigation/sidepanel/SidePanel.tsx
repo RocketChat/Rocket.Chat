@@ -10,18 +10,18 @@ import SidepanelListWrapper from './SidepanelListWrapper';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
-import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
+import { useIsRoomFilter, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 
 type SidePanelProps = {
 	title: string;
 	currentTab: AllGroupsKeys;
 	unreadOnly: boolean;
-	toggleOnlyUnreads: () => void;
+	toggleUnreadOnly: () => void;
 	// TODO: This can also be of type ILivechatInquiryRecord[]
 	rooms: SubscriptionWithRoom[];
 };
 
-const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: SidePanelProps) => {
+const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: SidePanelProps) => {
 	const { t } = useTranslation();
 	const ref = useRef(null);
 	const unreadFieldId = useId();
@@ -30,14 +30,17 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: 
 		isTablet,
 		sidePanel: { closeSidePanel },
 	} = useLayout();
+	const isRoomFilter = useIsRoomFilter();
 
 	usePreventDefault(ref);
 
 	return (
 		<Sidepanel role='tabpanel' aria-label='sidepanel'>
 			<SidepanelHeader role='heading' aria-label={title}>
-				{isTablet && <IconButton icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
-				<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
+				<Box display='flex' alignItems='center'>
+					{isTablet && <IconButton mie={8} icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
+					<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
+				</Box>
 				<Box display='flex' alignItems='center'>
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 						{t('Unread')}
@@ -47,7 +50,7 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: 
 						aria-label={t('Unread_toggle')}
 						id={unreadFieldId}
 						defaultChecked={unreadOnly}
-						onChange={toggleOnlyUnreads}
+						onChange={toggleUnreadOnly}
 					/>
 				</Box>
 			</SidepanelHeader>
@@ -58,7 +61,7 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: 
 						totalCount={rooms.length}
 						data={rooms}
 						components={{ Item: SidepanelListItem, List: SidepanelListWrapper }}
-						itemContent={(_, data) => <RoomSidepanelItem openedRoom={openedRoom} room={data} />}
+						itemContent={(_, data) => <RoomSidepanelItem openedRoom={openedRoom} room={data} isRoomFilter={isRoomFilter} />}
 					/>
 				</VirtualizedScrollbars>
 			</Box>

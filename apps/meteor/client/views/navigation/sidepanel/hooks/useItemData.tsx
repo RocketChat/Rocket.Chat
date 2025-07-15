@@ -1,6 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2ItemBadge as SidebarItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
-import { unescapeHTML } from '@rocket.chat/string-helpers';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -77,7 +76,6 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 			avatar: <RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />,
 			subtitle: message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null,
 			menu,
-			message: message ? unescapeHTML(message) : null,
 		}),
 		[badges, highlighted, icon, menu, message, openedRoom, rid, room, time, title, href],
 	);
