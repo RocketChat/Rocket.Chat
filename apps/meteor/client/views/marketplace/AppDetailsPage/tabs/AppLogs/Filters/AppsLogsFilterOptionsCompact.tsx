@@ -13,7 +13,7 @@ const CompactFilterOptions = ({ handleExpandAll, handleRefreshLogs, isLoading, .
 	const menuOptions = {
 		expandAll: {
 			label: (
-				<Box data-qa='current-chats-options-clearFilters'>
+				<Box>
 					<Icon name='arrow-expand' size='x16' marginInlineEnd={4} />
 					{t('Expand_all')}
 				</Box>
@@ -22,7 +22,7 @@ const CompactFilterOptions = ({ handleExpandAll, handleRefreshLogs, isLoading, .
 		},
 		refreshLogs: {
 			label: (
-				<Box data-qa='current-chats-options-clearFilters'>
+				<Box>
 					<Icon name='refresh' size='x16' marginInlineEnd={4} />
 					{t('Refresh_logs')}
 				</Box>
