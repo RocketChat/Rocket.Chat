@@ -50,7 +50,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	return (
 		<>
 			<Box pb={16}>
-				<AppLogsFilter isLoading={isFetching} />
+				<AppLogsFilter noResults={isFetching || !isSuccess || data?.logs?.length === 0} isLoading={isFetching} />
 			</Box>
 			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}

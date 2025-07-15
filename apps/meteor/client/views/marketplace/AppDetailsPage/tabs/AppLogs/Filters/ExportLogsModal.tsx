@@ -1,5 +1,5 @@
 import { Box, Button, Field, FieldLabel, FieldRow, Label, Modal, NumberInput, RadioButton } from '@rocket.chat/fuselage';
-import { useEndpoint, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -32,21 +32,39 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 
 	const formData = watch();
 
-	console.log(formData);
-
-	const getExportedFile = useEndpoint('GET', `/apps/:id/export-logs`, { id: appId } as { id: string });
+	const getFileUrl = ({
+		severity,
+		event,
+		startDate,
+		endDate,
+		count,
+		type,
+		startTime,
+		endTime,
+	}: AppLogsFilterFormData & { type: 'json' | 'csv'; count: number }): string => {
+		let baseUrl = `/api/apps/${appId}/export-logs?`;
+		if (severity && severity !== 'all') {
+			baseUrl += `logLevel=${severity}&`;
+		}
+		if (event) {
+			baseUrl += `method=${event}&`;
+		}
+		if (startDate) {
+			baseUrl += `startDate=${new Date(`${startDate}T${startTime}`).toISOString()}&`;
+		}
+		if (endDate) {
+			baseUrl += `endDate=${new Date(`${endDate}T${endTime}`).toISOString()}&`;
+		}
+		if (count) {
+			baseUrl += `count=${count}&`;
+		}
+		baseUrl += `type=${type}`;
+		return baseUrl;
+	};
 
 	const handleConfirm = (): void => {
-		const { severity, event: method, startDate, endDate } = filterValues;
-		const logLevel = severity === 'all' ? undefined : severity;
-		getExportedFile({
-			logLevel,
-			method,
-			startDate,
-			endDate,
-			count: formData.count === 'max' ? 2000 : formData.customExportAmount,
-			type: formData.type,
-		});
+		const url = getFileUrl({ ...filterValues, type: formData.type, count: formData.count === 'max' ? 2000 : formData.customExportAmount });
+		window.open(url, '_blank', 'noopener noreferrer');
 	};
 
 	return (

@@ -13,9 +13,10 @@ import { ExportLogsModal } from './ExportLogsModal';
 
 type AppsLogsFilterProps = {
 	isLoading: boolean;
+	noResults?: boolean;
 };
 
-export const AppLogsFilter = ({ isLoading }: AppsLogsFilterProps) => {
+export const AppLogsFilter = ({ isLoading, noResults = false }: AppsLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues } = useAppLogsFilterFormContext();
@@ -84,9 +85,10 @@ export const AppLogsFilter = ({ isLoading }: AppsLogsFilterProps) => {
 			)}
 			{!compactMode && (
 				<IconButton
-					title={t('Export')}
+					title={noResults ? t('No_data_to_export') : t('Export')}
 					alignSelf='flex-end'
 					icon='circle-arrow-down'
+					disabled={noResults}
 					secondary
 					mie={10}
 					onClick={() => openExportModal()}
