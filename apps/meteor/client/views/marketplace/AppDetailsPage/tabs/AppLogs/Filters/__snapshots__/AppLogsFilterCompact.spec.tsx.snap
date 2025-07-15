@@ -60,6 +60,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
         <button
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-17zzf5z"
           data-testid="menu"
+          title="Options"
           type="button"
         >
           <i

@@ -20,7 +20,7 @@ const CompactFilterOptions = ({ handleExportLogs, ...props }: CompactFilterOptio
 			action: handleExportLogs,
 		},
 	};
-	return <Menu small={false} alignSelf='flex-end' options={menuOptions} {...props} />;
+	return <Menu title={t('Options')} small={false} alignSelf='flex-end' options={menuOptions} {...props} />;
 };
 
 export default CompactFilterOptions;

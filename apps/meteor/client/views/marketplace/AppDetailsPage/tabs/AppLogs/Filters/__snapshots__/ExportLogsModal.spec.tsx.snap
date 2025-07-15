@@ -1,0 +1,232 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-4jy2w6"
+    >
+      <dialog
+        aria-modal="true"
+        class="rcx-box rcx-box--full rcx-modal"
+        open=""
+        title="Custom_time_range"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+        >
+          <header
+            class="rcx-box rcx-box--full rcx-modal__header"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-inner"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+              >
+                Export
+              </h2>
+              <button
+                aria-label="Close"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </header>
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-6ua2r5"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-label"
+                >
+                  Format
+                </label>
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+                      for="JSONField"
+                    >
+                      JSON
+                    </label>
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        aria-describedby="JSONField"
+                        checked=""
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        id="json"
+                        name="type"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </span>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+                      for="plainTextField"
+                    >
+                      CSV
+                    </label>
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        aria-describedby="plainTextField"
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        id="csv"
+                        name="type"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </span>
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-6ua2r5"
+              >
+                <label
+                  class="rcx-box rcx-box--full rcx-label"
+                >
+                  Export_most_recent_logs
+                </label>
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+                      for="maxLogsExport"
+                    >
+                      Max_logs_export
+                    </label>
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        aria-describedby="maxLogsExport"
+                        checked=""
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        id="max"
+                        name="count"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </span>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+                      for="customMaxLogs"
+                    >
+                      Limit_number_of_logs
+                    </label>
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        aria-describedby="customMaxLogs"
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        id="custom"
+                        name="count"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </span>
+                  <input
+                    aria-describedby="limitNumber"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-number rcx-input-box"
+                    disabled=""
+                    id="limit"
+                    name="customExportAmount"
+                    placeholder="0"
+                    size="1"
+                    type="number"
+                    value="100"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+          >
+            <div
+              class="rcx-button-group rcx-button-group--align-end"
+              role="group"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+                type="button"
+              >
+                <span
+                  class="rcx-button--content"
+                >
+                  Cancel
+                </span>
+              </button>
+              <button
+                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+                type="button"
+              >
+                <span
+                  class="rcx-button--content"
+                >
+                  Download
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </dialog>
+    </div>
+  </div>
+</body>
+`;
