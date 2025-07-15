@@ -1,7 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IWebdavAccount, IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import { WebdavAccounts } from '@rocket.chat/models';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 import type { DeleteResult } from 'mongodb';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';

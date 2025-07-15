@@ -5,7 +5,7 @@ import AppLogsItem from './AppLogsItem';
 import { CollapsiblePanel } from './Components/CollapsiblePanel';
 
 export default {
-	title: 'Components/AppLogsItem',
+	title: 'Marketplace/AppDetailsPage/AppLogs/AppLogsItem',
 	component: AppLogsItem,
 	decorators: [(fn) => <CollapsiblePanel style={{ padding: 24 }}>{fn()}</CollapsiblePanel>],
 	args: {
