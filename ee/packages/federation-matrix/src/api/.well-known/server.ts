@@ -1,7 +1,8 @@
-import type { Router } from "@rocket.chat/http-router";
+import { Router } from "@rocket.chat/http-router";
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
-import { getAllServicesFromFederationSDK } from '../../setupContainers';
 import { createHash } from 'node:crypto';
+
+import type { HomeserverServices } from '@hs/federation-sdk';
 
 const WellKnownServerResponseSchema = {
     type: 'object',
@@ -16,10 +17,10 @@ const WellKnownServerResponseSchema = {
 
 const isWellKnownServerResponseProps = ajv.compile(WellKnownServerResponseSchema);
 
-export const getWellKnownRoutes = (router: Router<'/.well-known'>) => {
-    const { wellKnown } = getAllServicesFromFederationSDK();
-    
-    return router.get('/matrix/server', {
+export const getWellKnownRoutes = (services: HomeserverServices) => {
+    const { wellKnown } = services;
+
+    return new Router('/matrix').get('/server', {
         response: {
             200: isWellKnownServerResponseProps
         },
