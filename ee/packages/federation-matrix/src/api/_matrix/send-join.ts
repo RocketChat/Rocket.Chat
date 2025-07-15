@@ -1,7 +1,6 @@
-import type { Router } from '@rocket.chat/http-router';
+import type { HomeserverServices } from '@hs/federation-sdk';
+import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
-
-import { getAllServicesFromFederationSDK } from '../../setupContainers';
 
 const UsernameSchema = {
 	type: 'string',
@@ -216,11 +215,11 @@ const SendJoinResponseSchema = {
 
 const isSendJoinResponseProps = ajv.compile(SendJoinResponseSchema);
 
-export const getMatrixSendJoinRoutes = (router: Router<'/_matrix'>) => {
-	const { sendJoin } = getAllServicesFromFederationSDK();
+export const getMatrixSendJoinRoutes = (services: HomeserverServices) => {
+	const { sendJoin } = services;
 
-	return router.put(
-		'/federation/v2/send_join/:roomId/:stateKey',
+	return new Router('/federation').put(
+		'/v2/send_join/:roomId/:stateKey',
 		{
 			params: isSendJoinParamsProps,
 			body: isSendJoinEventProps,

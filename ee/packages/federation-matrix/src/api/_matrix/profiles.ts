@@ -1,7 +1,6 @@
-import type { Router } from '@rocket.chat/http-router';
+import type { HomeserverServices } from '@hs/federation-sdk';
+import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
-
-import { getAllServicesFromFederationSDK } from '../../setupContainers';
 
 const UsernameSchema = {
 	type: 'string',
@@ -330,12 +329,12 @@ const EventAuthResponseSchema = {
 
 const isEventAuthResponseProps = ajv.compile(EventAuthResponseSchema);
 
-export const getMatrixProfilesRoutes = (router: Router<'/_matrix'>) => {
-	const { profile } = getAllServicesFromFederationSDK();
+export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
+	const { profile } = services;
 
-	return router
+	return new Router('/federation')
 		.get(
-			'/federation/v1/query/profile',
+			'/v1/query/profile',
 			{
 				query: isQueryProfileQueryProps,
 				response: {
@@ -356,7 +355,7 @@ export const getMatrixProfilesRoutes = (router: Router<'/_matrix'>) => {
 			},
 		)
 		.post(
-			'/federation/v1/user/keys/query',
+			'/v1/user/keys/query',
 			{
 				body: isQueryKeysBodyProps,
 				response: {
@@ -377,7 +376,7 @@ export const getMatrixProfilesRoutes = (router: Router<'/_matrix'>) => {
 			},
 		)
 		.get(
-			'/federation/v1/user/devices/:userId',
+			'/v1/user/devices/:userId',
 			{
 				params: isGetDevicesParamsProps,
 				response: {
@@ -398,7 +397,7 @@ export const getMatrixProfilesRoutes = (router: Router<'/_matrix'>) => {
 			},
 		)
 		.get(
-			'/federation/v1/make_join/:roomId/:userId',
+			'/v1/make_join/:roomId/:userId',
 			{
 				params: isMakeJoinParamsProps,
 				query: isMakeJoinQueryProps,
@@ -438,7 +437,7 @@ export const getMatrixProfilesRoutes = (router: Router<'/_matrix'>) => {
 			},
 		)
 		.post(
-			'/federation/v1/get_missing_events/:roomId',
+			'/v1/get_missing_events/:roomId',
 			{
 				params: isGetMissingEventsParamsProps,
 				body: isGetMissingEventsBodyProps,
@@ -461,7 +460,7 @@ export const getMatrixProfilesRoutes = (router: Router<'/_matrix'>) => {
 			},
 		)
 		.get(
-			'/federation/v1/event_auth/:roomId/:eventId',
+			'/v1/event_auth/:roomId/:eventId',
 			{
 				params: isEventAuthParamsProps,
 				response: {
