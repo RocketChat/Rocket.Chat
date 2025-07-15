@@ -138,7 +138,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 				chunks: ['polyfills', 'vendor', 'bundle'],
 				chunksSortMode: 'manual',
 			}),
-			new webpack.ContextReplacementPlugin(/date-fns[/\\]locale/, new RegExp(`(${supportedLocales.join('|')})\.js$`)),
+			new webpack.ContextReplacementPlugin(/date-fns[/\\]locale/, new RegExp(`(${supportedLocales.join('|')})\\.js$`)),
 		],
 		devServer: {
 			hot: true,
