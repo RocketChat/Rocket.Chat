@@ -211,7 +211,7 @@ export const useSwitchSidePanelTab = () => {
 
 export const useUnreadGroupData = (key: SidePanelFiltersKeys) => useRoomsListContext().unreadGroupData.get(key) || getEmptyUnreadInfo();
 
-export const useIsRoomFilterEnabled = (): boolean => {
+export const useIsRoomFilter = () => {
 	const [currentTab] = useSidePanelFilter();
 	return useMemo(() => Object.values(SIDE_BAR_GROUPS).some((group) => currentTab === group), [currentTab]);
 };

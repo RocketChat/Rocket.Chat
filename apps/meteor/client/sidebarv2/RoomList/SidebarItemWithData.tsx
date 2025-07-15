@@ -13,7 +13,7 @@ import {
 	useSwitchSidePanelTab,
 	SIDE_BAR_GROUPS,
 	useRoomsListContext,
-	useIsRoomFilterEnabled,
+	useIsRoomFilter,
 } from '../../views/navigation/contexts/RoomsNavigationContext';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
@@ -75,9 +75,9 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const switchSidePanelTab = useSwitchSidePanelTab();
 	const { parentRid } = useRoomsListContext();
 
-	const isRoomFilterEnabled = useIsRoomFilterEnabled();
+	const isRoomFilter = useIsRoomFilter();
 
-	const selected = isRoomFilterEnabled && room.rid === parentRid;
+	const selected = isRoomFilter && room.rid === parentRid;
 
 	const handleClick = useCallback(() => {
 		if (!selected) {
