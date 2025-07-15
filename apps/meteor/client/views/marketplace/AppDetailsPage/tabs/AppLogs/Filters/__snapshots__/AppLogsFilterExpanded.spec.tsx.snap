@@ -217,6 +217,8 @@ exports[`renders AppLogsItem without crashing 1`] = `
           </button>
         </div>
         <button
+          aria-disabled="false"
+          aria-label="Export"
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-qv9v2f"
           title="Export"
           type="button"
