@@ -7,6 +7,7 @@ import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 
+import { Rooms } from '../../../app/models/client';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & { limit?: number };
@@ -46,7 +47,7 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: U
 				return acc;
 			}
 
-			if (roomCoordinator.readOnly(room.rid, user)) return acc;
+			if (roomCoordinator.readOnly(Rooms.state.get(room.rid), user)) return acc;
 
 			return [
 				...acc,

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.22.12",
+	"version": "1.23.0",
 	"files": [
 		"/build"
 	],
@@ -103,6 +103,8 @@
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/random": "workspace:~",
 		"@rocket.chat/ui-kit": "workspace:~",
+		"ajv": "^8.17.1",
+		"ajv-formats": "^3.0.1",
 		"css-vars-ponyfill": "^2.4.9",
 		"date-fns": "^2.30.0",
 		"dompurify": "^3.2.6",

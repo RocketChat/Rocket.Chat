@@ -215,6 +215,10 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					order: {
 						type: 'number',
 					},
+					departmentEnabled: { type: 'boolean' },
+					departmentId: { type: 'string' },
+					_id: { type: 'string' },
+					_updatedAt: { type: 'string' },
 				},
 				required: ['agentId', 'username'],
 				additionalProperties: false,
@@ -4078,7 +4082,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/priorities/:priorityId': {
-		GET: () => ILivechatPriority | void;
+		GET: () => ILivechatPriority;
 		PUT: (params: PUTLivechatPriority) => void;
 	};
 
