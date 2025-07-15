@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import {isRoomFederated,type IRoom } from '@rocket.chat/core-typings';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,6 +7,10 @@ import { useLeaveTeam } from './useLeaveTeam';
 import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
 import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
+import { useReactiveValue } from '/client/hooks/useReactiveValue';
+import { roomCoordinator } from '/client/lib/rooms/roomCoordinator';
 type GenProps = {
 	onClickEdit?: () => void;
 };
@@ -18,6 +22,25 @@ export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room);
 	const leaveTeam = useLeaveTeam(room);
 
+	const federationMatrixEnabled = useSetting('Federation_Matrix_enabled', false);
+
+	const reactiveIsMember = useReactiveValue(
+		useCallback(() => {
+			if (!room.t) {
+				return false;
+			}
+
+			if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+				return false;
+			}
+
+			if (isRoomFederated(room)) {
+				return federationMatrixEnabled;
+			}
+			return true;
+		}, [federationMatrixEnabled, room]),
+	);
+	const isMember = useReactiveValue(() => reactiveIsMember);
 	return useMemo(
 		() => ({
 			items: [
@@ -37,7 +60,7 @@ export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 							},
 						]
 					: []),
-				...(leaveTeam
+				...(isMember && leaveTeam
 					? [
 							{
 								id: 'leave',
@@ -70,6 +93,6 @@ export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 					: []),
 			],
 		}),
-		[t, hideTeam, leaveTeam, onClickEdit, handleDelete, canDeleteRoom, convertToChannel],
+		[t, hideTeam, leaveTeam, onClickEdit, handleDelete, canDeleteRoom, convertToChannel,isMember],
 	);
 };
