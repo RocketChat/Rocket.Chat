@@ -3,7 +3,6 @@
 	"description": "The Ultimate Open Source WebChat Platform",
 	"version": "7.8.0",
 	"private": true,
-	"type": "commonjs",
 	"author": {
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
@@ -460,6 +459,11 @@
 		"mainModule": {
 			"client": "client/main.ts",
 			"server": "server/main.ts"
+		},
+		"modern": {
+			"transpiler": {
+				"verbose": true
+			}
 		}
 	},
 	"browserslist": [
