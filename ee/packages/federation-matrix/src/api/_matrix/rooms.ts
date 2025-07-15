@@ -1,7 +1,6 @@
-import type { Router } from '@rocket.chat/http-router';
+import type { HomeserverServices } from '@hs/federation-sdk';
+import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
-
-import { getAllServicesFromFederationSDK } from '../../setupContainers';
 
 const PublicRoomsQuerySchema = {
 	type: 'object',
@@ -122,12 +121,12 @@ const PublicRoomsPostBodySchema = {
 
 const isPublicRoomsPostBodyProps = ajv.compile(PublicRoomsPostBodySchema);
 
-export const getMatrixRoomsRoutes = (router: Router<'/_matrix'>) => {
-	const { state } = getAllServicesFromFederationSDK();
+export const getMatrixRoomsRoutes = (services: HomeserverServices) => {
+	const { state } = services;
 
-	return router
+	return new Router('/federation')
 		.get(
-			'/federation/v1/publicRooms',
+			'/v1/publicRooms',
 			{
 				query: isPublicRoomsQueryProps,
 				response: {
@@ -158,7 +157,7 @@ export const getMatrixRoomsRoutes = (router: Router<'/_matrix'>) => {
 			},
 		)
 		.post(
-			'/federation/v1/publicRooms',
+			'/v1/publicRooms',
 			{
 				body: isPublicRoomsPostBodyProps,
 				response: {
