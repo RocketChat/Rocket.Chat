@@ -104,13 +104,7 @@ export const AppLogsFilter = ({ expandAll, refetchLogs, isLoading }: AppsLogsFil
 					{t('Filters')}
 				</Button>
 			)}
-			{compactMode && (
-				<CompactFilterOptions
-					isLoading={isLoading}
-					handleExpandAll={openAllLogs}
-					handleRefreshLogs={refreshLogs}
-				/>
-			)}
+			{compactMode && <CompactFilterOptions isLoading={isLoading} handleExpandAll={openAllLogs} handleRefreshLogs={refreshLogs} />}
 		</Box>
 	);
 };

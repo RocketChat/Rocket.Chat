@@ -1,4 +1,5 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +26,8 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const [expandOverride, setExpandOverride] = useState(false);
 
 	const expandAll = () => setExpandOverride(true);
+
+	const debouncedEvent = useDebouncedValue(event, 500);
 
 	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
 		appId: id,
