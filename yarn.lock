@@ -8346,9 +8346,9 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~29.5.14"
     "@types/node-rsa": "npm:^1.1.4"
+    date-fns: "npm:~4.1.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.2"
-    moment: "npm:^2.30.1"
     node-rsa: "npm:^1.1.1"
     typescript: "npm:~5.8.3"
   languageName: unknown
