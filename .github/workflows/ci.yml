@@ -187,6 +187,7 @@ jobs:
           include-hidden-files: true
 
   deploy-preview:
+    name: 👀 Deploy Preview
     runs-on: ubuntu-24.04
     needs: [release-versions, packages-build]
     steps:
@@ -217,7 +218,7 @@ jobs:
 
       - name: Create PR Preview
         uses: rossjrw/pr-preview-action@v1
-        if: github.repository_owner == 'RocketChat'
+        if: github.repository == 'RocketChat/Rocket.Chat'
         with:
           source-dir: .preview
           preview-branch: gh-pages
