@@ -1,4 +1,4 @@
-import { Icon, SidebarV2Item, SidebarV2ItemBadge, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
+import { Icon, SidebarV2Item, SidebarV2ItemBadge, SidebarV2ItemIcon, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { memo } from 'react';
@@ -28,7 +28,7 @@ const RoomListFiltersItem = ({ group, icon, onClick }: SidebarFiltersItemProps) 
 
 	return (
 		<SidebarV2Item selected={group === currentTab} {...buttonProps}>
-			<Icon size='x20' name={icon} />
+			<SidebarV2ItemIcon highlighted={highlighted} icon={<Icon size='x20' name={icon} />} />
 			<SidebarV2ItemTitle unread={highlighted}>{t(roomTitle)}</SidebarV2ItemTitle>
 			{showUnread && (
 				<SidebarV2ItemBadge
