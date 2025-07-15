@@ -13,6 +13,7 @@ import './configuration/index';
 import './local-services/ldap/service';
 import './methods/getReadReceipts';
 import './patches';
+// import './hooks/federation';
 
 export * from './apps/startup';
 export { registerEEBroker } from './startup';
