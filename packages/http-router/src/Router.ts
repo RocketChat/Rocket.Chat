@@ -192,7 +192,6 @@ export class Router<
 		const convertedAction = this.convertActionToHandler(action);
 
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
-			console.log(process.env.NODE_ENV, process.env.TEST_MODE);
 			const { req, res } = c;
 
 			const queryParams = this.parseQueryParams(req);
