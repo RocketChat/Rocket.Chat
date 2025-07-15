@@ -50,6 +50,12 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 			}));
 	}
 
+	public getProviderById(appId: string): IOutboundPhoneMessageProvider | undefined {
+		const providers = this.outboundMessageProviders.get('phone') as IOutboundPhoneMessageProvider[] | undefined;
+
+		return providers?.find((provider) => provider.appId === appId);
+	}
+
 	public unregisterProvider(appId: string, providerType: ValidOutboundProvider): void {
 		const providers = this.outboundMessageProviders.get(providerType);
 		if (!providers) {

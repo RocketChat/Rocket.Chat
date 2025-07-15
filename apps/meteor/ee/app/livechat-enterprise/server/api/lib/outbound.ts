@@ -1,4 +1,4 @@
-import type { IOutboundProvider, ValidOutboundProvider } from '@rocket.chat/core-typings';
+import type { IOutboundProvider, IOutboundProviderMetadata, ValidOutboundProvider } from '@rocket.chat/core-typings';
 import { ValidOutboundProviderList } from '@rocket.chat/core-typings';
 
 import { OutboundMessageProvider } from '../../../../../../server/lib/OutboundMessageProvider';
@@ -20,6 +20,15 @@ export class OutboundMessageProviderService {
 		}
 
 		return this.provider.getOutboundMessageProviders(type);
+	}
+
+	public async getProviderMetadata(id: string): Promise<IOutboundProviderMetadata> {
+		const provider = this.provider.getProviderById(id);
+		if (!provider) {
+			throw new Error('Provider Not Found');
+		}
+
+		return provider.getProviderMetadata();
 	}
 }
 
