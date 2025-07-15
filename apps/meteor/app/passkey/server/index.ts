@@ -256,7 +256,7 @@ class Passkey {
 		} = user;
 		const { browser, os, device, cpu, app } = await this.uaParser(connection.httpHeaders['user-agent']);
 
-		// TODO fzh075
+		// TODO fzh075 connection.clientAddress reliability
 		const mailData = {
 			actionText: {
 				create: t('Passkey_Added'),
