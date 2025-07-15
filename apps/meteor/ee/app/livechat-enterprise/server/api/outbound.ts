@@ -1,8 +1,8 @@
-import type { IOutboundProvider, IOutboundProviderMetadata } from '@rocket.chat/core-typings';
+import type { IOutboundProvider } from '@rocket.chat/core-typings';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 
 import { API } from '../../../../../app/api/server';
-import { isGETOutboundProviderParams } from '../outboundcomms/rest';
+import { isGETOutboundProviderParams, isOutboundProviderMetadataSchema } from '../outboundcomms/rest';
 import { outboundMessageProvider } from './lib/outbound';
 import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
 
@@ -53,20 +53,7 @@ const outboundCommsEndpoints = API.v1
 		'omnichannel/outbound/providers/:id/metadata',
 		{
 			response: {
-				200: ajv.compile<{ metadata: IOutboundProviderMetadata }>({
-					type: 'object',
-					properties: {
-						metadata: {
-							type: 'object',
-							properties: {
-								// TODO: fix this type
-								metadata: {
-									type: 'object',
-								},
-							},
-						},
-					},
-				}),
+				200: isOutboundProviderMetadataSchema,
 			},
 			authRequired: true,
 		},

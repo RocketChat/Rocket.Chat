@@ -142,3 +142,140 @@ const POSTOutboundMessageSchema = {
 };
 
 export const isPOSTOutboundMessageParams = ajv.compile<POSTOutboundMessageParams>(POSTOutboundMessageSchema);
+
+const OutboundProviderMetadataSchema = {
+	type: 'object',
+	properties: {
+		metadata: {
+			type: 'object',
+			properties: {
+				providerId: {
+					type: 'string',
+				},
+				providerName: {
+					type: 'string',
+				},
+				supportsTemplates: {
+					type: 'boolean',
+				},
+				providerType: {
+					type: 'string',
+					enum: ['phone', 'email'],
+				},
+				templates: {
+					type: 'object',
+					additionalProperties: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								id: {
+									type: 'string',
+								},
+								name: {
+									type: 'string',
+								},
+								language: {
+									type: 'string',
+								},
+								type: {
+									type: 'string',
+								},
+								category: {
+									type: 'string',
+								},
+								status: {
+									type: 'string',
+								},
+								qualityScore: {
+									type: 'object',
+									required: ['score', 'reasons'],
+									properties: {
+										score: {
+											type: 'string',
+											enum: ['GREEN', 'YELLOW', 'RED', 'UNKNOWN'],
+										},
+										reasons: {
+											type: ['array', 'null'],
+											items: {
+												type: 'string',
+											},
+										},
+									},
+								},
+								components: {
+									type: 'array',
+									items: {
+										type: 'object',
+										oneOf: [
+											{
+												properties: {
+													type: { const: 'HEADER' },
+													format: {
+														type: 'string',
+														enum: ['TEXT', 'IMAGE', 'VIDEO', 'DOCUMENT'],
+													},
+													text: { type: 'string' },
+													example: {
+														type: 'object',
+														properties: {
+															headerText: {
+																type: 'array',
+																items: { type: 'string' },
+															},
+														},
+													},
+												},
+											},
+											{
+												properties: {
+													type: { const: 'BODY' },
+													text: { type: 'string' },
+													example: {
+														type: 'object',
+														properties: {
+															bodyText: {
+																type: 'array',
+																items: {
+																	type: 'array',
+																	items: { type: 'string' },
+																},
+															},
+														},
+													},
+												},
+												required: ['type', 'text'],
+											},
+											{
+												properties: {
+													type: { const: 'FOOTER' },
+													text: { type: 'string' },
+												},
+												required: ['type', 'text'],
+											},
+										],
+									},
+								},
+								createdAt: { type: 'string' },
+								createdBy: { type: 'string' },
+								modifiedAt: { type: 'string' },
+								modifiedBy: { type: 'string' },
+								namespace: { type: 'string' },
+								wabaAccountId: { type: 'string' },
+								phoneNumber: { type: 'string' },
+								partnerId: { type: 'string' },
+								externalId: { type: 'string' },
+								updatedExternal: { type: 'string' },
+								rejectedReason: {
+									type: ['string', 'null'],
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+};
+
+export const isOutboundProviderMetadataSchema = ajv.compile<{ metadata: IOutboundProviderMetadata }>(OutboundProviderMetadataSchema);
