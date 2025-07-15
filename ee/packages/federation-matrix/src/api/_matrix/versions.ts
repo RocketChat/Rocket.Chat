@@ -1,5 +1,5 @@
 import { ConfigService } from '@hs/federation-sdk';
-import type { Router } from '@rocket.chat/http-router';
+import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 const GetVersionsResponseSchema = {
@@ -25,11 +25,11 @@ const GetVersionsResponseSchema = {
 
 const isGetVersionsResponseProps = ajv.compile(GetVersionsResponseSchema);
 
-export const getFederationVersionsRoutes = (router: Router<'/_matrix'>) => {
+export const getFederationVersionsRoutes = () => {
 	const configService = new ConfigService();
 
-	return router.get(
-		'/federation/v1/version',
+	return new Router('/federation').get(
+		'/v1/version',
 		{
 			response: {
 				200: isGetVersionsResponseProps,
