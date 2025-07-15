@@ -36,8 +36,10 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: 
 	return (
 		<Sidepanel role='tabpanel'>
 			<SidepanelHeader>
-				{isTablet && <IconButton icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
-				<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
+				<Box display='flex' alignItems='center'>
+					{isTablet && <IconButton mie={8} icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
+					<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
+				</Box>
 				<Box display='flex' alignItems='center'>
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 						{t('Unread')}
