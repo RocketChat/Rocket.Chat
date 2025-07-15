@@ -187,8 +187,8 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		const match = {
 			$match: {
 				date: {
-					$gte: parseInt(format(parseISO(start), 'YYYYMMdd')),
-					$lte: parseInt(format(parseISO(end), 'YYYYMMdd')),
+					$gte: parseInt(format(parseISO(start), 'yyyyMMdd')),
+					$lte: parseInt(format(parseISO(end), 'yyyyMMdd')),
 				},
 			},
 		};
