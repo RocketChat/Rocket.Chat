@@ -1,16 +1,4 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
-import { useCallback } from 'react';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-
-export const useMessageComposerIsArchived = (rid: string, subscription?: ISubscription): boolean => {
-	const isArchived = useReactiveValue(
-		useCallback(
-			() => roomCoordinator.archived(rid) || Boolean(subscription && subscription.t === 'd' && subscription.archived),
-			[rid, subscription],
-		),
-	);
-
-	return Boolean(isArchived);
-};
+export const useMessageComposerIsArchived = (room: IRoom, subscription?: ISubscription): boolean =>
+	!!room?.archived || Boolean(subscription && subscription.t === 'd' && subscription.archived);
