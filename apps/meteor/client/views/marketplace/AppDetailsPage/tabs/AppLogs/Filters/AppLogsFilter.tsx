@@ -92,6 +92,8 @@ export const AppLogsFilter = ({ isLoading, noResults = false }: AppsLogsFilterPr
 					secondary
 					mie={10}
 					onClick={() => openExportModal()}
+					aria-label={noResults ? t('No_data_to_export') : t('Export')}
+					aria-disabled={noResults}
 				/>
 			)}
 			{compactMode && (

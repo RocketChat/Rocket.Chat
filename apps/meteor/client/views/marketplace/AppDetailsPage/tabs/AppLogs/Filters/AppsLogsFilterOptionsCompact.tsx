@@ -12,7 +12,7 @@ const CompactFilterOptions = ({ handleExportLogs, ...props }: CompactFilterOptio
 	const menuOptions = {
 		exportLogs: {
 			label: (
-				<Box data-qa='current-chats-options-clearFilters'>
+				<Box>
 					<Icon name='circle-arrow-down' size='x16' marginInlineEnd={4} />
 					{t('Export')}
 				</Box>
