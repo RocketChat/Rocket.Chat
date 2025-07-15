@@ -446,7 +446,6 @@
 		"ua-parser-js": "^1.0.40",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",
-		"url-polyfill": "^1.1.13",
 		"uuid": "^11.0.3",
 		"webdav": "^4.11.5",
 		"xml-crypto": "~3.2.1",

@@ -8274,7 +8274,6 @@ __metadata:
     ua-parser-js: "npm:^1.0.40"
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
-    url-polyfill: "npm:^1.1.13"
     uuid: "npm:^11.0.3"
     webdav: "npm:^4.11.5"
     webpack: "npm:~5.99.9"
@@ -35494,13 +35493,6 @@ __metadata:
     querystringify: "npm:^2.1.1"
     requires-port: "npm:^1.0.0"
   checksum: 10/c9e96bc8c5b34e9f05ddfeffc12f6aadecbb0d971b3cc26015b58d5b44676a99f50d5aeb1e5c9e61fa4d49961ae3ab1ae997369ed44da51b2f5ac010d188e6ad
-  languageName: node
-  linkType: hard
-
-"url-polyfill@npm:^1.1.13":
-  version: 1.1.13
-  resolution: "url-polyfill@npm:1.1.13"
-  checksum: 10/2b01caad660f86224f6c6ccb2528259fe3b27729912997786221132b02c39da66d139c1e10f57489984ab76129db7a370b33b5ed89dfc34b587d4953fb356c9b
   languageName: node
   linkType: hard
 
