@@ -21,7 +21,7 @@ export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: Translat
 	},
 	discussions: {
 		title: 'Discussions',
-		icon: 'balloon',
+		icon: 'balloons',
 	},
 	inProgress: {
 		title: 'In_progress',
