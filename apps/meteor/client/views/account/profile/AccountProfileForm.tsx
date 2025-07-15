@@ -153,7 +153,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								control={control}
 								name='name'
 								rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
-								render={({ field }) => <TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} />}
+								render={({ field }) => (
+									<TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} aria-required={true} />
+								)}
 							/>
 						</FieldRow>
 						{errors.name && <FieldError>{errors.name.message}</FieldError>}
@@ -173,6 +175,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								render={({ field }) => (
 									<TextInput
 										{...field}
+										aria-required={true}
 										disabled={!canChangeUsername}
 										addon={<Icon name='at' size='x20' />}
 										error={errors.username?.message}
@@ -278,6 +281,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							render={({ field }) => (
 								<TextInput
 									{...field}
+									aria-required={true}
 									flexGrow={1}
 									disabled={!allowEmailChange}
 									addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}

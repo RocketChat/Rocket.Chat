@@ -1,6 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage-forms';
 import { AccordionItem } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage-forms';
 import { useLanguages } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -16,16 +16,18 @@ const PreferencesLocalizationSection = () => {
 
 	return (
 		<AccordionItem title={t('Localization')} defaultExpanded>
-			<Field>
-				<FieldLabel required>{t('Language')}</FieldLabel>
-				<FieldRow>
-					<Controller
-						control={control}
-						name='language'
-						render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={languageOptions} />}
-					/>
-				</FieldRow>
-			</Field>
+			<FieldGroup>
+				<Field>
+					<FieldLabel>{t('Language')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='language'
+							render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={languageOptions} />}
+						/>
+					</FieldRow>
+				</Field>
+			</FieldGroup>
 		</AccordionItem>
 	);
 };
