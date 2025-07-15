@@ -20,6 +20,24 @@ function splitArray<T, U>(arr: [...T[], U]): [T[], U] {
 	return [rest, last as U];
 }
 
+function coerceDatesToStrings(obj: unknown): unknown {
+	if (Array.isArray(obj)) {
+		return obj.map(coerceDatesToStrings);
+	}
+	if (obj && typeof obj === 'object') {
+		const newObj: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(obj)) {
+			if (value instanceof Date) {
+				newObj[key] = value.toISOString();
+			} else {
+				newObj[key] = coerceDatesToStrings(value);
+			}
+		}
+		return newObj;
+	}
+	return obj;
+}
+
 export type Route = {
 	responses: Record<
 		number,
@@ -174,6 +192,7 @@ export class Router<
 		const convertedAction = this.convertActionToHandler(action);
 
 		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
+			console.log(process.env.NODE_ENV, process.env.TEST_MODE);
 			const { req, res } = c;
 
 			const queryParams = this.parseQueryParams(req);
@@ -221,12 +240,24 @@ export class Router<
 				if (!responseValidatorFn && options.typed) {
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
-				if (responseValidatorFn && !responseValidatorFn(body)) {
+				if (responseValidatorFn && !responseValidatorFn(coerceDatesToStrings(body))) {
 					return c.json(
 						{
 							success: false,
 							errorType: 'error-invalid-body',
-							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors?.map((error: any) => error.message).join('\n ')}`,
+							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors
+								?.map(
+									(error: any) =>
+										`${error.message} (${[
+											error.instancePath,
+											Object.entries(error.params)
+												.map(([key, value]) => `${key}: ${value}`)
+												.join(', '),
+										]
+											.filter(Boolean)
+											.join(' - ')})`,
+								)
+								.join('\n')}`,
 						},
 						400,
 					);

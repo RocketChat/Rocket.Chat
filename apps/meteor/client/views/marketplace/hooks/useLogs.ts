@@ -8,17 +8,32 @@ export const useLogs = ({
 	appId,
 	current,
 	itemsPerPage,
+	logLevel,
+	method,
+	startDate,
+	endDate,
+	instanceId,
 }: {
 	appId: string;
 	current: number;
 	itemsPerPage: number;
+	logLevel?: '0' | '1' | '2';
+	method?: string;
+	startDate?: string;
+	endDate?: string;
+	instanceId?: string;
 }): UseQueryResult<OperationResult<'GET', '/apps/:id/logs'>> => {
 	const query = useMemo(
 		() => ({
 			count: itemsPerPage,
 			offset: current,
+			...(logLevel && { logLevel }),
+			...(method && { method }),
+			...(startDate && { startDate }),
+			...(endDate && { endDate }),
+			...(instanceId && { instanceId }),
 		}),
-		[itemsPerPage, current],
+		[itemsPerPage, current, logLevel, method, startDate, endDate, instanceId],
 	);
 	const logs = useEndpoint('GET', '/apps/:id/logs', { id: appId });
 
