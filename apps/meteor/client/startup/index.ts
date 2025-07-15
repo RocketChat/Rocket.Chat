@@ -13,6 +13,7 @@ import './loadMissedMessages';
 import './loginViaQuery';
 import './messageObserve';
 import './messageTypes';
+import './passkey';
 import './notifications';
 import './reloadRoomAfterLogin';
 import './roles';

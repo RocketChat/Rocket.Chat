@@ -224,6 +224,7 @@ export interface IUser extends IRocketChatRecord {
 	roomRolePriorities?: Record<string, number>;
 	isOAuthUser?: boolean; // client only field
 	__rooms?: string[];
+	idForPasskey?: string;
 	passkeys?: Passkey[];
 }
 
@@ -280,8 +281,9 @@ export const getUserDisplayName = (name: IUser['name'], username: IUser['usernam
 	useRealName ? name || username : username;
 
 export type Passkey = WebAuthnCredential & {
-	name?: string;
+	name: string;
 	createdAt: Date;
 	lastUsedAt: Date | null;
-	resident?: boolean;
+	sync?: boolean;
+	platform?: string;
 };

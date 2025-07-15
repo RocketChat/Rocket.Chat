@@ -3391,41 +3391,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	async findPasskeysByUserId(userId: IUser['_id']) {
-		const query = {
-			_id: userId,
-		};
-
-		const options = {
-			projection: {
-				passkeys: 1,
-			},
-		};
-
-		const user = await this.findOne(query, options);
-		return user?.passkeys;
-	}
-
-	async findPasskeysByUserIdForUser(userId: IUser['_id']) {
-		const query = {
-			_id: userId,
-		};
-
-		const options = {
-			projection: {
-				'passkeys.id': 1,
-				'passkeys.name': 1,
-				'passkeys.createdAt': 1,
-				'passkeys.lastUsedAt': 1,
-				'passkeys.resident': 1,
-			},
-		};
-
-		const user = await this.findOne(query, options);
-		return user?.passkeys;
-	}
-
-	async createPasskey(userId: IUser['_id'], rawPasskey: Passkey) {
+	createPasskey(userId: IUser['_id'], rawPasskey: Passkey) {
 		const passkey: Passkey = {
 			...rawPasskey,
 			createdAt: new Date(),
@@ -3445,7 +3411,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	async updatePasskey(userId: IUser['_id'], passkeyId: Passkey['id'], newName: string) {
+	createIdForPasskey(userId: IUser['_id'], idForPasskey: IUser['idForPasskey']) {
+		const query = {
+			_id: userId,
+		};
+
+		const update = {
+			$set: {
+				idForPasskey: idForPasskey,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updatePasskey(userId: IUser['_id'], passkeyId: Passkey['id'], newName: string) {
 		const query = {
 			_id: userId,
 			passkeys: { $elemMatch: { id: passkeyId } },
@@ -3460,7 +3440,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	async deletePasskey(userId: IUser['_id'], passkeyId: Passkey['id']) {
+	deletePasskey(userId: IUser['_id'], passkeyId: Passkey['id']) {
 		const query = {
 			_id: userId,
 		};
@@ -3474,7 +3454,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	async updatePasskeyCounter(userId: IUser['_id'], passkeyId: Passkey['id'], newCounter: Passkey['counter']) {
+	updatePasskeyCounter(userId: IUser['_id'], passkeyId: Passkey['id'], newCounter: Passkey['counter']) {
 		const query = { _id: userId, passkeys: { $elemMatch: { id: passkeyId } } };
 
 		const update = {
@@ -3487,26 +3467,23 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne(query, update);
 	}
 
-	async removeExpiredPasskeys(daysThreshold: number) {
+	findExpiredPasskeys(daysThreshold: number) {
 		const cutoffDate = new Date();
 		cutoffDate.setDate(cutoffDate.getDate() - daysThreshold);
 
 		const query = {
-			passkeys: {
-				$elemMatch: {
-					lastUsedAt: { $lt: cutoffDate },
-				},
-			},
+			'passkeys.lastUsedAt': { $lt: cutoffDate },
 		};
 
-		const update = {
-			$pull: {
-				passkeys: {
-					lastUsedAt: { $lt: cutoffDate },
-				},
+		return this.find(query, {
+			projection: {
+				_id: 1,
+				name: 1,
+				username: 1,
+				emails: 1,
+				language: 1,
+				passkeys: 1,
 			},
-		};
-
-		return this.updateMany(query, update);
+		}).toArray();
 	}
 }

@@ -31,6 +31,6 @@ export async function configureServer(settings: ICachedSettings) {
 		configureSMTP(settings),
 		configureFederation(settings),
 		configureIRC(settings),
-		configurePasskey(settings)
+		configurePasskey(settings),
 	]);
 }

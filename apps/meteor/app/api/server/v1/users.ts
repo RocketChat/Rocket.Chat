@@ -878,88 +878,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'users.generateRegistrationOptions',
-	{ authRequired: true },
-	{
-		async get() {
-			console.log(this.connection.clientAddress);
-
-			const result = await passkey.generateRegistrationOptions(this.user);
-			return API.v1.success(result);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.verifyRegistrationResponse',
-	{ authRequired: true },
-	{
-		async post() {
-			console.log(this.bodyParams.registrationResponse);
-
-			await passkey.verifyRegistrationResponse(this.user, this.bodyParams.id, this.bodyParams.registrationResponse);
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.generateAuthenticationOptions',
-	{ authRequired: false },
-	{
-		async get() {
-			const result = await passkey.generateAuthenticationOptions();
-			return API.v1.success(result);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.findPasskeys',
-	{ authRequired: true },
-	{
-		async get() {
-			const passkeys = await passkey.findPasskeys(this.userId);
-			return API.v1.success({ passkeys });
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.editPasskey',
-	{ authRequired: true },
-	{
-		async put() {
-			// const { tokenName } = this.bodyParams;
-			// if (!tokenName) {
-			// 	return API.v1.failure("The 'tokenName' param is required");
-			// }
-
-			await passkey.editPasskey(this.userId, this.bodyParams.passkeyId, this.bodyParams.name);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.deletePasskey',
-	{ authRequired: true },
-	{
-		async delete() {
-			// const { tokenName } = this.bodyParams;
-			// if (!tokenName) {
-			// 	return API.v1.failure("The 'tokenName' param is required");
-			// }
-
-			await passkey.deletePasskey(this.userId, this.bodyParams.passkeyId);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
 	'users.2fa.enableEmail',
 	{ authRequired: true },
 	{
@@ -1475,3 +1393,86 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
+
+API.v1.addRoute(
+	'users.generateRegistrationOptions',
+	{ authRequired: true },
+	{
+		async get() {
+			const result = await passkey.generateRegistrationOptions(this.userId);
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.verifyRegistrationResponse',
+	{ authRequired: true },
+	{
+		async post() {
+			await passkey.verifyRegistrationResponse(
+				this.userId,
+				this.bodyParams.id,
+				this.bodyParams.registrationResponse,
+				this.bodyParams.name,
+				this.connection,
+			);
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.generateAuthenticationOptions',
+	{ authRequired: false },
+	{
+		async get() {
+			const result = await passkey.generateAuthenticationOptions();
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.findPasskeys',
+	{ authRequired: true },
+	{
+		async get() {
+			const passkeys = await passkey.findPasskeys(this.userId);
+			return API.v1.success({ passkeys });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.editPasskey',
+	{ authRequired: true },
+	{
+		async put() {
+			// const { tokenName } = this.bodyParams;
+			// if (!tokenName) {
+			// 	return API.v1.failure("The 'tokenName' param is required");
+			// }
+
+			await passkey.editPasskey(this.userId, this.bodyParams.passkeyId, this.bodyParams.name);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.deletePasskey',
+	{ authRequired: true },
+	{
+		async delete() {
+			// const { tokenName } = this.bodyParams;
+			// if (!tokenName) {
+			// 	return API.v1.failure("The 'tokenName' param is required");
+			// }
+			await passkey.deletePasskey(this.userId, this.bodyParams.passkeyId, this.connection);
+
+			return API.v1.success();
+		},
+	},
+);

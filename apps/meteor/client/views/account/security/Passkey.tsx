@@ -1,138 +1,105 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	Field,
-	FieldGroup,
-	FieldLabel,
-	FieldRow,
-	Icon,
-	IconButton,
-	Margins,
-	Tag,
-	TextInput,
-} from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Box, Button, ButtonGroup, Icon, IconButton, Tag } from '@rocket.chat/fuselage';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { startRegistration } from '@simplewebauthn/browser';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointAction } from '/client/hooks/useEndpointAction';
-import { startRegistration, base64URLStringToBuffer } from '@simplewebauthn/browser';
-import {
-	GenericTable,
-	GenericTableBody,
-	GenericTableCell,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-	GenericTableRow,
-} from '/client/components/GenericTable';
+import { GenericTable, GenericTableBody, GenericTableCell, GenericTableRow } from '/client/components/GenericTable';
 import GenericModal from '/client/components/GenericModal';
-import DOMPurify from 'dompurify';
-import { Controller } from 'react-hook-form';
 import { useFormatDate } from '/client/hooks/useFormatDate';
 
+import PasskeyCreateModel from './PasskeyCreateModal';
+import PasskeyEditModel from './PasskeyEditModal';
+
 // TODO fzh075 loading and reload
-const Passkey = (props: ComponentProps<typeof Box>) => {
+const Passkey = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
-	const closeModal = useCallback(() => setModal(null), [setModal]);
+	const closeModal = () => setModal(null);
 	const formatDate = useFormatDate();
 
 	const [passkeys, setPasskeys] = useState([]);
-	// TODO fzh075 createPasskey const [name, setName] = useState([]);
 	// const user = useUser();
 
 	// const isEnabled = user?.services?.email2fa?.enabled;
 
+	const findPasskeysAction = useEndpointAction('GET', '/v1/users.findPasskeys');
 	const generateRegistrationOptionsAction = useEndpointAction('GET', '/v1/users.generateRegistrationOptions');
 	const verifyRegistrationResponseAction = useEndpointAction('POST', '/v1/users.verifyRegistrationResponse');
-
-	const handleCreate = useCallback(async () => {
-		try {
-			const { id, options } = await generateRegistrationOptionsAction();
-
-			const registrationResponse = await startRegistration({ optionsJSON: options });
-
-			await verifyRegistrationResponseAction({ id, registrationResponse });
-
-			// const onConfirm = () => {
-			//
-			// closeModal()
-			// }
-			//
-			// setModal(
-			// 	<GenericModal confirmText={t('Remove')} onConfirm={onConfirm} onCancel={closeModal} onClose={closeModal}>
-			//
-			// 		<GenericModal title={t('Create')} onConfirm={() => handleConfirmEdit(editing, name)} onClose={() => setEditing('')}>
-			// 			<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} />
-			// 		{t('Passkeys_Remove_Modal')}
-			// 	</GenericModal>,
-			// );
-
-			dispatchToastMessage({ type: 'success', message: t('Registered_successfully') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [generateRegistrationOptionsAction, verifyRegistrationResponseAction]);
-
-	const [editing, setEditing] = useState(''); // TODO fzh075 The naming needs to be optimized.
-	const [name, setName] = useState('');
-	const findPasskeysAction = useEndpointAction('GET', '/v1/users.findPasskeys');
 	const editPasskeyAction = useEndpointAction('PUT', '/v1/users.editPasskey');
 	const deletePasskeyAction = useEndpointAction('DELETE', '/v1/users.deletePasskey');
 
-	const findPasskeys = useCallback(async () => {
+	const findPasskeys = async () => {
 		try {
 			const { passkeys } = await findPasskeysAction();
+			passkeys.forEach((passkey) => {
+				passkey.seenFromThisBrowser = localStorage.getItem(`PasskeySeenFromThisBrowser_${passkey.id}`) === 'true';
+			});
 			setPasskeys(passkeys);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [findPasskeysAction]);
+	};
 	useEffect(() => {
 		findPasskeys().then();
 	}, []);
 
-	// TODO fzh075 model optimization
-	const handleEdit = async (passkeyId, name) => {
-		setName(name);
-		setEditing(passkeyId);
+	const handleCreate = async () => {
+		const handleConfirmCreate = async (name) => {
+			try {
+				const { id, options } = await generateRegistrationOptionsAction();
+
+				const registrationResponse = await startRegistration({ optionsJSON: options });
+
+				await verifyRegistrationResponseAction({ id, registrationResponse, name });
+
+				localStorage.setItem(`PasskeySeenFromThisBrowser_${registrationResponse.id}`, 'true');
+				// localStorage.removeItem(`dontAskAgainForPasskey_${user._id}`);
+				dispatchToastMessage({ type: 'success', message: t('Registered_successfully') });
+				await findPasskeys();
+				closeModal();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		};
+
+		setModal(<PasskeyCreateModel onConfirm={handleConfirmCreate} onClose={closeModal} />);
 	};
-	const handleConfirmEdit = useCallback(
-		async (passkeyId, name) => {
+
+	const handleEdit = async (passkeyId, initialName) => {
+		const handleConfirmEdit = async (name) => {
 			try {
 				await editPasskeyAction({ passkeyId, name });
 				dispatchToastMessage({ type: 'success', message: t('Edited_successfully') });
 				await findPasskeys();
+				closeModal();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
-		},
-		[editPasskeyAction],
-	);
-	const handleDelete = useCallback(
-		async (passkeyId) => {
-			const onConfirm: () => Promise<void> = async () => {
-				try {
-					await deletePasskeyAction({ passkeyId });
-					dispatchToastMessage({ type: 'success', message: t('Deleted_successfully') });
-					await findPasskeys();
-					closeModal();
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				}
-			};
+		};
 
-			setModal(
-				<GenericModal variant='danger' confirmText={t('Remove')} onConfirm={onConfirm} onCancel={closeModal} onClose={closeModal}>
-					{t('Passkeys_Remove_Modal')}
-				</GenericModal>,
-			);
-		},
-		[deletePasskeyAction, setModal, closeModal],
-	);
+		setModal(<PasskeyEditModel initialName={initialName} onConfirm={handleConfirmEdit} onClose={closeModal} />);
+	};
+	const handleDelete = async (passkeyId) => {
+		const onConfirm: () => Promise<void> = async () => {
+			try {
+				await deletePasskeyAction({ passkeyId });
+				dispatchToastMessage({ type: 'success', message: t('Deleted_successfully') });
+				await findPasskeys();
+				closeModal();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		};
+
+		setModal(
+			<GenericModal variant='danger' confirmText={t('Remove')} onConfirm={onConfirm} onCancel={closeModal} onClose={closeModal}>
+				{t('Passkeys_Remove_Modal')}
+			</GenericModal>,
+		);
+	};
 
 	return (
 		<Box>
@@ -157,7 +124,7 @@ const Passkey = (props: ComponentProps<typeof Box>) => {
 				</Box>
 				<GenericTable>
 					<GenericTableBody>
-						{/*{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}*/
+						{/* {phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}*/
 						passkeys?.map((passkey) => (
 							<GenericTableRow key={passkey.id} borderBlockEnd='1px solid var(--rcx-color-neutral-200, #e4e7eb)'>
 								<GenericTableCell withTruncatedText>
@@ -171,7 +138,7 @@ const Passkey = (props: ComponentProps<typeof Box>) => {
 												{t('Seen_from_this_browser')}
 											</Tag>
 										)}
-										{passkey.resident && <Tag variant='secondary'>{t('Resident')}</Tag>}
+										{passkey.sync && <Tag variant='secondary'>{t('Sync')}</Tag>}
 									</Box>
 									<Box fontScale='c1' color='hint' mt='x4' p='x16' pbs='x0'>
 										Added on {formatDate(new Date(passkey.createdAt))} | Last used {formatDate(new Date(passkey.lastUsedAt))}
@@ -187,25 +154,6 @@ const Passkey = (props: ComponentProps<typeof Box>) => {
 						))}
 					</GenericTableBody>
 				</GenericTable>
-				{editing && (
-					<GenericModal title={t('Edit')} onConfirm={() => handleConfirmEdit(editing, name)} onClose={() => setEditing('')}>
-						<TextInput value={name} onChange={(e) => setName(e.currentTarget.value)} />
-						{/*<FieldGroup>*/}
-						{/*	<Field>*/}
-						{/*		<FieldLabel htmlFor={textField}>{t('Text')}</FieldLabel>*/}
-						{/*		<FieldRow>*/}
-						{/*			<Controller control={control} name='text' render={({ field }) => <TextInput autoComplete='off' id={textField} {...field} />} />*/}
-						{/*		</FieldRow>*/}
-						{/*	</Field>*/}
-						{/*	<Field>*/}
-						{/*		<FieldLabel htmlFor={urlField}>{t('URL')}</FieldLabel>*/}
-						{/*		<FieldRow>*/}
-						{/*			<Controller control={control} name='url' render={({ field }) => <TextInput autoComplete='off' id={urlField} {...field} />} />*/}
-						{/*		</FieldRow>*/}
-						{/*	</Field>*/}
-						{/*</FieldGroup>*/}
-					</GenericModal>
-				)}
 			</Box>
 		</Box>
 		// <Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>

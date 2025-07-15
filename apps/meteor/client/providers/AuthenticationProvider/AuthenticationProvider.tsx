@@ -83,11 +83,13 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 
 						const authenticationResponse = await startAuthentication({ optionsJSON: options, useBrowserAutofill: true });
 
-						Meteor.loginWithPasskey(id, authenticationResponse, (error: any): void => { // TODO fzh075 ts
-							if (!error) {
+						// TODO fzh075 ts
+						Meteor.loginWithPasskey(id, authenticationResponse, (error: any): void => {
+							if (error) {
 								reject(error);
 								return;
 							}
+							localStorage.setItem(`PasskeySeenFromThisBrowser_${authenticationResponse.id}`, 'true');
 							resolve();
 						});
 					} catch (error) {
