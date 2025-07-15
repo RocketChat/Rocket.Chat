@@ -1,4 +1,4 @@
-import type { IOutboundMessage } from '@rocket.chat/core-typings';
+import type { IOutboundMessage, IOutboundProviderMetadata } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { OutboundCommsEndpoints } from '../api/outbound';
