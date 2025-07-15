@@ -57,6 +57,18 @@ exports[`renders AppLogsItem without crashing 1`] = `
             Filters
           </span>
         </button>
+        <button
+          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-17zzf5z"
+          data-testid="menu"
+          type="button"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1x2l7ts"
+          >
+            
+          </i>
+        </button>
       </div>
     </div>
   </div>
