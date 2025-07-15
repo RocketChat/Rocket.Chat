@@ -1,7 +1,6 @@
-import type { Router } from '@rocket.chat/http-router';
+import type { HomeserverServices } from '@hs/federation-sdk';
+import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
-
-import { getAllServicesFromFederationSDK } from '../../setupContainers';
 
 const EventBaseSchema = {
 	type: 'object',
@@ -127,11 +126,11 @@ const ProcessInviteResponseSchema = {
 
 const isProcessInviteResponseProps = ajv.compile(ProcessInviteResponseSchema);
 
-export const getMatrixInviteRoutes = (router: Router<'/_matrix'>) => {
-	const { invite } = getAllServicesFromFederationSDK();
+export const getMatrixInviteRoutes = (services: HomeserverServices) => {
+	const { invite } = services;
 
-	return router.put(
-		'/federation/v2/invite/:roomId/:eventId',
+	return new Router('/federation').put(
+		'/v2/invite/:roomId/:eventId',
 		{
 			body: isProcessInviteBodyProps,
 			params: isProcessInviteParamsProps,
