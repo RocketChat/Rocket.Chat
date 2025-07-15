@@ -7548,6 +7548,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
     "@typescript-eslint/parser": "npm:~5.60.1"
     babel-loader: "npm:^9.2.1"
+    date-fns: "npm:~4.1.0"
     dompurify: "npm:^3.2.6"
     eslint: "npm:~8.45.0"
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
