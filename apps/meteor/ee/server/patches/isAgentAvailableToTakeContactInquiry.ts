@@ -15,7 +15,7 @@ export const runIsAgentAvailableToTakeContactInquiry = async (
 	source: IOmnichannelSource,
 	contactId: ILivechatContact['_id'],
 ): Promise<{ error: string; value: false } | { value: true }> => {
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(contactId, {
+	const contact = await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'unknown' | 'channels'>>(contactId, {
 		projection: {
 			unknown: 1,
 			channels: 1,

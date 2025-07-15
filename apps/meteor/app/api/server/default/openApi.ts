@@ -1,3 +1,4 @@
+import { schemas } from '@rocket.chat/core-typings';
 import type { Route } from '@rocket.chat/http-router';
 import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
 import express from 'express';
@@ -65,8 +66,9 @@ const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
 				name: 'X-Auth-Token',
 			},
 		},
-		schemas: {},
+		schemas: schemas.components.schemas,
 	},
+	schemas: schemas.components.schemas,
 	paths,
 });
 

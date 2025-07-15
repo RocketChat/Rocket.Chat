@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/license",
-	"version": "1.0.16",
+	"version": "1.0.20",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",

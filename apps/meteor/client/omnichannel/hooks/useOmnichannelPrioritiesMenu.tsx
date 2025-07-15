@@ -1,5 +1,5 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -10,24 +10,24 @@ import { roomsQueryKeys } from '../../lib/queryKeys';
 import { dispatchToastMessage } from '../../lib/toast';
 import { PRIORITY_ICONS } from '../priorities/PriorityIcon';
 
-export const useOmnichannelPrioritiesMenu = (rid: string) => {
+export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const updateRoomPriority = useEndpoint('POST', '/v1/livechat/room/:rid/priority', { rid });
 	const removeRoomPriority = useEndpoint('DELETE', '/v1/livechat/room/:rid/priority', { rid });
 	const { data: priorities } = useOmnichannelPriorities();
 
-	const handlePriorityChange = useEffectEvent((priorityId: string) => async () => {
-		try {
-			priorityId ? await updateRoomPriority({ priorityId }) : await removeRoomPriority();
-			queryClient.invalidateQueries({ queryKey: ['current-chats'] });
-			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(rid) });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
 	return useMemo(() => {
+		const handlePriorityChange = (priorityId: string) => async () => {
+			try {
+				priorityId ? await updateRoomPriority({ priorityId }) : await removeRoomPriority();
+				queryClient.invalidateQueries({ queryKey: ['current-chats'] });
+				queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(rid) });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		};
+
 		const unprioritizedOption = {
 			id: 'unprioritized',
 			icon: PRIORITY_ICONS[LivechatPriorityWeight.NOT_SPECIFIED].iconName,
@@ -49,5 +49,5 @@ export const useOmnichannelPrioritiesMenu = (rid: string) => {
 		});
 
 		return priorities.length ? [unprioritizedOption, ...options] : [];
-	}, [t, handlePriorityChange, priorities]);
+	}, [t, priorities, updateRoomPriority, removeRoomPriority, queryClient, rid]);
 };
