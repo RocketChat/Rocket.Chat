@@ -35,8 +35,8 @@ const roomAccessValidators: RoomAccessValidator[] = [
 			return canAccessPublicRoom(user);
 		}
 
-		// if user has 'view-p-room' permission, allow access to private teams' public rooms
-		if (user?._id && (await Authorization.hasPermission(user._id, 'view-p-room'))) {
+		// if user has 'view-all-p-room' permission, allow access to private teams' public rooms
+		if (user?._id && (await Authorization.hasPermission(user._id, 'view-all-p-room'))) {
 			return true;
 		}
 
@@ -86,13 +86,13 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		return Authorization.canAccessRoom(parentRoom, user);
 	},
 
-	// If user has 'view-p-room' permission, allow access to private rooms (including the private teams' private rooms)
+	// If user has 'view-all-p-room' permission, allow access to private rooms (including the private teams' private rooms)
 	async function _validateAdminAccessToPrivateRooms(room, user): Promise<boolean> {
 		if (!room?._id || room.t !== 'p' || !user?._id) {
 			return false;
 		}
 
-		return Authorization.hasPermission(user._id, 'view-p-room');
+		return Authorization.hasPermission(user._id, 'view-all-p-room');
 	},
 
 	canAccessRoomLivechat,
