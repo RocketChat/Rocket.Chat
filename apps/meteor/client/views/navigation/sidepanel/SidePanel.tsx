@@ -16,12 +16,12 @@ type SidePanelProps = {
 	title: string;
 	currentTab: AllGroupsKeys;
 	unreadOnly: boolean;
-	toggleOnlyUnreads: () => void;
+	toggleUnreadOnly: () => void;
 	// TODO: This can also be of type ILivechatInquiryRecord[]
 	rooms: SubscriptionWithRoom[];
 };
 
-const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: SidePanelProps) => {
+const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: SidePanelProps) => {
 	const { t } = useTranslation();
 	const ref = useRef(null);
 	const unreadFieldId = useId();
@@ -45,7 +45,7 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleOnlyUnreads, rooms }: 
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 						{t('Unread')}
 					</Box>
-					<ToggleSwitch id={unreadFieldId} defaultChecked={unreadOnly} onChange={toggleOnlyUnreads} />
+					<ToggleSwitch id={unreadFieldId} defaultChecked={unreadOnly} onChange={toggleUnreadOnly} />
 				</Box>
 			</SidepanelHeader>
 			<Box pb={8} h='full' ref={ref}>

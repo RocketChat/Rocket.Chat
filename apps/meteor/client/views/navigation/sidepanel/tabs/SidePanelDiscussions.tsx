@@ -12,14 +12,14 @@ import SidePanel from '../SidePanel';
 const SidePanelDiscussions = () => {
 	const { t } = useTranslation();
 	const rooms = useSidePanelRoomsListTab(SIDE_PANEL_GROUPS.DISCUSSIONS);
-	const [unreadOnly, toggleOnlyUnreads] = useUnreadOnlyToggle();
+	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
 
 	return (
 		<SidePanel
 			title={t(sidePanelFiltersConfig[SIDE_PANEL_GROUPS.DISCUSSIONS].title)}
 			currentTab={SIDE_PANEL_GROUPS.DISCUSSIONS}
 			unreadOnly={unreadOnly}
-			toggleOnlyUnreads={toggleOnlyUnreads}
+			toggleUnreadOnly={toggleUnreadOnly}
 			rooms={rooms as SubscriptionWithRoom[]}
 		/>
 	);

@@ -10,7 +10,7 @@ const SidePanelChannels = ({ parentRid, subscription }: { parentRid: string; sub
 	const isDirectSubscription = subscription?.t === 'd';
 
 	const username = useUserDisplayName({ name: subscription?.fname, username: subscription?.name });
-	const [unreadOnly, toggleOnlyUnreads] = useUnreadOnlyToggle();
+	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
 	const rooms = useChannelsChildrenList(parentRid, unreadOnly);
 
 	return (
@@ -18,7 +18,7 @@ const SidePanelChannels = ({ parentRid, subscription }: { parentRid: string; sub
 			title={(isDirectSubscription ? username : subscription?.fname) || subscription.name}
 			currentTab={isDirectSubscription ? SIDE_BAR_GROUPS.DIRECT_MESSAGES : SIDE_BAR_GROUPS.CHANNELS}
 			unreadOnly={unreadOnly}
-			toggleOnlyUnreads={toggleOnlyUnreads}
+			toggleUnreadOnly={toggleUnreadOnly}
 			rooms={rooms as SubscriptionWithRoom[]}
 		/>
 	);
