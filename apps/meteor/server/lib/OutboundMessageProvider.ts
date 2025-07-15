@@ -15,6 +15,18 @@ export class OutboundMessageProvider implements IOutboundMessageProvider {
 		]);
 	}
 
+	public findOneByProviderId(providerId: string) {
+		// it should find one from any of the types, phone or email without hardcoding as we may include more types in the future
+		for (const providers of this.outboundMessageProviders.values()) {
+			for (const provider of providers) {
+				if (provider.appId === providerId) {
+					return provider;
+				}
+			}
+		}
+		return undefined;
+	}
+
 	public registerPhoneProvider(provider: IOutboundPhoneMessageProvider): void {
 		this.outboundMessageProviders.set('phone', [...(this.outboundMessageProviders.get('phone') || []), provider]);
 	}

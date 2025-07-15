@@ -37,6 +37,9 @@ export class OutboundMessageProvider {
 
 			return result as string | boolean | Array<IBlock> | undefined;
 		} catch (e) {
+			if (e?.message === 'error-invalid-provider') {
+				throw new Error('error-provider-not-registered');
+			}
 			console.error(e);
 		}
 	}

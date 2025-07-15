@@ -1,3 +1,4 @@
+import { Apps } from '@rocket.chat/apps';
 import type { IOutboundProvider, ValidOutboundProvider, IOutboundMessageProviderService } from '@rocket.chat/core-typings';
 import { ValidOutboundProviderList } from '@rocket.chat/core-typings';
 
@@ -25,6 +26,28 @@ export class OutboundMessageProviderService implements IOutboundMessageProviderS
 		}
 
 		return this.provider.getOutboundMessageProviders(type);
+	}
+
+	public getProviderMetadata(providerId: string) {
+		const provider = this.provider.findOneByProviderId(providerId);
+		if (!provider) {
+			throw new Error('error-invalid-provider');
+		}
+
+		return this.getProviderManager().getProviderMetadata(provider.appId, provider.type);
+	}
+
+	private getProviderManager() {
+		if (!Apps.self?.isLoaded()) {
+			throw new Error('apps-engine-not-loaded');
+		}
+
+		const manager = Apps.self?.getManager()?.getOutboundCommunicationProviderManager();
+		if (!manager) {
+			throw new Error('apps-engine-not-configured-correctly');
+		}
+
+		return manager;
 	}
 }
 

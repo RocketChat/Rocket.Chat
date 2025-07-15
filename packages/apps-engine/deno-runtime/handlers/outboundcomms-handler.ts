@@ -7,11 +7,12 @@ import { Logger } from '../lib/logger.ts';
 
 export default async function outboundMessageHandler(call: string, params: unknown): Promise<JsonRpcError | Defined> {
 	const [, providerName, methodName] = call.split(':');
-	const [, providerType] = providerName.split('-');
-	const provider = AppObjectRegistry.get<IOutboundMessageProviders>(`outboundCommunication:${providerName}-${providerType}`);
+	const provider = AppObjectRegistry.get<IOutboundMessageProviders>(`outboundCommunication:${providerName}`);
+	if (!provider) {
+		return new JsonRpcError('error-invalid-provider', -32000);
+	}
 	const method = provider[methodName as keyof IOutboundMessageProviders];
 	const logger = AppObjectRegistry.get<Logger>('logger');
-
 	const args = (params as Array<unknown>) ?? [];
 
 	try {
