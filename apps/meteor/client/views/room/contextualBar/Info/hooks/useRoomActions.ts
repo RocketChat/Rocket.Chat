@@ -1,16 +1,16 @@
-import  {isRoomFederated,type IRoom, } from '@rocket.chat/core-typings';
-import { useMemo } from 'react';
+import { isRoomFederated, type IRoom } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
 import { useHideRoomAction } from '../../../../../hooks/useHideRoomAction';
+import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
+import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
-import { useSetting } from '@rocket.chat/ui-contexts';
-import { useReactiveValue } from '/client/hooks/useReactiveValue';
-import { useCallback } from 'react';
-import { roomCoordinator } from '/client/lib/rooms/roomCoordinator';
+
 type UseRoomActionsOptions = {
 	onClickEnterRoom?: () => void;
 	onClickEdit?: () => void;
@@ -19,10 +19,8 @@ type UseRoomActionsOptions = {
 
 export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { onClickEnterRoom, onClickEdit, resetState } = options;
-
 	const { t } = useTranslation();
 	const federationMatrixEnabled = useSetting('Federation_Matrix_enabled', false);
-	
 	const reactiveIsMember = useReactiveValue(
 		useCallback(() => {
 			if (!room.t) {
@@ -39,15 +37,12 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 			return true;
 		}, [federationMatrixEnabled, room]),
 	);
-	
 	const isMember = useReactiveValue(() => reactiveIsMember);
-	
 	const handleLeave = useRoomLeave(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
 	const handleHide = useHideRoomAction({ rid: room._id, type: room.t, name: room.name ?? '' });
-
 	return useMemo(() => {
 		const memoizedActions = {
 			items: [
@@ -123,5 +118,16 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 		};
 
 		return memoizedActions;
-	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t,isMember]);
+	}, [
+		canDeleteRoom,
+		handleConvertToTeam,
+		handleDelete,
+		handleHide,
+		handleLeave,
+		handleMoveToTeam,
+		onClickEdit,
+		onClickEnterRoom,
+		t,
+		isMember,
+	]);
 };

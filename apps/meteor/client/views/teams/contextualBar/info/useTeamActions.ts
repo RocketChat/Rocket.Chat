@@ -1,16 +1,15 @@
-import {isRoomFederated,type IRoom } from '@rocket.chat/core-typings';
-import { useMemo } from 'react';
+import { isRoomFederated, type IRoom } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useConvertToChannel } from './useConvertToChannel';
 import { useLeaveTeam } from './useLeaveTeam';
 import { useHideRoomAction } from '../../../../hooks/useHideRoomAction';
+import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 
-import { useSetting } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
-import { useReactiveValue } from '/client/hooks/useReactiveValue';
-import { roomCoordinator } from '/client/lib/rooms/roomCoordinator';
 type GenProps = {
 	onClickEdit?: () => void;
 };
@@ -93,6 +92,6 @@ export const useTeamActions = (room: IRoom, { onClickEdit }: GenProps) => {
 					: []),
 			],
 		}),
-		[t, hideTeam, leaveTeam, onClickEdit, handleDelete, canDeleteRoom, convertToChannel,isMember],
+		[t, hideTeam, leaveTeam, onClickEdit, handleDelete, canDeleteRoom, convertToChannel, isMember],
 	);
 };
