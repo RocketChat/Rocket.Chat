@@ -12,11 +12,11 @@ import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 import { ExportLogsModal } from './ExportLogsModal';
 
 type AppsLogsFilterProps = {
-	isLoading: boolean;
+	isLoading?: boolean;
 	noResults?: boolean;
 };
 
-export const AppLogsFilter = ({ isLoading, noResults = false }: AppsLogsFilterProps) => {
+export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues } = useAppLogsFilterFormContext();

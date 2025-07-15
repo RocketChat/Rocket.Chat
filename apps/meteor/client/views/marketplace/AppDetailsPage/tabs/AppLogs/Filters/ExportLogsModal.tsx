@@ -68,7 +68,7 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 	};
 
 	return (
-		<Modal title={t('Custom_time_range')}>
+		<Modal>
 			<Modal.Header>
 				<Modal.Title>{t('Export')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
