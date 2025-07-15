@@ -216,7 +216,7 @@ jobs:
           yarn turbo run .:build-preview-move
           npx indexifier .preview --html  --extensions .html  > .preview/index.html
 
-      - name: Create PR Preview
+      - name: Create preview for PR
         uses: rossjrw/pr-preview-action@v1
         if: github.repository == 'RocketChat/Rocket.Chat'
         with:
