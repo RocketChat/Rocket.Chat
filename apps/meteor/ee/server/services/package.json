@@ -1,5 +1,5 @@
 {
-	"name": "@rocket.chat/services",
+	"name": "rocketchat-services",
 	"private": true,
 	"version": "2.0.20",
 	"description": "Rocket.Chat Authorization service",

@@ -15,8 +15,7 @@
 		"lint": "turbo run lint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"fuselage": "./fuselage.sh",
-		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
-		"check-package-json": "node --experimental-strip-types scripts/check-package-json.ts"
+		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.11",
