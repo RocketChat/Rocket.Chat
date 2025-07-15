@@ -1,7 +1,6 @@
-import type { Router } from '@rocket.chat/http-router';
+import type { HomeserverServices } from '@hs/federation-sdk';
+import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
-
-import { getAllServicesFromFederationSDK } from '../../../setupContainers';
 
 const ServerKeyResponseSchema = {
 	type: 'object',
@@ -33,11 +32,11 @@ const ServerKeyResponseSchema = {
 
 const isServerKeyResponseProps = ajv.compile(ServerKeyResponseSchema);
 
-export const getKeyServerRoutes = (router: Router<'/_matrix'>) => {
-	const { server } = getAllServicesFromFederationSDK();
+export const getKeyServerRoutes = (services: HomeserverServices) => {
+	const { server } = services;
 
-	return router.get(
-		'/key/v2/server',
+	return new Router('/key').get(
+		'/v2/server',
 		{
 			response: {
 				200: isServerKeyResponseProps,
