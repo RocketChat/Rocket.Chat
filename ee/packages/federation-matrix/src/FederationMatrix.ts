@@ -8,7 +8,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
+import { MatrixBridgedUser, MatrixBridgedRoom, MatrixBridgedMessage, Users, Messages } from '@rocket.chat/models';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
@@ -19,6 +19,9 @@ import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
+import { registerHooks, removeAllHooks } from './hooks';
+import type { ICallbacks } from './types/ICallbacks';
+import { convertEmojiToUnicode } from './utils/emojiConverter';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -33,13 +36,16 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private httpRoutes: { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> };
 
+	private callbacks?: ICallbacks;
+
 	private constructor(emitter?: Emitter<HomeserverEventSignatures>) {
 		super();
 		this.eventHandler = emitter || new Emitter<HomeserverEventSignatures>();
 	}
 
-	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
+	static async create(emitter?: Emitter<HomeserverEventSignatures>, callbacks?: ICallbacks): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
+		instance.callbacks = callbacks;
 		const config = new ConfigService();
 		const matrixConfig = config.getMatrixConfig();
 		const serverConfig = config.getServerConfig();
@@ -85,12 +91,17 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	async created(): Promise<void> {
 		try {
 			registerEvents(this.eventHandler);
+			registerHooks(this, this.callbacks);
 		} catch (error) {
 			this.logger.warn('Homeserver module not available, running in limited mode');
 		}
 	}
 
-	async getMatrixDomain(): Promise<string> {
+	async stopped(): Promise<void> {
+		removeAllHooks(this.callbacks);
+	}
+
+	public async getMatrixDomain(): Promise<string> {
 		if (this.matrixDomain) {
 			return this.matrixDomain;
 		}
@@ -191,12 +202,114 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, matrixUserId, targetServer);
 
-			// TODO: Store the event ID mapping for future reference (edits, deletions, etc.)
-			// This would allow us to map between Rocket.Chat message IDs and Matrix event IDs
+			await MatrixBridgedMessage.createOrUpdate(message._id, result.event_id);
 
 			this.logger.debug('Message sent to Matrix successfully:', result.event_id);
 		} catch (error) {
 			this.logger.error('Failed to send message to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async sendReaction(messageId: string, reaction: string, user: IUser): Promise<void> {
+		try {
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				throw new Error(`Message ${messageId} not found`);
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+
+			const matrixEventId = await MatrixBridgedMessage.getExternalEventId(messageId);
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${user.username}:${matrixDomain}`;
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
+			if (!existingMatrixUserId) {
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
+			}
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping reaction send');
+				return;
+			}
+
+			const reactionKey = convertEmojiToUnicode(reaction);
+
+			// TODO: Fix hardcoded server
+			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+			const result = await this.homeserverServices.message.sendReaction(
+				matrixRoomId,
+				matrixEventId,
+				reactionKey,
+				matrixUserId,
+				targetServer,
+			);
+
+			const reactionMappingKey = `${messageId}_reaction_${reaction}`;
+			await MatrixBridgedMessage.createOrUpdate(reactionMappingKey, result.event_id);
+
+			this.logger.debug('Reaction sent to Matrix successfully:', result.event_id);
+		} catch (error) {
+			this.logger.error('Failed to send reaction to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async removeReaction(messageId: string, reaction: string, user: IUser): Promise<void> {
+		try {
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				throw new Error(`Message ${messageId} not found`);
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+
+			const matrixEventId = await MatrixBridgedMessage.getExternalEventId(messageId);
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${user.username}:${matrixDomain}`;
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping reaction removal');
+				return;
+			}
+
+			// TODO: Fix hardcoded server
+			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+
+			const reactionMappingKey = `${messageId}_reaction_${reaction}`;
+			const reactionEventId = await MatrixBridgedMessage.getExternalEventId(reactionMappingKey);
+			if (!reactionEventId) {
+				this.logger.warn(`No reaction event ID found for ${reactionMappingKey}`);
+				return;
+			}
+
+			const result = await this.homeserverServices.message.redactMessage(
+				matrixRoomId,
+				reactionEventId,
+				undefined,
+				matrixUserId,
+				targetServer,
+			);
+
+			await MatrixBridgedMessage.removeByLocalMessageId(reactionMappingKey);
+
+			this.logger.debug('Reaction removed from Matrix successfully:', result.event_id);
+		} catch (error) {
+			this.logger.error('Failed to remove reaction from Matrix:', error);
 			throw error;
 		}
 	}

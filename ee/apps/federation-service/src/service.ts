@@ -27,6 +27,9 @@ function handleHealthCheck(app: Hono) {
 	api.setBroker(startBroker());
 
 	const { FederationMatrix } = await import('@rocket.chat/federation-matrix');
+
+	// TODO: In microservice mode, callbacks are not available as they're part of the Meteor app
+	// Reaction hooks will only work in monolith mode
 	const federationMatrix = await FederationMatrix.create();
 	api.registerService(federationMatrix);
 
@@ -35,7 +38,7 @@ function handleHealthCheck(app: Hono) {
 
 	app.mount('/_matrix', matrix.getHonoRouter().fetch);
 	app.mount('/.well-known', wellKnown.getHonoRouter().fetch);
-	
+
 	handleHealthCheck(app);
 
 	serve({
