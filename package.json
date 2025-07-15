@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "7.8.0",
+	"version": "7.9.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -57,7 +57,7 @@
 	},
 	"volta": {
 		"node": "22.16.0",
-		"yarn": "1.22.18"
+		"yarn": "4.9.2"
 	},
 	"resolutions": {
 		"@react-pdf/fns": "2.0.1",
