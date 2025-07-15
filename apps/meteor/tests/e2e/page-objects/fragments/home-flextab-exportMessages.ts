@@ -7,15 +7,23 @@ export class HomeFlextabExportMessages {
 		this.page = page;
 	}
 
-	get sendEmailMethod() {
-		return this.page.getByLabel('Send email');
-	}
-
 	get downloadFileMethod() {
 		return this.page.getByLabel('Download file');
 	}
 
-	getMethodByName(name: string) {
+	getMethod(name: string) {
+		return this.page.getByRole('button', { name });
+	}
+
+	getMethodOptionByName(name: string) {
+		return this.page.getByRole('option', { name });
+	}
+
+	getOutputFormat(name: string) {
+		return this.page.getByRole('button', { name, exact: true });
+	}
+
+	getOutputFormatOptionByName(name: string) {
 		return this.page.getByRole('option', { name });
 	}
 

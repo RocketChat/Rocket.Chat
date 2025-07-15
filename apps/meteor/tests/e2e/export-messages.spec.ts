@@ -25,12 +25,36 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
-		await expect(poHomeChannel.tabs.exportMessages.sendEmailMethod).not.toBeDisabled();
+		await poHomeChannel.tabs.exportMessages.getMethod('Send email').click();
 
-		await poHomeChannel.tabs.exportMessages.sendEmailMethod.click();
-		await expect(poHomeChannel.tabs.exportMessages.getMethodByName('Send email')).toBeVisible();
-		await expect(poHomeChannel.tabs.exportMessages.getMethodByName('Send file via email')).toBeVisible();
-		await expect(poHomeChannel.tabs.exportMessages.getMethodByName('Download file')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send email')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send file via email')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Download file')).toBeVisible();
+	});
+
+	test('should display export output format correctly depending on the selected method', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.btnExportMessages.click();
+
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormat('HTML')).toHaveClass(new RegExp('disabled'));
+
+		await poHomeChannel.tabs.exportMessages.getMethod('Send email').click();
+		await poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send file via email').click();
+
+		await poHomeChannel.tabs.exportMessages.getOutputFormat('HTML').click();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('json')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).not.toBeVisible();
+		await poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html').click();
+
+		await poHomeChannel.tabs.exportMessages.getMethod('Send file via email').click();
+		await poHomeChannel.tabs.exportMessages.getMethodOptionByName('Download file').click();
+
+		await poHomeChannel.tabs.exportMessages.getOutputFormat('Format').click();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html')).not.toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('json')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).toBeVisible();
 	});
 
 	test('should display an error when trying to send email without filling to users or to additional emails', async () => {
