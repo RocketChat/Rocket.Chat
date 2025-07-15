@@ -610,5 +610,4 @@ Text after line break`,
   ],
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
-  // expect(parse(input)).toMatchSnapshot();
 });

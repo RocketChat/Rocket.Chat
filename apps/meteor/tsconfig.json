@@ -1,7 +1,7 @@
 {
 	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
-		"target": "es2019",
+		"target": "es2018",
 		"module": "esNext",
 		"lib": ["esnext", "dom"],
 
