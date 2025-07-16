@@ -1,4 +1,17 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
+import {
+	Button,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterAnnotation,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalHeaderText,
+	ModalIcon,
+	ModalTagline,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
@@ -51,11 +64,11 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	}
 
 	if (icon === undefined) {
-		return <Modal.Icon color={variant} name={iconMap[variant]} />;
+		return <ModalIcon color={variant} name={iconMap[variant]} />;
 	}
 
 	if (typeof icon === 'string') {
-		return <Modal.Icon name={icon} />;
+		return <ModalIcon name={icon} />;
 	}
 
 	return icon;
@@ -118,19 +131,19 @@ const GenericModal = ({
 
 	return (
 		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>
-			<Modal.Header>
+			<ModalHeader>
 				{renderIcon(icon, variant)}
-				<Modal.HeaderText>
-					{tagline && <Modal.Tagline color={taglineColor}>{tagline}</Modal.Tagline>}
-					<Modal.Title id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</Modal.Title>
-				</Modal.HeaderText>
-				{onClose && <Modal.Close aria-label={t('Close')} onClick={handleCloseButtonClick} />}
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>{children}</Modal.Content>
-			<Modal.Footer justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
+				<ModalHeaderText>
+					{tagline && <ModalTagline color={taglineColor}>{tagline}</ModalTagline>}
+					<ModalTitle id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</ModalTitle>
+				</ModalHeaderText>
+				{onClose && <ModalClose aria-label={t('Close')} onClick={handleCloseButtonClick} />}
+			</ModalHeader>
+			<ModalContent fontScale='p2'>{children}</ModalContent>
+			<ModalFooter justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
 				{dontAskAgain}
-				{annotation && !dontAskAgain && <Modal.FooterAnnotation>{annotation}</Modal.FooterAnnotation>}
-				<Modal.FooterControllers>
+				{annotation && !dontAskAgain && <ModalFooterAnnotation>{annotation}</ModalFooterAnnotation>}
+				<ModalFooterControllers>
 					{onCancel && (
 						<Button secondary onClick={handleCancel}>
 							{cancelText ?? t('Cancel')}
@@ -146,8 +159,8 @@ const GenericModal = ({
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
