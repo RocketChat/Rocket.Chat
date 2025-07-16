@@ -82,9 +82,6 @@ const SendInvitationEmailParamsSchema: JSONSchemaType<SendInvitationEmailParams>
 export const isSendInvitationEmailParams = ajv.compile<SendInvitationEmailParams>(SendInvitationEmailParamsSchema);
 
 export type InvitesEndpoints = {
-	'/v1/listInvites': {
-		GET: () => Array<IInvite>;
-	};
 	'/v1/removeInvite/:_id': {
 		DELETE: () => boolean;
 	};

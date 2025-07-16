@@ -100,6 +100,6 @@ export { useMediaDeviceMicrophonePermission, type requestDevice } from './hooks/
 
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
-export { Fields } from './UserContext';
+export { Fields, FindOptions } from './UserContext';
 
 export { SubscriptionWithRoom } from './types/SubscriptionWithRoom';

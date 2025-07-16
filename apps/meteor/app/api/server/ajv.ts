@@ -1,16 +1,7 @@
 import { schemas } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-	code: { source: true },
-});
-
-export { ajv };
+import { ajv } from '@rocket.chat/rest-typings';
 
 const components = schemas.components?.schemas;
-
 if (components) {
 	for (const key in components) {
 		if (Object.prototype.hasOwnProperty.call(components, key)) {
