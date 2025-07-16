@@ -37,7 +37,12 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 
 	const appId = useRouteParameter('id');
 
-	const { control, watch, getValues } = useForm<FormDataType>({
+	const {
+		control,
+		watch,
+		getValues,
+		formState: { isValid },
+	} = useForm<FormDataType>({
 		defaultValues: {
 			type: 'json',
 			count: 'max',
@@ -169,8 +174,17 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 						<Controller
 							name='customExportAmount'
 							control={control}
+							rules={{ required: count === 'custom', min: 1 }}
 							render={({ field }) => (
-								<NumberInput id='limit' disabled={count !== 'custom'} placeholder='0' {...field} aria-describedby='limitNumber' />
+								<NumberInput
+									id='limit'
+									min={1}
+									required={count === 'custom'}
+									disabled={count !== 'custom'}
+									placeholder='100'
+									{...field}
+									aria-describedby='limitNumber'
+								/>
 							)}
 						/>
 					</Field>
@@ -179,7 +193,7 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary onClick={handleConfirm}>
+					<Button primary disabled={!isValid} onClick={handleConfirm}>
 						{t('Download')}
 					</Button>
 				</ModalFooterControllers>

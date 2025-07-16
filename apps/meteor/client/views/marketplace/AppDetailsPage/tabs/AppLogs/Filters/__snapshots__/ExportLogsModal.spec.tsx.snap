@@ -184,8 +184,9 @@ exports[`renders without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-number rcx-input-box"
                     disabled=""
                     id="limit"
+                    min="1"
                     name="customExportAmount"
-                    placeholder="0"
+                    placeholder="100"
                     size="1"
                     type="number"
                     value="100"
@@ -213,6 +214,7 @@ exports[`renders without crashing 1`] = `
               </button>
               <button
                 class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+                disabled=""
                 type="button"
               >
                 <span
