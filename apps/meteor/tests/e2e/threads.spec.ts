@@ -141,12 +141,11 @@ test.describe.serial('Threads', () => {
 			await expect(poHomeChannel.content.lastThreadMessageTextAttachmentEqualsText).toContainText('this is a message for reply');
 		});
 
-		test('expect star the thread message', async () => {
+		test('expect star the thread message', async ({ page }) => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await poHomeChannel.content.btnOptionStarMessage.click();
-			await poHomeChannel.content.btnToolbarOptions.click();
-			await poHomeChannel.content.starredMessagesMenuOption.click();
-
+			await page.locator('role=menuitem[name="Star"]').click();
+			await page.getByRole('button').and(page.getByTitle('Options')).click();
+			await page.locator('[data-key="starred-messages"]').click();
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this is a message for reply');
 		});
 

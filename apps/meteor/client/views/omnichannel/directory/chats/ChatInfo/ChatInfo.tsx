@@ -54,7 +54,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 		livechatData,
 		source,
 		queuedAt,
-	} = room ?? {};
+	} = room || { v: {} };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');

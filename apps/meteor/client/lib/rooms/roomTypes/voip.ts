@@ -29,14 +29,14 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			return Rooms.state.get(identifier);
+			return Rooms.findOne({ _id: identifier });
 		},
 
-		canSendMessage() {
+		canSendMessage(_rid) {
 			return false;
 		},
 
-		readOnly() {
+		readOnly(_rid, _user) {
 			return true;
 		},
 

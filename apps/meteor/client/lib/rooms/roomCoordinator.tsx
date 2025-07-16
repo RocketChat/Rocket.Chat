@@ -1,9 +1,11 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { Subscriptions } from '../../../app/models/client';
+import { Rooms, Subscriptions } from '../../../app/models/client';
+import { settings } from '../../../app/settings/client';
 import type {
 	RoomSettingsEnum,
 	RoomMemberActions,
@@ -57,8 +59,8 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			isLivechatRoom(): boolean {
 				return false;
 			},
-			canSendMessage(room: IRoom): boolean {
-				return Subscriptions.find({ rid: room._id }).count() > 0;
+			canSendMessage(rid: string): boolean {
+				return Subscriptions.find({ rid }).count() > 0;
 			},
 			...directives,
 			config: roomConfig,
@@ -109,14 +111,20 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return this.getRoomDirectives(roomType).roomName(roomData) ?? '';
 	}
 
-	readOnly(room?: IRoom, user?: AtLeast<IUser, 'username'> | null): boolean {
+	public readOnly(rid: string, user: AtLeast<IUser, 'username'>): boolean {
+		const fields = {
+			ro: 1,
+			t: 1,
+			...(user && { muted: 1, unmuted: 1 }),
+		};
+		const room = Rooms.findOne({ _id: rid }, { fields });
 		if (!room) {
 			return false;
 		}
 
 		const directives = this.getRoomDirectives(room.t);
 		if (directives?.readOnly) {
-			return directives.readOnly(room, user);
+			return directives.readOnly(rid, user);
 		}
 
 		if (!user?.username) {
@@ -144,6 +152,26 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		}
 
 		return false;
+	}
+
+	// #ToDo: Move this out of the RoomCoordinator
+	public archived(rid: string): boolean {
+		const room = Rooms.findOne({ _id: rid }, { fields: { archived: 1 } });
+		return Boolean(room?.archived);
+	}
+
+	public verifyCanSendMessage(rid: string): boolean {
+		const room = Rooms.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
+		if (!room?.t) {
+			return false;
+		}
+		if (!this.getRoomDirectives(room.t).canSendMessage(rid)) {
+			return false;
+		}
+		if (isRoomFederated(room)) {
+			return settings.get('Federation_Matrix_enabled');
+		}
+		return true;
 	}
 
 	private validateRoute<TRouteName extends RouteName>(route: IRoomTypeRouteConfig<TRouteName>): void {

@@ -153,7 +153,7 @@ roomCoordinator.add(
 
 			const subscription = Subscriptions.findOne(query);
 			if (subscription?.rid) {
-				return Rooms.state.get(subscription.rid);
+				return Rooms.findOne(subscription.rid);
 			}
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,

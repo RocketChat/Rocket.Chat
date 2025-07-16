@@ -1,11 +1,9 @@
 import { isOmnichannelRoom, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useMethod } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmojiPickerData } from '../../../../../contexts/EmojiPickerContext';
-import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import EmojiElement from '../../../../../views/composer/EmojiPicker/EmojiElement';
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
@@ -25,21 +23,11 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 	const { t } = useTranslation();
 
-	const enabled = useReactiveValue(
-		useCallback(() => {
-			if (!chat || isOmnichannelRoom(room) || !subscription || message.private || !user) {
-				return false;
-			}
+	if (!chat || !room || isOmnichannelRoom(room) || !subscription || message.private || !user) {
+		return null;
+	}
 
-			if (roomCoordinator.readOnly(room, user) && !room.reactWhenReadOnly) {
-				return false;
-			}
-
-			return true;
-		}, [chat, room, subscription, message.private, user]),
-	);
-
-	if (!enabled) {
+	if (roomCoordinator.readOnly(room._id, user) && !room.reactWhenReadOnly) {
 		return null;
 	}
 
@@ -61,7 +49,7 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 				qa='Add_Reaction'
 				onClick={(event) => {
 					event.stopPropagation();
-					chat?.emojiPicker.open(event.currentTarget, (emoji) => {
+					chat.emojiPicker.open(event.currentTarget, (emoji) => {
 						toggleReaction(emoji);
 					});
 				}}

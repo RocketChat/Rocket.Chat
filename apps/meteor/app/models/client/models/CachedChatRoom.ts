@@ -3,15 +3,13 @@ import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-ty
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { CachedChatSubscription } from './CachedChatSubscription';
-import { PrivateCachedStore } from '../../../../client/lib/cachedCollections/CachedCollection';
-import { createDocumentMapStore } from '../../../../client/lib/cachedCollections/DocumentMapStore';
+import { PrivateCachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
 
-class CachedChatRoom extends PrivateCachedStore<IRoom> {
+class CachedChatRoom extends PrivateCachedCollection<IRoom> {
 	constructor() {
 		super({
 			name: 'rooms',
 			eventType: 'notify-user',
-			store: createDocumentMapStore(),
 		});
 	}
 

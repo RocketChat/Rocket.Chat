@@ -22,7 +22,9 @@ export const getPermaLink = async (msgId: string): Promise<string> => {
 	if (!msg) {
 		throw new Error('message-not-found');
 	}
-	const roomData = Rooms.state.get(msg.rid);
+	const roomData = Rooms.findOne({
+		_id: msg.rid,
+	});
 
 	if (!roomData) {
 		throw new Error('room-not-found');

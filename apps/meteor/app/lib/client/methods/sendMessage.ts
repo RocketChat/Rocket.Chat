@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// If the room is federated, send the message to matrix only
-		const room = Rooms.state.get(message.rid);
+		const room = Rooms.findOne({ _id: message.rid }, { fields: { federated: 1, name: 1 } });
 		if (room?.federated) {
 			return;
 		}
