@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -149,7 +149,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								control={control}
 								name='name'
 								rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
-								render={({ field }) => <TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} />}
+								render={({ field }) => (
+									<TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} aria-required={true} />
+								)}
 							/>
 						</FieldRow>
 						{errors.name && <FieldError>{errors.name.message}</FieldError>}
@@ -169,6 +171,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								render={({ field }) => (
 									<TextInput
 										{...field}
+										aria-required={true}
 										disabled={!canChangeUsername}
 										addon={<Icon name='at' size='x20' />}
 										error={errors.username?.message}
@@ -271,6 +274,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							render={({ field }) => (
 								<TextInput
 									{...field}
+									aria-required={true}
 									flexGrow={1}
 									disabled={!allowEmailChange}
 									addon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}

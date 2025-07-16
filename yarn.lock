@@ -7285,16 +7285,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage-forms@file:/Users/sandra/fuselage/packages/fuselage-forms::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
+"@rocket.chat/fuselage-forms@file:/Users/gabriellsh/dev/fuselage/packages/fuselage-forms::locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor":
   version: 0.0.1
-  resolution: "@rocket.chat/fuselage-forms@file:/Users/sandra/fuselage/packages/fuselage-forms#/Users/sandra/fuselage/packages/fuselage-forms::hash=e15ab3&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
+  resolution: "@rocket.chat/fuselage-forms@file:/Users/gabriellsh/dev/fuselage/packages/fuselage-forms#/Users/gabriellsh/dev/fuselage/packages/fuselage-forms::hash=206343&locator=%40rocket.chat%2Fmeteor%40workspace%3Aapps%2Fmeteor"
   dependencies:
     react-aria: "npm:~3.37.0"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     react: "*"
     react-dom: "*"
-  checksum: 10/9cbce12bf3e302838325285b19eb95e4fb198945b5f7a1357c2dd7adfbdeb1f3343895238c83f3b4a5892af9c48c5aaa5b31c624a52ce702cd558c581bc42620
+  checksum: 10/7f16b727015acb49ffe9d8b0bf6d7817bb3dcd3bccac0b7b8cf4021cc5094d8472f0b5b59bbce3aa20c23535a1f4e5d90c4795754ec54bb631976677d41de7b0
   languageName: node
   linkType: hard
 
@@ -7869,7 +7869,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.64.0"
-    "@rocket.chat/fuselage-forms": /Users/sandra/fuselage/packages/fuselage-forms
+    "@rocket.chat/fuselage-forms": /Users/gabriellsh/dev/fuselage/packages/fuselage-forms
     "@rocket.chat/fuselage-hooks": "npm:^0.36.0"
     "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
     "@rocket.chat/fuselage-toastbar": "npm:^0.35.0"

@@ -1,7 +1,7 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage-forms';
 import { AccordionItem, Button } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage-forms';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
@@ -93,106 +93,108 @@ const PreferencesNotificationsSection = () => {
 
 	return (
 		<AccordionItem title={t('Notifications')}>
-			<Field>
-				<FieldLabel required>{t('Desktop_Notifications')}</FieldLabel>
-				<FieldRow>
-					{notificationsPermission === 'denied' && t('Desktop_Notifications_Disabled')}
-					{notificationsPermission === 'granted' && (
-						<Button primary onClick={onSendNotification} aria-labelledby={desktopNotificationsLabelId}>
-							{t('Test_Desktop_Notifications')}
-						</Button>
-					)}
-					{notificationsPermission !== 'denied' && notificationsPermission !== 'granted' && (
-						<Button primary onClick={onAskNotificationPermission} aria-labelledby={desktopNotificationsLabelId}>
-							{t('Enable_Desktop_Notifications')}
-						</Button>
-					)}
-				</FieldRow>
-			</Field>
-			<Field>
-				<FieldRow>
-					<FieldLabel required>{t('Notification_RequireInteraction')}</FieldLabel>
-					<Controller
-						name='desktopNotificationRequireInteraction'
-						control={control}
-						render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
-					/>
-				</FieldRow>
-				<FieldHint>{t('Only_works_with_chrome_version_greater_50')}</FieldHint>
-			</Field>
-			<Field>
-				<FieldLabel required>{t('Notification_Desktop_Default_For')}</FieldLabel>
-				<FieldRow>
-					<Controller
-						name='desktopNotifications'
-						control={control}
-						render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={desktopNotificationOptions} />}
-					/>
-				</FieldRow>
-			</Field>
-			<Field>
-				<FieldLabel required>{t('Notification_Push_Default_For')}</FieldLabel>
-				<FieldRow>
-					<Controller
-						name='pushNotifications'
-						control={control}
-						render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={mobileNotificationOptions} />}
-					/>
-				</FieldRow>
-			</Field>
-			<Field>
-				<FieldLabel required>{t('Email_Notification_Mode')}</FieldLabel>
-				<FieldRow>
-					<Controller
-						name='emailNotificationMode'
-						control={control}
-						render={({ field: { value, onChange } }) => (
-							<Select disabled={!canChangeEmailNotification} value={value} onChange={onChange} options={emailNotificationOptions} />
+			<FieldGroup>
+				<Field>
+					<FieldLabel>{t('Desktop_Notifications')}</FieldLabel>
+					<FieldRow>
+						{notificationsPermission === 'denied' && t('Desktop_Notifications_Disabled')}
+						{notificationsPermission === 'granted' && (
+							<Button primary onClick={onSendNotification} aria-labelledby={desktopNotificationsLabelId}>
+								{t('Test_Desktop_Notifications')}
+							</Button>
 						)}
-					/>
-				</FieldRow>
-				<FieldHint>
-					{canChangeEmailNotification && t('You_need_to_verifiy_your_email_address_to_get_notications')}
-					{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
-				</FieldHint>
-			</Field>
-			{showNewLoginEmailPreference && (
+						{notificationsPermission !== 'denied' && notificationsPermission !== 'granted' && (
+							<Button primary onClick={onAskNotificationPermission} aria-labelledby={desktopNotificationsLabelId}>
+								{t('Enable_Desktop_Notifications')}
+							</Button>
+						)}
+					</FieldRow>
+				</Field>
 				<Field>
 					<FieldRow>
-						<FieldLabel required>{t('Receive_Login_Detection_Emails')}</FieldLabel>
+						<FieldLabel>{t('Notification_RequireInteraction')}</FieldLabel>
 						<Controller
-							name='receiveLoginDetectionEmail'
+							name='desktopNotificationRequireInteraction'
 							control={control}
 							render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
 						/>
 					</FieldRow>
-					<FieldHint>{t('Receive_Login_Detection_Emails_Description')}</FieldHint>
+					<FieldHint>{t('Only_works_with_chrome_version_greater_50')}</FieldHint>
 				</Field>
-			)}
-			{showCalendarPreference && (
 				<Field>
+					<FieldLabel>{t('Notification_Desktop_Default_For')}</FieldLabel>
 					<FieldRow>
-						<FieldLabel required>{t('Notify_Calendar_Events')}</FieldLabel>
 						<Controller
-							name='notifyCalendarEvents'
+							name='desktopNotifications'
 							control={control}
-							render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={desktopNotificationOptions} />}
 						/>
 					</FieldRow>
 				</Field>
-			)}
-			{showMobileRinging && (
 				<Field>
+					<FieldLabel>{t('Notification_Push_Default_For')}</FieldLabel>
 					<FieldRow>
-						<FieldLabel required>{t('VideoConf_Mobile_Ringing')}</FieldLabel>
 						<Controller
-							name='enableMobileRinging'
+							name='pushNotifications'
 							control={control}
-							render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={mobileNotificationOptions} />}
 						/>
 					</FieldRow>
 				</Field>
-			)}
+				<Field>
+					<FieldLabel>{t('Email_Notification_Mode')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							name='emailNotificationMode'
+							control={control}
+							render={({ field: { value, onChange } }) => (
+								<Select disabled={!canChangeEmailNotification} value={value} onChange={onChange} options={emailNotificationOptions} />
+							)}
+						/>
+					</FieldRow>
+					<FieldHint>
+						{canChangeEmailNotification && t('You_need_to_verifiy_your_email_address_to_get_notications')}
+						{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
+					</FieldHint>
+				</Field>
+				{showNewLoginEmailPreference && (
+					<Field>
+						<FieldRow>
+							<FieldLabel>{t('Receive_Login_Detection_Emails')}</FieldLabel>
+							<Controller
+								name='receiveLoginDetectionEmail'
+								control={control}
+								render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							/>
+						</FieldRow>
+						<FieldHint>{t('Receive_Login_Detection_Emails_Description')}</FieldHint>
+					</Field>
+				)}
+				{showCalendarPreference && (
+					<Field>
+						<FieldRow>
+							<FieldLabel>{t('Notify_Calendar_Events')}</FieldLabel>
+							<Controller
+								name='notifyCalendarEvents'
+								control={control}
+								render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							/>
+						</FieldRow>
+					</Field>
+				)}
+				{showMobileRinging && (
+					<Field>
+						<FieldRow>
+							<FieldLabel>{t('VideoConf_Mobile_Ringing')}</FieldLabel>
+							<Controller
+								name='enableMobileRinging'
+								control={control}
+								render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							/>
+						</FieldRow>
+					</Field>
+				)}
+			</FieldGroup>
 		</AccordionItem>
 	);
 };
