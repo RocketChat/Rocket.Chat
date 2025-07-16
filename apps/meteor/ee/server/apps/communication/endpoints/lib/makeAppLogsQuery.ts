@@ -48,7 +48,6 @@ export function makeAppLogsQuery(queryParams: AppLogsProps) {
 
 	if (queryParams.endDate) {
 		const endDate = new Date(queryParams.endDate);
-		endDate.setDate(endDate.getDate() + 1);
 
 		if (query._updatedAt?.$gte && query._updatedAt.$gte >= endDate) {
 			throw new Error('Invalid date range');

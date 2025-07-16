@@ -73,7 +73,6 @@ describe('makeAppLogsQuery', () => {
 		const result = makeAppLogsQuery(queryParams);
 
 		const expectedEndDate = new Date(endDate);
-		expectedEndDate.setDate(expectedEndDate.getDate() + 1);
 
 		expect(result).to.deep.equal({
 			_updatedAt: {
@@ -89,7 +88,6 @@ describe('makeAppLogsQuery', () => {
 		const result = makeAppLogsQuery(queryParams);
 
 		const expectedEndDate = new Date(endDate);
-		expectedEndDate.setDate(expectedEndDate.getDate() + 1);
 
 		expect(result).to.deep.equal({
 			_updatedAt: {
@@ -113,11 +111,11 @@ describe('makeAppLogsQuery', () => {
 			method: 'app:construct',
 			startDate: '2024-01-01T00:00:00.000Z',
 			endDate: '2024-01-02T00:00:00.000Z',
+			instanceId: 'instance123',
 		};
 		const result = makeAppLogsQuery(queryParams);
 
 		const expectedEndDate = new Date(queryParams.endDate as string);
-		expectedEndDate.setDate(expectedEndDate.getDate() + 1);
 
 		expect(result).to.deep.equal({
 			'entries.severity': { $in: ['error', 'warn', 'info', 'log'] },
@@ -126,6 +124,7 @@ describe('makeAppLogsQuery', () => {
 				$gte: new Date(queryParams.startDate as string),
 				$lte: expectedEndDate,
 			},
+			'instanceId': 'instance123',
 		});
 	});
 });
