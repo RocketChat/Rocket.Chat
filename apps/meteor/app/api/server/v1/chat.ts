@@ -29,6 +29,7 @@ import {
 	isChatScheduleMessageProps,
 	isChatUpdateScheduledMessageProps,
 	isChatDeleteScheduledMessageProps,
+	isChatGetScheduledMessagesProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -1233,7 +1234,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getScheduledMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams:  isChatGetScheduledMessagesProps},
 	{
 		async get() {
 			const userId = this.userId;
