@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds an endpoint to export apps logs as files
+Adds a button to the apps logs UI that exports logs as a downloadable file
