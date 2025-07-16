@@ -23,7 +23,7 @@ const serviceMocks = {
 	'moleculer': {
 		ServiceBroker: sinon.stub().returns(ServiceBrokerMock),
 		Serializers: {
-			Base: class { },
+			Base: class {},
 		},
 	},
 };
