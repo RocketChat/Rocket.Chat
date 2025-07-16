@@ -10,7 +10,6 @@ exports[`renders without crashing 1`] = `
         aria-modal="true"
         class="rcx-box rcx-box--full rcx-modal"
         open=""
-        title="Custom_time_range"
       >
         <div
           class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
