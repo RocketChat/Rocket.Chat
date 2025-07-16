@@ -1,9 +1,9 @@
 import { Room } from '@rocket.chat/core-services';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
+import { isObject } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isObject } from '../../../../lib/utils/isObject';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 
 export const getRoomByNameOrIdWithOptionToJoin = async ({
