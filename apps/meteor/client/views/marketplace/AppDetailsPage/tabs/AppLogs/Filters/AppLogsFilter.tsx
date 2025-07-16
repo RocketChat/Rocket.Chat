@@ -1,8 +1,9 @@
-import { Box, Button, Icon, Label, Palette, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, Label } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
@@ -35,13 +36,7 @@ export const AppLogsFilter = ({ appId }: { appId: string }) => {
 				<Controller
 					control={control}
 					name='event'
-					render={({ field }) => (
-						<TextInput
-							addon={<Icon color={Palette.text['font-secondary-info']} name='magnifier' size={20} />}
-							id='eventFilter'
-							{...field}
-						/>
-					)}
+					render={({ field }) => <EventFilterSelect appId={appId} aria-labelledby='eventFilterLabel' id='eventFilter' {...field} />}
 				/>
 			</Box>
 			{!compactMode && (

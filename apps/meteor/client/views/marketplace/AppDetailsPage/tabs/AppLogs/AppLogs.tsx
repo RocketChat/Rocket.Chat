@@ -1,5 +1,4 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMemo, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,15 +22,13 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const debouncedEvent = useDebouncedValue(event, 500);
-
 	const { data, isSuccess, isError, isFetching, error } = useLogs({
 		appId: id,
 		current,
 		itemsPerPage,
 		...(instance !== 'all' && { instanceId: instance }),
 		...(severity !== 'all' && { logLevel: severity }),
-		method: debouncedEvent,
+		...(event !== 'all' && { method: event }),
 		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
 		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
 	});
@@ -58,7 +55,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 				<GenericNoResults />
 			) : (
 				<CustomScrollbars>
-					<CollapsiblePanel aria-busy={isFetching || event !== debouncedEvent} width='100%' alignSelf='center'>
+					<CollapsiblePanel aria-busy={isFetching} width='100%' alignSelf='center'>
 						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
 					</CollapsiblePanel>
 				</CustomScrollbars>
