@@ -38,7 +38,9 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.tabs.btnExportMessages.click();
 
 		// TODO: Fix the base component to have a disabled statement and not only a class attribute
-		await expect(poHomeChannel.tabs.exportMessages.getOutputFormat('HTML')).toHaveClass(new RegExp('disabled'));
+		// Here we are checking for a button because the internal select element is not accessible
+		// and the higher component that is a button doesn't appear as disabled.
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormat('HTML')).toContainClass('disabled');
 
 		await poHomeChannel.tabs.exportMessages.getMethod('Send email').click();
 		await poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send file via email').click();
@@ -52,7 +54,7 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.tabs.exportMessages.getMethod('Send file via email').click();
 		await poHomeChannel.tabs.exportMessages.getMethodOptionByName('Download file').click();
 
-		await poHomeChannel.tabs.exportMessages.getOutputFormat('Format').click();
+		await poHomeChannel.tabs.exportMessages.getOutputFormat('JSON').click();
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html')).not.toBeVisible();
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('json')).toBeVisible();
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).toBeVisible();

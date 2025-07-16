@@ -301,7 +301,7 @@ test.describe('basic features', () => {
 		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
 
 		// Select Output format as PDF
-		await exportMessagesTab.outputFormat.click();
+		await exportMessagesTab.getOutputFormat('JSON').click();
 		await exportMessagesTab.getOutputFormatOptionByName('PDF').click();
 
 		// select messages to be exported
