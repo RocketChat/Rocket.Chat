@@ -25,7 +25,7 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
-		await poHomeChannel.tabs.exportMessages.getMethod('Send email').click();
+		await poHomeChannel.tabs.exportMessages.method.click();
 
 		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send email')).toBeVisible();
 		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send file via email')).toBeVisible();
@@ -40,21 +40,19 @@ test.describe.serial('export-messages', () => {
 		// TODO: Fix the base component to have a disabled statement and not only a class attribute
 		// Here we are checking for a button because the internal select element is not accessible
 		// and the higher component that is a button doesn't appear as disabled.
-		await expect(poHomeChannel.tabs.exportMessages.getOutputFormat('HTML')).toContainClass('disabled');
+		await expect(poHomeChannel.tabs.exportMessages.outputFormat).toContainClass('disabled');
 
-		await poHomeChannel.tabs.exportMessages.getMethod('Send email').click();
-		await poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send file via email').click();
+		await poHomeChannel.tabs.exportMessages.setMethod('Send file via email');
 
-		await poHomeChannel.tabs.exportMessages.getOutputFormat('HTML').click();
+		await poHomeChannel.tabs.exportMessages.outputFormat.click();
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html')).toBeVisible();
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('json')).toBeVisible();
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).not.toBeVisible();
 		await poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html').click();
 
-		await poHomeChannel.tabs.exportMessages.getMethod('Send file via email').click();
-		await poHomeChannel.tabs.exportMessages.getMethodOptionByName('Download file').click();
+		await poHomeChannel.tabs.exportMessages.setMethod('Download file');
 
-		await poHomeChannel.tabs.exportMessages.getOutputFormat('JSON').click();
+		await poHomeChannel.tabs.exportMessages.outputFormat.click();
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html')).not.toBeVisible();
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('json')).toBeVisible();
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).toBeVisible();

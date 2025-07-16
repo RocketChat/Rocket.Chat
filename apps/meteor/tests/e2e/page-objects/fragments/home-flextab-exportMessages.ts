@@ -11,16 +11,26 @@ export class HomeFlextabExportMessages {
 		return this.page.getByLabel('Download file');
 	}
 
-	getMethod(name: string) {
-		return this.page.getByRole('button', { name });
+	async setMethod(optionName: string) {
+		await this.method.click();
+		await this.page.getByRole('option', { name: optionName }).click();
+	}
+
+	async setOutputFormat(optionName: string) {
+		await this.outputFormat.click();
+		await this.page.getByRole('option', { name: optionName }).click();
+	}
+
+	get method() {
+		return this.page.getByTestId('export-messages-method');
 	}
 
 	getMethodOptionByName(name: string) {
 		return this.page.getByRole('option', { name });
 	}
 
-	getOutputFormat(name: string) {
-		return this.page.getByRole('button', { name, exact: true });
+	get outputFormat() {
+		return this.page.getByTestId('export-messages-output-format');
 	}
 
 	getOutputFormatOptionByName(name: string) {

@@ -231,7 +231,14 @@ const ExportMessages = () => {
 									name='type'
 									control={control}
 									render={({ field }) => (
-										<Select id={methodField} {...field} placeholder={t('Type')} disabled={isE2ERoom} options={exportOptions} />
+										<Select
+											id={methodField}
+											data-testid='export-messages-method'
+											{...field}
+											placeholder={t('Type')}
+											disabled={isE2ERoom}
+											options={exportOptions}
+										/>
 									)}
 								/>
 							</FieldRow>
@@ -253,7 +260,16 @@ const ExportMessages = () => {
 											options = outputOptions;
 										}
 
-										return <Select {...field} id={formatField} disabled={type === 'email'} placeholder={t('Format')} options={options} />;
+										return (
+											<Select
+												{...field}
+												id={formatField}
+												data-testid='export-messages-output-format'
+												disabled={type === 'email'}
+												placeholder={t('Format')}
+												options={options}
+											/>
+										);
 									}}
 								/>
 							</FieldRow>

@@ -282,7 +282,7 @@ test.describe('basic features', () => {
 
 		await encryptedRoomPage.showExportMessagesTab();
 		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
-		await expect(exportMessagesTab.getMethod('Send email')).not.toBeVisible();
+		await expect(exportMessagesTab.method).not.toBeVisible();
 	});
 
 	test('should allow exporting messages as PDF in an encrypted room', async ({ page }) => {
@@ -301,8 +301,7 @@ test.describe('basic features', () => {
 		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
 
 		// Select Output format as PDF
-		await exportMessagesTab.getOutputFormat('JSON').click();
-		await exportMessagesTab.getOutputFormatOptionByName('PDF').click();
+		await exportMessagesTab.setOutputFormat('PDF');
 
 		// select messages to be exported
 		await exportMessagesTab.btnSelectMessages.click();
