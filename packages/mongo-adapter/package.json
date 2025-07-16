@@ -24,5 +24,8 @@
 	},
 	"peerDependencies": {
 		"mongodb": "6.10.0"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }
