@@ -86,6 +86,7 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 	const handleConfirm = (): void => {
 		const url = getFileUrl({ ...filterValues, type, count: count === 'max' ? 2000 : getValues('customExportAmount') });
 		window.open(url, '_blank', 'noopener noreferrer');
+		onClose();
 	};
 
 	return (
@@ -174,11 +175,12 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 						<Controller
 							name='customExportAmount'
 							control={control}
-							rules={{ required: count === 'custom', min: 1 }}
+							rules={{ required: count === 'custom', min: 1, max: 2000 }}
 							render={({ field }) => (
 								<NumberInput
 									id='limit'
 									min={1}
+									max={2000}
 									required={count === 'custom'}
 									disabled={count !== 'custom'}
 									placeholder='100'

@@ -184,6 +184,7 @@ exports[`renders without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-number rcx-input-box"
                     disabled=""
                     id="limit"
+                    max="2000"
                     min="1"
                     name="customExportAmount"
                     placeholder="100"
