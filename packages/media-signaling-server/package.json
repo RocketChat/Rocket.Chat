@@ -1,5 +1,5 @@
 {
-	"name": "@rocket.chat/media-signaling",
+	"name": "@rocket.chat/media-signaling-server",
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
@@ -16,7 +16,7 @@
 		"test": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/media-signaling"
+		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/media-signaling-server"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -24,6 +24,8 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/emitter": "~0.31.25"
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/media-signaling": "workspace:^",
+		"@rocket.chat/models": "workspace:^"
 	}
 }

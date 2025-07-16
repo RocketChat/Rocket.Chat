@@ -1,51 +1,61 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IUser } from '../IUser';
 
-export interface IMediaCallUserSession {
-	//
-}
-
-export interface IMediaCallUser {
-	uid?: IUser['_id'];
-
-	// Might be a Rocket.Chat username, or an extension number
-	username?: string;
-	name?: string;
-
-	sessions: IMediaCallUserSession[];
-}
-
-export type MediaCallParticipant = {
-	type: 'user';
-	user: IMediaCallUser;
-};
+export type MediaCallActor =
+	| {
+			type: 'user';
+			uid: IUser['_id'];
+			sessionId?: string;
+	  }
+	| {
+			type: 'sip';
+			username: string;
+	  }
+	| { type: 'server' };
 
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
 	kind: 'direct';
 
 	rid?: string;
-	state: 'NONE' | 'DIALING' | 'ACCEPTED' | 'ACTIVE' | 'HANGUP';
+	state: 'none' | 'dialing' | 'accepted' | 'active' | 'hangup';
 
-	createdBy: MediaCallParticipant;
+	createdBy: MediaCallActor;
 	createdAt: Date;
 
-	endedBy?: MediaCallParticipant;
+	caller: MediaCallActor;
+	callee: MediaCallActor;
+
+	endedBy?: MediaCallActor;
 	endedAt?: Date;
 
-	channels: IMediaCallChannel[];
+	userChannels: MediaCallUserChannel[];
 
 	// providerName: string;
 	// providerData?: Record<string, any>;
 }
 
-export interface IMediaCallChannel {
-	user?: IMediaCallUser;
+export type MediaCallChannelUserRC = {
+	type: 'user';
+	uid: IUser['_id'];
+	username: string;
+	displayName?: string;
 
-	// Originator means this channel was the one who started the call
-	originator?: boolean;
+	sessionId: string;
+};
 
-	state: 'NONE' | 'JOINING' | 'ACTIVE' | 'LEFT';
+export type MediaCallChannelUserSIP = {
+	type: 'sip';
+	// The SIP username usually matches the extension number
+	username: string;
+};
+
+export type MediaCallParticipant = MediaCallChannelUserRC | MediaCallChannelUserSIP;
+
+export type MediaCallChannel = {
+	role: 'caller' | 'callee' | 'none';
+
+	state: 'none' | 'ringing' | 'joining' | 'active' | 'left';
 
 	// The moment when the user accepted the call or clicked on the join button
 	joinedAt?: Date;
@@ -53,16 +63,27 @@ export interface IMediaCallChannel {
 	activeAt?: Date;
 	// The moment when the user left the call or hanged up
 	leftAt?: Date;
-}
 
-export interface IWebRTCMediaCall extends IMediaCall {
-	service: 'webrtc';
-
-	offer?: {
-		sdp: string;
+	webrtc?: {
+		local: {
+			description: RTCSessionDescriptionInit | null;
+			iceCandidates: RTCIceCandidateInit[];
+			iceGatheringComplete: boolean;
+		};
+		remote: {
+			description: RTCSessionDescriptionInit | null;
+			iceCandidates: RTCIceCandidateInit[];
+			iceGatheringComplete: boolean;
+		};
 	};
+};
 
-	answer?: {
-		sdp: string;
-	};
-}
+export type MediaCallUserChannel = MediaCallChannel & {
+	participant: MediaCallChannelUserRC;
+};
+
+export type MediaCallSipChannel = MediaCallChannel & {
+	participant: MediaCallChannelUserSIP;
+};
+
+export type MediaCallExternalChannel = MediaCallSipChannel;

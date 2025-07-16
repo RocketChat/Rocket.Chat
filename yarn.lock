@@ -7807,6 +7807,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/media-signaling-server@workspace:packages/media-signaling-server":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/media-signaling-server@workspace:packages/media-signaling-server"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/media-signaling": "workspace:^"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/jest": "npm:~30.0.0"
+    eslint: "npm:~8.45.0"
+    jest: "npm:~30.0.5"
+    typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/media-signaling@workspace:^, @rocket.chat/media-signaling@workspace:packages/media-signaling":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/media-signaling@workspace:packages/media-signaling"
+  dependencies:
+    "@rocket.chat/emitter": "npm:~0.31.25"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/jest": "npm:~30.0.0"
+    eslint: "npm:~8.45.0"
+    jest: "npm:~30.0.5"
+    typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/memo@npm:^0.31.25, @rocket.chat/memo@npm:~0.31.25":
   version: 0.31.25
   resolution: "@rocket.chat/memo@npm:0.31.25"

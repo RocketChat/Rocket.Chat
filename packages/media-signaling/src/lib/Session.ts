@@ -127,14 +127,52 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.deliverToServer(requestSignal, 'sdp', sdp);
 	}
 
-	private async processDeliver(_signal: MediaSignalDeliver) {
-		//
+	private async processDeliver(signal: MediaSignalDeliver) {
+		if (!signal.sessionId) {
+			throw new Error('Delivery signals MUST target a specific session.');
+		}
+
+		switch (signal.body.deliver) {
+			case 'sdp':
+				await this.processor.setRemoteDescription(signal.body);
+				break;
+			case 'ice-candidates':
+				await this.processor.addIceCandidates(signal.body);
+				break;
+			case 'dtmf':
+				// #ToDo
+				break;
+		}
 	}
 
 	private async processNotify(signal: MediaSignalNotify) {
 		switch (signal.body.notify) {
 			case 'new':
 				return this.processNewCall(signal, true);
+			case 'error':
+				break;
+			case 'ack':
+				break;
+			case 'invalid':
+				break;
+			case 'unable':
+				break;
+			case 'empty':
+				break;
+			case 'state':
+				break;
+			case 'unavailable':
+				break;
+			case 'accept':
+				break;
+			case 'reject':
+				break;
+			case 'hangup':
+				break;
+			case 'negotiation-needed':
+				break;
+			case 'multi':
+				break;
 		}
 	}
 
@@ -159,7 +197,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private async initializePeerConnection() {
-		// call processor.initializePeerConnection
+		await this.processor.initializePeerConnection();
 	}
 
 	private async processNewCall(signal: MediaSignal, isNewNotify = false) {
