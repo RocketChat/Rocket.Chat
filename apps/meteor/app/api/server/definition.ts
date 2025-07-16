@@ -195,7 +195,6 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	}>;
 
 	readonly connection: {
-		token: string;
 		id: string;
 		close: () => void;
 		clientAddress: string;

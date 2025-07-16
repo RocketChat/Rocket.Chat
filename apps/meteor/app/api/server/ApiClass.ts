@@ -808,38 +808,41 @@ export class APIClass<
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
+						let result;
+
 						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute.call(this, this.request);
-							this.user = user!;
-							this.userId = String(this.request.headers.get('x-user-id'));
 							const authToken = this.request.headers.get('x-auth-token');
 							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
 						}
 
-						if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
-							const result = api.unauthorized('You must be logged in to do this.');
-							// compatibility with the old API
-							// TODO: MAJOR
-							if (!applyBreakingChanges) {
-								Object.assign(result.body, {
-									status: 'error',
-									message: 'You must be logged in to do this.',
-								});
-							}
-							return result;
-						}
-
-						const objectForRateLimitMatch = {
-							IPAddr: this.requestIp,
-							route: `/${route}${this.request.method.toLowerCase()}`,
-						};
-
-						let result;
-
-						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
+						const connection = { ...generateConnection(this.requestIp, this.request.headers) };
 						this.connection = connection;
 
 						try {
+							if (options.authRequired || options.authOrAnonRequired) {
+								const user = await api.authenticatedRoute.call(this, this.request);
+								this.user = user!;
+								this.userId = String(this.request.headers.get('x-user-id'));
+							}
+
+							if (!this.user && options.authRequired && !options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead')) {
+								const result = api.unauthorized('You must be logged in to do this.');
+								// compatibility with the old API
+								// TODO: MAJOR
+								if (!applyBreakingChanges) {
+									Object.assign(result.body, {
+										status: 'error',
+										message: 'You must be logged in to do this.',
+									});
+								}
+								return result;
+							}
+
+							const objectForRateLimitMatch = {
+								IPAddr: this.requestIp,
+								route: `/${route}${this.request.method.toLowerCase()}`,
+							};
+
 							if (options.deprecation) {
 								parseDeprecation(this, options.deprecation);
 							}
@@ -898,7 +901,7 @@ export class APIClass<
 									request: this.request,
 									invocation: invocation as unknown as Record<string, any>,
 									options: _options,
-									connection: connection as unknown as IMethodConnection,
+									connection,
 								}));
 
 							this.queryOperations = options.queryOperations;
