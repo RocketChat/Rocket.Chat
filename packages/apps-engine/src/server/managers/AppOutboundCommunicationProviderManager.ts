@@ -40,7 +40,7 @@ export class AppOutboundCommunicationProviderManager {
 	public addProvider(appId: string, provider: IOutboundMessageProviders): void {
 		const app = this.manager.getOneById(appId);
 		if (!app) {
-			throw new Error('App must exist in order for a video conference provider to be added.');
+			throw new Error('App must exist in order for an outbound provider to be added.');
 		}
 
 		if (!AppPermissionManager.hasPermission(appId, AppPermissions.outboundComms.provide)) {
@@ -119,8 +119,7 @@ export class AppOutboundCommunicationProviderManager {
 		return providerInfo.runGetProviderMetadata(this.manager.getLogStorage(), this.accessors);
 	}
 
-	// Any for now
-	public sendOutboundMessage(appId: string, providerType: ValidOutboundProvider, body: any) {
+	public sendOutboundMessage(appId: string, providerType: ValidOutboundProvider, body: unknown) {
 		const providerInfo = this.outboundMessageProviders.get(appId)?.get(providerType);
 		if (!providerInfo) {
 			throw new Error('provider-not-registered');

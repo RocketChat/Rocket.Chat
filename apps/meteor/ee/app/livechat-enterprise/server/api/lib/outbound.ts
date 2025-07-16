@@ -1,5 +1,10 @@
 import { Apps } from '@rocket.chat/apps';
-import type { IOutboundProvider, ValidOutboundProvider, IOutboundMessageProviderService } from '@rocket.chat/core-typings';
+import type {
+	IOutboundProvider,
+	ValidOutboundProvider,
+	IOutboundMessageProviderService,
+	IOutboundProviderMetadata,
+} from '@rocket.chat/core-typings';
 import { ValidOutboundProviderList } from '@rocket.chat/core-typings';
 
 import { getOutboundService } from '../../../../../../app/livechat/server/lib/outboundcommunication';
@@ -12,7 +17,7 @@ export class OutboundMessageProviderService implements IOutboundMessageProviderS
 		this.provider = new OutboundMessageProvider();
 	}
 
-	get messageProvider() {
+	get outboundMessageProvider() {
 		return this.provider;
 	}
 
@@ -28,7 +33,7 @@ export class OutboundMessageProviderService implements IOutboundMessageProviderS
 		return this.provider.getOutboundMessageProviders(type);
 	}
 
-	public getProviderMetadata(providerId: string) {
+	public getProviderMetadata(providerId: string): Promise<IOutboundProviderMetadata> {
 		const provider = this.provider.findOneByProviderId(providerId);
 		if (!provider) {
 			throw new Error('error-invalid-provider');

@@ -132,6 +132,6 @@ export const ValidOutboundProviderList = ['phone', 'email'] as const;
 export type ValidOutboundProvider = (typeof ValidOutboundProviderList)[number];
 
 export interface IOutboundMessageProviderService {
-	messageProvider: IOutboundMessageProvider;
+	outboundMessageProvider: IOutboundMessageProvider;
 	listOutboundProviders(type?: string): IOutboundProvider[];
 }
