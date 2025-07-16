@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "7.5.0-develop",
+	"version": "7.9.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -9,6 +9,7 @@
 		"build:services": "turbo run build --filter=rocketchat-services...",
 		"build:ci": "turbo run build:ci",
 		"testunit": "turbo run testunit",
+		"test-storybook": "turbo run test-storybook",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
@@ -20,8 +21,10 @@
 		"@changesets/cli": "^2.27.11",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
+		"@types/node": "~22.14.1",
 		"ts-node": "^10.9.2",
-		"turbo": "^2.3.4"
+		"turbo": "^2.5.4",
+		"typescript": "~5.8.3"
 	},
 	"workspaces": [
 		"apps/*",
@@ -41,11 +44,10 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
-		"yarn": "4.7.0",
-		"node": "22.13.1",
-		"npm": "Use yarn instead"
+		"yarn": "4.9.2",
+		"node": "22.16.0"
 	},
-	"packageManager": "yarn@4.7.0",
+	"packageManager": "yarn@4.9.2",
 	"houston": {
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
@@ -54,17 +56,27 @@
 		]
 	},
 	"volta": {
-		"node": "22.13.1",
-		"yarn": "1.22.18"
+		"node": "22.16.0",
+		"yarn": "4.9.2"
 	},
 	"resolutions": {
+		"@react-pdf/fns": "2.0.1",
+		"@react-pdf/font": "2.3.7",
+		"@react-pdf/image": "2.2.2",
+		"@react-pdf/layout": "3.6.3",
+		"@react-pdf/pdfkit": "3.0.2",
+		"@react-pdf/png-js": "2.2.0",
+		"@react-pdf/primitives": "3.0.1",
+		"@react-pdf/render": "3.2.7",
+		"@react-pdf/renderer": "3.1.14",
+		"@react-pdf/stylesheet": "4.1.8",
+		"@react-pdf/textkit": "4.2.0",
+		"@react-pdf/types": "2.3.4",
+		"@react-pdf/yoga": "4.1.2",
 		"minimist": "1.2.6",
 		"adm-zip": "0.5.9",
 		"underscore": "1.13.7",
 		"lodash": "4.17.21",
-		"mongodb@^4.17.1": "patch:mongodb@npm:4.17.1#.yarn/patches/mongodb-npm-4.17.1-a2fe811ff1.patch",
-		"typia@~6.9.0": "patch:typia@npm%3A6.9.0#./.yarn/patches/typia-npm-6.9.0-2fd4d85f25.patch",
-		"moleculer@^0.14.34": "patch:moleculer@npm%3A0.14.34#./.yarn/patches/moleculer-npm-0.14.34-440e26767d.patch",
 		"mongodb": "6.10.0",
 		"cross-spawn": "7.0.6"
 	},

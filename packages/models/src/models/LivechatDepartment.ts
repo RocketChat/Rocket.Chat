@@ -213,11 +213,11 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateMany(query, update);
 	}
 
-	unarchiveDepartment(_id: string): Promise<Document | UpdateResult> {
+	unarchiveDepartment(_id: string): Promise<UpdateResult> {
 		return this.updateOne({ _id }, { $set: { archived: false } });
 	}
 
-	archiveDepartment(_id: string): Promise<Document | UpdateResult> {
+	archiveDepartment(_id: string): Promise<UpdateResult> {
 		return this.updateOne({ _id }, { $set: { archived: true, enabled: false } });
 	}
 
@@ -282,15 +282,33 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find<T>(query, projection && { projection });
 	}
 
-	async findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
-		_: any,
+	findEnabledWithAgentsAndRegistration<T extends Document = ILivechatDepartment>(
 		projection: FindOptions<T>['projection'] = {},
-	): Promise<FindCursor<T>> {
+	): FindCursor<T> {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
+			showOnRegistration: true,
 		};
 		return this.find<T>(query, projection && { projection });
+	}
+
+	findOneEnabledWithAgentsAndRegistration<T extends Document = ILivechatDepartment>(
+		projection: FindOptions<T>['projection'] = {},
+	): Promise<T | null> {
+		const query = {
+			numAgents: { $gt: 0 },
+			enabled: true,
+			showOnRegistration: true,
+		};
+		return this.findOne<T>(query, projection && { projection });
+	}
+
+	findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
+		_: any,
+		projection?: FindOptions<T>['projection'],
+	): FindCursor<T> {
+		return this.findEnabledWithAgents(projection);
 	}
 
 	findOneByIdOrName(_idOrName: string, options: FindOptions<ILivechatDepartment> = {}): Promise<ILivechatDepartment | null> {
@@ -323,17 +341,8 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.countDocuments({ parentId: unitId });
 	}
 
-	findActiveByUnitIds<T extends Document = ILivechatDepartment>(unitIds: string[], options: FindOptions<T> = {}): FindCursor<T> {
-		const query = {
-			enabled: true,
-			numAgents: { $gt: 0 },
-			parentId: {
-				$exists: true,
-				$in: unitIds,
-			},
-		};
-
-		return this.find<T>(query, options);
+	findActiveByUnitIds<T extends Document = ILivechatDepartment>(_unitIds: string[], _options: FindOptions<T> = {}): FindCursor<T> {
+		throw new Error('not-implemented');
 	}
 
 	findNotArchived(options: FindOptions<ILivechatDepartment> = {}): FindCursor<ILivechatDepartment> {

@@ -1,5 +1,537 @@
 # @rocket.chat/models
 
+## 1.5.8
+
+### Patch Changes
+
+- ([#36116](https://github.com/RocketChat/Rocket.Chat/pull/36116)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
+
+- ([#36236](https://github.com/RocketChat/Rocket.Chat/pull/36236)) Fixes the `channels.counters`, `groups.counters` and `im.counters` endpoint to include only active users in members count.
+
+- ([#36206](https://github.com/RocketChat/Rocket.Chat/pull/36206)) Fixes an issue where overlapping calendar events could cause the user status to stay busy indefinitely
+
+- <details><summary>Updated dependencies [5cd7b20d5fb6def0a76743576eaa19fc0bf01c4c, 1eb53d289e1280b5ac4ce4a6995e7fe28d50601a, da288f69a4c169eee942af73f490e7570fe41cc5, 2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, d58457d25a9a899ebcc7fd0e1fe11d9d370c50d8]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0
+  - @rocket.chat/model-typings@1.6.8
+  </details>
+
+## 1.5.8-rc.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.9
+  - @rocket.chat/model-typings@1.6.8-rc.9
+  </details>
+
+## 1.5.5-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.8
+  - @rocket.chat/model-typings@1.6.5-rc.8
+  </details>
+
+## 1.5.5-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.7
+  - @rocket.chat/model-typings@1.6.5-rc.7
+  </details>
+
+## 1.5.5-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.6
+  - @rocket.chat/model-typings@1.6.5-rc.6
+  </details>
+
+## 1.5.5-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.5
+  - @rocket.chat/model-typings@1.6.5-rc.5
+  </details>
+
+## 1.5.5-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.4
+  - @rocket.chat/model-typings@1.6.5-rc.4
+  </details>
+
+## 1.5.5-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d58457d25a9a899ebcc7fd0e1fe11d9d370c50d8]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.3
+  - @rocket.chat/model-typings@1.6.5-rc.3
+  </details>
+
+## 1.5.5-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.2
+  - @rocket.chat/model-typings@1.6.5-rc.2
+  </details>
+
+## 1.5.5-rc.1
+
+## 1.5.8-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/rest-typings@7.8.0-rc.1
+  - @rocket.chat/model-typings@1.6.5-rc.1
+  </details>
+
+## 1.5.5-rc.0
+
+### Patch Changes
+
+- ([#36116](https://github.com/RocketChat/Rocket.Chat/pull/36116)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
+
+- ([#36236](https://github.com/RocketChat/Rocket.Chat/pull/36236)) Fixes the `channels.counters`, `groups.counters` and `im.counters` endpoint to include only active users in members count.
+
+- ([#36206](https://github.com/RocketChat/Rocket.Chat/pull/36206)) Fixes an issue where overlapping calendar events could cause the user status to stay busy indefinitely
+
+- <details><summary>Updated dependencies [5cd7b20d5fb6def0a76743576eaa19fc0bf01c4c, 1eb53d289e1280b5ac4ce4a6995e7fe28d50601a, da288f69a4c169eee942af73f490e7570fe41cc5, 2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858]:</summary>
+
+  - @rocket.chat/rest-typings@7.8.0-rc.0
+  - @rocket.chat/model-typings@1.6.5-rc.0
+  </details>
+
+## 1.5.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/rest-typings@7.7.4
+  - @rocket.chat/model-typings@1.6.7
+  </details>
+
+## 1.5.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.7.3
+  - @rocket.chat/model-typings@1.6.6
+  </details>
+
+## 1.5.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8874a5aab72c962f213d128a54393d95f7dabef8]:</summary>
+
+  - @rocket.chat/rest-typings@7.7.2
+  - @rocket.chat/model-typings@1.6.5
+  </details>
+
+## 1.5.4
+
+### Patch Changes
+
+- ([#36200](https://github.com/RocketChat/Rocket.Chat/pull/36200) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed contacts being marked as `known` after editing a custom field, or resolving conflicts by adding a new model function that only updates the `customFields` or `conflictingFields` prop.
+
+- <details><summary>Updated dependencies [016611917a86c738c22f7da4235e3ad38cf81e2a, 710f6b2bc211ba1d06d701f99d17bf2405d19b32]:</summary>
+
+  - @rocket.chat/rest-typings@7.7.1
+  - @rocket.chat/model-typings@1.6.4
+  </details>
+
+## 1.5.3
+
+### Patch Changes
+
+- ([#35981](https://github.com/RocketChat/Rocket.Chat/pull/35981)) Deprecates the use of MongoDB oplog or Change Streams to receive real time data updates.
+
+  The previous behavior can still be enabled using the environment flag `DISABLE_DB_WATCHERS=false`.
+
+  ⚠️ In future major versions, this flag will be completely removed, and the `@rocket.chat/stream-hub-service` package and the `stream-hub-service` At that time the Docker image will no longer be published.
+
+- ([#35797](https://github.com/RocketChat/Rocket.Chat/pull/35797)) Fixes the room history pruning behavior when filesOnly is true to ensure only file-type attachments are removed, preserving quotes and non-file attachments.
+
+- <details><summary>Updated dependencies [7f9748374a3b04f7880003227cde7058e5ea9a68, 7f9748374a3b04f7880003227cde7058e5ea9a68, 6d36fc25a47281aad298edc6fc3a6e981d279f61, 6d334f21b97f0cb98d9af03be5167ff60198f6c1]:</summary>
+
+  - @rocket.chat/rest-typings@7.7.0
+  - @rocket.chat/model-typings@1.6.3
+  </details>
+
+## 1.5.3-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.7.0-rc.6
+  - @rocket.chat/model-typings@1.6.3-rc.6
+  </details>
+
+## 1.5.3-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.7.0-rc.5
+  - @rocket.chat/model-typings@1.6.3-rc.5
+  </details>
+
+## 1.5.3-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.7.1-rc.4
+  - @rocket.chat/model-typings@1.6.3-rc.4
+  </details>
+
+## 1.5.3-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/rest-typings@7.7.0-rc.3
+  - @rocket.chat/model-typings@1.6.1-rc.3
+  </details>
+
+## 1.5.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.7.0-rc.2
+  - @rocket.chat/model-typings@1.6.1-rc.2
+  </details>
+
+## 1.5.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.7.0-rc.1
+  - @rocket.chat/model-typings@1.6.1-rc.1
+  </details>
+
+## 1.5.3-rc.0
+
+### Patch Changes
+
+- ([#35981](https://github.com/RocketChat/Rocket.Chat/pull/35981)) Deprecates the use of MongoDB oplog or Change Streams to receive real time data updates.
+
+  The previous behavior can still be enabled using the environment flag `DISABLE_DB_WATCHERS=false`.
+
+  ⚠️ In future major versions, this flag will be completely removed, and the `@rocket.chat/stream-hub-service` package and the `stream-hub-service` Docker image will no longer be published.
+
+- ([#35797](https://github.com/RocketChat/Rocket.Chat/pull/35797)) Fixes the room history pruning behavior when filesOnly is true to ensure only file-type attachments are removed, preserving quotes and non-file attachments.
+
+- <details><summary>Updated dependencies [7f9748374a3b04f7880003227cde7058e5ea9a68, 7f9748374a3b04f7880003227cde7058e5ea9a68, 6d36fc25a47281aad298edc6fc3a6e981d279f61, 6d334f21b97f0cb98d9af03be5167ff60198f6c1]:</summary>
+
+  - @rocket.chat/rest-typings@7.7.0-rc.0
+  - @rocket.chat/model-typings@1.6.1-rc.0
+  </details>
+
+## 1.5.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/rest-typings@7.6.2
+  - @rocket.chat/model-typings@1.6.2
+  </details>
+
+## 1.5.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.1
+  - @rocket.chat/model-typings@1.6.1
+  </details>
+
+## 1.5.0
+
+### Minor Changes
+
+- ([#34954](https://github.com/RocketChat/Rocket.Chat/pull/34954) by [@tapiarafael](https://github.com/tapiarafael)) Allows search omnichannel rooms by the exact visitor name using double quotes to have a faster response
+
+- ([#35721](https://github.com/RocketChat/Rocket.Chat/pull/35721)) Enhances the `/api/apps/installed` and `/api/apps/:id/status` endpoints so they get apps' status across the cluster in High-Availability and Microservices deployments
+
+- ([#34494](https://github.com/RocketChat/Rocket.Chat/pull/34494)) Implements auditing events for `/v1/users.update` API endpoint
+
+### Patch Changes
+
+- ([#35497](https://github.com/RocketChat/Rocket.Chat/pull/35497)) Fixes an issue where the app's logs index was not being created by default sometimes, also set to be always 30 days
+
+- ([#35722](https://github.com/RocketChat/Rocket.Chat/pull/35722)) Fixes the behavior of "Maximum number of simultaneous chats" settings, making them more predictable. Previously, we applied a single limit per operation, being the order: `Department > Agent > Global`. This caused the department limit to take prescedence over agent's specific limit, causing some unwanted side effects.
+
+  The new way of applying the filter is as follows:
+
+  - An agent can accept chats from multiple departments, respecting each department’s limit individually.
+  - The total number of active chats (across all departments) must not exceed the configured Agent-Level or Global limit.
+  - If neither the Agent-Level nor Global Limit is set, only department-specific limits apply.
+  - If no limits are set at any level, there is no restriction on the number of chats an agent can handle.
+
+- ([#35618](https://github.com/RocketChat/Rocket.Chat/pull/35618)) Fixes an issue when sending a message on an omnichannel room would cause the web client to fetch the room data again.
+
+- <details><summary>Updated dependencies [45a93a7713546ed2e3e0b3988e1f989371ebf53a, 5f11fea4ab1dc149f82b7d8c5fc556a2cf09fa5e, d8eb824d242cbbeafb11b1c4a806860e4541ba79, 47ae69912cd90743e7bf836fdee4be481a01bbba]:</summary>
+
+  - @rocket.chat/model-typings@1.6.0
+  - @rocket.chat/rest-typings@7.6.0
+  </details>
+
+## 1.5.0-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.8
+  - @rocket.chat/model-typings@1.6.0-rc.8
+  </details>
+
+## 1.5.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.7
+  - @rocket.chat/model-typings@1.6.0-rc.7
+  </details>
+
+## 1.5.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.6
+  - @rocket.chat/model-typings@1.6.0-rc.6
+  </details>
+
+## 1.5.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.5
+  - @rocket.chat/model-typings@1.6.0-rc.5
+  </details>
+
+## 1.5.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.4
+  - @rocket.chat/model-typings@1.6.0-rc.4
+  </details>
+
+## 1.5.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.3
+  - @rocket.chat/model-typings@1.6.0-rc.3
+  </details>
+
+## 1.5.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.2
+  - @rocket.chat/model-typings@1.6.0-rc.2
+  </details>
+
+## 1.5.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.6.0-rc.1
+  - @rocket.chat/model-typings@1.6.0-rc.1
+  </details>
+
+## 1.5.0-rc.0
+
+### Minor Changes
+
+- ([#34954](https://github.com/RocketChat/Rocket.Chat/pull/34954) by [@tapiarafael](https://github.com/tapiarafael)) Allows search omnichannel rooms by the exact visitor name using double quotes to have a faster response
+
+- ([#35721](https://github.com/RocketChat/Rocket.Chat/pull/35721)) Enhances the `/api/apps/installed` and `/api/apps/:id/status` endpoints so they get apps' status across the cluster in High-Availability and Microservices deployments
+
+- ([#34494](https://github.com/RocketChat/Rocket.Chat/pull/34494)) Implements auditing events for `/v1/users.update` API endpoint
+
+### Patch Changes
+
+- ([#35497](https://github.com/RocketChat/Rocket.Chat/pull/35497)) Fixes an issue where the app's logs index was not being created by default sometimes, also set to be always 30 days
+
+- ([#35722](https://github.com/RocketChat/Rocket.Chat/pull/35722)) Fixes the behavior of "Maximum number of simultaneous chats" settings, making them more predictable. Previously, we applied a single limit per operation, being the order: `Department > Agent > Global`. This caused the department limit to take prescedence over agent's specific limit, causing some unwanted side effects.
+
+  The new way of applying the filter is as follows:
+
+  - An agent can accept chats from multiple departments, respecting each department’s limit individually.
+  - The total number of active chats (across all departments) must not exceed the configured Agent-Level or Global limit.
+  - If neither the Agent-Level nor Global Limit is set, only department-specific limits apply.
+  - If no limits are set at any level, there is no restriction on the number of chats an agent can handle.
+
+- ([#35618](https://github.com/RocketChat/Rocket.Chat/pull/35618)) Fixes an issue when sending a message on an omnichannel room would cause the web client to fetch the room data again.
+
+- <details><summary>Updated dependencies [45a93a7713546ed2e3e0b3988e1f989371ebf53a, 5f11fea4ab1dc149f82b7d8c5fc556a2cf09fa5e, d8eb824d242cbbeafb11b1c4a806860e4541ba79, 47ae69912cd90743e7bf836fdee4be481a01bbba]:</summary>
+
+  - @rocket.chat/model-typings@1.6.0-rc.0
+  - @rocket.chat/rest-typings@7.6.0-rc.0
+  </details>
+
+## 1.4.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.5.1
+  - @rocket.chat/model-typings@1.5.1
+  </details>
+
+## 1.4.0
+
+### Minor Changes
+
+- ([#35370](https://github.com/RocketChat/Rocket.Chat/pull/35370)) Adds a new "Unit" field to the create/edit department page, allowing users to specify a business unit when creating or editing a department.
+
+- ([#35474](https://github.com/RocketChat/Rocket.Chat/pull/35474)) Adds automatic presence sync based on calendar events, updating the user’s status to “busy” when a meeting starts and reverting it afterward.
+
+### Patch Changes
+
+- ([#35374](https://github.com/RocketChat/Rocket.Chat/pull/35374)) Enforces app limitations on license downgrade by disabling premium marketplace apps, limiting marketplace apps to the oldest 5, and disabling private apps unless grandfathered based on historical statistics.
+
+- ([#35456](https://github.com/RocketChat/Rocket.Chat/pull/35456)) Fixes an issue wit airgapped restrictions being incorrectly applied.
+
+- <details><summary>Updated dependencies [4ce00382e9877c4d9241747fdd4f4223d70b58a7, 3b5406172c5575f09e9f5a2cb3ff99122900afde, c904862b1496cab943e97d28b36d3a24deac21c1, 96432420860651a3279069111972af6ec18c3b8a, cc4111cf0b1458dd97369baf8969734f337650dc, bb4ff0db3dcedcc715eb4b69b3f8d5c79ce0cb5f]:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0
+  - @rocket.chat/model-typings@1.5.0
+  </details>
+
+## 1.4.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0-rc.5
+  - @rocket.chat/model-typings@1.5.0-rc.5
+  </details>
+
+## 1.4.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0-rc.4
+  - @rocket.chat/model-typings@1.5.0-rc.4
+  </details>
+
+## 1.4.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0-rc.3
+  - @rocket.chat/model-typings@1.5.0-rc.3
+  </details>
+
+## 1.4.0-rc.2
+
+### Minor Changes
+
+- ([#35474](https://github.com/RocketChat/Rocket.Chat/pull/35474)) Adds automatic presence sync based on calendar events, updating the user’s status to “busy” when a meeting starts and reverting it afterward.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cc4111cf0b1458dd97369baf8969734f337650dc]:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0-rc.2
+  - @rocket.chat/model-typings@1.5.0-rc.2
+  </details>
+
+## 1.4.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0-rc.1
+  - @rocket.chat/model-typings@1.5.0-rc.1
+  </details>
+
+## 1.4.0-rc.0
+
+### Minor Changes
+
+- ([#35370](https://github.com/RocketChat/Rocket.Chat/pull/35370)) Adds a new "Unit" field to the create/edit department page, allowing users to specify a business unit when creating or editing a department.
+
+### Patch Changes
+
+- ([#35374](https://github.com/RocketChat/Rocket.Chat/pull/35374)) Enforces app limitations on license downgrade by disabling premium marketplace apps, limiting marketplace apps to the oldest 5, and disabling private apps unless grandfathered based on historical statistics.
+
+- ([#35456](https://github.com/RocketChat/Rocket.Chat/pull/35456)) Fixes an issue wit airgapped restrictions being incorrectly applied.
+
+- <details><summary>Updated dependencies [4ce00382e9877c4d9241747fdd4f4223d70b58a7, 3b5406172c5575f09e9f5a2cb3ff99122900afde, c904862b1496cab943e97d28b36d3a24deac21c1, 96432420860651a3279069111972af6ec18c3b8a, bb4ff0db3dcedcc715eb4b69b3f8d5c79ce0cb5f]:</summary>
+
+  - @rocket.chat/rest-typings@7.5.0-rc.0
+  - @rocket.chat/model-typings@1.5.0-rc.0
+  </details>
+
+## 1.3.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.4.1
+  - @rocket.chat/model-typings@1.4.1
+  </details>
+
 ## 1.3.0
 
 ### Minor Changes

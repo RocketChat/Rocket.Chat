@@ -2,25 +2,24 @@ import {
 	type IOmnichannelAgent,
 	type OmichannelRoutingConfig,
 	OmnichannelSortingMechanismSettingType,
-	type ILivechatInquiryRecord,
 	LivechatInquiryStatus,
 } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
+import { createComparatorFromSort } from '@rocket.chat/mongo-adapter';
+import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream, useCustomSound } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
+import { useState, useEffect, useMemo, memo, useRef } from 'react';
+import { useShallow } from 'zustand/shallow';
 
-import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
-import { useNewRoomNotification } from '../hooks/notification/useNewRoomNotification';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
+import { useLivechatInquiryStore } from '../hooks/useLivechatInquiryStore';
 import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
-import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 
 const emptyContextValue: OmnichannelContextValue = {
@@ -76,7 +75,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const isPrioritiesEnabled = isEnterprise && accessible;
 	const enabled = accessible && !!user && !!routeConfig;
 
-	const notifyNewRoom = useNewRoomNotification();
+	const { notificationSounds } = useCustomSound();
 
 	const {
 		data: { priorities = [] } = {},
@@ -142,28 +141,29 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		return streamNotifyUser(`${user._id}/departmentAgentData`, handleDepartmentAgentData);
 	}, [manuallySelected, streamNotifyUser, user?._id]);
 
-	const queue = useReactiveValue<ILivechatInquiryRecord[] | undefined>(
-		useCallback(() => {
+	const queue = useLivechatInquiryStore(
+		useShallow((state) => {
 			if (!manuallySelected) {
 				return undefined;
 			}
 
-			return LivechatInquiry.find(
-				{ status: LivechatInquiryStatus.QUEUED },
-				{
-					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
-					limit: omnichannelPoolMaxIncoming,
-				},
-			).fetch();
-		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism]),
+			return state.records
+				.filter((inquiry) => inquiry.status === LivechatInquiryStatus.QUEUED)
+				.sort(createComparatorFromSort(getOmniChatSortQuery(omnichannelSortingMechanism)))
+				.slice(...(omnichannelPoolMaxIncoming > 0 ? [0, omnichannelPoolMaxIncoming] : []));
+		}),
 	);
 
 	useEffect(() => {
 		if (lastQueueSize.current < (queue?.length ?? 0)) {
-			notifyNewRoom();
+			notificationSounds.playNewRoom();
 		}
 		lastQueueSize.current = queue?.length ?? 0;
-	}, [notifyNewRoom, queue?.length]);
+
+		return () => {
+			notificationSounds.stopNewRoom();
+		};
+	}, [notificationSounds, queue?.length]);
 
 	useOmnichannelContinuousSoundNotification(queue ?? []);
 

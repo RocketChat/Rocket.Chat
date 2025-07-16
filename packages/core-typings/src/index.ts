@@ -1,5 +1,7 @@
 import './ServerAudit/IAuditServerSettingEvent';
+import './ServerAudit/IAuditUserChangedEvent';
 
+export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
 export * from './AppOverview';
 export * from './FeaturedApps';
@@ -146,3 +148,5 @@ export * from './RoomRouteData';
 
 export * as Cloud from './cloud';
 export * from './themes';
+
+export { schemas } from './Ajv';

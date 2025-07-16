@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
 
 export class HomeSidenav {
@@ -61,10 +62,22 @@ export class HomeSidenav {
 		return this.sidebarToolbar.getByRole('button', { name: 'Home' });
 	}
 
+	get btnDisplay(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Display' });
+	}
+
+	get btnCreateNew(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Create new' });
+	}
+
+	get btnAdministration(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Administration' });
+	}
+
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
 		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.sidebarToolbar.click();
+		await this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.page.keyboard.press('Escape');
 	}
 
 	// Note: this is different from openChat because queued chats are not searchable
@@ -199,10 +212,14 @@ export class HomeSidenav {
 	}
 
 	async createEncryptedChannel(name: string) {
+		const toastMessages = new ToastMessages(this.page);
+
 		await this.openNewByLabel('Channel');
 		await this.inputChannelName.fill(name);
 		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
+
+		await toastMessages.dismissToast('success');
 	}
 }

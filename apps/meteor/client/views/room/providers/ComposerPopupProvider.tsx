@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useMethod, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useMethod, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -10,8 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { emoji } from '../../../../app/emoji/client';
-import { Subscriptions } from '../../../../app/models/client';
-import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
+import { Messages, Subscriptions } from '../../../../app/models/client';
 import { slashCommands } from '../../../../app/utils/client';
 import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
@@ -34,6 +33,33 @@ type ComposerPopupProviderProps = {
 	room: IRoom;
 };
 
+const getLastRecentUsers = (rid: string, uid: string) => {
+	const uniqueUsers = new Map<
+		string,
+		{
+			_id: string;
+			username: string;
+			name?: string;
+			ts: Date;
+			suggestion?: boolean;
+		}
+	>();
+	Messages.state
+		.filter((record) => record.rid === rid && record.u && record.u._id !== uid && !record.t && !!record.ts)
+		.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+		.forEach(({ u: { username, name, _id }, ts }) => {
+			if (!uniqueUsers.has(username)) {
+				uniqueUsers.set(username, {
+					_id,
+					username,
+					name,
+					ts,
+				});
+			}
+		});
+
+	return Array.from(uniqueUsers.values());
+};
 const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) => {
 	const { _id: rid, encrypted: isRoomEncrypted } = room;
 
@@ -53,8 +79,9 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const encrypted = isRoomEncrypted && e2eEnabled && !unencryptedMessagesAllowed;
 	const queryClient = useQueryClient();
-
+	const uid = useUserId();
 	const call = useMethod('getSlashCommandPreviews');
+
 	const value: ComposerPopupContextValue = useMemo(() => {
 		return [
 			createMessageBoxPopupConfig({
@@ -64,24 +91,18 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const items: ComposerBoxPopupUserProps[] = [];
 
-					const users = usersFromRoomMessages
-						.find(
-							{
-								ts: { $exists: true },
-								...(filter && {
-									$or: [{ username: filterRegex }, { name: filterRegex }],
-								}),
-							},
-							{
-								limit: suggestionsCount ?? 5,
-								sort: { ts: -1 },
-							},
-						)
-						.fetch()
-						.map((u) => {
-							u.suggestion = true;
-							return u;
-						});
+					const roomMessageUsers = getLastRecentUsers(rid, uid!)
+						.filter((u) => {
+							if (!filterRegex) return true;
+							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
+						})
+						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+						.slice(0, suggestionsCount ?? 5)
+						.map((u) => ({
+							...u,
+							suggestion: true,
+						}));
+
 					if (!filterRegex || filterRegex.test('all')) {
 						items.push({
 							_id: 'all',
@@ -102,27 +123,19 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						});
 					}
 
-					return [...users, ...items];
+					return [...roomMessageUsers, ...items];
 				},
 				getItemsFromServer: async (filter: string) => {
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
-					const usernames = usersFromRoomMessages
-						.find(
-							{
-								ts: { $exists: true },
-								...(filter && {
-									$or: [{ username: filterRegex }, { name: filterRegex }],
-								}),
-							},
-							{
-								limit: suggestionsCount ?? 5,
-								sort: { ts: -1 },
-							},
-						)
-						.fetch()
-						.map((u) => {
-							return u.username;
-						});
+					const usernames = getLastRecentUsers(rid, uid!)
+						.filter((u) => {
+							if (!filterRegex) return true;
+							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
+						})
+						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+						.slice(0, suggestionsCount ?? 5)
+						.map((u) => u.username);
+
 					const { users = [] } = await userSpotlight(filter, usernames, { users: true, mentions: true }, rid);
 
 					return users.map(({ _id, username, nickname, name, status, avatarETag, outside }) => {
@@ -379,19 +392,20 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 			}),
 		].filter(Boolean);
 	}, [
-		t,
-		useEmoji,
-		encrypted,
+		call,
 		cannedResponseEnabled,
+		encrypted,
+		i18n,
 		isOmnichannel,
 		previewTitle,
-		suggestionsCount,
-		userSpotlight,
-		rid,
-		recentEmojis,
-		i18n,
 		queryClient,
-		call,
+		recentEmojis,
+		rid,
+		suggestionsCount,
+		t,
+		uid,
+		useEmoji,
+		userSpotlight,
 	]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;

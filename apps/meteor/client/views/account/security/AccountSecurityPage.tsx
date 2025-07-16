@@ -1,4 +1,4 @@
-import { Box, Accordion, AccordionItem, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Accordion, AccordionItem, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { ReactElement } from 'react';
@@ -10,6 +10,7 @@ import TwoFactorEmail from './TwoFactorEmail';
 import TwoFactorTOTP from './TwoFactorTOTP';
 import Passkey from './Passkey';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
 const passwordDefaultValues = { password: '', confirmationPassword: '' };
 
@@ -41,6 +42,8 @@ const AccountSecurityPage = (): ReactElement => {
 
 	const passwordFormId = useId();
 
+	const require2faSetup = useRequire2faSetup();
+
 	return (
 		<Page>
 			<PageHeader title={t('Security')} />
@@ -49,7 +52,7 @@ const AccountSecurityPage = (): ReactElement => {
 					{allowPasswordChange && (
 						<FormProvider {...methods}>
 							<Accordion>
-								<AccordionItem title={t('Password')} defaultExpanded>
+								<AccordionItem title={t('Password')} expanded={!require2faSetup}>
 									<ChangePassword id={passwordFormId} />
 								</AccordionItem>
 							</Accordion>
@@ -64,7 +67,12 @@ const AccountSecurityPage = (): ReactElement => {
 					</Accordion>
 					<Accordion>
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
-							<AccordionItem title={t('Two Factor Authentication')}>
+							<AccordionItem expanded={require2faSetup} title={t('Two Factor Authentication')}>
+								{require2faSetup && (
+									<Callout type='warning' title={t('Enable_two-factor_authentication')} mbe='24px'>
+										{t('Enable_two-factor_authentication_callout_description')}
+									</Callout>
+								)}
 								{twoFactorTOTP && <TwoFactorTOTP />}
 								{showEmailTwoFactor && <TwoFactorEmail />}
 							</AccordionItem>

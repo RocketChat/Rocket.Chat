@@ -1,5 +1,6 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
@@ -8,7 +9,6 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import PruneMessages from './PruneMessages';
-import GenericModal from '../../../../components/GenericModal';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
@@ -94,10 +94,13 @@ const PruneMessagesWithData = (): ReactElement => {
 				setCounter(count);
 
 				if (count < 1) {
-					throw new Error(t('No_messages_found_to_prune'));
+					throw new Error(attached ? t('No_files_found_to_prune') : t('No_messages_found_to_prune'));
 				}
 
-				dispatchToastMessage({ type: 'success', message: t('__count__message_pruned', { count }) });
+				dispatchToastMessage({
+					type: 'success',
+					message: attached ? t('__count__file_pruned', { count }) : t('__count__message_pruned', { count }),
+				});
 				methods.reset();
 			} catch (error: unknown) {
 				dispatchToastMessage({ type: 'error', message: error });

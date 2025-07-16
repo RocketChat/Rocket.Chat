@@ -1,4 +1,5 @@
 import type { ISetting } from '@rocket.chat/core-typings';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { createContext, useContext } from 'react';
 import { create, type StoreApi, type UseBoundStore } from 'zustand';
 import { useShallow } from 'zustand/shallow';
@@ -19,6 +20,28 @@ export const compareSettings = (a: EditableSetting, b: EditableSetting): number 
 	const i18nLabel = a.i18nLabel.localeCompare(b.i18nLabel);
 
 	return i18nLabel;
+};
+
+export const performSettingQuery = (
+	query:
+		| string
+		| {
+				_id: string;
+				value: unknown;
+		  }
+		| {
+				_id: string;
+				value: unknown;
+		  }[]
+		| undefined,
+	settings: ISetting[],
+) => {
+	if (!query) {
+		return true;
+	}
+
+	const queries = [].concat(typeof query === 'string' ? JSON.parse(query) : query);
+	return queries.every((query) => settings.some(createPredicateFromFilter(query)));
 };
 
 type EditableSettingsContextQuery =
@@ -124,4 +147,15 @@ export const useEditableSettingsGroupTabs = (_id: ISetting['_id']): ISetting['_i
 export const useEditableSettingsDispatch = (): ((changes: Partial<EditableSetting>[]) => void) => {
 	const { useEditableSettingsStore } = useContext(EditableSettingsContext);
 	return useEditableSettingsStore((state) => state.mutate);
+};
+
+export const useEditableSettingVisibilityQuery = (query?: ISetting['enableQuery'] | ISetting['displayQuery']): boolean => {
+	const { useEditableSettingsStore } = useContext(EditableSettingsContext);
+
+	return useEditableSettingsStore((state) => {
+		if (!query) {
+			return true;
+		}
+		return performSettingQuery(query, state.state);
+	});
 };

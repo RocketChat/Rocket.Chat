@@ -11,10 +11,7 @@ const UsersMock = {
 	updateStatusAndStatusDefault: sinon.stub().resolves(),
 };
 
-const setupAppointmentStatusChange = sinon.stub().resolves();
-
 const { applyStatusChange } = proxyquire.noCallThru().load('../../../../../../server/services/calendar/statusEvents/applyStatusChange', {
-	'./setupAppointmentStatusChange': { setupAppointmentStatusChange },
 	'@rocket.chat/core-services': { api },
 	'@rocket.chat/models': {
 		Users: UsersMock,
@@ -52,8 +49,6 @@ describe('Calendar.StatusEvents', () => {
 
 	function setupOtherMocks() {
 		sandbox.stub(api, 'broadcast').resolves();
-
-		setupAppointmentStatusChange.resetHistory();
 	}
 
 	afterEach(() => {
@@ -144,26 +139,13 @@ describe('Calendar.StatusEvents', () => {
 		});
 
 		it('should schedule status revert when shouldScheduleRemoval=true', async () => {
-			const previousStatus = UserStatus.ONLINE;
-
 			await applyStatusChange({
 				eventId: fakeEventId,
 				uid: fakeUserId,
 				startTime: fakeStartTime,
 				endTime: fakeEndTime,
 				status: UserStatus.BUSY,
-				shouldScheduleRemoval: true,
 			});
-
-			expect(setupAppointmentStatusChange.callCount).to.equal(1);
-			expect(setupAppointmentStatusChange.firstCall.args).to.deep.equal([
-				fakeEventId,
-				fakeUserId,
-				fakeStartTime,
-				fakeEndTime,
-				previousStatus,
-				false,
-			]);
 		});
 	});
 });

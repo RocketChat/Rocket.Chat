@@ -11,8 +11,12 @@ type SubscribedRooms = {
 	t: string;
 };
 
-export const closeOmnichannelConversations = async (user: IUser, subscribedRooms: SubscribedRooms[]): Promise<void> => {
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+export const closeOmnichannelConversations = async (
+	user: IUser,
+	subscribedRooms: SubscribedRooms[],
+	executedBy?: string,
+): Promise<void> => {
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: executedBy });
 	const roomsInfo = LivechatRooms.findByIds(
 		subscribedRooms.map(({ rid }) => rid),
 		{},

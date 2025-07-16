@@ -53,6 +53,7 @@ API.v1.addRoute(
 				'Livechat_widget_position',
 				'Livechat_hide_system_messages',
 				'Omnichannel_allow_visitors_to_close_conversation',
+				'Livechat_hide_expand_chat',
 			];
 
 			const valid = settings.every((setting) => validSettingList.includes(setting._id));
@@ -98,7 +99,7 @@ API.v1.addRoute(
 				_id: this.userId,
 				username: this.user.username!,
 				ip: this.requestIp,
-				useragent: this.request.headers['user-agent'] || '',
+				useragent: this.request.headers.get('user-agent') || '',
 			});
 
 			const promises = eligibleSettings.map(({ _id, value }) => auditSettingOperation(Settings.updateValueById, _id, value));

@@ -87,7 +87,7 @@ describe('Send transcript', () => {
 	});
 	it('should attempt to send an email when params are valid using default subject', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'token' } });
-		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.resolves([]);
+		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([]);
 		tStub.returns('Conversation Transcript');
 
 		await sendTranscript({
@@ -112,7 +112,7 @@ describe('Send transcript', () => {
 	});
 	it('should use provided subject', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'token' } });
-		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.resolves([]);
+		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([]);
 
 		await sendTranscript({
 			rid: 'rid',
@@ -137,7 +137,7 @@ describe('Send transcript', () => {
 	});
 	it('should use subject from setting (when configured) when no subject provided', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'token' } });
-		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.resolves([]);
+		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([]);
 		mockSettingValues.Livechat_transcript_email_subject = 'A custom subject obtained from setting.get';
 
 		await sendTranscript({
@@ -197,7 +197,7 @@ describe('Send transcript', () => {
 	});
 	it('should work when token matches room.v', async () => {
 		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'token-123' } });
-		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.resolves([]);
+		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([]);
 		delete mockSettingValues.Livechat_transcript_email_subject;
 		tStub.returns('Conversation Transcript');
 

@@ -26,80 +26,80 @@ import type { UserBridge } from './UserBridge';
 import type { VideoConferenceBridge } from './VideoConferenceBridge';
 
 export type Bridge =
-    | CommandBridge
-    | ContactBridge
-    | ApiBridge
-    | AppDetailChangesBridge
-    | EnvironmentalVariableBridge
-    | HttpBridge
-    | IListenerBridge
-    | LivechatBridge
-    | MessageBridge
-    | PersistenceBridge
-    | AppActivationBridge
-    | RoomBridge
-    | IInternalBridge
-    | ServerSettingBridge
-    | EmailBridge
-    | UploadBridge
-    | UserBridge
-    | UiInteractionBridge
-    | SchedulerBridge
-    | VideoConferenceBridge
-    | OAuthAppsBridge
-    | ModerationBridge
-    | RoleBridge;
+	| CommandBridge
+	| ContactBridge
+	| ApiBridge
+	| AppDetailChangesBridge
+	| EnvironmentalVariableBridge
+	| HttpBridge
+	| IListenerBridge
+	| LivechatBridge
+	| MessageBridge
+	| PersistenceBridge
+	| AppActivationBridge
+	| RoomBridge
+	| IInternalBridge
+	| ServerSettingBridge
+	| EmailBridge
+	| UploadBridge
+	| UserBridge
+	| UiInteractionBridge
+	| SchedulerBridge
+	| VideoConferenceBridge
+	| OAuthAppsBridge
+	| ModerationBridge
+	| RoleBridge;
 
 export abstract class AppBridges {
-    public abstract getCommandBridge(): CommandBridge;
+	public abstract getCommandBridge(): CommandBridge;
 
-    public abstract getContactBridge(): ContactBridge;
+	public abstract getContactBridge(): ContactBridge;
 
-    public abstract getApiBridge(): ApiBridge;
+	public abstract getApiBridge(): ApiBridge;
 
-    public abstract getAppDetailChangesBridge(): AppDetailChangesBridge;
+	public abstract getAppDetailChangesBridge(): AppDetailChangesBridge;
 
-    public abstract getEnvironmentalVariableBridge(): EnvironmentalVariableBridge;
+	public abstract getEnvironmentalVariableBridge(): EnvironmentalVariableBridge;
 
-    public abstract getHttpBridge(): HttpBridge;
+	public abstract getHttpBridge(): HttpBridge;
 
-    public abstract getListenerBridge(): IListenerBridge;
+	public abstract getListenerBridge(): IListenerBridge;
 
-    public abstract getLivechatBridge(): LivechatBridge;
+	public abstract getLivechatBridge(): LivechatBridge;
 
-    public abstract getMessageBridge(): MessageBridge;
+	public abstract getMessageBridge(): MessageBridge;
 
-    public abstract getPersistenceBridge(): PersistenceBridge;
+	public abstract getPersistenceBridge(): PersistenceBridge;
 
-    public abstract getAppActivationBridge(): AppActivationBridge;
+	public abstract getAppActivationBridge(): AppActivationBridge;
 
-    public abstract getRoomBridge(): RoomBridge;
+	public abstract getRoomBridge(): RoomBridge;
 
-    public abstract getInternalBridge(): IInternalBridge;
+	public abstract getInternalBridge(): IInternalBridge;
 
-    public abstract getInternalFederationBridge(): IInternalFederationBridge;
+	public abstract getInternalFederationBridge(): IInternalFederationBridge;
 
-    public abstract getServerSettingBridge(): ServerSettingBridge;
+	public abstract getServerSettingBridge(): ServerSettingBridge;
 
-    public abstract getUploadBridge(): UploadBridge;
+	public abstract getUploadBridge(): UploadBridge;
 
-    public abstract getEmailBridge(): EmailBridge;
+	public abstract getEmailBridge(): EmailBridge;
 
-    public abstract getUserBridge(): UserBridge;
+	public abstract getUserBridge(): UserBridge;
 
-    public abstract getUiInteractionBridge(): UiInteractionBridge;
+	public abstract getUiInteractionBridge(): UiInteractionBridge;
 
-    public abstract getSchedulerBridge(): SchedulerBridge;
+	public abstract getSchedulerBridge(): SchedulerBridge;
 
-    public abstract getCloudWorkspaceBridge(): CloudWorkspaceBridge;
+	public abstract getCloudWorkspaceBridge(): CloudWorkspaceBridge;
 
-    public abstract getVideoConferenceBridge(): VideoConferenceBridge;
+	public abstract getVideoConferenceBridge(): VideoConferenceBridge;
 
-    public abstract getOAuthAppsBridge(): OAuthAppsBridge;
+	public abstract getOAuthAppsBridge(): OAuthAppsBridge;
 
-    public abstract getModerationBridge(): ModerationBridge;
+	public abstract getModerationBridge(): ModerationBridge;
 
-    public abstract getThreadBridge(): ThreadBridge;
+	public abstract getThreadBridge(): ThreadBridge;
 
-    public abstract getRoleBridge(): RoleBridge;
+	public abstract getRoleBridge(): RoleBridge;
 }

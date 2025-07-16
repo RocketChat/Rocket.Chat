@@ -1,8 +1,8 @@
+import { Room } from '@rocket.chat/core-services';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { addUserToRoom } from './addUserToRoom';
 import { isObject } from '../../../../lib/utils/isObject';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 
@@ -88,7 +88,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 	// If the room type is channel and joinChannel has been passed, try to join them
 	// if they can't join the room, this will error out!
 	if (room.t === 'c' && joinChannel) {
-		await addUserToRoom(room._id, user);
+		await Room.join({ room, user });
 	}
 
 	return room;

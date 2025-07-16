@@ -1,4 +1,5 @@
 export * from './convertSubObjectsIntoPaths';
+export * from './convertPathsIntoSubObjects';
 export * from './getObjectKeys';
 export * from './normalizeLanguage';
 export * from './objectMap';
@@ -8,3 +9,6 @@ export * from './timezone';
 export * from './wrapExceptions';
 export * from './getLoginExpiration';
 export * from './converter';
+export * from './removeEmpty';
+export * from './isObject';
+export * from './isRecord';

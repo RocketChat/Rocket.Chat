@@ -1,15 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Tracker } from 'meteor/tracker';
 
 import { ChromeScreenShare } from './screenShare';
-import GenericModal from '../../../client/components/GenericModal';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { Subscriptions } from '../../models/client';
+import { Subscriptions, Users } from '../../models/client';
 import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
@@ -65,9 +63,9 @@ type EventData<TStreamName extends StreamNames, TStreamKey extends StreamKeys<TS
 
 type StatusData = EventData<'notify-room', `${string}/webrtc`, 'status'>;
 type CallData = EventData<'notify-room-users', `${string}/webrtc`, 'call'>;
-type CandidateData = EventData<'notify-user', `${string}/webrtc`, 'candidate'>;
-type DescriptionData = EventData<'notify-user', `${string}/webrtc`, 'description'>;
-type JoinData = EventData<'notify-user', `${string}/webrtc`, 'join'>;
+export type CandidateData = EventData<'notify-user', `${string}/webrtc`, 'candidate'>;
+export type DescriptionData = EventData<'notify-user', `${string}/webrtc`, 'description'>;
+export type JoinData = EventData<'notify-user', `${string}/webrtc`, 'join'>;
 
 type RemoteItem = {
 	id: string;
@@ -822,7 +820,7 @@ class WebRTCClass {
 			return;
 		}
 
-		const user = Meteor.users.findOne(data.from);
+		const user = Users.findOne(data.from);
 		let fromUsername = undefined;
 		if (user?.username) {
 			fromUsername = user.username;
@@ -1073,32 +1071,5 @@ const WebRTC = new (class {
 		return this.instancesByRoomId[rid];
 	}
 })();
-
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const uid = Meteor.userId();
-
-		if (uid) {
-			sdk.stream('notify-user', [`${uid}/${WEB_RTC_EVENTS.WEB_RTC}`], (type, data) => {
-				if (data.room == null) {
-					return;
-				}
-				const webrtc = WebRTC.getInstanceByRoomId(data.room);
-
-				switch (type) {
-					case 'candidate':
-						webrtc?.onUserStream('candidate', data);
-						break;
-					case 'description':
-						webrtc?.onUserStream('description', data);
-						break;
-					case 'join':
-						webrtc?.onUserStream('join', data);
-						break;
-				}
-			});
-		}
-	});
-});
 
 export { WebRTC };

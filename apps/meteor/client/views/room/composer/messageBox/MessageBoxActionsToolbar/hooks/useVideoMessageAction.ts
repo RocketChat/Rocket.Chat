@@ -55,7 +55,7 @@ export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps =
 	return {
 		id: 'video-message',
 		content: getMediaActionTitle,
-		icon: 'video',
+		icon: 'video-message',
 		disabled: !isAllowed || Boolean(disabled),
 		onClick: handleOpenVideoMessage,
 	};

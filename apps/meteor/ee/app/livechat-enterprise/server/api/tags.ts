@@ -4,7 +4,11 @@ import { getPaginationItems } from '../../../../../app/api/server/helpers/getPag
 
 API.v1.addRoute(
 	'livechat/tags',
-	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } } },
+	{
+		authRequired: true,
+		permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } },
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -30,7 +34,11 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/tags/:tagId',
-	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } } },
+	{
+		authRequired: true,
+		permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } },
+		license: ['livechat-enterprise'],
+	},
 	{
 		async get() {
 			const { tagId } = this.urlParams;

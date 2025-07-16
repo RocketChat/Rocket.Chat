@@ -23,7 +23,7 @@ env:
 jobs:
   release-versions:
     name: ⚙️ Variables Setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       release: ${{ steps.by-tag.outputs.release }}
       latest-release: ${{ steps.latest.outputs.latest-release }}
@@ -36,8 +36,8 @@ jobs:
       deno-version: ${{ steps.var.outputs.deno-version }}
       official-platform: 'alpine'
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
-      # to avoid this, we are using a dummy license, expiring at 2025-06-31
-      enterprise-license: X/XumwIkgwQuld0alWKt37lVA90XjKOrfiMvMZ0/RtqsMtrdL9GoAk+4jXnaY1b2ePoG7XSzGhuxEDxFKIWJK3hIKGNTvrd980LgH5sM5+1T4P42ivSpd8UZi0bwjJkCFLIu9RozzYwslGG0IehMxe0S6VjcO0UYlUJtbMCBHuR2WmTAmO6YVU3ln+pZCbrPFaTPSS1RovhKaNCNkZwIx/CLWW8UTXUuFV/ML4PbKKVoa5nvvJwPeatgL7UCnlSD90lfCiiuikpzj/Y/JLkIL6velFbwNxsrxg9iRJ2k0sKheMMSmlTiGzSvZUm+na5WQq91aKGncih+DmaEZA7QGrjp4eoA0dqTk6OmItsy0fHmQhvZIOKNMeO7vNQiLbaSV6rqibrzu7WPpeIvsvL57T1h37USoCSB6+jDqkzdfoqIpz8BxTiJDj1d8xGPJFVrgxoqQqkj9qIP/gCaEz5DF39QFv5sovk4yK2O8fEQYod2d14V9yECYl4szZPMk1IBfCAC2w7czWGHHFonhL+CQGT403y5wmDmnsnjlCqMKF72odqfTPTI8XnCvJDriPMWohnQEAGtTTyciAhNokx/mjAVJ4NeZPcsbm4BjhvJvnjxx/BhYhBBTNWPaCSZzocfrGUj9Z+ZA7BEz+xAFQyGDx3xRzqIXfT0G7w8fvgYJMU=
+      # to avoid this, we are using a dummy license, expiring at 2026-07-01
+      enterprise-license: Uo7Jcr6WW0XYA8ydHd+Sk6pZ9/0V6dIASnyTwvUrNym/zJg2Ma3eYNKkC8osXLCc72y1ahohnWY7/+7IYkvono3GYXQR+IGvYbbrVgNR6OjMahd9P/odHZL1GFTm2qHrEL5Hh/XEOG+YluFeRdWPzCizQlp4zGGOi0+PkQo096TR9NVCLrsErVl2MW1WM6ZM1W5EUJG9pKly4BQnaOTUAlor1im6i8qPTDCKrISZfLiZEWuQKaPW/GE3mRKjQNjDh0CabX1N2S880pRRGoozBYAnp2NmFfrQW0+5ihKisBTIeMbMZ7K5NE5PkYU1nhQDcc+rpDHtwG9Ceg5X0J+oea3UfrPTmDON2aSI0iO22kvL6G7QI3fyrEIvJrMbxcNKxAFeQYgnjisw/b06+chWSG4jG686Fx58XrVS87dFhWL9WoGltsk1dJCntUQvI1sX6zOfpvyg1iWRnHfYDOrwoWlX57XMm29fWineEoqnOOTOVnA/uP+DKEhercQ9Xuo7Cr6zJxpQpwd03e7ODVjiEbTDqlkZE687rmxRCD4Wmu8L86WIl2xSEIajKLX301Ww5mz/FdLqk+Mg32lkW66W3azQKvJ1440NBrYxhpJ+dl9vSFMb3s1+xnz1cYUbjUcq9mARvORcgy5mLwKulmqT6Sq0Uvbv10YCO0TW0beXYW8=
     steps:
       - uses: actions/checkout@v4
         with:
@@ -93,7 +93,7 @@ jobs:
 
   notify-draft-services:
     name: 🚀 Notify external services - draft
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [release-versions]
     steps:
       - uses: actions/checkout@v4
@@ -130,13 +130,13 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
   packages-build:
     name: 📦 Build Packages
     needs: [release-versions, notify-draft-services]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Github Info
         run: |
@@ -173,7 +173,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.os }}-
 
-      - uses: rharkor/caching-for-turbo@v1.6
+      - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Build Rocket.Chat Packages
         run: yarn build
@@ -187,19 +187,20 @@ jobs:
           include-hidden-files: true
 
   deploy-preview:
-    runs-on: ubuntu-latest
+    name: 👀 Deploy Preview
+    runs-on: ubuntu-24.04
     needs: [release-versions, packages-build]
     steps:
       - uses: actions/checkout@v4
 
-      - uses: rharkor/caching-for-turbo@v1.6
+      - uses: rharkor/caching-for-turbo@v1.8
         if: github.event.action != 'closed'
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         if: github.event.action != 'closed'
         with:
-          node-version: 22.13.1
+          node-version: 22.16.0
           deno-version: 1.43.5
           cache-modules: true
           install: true
@@ -215,7 +216,9 @@ jobs:
           yarn turbo run .:build-preview-move
           npx indexifier .preview --html  --extensions .html  > .preview/index.html
 
-      - uses: rossjrw/pr-preview-action@v1
+      - name: Create preview for PR
+        uses: rossjrw/pr-preview-action@v1
+        if: github.event.pull_request.head.repo.full_name == github.repository
         with:
           source-dir: .preview
           preview-branch: gh-pages
@@ -225,7 +228,7 @@ jobs:
   build:
     name: 📦 Meteor Build - coverage
     needs: [release-versions, packages-build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Collect Workflow Telemetry
@@ -250,13 +253,13 @@ jobs:
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          coverage: ${{ github.event_name != 'release' }}
+          coverage: true
 
   build-prod:
     name: 📦 Meteor Build - official
     needs: [tests-done, release-versions, packages-build]
     if: (github.event_name == 'release' || github.ref == 'refs/heads/develop')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Collect Workflow Telemetry
@@ -281,12 +284,12 @@ jobs:
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          coverage: ${{ github.event_name != 'release' }}
+          coverage: false
 
   # TODO: this should go away once upstream builds are fixed
   build-matrix-rust-bindings-for-alpine:
     name: Builds matrix rust bindings against alpine
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: check cache for matrix-rust-sdk-crypto-nodejs
         id: matrix-rust-sdk-crypto-nodejs
@@ -304,15 +307,15 @@ jobs:
         run: sudo apt-get install -y musl-tools libunwind-dev && find /usr/include -name stdarg.h 2>/dev/null || true
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
-          node-version: '20.18.0'
+          node-version: 22.16.0
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          toolchain: stable
-          targets: x86_64-unknown-linux-musl
+          toolchain: '1.76'
+          target: x86_64-unknown-linux-musl
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
         name: Install ziglang
@@ -331,7 +334,7 @@ jobs:
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
     needs: [build, release-versions, build-matrix-rust-bindings-for-alpine]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     env:
       RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
@@ -376,7 +379,7 @@ jobs:
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
     needs: [build-prod, release-versions]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     env:
       RC_DOCKERFILE: ${{ needs.release-versions.outputs.rc-dockerfile }}.${{ matrix.platform }}
@@ -423,6 +426,17 @@ jobs:
     with:
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
+
+  test-storybook:
+    name: 🔨 Test Storybook
+    needs: [packages-build, release-versions]
+
+    uses: ./.github/workflows/ci-test-storybook.yml
+    with:
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test-unit:
     name: 🔨 Test Unit
@@ -531,7 +545,7 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
-  test-ui-ee-no-watcher:
+  test-ui-ee-watcher:
     name: 🔨 Test UI (EE)
     needs: [checks, build-gh-docker-coverage, release-versions]
 
@@ -551,7 +565,7 @@ jobs:
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
-      db-watcher-disabled: 'true'
+      db-watcher-disabled: 'false'
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -563,8 +577,8 @@ jobs:
 
   tests-done:
     name: ✅ Tests Done
-    runs-on: ubuntu-20.04
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-no-watcher]
+    runs-on: ubuntu-24.04
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher]
     if: always()
     steps:
       - name: Test finish aggregation
@@ -593,7 +607,7 @@ jobs:
             exit 1
           fi
 
-          if [[ '${{ needs.test-ui-ee-no-watcher.result }}' != 'success' ]]; then
+          if [[ '${{ needs.test-ui-ee-watcher.result }}' != 'success' ]]; then
             exit 1
           fi
 
@@ -601,7 +615,7 @@ jobs:
 
   deploy:
     name: 🚀 Publish build assets
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: [build-gh-docker, release-versions]
 
@@ -655,7 +669,7 @@ jobs:
 
   docker-image-publish:
     name: 🚀 Publish Docker Image (main)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [deploy, release-versions]
 
     strategy:
@@ -765,7 +779,7 @@ jobs:
 
   services-docker-image-publish:
     name: 🚀 Publish Docker Image (services)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [deploy, release-versions]
 
     strategy:
@@ -854,7 +868,7 @@ jobs:
 
   notify-services:
     name: 🚀 Notify external services
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - services-docker-image-publish
       - docker-image-publish
@@ -893,7 +907,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there

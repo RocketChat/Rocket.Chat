@@ -5,12 +5,12 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { CalendarEvent } from '@rocket.chat/models';
+import { CalendarEvent, Users } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
+import { applyStatusChange } from './statusEvents/applyStatusChange';
 import { cancelUpcomingStatusChanges } from './statusEvents/cancelUpcomingStatusChanges';
 import { removeCronJobs } from './statusEvents/removeCronJobs';
-import { setupAppointmentStatusChange } from './statusEvents/setupAppointmentStatusChange';
 import { getShiftedTime } from './utils/getShiftedTime';
 import { settings } from '../../../app/settings/server';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
@@ -43,7 +43,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const insertResult = await CalendarEvent.insertOne(insertData);
 		await this.setupNextNotification();
 		if (busy !== false) {
-			await setupAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
+			await this.setupNextStatusChange();
 		}
 
 		return insertResult.insertedId;
@@ -82,8 +82,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 			await this.setupNextNotification();
 			if (busy !== false) {
-				await setupAppointmentStatusChange(insertResult.insertedId, uid, startTime, endTime, UserStatus.BUSY, true);
+				await this.setupNextStatusChange();
 			}
+
 			return insertResult.insertedId;
 		}
 
@@ -91,7 +92,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		if (updateResult.modifiedCount > 0) {
 			await this.setupNextNotification();
 			if (busy !== false) {
-				await setupAppointmentStatusChange(event._id, uid, startTime, endTime, UserStatus.BUSY, true);
+				await this.setupNextStatusChange();
 			}
 		}
 
@@ -135,16 +136,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 			if (startTime || endTime) {
 				await removeCronJobs(eventId, event.uid);
-
 				const isBusy = busy !== undefined ? busy : event.busy !== false;
 				if (isBusy) {
-					const effectiveStartTime = startTime || event.startTime;
-					const effectiveEndTime = endTime || event.endTime;
-
-					// Only proceed if we have both valid start and end times
-					if (effectiveStartTime && effectiveEndTime) {
-						await setupAppointmentStatusChange(eventId, event.uid, effectiveStartTime, effectiveEndTime, UserStatus.BUSY, true);
-					}
+					await this.setupNextStatusChange();
 				}
 			}
 		}
@@ -158,13 +152,23 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			await removeCronJobs(eventId, event.uid);
 		}
 
-		return CalendarEvent.deleteOne({
+		const result = await CalendarEvent.deleteOne({
 			_id: eventId,
 		});
+
+		if (result.deletedCount > 0) {
+			await this.setupNextStatusChange();
+		}
+
+		return result;
 	}
 
 	public async setupNextNotification(): Promise<void> {
 		return this.doSetupNextNotification(false);
+	}
+
+	public async setupNextStatusChange(): Promise<void> {
+		return this.doSetupNextStatusChange();
 	}
 
 	public async cancelUpcomingStatusChanges(uid: IUser['_id'], endTime = new Date()): Promise<void> {
@@ -198,6 +202,137 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		}
 
 		await cronJobs.addAtTimestamp('calendar-reminders', date, async () => this.sendCurrentNotifications(date));
+	}
+
+	private async doSetupNextStatusChange(): Promise<void> {
+		// This method is called in the following moments:
+		// 1. When a new busy event is created or imported
+		// 2. When a busy event is updated (time/busy status changes)
+		// 3. When a busy event is deleted
+		// 4. When a status change job executes and completes
+		// 5. When an event ends and the status is restored
+		// 6. From Outlook Calendar integration (ee/server/configuration/outlookCalendar.ts)
+
+		const busyStatusEnabled = settings.get<boolean>('Calendar_BusyStatus_Enabled');
+		if (!busyStatusEnabled) {
+			const schedulerJobId = 'calendar-status-scheduler';
+			if (await cronJobs.has(schedulerJobId)) {
+				await cronJobs.remove(schedulerJobId);
+			}
+			return;
+		}
+
+		const schedulerJobId = 'calendar-status-scheduler';
+		if (await cronJobs.has(schedulerJobId)) {
+			await cronJobs.remove(schedulerJobId);
+		}
+
+		const now = new Date();
+		const nextStartEvent = await CalendarEvent.findNextFutureEvent(now);
+		const inProgressEvents = await CalendarEvent.findInProgressEvents(now).toArray();
+		const eventsWithEndTime = inProgressEvents.filter((event) => event.endTime && event.busy !== false);
+		if (eventsWithEndTime.length === 0 && !nextStartEvent) {
+			return;
+		}
+
+		let nextEndTime: Date | null = null;
+		if (eventsWithEndTime.length > 0 && eventsWithEndTime[0].endTime) {
+			nextEndTime = eventsWithEndTime.reduce((earliest, event) => {
+				if (!event.endTime) return earliest;
+				return event.endTime.getTime() < earliest.getTime() ? event.endTime : earliest;
+			}, eventsWithEndTime[0].endTime);
+		}
+
+		let nextProcessTime: Date;
+		if (nextStartEvent && nextEndTime) {
+			nextProcessTime = nextStartEvent.startTime.getTime() < nextEndTime.getTime() ? nextStartEvent.startTime : nextEndTime;
+		} else if (nextStartEvent) {
+			nextProcessTime = nextStartEvent.startTime;
+		} else if (nextEndTime) {
+			nextProcessTime = nextEndTime;
+		} else {
+			// This should never happen due to the earlier check, but just in case
+			return;
+		}
+
+		await cronJobs.addAtTimestamp(schedulerJobId, nextProcessTime, async () => this.processStatusChangesAtTime());
+	}
+
+	private async processStatusChangesAtTime(): Promise<void> {
+		const processTime = new Date();
+
+		const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
+		for await (const event of eventsStartingNow) {
+			if (event.busy === false) {
+				continue;
+			}
+			await this.processEventStart(event);
+		}
+
+		const eventsEndingNow = await CalendarEvent.findEventsEndingNow({ now: processTime, offset: 5000 }).toArray();
+		for await (const event of eventsEndingNow) {
+			if (event.busy === false) {
+				continue;
+			}
+			await this.processEventEnd(event);
+		}
+
+		await this.doSetupNextStatusChange();
+	}
+
+	private async processEventStart(event: ICalendarEvent): Promise<void> {
+		if (!event.endTime) {
+			return;
+		}
+
+		const user = await Users.findOneById(event.uid, { projection: { status: 1 } });
+		if (!user || user.status === UserStatus.OFFLINE) {
+			return;
+		}
+
+		const overlappingEvents = await CalendarEvent.findOverlappingEvents(event._id, event.uid, event.startTime, event.endTime)
+			.sort({ startTime: -1 })
+			.toArray();
+		const previousStatus = overlappingEvents.at(0)?.previousStatus ?? user.status;
+
+		if (previousStatus) {
+			await CalendarEvent.updateEvent(event._id, { previousStatus });
+		}
+
+		await applyStatusChange({
+			eventId: event._id,
+			uid: event.uid,
+			startTime: event.startTime,
+			endTime: event.endTime,
+			status: UserStatus.BUSY,
+		});
+	}
+
+	private async processEventEnd(event: ICalendarEvent): Promise<void> {
+		if (!event.endTime) {
+			return;
+		}
+
+		const user = await Users.findOneById(event.uid, { projection: { status: 1 } });
+		if (!user) {
+			return;
+		}
+
+		// Only restore status if:
+		// 1. The current status is BUSY (meaning it was set by our system, not manually changed by user)
+		// 2. We have a previousStatus stored from before the event started
+
+		if (user.status === UserStatus.BUSY && event.previousStatus && event.previousStatus !== user.status) {
+			await applyStatusChange({
+				eventId: event._id,
+				uid: event.uid,
+				startTime: event.startTime,
+				endTime: event.endTime,
+				status: event.previousStatus,
+			});
+		} else {
+			logger.debug(`Not restoring status for user ${event.uid}: current=${user.status}, stored=${event.previousStatus}`);
+		}
 	}
 
 	private async sendCurrentNotifications(date: Date): Promise<void> {

@@ -16,6 +16,11 @@ import type {
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
+import type { AppLogsProps } from './appLogsProps';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
+export * from './appLogsProps';
+
 export type AppsEndpoints = {
 	'/apps/count': {
 		GET: () => { totalMarketplaceEnabled: number; totalPrivateEnabled: number; maxMarketplaceApps: number; maxPrivateApps: number };
@@ -59,6 +64,12 @@ export type AppsEndpoints = {
 		};
 	};
 
+	'/apps/logs': {
+		GET: (params: AppLogsProps) => PaginatedResult<{
+			logs: ILogItem[];
+		}>;
+	};
+
 	'/apps/public/:appId/get-sidebar-icon': {
 		GET: (params: { icon: string }) => unknown;
 	};
@@ -85,21 +96,14 @@ export type AppsEndpoints = {
 
 	'/apps/:id/languages': {
 		GET: () => {
-			languages: {
-				[key: string]: {
-					Params: string;
-					Description: string;
-					Setting_Name: string;
-					Setting_Description: string;
-				};
-			};
+			languages: { [language: string]: { [key: string]: string } };
 		};
 	};
 
 	'/apps/:id/logs': {
-		GET: () => {
+		GET: (params: Omit<AppLogsProps, 'appId'>) => PaginatedResult<{
 			logs: ILogItem[];
-		};
+		}>;
 	};
 
 	'/apps/:id/apis': {
@@ -123,6 +127,7 @@ export type AppsEndpoints = {
 	'/apps/:id/status': {
 		GET: () => {
 			status: string;
+			clusterStatus: App['clusterStatus'];
 		};
 		POST: (params: { status: AppStatus }) => {
 			status: AppStatus;
@@ -173,7 +178,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/installed': {
-		GET: () => { apps: App[] };
+		GET: (params: { includeClusterStatus?: 'true' | 'false' }) => { success: true; apps: App[] } | { success: false; error: string };
 	};
 
 	'/apps/buildExternalAppRequest': {

@@ -1,13 +1,15 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import type { MutableRefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
-import { useSafeRefCallback } from '../../../../hooks/useSafeRefCallback';
 
 export const useListIsAtBottom = () => {
 	const atBottomRef = useRef(true);
+
+	const jumpToRef = useRef<HTMLElement>(undefined);
 
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
@@ -16,6 +18,9 @@ export const useListIsAtBottom = () => {
 	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {
+		if (jumpToRef.current) {
+			atBottomRef.current = false;
+		}
 		if (atBottomRef.current === true) {
 			sendToBottom();
 		}
@@ -42,6 +47,9 @@ export const useListIsAtBottom = () => {
 				}
 
 				const observer = new ResizeObserver(() => {
+					if (jumpToRef.current) {
+						atBottomRef.current = false;
+					}
 					if (atBottomRef.current === true) {
 						node.scrollTo({ left: 30, top: node.scrollHeight });
 					}
@@ -72,5 +80,6 @@ export const useListIsAtBottom = () => {
 		sendToBottom,
 		sendToBottomIfNecessary,
 		isAtBottom,
+		jumpToRef,
 	};
 };

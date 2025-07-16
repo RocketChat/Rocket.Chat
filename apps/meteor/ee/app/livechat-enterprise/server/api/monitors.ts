@@ -9,6 +9,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['manage-livechat-monitors'],
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {
@@ -35,6 +36,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['manage-livechat-monitors'],
+		license: ['livechat-enterprise'],
 	},
 	{
 		async get() {

@@ -13,14 +13,14 @@ import {
 	ToggleSwitch,
 	FieldGroup,
 } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useAbsoluteUrl, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useId, useMemo } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 
 import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
-import GenericModal from '../../../components/GenericModal';
 
 type EditOAuthAddAppPayload = {
 	name: string;
@@ -99,6 +99,13 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 			</GenericModal>,
 		);
 
+	const nameField = useId();
+	const redirectUriField = useId();
+	const clientIdField = useId();
+	const clientSecretField = useId();
+	const authUrlField = useId();
+	const tokenUrlField = useId();
+
 	return (
 		<ContextualbarScrollableContent w='full' {...props}>
 			<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
@@ -114,43 +121,43 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Application_Name')}</FieldLabel>
+					<FieldLabel htmlFor={nameField}>{t('Application_Name')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('name', { required: true })} />
+						<TextInput id={nameField} {...register('name', { required: true })} />
 					</FieldRow>
 					<FieldHint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</FieldHint>
 					{errors?.name && <FieldError>{t('Required_field', { field: t('Name') })}</FieldError>}
 				</Field>
 				<Field>
-					<FieldLabel>{t('Redirect_URI')}</FieldLabel>
+					<FieldLabel htmlFor={redirectUriField}>{t('Redirect_URI')}</FieldLabel>
 					<FieldRow>
-						<TextAreaInput rows={5} {...register('redirectUri', { required: true })} />
+						<TextAreaInput id={redirectUriField} rows={5} {...register('redirectUri', { required: true })} />
 					</FieldRow>
 					<FieldHint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</FieldHint>
 					{errors?.redirectUri && <FieldError>{t('Required_field', { field: t('Redirect_URI') })}</FieldError>}
 				</Field>
 				<Field>
-					<FieldLabel>{t('Client_ID')}</FieldLabel>
+					<FieldLabel htmlFor={clientIdField}>{t('Client_ID')}</FieldLabel>
 					<FieldRow>
-						<TextInput value={data.clientId} />
+						<TextInput id={clientIdField} value={data.clientId} />
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Client_Secret')}</FieldLabel>
+					<FieldLabel htmlFor={clientSecretField}>{t('Client_Secret')}</FieldLabel>
 					<FieldRow>
-						<PasswordInput value={data.clientSecret} />
+						<PasswordInput id={clientSecretField} value={data.clientSecret} />
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Authorization_URL')}</FieldLabel>
+					<FieldLabel htmlFor={authUrlField}>{t('Authorization_URL')}</FieldLabel>
 					<FieldRow>
-						<TextInput value={authUrl} />
+						<TextInput id={authUrlField} value={authUrl} />
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Access_Token_URL')}</FieldLabel>
+					<FieldLabel htmlFor={tokenUrlField}>{t('Access_Token_URL')}</FieldLabel>
 					<FieldRow>
-						<TextInput value={tokenUrl} />
+						<TextInput id={tokenUrlField} value={tokenUrl} />
 					</FieldRow>
 				</Field>
 				<Field>

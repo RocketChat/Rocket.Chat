@@ -20,7 +20,7 @@ const NotificationPreferencesWithData = (): ReactElement => {
 		successMessage: t('Room_updated_successfully'),
 	});
 
-	const customSoundAsset: SelectOption[] | undefined = customSound?.getList()?.map((value) => [value._id, value.name]);
+	const customSoundAsset: SelectOption[] | undefined = customSound.list?.map((value) => [value._id, value.name]);
 
 	const defaultOption: SelectOption[] = [
 		['default', t('Default')],

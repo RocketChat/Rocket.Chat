@@ -4,9 +4,10 @@ import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
-import type { IAppsEngineService } from '@rocket.chat/core-services';
+import type { AppStatusReport, IAppsEngineService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 
+import { isRunningMs } from '../../lib/isRunningMs';
 import { SystemLogger } from '../../lib/logger/system';
 
 export class AppsEngineService extends ServiceClassInternal implements IAppsEngineService {
@@ -132,5 +133,69 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		}
 
 		return app.getStorageItem();
+	}
+
+	async getAppsStatusLocal(): Promise<{ status: AppStatus; appId: string }[]> {
+		const apps = await Apps.self?.getManager()?.get();
+
+		if (!apps) {
+			return [];
+		}
+
+		return Promise.all(
+			apps.map(async (app) => ({
+				status: await app.getStatus(),
+				appId: app.getID(),
+			})),
+		);
+	}
+
+	async getAppsStatusInNodes(): Promise<AppStatusReport> {
+		if (!isRunningMs()) {
+			throw new Error('Getting apps status in cluster is only available in microservices mode');
+		}
+
+		if (!this.api) {
+			throw new Error('AppsEngineService is not initialized');
+		}
+
+		// If we are running MS AND this.api is defined, we KNOW there is a local node
+		/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+		const { id: localNodeId } = (await this.api.nodeList()).find((node) => node.local)!;
+
+		const services: { name: string; nodes: string[] }[] = await this.api?.call('$node.services', { onlyActive: true });
+
+		// We can filter out the local node because we already know its status
+		const availableNodes = services?.find((service) => service.name === 'apps-engine')?.nodes.filter((node) => node !== localNodeId);
+
+		if (!availableNodes || availableNodes.length < 1) {
+			throw new Error('Not enough Apps-Engine nodes in deployment');
+		}
+
+		const statusByApp: AppStatusReport = {};
+
+		const apps: Promise<void>[] = availableNodes.map(async (nodeID) => {
+			const appsStatus: Awaited<ReturnType<typeof this.getAppsStatusLocal>> | undefined = await this.api?.call(
+				'apps-engine.getAppsStatusLocal',
+				[],
+				{ nodeID },
+			);
+
+			if (!appsStatus) {
+				throw new Error(`Failed to get apps status from node ${nodeID}`);
+			}
+
+			appsStatus.forEach(({ status, appId }) => {
+				if (!statusByApp[appId]) {
+					statusByApp[appId] = [];
+				}
+
+				statusByApp[appId].push({ instanceId: nodeID, status });
+			});
+		});
+
+		await Promise.all(apps);
+
+		return statusByApp;
 	}
 }

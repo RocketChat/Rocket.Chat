@@ -303,9 +303,10 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptPendingMessages() {
-		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
-			Messages.update({ _id }, await this.decryptMessage({ _id, ...msg }));
-		});
+		await Messages.state.updateAsync(
+			(record) => record.rid === this.roomId && record.t === 'e2e' && record.e2e === 'pending',
+			(record) => this.decryptMessage(record),
+		);
 	}
 
 	// Initiates E2E Encryption
@@ -334,9 +335,8 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const room = Rooms.findOne({ _id: this.roomId })!;
-			if (!room.e2eKeyId) {
+			const room = Rooms.state.get(this.roomId);
+			if (!room?.e2eKeyId) {
 				this.setState(E2ERoomState.CREATING_KEYS);
 				await this.createGroupKey();
 				this.setState(E2ERoomState.READY);

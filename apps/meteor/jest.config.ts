@@ -12,6 +12,7 @@ export default {
 			testMatch: [
 				'<rootDir>/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/ee/client/**/**.spec.[jt]s?(x)',
+				'<rootDir>/app/ui-message/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
 				'<rootDir>/tests/unit/client/providers/**/*.spec.{ts,tsx}',
 			],
@@ -24,12 +25,11 @@ export default {
 				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',
 			},
 
-			coveragePathIgnorePatterns: ['<rootDir>/tests/'],
+			coveragePathIgnorePatterns: ['<rootDir>/tests/', '/node_modules/'],
 		},
 		{
 			displayName: 'server',
 			preset: server.preset,
-
 			testMatch: [
 				'<rootDir>/app/livechat/server/business-hour/**/*.spec.ts?(x)',
 				'<rootDir>/app/livechat/server/api/**/*.spec.ts',
@@ -38,9 +38,15 @@ export default {
 				'<rootDir>/ee/server/patches/**/*.spec.ts',
 				'<rootDir>/app/cloud/server/functions/supportedVersionsToken/**.spec.ts',
 				'<rootDir>/app/utils/lib/**.spec.ts',
+				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
+				'<rootDir>/server/cron/**.spec.ts',
 				'<rootDir>/app/api/server/**.spec.ts',
+				'<rootDir>/app/api/server/helpers/**.spec.ts',
 				'<rootDir>/app/api/server/middlewares/**.spec.ts',
 			],
+			coveragePathIgnorePatterns: ['/node_modules/'],
 		},
 	],
+	coverageProvider: 'v8',
+	collectCoverage: true,
 } satisfies Config;

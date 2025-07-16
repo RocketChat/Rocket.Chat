@@ -4,6 +4,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 
 import AccessibilityShortcut from './AccessibilityShortcut';
+import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import Sidebar from '../../../sidebar';
 
@@ -13,7 +14,6 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 	const currentRoutePath = useCurrentRoutePath();
 	const channelRoute = useRoute('channel');
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
-	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
 
 	const firstChannelAfterLogin = useSetting('First_Channel_After_Login');
 
@@ -47,12 +47,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			<AccessibilityShortcut />
 			<MainLayoutStyleTags />
 			{!removeSidenav && <Sidebar />}
-			<main
-				id='main-content'
-				className={['main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
-			>
-				{children}
-			</main>
+			<MainContent>{children}</MainContent>
 		</Box>
 	);
 };

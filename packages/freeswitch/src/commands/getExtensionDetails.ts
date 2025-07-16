@@ -1,7 +1,7 @@
 import type { FreeSwitchExtension } from '@rocket.chat/core-typings';
 
 import type { FreeSwitchOptions } from '../FreeSwitchOptions';
-import { runCommand } from '../runCommand';
+import { FreeSwitchApiClient } from '../esl';
 import { mapUserData } from '../utils/mapUserData';
 import { parseUserList } from '../utils/parseUserList';
 
@@ -14,7 +14,7 @@ export async function getExtensionDetails(
 	requestParams: { extension: string; group?: string },
 ): Promise<FreeSwitchExtension> {
 	const { extension, group } = requestParams;
-	const response = await runCommand(options, getCommandListFilteredUser(extension, group));
+	const response = await FreeSwitchApiClient.runSingleCommand(options, getCommandListFilteredUser(extension, group));
 
 	const users = parseUserList(response);
 

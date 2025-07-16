@@ -4,18 +4,20 @@ import { Meteor } from 'meteor/meteor';
 
 import { Spotlight } from '../lib/spotlight';
 
+type SpotlightType = {
+	users?: boolean;
+	rooms?: boolean;
+	mentions?: boolean;
+	includeFederatedRooms?: boolean;
+};
+
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		spotlight(
 			text: string,
 			usernames?: string[],
-			type?: {
-				users?: boolean;
-				rooms?: boolean;
-				mentions?: boolean;
-				includeFederatedRooms?: boolean;
-			},
+			type?: SpotlightType,
 			rid?: string,
 		): {
 			rooms: { _id: string; name: string; t: string; uids?: string[] }[];
@@ -32,27 +34,41 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const spotlightMethod = async ({
+	text,
+	usernames = [],
+	type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false },
+	rid,
+	userId,
+}: {
+	text: string;
+	usernames?: string[];
+	type?: SpotlightType;
+	rid?: string;
+	userId?: string | null;
+}) => {
+	const spotlight = new Spotlight();
+	const { mentions, includeFederatedRooms } = type;
+
+	if (text.startsWith('#')) {
+		type.users = false;
+		text = text.slice(1);
+	}
+
+	if (text.startsWith('@')) {
+		type.rooms = false;
+		text = text.slice(1);
+	}
+
+	return {
+		users: type.users ? await spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
+		rooms: type.rooms ? await spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
+	};
+};
+
 Meteor.methods<ServerMethods>({
 	async spotlight(text, usernames = [], type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false }, rid) {
-		const spotlight = new Spotlight();
-		const { mentions, includeFederatedRooms } = type;
-
-		if (text.startsWith('#')) {
-			type.users = false;
-			text = text.slice(1);
-		}
-
-		if (text.startsWith('@')) {
-			type.rooms = false;
-			text = text.slice(1);
-		}
-
-		const { userId } = this;
-
-		return {
-			users: type.users ? await spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
-			rooms: type.rooms ? await spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
-		};
+		return spotlightMethod({ text, usernames, type, rid, userId: this.userId });
 	},
 });
 

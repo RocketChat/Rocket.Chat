@@ -7,18 +7,23 @@ import {
 	MessageStatusPrivateIndicator,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence } from '@rocket.chat/ui-contexts';
-import type { KeyboardEvent, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
-import { useMessageListShowUsername, useMessageListShowRealName, useMessageListShowRoles } from './list/MessageListContext';
-import { useFormatDateAndTime } from '../../hooks/useFormatDateAndTime';
-import { useFormatTime } from '../../hooks/useFormatTime';
 import { useMessageRoles } from './header/hooks/useMessageRoles';
+import {
+	useMessageListShowUsername,
+	useMessageListShowRealName,
+	useMessageListShowRoles,
+	useMessageListFormatDateAndTime,
+	useMessageListFormatTime,
+} from './list/MessageListContext';
 import { useUserCard } from '../../views/room/contexts/UserCardContext';
 
 type MessageHeaderProps = {
@@ -28,9 +33,10 @@ type MessageHeaderProps = {
 const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const formatTime = useFormatTime();
-	const formatDateAndTime = useFormatDateAndTime();
+	const formatTime = useMessageListFormatTime();
+	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { triggerProps, openUserCard } = useUserCard();
+	const buttonProps = useButtonPattern((e) => openUserCard(e, message.u.username));
 
 	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -45,15 +51,10 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	return (
 		<FuselageMessageHeader>
 			<MessageNameContainer
-				tabIndex={0}
-				role='button'
 				id={`${message._id}-displayName`}
 				aria-label={displayName}
-				onClick={(e) => openUserCard(e, message.u.username)}
-				onKeyDown={(e: KeyboardEvent<HTMLSpanElement>) => {
-					(e.code === 'Enter' || e.code === 'Space') && openUserCard(e, message.u.username);
-				}}
 				style={{ cursor: 'pointer' }}
+				{...buttonProps}
 				{...triggerProps}
 			>
 				<MessageName

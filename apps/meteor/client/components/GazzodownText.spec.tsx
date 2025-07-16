@@ -13,6 +13,7 @@ jest.mock('@rocket.chat/fuselage-hooks', () => ({
 }));
 jest.mock('./message/list/MessageListContext', () => ({
 	useMessageListHighlights: jest.fn(),
+	useMessageListShowRealName: jest.fn(() => false),
 }));
 jest.mock('../lib/utils/fireGlobalEvent', () => ({
 	fireGlobalEvent: jest.fn(),
@@ -22,7 +23,6 @@ jest.mock('../views/room/hooks/useGoToRoom', () => ({
 }));
 
 const mockUseMessageListHighlights = useMessageListHighlights as jest.MockedFunction<typeof useMessageListHighlights>;
-
 const wrapper = mockAppRoot().withUserPreference('useEmojis', true).withSetting('UI_Use_Real_Name', false).withJohnDoe();
 
 const HighlightTester = ({ text }: { text: string }) => {

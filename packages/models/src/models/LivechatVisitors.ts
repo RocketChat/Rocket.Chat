@@ -242,6 +242,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
+	updateAllLivechatDataByToken(token: string, livechatDataToUpdate: Record<string, string>): Promise<UpdateResult> {
+		return this.updateOne({ token }, { $set: livechatDataToUpdate });
+	}
+
 	async updateLivechatDataByToken(
 		token: string,
 		key: string,
@@ -439,6 +443,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 				},
 			},
 		);
+	}
+
+	updateDepartmentById(_id: string, department: string) {
+		return this.findOneAndUpdate({ _id }, { $set: { department } }, { returnDocument: 'after' });
 	}
 }
 
