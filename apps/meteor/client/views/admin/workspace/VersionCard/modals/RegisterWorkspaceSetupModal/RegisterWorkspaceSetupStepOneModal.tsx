@@ -1,4 +1,21 @@
-import { Modal, Box, Field, FieldLabel, FieldRow, TextInput, CheckBox, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	Box,
+	Field,
+	FieldLabel,
+	FieldRow,
+	TextInput,
+	CheckBox,
+	ButtonGroup,
+	Button,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTagline,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+} from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
@@ -56,14 +73,14 @@ const RegisterWorkspaceSetupStepOneModal = ({
 
 	return (
 		<Modal {...props}>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Tagline>{t('RegisterWorkspace_Setup_Steps', { step, numberOfSteps: 2 })}</Modal.Tagline>
-					<Modal.Title>{t('RegisterWorkspace_with_email')}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTagline>{t('RegisterWorkspace_Setup_Steps', { step, numberOfSteps: 2 })}</ModalTagline>
+					<ModalTitle>{t('RegisterWorkspace_with_email')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box>
 					<Box is='p' fontSize='p2' withRichContent>
 						{t('RegisterWorkspace_Setup_Subtitle')}
@@ -101,15 +118,15 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						</FieldRow>
 					</Field>
 				</Box>
-			</Modal.Content>
-			<Modal.Footer>
+			</ModalContent>
+			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={handleBack}>{t('Back')}</Button>
 					<Button primary onClick={handleRegisterWorkspace} disabled={!validInfo}>
 						{t('Next')}
 					</Button>
 				</ButtonGroup>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };
