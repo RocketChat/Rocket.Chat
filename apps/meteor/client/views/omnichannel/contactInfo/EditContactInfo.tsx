@@ -1,7 +1,7 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useAllPermissions, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 import AdvancedContactModal from './AdvancedContactModal';
 import { useCreateContact } from './hooks/useCreateContact';
 import { useEditContact } from './hooks/useEditContact';
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { validateEmail } from '../../../../lib/emailValidator';
 import {
 	ContextualbarScrollableContent,
@@ -66,12 +65,14 @@ const getInitialValues = (data: ContactNewEditProps['contactData']): ContactForm
 
 const validateMultipleFields = (fieldsLength: number, hasLicense: boolean) => fieldsLength >= 1 && !hasLicense;
 
+const customFieldsPermissions = ['view-livechat-room-customfields', 'edit-livechat-room-customfields'];
+
 const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps): ReactElement => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
 	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
-	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
+	const canViewCustomFields = useAllPermissions(customFieldsPermissions);
 
 	const editContact = useEditContact(['current-contacts']);
 	const createContact = useCreateContact(['current-contacts']);

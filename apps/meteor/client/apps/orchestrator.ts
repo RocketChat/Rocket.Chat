@@ -38,7 +38,7 @@ class AppClientOrchestrator {
 	}
 
 	public handleError(error: unknown): void {
-		if (hasAtLeastOnePermission(['manage-apps'])) {
+		if (hasAtLeastOnePermission(Meteor.user(), ['manage-apps'])) {
 			dispatchToastMessage({
 				type: 'error',
 				message: error,

@@ -10,7 +10,8 @@ import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
 import type { DataAPI } from './ChatAPI';
-import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
+import { hasAtLeastOnePermission } from '../../../app/authorization/client';
+import { hasPermission } from '../../../app/authorization/client/hasPermission';
 import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { MessageTypes } from '../../../app/ui-utils/client';
@@ -76,7 +77,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
-		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
+		const canEditMessage = hasAtLeastOnePermission(Meteor.user(), 'edit-message', message.rid);
 		const editAllowed = (settings.get('Message_AllowEditing') as boolean | undefined) ?? false;
 		const editOwn = message?.u && message.u._id === Meteor.userId();
 
@@ -85,7 +86,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
-		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
+		const bypassBlockTimeLimit = hasPermission(Meteor.user(), 'bypass-time-limit-edit-and-delete', message.rid);
 
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
 		if (!bypassBlockTimeLimit && elapsedMinutes && blockEditInMinutes && elapsedMinutes > blockEditInMinutes) {
@@ -180,7 +181,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
 		const uid = Meteor.userId();
-
+		const user = Meteor.user();
 		if (!uid) {
 			return false;
 		}
@@ -189,7 +190,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
-		const forceDeleteAllowed = hasPermission('force-delete-message', message.rid);
+		const forceDeleteAllowed = hasPermission(user, 'force-delete-message', message.rid);
 		if (forceDeleteAllowed) {
 			return true;
 		}
@@ -199,8 +200,8 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
-		const deleteAnyAllowed = hasPermission('delete-message', rid);
-		const deleteOwnAllowed = hasPermission('delete-own-message');
+		const deleteAnyAllowed = hasPermission(user, 'delete-message', rid);
+		const deleteOwnAllowed = hasPermission(user, 'delete-own-message');
 		const deleteAllowed = deleteAnyAllowed || (deleteOwnAllowed && message?.u && message.u._id === Meteor.userId());
 
 		if (!deleteAllowed) {
@@ -208,7 +209,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
-		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
+		const bypassBlockTimeLimit = hasPermission(user, 'bypass-time-limit-edit-and-delete', message.rid);
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
 		const onTimeForDelete = bypassBlockTimeLimit || !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
 
