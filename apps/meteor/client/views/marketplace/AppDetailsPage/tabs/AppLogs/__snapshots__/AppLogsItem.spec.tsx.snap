@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders AppLogsItem without crashing 1`] = `
 <body>
@@ -82,7 +82,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             >
               Time
             </div>
-            June 2, 2025 1:06 PM
+            June 2, 2025 10:06 AM
           </div>
           <div
             class="rcx-box rcx-box--full rcx-css-4r9746"

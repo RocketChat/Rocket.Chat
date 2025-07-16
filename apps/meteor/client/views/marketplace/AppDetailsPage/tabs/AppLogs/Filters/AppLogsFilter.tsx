@@ -10,7 +10,8 @@ import { TimeFilterSelect } from './TimeFilterSelect';
 import { useCompactMode } from '../../../useCompactMode';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
-type AppLogsFilterProps = { appId: string }
+type AppLogsFilterProps = { appId: string };
+
 export const AppLogsFilter = ({ appId }: AppLogsFilterProps) => {
 	const { t } = useTranslation();
 
@@ -33,7 +34,9 @@ export const AppLogsFilter = ({ appId }: AppLogsFilterProps) => {
 	return (
 		<Box display='flex' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
 			<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-				<Label htmlFor='eventFilter'>{t('Event')}</Label>
+				<Label id='eventFilterLabel' htmlFor='eventFilter'>
+					{t('Event')}
+				</Label>
 				<Controller
 					control={control}
 					name='event'
