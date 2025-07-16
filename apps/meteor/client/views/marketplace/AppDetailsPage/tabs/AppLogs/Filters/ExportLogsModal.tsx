@@ -1,4 +1,20 @@
-import { Box, Button, Field, FieldLabel, FieldRow, Label, Modal, NumberInput, RadioButton } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	Field,
+	FieldLabel,
+	FieldRow,
+	Label,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalTitle,
+	NumberInput,
+	RadioButton,
+} from '@rocket.chat/fuselage';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -69,11 +85,11 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.Title>{t('Export')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Export')}</ModalTitle>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box display='flex' flexDirection='column' mie={10} mbe={24} flexGrow={1}>
 					<Label>{t('Format')}</Label>
 					<Field>
@@ -159,15 +175,15 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 						/>
 					</Field>
 				</Box>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary onClick={handleConfirm}>
 						{t('Download')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
