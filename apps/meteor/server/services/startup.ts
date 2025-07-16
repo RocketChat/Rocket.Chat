@@ -72,6 +72,7 @@ export const registerServices = async (): Promise<void> => {
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
 
+		// TODO: Add it to a proper place since it's EE only
 		const { FederationMatrix } = await import('@rocket.chat/federation-matrix');
 		const federationMatrix = await FederationMatrix.create();
 		api.registerService(federationMatrix);

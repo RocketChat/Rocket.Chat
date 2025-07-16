@@ -27,7 +27,6 @@ function handleHealthCheck(app: Hono) {
 	api.setBroker(startBroker());
 
 	const { FederationMatrix } = await import('@rocket.chat/federation-matrix');
-
 	const federationMatrix = await FederationMatrix.create();
 	api.registerService(federationMatrix);
 
@@ -36,7 +35,7 @@ function handleHealthCheck(app: Hono) {
 
 	app.mount('/_matrix', matrix.getHonoRouter().fetch);
 	app.mount('/.well-known', wellKnown.getHonoRouter().fetch);
-
+	
 	handleHealthCheck(app);
 
 	serve({
