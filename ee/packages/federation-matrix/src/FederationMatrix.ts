@@ -3,12 +3,12 @@ import 'reflect-metadata';
 import { toUnpaddedBase64 } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
-import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
+import { MatrixBridgedUser, MatrixBridgedRoom, Users, Subscriptions } from '@rocket.chat/models';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
@@ -142,7 +142,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					// TODO: Check if it is external user - split domain etc
 					const localUserId = await Users.findOneByUsername(member);
 					if (localUserId) {
-						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, true, matrixDomain);
+						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, false, matrixDomain);
 						// continue;
 					}
 				} catch (error) {
@@ -197,6 +197,52 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			this.logger.debug('Message sent to Matrix successfully:', result.event_id);
 		} catch (error) {
 			this.logger.error('Failed to send message to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async inviteUsersToRoom(room: IRoom, usersUserName: string[], inviter: IUser): Promise<void> {
+		try {
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(room._id);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${room._id}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const inviterUserId = `@${inviter.username}:${matrixDomain}`;
+
+			await Promise.all(
+				usersUserName.map(async (username) => {
+					const alreadyMember = await Subscriptions.findOneByRoomIdAndUsername(room._id, username, { projection: { _id: 1 } });
+					if (alreadyMember) {
+						return;
+					}
+
+					const isExternalUser = username.includes(':');
+					if (isExternalUser) {
+						let externalUsernameToInvite = username;
+						const alreadyCreatedLocally = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+						if (alreadyCreatedLocally) {
+							externalUsernameToInvite = `@${username}`;
+						}
+						await this.homeserverServices.invite.inviteUserToRoom(externalUsernameToInvite, matrixRoomId, inviterUserId, room.fname);
+						return;
+					}
+
+					const localUser = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+					if (localUser) {
+						await Room.addUserToRoom(room._id, localUser, { _id: inviter._id, username: inviter.username });
+						let externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
+						if (!externalUserId) {
+							externalUserId = `@${username}:${matrixDomain}`;
+							await MatrixBridgedUser.createOrUpdateByLocalId(localUser._id, externalUserId, false, matrixDomain);
+						}
+						await this.homeserverServices.invite.inviteUserToRoom(externalUserId, matrixRoomId, inviterUserId, room.fname);
+					}
+				}),
+			);
+		} catch (error) {
+			this.logger.error('Failed to invite an user to Matrix:', error);
 			throw error;
 		}
 	}

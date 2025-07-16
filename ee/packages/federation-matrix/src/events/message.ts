@@ -65,7 +65,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 
 				logger.info('Successfully created federated user:', { userId: user._id, username });
 			} else {
-				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, data.sender, true, domain);
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, data.sender, false, domain);
 			}
 
 			const internalRoomId = await MatrixBridgedRoom.getLocalRoomId(data.room_id);
