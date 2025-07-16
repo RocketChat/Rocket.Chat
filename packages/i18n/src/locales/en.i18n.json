@@ -6699,6 +6699,7 @@
   "this_app_is_included_with_subscription": "This app is included with {{bundleName}} plans",
   "thread": "thread",
   "thread_message": "thread message",
+  "thread_messages": "thread messages",
   "thread_message_preview": "thread message preview",
   "threads_counter_one": "{{count}} unread threaded message",
   "threads_counter_other": "{{count}} unread threaded messages",
