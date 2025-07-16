@@ -1,7 +1,6 @@
 import { isDirectMessageRoom, isOmnichannelRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
 import { memo, useCallback, useMemo } from 'react';
@@ -34,7 +33,6 @@ type RoomListRowProps = {
 };
 
 const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListRowProps) => {
-	const { sidebar } = useLayout();
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
@@ -80,10 +78,6 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const selected = isRoomFilter && room.rid === parentRid;
 
 	const handleClick = useCallback(() => {
-		if (!selected) {
-			sidebar.toggle();
-		}
-
 		if (isTeamRoom(room)) {
 			switchSidePanelTab(SIDE_BAR_GROUPS.TEAMS, { parentRid: room.rid });
 			return;
@@ -95,7 +89,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 		}
 
 		switchSidePanelTab(SIDE_BAR_GROUPS.CHANNELS, { parentRid: room.rid });
-	}, [room, selected, sidebar, switchSidePanelTab]);
+	}, [room, switchSidePanelTab]);
 
 	return (
 		<SidebarItem
