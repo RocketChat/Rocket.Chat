@@ -22,7 +22,7 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 					tab: 'thread',
 					context: message.tmid || message._id,
 					rid: message.rid,
-					name: Rooms.findOne({ _id: message.rid })?.name ?? '',
+					name: Rooms.state.get(message.rid)?.name ?? '',
 				},
 				search: {
 					...router.getSearchParameters(),

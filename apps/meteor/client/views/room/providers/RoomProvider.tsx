@@ -6,9 +6,8 @@ import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
 import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
-import { useRoomQuery } from './hooks/useRoomQuery';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
-import { Subscriptions } from '../../../../app/models/client';
+import { Rooms, Subscriptions } from '../../../../app/models/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { omit } from '../../../../lib/utils/omit';
@@ -28,7 +27,7 @@ type RoomProviderProps = {
 };
 
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
-	const { data: room, isSuccess } = useRoomQuery(rid);
+	const room = Rooms.use((state) => state.get(rid));
 
 	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
 
@@ -102,7 +101,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
+		return !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (

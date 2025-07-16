@@ -1,24 +1,15 @@
-import type { IOutboundProvider, IOutboundMessage, IOutboundProviderMetadata } from '@rocket.chat/core-typings';
+import type { IOutboundMessage } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+
+import type { OutboundCommsEndpoints } from '../api/outbound';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface Endpoints {
-		'/v1/omnichannel/outbound/providers': {
-			GET: (params: GETOutboundProviderParams) => IOutboundProvider[];
-		};
-		'/v1/omnichannel/outbound/providers/:id/metadata': {
-			GET: () => IOutboundProviderMetadata;
-		};
-		'/v1/omnichannel/outbound/providers/:id/message': {
-			// Note: we may need to adapt this type when the API is implemented and UI starts to use it
-			POST: (params: POSTOutboundMessageParams) => void;
-		};
-	}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends OutboundCommsEndpoints {}
 }
 
 type GETOutboundProviderParams = { type?: string };
