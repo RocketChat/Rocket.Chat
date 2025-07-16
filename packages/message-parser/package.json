@@ -27,7 +27,7 @@
   },
   "module": "dist/messageParser.mjs",
   "unpkg": "dist/messageParser.umd.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "files": [
     "/dist",
     "/messageParser.js"
@@ -39,9 +39,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "run-s .:build:clean .:build:bundle",
-    ".:build:clean": "rimraf dist",
-    ".:build:bundle": "webpack-cli",
+    "build": "vite build",
     "lint": "eslint .",
     "test": "jest",
     "testunit": "jest",
@@ -58,19 +56,15 @@
     "@types/jest": "~29.5.14",
     "@types/node": "~22.16.1",
     "@typescript-eslint/parser": "~5.58.0",
-    "babel-loader": "~9.2.1",
     "eslint": "~8.45.0",
     "jest": "~30.0.2",
-    "npm-run-all": "^4.1.5",
     "peggy": "4.1.1",
     "prettier": "~3.3.3",
     "prettier-plugin-pegjs": "~0.5.4",
-    "rimraf": "^6.0.1",
-    "ts-loader": "~9.5.2",
     "typedoc": "~0.28.5",
     "typescript": "~5.8.3",
-    "webpack": "~5.99.9",
-    "webpack-cli": "~5.1.4"
+    "vite": "^7.0.4",
+    "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
     "tldts": "~6.1.86"

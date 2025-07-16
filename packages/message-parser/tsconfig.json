@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "rootDir": ".",
-    "target": "es5",
+    "target": "es2019",
     "module": "ESNext",
     "declaration": true,
     "declarationMap": true,
@@ -14,6 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "noImplicitThis": true,
-    "alwaysStrict": true
+    "alwaysStrict": true,
+    "emitDeclarationOnly": true
   }
 }

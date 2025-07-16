@@ -7,7 +7,7 @@ import type {
   SourceOptionsBase,
 } from 'peggy';
 import peggy from 'peggy';
-import type { LoaderContext } from 'webpack';
+import type { Plugin } from 'vite';
 
 type Options = BuildOptionsBase &
   (
@@ -20,19 +20,23 @@ type Options = BuildOptionsBase &
     | Omit<OutputFormatBare<'source'>, keyof SourceOptionsBase<'source'>>
   );
 
-function peggyLoader(
-  this: LoaderContext<Options>,
-  grammarContent: string,
-): string {
-  const options: Options = {
-    format: 'commonjs',
-    ...this.getOptions(),
+const peggyPlugin = (options: Options = {}): Plugin => {
+  return {
+    name: 'vite-plugin-peggy',
+    transform(code, id) {
+      if (id.endsWith('.pegjs')) {
+        //   return peggy.generate(code, {
+        //     output: 'source',
+        //     ...options,
+        //   });
+        // }
+        return `export default ${peggy.generate(code, {
+          output: 'source',
+          ...options,
+        })};`;
+      }
+    },
   };
+};
 
-  return peggy.generate(grammarContent, {
-    output: 'source',
-    ...options,
-  });
-}
-
-export default peggyLoader;
+export default peggyPlugin;
