@@ -5,7 +5,7 @@ import {
 	HeaderV2TagSkeleton,
 	HeaderTagSkeleton as HeaderTagSkeletonComponent,
 } from '@rocket.chat/ui-client';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 const HeaderTagSkeleton = () => (
 	<FeaturePreview feature='newNavigation'>

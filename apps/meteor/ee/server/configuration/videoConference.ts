@@ -38,7 +38,7 @@ Meteor.startup(async () => {
 				}
 			}
 
-			if ((await Subscriptions.findByRoomId(_id).count()) > 10) {
+			if ((await Subscriptions.countByRoomId(_id)) > 10) {
 				return false;
 			}
 

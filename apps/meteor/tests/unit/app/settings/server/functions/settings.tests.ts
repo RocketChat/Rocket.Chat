@@ -586,13 +586,16 @@ describe('Settings', () => {
 			settings.watch('setting_callback', spiedCallback1, { debounce: 10 });
 			settings.watchByRegex(/setting_callback/, spiedCallback2, { debounce: 10 });
 
-			setTimeout(() => {
-				expect(spiedCallback1).to.have.been.called.exactly(1);
-				expect(spiedCallback2).to.have.been.called.exactly(1);
-				expect(spiedCallback1).to.have.been.called.always.with('value1');
-				expect(spiedCallback2).to.have.been.called.always.with('setting_callback', 'value1');
-				resolve();
-			}, settings.getConfig({ debounce: 10 }).debounce);
+			setTimeout(
+				() => {
+					expect(spiedCallback1).to.have.been.called.exactly(1);
+					expect(spiedCallback2).to.have.been.called.exactly(1);
+					expect(spiedCallback1).to.have.been.called.always.with('value1');
+					expect(spiedCallback2).to.have.been.called.always.with('setting_callback', 'value1');
+					resolve();
+				},
+				settings.getConfig({ debounce: 10 }).debounce,
+			);
 		});
 	});
 
@@ -615,16 +618,22 @@ describe('Settings', () => {
 					});
 				});
 			});
-			setTimeout(() => {
-				Settings.updateValueById('setting_callback', 'value3');
-				setTimeout(() => {
-					expect(spiedCallback1).to.have.been.called.exactly(2);
-					expect(spiedCallback2).to.have.been.called.exactly(2);
-					expect(spiedCallback1).to.have.been.called.with('value2');
-					expect(spiedCallback1).to.have.been.called.with('value3');
-					resolve();
-				}, settings.getConfig({ debounce: 10 }).debounce);
-			}, settings.getConfig({ debounce: 10 }).debounce);
+			setTimeout(
+				() => {
+					Settings.updateValueById('setting_callback', 'value3');
+					setTimeout(
+						() => {
+							expect(spiedCallback1).to.have.been.called.exactly(2);
+							expect(spiedCallback2).to.have.been.called.exactly(2);
+							expect(spiedCallback1).to.have.been.called.with('value2');
+							expect(spiedCallback1).to.have.been.called.with('value3');
+							resolve();
+						},
+						settings.getConfig({ debounce: 10 }).debounce,
+					);
+				},
+				settings.getConfig({ debounce: 10 }).debounce,
+			);
 		});
 	});
 

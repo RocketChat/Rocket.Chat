@@ -1,26 +1,27 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useRoute, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Contextualbar } from '../../../components/Contextualbar';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import Call from './calls/Call';
 import { VoipInfo } from './calls/contextualBar/VoipInfo';
-import { FormSkeleton } from './components/FormSkeleton';
+import { ContextualbarSkeleton } from '../../../components/Contextualbar';
+import { AsyncStatePhase } from '../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../hooks/useEndpointData';
 
+// TODO: We should render contextual bar components in this view
 const CallsContextualBarDirectory = () => {
-	const directoryRoute = useRoute('omnichannel-directory');
+	const { t } = useTranslation();
 
-	const bar = useRouteParameter('bar') || 'info';
 	const id = useRouteParameter('id');
 	const token = useSearchParameter('token');
+	const context = useRouteParameter('context');
 
-	const t = useTranslation();
+	const directoryRoute = useRoute('omnichannel-directory');
 
 	const handleClose = (): void => {
-		directoryRoute.push({ page: 'calls' });
+		directoryRoute.push({ tab: 'calls' });
 	};
 
 	const query = useMemo(
@@ -33,16 +34,12 @@ const CallsContextualBarDirectory = () => {
 
 	const { value: data, phase: state, error } = useEndpointData(`/v1/voip/room`, { params: query });
 
-	if (bar === 'view' && id) {
+	if (context === 'view' && id) {
 		return <Call rid={id} />;
 	}
 
 	if (state === AsyncStatePhase.LOADING) {
-		return (
-			<Box pi={24}>
-				<FormSkeleton />
-			</Box>
-		);
+		return <ContextualbarSkeleton />;
 	}
 
 	if (error || !data || !data.room) {
@@ -51,7 +48,7 @@ const CallsContextualBarDirectory = () => {
 
 	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
 
-	return <Contextualbar>{bar === 'info' && <VoipInfo room={room} onClickClose={handleClose} />}</Contextualbar>;
+	return context === 'info' ? <VoipInfo room={room} onClickClose={handleClose} /> : null;
 };
 
 export default CallsContextualBarDirectory;

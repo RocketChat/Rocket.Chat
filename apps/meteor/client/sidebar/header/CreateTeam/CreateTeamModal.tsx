@@ -14,8 +14,13 @@ import {
 	FieldHint,
 	Accordion,
 	AccordionItem,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import {
 	useEndpoint,
 	usePermission,
@@ -25,7 +30,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useEffect, useMemo } from 'react';
+import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
@@ -147,14 +152,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		}
 	};
 
-	const createTeamFormId = useUniqueId();
-	const nameId = useUniqueId();
-	const topicId = useUniqueId();
-	const privateId = useUniqueId();
-	const readOnlyId = useUniqueId();
-	const encryptedId = useUniqueId();
-	const broadcastId = useUniqueId();
-	const addMembersId = useUniqueId();
+	const createTeamFormId = useId();
+	const nameId = useId();
+	const topicId = useId();
+	const privateId = useId();
+	const readOnlyId = useId();
+	const encryptedId = useId();
+	const broadcastId = useId();
+	const addMembersId = useId();
 
 	return (
 		<Modal
@@ -163,11 +168,11 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 				<Box is='form' id={createTeamFormId} onSubmit={handleSubmit(handleCreateTeam)} {...props} />
 			)}
 		>
-			<Modal.Header>
-				<Modal.Title id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
-			</Modal.Header>
-			<Modal.Content mbe={2}>
+			<ModalHeader>
+				<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>
+				<ModalClose title={t('Close')} onClick={onClose} tabIndex={-1} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
 				<Box fontScale='p2' mbe={16}>
 					{t('Teams_new_description')}
 				</Box>
@@ -302,15 +307,15 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						</FieldGroup>
 					</AccordionItem>
 				</Accordion>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!canCreateTeam} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

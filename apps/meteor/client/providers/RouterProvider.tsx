@@ -10,10 +10,9 @@ import type {
 	RouteObject,
 	LocationSearch,
 } from '@rocket.chat/ui-contexts';
-import { FlowRouter } from 'meteor/kadira:flow-router';
+import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { Tracker } from 'meteor/tracker';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 import { appLayout } from '../lib/appLayout';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
@@ -46,7 +45,7 @@ const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 	};
 };
 
-const getLocationPathname = () => FlowRouter.current().path as LocationPathname;
+const getLocationPathname = () => FlowRouter.current().path.replace(/\?.*/, '') as LocationPathname;
 
 const getLocationSearch = () => location.search as LocationSearch;
 
@@ -126,7 +125,12 @@ const updateFlowRouter = () => {
 		return;
 	}
 
-	FlowRouter.initialize();
+	FlowRouter.initialize({
+		hashbang: false,
+		page: {
+			click: true,
+		},
+	});
 };
 
 const defineRoutes = (routes: RouteObject[]) => {

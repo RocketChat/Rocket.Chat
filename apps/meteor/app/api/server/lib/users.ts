@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Mongo } from 'meteor/mongo';
-import type { Filter, RootFilterOperators } from 'mongodb';
+import type { Filter, FindOptions, RootFilterOperators } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
@@ -21,7 +21,7 @@ export async function findUsersToAutocomplete({
 	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
-	const options = {
+	const options: FindOptions<IUser> & { limit: number } = {
 		projection: {
 			name: 1,
 			username: 1,
@@ -147,9 +147,6 @@ export async function findPaginatedUsersByStatus({
 	if (sort?.status) {
 		actualSort.active = sort.status;
 	}
-	if (sort?.name) {
-		actualSort.nameInsensitive = sort.name;
-	}
 	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
 	switch (status) {
 		case 'active':
@@ -186,19 +183,22 @@ export async function findPaginatedUsersByStatus({
 		...(canSeeExtension ? { freeSwitchExtension: 1 } : {}),
 	};
 
-	match.$or = [
-		...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
-		{
-			username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-		},
-		{
-			name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-		},
-	];
+	if (searchTerm?.trim()) {
+		match.$or = [
+			...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
+			{
+				username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+			},
+			{
+				name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+			},
+		];
+	}
 	if (roles?.length && !roles.includes('all')) {
 		match.roles = { $in: roles };
 	}
-	const { cursor, totalCount } = await Users.findPaginated(
+
+	const { cursor, totalCount } = Users.findPaginated(
 		{
 			...match,
 		},

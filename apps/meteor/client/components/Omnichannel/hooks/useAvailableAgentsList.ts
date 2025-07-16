@@ -1,64 +1,56 @@
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { Serialized, ILivechatAgent } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
-
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { RecordList } from '../../../lib/lists/RecordList';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 type AgentsListOptions = {
-	text: string;
+	filter: string;
 	includeExtension?: string;
+	limit?: number;
 };
 
-export const useAvailableAgentsList = (
-	options: AgentsListOptions,
-): {
-	itemsList: RecordList<ILivechatAgent>;
-	initialItemCount: number;
-	reload: () => void;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
-	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatAgent>());
-	const reload = useCallback(() => setItemsList(new RecordList<ILivechatAgent>()), []);
+type AgentOption = {
+	_id: string;
+	label: string;
+	value: string;
+};
 
+const DEFAULT_QUERY_LIMIT = 25;
+
+export const useAvailableAgentsList = (options: AgentsListOptions) => {
+	const { filter, includeExtension, limit = DEFAULT_QUERY_LIMIT } = options;
 	const getAgents = useEndpoint('GET', '/v1/omnichannel/agents/available');
 
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
+	const formatAgentItem = (agent: Serialized<ILivechatAgent>): AgentOption => ({
+		_id: agent._id,
+		label: agent.username ?? '',
+		value: agent._id,
+	});
 
-	const fetchData = useCallback(
-		async (start, end) => {
-			const { agents, total } = await getAgents({
-				...(options.text && { text: options.text }),
-				...(options.includeExtension && { includeExtension: options.includeExtension }),
-				offset: start,
-				count: end + start,
-				sort: `{ "name": 1 }`,
-			});
-
-			const items = agents.map((agent: any) => {
-				agent._updatedAt = new Date(agent._updatedAt);
-				agent.label = agent.username;
-				agent.value = agent._id;
-				return agent;
+	return useInfiniteQuery({
+		queryKey: ['/v1/omnichannel/agents/available', options],
+		queryFn: async ({ pageParam: offset = 0 }) => {
+			const { agents, ...data } = await getAgents({
+				...(filter && { text: filter }),
+				...(includeExtension && { includeExtension }),
+				offset,
+				count: limit,
+				sort: `{ "username": 1 }`,
 			});
 
 			return {
-				items,
-				itemCount: total,
+				...data,
+				agents: agents.map(formatAgentItem),
 			};
 		},
-		[getAgents, options.includeExtension, options.text],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
-
-	return {
-		reload,
-		itemsList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		select: (data) => data.pages.flatMap<AgentOption>((page) => page.agents),
+		initialPageParam: 0,
+		getNextPageParam: (lastPage) => {
+			const offset = lastPage.offset + lastPage.count;
+			return offset < lastPage.total ? offset : undefined;
+		},
+		initialData: () => ({
+			pages: [{ agents: [], offset: 0, count: 0, total: Infinity }],
+			pageParams: [0],
+		}),
+	});
 };

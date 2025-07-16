@@ -107,7 +107,7 @@ function generateContext(username: string): IUserState {
 										name: 'private_key',
 										value: e2eeData[username]?.client.private_key,
 									},
-							  ]
+								]
 							: []),
 					],
 				},
@@ -120,6 +120,7 @@ export const Users = {
 	user1: generateContext('user1'),
 	user2: generateContext('user2'),
 	user3: generateContext('user3'),
+	userNotAllowedByApp: generateContext('userNotAllowedByApp'),
 	userE2EE: generateContext('userE2EE'),
 	samluser1: generateContext('samluser1'),
 	samluser2: generateContext('samluser2'),

@@ -9,16 +9,16 @@ on:
       - develop
 jobs:
   deploy-preview:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: rharkor/caching-for-turbo@v1.5
+      - uses: actions/checkout@v4
+      - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 14.21.3
-          deno-version: 1.37.1
+          node-version: 22.16.0
+          deno-version: 1.43.5
           cache-modules: true
           install: true
 

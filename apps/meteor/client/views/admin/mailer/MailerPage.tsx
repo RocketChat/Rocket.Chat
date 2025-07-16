@@ -12,17 +12,18 @@ import {
 	ButtonGroup,
 	Box,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React from 'react';
+import DOMPurify from 'dompurify';
+import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import { isJSON } from '../../../../lib/utils/isJSON';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
-export type SendEmailFormValue = {
+type SendEmailFormValue = {
 	fromEmail: string;
 	subject: string;
 	emailBody: string;
@@ -33,7 +34,7 @@ export type SendEmailFormValue = {
 const initialData = { fromEmail: '', query: '', dryRun: false, subject: '', emailBody: '' };
 
 const MailerPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -62,12 +63,12 @@ const MailerPage = () => {
 		sendMailAction.mutateAsync({ from: fromEmail, subject, body: emailBody, dryrun: dryRun, query });
 	};
 
-	const mailerFormId = useUniqueId();
-	const fromEmailId = useUniqueId();
-	const queryId = useUniqueId();
-	const dryRunId = useUniqueId();
-	const subjectId = useUniqueId();
-	const emailBodyId = useUniqueId();
+	const mailerFormId = useId();
+	const fromEmailId = useId();
+	const queryId = useId();
+	const dryRunId = useId();
+	const subjectId = useId();
+	const emailBodyId = useId();
 
 	return (
 		<Page>
@@ -175,7 +176,7 @@ const MailerPage = () => {
 									{errors.emailBody.message}
 								</FieldError>
 							)}
-							<FieldHint id={`${emailBodyId}-hint`} dangerouslySetInnerHTML={{ __html: t('Mailer_body_tags') }} />
+							<FieldHint id={`${emailBodyId}-hint`} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Mailer_body_tags')) }} />
 						</Field>
 					</FieldGroup>
 				</Box>

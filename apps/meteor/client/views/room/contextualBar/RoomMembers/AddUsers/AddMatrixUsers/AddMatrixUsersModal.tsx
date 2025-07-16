@@ -1,8 +1,20 @@
-import { Modal, Button, Box, Icon } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	Modal,
+	Button,
+	Box,
+	Icon,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 type AddMatrixUsersModalProps = {
 	matrixIdVerifiedStatus: Map<string, string>;
@@ -48,17 +60,17 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 			.catch((error) => dispatchToastMessage({ type: 'error', message: error as Error }));
 	};
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Title>{t('Continue_Adding')}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTitle>{t('Continue_Adding')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box>
 					<Box is='ul'>
 						{[...matrixIdVerifiedStatus.entries()].map(([_matrixId, _verificationStatus]) => (
@@ -71,15 +83,15 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 						))}
 					</Box>
 				</Box>
-			</Modal.Content>
-			<Modal.Footer justifyContent='center'>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter justifyContent='center'>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary onClick={handleSubmit(onSubmit)} disabled={!(usersToInvite.length > 0)}>
 						{t('Yes_continue')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

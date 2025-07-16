@@ -1,7 +1,7 @@
 import { type Cloud, type Serialized } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { v, compile } from 'suretype';
+import { z } from 'zod';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
@@ -14,75 +14,71 @@ import { getWorkspaceLicense } from '../getWorkspaceLicense';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
 import { handleBannerOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleCommsSync';
 
-const workspaceClientPayloadSchema = v.object({
-	workspaceId: v.string().required(),
-	publicKey: v.string(),
-	trial: v.object({
-		trialing: v.boolean().required(),
-		trialID: v.string().required(),
-		endDate: v.string().format('date-time').required(),
-		marketing: v
-			.object({
-				utmContent: v.string().required(),
-				utmMedium: v.string().required(),
-				utmSource: v.string().required(),
-				utmCampaign: v.string().required(),
-			})
-			.required(),
-		DowngradesToPlan: v
-			.object({
-				id: v.string().required(),
-			})
-			.required(),
-		trialRequested: v.boolean().required(),
-	}),
-	nps: v.object({
-		id: v.string().required(),
-		startAt: v.string().format('date-time').required(),
-		expireAt: v.string().format('date-time').required(),
-	}),
-	banners: v.array(
-		v.object({
-			_id: v.string().required(),
-			_updatedAt: v.string().format('date-time').required(),
-			platform: v.array(v.string()).required(),
-			expireAt: v.string().format('date-time').required(),
-			startAt: v.string().format('date-time').required(),
-			roles: v.array(v.string()),
-			createdBy: v.object({
-				_id: v.string().required(),
-				username: v.string(),
+const workspaceClientPayloadSchema = z.object({
+	workspaceId: z.string(),
+	publicKey: z.string().optional(),
+	trial: z
+		.object({
+			trialing: z.boolean(),
+			trialID: z.string(),
+			endDate: z.string().datetime(),
+			marketing: z.object({
+				utmContent: z.string(),
+				utmMedium: z.string(),
+				utmSource: z.string(),
+				utmCampaign: z.string(),
 			}),
-			createdAt: v.string().format('date-time').required(),
-			view: v.any(),
-			active: v.boolean(),
-			inactivedAt: v.string().format('date-time'),
-			snapshot: v.string(),
+			DowngradesToPlan: z.object({
+				id: z.string(),
+			}),
+			trialRequested: z.boolean(),
+		})
+		.optional(),
+	nps: z.object({
+		id: z.string(),
+		startAt: z.string().datetime(),
+		expireAt: z.string().datetime(),
+	}),
+	banners: z.array(
+		z.object({
+			_id: z.string(),
+			_updatedAt: z.string().datetime(),
+			platform: z.array(z.string()),
+			expireAt: z.string().datetime(),
+			startAt: z.string().datetime(),
+			roles: z.array(z.string()).optional(),
+			createdBy: z.object({
+				_id: z.string(),
+				username: z.string().optional(),
+			}),
+			createdAt: z.string().datetime(),
+			view: z.any(),
+			active: z.boolean().optional(),
+			inactivedAt: z.string().datetime().optional(),
+			snapshot: z.string().optional(),
 		}),
 	),
-	announcements: v.object({
-		create: v.array(
-			v.object({
-				_id: v.string().required(),
-				_updatedAt: v.string().format('date-time').required(),
-				selector: v.object({
-					roles: v.array(v.string()),
+	announcements: z.object({
+		create: z.array(
+			z.object({
+				_id: z.string(),
+				_updatedAt: z.string().datetime(),
+				selector: z.object({
+					roles: z.array(z.string()),
 				}),
-				platform: v.array(v.string().enum('web', 'mobile')).required(),
-				expireAt: v.string().format('date-time').required(),
-				startAt: v.string().format('date-time').required(),
-				createdBy: v.string().enum('cloud', 'system').required(),
-				createdAt: v.string().format('date-time').required(),
-				dictionary: v.object({}).additional(v.object({}).additional(v.string())),
-				view: v.any(),
-				surface: v.string().enum('banner', 'modal').required(),
+				platform: z.array(z.enum(['web', 'mobile'])),
+				expireAt: z.string().datetime(),
+				startAt: z.string().datetime(),
+				createdBy: z.enum(['cloud', 'system']),
+				createdAt: z.string().datetime(),
+				dictionary: z.record(z.record(z.string())),
+				view: z.any(),
+				surface: z.enum(['banner', 'modal']),
 			}),
 		),
-		delete: v.array(v.string()),
+		delete: z.array(z.string()),
 	}),
 });
-
-const assertWorkspaceClientPayload = compile(workspaceClientPayloadSchema);
 
 /** @deprecated */
 const fetchWorkspaceClientPayload = async ({
@@ -117,7 +113,9 @@ const fetchWorkspaceClientPayload = async ({
 		return undefined;
 	}
 
-	if (!assertWorkspaceClientPayload(payload)) {
+	const assertWorkspaceClientPayload = workspaceClientPayloadSchema.safeParse(payload);
+
+	if (!assertWorkspaceClientPayload.success) {
 		throw new CloudWorkspaceConnectionError('Invalid response from Rocket.Chat Cloud');
 	}
 

@@ -8,7 +8,7 @@ exports[`renders StartCall without crashing 1`] = `
     >
       <div
         aria-label="Start Call"
-        class="rcx-css-1meucp3"
+        class="rcx-css-5tiw1q"
         role="dialog"
       >
         <div
@@ -33,7 +33,7 @@ exports[`renders StartCall without crashing 1`] = `
               <button
                 aria-label="video"
                 aria-live="assertive"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                 type="button"
               >
                 <i
@@ -46,7 +46,7 @@ exports[`renders StartCall without crashing 1`] = `
               <button
                 aria-label="mic"
                 aria-live="assertive"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                 type="button"
               >
                 <i
@@ -98,7 +98,7 @@ exports[`renders StartCall without crashing 1`] = `
               role="group"
             >
               <button
-                class="rcx-box rcx-box--full rcx-button--primary rcx-button  rcx-button-group__item rcx-css-1qcz93u"
+                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item rcx-css-1qcz93u"
                 type="button"
               >
                 <span

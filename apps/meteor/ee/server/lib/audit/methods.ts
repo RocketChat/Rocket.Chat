@@ -27,12 +27,14 @@ const getRoomInfoByAuditParams = async ({
 	users: usernames,
 	visitor,
 	agent,
+	userId,
 }: {
 	type: string;
 	roomId: IRoom['_id'];
 	users: NonNullable<IUser['username']>[];
 	visitor: ILivechatVisitor['_id'];
 	agent: ILivechatAgent['_id'];
+	userId: string;
 }) => {
 	if (rid) {
 		return getValue(await Rooms.findOne({ _id: rid }));
@@ -44,7 +46,7 @@ const getRoomInfoByAuditParams = async ({
 
 	if (type === 'l') {
 		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
-		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
 		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(
 			visitor,
 			agent,
@@ -161,7 +163,7 @@ Meteor.methods<ServerMethods>({
 			const usersId = await getUsersIdFromUserName(usernames);
 			query['u._id'] = { $in: usersId };
 		} else {
-			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent });
+			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent, userId: user._id });
 			if (!roomInfo) {
 				throw new Meteor.Error('Room doesn`t exist');
 			}

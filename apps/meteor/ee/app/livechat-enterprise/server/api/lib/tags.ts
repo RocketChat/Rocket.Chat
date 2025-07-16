@@ -3,9 +3,9 @@ import { LivechatTag } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Filter, FindOptions } from 'mongodb';
 
+import { getDepartmentsWhichUserCanAccess } from './departments';
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
 import { helperLogger } from '../../lib/logger';
-import { getDepartmentsWhichUserCanAccess } from './departments';
 
 type FindTagsParams = {
 	userId: string;
@@ -104,7 +104,7 @@ export async function findTags({
 								...(filteredDepartmentIds.length ? [{ departments: { $in: filteredDepartmentIds } }] : []),
 							],
 						},
-				  ]
+					]
 				: []),
 		],
 	};

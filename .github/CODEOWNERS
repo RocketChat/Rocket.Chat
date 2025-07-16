@@ -20,7 +20,7 @@
 /apps/meteor/app/voip @RocketChat/omnichannel
 /apps/meteor/app/sms @RocketChat/omnichannel
 /apps/meteor/server @RocketChat/backend
-/apps/meteor/server/models @RocketChat/Architecture
+/packages/models @RocketChat/Architecture
 apps/meteor/server/startup/migrations @RocketChat/Architecture
 /apps/meteor/packages/rocketchat-livechat @RocketChat/omnichannel
 /apps/meteor/server/services/voip-asterisk @RocketChat/omnichannel

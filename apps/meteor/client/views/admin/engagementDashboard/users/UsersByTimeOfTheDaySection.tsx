@@ -1,9 +1,10 @@
+import type { ComputedCell, DefaultHeatMapDatum } from '@nivo/heatmap';
 import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
 import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
@@ -21,12 +22,12 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 
 	const utc = timezone === 'utc';
 
-	const { data, isLoading } = useUsersByTimeOfTheDay({ period, utc });
+	const { data, isPending } = useUsersByTimeOfTheDay({ period, utc });
 
 	const { t } = useTranslation();
 
 	const [dates, values] = useMemo(() => {
-		if (!data || isLoading) {
+		if (!data || isPending) {
 			return [];
 		}
 
@@ -60,10 +61,10 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 		}
 
 		return [dates, values];
-	}, [data, isLoading, utc]);
+	}, [data, isPending, utc]);
 
 	const tooltip = useCallback(
-		({ cell }): ReactElement => {
+		({ cell }: { cell: ComputedCell<DefaultHeatMapDatum> }) => {
 			return (
 				<Tooltip>
 					{moment(cell.data.x).format('ddd')}{' '}
@@ -98,7 +99,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 				/>
 			</EngagementDashboardCardFilter>
 
-			{!isLoading && values && dates ? (
+			{!isPending && values && dates ? (
 				<Box display='flex' style={{ height: 696 }}>
 					<Flex.Item align='stretch' grow={1} shrink={0}>
 						<Box style={{ position: 'relative' }}>

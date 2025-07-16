@@ -56,6 +56,7 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public async disableFederation(): Promise<void> {
+		// TODO: audit
 		(await Settings.updateValueById('Federation_Matrix_enabled', false)).modifiedCount &&
 			void notifyOnSettingChangedById('Federation_Matrix_enabled');
 	}
@@ -73,7 +74,8 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public async setConfigurationStatus(status: 'Valid' | 'Invalid'): Promise<void> {
-		const { modifiedCount } = await Settings.updateOne({ _id: 'Federation_Matrix_configuration_status' }, { $set: { value: status } });
+		// TODO: audit
+		const { modifiedCount } = await Settings.updateValueById('Federation_Matrix_configuration_status', status);
 		if (modifiedCount) {
 			void notifyOnSettingChangedById('Federation_Matrix_configuration_status');
 		}
@@ -158,6 +160,7 @@ export class RocketChatSettingsAdapter {
 				'sender_localpart': registrationFile.botName,
 				'namespaces': registrationFile.listenTo,
 				'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
+				'use_appservice_legacy_authorization': true,
 			}),
 		);
 	}
@@ -292,6 +295,7 @@ export class RocketChatSettingsAdapter {
 			i18nLabel: 'Federation_Matrix_max_size_of_public_rooms_users',
 			i18nDescription: 'Federation_Matrix_max_size_of_public_rooms_users_desc',
 			alert: 'Federation_Matrix_max_size_of_public_rooms_users_Alert',
+			modules: ['federation'],
 			public: true,
 			enterprise: true,
 			invalidValue: false,

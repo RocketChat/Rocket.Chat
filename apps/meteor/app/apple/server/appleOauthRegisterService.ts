@@ -1,9 +1,9 @@
 import { KJUR } from 'jsrsasign';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
+import { AppleCustomOAuth } from './AppleCustomOAuth';
 import { settings } from '../../settings/server';
 import { config } from '../lib/config';
-import { AppleCustomOAuth } from './AppleCustomOAuth';
 
 new AppleCustomOAuth('apple', config);
 

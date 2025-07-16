@@ -12,9 +12,9 @@ function isILayoutblock(obj: object): obj is IPayload {
 const useFormatCodeMirrorValue = (
   callback: (
     parsedCode: IPayload,
-    prettierCode: ReturnType<typeof codePrettier>
+    prettierCode: Awaited<ReturnType<typeof codePrettier>>,
   ) => void,
-  changes: ICodeMirrorChanges
+  changes: ICodeMirrorChanges,
 ) => {
   useEffect(() => {
     if (changes?.isDispatch) return;
@@ -23,8 +23,9 @@ const useFormatCodeMirrorValue = (
       const parsedCode = json5.parse(changes.value);
       if (!isILayoutblock(parsedCode))
         throw new Error('Please enter a valid LayoutBlock');
-      const prettierCode = codePrettier(changes.value, changes.cursor || 0);
-      callback(parsedCode, prettierCode);
+      codePrettier(changes.value, changes.cursor || 0).then((prettierCode) => {
+        callback(parsedCode, prettierCode);
+      });
     } catch (e) {
       // do nothing
     }

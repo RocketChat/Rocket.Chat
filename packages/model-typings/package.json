@@ -1,12 +1,12 @@
 {
 	"name": "@rocket.chat/model-typings",
-	"version": "0.8.0-rc.1",
+	"version": "1.6.8",
 	"private": true,
 	"devDependencies": {
 		"@types/node-rsa": "^1.1.4",
 		"eslint": "~8.45.0",
-		"mongodb": "^4.17.2",
-		"typescript": "~5.5.4"
+		"mongodb": "6.10.0",
+		"typescript": "~5.8.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -20,5 +20,8 @@
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

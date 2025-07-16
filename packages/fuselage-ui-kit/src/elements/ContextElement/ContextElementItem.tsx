@@ -7,37 +7,28 @@ import type { BlockProps } from '../../utils/BlockProps';
 type ContextElementProps = BlockProps<UiKit.ContextBlock>;
 
 type ContextElementItemProps = {
-  element: ContextElementProps['block']['elements'][number];
-  surfaceRenderer: ContextElementProps['surfaceRenderer'];
-  index: number;
+	element: ContextElementProps['block']['elements'][number];
+	surfaceRenderer: ContextElementProps['surfaceRenderer'];
+	index: number;
 };
 
-export const ContextElementItem = ({
-  element,
-  surfaceRenderer,
-  index,
-}: ContextElementItemProps) => {
-  const renderedElement = surfaceRenderer.renderContext(
-    element,
-    BlockContext.CONTEXT,
-    undefined,
-    index
-  );
+export const ContextElementItem = ({ element, surfaceRenderer, index }: ContextElementItemProps) => {
+	const renderedElement = surfaceRenderer.renderContext(element, BlockContext.CONTEXT, undefined, index);
 
-  if (!renderedElement) {
-    return null;
-  }
+	if (!renderedElement) {
+		return null;
+	}
 
-  switch (element.type) {
-    case ElementType.PLAIN_TEXT:
-    case ElementType.MARKDOWN:
-      return (
-        <Box is='span' withTruncatedText fontScale='c1' color='hint' margin={4}>
-          {renderedElement}
-        </Box>
-      );
+	switch (element.type) {
+		case ElementType.PLAIN_TEXT:
+		case ElementType.MARKDOWN:
+			return (
+				<Box is='span' withTruncatedText fontScale='c1' color='hint' margin={4}>
+					{renderedElement}
+				</Box>
+			);
 
-    default:
-      return <>{renderedElement}</>;
-  }
+		default:
+			return <>{renderedElement}</>;
+	}
 };

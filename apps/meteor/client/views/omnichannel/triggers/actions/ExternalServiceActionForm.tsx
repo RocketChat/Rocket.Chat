@@ -1,7 +1,5 @@
 import { FieldError, Field, FieldHint, FieldLabel, FieldRow, NumberInput, TextAreaInput, FieldGroup } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, FocusEvent } from 'react';
-import React from 'react';
+import { useId, type ComponentProps, type FocusEvent } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -23,9 +21,9 @@ export const ExternalServiceActionForm = ({ control, trigger, index, ...props }:
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
-	const timeoutFieldId = useUniqueId();
+	const timeoutFieldId = useId();
 	const timeoutFieldName = `actions.${index}.params.serviceTimeout` as const;
-	const fallbackMessageFieldId = useUniqueId();
+	const fallbackMessageFieldId = useId();
 	const fallbackMessageFieldName = `actions.${index}.params.serviceFallbackMessage` as const;
 
 	const [timeoutError, fallbackMessageError] = useFieldError({ control, name: [timeoutFieldName, fallbackMessageFieldName] });

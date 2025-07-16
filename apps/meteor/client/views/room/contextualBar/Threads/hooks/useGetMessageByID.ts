@@ -8,6 +8,7 @@ import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 
 export const useGetMessageByID = () => {
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
+	const storeMessage = Messages.use((state) => state.store);
 
 	return useCallback(
 		async (mid: IMessage['_id']) => {
@@ -15,7 +16,7 @@ export const useGetMessageByID = () => {
 				const { message: rawMessage } = await getMessage({ msgId: mid });
 				const mappedMessage = mapMessageFromApi(rawMessage);
 				const message = (await onClientMessageReceived(mappedMessage)) || mappedMessage;
-				Messages.upsert({ _id: message._id }, { $set: message as any });
+				storeMessage(message);
 				return message;
 			} catch (error) {
 				if (typeof error === 'object' && error !== null && 'success' in error) {
@@ -25,6 +26,6 @@ export const useGetMessageByID = () => {
 				throw error;
 			}
 		},
-		[getMessage],
+		[getMessage, storeMessage],
 	);
 };

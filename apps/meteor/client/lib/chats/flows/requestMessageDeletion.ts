@@ -1,8 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 
 import { t } from '../../../../app/utils/lib/i18n';
-import GenericModal from '../../../components/GenericModal';
-import { imperativeModal } from '../../imperativeModal';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
@@ -21,7 +20,7 @@ export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): 
 					dispatchToastMessage({ type: 'error', message: t('Message_deleting_blocked') });
 					return;
 				}
-				await chat.data.deleteMessage(message._id);
+				await chat.data.deleteMessage(message);
 
 				imperativeModal.close();
 

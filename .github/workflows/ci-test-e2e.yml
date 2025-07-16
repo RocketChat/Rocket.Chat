@@ -18,12 +18,6 @@ on:
       rc-docker-tag:
         required: true
         type: string
-      rc-dockerfile-alpine:
-        required: true
-        type: string
-      rc-docker-tag-alpine:
-        required: true
-        type: string
       gh-docker-tag:
         required: true
         type: string
@@ -32,7 +26,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['4.4', '6.0']"
+        default: "['5.0', '7.0']"
         required: false
         type: string
       release:
@@ -54,7 +48,7 @@ on:
         required: true
         type: string
       db-watcher-disabled:
-        default: 'false'
+        default: 'true'
         required: false
         type: string
     secrets:
@@ -81,10 +75,10 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
-      RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && inputs.rc-dockerfile-alpine || inputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && inputs.rc-docker-tag-alpine || inputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
+      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
 
     strategy:
       fail-fast: false
@@ -92,7 +86,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})${{ matrix.mongodb-version == '6.0' && ' - Alpine' || '' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '7.0' && 'Debian' && false) || 'Alpine (Official)' }}
 
     steps:
       - name: Collect Workflow Telemetry
@@ -104,7 +98,7 @@ jobs:
 
       - name: Setup kernel limits
         run: |
-          sudo sysctl -w net.ipv4.ip_local_port_range="500   65535"
+          echo "500 65535" > sudo tee -a /proc/sys/net/ipv4/ip_local_port_range
           sudo sysctl -w net.ipv4.tcp_mem="383865   511820   2303190"
 
           echo fs.file-max=20000500 | sudo tee -a /etc/sysctl.conf
@@ -112,15 +106,15 @@ jobs:
           sudo sysctl -p
 
       - name: Login to GitHub Container Registry
-        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: docker/login-action@v2
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
       - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@v1.10.0
+        uses: supercharge/mongodb-github-action@1.12.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
@@ -136,12 +130,19 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.5
+      - uses: rharkor/caching-for-turbo@v1.8
+
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
 
       - run: yarn build
+
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        if: github.event_name == 'pull_request' && (github.event.pull_request.head.repo.full_name != github.repository || github.actor == 'dependabot[bot]')
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -197,20 +198,8 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml up -d
 
-      - name: Cache Playwright binaries
+      - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
-        uses: actions/cache@v3
-        id: cache-playwright
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.40.1
-
-      - name: Install Playwright
-        if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'
-        working-directory: ./apps/meteor
-        run: npx playwright install --with-deps
 
       - name: Wait for Rocket.Chat to start up
         uses: cygnetdigital/wait_for_response@v2.0.0
@@ -233,6 +222,7 @@ jobs:
 
       - name: Remove unused Docker images
         run: docker system prune -af
+
       - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
@@ -274,7 +264,7 @@ jobs:
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
           REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
-          REPORTER_ROCKETCHAT_REPORT: ${{ github.event.pull_request.draft != 'true' && 'true' || '' }}
+          REPORTER_ROCKETCHAT_REPORT: ${{ github.event.pull_request.draft != 'true' && secrets.REPORTER_ROCKETCHAT_URL != '' && 'true' || '' }}
           REPORTER_ROCKETCHAT_RUN: ${{ github.run_number }}
           REPORTER_ROCKETCHAT_BRANCH: ${{ github.ref }}
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
@@ -300,7 +290,11 @@ jobs:
           include-hidden-files: true
 
       - name: Show server logs if E2E test failed
-        if: failure()
+        if: failure() && inputs.release == 'ee'
+        run: docker compose -f docker-compose-ci.yml logs
+
+      - name: Show server logs if E2E test failed
+        if: failure() && inputs.release != 'ee'
         run: docker compose -f docker-compose-ci.yml logs rocketchat
 
       - name: Extract e2e:ee:coverage

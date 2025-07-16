@@ -1,9 +1,11 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiUsername, apiEmail, methodCall } from '../../data/api-data';
+import { pinMessage, sendMessage, starMessage } from '../../data/chat.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
@@ -216,29 +218,51 @@ describe('[Direct Messages]', () => {
 			.end(done);
 	});
 
-	it('/im.list.everyone', (done) => {
-		void request
-			.get(api('im.list.everyone'))
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
-				expect(res.body).to.have.property('ims').and.to.be.an('array');
-				const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id);
-				expect(im).to.have.property('_id');
-				expect(im).to.have.property('t').and.to.be.eq('d');
-				expect(im).to.have.property('msgs').and.to.be.a('number');
-				expect(im).to.have.property('usernames').and.to.be.an('array');
-				expect(im).to.have.property('ro');
-				expect(im).to.have.property('sysMes');
-				expect(im).to.have.property('_updatedAt');
-				expect(im).to.have.property('ts');
-				expect(im).to.have.property('lastMessage');
-			})
-			.end(done);
+	describe('/im.list.everyone', () => {
+		before(async () => {
+			return updatePermission('view-room-administration', ['admin']);
+		});
+
+		after(async () => {
+			return updatePermission('view-room-administration', ['admin']);
+		});
+
+		it('should succesfully return a list of direct messages', async () => {
+			await request
+				.get(api('im.list.everyone'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('ims').and.to.be.an('array');
+					const im = res.body.ims[0];
+					expect(im).to.have.property('_id');
+					expect(im).to.have.property('t').and.to.be.eq('d');
+					expect(im).to.have.property('msgs').and.to.be.a('number');
+					expect(im).to.have.property('usernames').and.to.be.an('array');
+					expect(im).to.have.property('ro');
+					expect(im).to.have.property('sysMes');
+					expect(im).to.have.property('_updatedAt');
+					expect(im).to.have.property('ts');
+					expect(im).to.have.property('lastMessage');
+				});
+		});
+
+		it('should fail if user does NOT have the view-room-administration permission', async () => {
+			await updatePermission('view-room-administration', []);
+			await request
+				.get(api('im.list.everyone'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
 	});
 
 	describe("Setting: 'Use Real Name': true", () => {
@@ -320,26 +344,132 @@ describe('[Direct Messages]', () => {
 			.end(done);
 	});
 
-	it('/im.counters', (done) => {
-		void request
-			.get(api('im.counters'))
-			.set(credentials)
-			.query({
-				roomId: directMessage._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('joined', true);
-				expect(res.body).to.have.property('members');
-				expect(res.body).to.have.property('unreads');
-				expect(res.body).to.have.property('unreadsFrom');
-				expect(res.body).to.have.property('msgs');
-				expect(res.body).to.have.property('latest');
-				expect(res.body).to.have.property('userMentions');
-			})
-			.end(done);
+	describe('/im.counters', () => {
+		it('should require auth', async () => {
+			await request
+				.get(api('im.counters'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+		it('should require a roomId', async () => {
+			await request
+				.get(api('im.counters'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+		it('should work with all params right', (done) => {
+			void request
+				.get(api('im.counters'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('joined', true);
+					expect(res.body).to.have.property('members');
+					expect(res.body).to.have.property('unreads');
+					expect(res.body).to.have.property('unreadsFrom');
+					expect(res.body).to.have.property('msgs');
+					expect(res.body).to.have.property('latest');
+					expect(res.body).to.have.property('userMentions');
+				})
+				.end(done);
+		});
+
+		describe('with valid room id', () => {
+			let testDM: IRoom & { rid: IRoom['_id'] };
+			let user2: TestUser<IUser>;
+			let userCreds: Credentials;
+
+			before(async () => {
+				user2 = await createUser();
+				userCreds = await login(user2.username, password);
+				await request
+					.post(api('im.create'))
+					.set(credentials)
+					.send({
+						username: user2.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						testDM = res.body.room;
+					});
+
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							text: 'Sample message',
+							rid: testDM._id,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			after(async () => {
+				await request
+					.post(api('im.delete'))
+					.set(credentials)
+					.send({
+						roomId: testDM._id,
+					})
+					.expect(200);
+
+				await deleteUser(user2);
+			});
+
+			it('should properly return counters before opening the dm', async () => {
+				await request
+					.get(api('im.counters'))
+					.set(userCreds)
+					.query({
+						roomId: testDM._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('joined', true);
+						expect(res.body).to.have.property('members').and.to.be.a('number').and.to.be.eq(2);
+						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.eq(1);
+						expect(res.body).to.have.property('unreadsFrom');
+						expect(res.body).to.have.property('msgs').and.to.be.a('number').and.to.be.eq(1);
+						expect(res.body).to.have.property('latest');
+						expect(res.body).to.have.property('userMentions').and.to.be.a('number').and.to.be.eq(0);
+					});
+			});
+		});
+
+		describe('with deactived users', async () => {
+			before(() => request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user._id, activeStatus: false }));
+			after(() => request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user._id, activeStatus: true }));
+			it('should not include deactivated users in members count', async () => {
+				// Deactivate the second user
+
+				const res = await request.get(api('im.counters')).set(credentials).query({ roomId: directMessage._id });
+
+				expect(res.status).to.equal(200);
+				expect(res.body.success).to.be.true;
+				// Only  admin remain active
+				expect(res.body.members).to.equal(1);
+			});
+		});
 	});
 
 	describe('[/im.files]', async () => {
@@ -347,12 +477,77 @@ describe('[Direct Messages]', () => {
 	});
 
 	describe('/im.messages', () => {
+		let testUser: IUser;
+		let testUser2: IUser;
+		let testUserDMRoom: IRoom;
+		let testUserCredentials: Credentials;
+		let testUser2Credentials: Credentials;
+
+		let messages: Pick<IMessage, 'rid' | 'msg' | 'mentions'>[] = [];
+
+		before(async () => {
+			[testUser, testUser2] = await Promise.all([
+				createUser({ joinDefaultChannels: false, roles: ['admin'], username: `a_${Random.id()}` }),
+				createUser({ joinDefaultChannels: false, username: `b_${Random.id()}` }),
+			]);
+
+			[testUserCredentials, testUser2Credentials] = await Promise.all([
+				login(testUser.username, password),
+				login(testUser2.username, password),
+			]);
+			await setUserStatus(testUserCredentials);
+
+			testUserDMRoom = (
+				await request
+					.post(api('im.create'))
+					.set(testUserCredentials)
+					.send({ username: `${testUser2.username}` })
+			).body.room;
+
+			messages = [
+				{
+					rid: testUserDMRoom._id,
+					msg: `@${adminUsername} youre being mentioned`,
+					mentions: [{ username: adminUsername, _id: adminUsername, name: adminUsername }],
+				},
+				{
+					rid: testUserDMRoom._id,
+					msg: `@${testUser.username} youre being mentioned`,
+					mentions: [{ username: testUser.username, _id: testUser._id, name: testUser.name }],
+				},
+				{
+					rid: testUserDMRoom._id,
+					msg: `A simple message`,
+				},
+				{
+					rid: testUserDMRoom._id,
+					msg: `A pinned simple message`,
+				},
+			];
+
+			/**
+			 * We are not using `Promise.all` here because we want to ensure that each message is sent sequentially.
+			 * This approach helps in maintaining the order of messages by ts.
+			 */
+			const starredMessage = await sendMessage({ message: messages[0], requestCredentials: testUserCredentials });
+			const pinnedMessage = await sendMessage({ message: messages[1], requestCredentials: testUser2Credentials });
+			await sendMessage({ message: messages[2], requestCredentials: testUserCredentials });
+			await sendMessage({ message: messages[3], requestCredentials: testUser2Credentials });
+
+			await Promise.all([
+				starMessage({ messageId: starredMessage.body.message._id, requestCredentials: testUserCredentials }),
+				pinMessage({ messageId: pinnedMessage.body.message._id, requestCredentials: testUserCredentials }),
+			]);
+		});
+
+		after(async () => Promise.all([deleteUser(testUser), deleteUser(testUser2)]));
+
 		it('should return all DM messages that were sent to yourself using your username', (done) => {
 			void request
 				.get(api('im.messages'))
-				.set(credentials)
+				.set(testUserCredentials)
 				.query({
-					username: adminUsername,
+					username: testUser.username,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -362,66 +557,219 @@ describe('[Direct Messages]', () => {
 				})
 				.end(done);
 		});
+
+		it('should sort by ts by default', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages.map((m: IMessage) => m.u.username)).to.deep.equal(
+						res.body.messages
+							.sort((a: IMessage, b: IMessage) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
+							.map((m: IMessage) => m.u.username),
+					);
+				});
+		});
+
+		it('should allow custom sorting', async () => {
+			const { messages } = (
+				await request
+					.get(api('im.messages'))
+					.set(testUserCredentials)
+					.query({
+						roomId: testUserDMRoom._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+			).body;
+
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+					sort: '{"u.username":-1}',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages.map((m: IMessage) => m.u.username)).to.deep.equal(
+						messages.map((m: IMessage) => m.u.username).sort((a: string, b: string) => b.localeCompare(a)),
+					);
+				});
+		});
+
+		it('should return an error when trying to access a DM that does not belong to the current user', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(credentials)
+				.query({ roomId: testUserDMRoom._id })
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+
+		it('should return messages that mention a single user', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+					mentionIds: adminUsername,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('mentions').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body.messages[0].mentions[0]).to.have.property('_id', adminUsername);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		it('should return messages that mention multiple users', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+					mentionIds: `${adminUsername},${testUser._id}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(2);
+					expect(res.body).to.have.property('count', 2);
+					expect(res.body).to.have.property('total', 2);
+
+					const mentionIds = res.body.messages.map((message: any) => message.mentions[0]._id);
+					expect(mentionIds).to.include.members([adminUsername, testUser._id]);
+				});
+		});
+
+		it('should return messages that are starred by a specific user', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+					starredIds: testUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('starred').that.is.an('array').and.to.have.lengthOf(1);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
+
+		it('should return messages that are pinned', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+					pinned: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages).to.have.lengthOf(1);
+					expect(res.body.messages[0]).to.have.nested.property('pinned').that.is.an('boolean').and.to.be.true;
+					expect(res.body.messages[0]).to.have.nested.property('pinnedBy').that.is.an('object');
+					expect(res.body.messages[0].pinnedBy).to.have.property('_id', testUser._id);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+				});
+		});
 	});
 
 	describe('/im.messages.others', () => {
-		it('should fail when the endpoint is disabled', (done) => {
-			void updateSetting('API_Enable_Direct_Message_History_EndPoint', false).then(() => {
-				void request
-					.get(api('im.messages.others'))
-					.set(credentials)
-					.query({
-						roomId: directMessage._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-endpoint-disabled');
-					})
-					.end(done);
-			});
-		});
-		it('should fail when the endpoint is enabled but the user doesnt have permission', (done) => {
-			void updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
-				void updatePermission('view-room-administration', []).then(() => {
-					void request
-						.get(api('im.messages.others'))
-						.set(credentials)
-						.query({
-							roomId: directMessage._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'unauthorized');
-						})
-						.end(done);
+		it('should fail when the endpoint is disabled and the user has permissions', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', false);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-endpoint-disabled');
 				});
-			});
 		});
-		it('should succeed when the endpoint is enabled and user has permission', (done) => {
-			void updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
-				void updatePermission('view-room-administration', ['admin']).then(() => {
-					void request
-						.get(api('im.messages.others'))
-						.set(credentials)
-						.query({
-							roomId: directMessage._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('count');
-							expect(res.body).to.have.property('total');
-						})
-						.end(done);
+		it('should fail when the endpoint is disabled and the user doesnt have permission', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', false);
+			await updatePermission('view-room-administration', []);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
-			});
+		});
+		it('should fail when the endpoint is enabled but the user doesnt have permission', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', true);
+			await updatePermission('view-room-administration', []);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
+		it('should succeed when the endpoint is enabled and user has permission', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', true);
+			await updatePermission('view-room-administration', ['admin']);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				});
 		});
 	});
 

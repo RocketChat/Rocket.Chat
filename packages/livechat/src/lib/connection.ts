@@ -53,12 +53,14 @@ const Connection = {
 
 	async clearAlerts() {
 		const { alerts } = store.state;
-		await store.setState({ alerts: alerts.filter((alert) => ![livechatDisconnectedAlertId, livechatConnectedAlertId].includes(alert.id)) });
+		await store.setState({
+			alerts: alerts?.filter((alert) => ![livechatDisconnectedAlertId, livechatConnectedAlertId].includes(alert.id)),
+		});
 	},
 
 	async displayAlert(alert = {}) {
 		const { alerts } = store.state;
-		await store.setState({ alerts: (alerts.push(alert), alerts) });
+		await store.setState({ alerts: (alerts?.push(alert), alerts) });
 	},
 
 	async handleConnected() {

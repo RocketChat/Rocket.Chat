@@ -46,7 +46,7 @@ const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, r
 	};
 
 	const acceptClick = async () => {
-		setShow(!{ show });
+		setShow(!show);
 		switch (callProvider) {
 			case 'video-conference': {
 				window.open(url, rid);

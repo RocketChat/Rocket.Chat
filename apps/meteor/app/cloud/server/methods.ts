@@ -2,7 +2,6 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { buildWorkspaceRegistrationData } from './functions/buildRegistrationData';
 import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
 import { connectWorkspace } from './functions/connectWorkspace';
@@ -12,6 +11,7 @@ import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStat
 import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { userLogout } from './functions/userLogout';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

@@ -25,7 +25,7 @@ exports[`renders NeutralButton without crashing 1`] = `
   <div>
     <button
       aria-label="Neutral Button"
-      class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+      class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
       title="Neutral Button"
       type="button"
     >

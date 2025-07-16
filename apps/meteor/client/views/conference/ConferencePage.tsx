@@ -1,11 +1,11 @@
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useRoute, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
-import { useUserDisplayName } from '../../hooks/useUserDisplayName';
+import ConferencePageError from './ConferencePageError';
 import { useVideoConfOpenCall } from '../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import PageLoading from '../root/PageLoading';
-import ConferencePageError from './ConferencePageError';
 
 const getQueryParams = () => {
 	const queryString = window.location.search;

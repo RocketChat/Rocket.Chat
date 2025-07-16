@@ -99,12 +99,12 @@ describe('banners', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', "Match error: Missing key 'bannerId'");
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				})
 				.end(done);
 		});
 
-		it('should fail if missing bannerId is empty', (done) => {
+		it('should fail if bannerId is empty', (done) => {
 			void request
 				.post(api('banners.dismiss'))
 				.set(credentials)
@@ -118,7 +118,7 @@ describe('banners', () => {
 				.end(done);
 		});
 
-		it('should fail if missing bannerId is invalid', (done) => {
+		it('should fail if bannerId is invalid', (done) => {
 			void request
 				.post(api('banners.dismiss'))
 				.set(credentials)
@@ -130,6 +130,144 @@ describe('banners', () => {
 					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/banners]', () => {
+		it('should fail if not logged in', async () => {
+			return request
+				.get(api('banners'))
+				.query({
+					platform: 'web',
+				})
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				});
+		});
+
+		it('should fail if missing platform', async () => {
+			return request
+				.get(api('banners'))
+				.set(credentials)
+				.query({})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail if platform is invalid', async () => {
+			return request
+				.get(api('banners'))
+				.set(credentials)
+				.query({
+					platform: 'invalid-platform',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should succesfully return web banners', async () => {
+			return request
+				.get(api('banners'))
+				.set(credentials)
+				.query({
+					platform: 'web',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('banners').that.is.an('array');
+				});
+		});
+
+		it('should succesfully return mobile banners', async () => {
+			return request
+				.get(api('banners'))
+				.set(credentials)
+				.query({
+					platform: 'mobile',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('banners').that.is.an('array');
+				});
+		});
+	});
+
+	describe('[/banners/:id]', () => {
+		it('should fail if not logged in', async () => {
+			return request
+				.get(api('banners/some-id'))
+				.query({
+					platform: 'web',
+				})
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+				});
+		});
+
+		it('should fail if missing platform', async () => {
+			return request
+				.get(api('banners/some-id'))
+				.set(credentials)
+				.query({})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail if platform is invalid', async () => {
+			return request
+				.get(api('banners/some-id'))
+				.set(credentials)
+				.query({
+					platform: 'invalid-platform',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should succesfully return a web banner by id', async () => {
+			return request
+				.get(api('banners/some-id'))
+				.set(credentials)
+				.query({
+					platform: 'web',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('banners').that.is.an('array');
+				});
+		});
+
+		it('should succesfully return a mobile banner by id', async () => {
+			return request
+				.get(api('banners/some-id'))
+				.set(credentials)
+				.query({
+					platform: 'mobile',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('banners').that.is.an('array');
+				});
 		});
 	});
 });

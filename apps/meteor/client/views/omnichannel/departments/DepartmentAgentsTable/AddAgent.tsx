@@ -1,14 +1,21 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { AriaAttributes } from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import type { IDepartmentAgent } from '../EditDepartment';
+import type { IDepartmentAgent } from '../definitions';
 
-function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: (agent: IDepartmentAgent) => void }) {
-	const t = useTranslation();
+type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
+	agentList: IDepartmentAgent[];
+	onAdd: (agent: IDepartmentAgent) => void;
+};
+
+function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAgentProps) {
+	const { t } = useTranslation();
 
 	const [userId, setUserId] = useState('');
 
@@ -16,9 +23,9 @@ function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: 
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleAgent = useMutableCallback((e) => setUserId(e));
+	const handleAgent = useEffectEvent((e: string) => setUserId(e));
 
-	const handleSave = useMutableCallback(async () => {
+	const handleSave = useEffectEvent(async () => {
 		if (!userId) {
 			return;
 		}
@@ -36,7 +43,7 @@ function AddAgent({ agentList, onAdd }: { agentList: IDepartmentAgent[]; onAdd: 
 	});
 
 	return (
-		<Box display='flex' alignItems='center'>
+		<Box role='group' aria-labelledby={ariaLabelledBy} display='flex' alignItems='center'>
 			<AutoCompleteAgent value={userId} onChange={handleAgent} />
 			<Button disabled={!userId} onClick={handleSave} mis={8} primary>
 				{t('Add')}

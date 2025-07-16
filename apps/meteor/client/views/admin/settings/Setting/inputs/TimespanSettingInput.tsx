@@ -1,6 +1,6 @@
 import { Field, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
-import type { FormEventHandler, ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import type { FormEventHandler, Key, ReactElement } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from '../../../../../lib/convertTimeUnit';
@@ -62,7 +62,7 @@ function TimespanSettingInput({
 		setInternalValue(newValue);
 	};
 
-	const handleChangeTimeUnit = (nextTimeUnit: string | number) => {
+	const handleChangeTimeUnit = (nextTimeUnit: Key) => {
 		if (typeof nextTimeUnit !== 'string') {
 			return;
 		}

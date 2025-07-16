@@ -4,7 +4,13 @@ import { Info } from '../rocketchat.info';
 
 export const getURL = function (
 	path: string, // eslint-disable-next-line @typescript-eslint/naming-convention
-	params: Record<string, any> = {},
+	params: {
+		cdn?: boolean;
+		full?: boolean;
+		cloud?: boolean;
+		cloud_route?: string;
+		cloud_params?: Record<string, string>;
+	} = {},
 	cloudDeepLinkUrl?: string,
 	cacheKey?: boolean,
 ): string {

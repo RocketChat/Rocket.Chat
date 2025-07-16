@@ -20,7 +20,7 @@ import {
 	moveBackToQueue,
 	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -36,6 +36,8 @@ describe('LIVECHAT - Agents', () => {
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
+		await updateSetting('Omnichannel_enable_department_removal', true);
 		agent = await createAgent();
 		manager = await createManager();
 	});
@@ -54,6 +56,7 @@ describe('LIVECHAT - Agents', () => {
 	});
 
 	after(async () => {
+		await updateSetting('Omnichannel_enable_department_removal', false);
 		await deleteUser(agent2.user);
 	});
 
@@ -302,16 +305,10 @@ describe('LIVECHAT - Agents', () => {
 			await updatePermission('view-livechat-manager', ['admin']);
 
 			await request
-				.get(api(`livechat/users/invalid-type/invalid-id${agent._id}`))
+				.get(api(`livechat/users/invalid-type/${agent._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400);
-		}).timeout(5000);
-
-		it('should return an error when _id is invalid', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
-
-			await request.get(api('livechat/users/agent/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		}).timeout(5000);
 
 		it('should return a valid user when all goes fine', async () => {
@@ -336,6 +333,24 @@ describe('LIVECHAT - Agents', () => {
 			const user = await createUser();
 			await request
 				.get(api(`livechat/users/agent/${user._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('user');
+					expect(res.body.user).to.be.null;
+				});
+
+			// cleanup
+			await deleteUser(user);
+		});
+
+		it('should return { user: null } when user is not a manager', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			const user = await createUser();
+			await request
+				.get(api(`livechat/users/manager/${user._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

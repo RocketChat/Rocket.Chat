@@ -1,6 +1,9 @@
 import { Box, Skeleton, Margins, Callout } from '@rocket.chat/fuselage';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { useOAuthAppQuery } from '../../oauth/hooks/useOAuthAppQuery';
+import PageLoading from '../../root/PageLoading';
 
 const blogSpotStyleScriptImport = (src: string) =>
 	new Promise((resolve) => {
@@ -17,6 +20,8 @@ const blogSpotStyleScriptImport = (src: string) =>
 
 const NewZapier = ({ ...props }) => {
 	const { t } = useTranslation();
+	const oauthAppQuery = useOAuthAppQuery('zapier');
+	const zapierAvailable = !oauthAppQuery.isLoading && !oauthAppQuery.isError && oauthAppQuery.data;
 	const [script, setScript] = useState<HTMLScriptElement>();
 
 	useEffect(() => {
@@ -28,7 +33,7 @@ const NewZapier = ({ ...props }) => {
 			setScript(scriptEl as HTMLScriptElement);
 		};
 
-		if (!script) {
+		if (!script && zapierAvailable) {
 			importZapier();
 		}
 
@@ -37,25 +42,39 @@ const NewZapier = ({ ...props }) => {
 				script.parentNode?.removeChild(script);
 			}
 		};
-	}, [script]);
+	}, [script, zapierAvailable]);
+
+	if (oauthAppQuery.isLoading) {
+		return <PageLoading />;
+	}
 
 	return (
 		<>
-			<Callout type='warning' icon='warning' title={t('Zapier_integration_has_been_deprecated')} mbs={16} mbe={4}>
-				{t('Install_Zapier_from_marketplace')}
+			<Callout
+				type='warning'
+				icon='warning'
+				title={t(!zapierAvailable ? 'Zapier_integration_is_not_available' : 'Zapier_integration_has_been_deprecated')}
+				mbs={16}
+				mbe={4}
+			>
+				{t(!zapierAvailable ? 'Install_Zapier_from_marketplace_new_workspaces' : 'Install_Zapier_from_marketplace')}
 			</Callout>
-			{!script && (
-				<Box display='flex' flexDirection='column' alignItems='stretch' mbs={10}>
-					<Margins blockEnd={14}>
-						<Skeleton variant='rect' height={71} />
-						<Skeleton variant='rect' height={71} />
-						<Skeleton variant='rect' height={71} />
-						<Skeleton variant='rect' height={71} />
-						<Skeleton variant='rect' height={71} />
-					</Margins>
-				</Box>
+			{zapierAvailable && (
+				<>
+					{!script && (
+						<Box display='flex' flexDirection='column' alignItems='stretch' mbs={10}>
+							<Margins blockEnd={14}>
+								<Skeleton variant='rect' height={71} />
+								<Skeleton variant='rect' height={71} />
+								<Skeleton variant='rect' height={71} />
+								<Skeleton variant='rect' height={71} />
+								<Skeleton variant='rect' height={71} />
+							</Margins>
+						</Box>
+					)}
+					<Box id='zapier-goes-here' {...props} />
+				</>
 			)}
-			<Box id='zapier-goes-here' {...props} />
 		</>
 	);
 };

@@ -90,41 +90,38 @@ export const getUnreadMessages = () => {
 	const { messages, user, lastReadMessageId } = store.state;
 
 	const renderedMessages = messages.filter((message) => canRenderMessage(message));
+
 	const lastReadMessageIndex = lastReadMessageId
 		? renderedMessages.findIndex((item) => item._id === lastReadMessageId)
-		: renderedMessages
-				.slice()
-				.reverse()
-				.findIndex((item) => item.u._id === user?._id);
+		: renderedMessages.findLastIndex((item) => item.u._id === user?._id);
 
-	if (lastReadMessageIndex !== -1) {
-		const unreadMessages = renderedMessages.slice(lastReadMessageIndex + 1).filter((message) => message.u._id !== user?._id);
-
-		return unreadMessages;
-	}
-
-	return [];
+	if (lastReadMessageIndex === -1) return 0;
+	return renderedMessages.slice(lastReadMessageIndex + 1).filter((message) => message.u._id !== user?._id).length;
 };
 
 export const processUnread = async () => {
-	const shouldMarkUnread = shouldMarkAsUnread();
-	if (shouldMarkUnread) {
-		const unreadMessages = getUnreadMessages();
-
-		if (unreadMessages.length > 0) {
-			const { alerts } = store.state;
-			const lastReadMessage = getLastReadMessage();
-			const alertMessage = i18next.t('count_new_messages_since_since', {
-				count: unreadMessages.length,
-				val: new Date(lastReadMessage.ts),
-				formatParams: {
-					val: { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' },
-				},
-			});
-
-			const alert = { id: constants.unreadMessagesAlertId, children: alertMessage, success: true, timeout: 0 };
-			const newAlerts = alerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
-			await store.setState({ alerts: (newAlerts.push(alert), newAlerts), unread: unreadMessages.length });
-		}
+	const unreadMessages = getUnreadMessages();
+	if (unreadMessages <= 0) {
+		await store.setState({ unread: 0 });
+		return;
 	}
+
+	const shouldMarkUnread = shouldMarkAsUnread();
+	if (!shouldMarkUnread) {
+		return;
+	}
+
+	const { alerts } = store.state;
+	const lastReadMessage = getLastReadMessage();
+	const alertMessage = i18next.t('count_new_messages_since_since', {
+		count: unreadMessages,
+		val: new Date(lastReadMessage.ts),
+		formatParams: {
+			val: { month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' },
+		},
+	});
+	const alert = { id: constants.unreadMessagesAlertId, children: alertMessage, success: true, timeout: 0 };
+	const newAlerts = alerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
+
+	await store.setState({ alerts: (newAlerts.push(alert), newAlerts), unread: unreadMessages });
 };

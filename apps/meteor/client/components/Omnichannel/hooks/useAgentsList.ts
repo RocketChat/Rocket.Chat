@@ -1,92 +1,92 @@
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
-
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { RecordList } from '../../../lib/lists/RecordList';
+import type { ILivechatAgent, Serialized } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 type AgentsListOptions = {
-	text: string;
-	haveAll: boolean;
-	haveNoAgentsSelectedOption: boolean;
+	filter: string;
+	haveAll?: boolean;
+	haveNoAgentsSelectedOption?: boolean;
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	onlyAvailable?: boolean;
+	limit?: number;
 };
 
-type AgentOption = { value: string; label: string; _updatedAt: Date; _id: string };
+type AgentOption = {
+	_id: string;
+	value: string;
+	label: string;
+};
 
-export const useAgentsList = (
-	options: AgentsListOptions,
-): {
-	itemsList: RecordList<AgentOption>;
-	initialItemCount: number;
-	reload: () => void;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
-	const t = useTranslation();
-	const [itemsList, setItemsList] = useState(() => new RecordList<AgentOption>());
-	const reload = useCallback(() => setItemsList(new RecordList<AgentOption>()), []);
+const DEFAULT_QUERY_LIMIT = 25;
 
+export const useAgentsList = (options: AgentsListOptions) => {
+	const { t } = useTranslation();
 	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
-	const { text, onlyAvailable = false, showIdleAgents = true, excludeId, haveAll, haveNoAgentsSelectedOption } = options;
+	const {
+		filter,
+		onlyAvailable = false,
+		showIdleAgents = true,
+		excludeId,
+		haveAll,
+		haveNoAgentsSelectedOption,
+		limit = DEFAULT_QUERY_LIMIT,
+	} = options;
 
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
+	const formatAgentItem = (agent: Serialized<ILivechatAgent>) => ({
+		_id: agent._id,
+		label: `${agent.name || agent._id} (@${agent.username})`,
+		value: agent._id,
+	});
 
-	const fetchData = useCallback(
-		async (start, end) => {
-			const { users: agents, total } = await getAgents({
-				...(text && { text }),
+	return useInfiniteQuery({
+		queryKey: ['/v1/livechat/users/agent', { filter, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
+		queryFn: async ({ pageParam: offset = 0 }) => {
+			const { users, ...data } = await getAgents({
+				...(filter && { text: filter }),
 				...(excludeId && { excludeId }),
 				showIdleAgents,
 				onlyAvailable,
-				offset: start,
-				count: end + start,
+				offset,
+				count: limit,
 				sort: `{ "name": 1 }`,
 			});
 
-			const items = agents.map<AgentOption>((agent) => {
-				const agentOption = {
-					_updatedAt: new Date(agent._updatedAt),
-					label: `${agent.name || agent._id} (@${agent.username})`,
-					value: agent._id,
-					_id: agent._id,
-				};
-				return agentOption;
-			});
+			return {
+				...data,
+				users: users.map(formatAgentItem),
+			};
+		},
+		select: (data) => {
+			const items = data.pages.flatMap<AgentOption>((page) => page.users);
 
-			haveAll &&
+			if (haveAll) {
 				items.unshift({
 					label: t('All'),
 					value: 'all',
-					_updatedAt: new Date(),
 					_id: 'all',
 				});
+			}
 
-			haveNoAgentsSelectedOption &&
+			if (haveNoAgentsSelectedOption) {
 				items.unshift({
 					label: t('Empty_no_agent_selected'),
 					value: 'no-agent-selected',
-					_updatedAt: new Date(),
 					_id: 'no-agent-selected',
 				});
+			}
 
-			return {
-				items,
-				itemCount: total + 1,
-			};
+			return items;
 		},
-		[excludeId, getAgents, haveAll, haveNoAgentsSelectedOption, onlyAvailable, showIdleAgents, t, text],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
-
-	return {
-		reload,
-		itemsList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage) => {
+			const offset = lastPage.offset + lastPage.count;
+			return offset < lastPage.total ? offset : undefined;
+		},
+		initialData: () => ({
+			pages: [{ users: [], offset: 0, count: 0, total: Infinity }],
+			pageParams: [0],
+		}),
+	});
 };

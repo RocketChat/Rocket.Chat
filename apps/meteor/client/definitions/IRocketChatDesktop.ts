@@ -5,6 +5,6 @@ export interface IRocketChatDesktop {
 	getOutlookEvents?: (date: Date) => Promise<OutlookEventsResponse>;
 	setOutlookExchangeUrl?: (url: string, userId: string) => Promise<void>;
 	hasOutlookCredentials?: () => Promise<boolean>;
-	clearOutlookCredentials?: () => void;
+	clearOutlookCredentials?: () => Promise<void> | void;
 	openDocumentViewer?: (url: string, format: string, options: any) => void;
 }

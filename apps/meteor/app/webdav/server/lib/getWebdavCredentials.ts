@@ -6,6 +6,6 @@ export function getWebdavCredentials(account: WebDAVClientOptions): WebDAVClient
 		: {
 				username: account.username,
 				password: account.password,
-		  };
+			};
 	return cred;
 }

@@ -38,7 +38,7 @@ class AutoSelection implements IRoutingMethod {
 			);
 		}
 
-		return Users.getNextAgent(ignoreAgentId, extraQuery);
+		return Users.getNextAgent(ignoreAgentId, extraQuery, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 	}
 }
 

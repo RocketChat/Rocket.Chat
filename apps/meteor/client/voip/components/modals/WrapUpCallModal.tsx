@@ -1,9 +1,25 @@
-import { Box, Button, Field, FieldLabel, FieldRow, FieldHint, Modal, TextAreaInput } from '@rocket.chat/fuselage';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	Box,
+	Button,
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldHint,
+	Modal,
+	TextAreaInput,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import Tags from '../../../components/Omnichannel/Tags';
 
@@ -20,7 +36,7 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 	const setModal = useSetModal();
 
 	const closeModal = (): void => setModal(null);
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { register, handleSubmit, setValue, watch } = useForm<WrapUpCallPayload>();
 
@@ -46,11 +62,11 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 
 	return (
 		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Wrap_up_the_call')}</Modal.Title>
-				<Modal.Close onClick={closeModal} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Wrap_up_the_call')}</ModalTitle>
+				<ModalClose onClick={closeModal} />
+			</ModalHeader>
+			<ModalContent>
 				<Field mbe='24px'>
 					<FieldLabel>{t('Notes')}</FieldLabel>
 					<FieldRow>
@@ -61,17 +77,17 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 				<Field>
 					<Tags tags={tags} handler={handleTags as () => void} />
 				</Field>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button secondary onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
 					<Button type='submit' primary>
 						{t('Save')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

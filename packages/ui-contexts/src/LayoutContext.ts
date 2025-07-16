@@ -8,6 +8,7 @@ export type SizeLayout = {
 export type LayoutContextValue = {
 	isEmbedded: boolean;
 	showTopNavbarEmbeddedLayout: boolean;
+	isTablet: boolean;
 	isMobile: boolean;
 	roomToolboxExpanded: boolean;
 	sidebar: {
@@ -16,6 +17,11 @@ export type LayoutContextValue = {
 		collapse: () => void;
 		expand: () => void;
 		close: () => void;
+	};
+	navbar: {
+		searchExpanded: boolean;
+		expandSearch?: () => void;
+		collapseSearch?: () => void;
 	};
 	size: SizeLayout;
 	contextualBarExpanded: boolean;
@@ -31,8 +37,14 @@ export type LayoutContextValue = {
 export const LayoutContext = createContext<LayoutContextValue>({
 	isEmbedded: false,
 	showTopNavbarEmbeddedLayout: false,
+	isTablet: false,
 	isMobile: false,
 	roomToolboxExpanded: true,
+	navbar: {
+		searchExpanded: false,
+		expandSearch: () => undefined,
+		collapseSearch: () => undefined,
+	},
 	sidebar: {
 		isCollapsed: false,
 		toggle: () => undefined,

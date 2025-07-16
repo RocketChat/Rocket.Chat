@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Menu, { Group, Item } from '.';
@@ -24,10 +24,10 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof Menu>>;
 
-export const Empty: Story<ComponentProps<typeof Menu>> = (args) => <Menu {...args} />;
+export const Empty: StoryFn<ComponentProps<typeof Menu>> = (args) => <Menu {...args} />;
 Empty.storyName = 'empty';
 
-export const Simple: Story<ComponentProps<typeof Menu>> = (args) => (
+export const Simple: StoryFn<ComponentProps<typeof Menu>> = (args) => (
 	<Menu {...args}>
 		<Group>
 			<Item onClick={action('clicked')}>A menu item</Item>
@@ -45,7 +45,7 @@ Simple.args = {
 	),
 };
 
-export const Placement: Story<ComponentProps<typeof Menu>> = (args) => (
+export const Placement: StoryFn<ComponentProps<typeof Menu>> = (args) => (
 	<div style={{ position: 'relative' }}>
 		<Button>Button</Button>
 		<Menu {...args}>

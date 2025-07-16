@@ -12,23 +12,32 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldError,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+	ModalClose,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalContent,
 } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { dispatchToastMessage } from '../../../lib/toast';
-import GenericModal from '../../GenericModal';
 import Tags from '../Tags';
 
-const CloseChatModal = ({
-	department,
-	visitorEmail,
-	onCancel,
-	onConfirm,
-}: {
+type CloseChatModalFormData = {
+	comment: string;
+	tags: string[];
+	transcriptPDF: boolean;
+	transcriptEmail: boolean;
+	subject: string;
+};
+
+type CloseChatModalProps = {
 	department?: Serialized<ILivechatDepartment | null>;
 	visitorEmail?: string;
 	onCancel: () => void;
@@ -38,7 +47,9 @@ const CloseChatModal = ({
 		preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
 		requestData?: { email: string; subject: string },
 	) => Promise<void>;
-}): ReactElement => {
+};
+
+const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: CloseChatModalProps) => {
 	const t = useTranslation();
 
 	const {
@@ -49,11 +60,11 @@ const CloseChatModal = ({
 		setFocus,
 		setValue,
 		watch,
-	} = useForm();
+	} = useForm<CloseChatModalFormData>();
 
-	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation') as boolean;
-	const alwaysSendTranscript = useSetting<boolean>('Livechat_transcript_send_always');
-	const customSubject = useSetting<string>('Livechat_transcript_email_subject');
+	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation', true);
+	const alwaysSendTranscript = useSetting('Livechat_transcript_send_always', false);
+	const customSubject = useSetting('Livechat_transcript_email_subject', '');
 	const [tagRequired, setTagRequired] = useState(false);
 
 	const tags = watch('tags');
@@ -76,7 +87,7 @@ const CloseChatModal = ({
 	};
 
 	const onSubmit = useCallback(
-		({ comment, tags, transcriptPDF, transcriptEmail, subject }): void => {
+		({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData) => {
 			const preferences = {
 				omnichannelTranscriptPDF: !!transcriptPDF,
 				omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,
@@ -141,12 +152,12 @@ const CloseChatModal = ({
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
 			<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} data-qa-id='close-chat-modal' />}>
-				<Modal.Header>
-					<Modal.Icon name='baloon-close-top-right' />
-					<Modal.Title>{t('Wrap_up_conversation')}</Modal.Title>
-					<Modal.Close onClick={onCancel} />
-				</Modal.Header>
-				<Modal.Content fontScale='p2'>
+				<ModalHeader>
+					<ModalIcon name='baloon-close-top-right' />
+					<ModalTitle>{t('Wrap_up_conversation')}</ModalTitle>
+					<ModalClose onClick={onCancel} />
+				</ModalHeader>
+				<ModalContent fontScale='p2'>
 					<Box color='annotation'>{t('Close_room_description')}</Box>
 					<FieldGroup>
 						<Field>
@@ -221,15 +232,15 @@ const CloseChatModal = ({
 							</>
 						)}
 					</FieldGroup>
-				</Modal.Content>
-				<Modal.Footer>
-					<Modal.FooterControllers>
+				</ModalContent>
+				<ModalFooter>
+					<ModalFooterControllers>
 						<Button onClick={onCancel}>{t('Cancel')}</Button>
 						<Button type='submit' disabled={cannotSubmit} primary>
 							{t('Confirm')}
 						</Button>
-					</Modal.FooterControllers>
-				</Modal.Footer>
+					</ModalFooterControllers>
+				</ModalFooter>
 			</Modal>
 		);
 	}

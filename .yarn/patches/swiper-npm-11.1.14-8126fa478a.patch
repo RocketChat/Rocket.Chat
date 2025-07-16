@@ -1,0 +1,62 @@
+diff --git a/package.json b/package.json
+index 9f37b1dd9e3ea128aafb0ceef83641e864474308..795e15b1b008596f0a278ff43cb1103794c10d9d 100644
+--- a/package.json
++++ b/package.json
+@@ -24,6 +24,7 @@
+       "default": "./swiper-bundle.mjs"
+     },
+     "./css": "./swiper.css",
++    "./swiper.css": "./swiper.css",
+     "./css/bundle": "./swiper-bundle.css",
+     "./swiper-bundle.css": "./swiper-bundle.css",
+     "./css/a11y": "./modules/a11y.css",
+@@ -49,6 +50,7 @@
+     "./css/thumbs": "./modules/thumbs.css",
+     "./css/virtual": "./modules/virtual.css",
+     "./css/zoom": "./modules/zoom.css",
++    "./modules/zoom.css": "./modules/zoom.css",
+     "./less": "./swiper.less",
+     "./less/a11y": "./modules/a11y.less",
+     "./less/autoplay": "./modules/autoplay.less",
+@@ -136,6 +138,10 @@
+       "types": "./swiper-react.d.ts",
+       "default": "./swiper-react.mjs"
+     },
++    "./swiper-react.mjs": {
++      "types": "./swiper-react.d.ts",
++      "default": "./swiper-react.mjs"
++    },
+     "./vue": {
+       "types": "./swiper-vue.d.ts",
+       "default": "./swiper-vue.mjs"
+@@ -144,6 +150,10 @@
+       "types": "./types/modules/index.d.ts",
+       "default": "./modules/index.mjs"
+     },
++    "./modules/index.mjs": {
++      "types": "./types/modules/index.d.ts",
++      "default": "./modules/index.mjs"
++    },
+     "./types": "./types/index.d.ts",
+     "./package.json": "./package.json"
+   },
+@@ -152,6 +162,9 @@
+       "modules": [
+         "./types/modules/index.d.ts"
+       ],
++      "modules/index.mjs": [
++        "./types/modules/index.d.ts"
++      ],
+       "element": [
+         "./swiper-element.d.ts"
+       ],
+@@ -161,6 +174,9 @@
+       "react": [
+         "./swiper-react.d.ts"
+       ],
++      "swiper-react.mjs": [
++        "./swiper-react.d.ts"
++      ],
+       "vue": [
+         "./swiper-vue.d.ts"
+       ]

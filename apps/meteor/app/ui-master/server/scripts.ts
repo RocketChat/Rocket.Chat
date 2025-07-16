@@ -1,5 +1,5 @@
-import { settings } from '../../settings/server';
 import { addScript } from './inject';
+import { settings } from '../../settings/server';
 
 const getContent = (): string => `
 

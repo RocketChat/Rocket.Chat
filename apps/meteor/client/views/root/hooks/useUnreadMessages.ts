@@ -1,7 +1,8 @@
-import { useSession, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSession } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 export const useUnreadMessages = (): string | undefined => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const unreadMessages = useSession('unread') as number | '' | '999+' | '•';
 
 	return (() => {

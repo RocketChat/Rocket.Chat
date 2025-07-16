@@ -19,7 +19,7 @@ export const RegisterSecretPageRouter = ({
 	origin: 'register' | 'secret-register' | 'invite-register';
 }): ReactElement => {
 	const { t } = useTranslation();
-	const registrationMode = useSetting<string>('Accounts_RegistrationForm');
+	const registrationMode = useSetting<'Public' | 'Disabled' | 'Secret URL'>('Accounts_RegistrationForm', 'Public');
 
 	const isPublicRegistration = registrationMode === 'Public';
 	const isRegistrationAllowedForSecret = registrationMode === 'Secret URL';

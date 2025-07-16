@@ -1,24 +1,19 @@
-import { Button, ButtonGroup, Icon, Field, FieldGroup, FieldLabel, FieldRow, TextInput, Callout } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { Button, ButtonGroup, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useCallback, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useInstallApp } from './hooks/useInstallApp';
 import { Page, PageHeader, PageScrollableContent } from '../../components/Page';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
-import { useInstallApp } from './hooks/useInstallApp';
-
-const PLACEHOLDER_URL = 'https://rocket.chat/apps/package.zip';
 
 const AppInstallPage = () => {
 	const t = useTranslation();
 	const router = useRouter();
 
-	const queryUrl = useSearchParameter('url');
-
-	const { control, setValue, watch } = useForm<{ file: File; url: string }>({ defaultValues: { url: queryUrl || '' } });
-	const { file, url } = watch();
-	const { install, isInstalling } = useInstallApp(file, url);
+	const { control, setValue, watch } = useForm<{ file: File }>();
+	const { file } = watch();
+	const { install, isInstalling } = useInstallApp(file);
 
 	const [handleUploadButtonClick] = useSingleFileInput((value) => setValue('file', value), 'app');
 
@@ -32,29 +27,13 @@ const AppInstallPage = () => {
 		});
 	}, [router]);
 
-	const urlField = useUniqueId();
-	const fileField = useUniqueId();
+	const fileField = useId();
 
 	return (
 		<Page flexDirection='column'>
 			<PageHeader title={t('App_Installation')} />
 			<PageScrollableContent>
 				<FieldGroup display='flex' flexDirection='column' alignSelf='center' maxWidth='x600' w='full'>
-					<Field>
-						<FieldLabel htmlFor={urlField}>{t('App_Url_to_Install_From')}</FieldLabel>
-						<Callout type='warning' title={t('App_Installation_Deprecation_Title')}>
-							{t('App_Installation_Deprecation')}
-						</Callout>
-						<FieldRow>
-							<Controller
-								name='url'
-								control={control}
-								render={({ field }) => (
-									<TextInput id={urlField} placeholder={PLACEHOLDER_URL} addon={<Icon name='permalink' size='x20' />} {...field} />
-								)}
-							/>
-						</FieldRow>
-					</Field>
 					<Field>
 						<FieldLabel htmlFor={fileField}>{t('App_Url_to_Install_From_File')}</FieldLabel>
 						<FieldRow>
@@ -79,7 +58,7 @@ const AppInstallPage = () => {
 					</Field>
 					<Field>
 						<ButtonGroup>
-							<Button disabled={!url && !file?.name} loading={isInstalling} onClick={install}>
+							<Button disabled={!file?.name} loading={isInstalling} onClick={install}>
 								{t('Install')}
 							</Button>
 							<Button onClick={handleCancel}>{t('Cancel')}</Button>

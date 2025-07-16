@@ -1,7 +1,7 @@
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import SidebarGenericItem from './SidebarGenericItem';
 

@@ -1,11 +1,11 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
+import AdminFeaturePreviewPage from './AdminFeaturePreviewPage';
 import SettingsProvider from '../../../providers/SettingsProvider';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
-import AdminFeaturePreviewPage from './AdminFeaturePreviewPage';
 
 const AdminFeaturePreviewRoute = (): ReactElement => {
 	const canViewFeaturesPreview = usePermission('manage-cloud');
@@ -15,7 +15,7 @@ const AdminFeaturePreviewRoute = (): ReactElement => {
 	}
 
 	return (
-		<SettingsProvider privileged>
+		<SettingsProvider>
 			<EditableSettingsProvider>
 				<AdminFeaturePreviewPage />
 			</EditableSettingsProvider>

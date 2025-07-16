@@ -1,11 +1,13 @@
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import EJSON from 'ejson';
 
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import {
 	notifyOnMessageChange,
 	notifyOnRoomChanged,
@@ -119,8 +121,8 @@ const eventHandlers = {
 
 			if (persistedUser) {
 				// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed)
-				if (!persistedUser.federation) {
-					await Users.updateOne({ _id: persistedUser._id }, { $set: { federation: user.federation } });
+				if (!persistedUser.federation && user.federation) {
+					await Users.updateOne({ _id: persistedUser._id }, { $set: { federation: removeEmpty(user.federation) } });
 					federationAltered = true;
 				}
 			} else {
@@ -138,8 +140,11 @@ const eventHandlers = {
 			try {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
-					if (!persistedSubscription.federation) {
-						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+					if (!persistedSubscription.federation && subscription.federation) {
+						await Subscriptions.updateOne(
+							{ _id: persistedSubscription._id },
+							{ $set: { federation: removeEmpty(subscription.federation) } },
+						);
 						federationAltered = true;
 					}
 				} else {
@@ -147,7 +152,7 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					const { insertedId } = await Subscriptions.insertOne(denormalizedSubscription);
+					const { insertedId } = await Subscriptions.insertOne(removeEmpty(denormalizedSubscription));
 					if (insertedId) {
 						void notifyOnSubscriptionChangedById(insertedId);
 					}
@@ -551,6 +556,18 @@ API.v1.addRoute(
 	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } },
 	{
 		async post() {
+			/*
+			The legacy federation has been deprecated for over a year
+			and no longer receives any updates. This feature also has
+			relevant security issues that weren't addressed.
+			Workspaces should migrate to the newer matrix federation.
+			*/
+			apiDeprecationLogger.endpoint(this.request.route, '8.0.0', this.response, 'Use Matrix Federation instead.');
+
+			if (!process.env.ENABLE_INSECURE_LEGACY_FEDERATION) {
+				return API.v1.failure('Deprecated. ENABLE_INSECURE_LEGACY_FEDERATION environment variable is needed to enable it.');
+			}
+
 			if (!isFederationEnabled()) {
 				return API.v1.failure('Federation not enabled');
 			}

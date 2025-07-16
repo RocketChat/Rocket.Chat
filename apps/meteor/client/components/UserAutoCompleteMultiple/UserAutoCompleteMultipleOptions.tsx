@@ -1,6 +1,7 @@
+import type { OptionType } from '@rocket.chat/fuselage';
 import { Options } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement, Ref } from 'react';
-import React, { forwardRef, createContext, useContext } from 'react';
+import { forwardRef, createContext, useContext } from 'react';
 
 import UserAutoCompleteMultipleOption from './UserAutoCompleteMultipleOption';
 
@@ -9,7 +10,7 @@ import UserAutoCompleteMultipleOption from './UserAutoCompleteMultipleOption';
 // but we also need to pass internal state to this renderer, as well as the props that also come from the Select.
 
 type OptionsContextValue = {
-	options: ComponentProps<typeof Options>['options'];
+	options: OptionType[];
 };
 
 export const OptionsContext = createContext<OptionsContextValue>({

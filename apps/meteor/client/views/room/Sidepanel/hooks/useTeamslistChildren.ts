@@ -1,17 +1,20 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { useQuery } from '@tanstack/react-query';
-import type { Mongo } from 'meteor/mongo';
+import type { ISubscription } from '@rocket.chat/core-typings';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import type { Filter } from 'mongodb';
 import { useEffect, useMemo } from 'react';
 
-import { ChatRoom } from '../../../../../app/models/client';
+import { Subscriptions } from '../../../../../app/models/client';
+import { useSortQueryOptions } from '../../../../hooks/useSortQueryOptions';
 
 export const useTeamsListChildrenUpdate = (
 	parentRid: string,
 	teamId?: string | null,
 	sidepanelItems?: 'channels' | 'discussions' | null,
 ) => {
+	const options = useSortQueryOptions();
+
 	const query = useMemo(() => {
-		const query: Mongo.Selector<IRoom> = {
+		const query: Filter<ISubscription> = {
 			$or: [
 				{
 					_id: parentRid,
@@ -34,27 +37,26 @@ export const useTeamsListChildrenUpdate = (
 	}, [parentRid, teamId, sidepanelItems]);
 
 	const result = useQuery({
-		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems],
-		queryFn: () =>
-			ChatRoom.find(query, {
-				sort: { lm: -1 },
-			}).fetch(),
+		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems, options],
+		queryFn: () => Subscriptions.find(query, options).fetch(),
 		enabled: sidepanelItems !== null && teamId !== null,
 		refetchInterval: 5 * 60 * 1000,
-		keepPreviousData: true,
+		placeholderData: keepPreviousData,
 	});
 
+	const { refetch } = result;
+
 	useEffect(() => {
-		const liveQueryHandle = ChatRoom.find(query).observe({
-			added: () => queueMicrotask(() => result.refetch({ exact: false })),
-			changed: () => queueMicrotask(() => result.refetch({ exact: false })),
-			removed: () => queueMicrotask(() => result.refetch({ exact: false })),
+		const liveQueryHandle = Subscriptions.find(query).observe({
+			added: () => queueMicrotask(() => refetch()),
+			changed: () => queueMicrotask(() => refetch()),
+			removed: () => queueMicrotask(() => refetch()),
 		});
 
 		return () => {
 			liveQueryHandle.stop();
 		};
-	}, [query, result]);
+	}, [query, refetch]);
 
 	return result;
 };

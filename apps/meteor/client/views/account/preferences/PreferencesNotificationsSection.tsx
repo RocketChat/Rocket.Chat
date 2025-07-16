@@ -1,13 +1,13 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldLabel, FieldRow, FieldHint, Select, FieldGroup, ToggleSwitch, Button } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { AccordionItem, Button, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { useSetting, useUserPreference, useUser } from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
+import { useNotification } from '../../../hooks/notification/useNotification';
 
 const notificationOptionsLabelMap = {
 	all: 'All_messages',
@@ -20,9 +20,9 @@ const emailNotificationOptionsLabelMap = {
 	nothing: 'Email_Notification_Mode_Disabled',
 };
 
-// TODO: Test Notification Button not working
 const PreferencesNotificationsSection = () => {
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
+	const user = useUser();
 
 	const [notificationsPermission, setNotificationsPermission] = useState<NotificationPermission>();
 
@@ -37,28 +37,31 @@ const PreferencesNotificationsSection = () => {
 	const loginEmailEnabled = useSetting('Device_Management_Enable_Login_Emails');
 	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
 	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
-	const showCalendarPreference = useSetting('Outlook_Calendar_Enabled');
 	const showMobileRinging = useSetting('VideoConf_Mobile_Ringing');
+	const notify = useNotification();
 
 	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
 
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
 
 	const onSendNotification = useCallback(() => {
-		KonchatNotification.notify({
-			payload: { sender: { _id: 'rocket.cat', username: 'rocket.cat' }, rid: 'GENERAL' } as INotificationDesktop['payload'],
+		notify({
+			payload: {
+				sender: { _id: 'rocket.cat', username: 'rocket.cat' },
+				rid: 'GENERAL',
+			} as INotificationDesktop['payload'],
 			title: t('Desktop_Notification_Test'),
 			text: t('This_is_a_desktop_notification'),
 		});
-	}, [t]);
+	}, [notify, t]);
 
 	const onAskNotificationPermission = useCallback(() => {
 		window.Notification && Notification.requestPermission().then((val) => setNotificationsPermission(val));
 	}, []);
 
 	const notificationOptions = useMemo(
-		() => Object.entries(notificationOptionsLabelMap).map(([key, val]) => t.has(val) && [key, t(val)]),
-		[t],
+		() => Object.entries(notificationOptionsLabelMap).map(([key, val]) => i18n.exists(val) && [key, t(val)]),
+		[i18n, t],
 	) as SelectOption[];
 
 	const desktopNotificationOptions = useMemo<SelectOption[]>((): SelectOption[] => {
@@ -74,41 +77,44 @@ const PreferencesNotificationsSection = () => {
 	}, [defaultMobileNotifications, notificationOptions, t]);
 
 	const emailNotificationOptions = useMemo(() => {
-		const options = Object.entries(emailNotificationOptionsLabelMap).map(([key, val]) => t.has(val) && [key, t(val)]) as SelectOption[];
+		const options = Object.entries(emailNotificationOptionsLabelMap).map(
+			([key, val]) => i18n.exists(val) && [key, t(val)],
+		) as SelectOption[];
 		options.unshift(['default', `${t('Default')} (${t(emailNotificationOptionsLabelMap[userEmailNotificationMode] as TranslationKey)})`]);
 		return options;
-	}, [t, userEmailNotificationMode]);
+	}, [i18n, t, userEmailNotificationMode]);
 
 	const { control } = useFormContext();
 
-	const notificationRequireId = useUniqueId();
-	const desktopNotificationsId = useUniqueId();
-	const pushNotificationsId = useUniqueId();
-	const emailNotificationModeId = useUniqueId();
-	const receiveLoginDetectionEmailId = useUniqueId();
-	const notifyCalendarEventsId = useUniqueId();
-	const enableMobileRingingId = useUniqueId();
+	const notificationRequireId = useId();
+	const desktopNotificationsId = useId();
+	const pushNotificationsId = useId();
+	const emailNotificationModeId = useId();
+	const receiveLoginDetectionEmailId = useId();
+	const notifyCalendarEventsId = useId();
+	const enableMobileRingingId = useId();
+	const desktopNotificationsLabelId = useId();
+
+	const showCalendarPreference = user?.settings?.calendar?.outlook?.Enabled;
 
 	return (
-		<Accordion.Item title={t('Notifications')}>
+		<AccordionItem title={t('Notifications')}>
 			<FieldGroup>
 				<Field>
-					<FieldLabel>{t('Desktop_Notifications')}</FieldLabel>
+					<FieldLabel is='span' id={desktopNotificationsLabelId}>
+						{t('Desktop_Notifications')}
+					</FieldLabel>
 					<FieldRow>
 						{notificationsPermission === 'denied' && t('Desktop_Notifications_Disabled')}
 						{notificationsPermission === 'granted' && (
-							<>
-								<Button primary onClick={onSendNotification}>
-									{t('Test_Desktop_Notifications')}
-								</Button>
-							</>
+							<Button primary onClick={onSendNotification} aria-labelledby={desktopNotificationsLabelId}>
+								{t('Test_Desktop_Notifications')}
+							</Button>
 						)}
 						{notificationsPermission !== 'denied' && notificationsPermission !== 'granted' && (
-							<>
-								<Button primary onClick={onAskNotificationPermission}>
-									{t('Enable_Desktop_Notifications')}
-								</Button>
-							</>
+							<Button primary onClick={onAskNotificationPermission} aria-labelledby={desktopNotificationsLabelId}>
+								{t('Enable_Desktop_Notifications')}
+							</Button>
 						)}
 					</FieldRow>
 				</Field>
@@ -132,31 +138,37 @@ const PreferencesNotificationsSection = () => {
 					<FieldHint id={`${notificationRequireId}-hint`}>{t('Only_works_with_chrome_version_greater_50')}</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={desktopNotificationsId}>{t('Notification_Desktop_Default_For')}</FieldLabel>
+					<FieldLabel is='span' id={desktopNotificationsId}>
+						{t('Notification_Desktop_Default_For')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='desktopNotifications'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<Select id={desktopNotificationsId} value={value} onChange={onChange} options={desktopNotificationOptions} />
+								<Select aria-labelledby={desktopNotificationsId} value={value} onChange={onChange} options={desktopNotificationOptions} />
 							)}
 						/>
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={pushNotificationsId}>{t('Notification_Push_Default_For')}</FieldLabel>
+					<FieldLabel is='span' id={pushNotificationsId}>
+						{t('Notification_Push_Default_For')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='pushNotifications'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<Select id={pushNotificationsId} value={value} onChange={onChange} options={mobileNotificationOptions} />
+								<Select aria-labelledby={pushNotificationsId} value={value} onChange={onChange} options={mobileNotificationOptions} />
 							)}
 						/>
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={emailNotificationModeId}>{t('Email_Notification_Mode')}</FieldLabel>
+					<FieldLabel is='span' id={emailNotificationModeId}>
+						{t('Email_Notification_Mode')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='emailNotificationMode'
@@ -164,7 +176,7 @@ const PreferencesNotificationsSection = () => {
 							render={({ field: { value, onChange } }) => (
 								<Select
 									aria-describedby={`${emailNotificationModeId}-hint`}
-									id={emailNotificationModeId}
+									aria-labelledby={emailNotificationModeId}
 									disabled={!canChangeEmailNotification}
 									value={value}
 									onChange={onChange}
@@ -228,7 +240,7 @@ const PreferencesNotificationsSection = () => {
 					</Field>
 				)}
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

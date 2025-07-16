@@ -3,11 +3,10 @@ import { isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Flex, Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';
 import RoomForewordUsernameList from './RoomForewordUsernameList';
+import { VoipRoomForeword } from '../../../../components/voip/room/VoipRoomForeword';
 
 type RoomForewordProps = { user: IUser | null; room: IRoom };
 

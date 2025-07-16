@@ -1,6 +1,6 @@
-@import 'colors';
-@import 'grid';
-@import 'variables';
+@use 'colors';
+@use 'grid';
+@use 'variables';
 
 html,
 body {
@@ -11,7 +11,7 @@ body {
 
 	color: #444444;
 
-	font-family: $font-family;
+	font-family: variables.$font-family;
 	font-weight: 400;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -27,12 +27,12 @@ body {
 
 	&-thumb {
 		border-radius: 5px;
-		background: $color-text-grey;
+		background: colors.$color-text-grey;
 	}
 
 	&-track {
 		border-radius: 5px;
-		background: $color-text-light;
+		background: colors.$color-text-light;
 	}
 }
 

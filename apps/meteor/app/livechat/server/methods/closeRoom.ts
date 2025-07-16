@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { Livechat } from '../lib/LivechatTyped';
+import { closeRoom } from '../lib/closeRoom';
 
 type CloseRoomOptions = {
 	clientAction?: boolean;
@@ -87,7 +87,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Livechat.closeRoom({
+		await closeRoom({
 			user,
 			room,
 			comment,

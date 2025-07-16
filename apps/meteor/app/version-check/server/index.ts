@@ -1,8 +1,8 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../settings/server';
 import { checkVersionUpdate } from './functions/checkVersionUpdate';
+import { settings } from '../../settings/server';
 import './methods/banner_dismiss';
 
 const jobName = 'version_check';

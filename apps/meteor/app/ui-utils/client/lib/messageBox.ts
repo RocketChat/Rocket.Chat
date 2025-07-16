@@ -48,13 +48,16 @@ class MessageBoxActions {
 
 	get(group?: TranslationKey) {
 		if (!group) {
-			return [...this.actions.entries()].reduce<Record<TranslationKey, MessageBoxAction[]>>((ret, [group, actions]) => {
-				const filteredActions = actions.filter((action) => !action.condition || action.condition());
-				if (filteredActions.length) {
-					ret[group] = filteredActions;
-				}
-				return ret;
-			}, {} as Record<TranslationKey, MessageBoxAction[]>);
+			return [...this.actions.entries()].reduce<Record<TranslationKey, MessageBoxAction[]>>(
+				(ret, [group, actions]) => {
+					const filteredActions = actions.filter((action) => !action.condition || action.condition());
+					if (filteredActions.length) {
+						ret[group] = filteredActions;
+					}
+					return ret;
+				},
+				{} as Record<TranslationKey, MessageBoxAction[]>,
+			);
 		}
 
 		return this.actions.get(group)?.filter((action) => !action.condition || action.condition());

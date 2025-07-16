@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useSyncExternalStore } from 'react';
 
 import { e2e } from '../../../../app/e2e/client';
 import type { E2EEState } from '../../../../app/e2e/client/E2EEState';

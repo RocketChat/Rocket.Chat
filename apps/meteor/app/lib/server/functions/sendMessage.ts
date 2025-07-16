@@ -4,6 +4,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
+import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -12,7 +13,6 @@ import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
-import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -213,7 +213,9 @@ export function prepareMessageObject(
 }
 
 /**
- * Validates and sends the message object.
+ * Validates and sends the message object. This function does not verify the Message_MaxAllowedSize settings.
+ * Caller of the function should verify the Message_MaxAllowedSize if needed.
+ * There might be same use cases which needs to override this setting. Example - sending error logs.
  */
 export const sendMessage = async function (user: any, message: any, room: any, upsert = false, previewUrls?: string[]) {
 	if (!user || !message || !room._id) {
@@ -284,9 +286,9 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 	}
 
 	if (Apps.self?.isLoaded()) {
-		// This returns a promise, but it won't mutate anything about the message
-		// so, we don't really care if it is successful or fails
-		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
+		// If the message has a type (system message), we should notify the listener about it
+		const messageEvent = message.t ? 'IPostSystemMessageSent' : 'IPostMessageSent';
+		void Apps.getBridges()?.getListenerBridge().messageEvent(messageEvent, message);
 	}
 
 	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?

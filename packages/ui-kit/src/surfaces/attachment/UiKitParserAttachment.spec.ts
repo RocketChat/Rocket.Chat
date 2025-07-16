@@ -1,6 +1,6 @@
-import { BlockContext } from '../../rendering/BlockContext';
 import { UiKitParserAttachment } from './UiKitParserAttachment';
 import { uiKitAttachment } from './uiKitAttachment';
+import { BlockContext } from '../../rendering/BlockContext';
 
 class TestParser extends UiKitParserAttachment<unknown> {
 	plain_text = (element: any, context: any, index: any): any => ({

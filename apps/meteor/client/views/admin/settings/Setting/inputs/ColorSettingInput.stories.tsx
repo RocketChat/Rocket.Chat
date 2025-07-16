@@ -1,6 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
-import type { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
+import type { Meta, StoryFn } from '@storybook/react';
 
 import ColorSettingInput from './ColorSettingInput';
 
@@ -13,9 +12,9 @@ export default {
 		},
 	},
 	decorators: [(fn) => <Field>{fn()}</Field>],
-} as ComponentMeta<typeof ColorSettingInput>;
+} satisfies Meta<typeof ColorSettingInput>;
 
-const Template: ComponentStory<typeof ColorSettingInput> = (args) => <ColorSettingInput {...args} />;
+const Template: StoryFn<typeof ColorSettingInput> = (args) => <ColorSettingInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {

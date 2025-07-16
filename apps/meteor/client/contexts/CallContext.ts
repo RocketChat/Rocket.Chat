@@ -1,7 +1,6 @@
 import type { IVoipRoom, ICallerInfo, VoIpCallerInfo } from '@rocket.chat/core-typings';
 import type { Device } from '@rocket.chat/ui-contexts';
-import { createContext, useContext, useMemo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { createContext, useContext, useMemo, useSyncExternalStore } from 'react';
 
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import type { VoIPUser } from '../lib/voip/VoIPUser';

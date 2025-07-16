@@ -57,10 +57,13 @@ export const getFederatedRoomData = async (
 
 	// Find all subscriptions of this room
 	const s = await Subscriptions.findByRoomIdWhenUsernameExists(room._id).toArray();
-	const subscriptions = s.reduce((acc, s) => {
-		acc[s.u._id] = s;
-		return acc;
-	}, {} as { [k: string]: ISubscription });
+	const subscriptions = s.reduce(
+		(acc, s) => {
+			acc[s.u._id] = s;
+			return acc;
+		},
+		{} as { [k: string]: ISubscription },
+	);
 
 	// Get all user ids
 	const userIds = Object.keys(subscriptions);

@@ -11,5 +11,11 @@ import type { IUserContext } from './IUserContext';
  * user has been removed from the database.
  */
 export interface IPostUserDeleted {
-    [AppMethod.EXECUTE_POST_USER_CREATED](context: IUserContext, read: IRead, http: IHttp, persis: IPersistence, modify: IModify): Promise<void>;
+	[AppMethod.EXECUTE_POST_USER_CREATED](
+		context: IUserContext,
+		read: IRead,
+		http: IHttp,
+		persis: IPersistence,
+		modify: IModify,
+	): Promise<void>;
 }

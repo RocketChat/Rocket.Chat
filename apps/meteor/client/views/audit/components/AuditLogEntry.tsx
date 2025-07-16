@@ -3,12 +3,12 @@ import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AuditFiltersDisplay from './AuditFiltersDisplay';
 import { GenericTableRow, GenericTableCell } from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import AuditFiltersDisplay from './AuditFiltersDisplay';
 
 type AuditLogEntryProps = { value: IAuditLog };
 

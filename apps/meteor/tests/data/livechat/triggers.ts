@@ -1,39 +1,35 @@
 import { faker } from '@faker-js/faker';
 import type { ILivechatTrigger } from '@rocket.chat/core-typings';
 
-import { api, credentials, methodCall, request } from '../api-data';
+import { api, credentials, request } from '../api-data';
 import type { DummyResponse } from './utils';
 
 export const createTrigger = (name: string): Promise<boolean> => {
 	return new Promise((resolve, reject) => {
 		void request
-			.post(methodCall(`livechat:saveTrigger`))
+			.post(api('livechat/triggers'))
 			.set(credentials)
 			.send({
-				message: JSON.stringify({
-					method: 'livechat:saveTrigger',
-					params: [
-						{
-							name,
-							description: faker.lorem.sentence(),
-							enabled: true,
-							runOnce: faker.datatype.boolean(),
-							actions: [
-								{
-									name: 'send-message',
-									params: {
-										msg: faker.lorem.sentence(),
-										name: faker.person.firstName(),
-										sender: faker.helpers.arrayElement(['queue', 'custom']),
-									},
-								},
-							],
-							conditions: [{ name: faker.lorem.word(), value: faker.number.int() }],
+				name,
+				description: faker.lorem.sentence(),
+				enabled: true,
+				runOnce: faker.datatype.boolean(),
+				actions: [
+					{
+						name: 'send-message',
+						params: {
+							msg: faker.lorem.sentence(),
+							name: faker.person.firstName(),
+							sender: faker.helpers.arrayElement(['queue', 'custom']),
 						},
-					],
-					id: '101',
-					msg: 'method',
-				}),
+					},
+				],
+				conditions: [
+					{
+						name: faker.helpers.arrayElement(['time-on-site', 'page-url', 'chat-opened-by-visitor', 'after-guest-registration']),
+						value: faker.string.alpha(),
+					},
+				],
 			})
 			.end((err: Error, _res: DummyResponse<boolean, 'unwrapped'>) => {
 				if (err) {

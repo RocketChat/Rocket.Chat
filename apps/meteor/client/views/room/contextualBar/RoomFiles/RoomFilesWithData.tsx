@@ -1,13 +1,14 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import React, { useState, useCallback, useMemo } from 'react';
+import type { ChangeEvent } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
+import RoomFiles from './RoomFiles';
+import { useDeleteFile } from './hooks/useDeleteFile';
+import { useFilesList } from './hooks/useFilesList';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
-import RoomFiles from './RoomFiles';
-import { useDeleteFile } from './hooks/useDeleteFile';
-import { useFilesList } from './hooks/useFilesList';
 
 const RoomFilesWithData = () => {
 	const room = useRoom();
@@ -15,7 +16,7 @@ const RoomFilesWithData = () => {
 	const [text, setText] = useState('');
 	const [type, setType] = useLocalStorage('file-list-type', 'all');
 
-	const handleTextChange = useCallback((event) => {
+	const handleTextChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
 	}, []);
 

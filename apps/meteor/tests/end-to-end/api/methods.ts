@@ -1,12 +1,13 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { after, before, beforeEach, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
+import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor } from '../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -2059,6 +2060,55 @@ describe('Meteor.methods', () => {
 					expect(res.body).to.have.property('success', false);
 				});
 		});
+
+		it('should return an error if request includes unallowed parameters', (done) => {
+			void request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ _id: `${Date.now() + Math.random()}`, rid, msg: 'test message', _notAllowed: '1' }],
+						id: 1000,
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error.sanitizedError).to.have.a.property('reason', 'Match failed');
+				})
+				.end(done);
+		});
+
+		it('should accept message sent by js.SDK', (done) => {
+			void request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [{ rid, msg: 'test message', bot: { i: 'js.SDK' } }],
+						id: 1000,
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+
+					const data = JSON.parse(res.body.message);
+
+					expect(data).to.have.a.property('result').that.is.an('object');
+					expect(data.result).to.have.a.property('bot').that.is.an('object');
+					expect(data.result.bot).to.have.a.property('i', 'js.SDK');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[@updateMessage]', () => {
@@ -2519,279 +2569,249 @@ describe('Meteor.methods', () => {
 		});
 	});
 
-	describe('[@deleteMessage]', () => {
-		let rid: IRoom['_id'];
-		let messageId: IMessage['_id'];
+	describe('[@getRoomByTypeAndName]', () => {
+		let testUser: TestUser<IUser>;
+		let testUser2: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+		let dmId: IRoom['_id'];
+		let room: IRoom;
+		let privateRoom: IRoom;
 
-		before('create room', (done) => {
-			const channelName = `methods-test-channel-${Date.now()}`;
-			void request
-				.post(api('groups.create'))
-				.set(credentials)
-				.send({
-					name: channelName,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('group._id');
-					expect(res.body).to.have.nested.property('group.name', channelName);
-					expect(res.body).to.have.nested.property('group.t', 'p');
-					expect(res.body).to.have.nested.property('group.msgs', 0);
-					rid = res.body.group._id;
-				})
-				.end(done);
+		before(async () => {
+			testUser = await createUser();
+			testUser2 = await createUser();
+			testUserCredentials = await login(testUser.username, password);
 		});
 
-		beforeEach('send message with URL', (done) => {
+		before(async () => {
+			room = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}-${Math.random()}`,
+				})
+			).body.channel;
+		});
+
+		before('create direct conversation with user', (done) => {
 			void request
-				.post(methodCall('sendMessage'))
+				.post(methodCall('createDirectMessage'))
 				.set(credentials)
 				.send({
 					message: JSON.stringify({
-						method: 'sendMessage',
-						params: [
-							{
-								_id: `${Date.now() + Math.random()}`,
-								rid,
-								msg: 'test message with https://github.com',
-							},
-						],
+						method: 'createDirectMessage',
+						params: [testUser2.username],
 						id: 'id',
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
+				.end((_err, res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.an('object');
+					expect(result.result).to.have.property('rid').that.is.an('string');
 
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('object');
-					expect(data.result).to.have.a.property('urls').that.is.an('array');
-					expect(data.result.urls[0].url).to.equal('https://github.com');
-					messageId = data.result._id;
-				})
-				.end(done);
+					dmId = result.result.rid;
+					done();
+				});
 		});
 
-		after(() =>
-			Promise.all([
-				deleteRoom({ type: 'p', roomId: rid }),
-				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
-				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
-			]),
-		);
-
-		it('should delete a message', (done) => {
-			void request
-				.post(methodCall('deleteMessage'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'deleteMessage',
-						params: [{ _id: messageId, rid }],
-						id: 'id',
-						msg: 'method',
-					}),
+		before(async () => {
+			privateRoom = (
+				await createRoom({
+					type: 'p',
+					name: `private.test.${Date.now()}-${Math.random()}`,
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('msg', 'result');
-					expect(data).to.have.a.property('id', 'id');
-				})
-				.end(done);
+			).body.group;
 		});
 
-		it('should delete a message when bypass time limits permission is enabled', async () => {
+		after(async () => {
 			await Promise.all([
-				updatePermission('bypass-time-limit-edit-and-delete', ['admin']),
-				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0.01),
+				deleteRoom({ type: 'd', roomId: dmId }),
+				deleteRoom({ type: 'c', roomId: room._id }),
+				deleteRoom({ type: 'p', roomId: privateRoom._id }),
+				deleteUser(testUser),
+				deleteUser(testUser2),
+				updateSetting('Accounts_AllowAnonymousRead', false),
 			]);
+		});
 
-			await request
-				.post(methodCall('deleteMessage'))
-				.set(credentials)
+		it('should throw error when anonymous user tries to read private channel with anonymous read enabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', true);
+
+			const payload = {
+				message: JSON.stringify({
+					msg: 'method',
+					id: '2',
+					method: 'getRoomByTypeAndName',
+					params: ['p', privateRoom.name],
+				}),
+			};
+
+			const res = await request.post('/api/v1/method.callAnon/getRoomByTypeAndName').set('Content-Type', 'application/json').send(payload);
+
+			expect(res.body).to.have.property('message');
+			const parsedMessage = JSON.parse(res.body.message);
+
+			expect(parsedMessage).to.have.property('error');
+			expect(parsedMessage.error).to.have.property('error');
+			expect(parsedMessage.error.error).to.equal('error-invalid-user');
+
+			await updateSetting('Accounts_AllowAnonymousRead', false);
+		});
+
+		it("should throw an error if the user isn't logged in", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
 				.send({
 					message: JSON.stringify({
-						method: 'deleteMessage',
-						params: [{ _id: messageId, rid }],
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
 						id: 'id',
 						msg: 'method',
 					}),
 				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('msg', 'result');
-					expect(data).to.have.a.property('id', 'id');
+				.end((_err, res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.be.equal('You must be logged in to do this.');
+					done();
+				});
+		});
+
+		it("should throw an error if name isn't provided", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', null],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-invalid-room');
+					done();
+				});
+		});
+
+		it("should throw an error if type isn't provided", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: [null, dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-invalid-room');
+					done();
+				});
+		});
+
+		it("should throw an error if the user doesn't have access to the room", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-no-permission');
+					done();
+				});
+		});
+
+		it("should throw an error if the room doesn't exist", (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', 'testId'],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body).to.have.property('message');
+
+					const parsedResponse = JSON.parse(res.body.message);
+
+					expect(parsedResponse).to.have.property('error');
+					expect(parsedResponse.error).to.have.property('error');
+					expect(parsedResponse.error.error).to.equal('error-invalid-room');
+					done();
+				});
+		});
+
+		it('should return the room object for a Public Channel if anonymous read is enabled', async () => {
+			await updateSetting('Accounts_AllowAnonymousRead', true);
+
+			const res = await request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['c', room._id],
+						id: 'id',
+						msg: 'method',
+					}),
 				});
 
-			await Promise.all([
-				updatePermission('bypass-time-limit-edit-and-delete', ['bot', 'app']),
-				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
-			]);
+			expect(res.body.success).to.equal(true);
+			const parsedResponse = JSON.parse(res.body.message);
+			expect(parsedResponse.result.name).to.equal(room.name);
+
+			await updateSetting('Accounts_AllowAnonymousRead', false);
 		});
 
-		describe('message deletion when user is not part of the room', () => {
-			let ridTestRoom: IRoom['_id'];
-			let messageIdTestRoom: IMessage['_id'];
-			let testUser: TestUser<IUser>;
-			let testUserCredentials: Credentials;
-
-			before('create room, add new owner, and leave room', async () => {
-				testUser = await createUser();
-				testUserCredentials = await login(testUser.username, password);
-				const channelName = `methods-test-channel-${Date.now()}`;
-
-				await request
-					.post(api('groups.create'))
-					.set(testUserCredentials)
-					.send({
-						name: channelName,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('group._id');
-						expect(res.body).to.have.nested.property('group.name', channelName);
-						expect(res.body).to.have.nested.property('group.t', 'p');
-						expect(res.body).to.have.nested.property('group.msgs', 0);
-						ridTestRoom = res.body.group._id;
-					});
-
-				await request
-					.post(methodCall('sendMessage'))
-					.set(testUserCredentials)
-					.send({
-						message: JSON.stringify({
-							method: 'sendMessage',
-							params: [
-								{
-									_id: `${Date.now() + Math.random()}`,
-									rid: ridTestRoom,
-									msg: 'just a random test message',
-								},
-							],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('result').that.is.an('object');
-						messageIdTestRoom = data.result._id;
-					});
-
-				await request
-					.post(methodCall('addUsersToRoom'))
-					.set(testUserCredentials)
-					.send({
-						message: JSON.stringify({
-							method: 'addUsersToRoom',
-							params: [
-								{
-									rid: ridTestRoom,
-									users: ['rocket.cat'],
-								},
-							],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
-					});
-
-				await request
-					.post(api('groups.addOwner'))
-					.set(testUserCredentials)
-					.send({
-						roomId: ridTestRoom,
-						userId: 'rocket.cat',
-					})
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-					});
-
-				await request
-					.post(api('groups.leave'))
-					.set(testUserCredentials)
-					.send({
-						roomId: ridTestRoom,
-					})
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-					});
-			});
-
-			it('should not delete a message if the user is no longer member of the room', async () => {
-				await request
-					.post(methodCall('deleteMessage'))
-					.set(testUserCredentials)
-					.send({
-						message: JSON.stringify({
-							method: 'deleteMessage',
-							params: [{ _id: messageIdTestRoom, rid: ridTestRoom }],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('msg', 'result');
-						expect(data).to.have.a.property('id', 'id');
-						expect(data.error).to.have.a.property('error', 'error-action-not-allowed');
-					});
-			});
-
-			it('should not delete a message if the user was never part of the room', async () => {
-				await request
-					.post(methodCall('deleteMessage'))
-					.set(credentials)
-					.send({
-						message: JSON.stringify({
-							method: 'deleteMessage',
-							params: [{ _id: messageIdTestRoom, rid: ridTestRoom }],
-							id: 'id',
-							msg: 'method',
-						}),
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('message').that.is.a('string');
-						const data = JSON.parse(res.body.message);
-						expect(data).to.have.a.property('msg', 'result');
-						expect(data).to.have.a.property('id', 'id');
-						expect(data.error).to.have.a.property('error', 'error-action-not-allowed');
-					});
-			});
-
-			after(() => Promise.all([deleteRoom({ type: 'p', roomId: ridTestRoom }), deleteUser(testUser)]));
+		it('should return the room object for a DM', (done) => {
+			void request
+				.post(methodCall('getRoomByTypeAndName'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'getRoomByTypeAndName',
+						params: ['d', dmId],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					expect(res.body.success).to.equal(true);
+					const parsedResponse = JSON.parse(res.body.message);
+					expect(parsedResponse.result._id).to.equal(dmId);
+					done();
+				});
 		});
 	});
 
@@ -3941,6 +3961,48 @@ describe('Meteor.methods', () => {
 				.expect((res) => {
 					expect(res.body).to.have.a.property('message');
 					expect(res.body).to.have.a.property('success', true);
+				});
+		});
+	});
+
+	describe('[@joinRoom]', async () => {
+		let room: IOmnichannelRoom;
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+
+		before(async () => {
+			const visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+
+			user = await createUser();
+			await createAgent(user.username);
+			userCredentials = await login(user.username, password);
+		});
+
+		after(() => Promise.all([deleteUser(user)]));
+
+		it('should not allow an agent to join a closed livechat room', async () => {
+			await request
+				.post(methodCall('joinRoom'))
+				.set(userCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'joinRoom',
+						params: [room._id],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('error', 'room-closed');
 				});
 		});
 	});

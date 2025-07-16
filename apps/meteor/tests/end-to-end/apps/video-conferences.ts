@@ -7,6 +7,7 @@ import { cleanupApps, installTestApp } from '../../data/apps/helper';
 import { updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername } from '../../data/user';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('Apps - Video Conferences', () => {
 	before((done) => getCredentials(done));
@@ -65,7 +66,7 @@ describe('Apps - Video Conferences', () => {
 		});
 	});
 
-	describe('[With Test App]', () => {
+	(IS_EE ? describe : describe.skip)('[With Test App]', () => {
 		before(async () => {
 			await cleanupApps();
 			await installTestApp();
@@ -80,7 +81,7 @@ describe('Apps - Video Conferences', () => {
 			}
 
 			await updateSetting('VideoConf_Enable_Persistent_Chat', false);
-			await updateSetting('VideoConf_Persistent_Chat_Discussion_Name', 'Conference Call Chat History');
+			await updateSetting('VideoConf_Persistent_Chat_Discussion_Name', '[date] - Video Call Persisted Chat');
 		});
 
 		describe('[/video-conference.capabilities]', () => {
@@ -576,7 +577,107 @@ describe('Apps - Video Conferences', () => {
 							expect(res.body.room)
 								.to.have.a.property('fname')
 								.that.is.a('string')
-								.that.satisfies((msg: string) => msg.startsWith('Chat History'));
+								.that.satisfies((msg: string) => !msg.startsWith('Chat History'))
+								.that.satisfies((msg: string) => msg.includes('Chat History'));
+						});
+				});
+
+				it('should have created a subscription with open = false', async function () {
+					if (!process.env.IS_EE) {
+						this.skip();
+						return;
+					}
+
+					await request
+						.get(api('subscriptions.getOne'))
+						.set(credentials)
+						.query({
+							roomId: discussionRid,
+						})
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('subscription').and.to.be.an('object');
+							expect(res.body.subscription).to.have.a.property('rid').equal(discussionRid);
+							expect(res.body.subscription)
+								.to.have.a.property('fname')
+								.that.is.a('string')
+								.that.satisfies((msg: string) => !msg.startsWith('Chat History'))
+								.that.satisfies((msg: string) => msg.includes('Chat History'));
+							expect(res.body.subscription).to.have.a.property('open', false);
+							expect(res.body.subscription).to.have.a.property('alert', false);
+						});
+				});
+			});
+
+			describe('[Persistent Chat provider with the persistent chat feature enabled and custom discussion names]', () => {
+				let callId: string | undefined;
+				let discussionRid: string | undefined;
+				let chatDate: string;
+
+				before(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
+					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+					await updateSetting('Discussion_enabled', true);
+					await updateSetting('VideoConf_Enable_Persistent_Chat', true);
+					await updateSetting('VideoConf_Persistent_Chat_Discussion_Name', 'Date [date] between');
+					chatDate = new Date().toISOString().substring(0, 10);
+					const res = await request.post(api('video-conference.start')).set(credentials).send({
+						roomId,
+					});
+
+					callId = res.body.data.callId;
+				});
+
+				it('should include a discussion room id on the response', async function () {
+					if (!process.env.IS_EE) {
+						this.skip();
+						return;
+					}
+
+					await request
+						.get(api('video-conference.info'))
+						.set(credentials)
+						.query({
+							callId,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('providerName').equal('persistentchat');
+							expect(res.body).to.not.have.a.property('providerData');
+							expect(res.body).to.have.a.property('_id').equal(callId);
+							expect(res.body).to.have.a.property('discussionRid').that.is.a('string');
+
+							discussionRid = res.body.discussionRid;
+							expect(res.body).to.have.a.property('url').equal(`pchat/videoconference/${callId}/${discussionRid}`);
+						});
+				});
+
+				it('should have created the discussion room using the configured name', async function () {
+					if (!process.env.IS_EE) {
+						this.skip();
+						return;
+					}
+
+					await request
+						.get(api('rooms.info'))
+						.set(credentials)
+						.query({
+							roomId: discussionRid,
+						})
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('room').and.to.be.an('object');
+							expect(res.body.room).to.have.a.property('_id').equal(discussionRid);
+							expect(res.body.room)
+								.to.have.a.property('fname')
+								.that.is.a('string')
+								.that.satisfies((msg: string) => msg.includes(`Date ${chatDate} between`));
 						});
 				});
 			});

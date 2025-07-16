@@ -17,22 +17,28 @@ import {
 	FieldHint,
 	Option,
 } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter, usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import type { EditDepartmentFormData } from './definitions';
+import { formatAgentListPayload } from './utils/formatAgentListPayload';
+import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
+import { getFormInitialValues } from './utils/getFormInititalValues';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
+import AutoCompleteDepartmentMultiple from '../../../components/AutoCompleteDepartmentMultiple';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentForwarding, DepartmentBusinessHours } from '../additionalForms';
+import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import DepartmentTags from './DepartmentTags';
+import AutoCompleteUnit from '../../../omnichannel/additionalForms/AutoCompleteUnit';
 
 export type EditDepartmentProps = {
 	id?: string;
@@ -46,62 +52,8 @@ export type EditDepartmentProps = {
 	}>;
 };
 
-type InitialValueParams = {
-	department?: Serialized<ILivechatDepartment> | null;
-	agents?: Serialized<ILivechatDepartmentAgents>[];
-	allowedToForwardData?: EditDepartmentProps['allowedToForwardData'];
-};
-
-export type IDepartmentAgent = Pick<ILivechatDepartmentAgents, 'agentId' | 'username' | 'count' | 'order'> & {
-	_id?: string;
-	name?: string;
-};
-
-export type FormValues = {
-	name: string;
-	email: string;
-	description: string;
-	enabled: boolean;
-	maxNumberSimultaneousChat: number;
-	showOnRegistration: boolean;
-	showOnOfflineForm: boolean;
-	abandonedRoomsCloseCustomMessage: string;
-	requestTagBeforeClosingChat: boolean;
-	offlineMessageChannelName: string;
-	visitorInactivityTimeoutInSeconds: number;
-	waitingQueueMessage: string;
-	departmentsAllowedToForward: { label: string; value: string }[];
-	fallbackForwardDepartment: string;
-	agentList: IDepartmentAgent[];
-	chatClosingTags: string[];
-	allowReceiveForwardOffline: boolean;
-};
-
-function withDefault<T>(key: T | undefined | null, defaultValue: T) {
-	return key || defaultValue;
-}
-
-const getInitialValues = ({ department, agents, allowedToForwardData }: InitialValueParams) => ({
-	name: withDefault(department?.name, ''),
-	email: withDefault(department?.email, ''),
-	description: withDefault(department?.description, ''),
-	enabled: !!department?.enabled,
-	maxNumberSimultaneousChat: department?.maxNumberSimultaneousChat,
-	showOnRegistration: !!department?.showOnRegistration,
-	showOnOfflineForm: !!department?.showOnOfflineForm,
-	abandonedRoomsCloseCustomMessage: withDefault(department?.abandonedRoomsCloseCustomMessage, ''),
-	requestTagBeforeClosingChat: !!department?.requestTagBeforeClosingChat,
-	offlineMessageChannelName: withDefault(department?.offlineMessageChannelName, ''),
-	visitorInactivityTimeoutInSeconds: department?.visitorInactivityTimeoutInSeconds,
-	waitingQueueMessage: withDefault(department?.waitingQueueMessage, ''),
-	departmentsAllowedToForward: allowedToForwardData?.departments?.map((dep) => ({ label: dep.name, value: dep._id })) || [],
-	fallbackForwardDepartment: withDefault(department?.fallbackForwardDepartment, ''),
-	chatClosingTags: department?.chatClosingTags ?? [],
-	agentList: agents || [],
-	allowReceiveForwardOffline: withDefault(department?.allowReceiveForwardOffline, false),
-});
-
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
+	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 	const router = useRouter();
 	const queryClient = useQueryClient();
@@ -109,8 +61,9 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const { department, agents = [] } = data || {};
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const canManageUnits = usePermission('manage-livechat-units');
 
-	const initialValues = getInitialValues({ department, agents, allowedToForwardData });
+	const initialValues = getFormInitialValues({ department, agents, allowedToForwardData });
 
 	const {
 		register,
@@ -118,11 +71,12 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		handleSubmit,
 		watch,
 		formState: { errors, isValid, isDirty, isSubmitting },
-	} = useForm<FormValues>({ mode: 'onChange', defaultValues: initialValues });
+	} = useForm<EditDepartmentFormData>({ mode: 'onChange', defaultValues: initialValues });
 
 	const requestTagBeforeClosingChat = watch('requestTagBeforeClosingChat');
 
 	const [fallbackFilter, setFallbackFilter] = useState<string>('');
+	const [isUnitRequired, setUnitRequired] = useState(false);
 
 	const debouncedFallbackFilter = useDebouncedValue(fallbackFilter, 500);
 
@@ -132,73 +86,38 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const { phase: roomsPhase, items: roomsItems, itemCount: roomsTotal } = useRecordList(RoomsList);
 
-	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
+	const createDepartment = useEndpoint('POST', '/v1/livechat/department');
+	const updateDepartmentInfo = useEndpoint('PUT', '/v1/livechat/department/:_id', { _id: id || '' });
 	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/:_id/agents`, { _id: id || '' });
 
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const handleSave = useMutableCallback(async (data: FormValues) => {
-		const {
-			agentList,
-			enabled,
-			name,
-			description,
-			showOnRegistration,
-			showOnOfflineForm,
-			email,
-			chatClosingTags,
-			offlineMessageChannelName,
-			maxNumberSimultaneousChat,
-			visitorInactivityTimeoutInSeconds,
-			abandonedRoomsCloseCustomMessage,
-			waitingQueueMessage,
-			departmentsAllowedToForward,
-			fallbackForwardDepartment,
-			allowReceiveForwardOffline,
-		} = data;
-
-		const payload = {
-			enabled,
-			name,
-			description,
-			showOnRegistration,
-			showOnOfflineForm,
-			requestTagBeforeClosingChat,
-			email,
-			chatClosingTags,
-			offlineMessageChannelName,
-			maxNumberSimultaneousChat,
-			visitorInactivityTimeoutInSeconds,
-			abandonedRoomsCloseCustomMessage,
-			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
-			fallbackForwardDepartment,
-			allowReceiveForwardOffline,
-		};
-
+	const handleSave = useEffectEvent(async (data: EditDepartmentFormData) => {
 		try {
+			const { agentList } = data;
+			const payload = formatEditDepartmentPayload(data);
+			const departmentUnit = data.unit ? { _id: data.unit } : undefined;
+
 			if (id) {
+				await updateDepartmentInfo({
+					department: payload,
+					agents: [],
+					departmentUnit,
+				});
+
 				const { agentList: initialAgentList } = initialValues;
+				const agentListPayload = formatAgentListPayload(initialAgentList, agentList);
 
-				const agentListPayload = {
-					upsert: agentList.filter(
-						(agent) =>
-							!initialAgentList.some(
-								(initialAgent) =>
-									initialAgent._id === agent._id && agent.count === initialAgent.count && agent.order === initialAgent.order,
-							),
-					),
-					remove: initialAgentList.filter((initialAgent) => !agentList.some((agent) => initialAgent._id === agent._id)),
-				};
-
-				await saveDepartmentInfo(id, payload, []);
 				if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
 					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
 				}
 			} else {
-				await saveDepartmentInfo(id ?? null, payload, agentList);
+				await createDepartment({
+					department: payload,
+					agents: agentList.map(({ agentId, count, order }) => ({ agentId, count, order })),
+					departmentUnit,
+				});
 			}
-			queryClient.invalidateQueries(['/v1/livechat/department/:_id', id]);
+
+			queryClient.invalidateQueries({ queryKey: ['/v1/livechat/department/:_id', id] });
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			router.navigate('/omnichannel/departments');
 		} catch (error) {
@@ -208,18 +127,21 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 
 	const isFormValid = isValid && isDirty;
 
-	const formId = useUniqueId();
-	const enabledField = useUniqueId();
-	const nameField = useUniqueId();
-	const descriptionField = useUniqueId();
-	const showOnRegistrationField = useUniqueId();
-	const emailField = useUniqueId();
-	const showOnOfflineFormField = useUniqueId();
-	const offlineMessageChannelNameField = useUniqueId();
-	const fallbackForwardDepartmentField = useUniqueId();
-	const requestTagBeforeClosingChatField = useUniqueId();
-	const chatClosingTagsField = useUniqueId();
-	const allowReceiveForwardOffline = useUniqueId();
+	const formId = useId();
+	const enabledField = useId();
+	const nameField = useId();
+	const descriptionField = useId();
+	const showOnRegistrationField = useId();
+	const emailField = useId();
+	const showOnOfflineFormField = useId();
+	const offlineMessageChannelNameField = useId();
+	const fallbackForwardDepartmentField = useId();
+	const requestTagBeforeClosingChatField = useId();
+	const chatClosingTagsField = useId();
+	const allowReceiveForwardOffline = useId();
+	const unitFieldId = useId();
+	const agentsLabelId = useId();
+	const departmentsAllowedToForwardFieldId = useId();
 
 	return (
 		<Page flexDirection='row'>
@@ -247,6 +169,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<ToggleSwitch id={enabledField} {...register('enabled')} />
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={nameField} required>
 								{t('Name')}
@@ -267,6 +190,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</FieldError>
 							)}
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
 							<FieldRow>
@@ -278,12 +202,14 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</FieldRow>
 						</Field>
+
 						<Field data-qa='DepartmentEditToggle-ShowOnRegistrationPage'>
 							<FieldRow>
 								<FieldLabel htmlFor={showOnRegistrationField}>{t('Show_on_registration_page')}</FieldLabel>
 								<ToggleSwitch id={showOnRegistrationField} {...register('showOnRegistration')} />
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={emailField} required>
 								{t('Email')}
@@ -308,12 +234,14 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								</FieldError>
 							)}
 						</Field>
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={showOnOfflineFormField}>{t('Show_on_offline_page')}</FieldLabel>
 								<ToggleSwitch id={showOnOfflineFormField} {...register('showOnOfflineForm')} />
 							</FieldRow>
 						</Field>
+
 						<Field>
 							<FieldLabel htmlFor={offlineMessageChannelNameField}>{t('Livechat_DepartmentOfflineMessageToChannel')}</FieldLabel>
 							<FieldRow>
@@ -340,6 +268,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								/>
 							</FieldRow>
 						</Field>
+
 						{hasLicense && (
 							<>
 								<Field>
@@ -355,6 +284,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -368,6 +298,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -381,6 +312,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
 									<Controller
 										control={control}
@@ -390,20 +322,33 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
 								<Field>
-									<Controller
-										control={control}
-										name='departmentsAllowedToForward'
-										render={({ field: { value, onChange } }) => (
-											<DepartmentForwarding
-												departmentId={id ?? ''}
-												value={value}
-												handler={onChange}
-												label='List_of_departments_for_forward'
+									<FieldLabel htmlFor={departmentsAllowedToForwardFieldId}>{t('List_of_departments_for_forward')}</FieldLabel>
+									<FieldRow>
+										<Box w='100%'>
+											<Controller
+												control={control}
+												name='departmentsAllowedToForward'
+												render={({ field: { value, onChange } }) => (
+													<AutoCompleteDepartmentMultiple
+														id={departmentsAllowedToForwardFieldId}
+														withCheckbox
+														showArchived
+														excludeId={id ?? ''}
+														value={value}
+														maxWidth='100%'
+														w='100%'
+														flexGrow={1}
+														onChange={onChange}
+													/>
+												)}
 											/>
-										)}
-									/>
+										</Box>
+									</FieldRow>
+									<FieldHint>{t('List_of_departments_for_forward_description')}</FieldHint>
 								</Field>
+
 								<Field>
 									<FieldLabel htmlFor={fallbackForwardDepartmentField}>{t('Fallback_forward_department')}</FieldLabel>
 									<Controller
@@ -413,7 +358,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 											<AutoCompleteDepartment
 												id={fallbackForwardDepartmentField}
 												haveNone
-												excludeDepartmentId={department?._id}
+												excludeId={department?._id}
 												value={value}
 												onChange={onChange}
 												onlyMyDepartments
@@ -426,14 +371,49 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										)}
 									/>
 								</Field>
+
+								<Field>
+									<FieldLabel htmlFor={unitFieldId} required={isUnitRequired}>
+										{t('Unit')}
+									</FieldLabel>
+									<FieldRow>
+										<Controller
+											name='unit'
+											control={control}
+											rules={{ required: isUnitRequired ? t('Required_field', { field: t('Unit') }) : false }}
+											render={({ field: { value, onChange } }) => (
+												<AutoCompleteUnit
+													disabled={!!initialValues.unit}
+													haveNone
+													id={unitFieldId}
+													error={errors.unit?.message as string}
+													aria-describedby={`${unitFieldId}-error`}
+													value={value}
+													onChange={onChange}
+													onLoadItems={(list) => {
+														// NOTE: list.itemCount > 1 to account for the "None" option
+														setUnitRequired(!canManageUnits && list.length > 1);
+													}}
+												/>
+											)}
+										/>
+									</FieldRow>
+									{errors.unit && (
+										<FieldError aria-live='assertive' id={`${unitFieldId}-error`}>
+											{errors.unit?.message}
+										</FieldError>
+									)}
+								</Field>
 							</>
 						)}
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={requestTagBeforeClosingChatField}>{t('Request_tag_before_closing_chat')}</FieldLabel>
 								<ToggleSwitch id={requestTagBeforeClosingChatField} {...register('requestTagBeforeClosingChat')} />
 							</FieldRow>
 						</Field>
+
 						{requestTagBeforeClosingChat && (
 							<Field>
 								<FieldLabel htmlFor={chatClosingTagsField} required>
@@ -461,6 +441,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								)}
 							</Field>
 						)}
+
 						<Field>
 							<FieldRow>
 								<FieldLabel htmlFor={allowReceiveForwardOffline}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
@@ -473,11 +454,15 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>
+
 						<Divider mb={16} />
+
 						<Field>
-							<FieldLabel mb={4}>{t('Agents')}</FieldLabel>
+							<FieldLabel id={agentsLabelId} mb={4}>
+								{t('Agents')}
+							</FieldLabel>
 							<Box display='flex' flexDirection='column' height='50vh'>
-								<DepartmentsAgentsTable control={control} register={register} />
+								<DepartmentsAgentsTable aria-labelledby={agentsLabelId} control={control} register={register} />
 							</Box>
 						</Field>
 					</FieldGroup>

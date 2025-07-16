@@ -39,7 +39,7 @@ export const CustomFields = ({ customFields, loading, control, errors }: RenderC
 								message: t('invalid', { field: label }),
 							},
 						}),
-				  };
+					};
 
 		return (
 			<FormField label={label} required={required} key={_id} error={errors?.[_id]?.message?.toString()}>

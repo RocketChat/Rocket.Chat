@@ -2,23 +2,22 @@ import type { ILivechatTag } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import TagEdit from './TagEdit';
+import { ContextualbarSkeletonBody } from '../../components/Contextualbar';
 
-const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
+const TagEditWithDepartmentData = ({ tagData, onClose }: { tagData: ILivechatTag; onClose: () => void }) => {
 	const t = useTranslation();
 
 	const getDepartmentsById = useEndpoint('GET', '/v1/livechat/department.listByIds');
-	const { data, isLoading, isError } = useQuery(
-		['livechat-getDepartmentsById', tagData.departments],
-		async () => getDepartmentsById({ ids: tagData.departments }),
-		{ refetchOnWindowFocus: false },
-	);
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['livechat-getDepartmentsById', tagData.departments],
+		queryFn: async () => getDepartmentsById({ ids: tagData.departments }),
+		refetchOnWindowFocus: false,
+	});
 
-	if (isLoading) {
-		return <ContextualbarSkeleton />;
+	if (isPending) {
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError) {
@@ -29,7 +28,7 @@ const TagEditWithDepartmentData = ({ tagData }: { tagData: ILivechatTag }) => {
 		);
 	}
 
-	return <TagEdit tagData={tagData} currentDepartments={data?.departments} />;
+	return <TagEdit tagData={tagData} currentDepartments={data?.departments} onClose={onClose} />;
 };
 
 export default TagEditWithDepartmentData;

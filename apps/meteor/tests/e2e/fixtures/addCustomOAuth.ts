@@ -1,7 +1,7 @@
 import { request } from '@playwright/test';
 
-import { BASE_API_URL } from '../config/constants';
 import { Users } from './userStates';
+import { BASE_API_URL } from '../config/constants';
 
 export default async function addCustomOAuth(): Promise<void> {
 	const api = await request.newContext();

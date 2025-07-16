@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function useEmailVerificationWarning(user: IUser | undefined) {
-	const emailVerificationEnabled = useSetting<boolean>('Accounts_EmailVerification') === true;
+	const emailVerificationEnabled = useSetting('Accounts_EmailVerification', false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 

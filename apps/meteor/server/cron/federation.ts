@@ -16,6 +16,7 @@ async function updateSetting(id: string, value: SettingValue | null): Promise<vo
 		if (setting === undefined) {
 			await settingsRegistry.add(id, value);
 		} else {
+			// TODO: audit
 			(await Settings.updateValueById(id, value)).modifiedCount && void notifyOnSettingChangedById(id);
 		}
 	} else {
@@ -77,8 +78,7 @@ async function runFederation(): Promise<void> {
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export async function federationCron(): Promise<void> {
+export function federationCron(): void {
 	const name = 'Federation';
 
 	settings.watch('FEDERATION_Enabled', async (value) => {

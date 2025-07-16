@@ -1,9 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
 import Reactions from './Reactions';
 
 type ReactionListModalProps = {

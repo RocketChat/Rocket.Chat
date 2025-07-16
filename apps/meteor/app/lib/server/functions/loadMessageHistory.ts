@@ -49,7 +49,7 @@ export async function loadMessageHistory({
 				hiddenMessageTypes,
 				options,
 				showThreadMessages,
-		  ).toArray()
+			).toArray()
 		: await Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).toArray();
 	const messages = await normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;

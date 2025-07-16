@@ -1,15 +1,11 @@
 import type { IRocketChatAssetConstraint } from './IRocketChatAssets';
-
-export type SettingId = string;
-export type GroupId = SettingId;
-export type TabId = SettingId;
-export type SectionName = string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export enum SettingEditor {
 	COLOR = 'color',
 	EXPRESSION = 'expression',
 }
-type AssetValue = { defaultUrl?: string };
+
 export type SettingValueMultiSelect = (string | number)[];
 export type SettingValueRoomPick = { _id: string; name?: string }[];
 export type SettingValue =
@@ -19,7 +15,7 @@ export type SettingValue =
 	| SettingValueMultiSelect
 	| SettingValueRoomPick
 	| Date
-	| AssetValue
+	| { url?: string; defaultUrl?: string }
 	| undefined
 	| null;
 
@@ -32,9 +28,7 @@ export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISett
 
 type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
-export interface ISettingBase {
-	_id: SettingId;
-	_updatedAt: Date;
+export interface ISettingBase extends IRocketChatRecord {
 	type:
 		| 'boolean'
 		| 'timezone'
@@ -57,9 +51,9 @@ export interface ISettingBase {
 		| 'timespan';
 	public: boolean;
 	env: boolean;
-	group?: GroupId;
-	section?: SectionName;
-	tab?: TabId;
+	group?: string;
+	section?: string;
+	tab?: string;
 	i18nLabel: string;
 	value: SettingValue;
 	packageValue: SettingValue;
@@ -132,7 +126,7 @@ export interface ISettingAction extends ISettingBase {
 }
 export interface ISettingAsset extends ISettingBase {
 	type: 'asset';
-	value: AssetValue;
+	value: { url?: string; defaultUrl?: string };
 	fileConstraints: IRocketChatAssetConstraint;
 	asset: string;
 }

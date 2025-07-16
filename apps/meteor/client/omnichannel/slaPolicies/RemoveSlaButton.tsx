@@ -1,20 +1,21 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useRoute, useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../components/GenericModal';
 import { GenericTableCell } from '../../components/GenericTable';
 
 const RemoveSlaButton = ({ _id, reload }: { _id: string; reload: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const slaRoute = useRoute('omnichannel-sla-policies');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const removeSLA = useEndpoint('DELETE', `/v1/livechat/sla/:slaId`, { slaId: _id });
 
-	const handleDelete = useMutableCallback((e) => {
+	const handleDelete = useEffectEvent((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteAgent = async (): Promise<void> => {
 			try {

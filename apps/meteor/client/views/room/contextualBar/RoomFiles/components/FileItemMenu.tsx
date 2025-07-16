@@ -1,9 +1,10 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Box, Menu, Icon } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { Box } from '@rocket.chat/fuselage';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import React, { memo, useEffect } from 'react';
+import { memo, useEffect, useId } from 'react';
 
 import { getURL } from '../../../../../../app/utils/client';
 import { download, downloadAs } from '../../../../../lib/download';
@@ -36,7 +37,7 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 
 	const { controller } = navigator?.serviceWorker || {};
 
-	const uid = useUniqueId();
+	const uid = useId();
 
 	useEffect(
 		() =>
@@ -46,15 +47,12 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 		[fileData, t, uid],
 	);
 
-	const menuOptions = {
-		downLoad: {
-			label: (
-				<Box display='flex' alignItems='center'>
-					<Icon mie={4} name='download' size='x16' />
-					{t('Download')}
-				</Box>
-			),
-			action: () => {
+	const menuOptions = [
+		{
+			id: 'download',
+			content: t('Download'),
+			icon: 'download',
+			onClick: () => {
 				if (fileData.path?.includes('/file-decrypt/')) {
 					if (!controller) {
 						return;
@@ -77,21 +75,20 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 			},
 			disabled: !canDownloadFile,
 		},
-		...(isDeletionAllowed &&
-			onClickDelete && {
-				delete: {
-					label: (
-						<Box display='flex' alignItems='center' color='status-font-on-danger'>
-							<Icon mie={4} name='trash' size='x16' />
-							{t('Delete')}
-						</Box>
-					),
-					action: () => onClickDelete(fileData._id),
-				},
-			}),
-	};
+		...(isDeletionAllowed && onClickDelete
+			? [
+					{
+						id: 'delete',
+						content: <Box color='status-font-on-danger'>{t('Delete')}</Box>,
+						onClick: () => onClickDelete(fileData._id),
+						icon: 'trash',
+						iconColor: 'status-font-on-danger',
+					},
+				]
+			: []),
+	] as GenericMenuItemProps[];
 
-	return <Menu options={menuOptions} />;
+	return <GenericMenu title={t('More')} aria-label={t('More')} items={menuOptions} placement='bottom-end' />;
 };
 
 export default memo(FileItemMenu);

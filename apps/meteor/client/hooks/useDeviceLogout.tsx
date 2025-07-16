@@ -1,7 +1,7 @@
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useTranslation, useToastMessageDispatch, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
-import GenericModal from '../components/GenericModal';
 import { useEndpointAction } from './useEndpointAction';
 
 export const useDeviceLogout = (

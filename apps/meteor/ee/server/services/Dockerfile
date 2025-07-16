@@ -1,4 +1,4 @@
-FROM node:14.21.3 as build
+FROM node:22.14.0 as build
 
 WORKDIR /app
 
@@ -15,6 +15,7 @@ COPY ./.yarn/patches .yarn/patches
 COPY ./packages/core-services packages/core-services
 COPY ./packages/core-typings packages/core-typings
 COPY ./packages/eslint-config packages/eslint-config
+COPY ./packages/tsconfig packages/tsconfig
 COPY ./packages/rest-typings packages/rest-typings
 COPY ./packages/model-typings packages/model-typings
 COPY ./packages/models packages/models
@@ -23,12 +24,10 @@ COPY ./apps/meteor/ee/server/services apps/meteor/ee/server/services
 
 RUN yarn install
 
-COPY ./tsconfig.base.json .
-
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:14.21.3-alpine
+FROM node:22.16.0-alpine3.20
 
 ARG SERVICE
 
@@ -69,7 +68,7 @@ ENV NODE_ENV=production \
 WORKDIR /app/apps/meteor/ee/server/services
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies

@@ -4,10 +4,10 @@ import { Random } from '@rocket.chat/random';
 import bcrypt from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 
+import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 import { i18n } from '../../../../server/lib/i18n';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class EmailCheck implements ICodeCheck {
 	public readonly name = 'email';

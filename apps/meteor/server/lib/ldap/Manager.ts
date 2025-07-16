@@ -8,15 +8,18 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
+import { LDAPConnection } from './Connection';
+import { logger, authLogger, connLogger } from './Logger';
+import { LDAPUserConverter } from './UserConverter';
+import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
+import { getLdapDynamicValue } from './getLdapDynamicValue';
+import { getLdapString } from './getLdapString';
+import { ldapKeyExists } from './ldapKeyExists';
+import type { UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { omit } from '../../../lib/utils/omit';
-import { LDAPConnection } from './Connection';
-import { LDAPDataConverter } from './DataConverter';
-import { logger, authLogger, connLogger } from './Logger';
-import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
@@ -38,6 +41,11 @@ export class LDAPManager {
 			}
 
 			if (ldapUser === undefined) {
+				return this.fallbackToDefaultLogin(username, password);
+			}
+
+			const homeServer = this.getFederationHomeServer(ldapUser);
+			if (homeServer) {
 				return this.fallbackToDefaultLogin(username, password);
 			}
 
@@ -75,6 +83,11 @@ export class LDAPManager {
 			}
 
 			if (ldapUser === undefined) {
+				return;
+			}
+
+			const homeServer = this.getFederationHomeServer(ldapUser);
+			if (homeServer) {
 				return;
 			}
 
@@ -140,16 +153,16 @@ export class LDAPManager {
 	}
 
 	// This method will only find existing users that are already linked to LDAP
-	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined> {
+	protected static async findExistingLDAPUser(ldapUser: ILDAPEntry): Promise<IUser | undefined | null> {
 		const uniqueIdentifierField = this.getLdapUserUniqueID(ldapUser);
 
 		if (uniqueIdentifierField) {
 			logger.debug({ msg: 'Querying user', uniqueId: uniqueIdentifierField.value });
-			return UsersRaw.findOneByLDAPId(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
+			return UsersRaw.findOneByLDAPId<IUser>(uniqueIdentifierField.value, uniqueIdentifierField.attribute);
 		}
 	}
 
-	protected static getConverterOptions(): IConverterOptions {
+	protected static getConverterOptions(): UserConverterOptions {
 		return {
 			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 			skipExistingUsers: false,
@@ -165,8 +178,10 @@ export class LDAPManager {
 
 		const { attribute: idAttribute, value: id } = uniqueId;
 		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
-		const emails = this.getLdapEmails(ldapUser, username).map((email) => email.trim());
+		const homeServer = this.getFederationHomeServer(ldapUser);
+		const emails = homeServer ? [] : this.getLdapEmails(ldapUser, username).map((email) => email.trim());
 		const name = this.getLdapName(ldapUser) || undefined;
+		const voipExtension = this.getLdapExtension(ldapUser);
 
 		const userData: IImportUser = {
 			type: 'user',
@@ -174,12 +189,17 @@ export class LDAPManager {
 			importIds: [ldapUser.dn],
 			username,
 			name,
+			voipExtension,
 			services: {
 				ldap: {
 					idAttribute,
 					id,
 				},
 			},
+			...(homeServer && {
+				username: `${username}:${homeServer}`,
+				federated: true,
+			}),
 		};
 
 		this.onMapUserData(ldapUser, userData);
@@ -339,7 +359,7 @@ export class LDAPManager {
 		ldapUser: ILDAPEntry,
 		existingUser?: IUser,
 		usedUsername?: string | undefined,
-	): Promise<IUser | undefined> {
+	): Promise<IUser | undefined | null> {
 		logger.debug({
 			msg: 'Syncing user data',
 			ldapUser: omit(ldapUser, '_raw'),
@@ -360,7 +380,7 @@ export class LDAPManager {
 		}
 
 		const options = this.getConverterOptions();
-		await LDAPDataConverter.convertSingleUser(userData, options);
+		await LDAPUserConverter.convertSingleUser(userData, options);
 
 		return existingUser || this.findExistingLDAPUser(ldapUser);
 	}
@@ -399,50 +419,25 @@ export class LDAPManager {
 		connLogger.debug(ldapUser);
 	}
 
-	private static ldapKeyExists(ldapUser: ILDAPEntry, key: string): boolean {
-		return !_.isEmpty(ldapUser[key.trim()]);
+	private static getLdapName(ldapUser: ILDAPEntry): string | undefined {
+		const nameAttributes = getLDAPConditionalSetting<string | undefined>('LDAP_Name_Field');
+		return getLdapDynamicValue(ldapUser, nameAttributes);
 	}
 
-	private static getLdapString(ldapUser: ILDAPEntry, key: string): string {
-		return ldapUser[key.trim()];
-	}
-
-	private static getLdapDynamicValue(ldapUser: ILDAPEntry, attributeSetting: string | undefined): string | undefined {
-		if (!attributeSetting) {
+	private static getLdapExtension(ldapUser: ILDAPEntry): string | undefined {
+		const extensionAttribute = settings.get<string>('LDAP_Extension_Field');
+		if (!extensionAttribute) {
 			return;
 		}
 
-		// If the attribute setting is a template, then convert the variables in it
-		if (attributeSetting.includes('#{')) {
-			return attributeSetting.replace(/#{(.+?)}/g, (_match, field) => {
-				const key = field.trim();
-
-				if (this.ldapKeyExists(ldapUser, key)) {
-					return this.getLdapString(ldapUser, key);
-				}
-
-				return '';
-			});
-		}
-
-		// If it's not a template, then treat the setting as a CSV list of possible attribute names and return the first valid one.
-		const attributeList: string[] = attributeSetting.replace(/\s/g, '').split(',');
-		const key = attributeList.find((field) => this.ldapKeyExists(ldapUser, field));
-		if (key) {
-			return this.getLdapString(ldapUser, key);
-		}
-	}
-
-	private static getLdapName(ldapUser: ILDAPEntry): string | undefined {
-		const nameAttributes = getLDAPConditionalSetting<string | undefined>('LDAP_Name_Field');
-		return this.getLdapDynamicValue(ldapUser, nameAttributes);
+		return getLdapString(ldapUser, extensionAttribute);
 	}
 
 	private static getLdapEmails(ldapUser: ILDAPEntry, username?: string): string[] {
 		const emailAttributes = getLDAPConditionalSetting<string>('LDAP_Email_Field');
 		if (emailAttributes) {
 			const attributeList: string[] = emailAttributes.replace(/\s/g, '').split(',');
-			const key = attributeList.find((field) => this.ldapKeyExists(ldapUser, field));
+			const key = attributeList.find((field) => ldapKeyExists(ldapUser, field));
 
 			const emails: string[] = [].concat(key ? ldapUser[key.trim()] : []);
 			const filteredEmails = emails.filter((email) => email.includes('@'));
@@ -486,18 +481,51 @@ export class LDAPManager {
 
 	protected static getLdapUsername(ldapUser: ILDAPEntry): string | undefined {
 		const usernameField = getLDAPConditionalSetting('LDAP_Username_Field') as string;
-		return this.getLdapDynamicValue(ldapUser, usernameField);
+		return getLdapDynamicValue(ldapUser, usernameField);
+	}
+
+	protected static getFederationHomeServer(ldapUser: ILDAPEntry): string | undefined {
+		if (!settings.get<boolean>('Federation_Matrix_enabled')) {
+			return;
+		}
+
+		const homeServerField = settings.get<string>('LDAP_FederationHomeServer_Field');
+		const homeServer = getLdapDynamicValue(ldapUser, homeServerField);
+
+		if (!homeServer) {
+			return;
+		}
+
+		logger.debug({ msg: 'User has a federation home server', homeServer });
+
+		const localServer = settings.get<string>('Federation_Matrix_homeserver_domain');
+		if (localServer === homeServer) {
+			return;
+		}
+
+		return homeServer;
+	}
+
+	protected static getFederatedUsername(ldapUser: ILDAPEntry, requestUsername: string): string {
+		const username = this.slugifyUsername(ldapUser, requestUsername);
+		const homeServer = this.getFederationHomeServer(ldapUser);
+
+		if (homeServer) {
+			return `${username}:${homeServer}`;
+		}
+
+		return username;
 	}
 
 	// This method will find existing users by LDAP id or by username.
-	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined> {
+	private static async findExistingUser(ldapUser: ILDAPEntry, slugifiedUsername: string): Promise<IUser | undefined | null> {
 		const user = await this.findExistingLDAPUser(ldapUser);
 		if (user) {
 			return user;
 		}
 
 		// If we don't have that ldap user linked yet, check if there's any non-ldap user with the same username
-		return UsersRaw.findOneWithoutLDAPByUsernameIgnoringCase(slugifiedUsername);
+		return UsersRaw.findOneWithoutLDAPByUsernameIgnoringCase<IUser>(slugifiedUsername);
 	}
 
 	private static fallbackToDefaultLogin(username: LoginUsername, password: string): LDAPLoginResult {

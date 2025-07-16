@@ -1,8 +1,8 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { PriorityIcon } from './PriorityIcon';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -13,7 +13,6 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '../../components/GenericTable';
-import { PriorityIcon } from './PriorityIcon';
 
 type PrioritiesTableProps = {
 	priorities?: Serialized<ILivechatPriority>[];

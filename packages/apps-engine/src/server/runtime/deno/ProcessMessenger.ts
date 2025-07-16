@@ -1,48 +1,55 @@
-import { ChildProcess } from 'child_process';
+import type { ChildProcess } from 'child_process';
 
 import type { JsonRpc } from 'jsonrpc-lite';
 
-import { encoder } from './codec';
+import type { Encoder } from './codec';
+import { newEncoder } from './codec';
 
 export class ProcessMessenger {
-    private deno: ChildProcess;
+	private deno: ChildProcess | undefined;
 
-    private _sendStrategy: (message: JsonRpc) => void;
+	private encoder: Encoder | undefined;
 
-    constructor(private readonly debug: debug.Debugger) {
-        this._sendStrategy = this.strategyError;
-    }
+	private _sendStrategy: (message: JsonRpc) => void;
 
-    public get send() {
-        return this._sendStrategy.bind(this);
-    }
+	constructor(private readonly debug: debug.Debugger) {
+		this._sendStrategy = this.strategyError;
+	}
 
-    public setReceiver(deno: ChildProcess) {
-        this.deno = deno;
+	public get send() {
+		return this._sendStrategy.bind(this);
+	}
 
-        this.switchStrategy();
-    }
+	public setReceiver(deno: ChildProcess) {
+		this.deno = deno;
 
-    public clearReceiver() {
-        delete this.deno;
+		this.switchStrategy();
+	}
 
-        this.switchStrategy();
-    }
+	public clearReceiver() {
+		delete this.deno;
+		delete this.encoder;
 
-    private switchStrategy() {
-        if (this.deno instanceof ChildProcess) {
-            this._sendStrategy = this.strategySend.bind(this);
-        } else {
-            this._sendStrategy = this.strategyError.bind(this);
-        }
-    }
+		this.switchStrategy();
+	}
 
-    private strategyError(_message: JsonRpc) {
-        throw new Error('No process configured to receive a message');
-    }
+	private switchStrategy() {
+		if (this.deno?.stdin?.writable) {
+			this._sendStrategy = this.strategySend.bind(this);
 
-    private strategySend(message: JsonRpc) {
-        this.debug('Sending message to subprocess %o', message);
-        this.deno.stdin.write(encoder.encode(message));
-    }
+			// Get a clean encoder
+			this.encoder = newEncoder();
+		} else {
+			this._sendStrategy = this.strategyError.bind(this);
+		}
+	}
+
+	private strategyError(_message: JsonRpc) {
+		throw new Error('No process configured to receive a message');
+	}
+
+	private strategySend(message: JsonRpc) {
+		this.debug('Sending message to subprocess %o', message);
+		this.deno.stdin.write(this.encoder.encode(message));
+	}
 }

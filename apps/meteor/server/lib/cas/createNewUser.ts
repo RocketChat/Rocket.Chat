@@ -3,8 +3,8 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 
-import { createRoom } from '../../../app/lib/server/functions/createRoom';
 import { logger } from './logger';
+import { createRoom } from '../../../app/lib/server/functions/createRoom';
 
 type CASUserOptions = {
 	attributes: Record<string, string | undefined>;
@@ -36,7 +36,7 @@ export const createNewUser = async (username: string, { attributes, casVersion, 
 
 	// Create the user
 	logger.debug(`User "${username}" does not exist yet, creating it`);
-	const userId = Accounts.insertUserDoc({}, newUser);
+	const userId = await Accounts.insertUserDoc({}, newUser);
 
 	// Fetch and use it
 	const user = await Users.findOneById(userId);

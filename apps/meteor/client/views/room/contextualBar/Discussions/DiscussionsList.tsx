@@ -1,11 +1,13 @@
-import type { IDiscussionMessage, IUser } from '@rocket.chat/core-typings';
+import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { RefObject } from 'react';
-import React, { useCallback } from 'react';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, MouseEvent, RefObject } from 'react';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import DiscussionsListRow from './DiscussionsListRow';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -14,10 +16,10 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarTitle,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
-import DiscussionsListRow from './DiscussionsListRow';
 
 type DiscussionsListProps = {
 	total: number;
@@ -26,9 +28,8 @@ type DiscussionsListProps = {
 	loading: boolean;
 	onClose: () => void;
 	error: unknown;
-	userId: IUser['_id'];
 	text: string;
-	onChangeFilter: (e: unknown) => void;
+	onChangeFilter: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 function DiscussionsList({
@@ -38,17 +39,16 @@ function DiscussionsList({
 	loading,
 	onClose,
 	error,
-	userId,
 	text,
 	onChangeFilter,
 }: DiscussionsListProps) {
-	const t = useTranslation();
-	const showRealNames = useSetting<boolean>('UI_Use_Real_Name') || false;
+	const { t } = useTranslation();
+	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
 
-	const onClick = useCallback((e) => {
+	const onClick = useCallback((e: MouseEvent<HTMLElement>) => {
 		const { drid } = e.currentTarget.dataset;
-		goToRoomById(drid);
+		if (drid) goToRoomById(drid);
 	}, []);
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
@@ -56,7 +56,7 @@ function DiscussionsList({
 	});
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='discussion' />
 				<ContextualbarTitle>{t('Discussions')}</ContextualbarTitle>
@@ -88,25 +88,24 @@ function DiscussionsList({
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && total > 0 && discussions.length > 0 && (
-						<Virtuoso
-							style={{
-								height: blockSize,
-								width: inlineSize,
-								overflow: 'hidden',
-							}}
-							totalCount={total}
-							endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
-							overscan={25}
-							data={discussions}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_, data) => (
-								<DiscussionsListRow discussion={data} showRealNames={showRealNames} userId={userId} onClick={onClick} />
-							)}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{
+									height: blockSize,
+									width: inlineSize,
+									overflow: 'hidden',
+								}}
+								totalCount={total}
+								endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
+								overscan={25}
+								data={discussions}
+								itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
+							/>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 }
 

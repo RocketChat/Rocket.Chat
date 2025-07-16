@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageBlock } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { useOembedLayout } from '../hooks/useOembedLayout';
 import type { OEmbedPreviewMetadata } from './urlPreviews/OEmbedPreviewMetadata';

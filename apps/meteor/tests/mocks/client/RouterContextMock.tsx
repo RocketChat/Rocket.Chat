@@ -1,7 +1,7 @@
 import type { To, SearchParameters, LocationPathname, LocationSearch } from '@rocket.chat/ui-contexts';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
-import React, { useRef, useMemo } from 'react';
+import { useRef, useMemo } from 'react';
 import type { MutableRefObject, ReactElement, ReactNode } from 'react';
 
 const encodeSearchParameters = (searchParameters: SearchParameters) => {

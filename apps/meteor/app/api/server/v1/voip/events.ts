@@ -26,7 +26,7 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 			if (!(await canAccessRoomAsync(room, this.user))) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success(await LivechatVoip.handleEvent(event, room, this.user, comment));

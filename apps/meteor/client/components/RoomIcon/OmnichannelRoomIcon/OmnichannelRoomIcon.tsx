@@ -2,7 +2,6 @@ import type { IOmnichannelSource } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelSourceFromApp } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 import { OmnichannelAppSourceRoomIcon } from './OmnichannelAppSourceRoomIcon';
 import { OmnichannelCoreSourceRoomIcon } from './OmnichannelCoreSourceRoomIcon';

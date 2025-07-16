@@ -1,9 +1,8 @@
 import type { ReactElement } from 'react';
-import React from 'react';
 
-import { useEditableSettingsGroupSections, useEditableSettingsGroupTabs } from '../../EditableSettingsContext';
 import GenericGroupPage from './GenericGroupPage';
 import TabbedGroupPage from './TabbedGroupPage';
+import { useEditableSettingsGroupSections, useEditableSettingsGroupTabs } from '../../EditableSettingsContext';
 
 type BaseGroupPageProps = {
 	_id: string;

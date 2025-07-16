@@ -1,9 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
+import type { ReactNode } from 'react';
 
 type ToastMessagePayload =
 	| {
 			type: 'success' | 'info' | 'warning';
-			message: string;
+			message: ReactNode | string;
 			title?: string;
 			options?: object;
 	  }

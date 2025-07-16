@@ -13,13 +13,22 @@ import { settings } from '../../../../app/settings/server/cached';
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.list',
-	{ authRequired: true, permissionsRequired: ['manage-voip-extensions'], validateParams: isVoipFreeSwitchExtensionListProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-voip-extensions'],
+		validateParams: isVoipFreeSwitchExtensionListProps,
+		license: ['voip-enterprise'],
+	},
 	{
 		async get() {
+			if (!settings.get('VoIP_TeamCollab_Enabled')) {
+				throw new Error('error-voip-disabled');
+			}
+
 			const { username, type = 'all' } = this.queryParams;
 
 			const extensions = await wrapExceptions(() => VoipFreeSwitch.getExtensionList()).catch(() => {
-				throw new Error('Failed to load extension list.');
+				throw new Error('error-loading-extension-list');
 			});
 
 			if (type === 'all') {
@@ -55,9 +64,18 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.assign',
-	{ authRequired: true, permissionsRequired: ['manage-voip-extensions'], validateParams: isVoipFreeSwitchExtensionAssignProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-voip-extensions'],
+		validateParams: isVoipFreeSwitchExtensionAssignProps,
+		license: ['voip-enterprise'],
+	},
 	{
 		async post() {
+			if (!settings.get('VoIP_TeamCollab_Enabled')) {
+				throw new Error('error-voip-disabled');
+			}
+
 			const { extension, username } = this.bodyParams;
 
 			if (!username) {
@@ -71,7 +89,7 @@ API.v1.addRoute(
 
 			const existingUser = extension && (await Users.findOneByFreeSwitchExtension(extension, { projection: { _id: 1 } }));
 			if (existingUser && existingUser._id !== user._id) {
-				throw new Error('Extension not available.');
+				throw new Error('error-extension-not-available');
 			}
 
 			if (extension && user.freeSwitchExtension === extension) {
@@ -86,13 +104,22 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.getDetails',
-	{ authRequired: true, permissionsRequired: ['view-voip-extension-details'], validateParams: isVoipFreeSwitchExtensionGetDetailsProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-voip-extension-details'],
+		validateParams: isVoipFreeSwitchExtensionGetDetailsProps,
+		license: ['voip-enterprise'],
+	},
 	{
 		async get() {
+			if (!settings.get('VoIP_TeamCollab_Enabled')) {
+				throw new Error('error-voip-disabled');
+			}
+
 			const { extension, group } = this.queryParams;
 
 			if (!extension) {
-				throw new Error('Invalid params');
+				throw new Error('error-invalid-params');
 			}
 
 			const extensionData = await wrapExceptions(() => VoipFreeSwitch.getExtensionDetails({ extension, group })).suppress(() => undefined);
@@ -112,29 +139,38 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.getRegistrationInfoByUserId',
-	{ authRequired: true, permissionsRequired: ['view-user-voip-extension'], validateParams: isVoipFreeSwitchExtensionGetInfoProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-user-voip-extension'],
+		validateParams: isVoipFreeSwitchExtensionGetInfoProps,
+		license: ['voip-enterprise'],
+	},
 	{
 		async get() {
+			if (!settings.get('VoIP_TeamCollab_Enabled')) {
+				throw new Error('error-voip-disabled');
+			}
+
 			const { userId } = this.queryParams;
 
 			if (!userId) {
-				throw new Error('Invalid params.');
+				throw new Error('error-invalid-params');
 			}
 
 			const user = await Users.findOneById(userId, { projection: { freeSwitchExtension: 1 } });
 			if (!user) {
-				throw new Error('User not found.');
+				throw new Error('error-user-not-found');
 			}
 
 			const { freeSwitchExtension: extension } = user;
 
 			if (!extension) {
-				throw new Error('Extension not assigned.');
+				throw new Error('error-extension-not-assigned');
 			}
 
 			const extensionData = await wrapExceptions(() => VoipFreeSwitch.getExtensionDetails({ extension })).suppress(() => undefined);
 			if (!extensionData) {
-				return API.v1.notFound();
+				return API.v1.notFound('error-registration-not-found');
 			}
 			const password = await wrapExceptions(() => VoipFreeSwitch.getUserPassword(extension)).suppress(() => undefined);
 

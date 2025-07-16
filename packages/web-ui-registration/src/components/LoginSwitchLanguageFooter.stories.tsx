@@ -1,6 +1,6 @@
 import { Box, Tile } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { type ComponentStory, type ComponentMeta } from '@storybook/react';
+import type { Meta, StoryFn } from '@storybook/react';
 import { createElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -37,6 +37,6 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies ComponentMeta<typeof LoginSwitchLanguageFooter>;
+} satisfies Meta<typeof LoginSwitchLanguageFooter>;
 
-export const Default: ComponentStory<typeof LoginSwitchLanguageFooter> = (args) => <LoginSwitchLanguageFooter {...args} />;
+export const Default: StoryFn<typeof LoginSwitchLanguageFooter> = (args) => <LoginSwitchLanguageFooter {...args} />;

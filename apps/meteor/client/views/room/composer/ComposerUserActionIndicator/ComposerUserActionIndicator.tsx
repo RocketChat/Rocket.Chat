@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useCallback, Fragment } from 'react';
+import { useCallback, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UserAction } from '../../../../../app/ui/client/lib/UserAction';

@@ -1,15 +1,29 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useClipboard, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import {
+	Modal,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldHint,
+	ButtonGroup,
+	Button,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+} from '@rocket.chat/fuselage';
+import { useClipboard } from '@rocket.chat/fuselage-hooks';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAndRoomAutoCompleteMultiple from '../../../../components/UserAndRoomAutoCompleteMultiple';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
-import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import { prependReplies } from '../../../../lib/utils/prependReplies';
 
 type ForwardMessageProps = {
@@ -23,7 +37,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 	const getUserAvatarPath = useUserAvatarPath();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { copy, hasCopied } = useClipboard(permalink);
-	const usersAndRoomsField = useUniqueId();
+	const usersAndRoomsField = useId();
 
 	const { control, watch } = useForm({
 		defaultValues: {
@@ -78,11 +92,11 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.Title>{t('Forward_message')}</Modal.Title>
-				<Modal.Close onClick={onClose} title={t('Close')} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Forward_message')}</ModalTitle>
+				<ModalClose onClick={onClose} title={t('Close')} />
+			</ModalHeader>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={usersAndRoomsField}>{t('Person_Or_Channel')}</FieldLabel>
@@ -96,6 +110,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 										aria-describedby={`${usersAndRoomsField}-hint`}
 										name={name}
 										value={value}
+										limit={25}
 										onChange={onChange}
 									/>
 								)}
@@ -109,17 +124,17 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 						<QuoteAttachment attachment={attachment} />
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
+			</ModalContent>
+			<ModalFooter>
 				<ButtonGroup>
 					<Button onClick={handleCopy} disabled={hasCopied}>
 						{hasCopied ? t('Copied') : t('Copy_Link')}
 					</Button>
-					<Button disabled={!rooms.length} loading={sendMessageMutation.isLoading} onClick={() => sendMessageMutation.mutate()} primary>
+					<Button disabled={!rooms.length} loading={sendMessageMutation.isPending} onClick={() => sendMessageMutation.mutate()} primary>
 						{t('Forward')}
 					</Button>
 				</ButtonGroup>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };

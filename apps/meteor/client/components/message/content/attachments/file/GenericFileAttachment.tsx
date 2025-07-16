@@ -6,10 +6,9 @@ import {
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import type { UIEvent } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
@@ -34,7 +33,7 @@ const GenericFileAttachment = ({
 	collapsed,
 }: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
-	const uid = useUniqueId();
+	const uid = useId();
 	const { t } = useTranslation();
 
 	const handleTitleClick = (event: UIEvent): void => {

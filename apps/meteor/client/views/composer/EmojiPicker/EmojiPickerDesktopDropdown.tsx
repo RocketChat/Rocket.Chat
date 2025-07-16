@@ -1,7 +1,7 @@
 import { Box, Tile } from '@rocket.chat/fuselage';
 import { useMergedRefs, usePosition } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, Ref, RefObject } from 'react';
-import React, { useMemo, useRef, forwardRef } from 'react';
+import { useMemo, useRef, forwardRef } from 'react';
 
 const getDropdownContainer = (descendant: HTMLElement | null) => {
 	for (let element = descendant ?? document.body; element !== document.body; element = element.parentElement ?? document.body) {

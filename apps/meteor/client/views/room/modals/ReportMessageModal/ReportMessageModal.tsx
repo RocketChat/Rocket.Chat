@@ -1,12 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import GenericModal from '../../../../components/GenericModal';
 import MarkdownText from '../../../../components/MarkdownText';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 
@@ -31,13 +30,13 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 		handleSubmit,
 	} = useForm<ReportMessageModalsFields>();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const reportMessage = useMethod('reportMessage');
+	const reportMessage = useEndpoint('POST', '/v1/chat.reportMessage');
 
 	const { _id } = message;
 
 	const handleReportMessage = async ({ description }: ReportMessageModalsFields): Promise<void> => {
 		try {
-			await reportMessage(_id, description);
+			await reportMessage({ messageId: _id, description });
 			dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

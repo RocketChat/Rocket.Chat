@@ -6,36 +6,42 @@ import {
 	TextAreaInput,
 	Modal,
 	Box,
-	PaginatedSelectFiltered,
 	Divider,
 	FieldLabel,
 	FieldRow,
-	Option,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { useRecordList } from '../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import AutoCompleteAgent from '../../AutoCompleteAgent';
-import { useDepartmentsList } from '../hooks/useDepartmentsList';
+import AutoCompleteDepartment from '../../AutoCompleteDepartment';
 
-const ForwardChatModal = ({
-	onForward,
-	onCancel,
-	room,
-	...props
-}: {
+type ForwardChatModalFormData = {
+	comment: string;
+	department: string;
+	username: string;
+};
+
+type ForwardChatModalProps = {
 	onForward: (departmentId?: string, userId?: string, comment?: string) => Promise<void>;
 	onCancel: () => void;
 	room: IOmnichannelRoom;
-}): ReactElement => {
-	const t = useTranslation();
+};
+
+const ForwardChatModal = ({ onForward, onCancel, room, ...props }: ForwardChatModalProps): ReactElement => {
+	const { t } = useTranslation();
 	const getUserData = useEndpoint('GET', '/v1/users.info');
-	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
+	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle', true);
 
 	const {
 		getValues,
@@ -45,7 +51,7 @@ const ForwardChatModal = ({
 		setValue,
 		watch,
 		formState: { isSubmitting },
-	} = useForm();
+	} = useForm<ForwardChatModalFormData>();
 
 	useEffect(() => {
 		setFocus('comment');
@@ -54,25 +60,8 @@ const ForwardChatModal = ({
 	const department = watch('department');
 	const username = watch('username');
 
-	const [departmentsFilter, setDepartmentsFilter] = useState<string | number | undefined>('');
-	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
-
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(() => ({ filter: debouncedDepartmentsFilter as string, enabled: true }), [debouncedDepartmentsFilter]),
-	);
-	const { phase: departmentsPhase, items: departments, itemCount: departmentsTotal } = useRecordList(departmentsList);
-
-	const endReached = useCallback(
-		(start) => {
-			if (departmentsPhase !== AsyncStatePhase.LOADING) {
-				loadMoreDepartments(start, Math.min(50, departmentsTotal));
-			}
-		},
-		[departmentsPhase, departmentsTotal, loadMoreDepartments],
-	);
-
 	const onSubmit = useCallback(
-		async ({ department: departmentId, username, comment }) => {
+		async ({ department: departmentId, username, comment }: ForwardChatModalFormData) => {
 			let uid;
 
 			if (username) {
@@ -96,30 +85,24 @@ const ForwardChatModal = ({
 			{...props}
 			data-qa-id='forward-chat-modal'
 		>
-			<Modal.Header>
-				<Modal.Icon name='baloon-arrow-top-right' />
-				<Modal.Title>{t('Forward_chat')}</Modal.Title>
-				<Modal.Close onClick={onCancel} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>
+			<ModalHeader>
+				<ModalIcon name='baloon-arrow-top-right' />
+				<ModalTitle>{t('Forward_chat')}</ModalTitle>
+				<ModalClose onClick={onCancel} />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>
 				<FieldGroup>
 					<Field>
 						<FieldLabel>{t('Forward_to_department')}</FieldLabel>
 						<FieldRow>
-							<PaginatedSelectFiltered
+							<AutoCompleteDepartment
 								withTitle={false}
-								filter={departmentsFilter as string}
-								setFilter={setDepartmentsFilter}
-								options={departments}
 								maxWidth='100%'
-								placeholder={t('Select_an_option')}
+								flexGrow={1}
 								data-qa-id='forward-to-department'
 								onChange={(value: string): void => {
 									setValue('department', value);
 								}}
-								flexGrow={1}
-								endReached={endReached}
-								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
 						</FieldRow>
 					</Field>
@@ -152,15 +135,15 @@ const ForwardChatModal = ({
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					<Button type='submit' disabled={!username && !department} primary loading={isSubmitting}>
 						{t('Forward')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

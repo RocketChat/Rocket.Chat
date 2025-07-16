@@ -1,13 +1,15 @@
 import type { IMessage, IUser, RequiredField, MessageAttachment } from '@rocket.chat/core-typings';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
+import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
+import { sendMessage } from './sendMessage';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { validateRoomMessagePermissionsAsync } from '../../../authorization/server/functions/canSendMessage';
-import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
-import { sendMessage } from './sendMessage';
+import { settings } from '../../../settings/server';
 
 type Payload = {
 	channel?: string | string[];
@@ -47,7 +49,7 @@ export const processWebhookMessage = async function (
 	for await (const channel of channels) {
 		const channelType = channel[0];
 
-		let channelValue = channel.substr(1);
+		let channelValue = channel.slice(1);
 		let room;
 
 		switch (channelType) {
@@ -113,6 +115,12 @@ export const processWebhookMessage = async function (
 			customFields: messageObj.customFields,
 		};
 
+		if (message.msg) {
+			if (message.msg.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
+				throw Error('error-message-size-exceeded');
+			}
+		}
+
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {
 			message.avatar = messageObj.icon_url || messageObj.avatar;
 		} else if (!_.isEmpty(messageObj.icon_emoji) || !_.isEmpty(messageObj.emoji)) {
@@ -135,7 +143,7 @@ export const processWebhookMessage = async function (
 
 		await validateRoomMessagePermissionsAsync(room, { uid: user._id, ...user });
 
-		const messageReturn = await sendMessage(user, message, room);
+		const messageReturn = await sendMessage(user, removeEmpty(message), room);
 		sentData.push({ channel, message: messageReturn });
 	}
 

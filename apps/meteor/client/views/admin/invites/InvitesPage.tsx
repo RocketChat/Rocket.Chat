@@ -1,11 +1,12 @@
 import { States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
-import GenericModal from '../../../components/GenericModal';
+import InviteRow from './InviteRow';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -15,7 +16,6 @@ import {
 	GenericTableLoadingTable,
 } from '../../../components/GenericTable';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
-import InviteRow from './InviteRow';
 
 const InvitesPage = (): ReactElement => {
 	const t = useTranslation();
@@ -24,18 +24,16 @@ const InvitesPage = (): ReactElement => {
 
 	const getInvites = useEndpoint('GET', '/v1/listInvites');
 
-	const { data, isLoading, refetch, isSuccess, isError } = useQuery(
-		['invites'],
-		async () => {
+	const { data, isLoading, refetch, isSuccess, isError } = useQuery({
+		queryKey: ['invites'],
+		queryFn: async () => {
 			const invites = await getInvites();
 			return invites;
 		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
+		meta: {
+			apiErrorToastMessage: true,
 		},
-	);
+	});
 
 	const onRemove = (removeInvite: () => Promise<boolean>): void => {
 		const confirmRemove = async (): Promise<void> => {

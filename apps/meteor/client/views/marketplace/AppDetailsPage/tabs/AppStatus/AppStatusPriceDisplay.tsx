@@ -1,6 +1,6 @@
 import type { AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { formatPriceAndPurchaseType } from '../../../helpers/formatPriceAndPurchaseType';

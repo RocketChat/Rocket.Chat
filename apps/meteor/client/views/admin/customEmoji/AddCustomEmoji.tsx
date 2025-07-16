@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, IconButton } from '@rocket.chat/fuselage';
 import type { ReactElement, ChangeEvent } from 'react';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
@@ -21,7 +21,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	const [errors, setErrors] = useState({ name: false, emoji: false, aliases: false });
 
 	const setEmojiPreview = useCallback(
-		async (file) => {
+		async (file: Blob) => {
 			setEmojiFile(file);
 			setNewEmojiPreview(URL.createObjectURL(file));
 			setErrors((prevState) => ({ ...prevState, emoji: false }));

@@ -1,8 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { createFakeRoom } from '../../../../tests/mocks/data';
 import { useRetentionPolicy } from './useRetentionPolicy';
+import { createFakeRoom } from '../../../../tests/mocks/data';
 
 const getGlobalSettings = ({
 	enabled = false,
@@ -43,7 +43,6 @@ it('should return the default value if global retention is not enabled', async (
 	const fakeRoom = createFakeRoom({ t: CHANNELS_TYPE });
 
 	const { result } = renderHook(() => useRetentionPolicy(fakeRoom), {
-		legacyRoot: true,
 		wrapper: getGlobalSettings({}).build(),
 	});
 
@@ -54,7 +53,6 @@ it('should return enabled true if global retention is enabled', async () => {
 	const fakeRoom = createFakeRoom({ t: CHANNELS_TYPE });
 
 	const { result } = renderHook(() => useRetentionPolicy(fakeRoom), {
-		legacyRoot: true,
 		wrapper: getGlobalSettings({ enabled: true }).build(),
 	});
 
@@ -65,7 +63,6 @@ it('should return enabled and active true global retention is active for rooms o
 	const fakeRoom = createFakeRoom({ t: CHANNELS_TYPE });
 
 	const { result } = renderHook(() => useRetentionPolicy(fakeRoom), {
-		legacyRoot: true,
 		wrapper: getGlobalSettings({ enabled: true, ...roomTypeConfig[CHANNELS_TYPE] }).build(),
 	});
 
@@ -76,7 +73,6 @@ it('should isActive be false if global retention is active for rooms of the type
 	const fakeRoom = createFakeRoom({ t: CHANNELS_TYPE, retention: { enabled: false } });
 
 	const { result } = renderHook(() => useRetentionPolicy(fakeRoom), {
-		legacyRoot: true,
 		wrapper: getGlobalSettings({ enabled: true, ...roomTypeConfig[CHANNELS_TYPE] }).build(),
 	});
 

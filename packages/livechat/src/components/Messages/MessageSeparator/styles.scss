@@ -1,18 +1,18 @@
-@import '../../../styles/colors';
-@import '../../../styles/variables';
+@use '../../../styles/colors';
+@use '../../../styles/variables';
 
 $separator-text-font-size: 0.625rem;
 $separator-text-letter-spacing: 0.2px;
 $separator-line-width: 2px;
-$separator-date-text-color: $color-text-grey;
-$separator-date-line-color: $bg-color-grey;
-$separator-unread-text-color: $color-red;
-$separator-unread-line-color: $color-red;
+$separator-date-text-color: colors.$color-text-grey;
+$separator-date-line-color: colors.$bg-color-grey;
+$separator-unread-text-color: colors.$color-red;
+$separator-unread-line-color: colors.$color-red;
 
 .separator {
 	display: flex;
 
-	margin: $default-gap 0;
+	margin: variables.$default-gap 0;
 	align-items: center;
 	flex-flow: row nowrap;
 

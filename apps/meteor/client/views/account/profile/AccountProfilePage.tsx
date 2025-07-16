@@ -1,5 +1,4 @@
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { SHA256 } from '@rocket.chat/sha256';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -10,23 +9,25 @@ import {
 	useEndpoint,
 	useTranslation,
 	useSetting,
+	useLayout,
 } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useState, useCallback } from 'react';
+import { useId, useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
-import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
-import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
 import { getProfileInitialValues } from './getProfileInitialValues';
+import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
 const AccountProfilePage = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const { isMobile } = useLayout();
 
 	const setModal = useSetModal();
 	const logout = useLogout();
@@ -64,7 +65,7 @@ const AccountProfilePage = (): ReactElement => {
 	}, [logoutOtherClients, dispatchToastMessage, t]);
 
 	const handleConfirmOwnerChange = useCallback(
-		(passwordOrUsername, shouldChangeOwner, shouldBeRemoved) => {
+		(passwordOrUsername: string, shouldChangeOwner: string[], shouldBeRemoved: string[]) => {
 			const handleConfirm = async (): Promise<void> => {
 				try {
 					await deleteOwnAccount({ password: SHA256(passwordOrUsername), confirmRelinquish: true });
@@ -76,7 +77,7 @@ const AccountProfilePage = (): ReactElement => {
 				}
 			};
 
-			return setModal(() => (
+			return setModal(
 				<ConfirmOwnerChangeModal
 					onConfirm={handleConfirm}
 					onCancel={() => setModal(null)}
@@ -84,8 +85,8 @@ const AccountProfilePage = (): ReactElement => {
 					confirmText={t('Delete')}
 					shouldChangeOwner={shouldChangeOwner}
 					shouldBeRemoved={shouldBeRemoved}
-				/>
-			));
+				/>,
+			);
 		},
 		[erasureType, setModal, t, deleteOwnAccount, dispatchToastMessage, logout],
 	);
@@ -106,10 +107,10 @@ const AccountProfilePage = (): ReactElement => {
 			}
 		};
 
-		return setModal(() => <ActionConfirmModal onConfirm={handleConfirm} onCancel={() => setModal(null)} isPassword={hasLocalPassword} />);
+		return setModal(<ActionConfirmModal onConfirm={handleConfirm} onCancel={() => setModal(null)} isPassword={hasLocalPassword} />);
 	}, [dispatchToastMessage, hasLocalPassword, setModal, handleConfirmOwnerChange, deleteOwnAccount, logout, t]);
 
-	const profileFormId = useUniqueId();
+	const profileFormId = useId();
 
 	return (
 		<Page>
@@ -120,7 +121,7 @@ const AccountProfilePage = (): ReactElement => {
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
 					<Box mb={12}>
-						<ButtonGroup stretch>
+						<ButtonGroup stretch vertical={isMobile}>
 							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
 								{t('Logout_Others')}
 							</Button>

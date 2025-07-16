@@ -1,3 +1,4 @@
+import { imperativeModal } from '@rocket.chat/ui-client';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
@@ -20,6 +21,14 @@ jest.mock('../../lib/toast', () => ({
 	dispatchToastMessage: jest.fn(),
 }));
 
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
+	imperativeModal: {
+		open: jest.fn(),
+		close: jest.fn(),
+	},
+}));
+
 jest.mock('../../views/room/contexts/RoomContext', () => ({
 	useRoom: jest.fn(),
 	useRoomSubscription: jest.fn(),
@@ -37,6 +46,10 @@ jest.mock('../../../app/e2e/client/rocketchat.e2e', () => ({
 
 jest.mock('../../views/room/hooks/useE2EEState', () => ({
 	useE2EEState: jest.fn(),
+}));
+
+jest.mock('../../views/room/hooks/useE2EERoomState', () => ({
+	useE2EERoomState: jest.fn(),
 }));
 
 jest.mock('react-i18next', () => ({
@@ -72,7 +85,7 @@ describe('useE2EERoomAction', () => {
 	it('should dispatch error toast message when otrState is ESTABLISHED', async () => {
 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.ESTABLISHED });
 
-		const { result } = renderHook(() => useE2EERoomAction(), { legacyRoot: true });
+		const { result } = renderHook(() => useE2EERoomAction());
 
 		await act(async () => {
 			await result?.current?.action?.();
@@ -84,7 +97,7 @@ describe('useE2EERoomAction', () => {
 	it('should dispatch error toast message when otrState is ESTABLISHING', async () => {
 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.ESTABLISHING });
 
-		const { result } = renderHook(() => useE2EERoomAction(), { legacyRoot: true });
+		const { result } = renderHook(() => useE2EERoomAction());
 
 		act(() => {
 			result?.current?.action?.();
@@ -96,7 +109,7 @@ describe('useE2EERoomAction', () => {
 	it('should dispatch error toast message when otrState is REQUESTED', async () => {
 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.REQUESTED });
 
-		const { result } = renderHook(() => useE2EERoomAction(), { legacyRoot: true });
+		const { result } = renderHook(() => useE2EERoomAction());
 
 		act(() => {
 			result?.current?.action?.();
@@ -105,20 +118,14 @@ describe('useE2EERoomAction', () => {
 		await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: 'E2EE_not_available_OTR' }));
 	});
 
-	it('should dispatch success toast message when encryption is enabled', async () => {
+	it('should open Enable E2EE confirmation modal', async () => {
 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.NOT_STARTED });
 
-		const { result } = renderHook(() => useE2EERoomAction(), { legacyRoot: true });
-
+		const { result } = renderHook(() => useE2EERoomAction());
 		act(() => {
 			result?.current?.action?.();
 		});
 
-		await waitFor(() =>
-			expect(dispatchToastMessage).toHaveBeenCalledWith({
-				type: 'success',
-				message: 'E2E_Encryption_enabled_for_room',
-			}),
-		);
+		await waitFor(() => expect(imperativeModal.open).toHaveBeenCalledTimes(1));
 	});
 });

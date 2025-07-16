@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentType } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 export const useAvatarTemplate = (
 	sidebarViewMode?: 'extended' | 'medium' | 'condensed',

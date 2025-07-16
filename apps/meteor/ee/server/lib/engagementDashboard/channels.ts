@@ -2,8 +2,8 @@ import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import { Analytics, Rooms } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { convertDateToInt, diffBetweenDaysInclusive } from './date';
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const findChannelsWithNumberOfMessages = async ({
 	start,

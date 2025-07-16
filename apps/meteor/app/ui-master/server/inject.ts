@@ -16,7 +16,7 @@ type Injection =
 			tag: string;
 	  };
 
-export const headInjections = new ReactiveDict();
+export const headInjections = new ReactiveDict<Record<string, Injection>>();
 
 const callback: NextHandleFunction = (req, res, next) => {
 	if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
@@ -32,7 +32,7 @@ const callback: NextHandleFunction = (req, res, next) => {
 			return;
 		}
 
-		const injection = headInjections.get(pathname.replace(/^\//, '').split('_')[0]) as Injection | undefined;
+		const injection = headInjections.get(pathname.replace(/^\//, '').split('_')[0]);
 
 		if (!injection || typeof injection === 'string') {
 			next();

@@ -3,15 +3,16 @@ import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings
 
 import type { StreamerCallbackArgs } from '../../types/streams';
 
-export type LivechatRoomEvents<T> = StreamerCallbackArgs<'livechat-room', `${string}`> extends [infer A]
-	? A extends { type: T; data: unknown }
-		? A['data']
-		: A extends { type: T; status: unknown }
-		? A['status']
-		: A extends { type: T; visitor: unknown }
-		? A['visitor']
-		: never
-	: never;
+export type LivechatRoomEvents<T> =
+	StreamerCallbackArgs<'livechat-room', `${string}`> extends [infer A]
+		? A extends { type: T; data: unknown }
+			? A['data']
+			: A extends { type: T; status: unknown }
+				? A['status']
+				: A extends { type: T; visitor: unknown }
+					? A['visitor']
+					: never
+		: never;
 
 export interface LivechatStream {
 	notifyVisitorActivity(rid: string, username: string, activities: string[]): Promise<unknown>;

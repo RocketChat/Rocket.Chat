@@ -1,17 +1,10 @@
-import { ContextualbarV2Skeleton, ContextualbarSkeleton as ContextualbarSkeletonComponent } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
-import React, { memo } from 'react';
+import ContextualbarDialog from './ContextualbarDialog';
+import ContextualbarSkeletonBody from './ContextualbarSkeletonBody';
 
-const ContextualbarSkeleton = (props: ComponentProps<typeof ContextualbarSkeletonComponent>) => (
-	<FeaturePreview feature='newNavigation'>
-		<FeaturePreviewOff>
-			<ContextualbarSkeletonComponent {...props} />
-		</FeaturePreviewOff>
-		<FeaturePreviewOn>
-			<ContextualbarV2Skeleton {...props} />
-		</FeaturePreviewOn>
-	</FeaturePreview>
+const ContextualbarSkeleton = ({ onClose }: { onClose?: () => void }) => (
+	<ContextualbarDialog onClose={onClose}>
+		<ContextualbarSkeletonBody />
+	</ContextualbarDialog>
 );
 
-export default memo(ContextualbarSkeleton);
+export default ContextualbarSkeleton;

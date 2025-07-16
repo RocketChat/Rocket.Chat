@@ -2,7 +2,6 @@ import { Box, Icon, StatusBullet } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { TextSeparator } from '@rocket.chat/ui-client';
 import type { ComponentProps, ReactNode } from 'react';
-import React from 'react';
 
 type WorkspaceCardTextSeparatorProps = {
 	label: ReactNode;

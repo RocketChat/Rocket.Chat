@@ -6,6 +6,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { closeOmnichannelConversations } from './closeOmnichannelConversations';
+import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
+import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
+import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { callbacks } from '../../../../lib/callbacks';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -15,10 +19,6 @@ import {
 	notifyOnSubscriptionChangedByNameAndRoomType,
 	notifyOnUserChange,
 } from '../lib/notifyListener';
-import { closeOmnichannelConversations } from './closeOmnichannelConversations';
-import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
-import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 
 async function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
@@ -50,7 +50,12 @@ async function reactivateDirectConversations(userId: string) {
 	}
 }
 
-export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean | undefined> {
+export async function setUserActiveStatus(
+	userId: string,
+	active: boolean,
+	confirmRelinquish = false,
+	executedBy?: string,
+): Promise<boolean | undefined> {
 	check(userId, String);
 	check(active, Boolean);
 
@@ -105,7 +110,7 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 
 		// We don't want one killing the other :)
 		await Promise.allSettled([
-			closeOmnichannelConversations(user, livechatSubscribedRooms),
+			closeOmnichannelConversations(user, livechatSubscribedRooms, executedBy),
 			relinquishRoomOwnerships(user._id, chatSubscribedRooms, false),
 		]);
 	}

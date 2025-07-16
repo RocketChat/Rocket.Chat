@@ -24,13 +24,15 @@ export const createReactiveSubscriptionFactory =
 
 		let computation: Tracker.Computation | undefined;
 
-		queueMicrotask(() => {
-			computation = Tracker.autorun(reactiveFn);
-		});
-
 		return [
 			(callback): (() => void) => {
 				callbacks.add(callback);
+
+				queueMicrotask(() => {
+					if (!computation || computation.stopped) {
+						computation = Tracker.autorun(reactiveFn);
+					}
+				});
 
 				return (): void => {
 					callbacks.delete(callback);

@@ -1,5 +1,5 @@
-@import '../mixins';
+@use '../mixins';
 
 .text-input {
-	@include form__input-box;
+	@include mixins.form__input-box;
 }

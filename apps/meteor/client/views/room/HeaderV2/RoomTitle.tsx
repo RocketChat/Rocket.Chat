@@ -1,12 +1,10 @@
 import { isTeamRoom, type IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useButtonPattern, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
-import type { KeyboardEvent } from 'react';
-import React from 'react';
 
+import HeaderIconWithRoom from './HeaderIconWithRoom';
 import { HeaderTitle, HeaderTitleButton } from '../../../components/Header';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import HeaderIconWithRoom from './HeaderIconWithRoom';
 
 type RoomTitleProps = { room: IRoom };
 
@@ -38,15 +36,12 @@ const RoomTitle = ({ room }: RoomTitleProps) => {
 		}
 	});
 
+	const buttonProps = useButtonPattern(handleOpenRoomInfo);
+
 	return (
-		<HeaderTitleButton
-			onKeyDown={(e: KeyboardEvent) => (e.code === 'Enter' || e.code === 'Space') && handleOpenRoomInfo()}
-			onClick={() => handleOpenRoomInfo()}
-			tabIndex={0}
-			role='button'
-		>
+		<HeaderTitleButton {...buttonProps} mie={4}>
 			<HeaderIconWithRoom room={room} />
-			<HeaderTitle is='h1'>{room.name}</HeaderTitle>
+			<HeaderTitle>{room.name}</HeaderTitle>
 		</HeaderTitleButton>
 	);
 };

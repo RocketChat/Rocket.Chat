@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Settings } from '@rocket.chat/models';
 
 import { use } from './Middleware';

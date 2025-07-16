@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer';
+
 import type { MessageTypesValues } from '@rocket.chat/core-typings';
 
 import type { Data } from '../../types/Data';

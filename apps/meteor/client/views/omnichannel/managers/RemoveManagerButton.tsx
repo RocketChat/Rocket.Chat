@@ -1,24 +1,24 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { MouseEvent, ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../components/GenericModal';
 import { GenericTableCell } from '../../../components/GenericTable';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
 const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const deleteAction = useEndpointAction('DELETE', '/v1/livechat/users/manager/:_id', { keys: { _id } });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleRemoveClick = useMutableCallback(async () => {
+	const handleRemoveClick = useEffectEvent(async () => {
 		await deleteAction();
 		reload();
 	});
-	const handleDelete = useMutableCallback((e) => {
+	const handleDelete = useEffectEvent((e: MouseEvent) => {
 		e.stopPropagation();
 		const onDeleteManager = async (): Promise<void> => {
 			try {

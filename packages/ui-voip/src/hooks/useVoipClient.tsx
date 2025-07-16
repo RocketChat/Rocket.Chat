@@ -1,11 +1,12 @@
-import { useUser, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useUser, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
+import { useIceServers } from './useIceServers';
 import VoipClient from '../lib/VoipClient';
-import { useWebRtcServers } from './useWebRtcServers';
 
 type VoipClientParams = {
+	enabled?: boolean;
 	autoRegister?: boolean;
 };
 
@@ -14,46 +15,43 @@ type VoipClientResult = {
 	error: Error | null;
 };
 
-export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipClientResult => {
+export const useVoipClient = ({ enabled = true, autoRegister = true }: VoipClientParams = {}): VoipClientResult => {
 	const { _id: userId } = useUser() || {};
-	const isVoipEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled');
 	const voipClientRef = useRef<VoipClient | null>(null);
+	const siteUrl = useSetting('Site_Url') as string;
 
 	const getRegistrationInfo = useEndpoint('GET', '/v1/voip-freeswitch.extension.getRegistrationInfoByUserId');
+	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
 
-	const iceServers = useWebRtcServers();
+	const iceServers = useIceServers();
 
-	const { data: voipClient, error } = useQuery<VoipClient | null, Error>(
-		['voip-client', isVoipEnabled, userId, iceServers],
-		async () => {
+	const { data: voipClient, error } = useQuery<VoipClient | null, Error>({
+		queryKey: ['voip-client', enabled, userId, iceServers],
+		queryFn: async () => {
 			if (voipClientRef.current) {
 				voipClientRef.current.clear();
 			}
 
 			if (!userId) {
-				throw Error('User_not_found');
+				throw Error('error-user-not-found');
 			}
 
 			const registrationInfo = await getRegistrationInfo({ userId })
 				.then((registration) => {
 					if (!registration) {
-						throw Error();
+						throw Error('error-registration-not-found');
 					}
 
 					return registration;
 				})
-				.catch(() => {
-					throw Error('Registration_information_not_found');
+				.catch((e) => {
+					throw Error(e.error || 'error-registration-not-found');
 				});
 
 			const {
 				extension: { extension },
 				credentials: { websocketPath, password },
 			} = registrationInfo;
-
-			if (!extension) {
-				throw Error('User_extension_not_found');
-			}
 
 			const config = {
 				iceServers,
@@ -63,6 +61,9 @@ export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipCl
 				webSocketURI: websocketPath,
 				connectionRetryCount: Number(10), // TODO: get from settings
 				enableKeepAliveUsingOptionsForUnstableNetworks: true, // TODO: get from settings
+				userId,
+				siteUrl,
+				iceGatheringTimeout,
 			};
 
 			const voipClient = await VoipClient.create(config);
@@ -73,11 +74,9 @@ export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipCl
 
 			return voipClient;
 		},
-		{
-			initialData: null,
-			enabled: !!userId,
-		},
-	);
+		initialData: null,
+		enabled,
+	});
 
 	useEffect(() => {
 		voipClientRef.current = voipClient;

@@ -53,7 +53,7 @@ export const useAddUserAction = (
 
 	const inviteUser = useEndpoint('POST', inviteUserEndpoints[room.t === 'p' ? 'p' : 'c']);
 
-	const handleAddUser = useEffectEvent(async ({ users }) => {
+	const handleAddUser = useEffectEvent(async ({ users }: { users: string[] }) => {
 		const [username] = users;
 		await inviteUser({ roomId: rid, username });
 		reload?.();
@@ -86,7 +86,7 @@ export const useAddUserAction = (
 						icon: 'user-plus' as const,
 						onClick: addUserOptionAction,
 						type: 'management' as const,
-				  }
+					}
 				: undefined,
 		[roomCanInvite, userCanAdd, room.archived, t, addUserOptionAction],
 	);

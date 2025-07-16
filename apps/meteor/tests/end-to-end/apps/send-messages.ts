@@ -7,8 +7,9 @@ import { apps } from '../../data/apps/apps-data';
 import { cleanupApps, installTestApp } from '../../data/apps/helper';
 import { getMessageById } from '../../data/chat.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
-describe('Apps - Send Messages As APP User', () => {
+(IS_EE ? describe : describe.skip)('Apps - Send Messages As APP User', () => {
 	let app: App;
 
 	before((done) => getCredentials(done));

@@ -28,6 +28,7 @@ export class AccountProfile {
 		return this.page.locator('//label[contains(text(), "Username")]/..//input');
 	}
 
+	// TODO: remove this locator
 	get btnSubmit(): Locator {
 		return this.page.locator('[data-qa="AccountProfilePageSaveButton"]');
 	}
@@ -42,6 +43,14 @@ export class AccountProfile {
 
 	get emailTextInput(): Locator {
 		return this.page.locator('//label[contains(text(), "Email")]/..//input');
+	}
+
+	get preferencesSoundAccordionOption(): Locator {
+		return this.page.locator('h2:has-text("Sound")');
+	}
+
+	get preferencesCallRingerVolumeSlider(): Locator {
+		return this.page.getByRole('slider', { name: 'Call Ringer Volume' });
 	}
 
 	get btnClose(): Locator {
@@ -64,6 +73,14 @@ export class AccountProfile {
 		return this.page.locator('role=dialog[name="Personal Access Token successfully generated"]');
 	}
 
+	get btnTokenAddedOk(): Locator {
+		return this.tokenAddedModal.locator('role=button[name="Ok"]');
+	}
+
+	get tokensRows(): Locator {
+		return this.page.locator('table tbody tr');
+	}
+
 	tokenInTable(name: string): Locator {
 		return this.page.locator(`tr[qa-token-name="${name}"]`);
 	}
@@ -72,8 +89,12 @@ export class AccountProfile {
 		return this.page.locator('role=button[name="Regenerate token"]');
 	}
 
+	get removeTokenModal(): Locator {
+		return this.page.locator('role=dialog', { hasText: 'personal access token' });
+	}
+
 	get btnRemoveTokenModal(): Locator {
-		return this.page.locator('role=button[name="Remove"]');
+		return this.removeTokenModal.getByRole('button', { name: 'Remove' });
 	}
 
 	get inputImageFile(): Locator {
@@ -93,11 +114,11 @@ export class AccountProfile {
 	}
 
 	get securityE2EEncryptionSection(): Locator {
-		return this.page.locator('[role="button"]:has-text("E2E Encryption")');
+		return this.page.locator('[role="button"]:has-text("End-to-end encryption")');
 	}
 
 	get securityE2EEncryptionResetKeyButton(): Locator {
-		return this.page.locator("role=button[name='Reset E2E Key']");
+		return this.page.locator("role=button[name='Reset E2EE key']");
 	}
 
 	get securityE2EEncryptionPassword(): Locator {
@@ -110,5 +131,57 @@ export class AccountProfile {
 
 	get securityE2EEncryptionSavePasswordButton(): Locator {
 		return this.page.locator("role=button[name='Save changes']");
+	}
+
+	getAccordionItemByName(name: string): Locator {
+		return this.page.getByRole('button', { name, exact: true });
+	}
+
+	getCheckboxByLabelText(name: string): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name }) });
+	}
+
+	get btnSaveChanges(): Locator {
+		return this.page.getByRole('button', { name: 'Save changes', exact: true });
+	}
+
+	get email2FASwitch(): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Two-factor authentication via email' }) });
+	}
+
+	get totp2FASwitch(): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Two-factor authentication via TOTP' }) });
+	}
+
+	get required2faModalSetUpButton(): Locator {
+		return this.page.locator('dialog >> button');
+	}
+
+	get btnDeleteMyAccount(): Locator {
+		return this.page.getByRole('button', { name: 'Delete my account' });
+	}
+
+	get deleteAccountDialog(): Locator {
+		return this.page.getByRole('dialog', { name: 'Delete account?' });
+	}
+
+	get deleteAccountDialogMessageWithPassword(): Locator {
+		return this.deleteAccountDialog.getByText('Enter your password to delete your account. This cannot be undone.');
+	}
+
+	get inputDeleteAccountPassword(): Locator {
+		return this.deleteAccountDialog.getByRole('textbox', { name: 'Enter your password to delete your account. This cannot be undone.' });
+	}
+
+	get btnDeleteAccountConfirm(): Locator {
+		return this.deleteAccountDialog.getByRole('button', { name: 'Delete Account' });
+	}
+
+	get btnDeleteAccountCancel(): Locator {
+		return this.deleteAccountDialog.getByRole('button', { name: 'Cancel' });
+	}
+
+	get profileTitle(): Locator {
+		return this.page.getByRole('heading', { name: 'Profile' });
 	}
 }

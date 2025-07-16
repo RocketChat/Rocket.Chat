@@ -1,4 +1,12 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import {
+	addSprinfToI18n,
+	extractTranslationKeys,
+	applyCustomTranslations,
+	availableTranslationNamespaces,
+	defaultTranslationNamespace,
+	extractTranslationNamespaces,
+} from '@rocket.chat/i18n';
 import languages from '@rocket.chat/i18n/dist/languages';
 import en from '@rocket.chat/i18n/src/locales/en.i18n.json';
 import { normalizeLanguage } from '@rocket.chat/tools';
@@ -8,21 +16,13 @@ import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import moment from 'moment';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
-import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 import { getURL } from '../../app/utils/client';
-import {
-	i18n,
-	addSprinfToI18n,
-	extractTranslationKeys,
-	applyCustomTranslations,
-	availableTranslationNamespaces,
-	defaultTranslationNamespace,
-	extractTranslationNamespaces,
-} from '../../app/utils/lib/i18n';
+import { i18n } from '../../app/utils/lib/i18n';
 import { AppClientOrchestratorInstance } from '../apps/orchestrator';
+import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next);
@@ -121,12 +121,14 @@ const useI18next = (lng: string): typeof i18next => {
 };
 
 const useAutoLanguage = () => {
-	const serverLanguage = useSetting<string>('Language');
+	const serverLanguage = useSetting('Language', '');
 	const browserLanguage = normalizeLanguage(window.navigator.userLanguage ?? window.navigator.language);
 	const defaultUserLanguage = browserLanguage || serverLanguage || 'en';
 
 	// if the language is supported, if not remove the region
-	const suggestedLanguage = languages.includes(defaultUserLanguage) ? defaultUserLanguage : defaultUserLanguage.split('-').shift() ?? 'en';
+	const suggestedLanguage = languages.includes(defaultUserLanguage)
+		? defaultUserLanguage
+		: (defaultUserLanguage.split('-').shift() ?? 'en');
 
 	// usually that value is set based on the user's config language
 	const [language] = useLocalStorage('userLanguage', suggestedLanguage);
@@ -139,9 +141,31 @@ const useAutoLanguage = () => {
 	return language || suggestedLanguage;
 };
 
+const getNorthernSamiDisplayName = (lng: string) => {
+	/*
+	 ** Intl.DisplayName not returning Northern Sami
+	 ** for `se` language code in Chrome Version 134.0.6998.89
+	 ** which is the proper name based on the Unicode Common Locale Data Repository (CLDR)
+	 */
+	const languageDisplayNames: { [key: string]: string } = {
+		se: 'davvisámegiella',
+		sv: 'nordsamiska',
+		ru: 'северносаамский',
+		no: 'nordsamisk',
+		fi: 'pohjoissaame',
+	};
+
+	return languageDisplayNames[lng] || 'Northern Sami';
+};
+
 const getLanguageName = (code: string, lng: string): string => {
 	try {
 		const lang = new Intl.DisplayNames([lng], { type: 'language' });
+
+		if (code === 'se' && lang.of(code) === 'se') {
+			return getNorthernSamiDisplayName(lng);
+		}
+
 		return lang.of(code) ?? code;
 	} catch (e) {
 		return code;
@@ -167,12 +191,14 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 				ogName: i18nextInstance.t('Default'),
 				key: '',
 			},
-			...[...new Set([...i18nextInstance.languages, ...languages])].map((key) => ({
-				en: key,
-				name: getLanguageName(key, language),
-				ogName: getLanguageName(key, key),
-				key,
-			})),
+			...[...new Set([...i18nextInstance.languages, ...languages])]
+				.map((key) => ({
+					en: key,
+					name: getLanguageName(key, language),
+					ogName: getLanguageName(key, key),
+					key,
+				}))
+				.sort(({ name: nameA }, { name: nameB }) => nameA.localeCompare(nameB)),
 		],
 		[language, i18nextInstance],
 	);
@@ -196,14 +222,14 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 			});
 	}, [language, loadLocale, availableLanguages]);
 
-	useEffect(() => {
-		const cb = () => {
-			AppClientOrchestratorInstance.getAppClientManager().initialize();
-			AppClientOrchestratorInstance.load();
-		};
-		CachedCollectionManager.onLogin(cb);
-		return () => CachedCollectionManager.off('login', cb);
-	}, []);
+	useEffect(
+		() =>
+			onLoggedIn(() => {
+				AppClientOrchestratorInstance.getAppClientManager().initialize();
+				AppClientOrchestratorInstance.load();
+			}),
+		[],
+	);
 
 	return (
 		<I18nextProvider i18n={i18nextInstance}>

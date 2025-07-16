@@ -6,13 +6,13 @@ import AtlassianCrowd from 'atlassian-crowd-patched';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { logger } from './logger';
 import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
 import { deleteUser } from '../../lib/server/functions/deleteUser';
 import { _setRealName } from '../../lib/server/functions/setRealName';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 import { notifyOnUserChange, notifyOnUserChangeById, notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
-import { logger } from './logger';
 
 type CrowdUser = Pick<IUser, '_id' | 'username'> & { crowd: Record<string, any>; crowd_username: string };
 

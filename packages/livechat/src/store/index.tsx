@@ -3,13 +3,13 @@ import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 
+import Store from './Store';
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
 import type { TriggerMessage } from '../definitions/triggerMessage';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
-import Store from './Store';
 
 export type LivechatHiddenSytemMessageType =
 	| 'uj' // User joined
@@ -30,6 +30,7 @@ export type StoreState = {
 			offlineColor?: string;
 			position: 'left' | 'right';
 			background?: string;
+			hideExpandChat?: boolean;
 			actionLinks?: {
 				webrtc: {
 					actionLinksAlignment: string;
@@ -89,6 +90,7 @@ export type StoreState = {
 			background?: string;
 			hideGuestAvatar?: boolean;
 			hideAgentAvatar?: boolean;
+			hideExpandChat?: boolean;
 		};
 		visible?: boolean;
 		department?: string;
@@ -123,6 +125,7 @@ export type StoreState = {
 	connecting?: boolean;
 	messageListPosition?: 'top' | 'bottom' | 'free';
 	renderedTriggers: TriggerMessage[];
+	customFieldsQueue: Record<string, { value: string; overwrite: boolean }>;
 };
 
 export const initialState = (): StoreState => ({
@@ -164,6 +167,7 @@ export const initialState = (): StoreState => ({
 	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
 	businessUnit: null,
 	renderedTriggers: [],
+	customFieldsQueue: {},
 });
 
 const dontPersist = [
@@ -177,7 +181,7 @@ const dontPersist = [
 	'incomingCallAlert',
 	'ongoingCall',
 	'parentUrl',
-];
+] as Array<keyof StoreState>;
 
 export const store = new Store(initialState(), { dontPersist });
 
@@ -191,6 +195,10 @@ window.addEventListener('load', () => {
 });
 
 window.addEventListener('visibilitychange', () => {
+	if (store.state.undocked) {
+		return;
+	}
+
 	!store.state.minimized && !store.state.triggered && parentCall('openWidget');
 	store.state.iframe.visible ? parentCall('showWidget') : parentCall('hideWidget');
 });

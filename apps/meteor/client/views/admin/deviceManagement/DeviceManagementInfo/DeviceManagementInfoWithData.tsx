@@ -1,20 +1,19 @@
 import type { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import DeviceManagementInfo from './DeviceManagementInfo';
 import {
-	Contextualbar,
-	ContextualbarSkeleton,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarTitle,
+	ContextualbarSkeletonBody,
 } from '../../../../components/Contextualbar';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import DeviceManagementInfo from './DeviceManagementInfo';
 
 const convertSessionFromAPI = ({
 	loginAt,
@@ -36,12 +35,12 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 	} = useEndpointData('/v1/sessions/info.admin', { params: useMemo(() => ({ sessionId: deviceId }), [deviceId]) });
 
 	if (phase === AsyncStatePhase.LOADING) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (error || !data) {
 		return (
-			<Contextualbar>
+			<>
 				<ContextualbarHeader>
 					<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 					<ContextualbarClose />
@@ -56,7 +55,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 						</States>
 					</Box>
 				</ContextualbarContent>
-			</Contextualbar>
+			</>
 		);
 	}
 

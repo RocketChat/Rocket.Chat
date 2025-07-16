@@ -1,7 +1,24 @@
-import { Button, Modal, Select, Field, FieldGroup, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo } from 'react';
+import {
+	Button,
+	Modal,
+	Select,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	Box,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { FormEvent } from 'react';
+import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
@@ -14,7 +31,7 @@ type AssignAgentModalProps = {
 };
 
 const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgentModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [agent, setAgent] = useState('');
 	const [extension, setExtension] = useState(existingExtension || '');
@@ -22,7 +39,7 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 
 	const assignAgent = useEndpoint('POST', '/v1/omnichannel/agent/extension');
 
-	const handleAssignment = useMutableCallback(async (e) => {
+	const handleAssignment = useEffectEvent(async (e: FormEvent) => {
 		e.preventDefault();
 		try {
 			await assignAgent({ username: agent, extension });
@@ -32,17 +49,17 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 		reload();
 		closeModal();
 	});
-	const handleAgentChange = useMutableCallback((e) => setAgent(e));
+	const handleAgentChange = useEffectEvent((e: string) => setAgent(e));
 
 	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', { params: query });
 
 	return (
 		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleAssignment} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Associate_Agent_to_Extension')}</Modal.Title>
-				<Modal.Close onClick={closeModal} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Associate_Agent_to_Extension')}</ModalTitle>
+				<ModalClose onClick={closeModal} />
+			</ModalHeader>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel>{t('Agent_Without_Extensions')}</FieldLabel>
@@ -51,7 +68,7 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 						</FieldRow>
 					</Field>
 					<Field>
-						<FieldLabel>{t('Free_Extension_Numbers')}</FieldLabel>
+						<FieldLabel>{t('Available_extensions')}</FieldLabel>
 						<FieldRow>
 							<Select
 								disabled={state === AsyncStatePhase.LOADING || agent === ''}
@@ -63,15 +80,15 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={closeModal}>{t('Cancel')}</Button>
 					<Button primary disabled={!agent || !extension} type='submit'>
 						{t('Associate')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

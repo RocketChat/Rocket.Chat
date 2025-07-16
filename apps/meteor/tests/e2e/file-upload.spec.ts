@@ -27,20 +27,22 @@ test.describe.serial('file-upload', () => {
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
-	test('expect successfully cancel upload', async () => {
+	test('should successfully cancel upload', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await poHomeChannel.content.btnModalCancel.click();
 		await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
 	});
 
-	test('expect send file not show modal', async () => {
+	test('should not display modal when clicking in send file', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await poHomeChannel.content.btnModalConfirm.click();
 		await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
 	});
 
-	test('expect send file with name/description updated', async () => {
+	test('should send file with name/description updated', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
+		await expect(poHomeChannel.content.descriptionInput).toBeFocused();
+
 		await poHomeChannel.content.descriptionInput.fill('any_description');
 		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
 		await poHomeChannel.content.btnModalConfirm.click();
@@ -49,7 +51,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 	});
 
-	test('expect send lst file succesfully', async () => {
+	test('should send lst file successfully', async () => {
 		await poHomeChannel.content.dragAndDropLstFile();
 		await poHomeChannel.content.descriptionInput.fill('lst_description');
 		await poHomeChannel.content.btnModalConfirm.click();
@@ -58,7 +60,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText('lst-test.lst');
 	});
 
-	test('expect send drawio (unknown media type) file succesfully', async ({ page }) => {
+	test('should send drawio (unknown media type) file successfully', async ({ page }) => {
 		await page.reload();
 		await poHomeChannel.content.sendFileMessage('diagram.drawio');
 		await poHomeChannel.content.descriptionInput.fill('drawio_description');
@@ -68,7 +70,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText('diagram.drawio');
 	});
 
-	test('expect not to send drawio file (unknown media type) when the default media type is blocked', async ({ api, page }) => {
+	test('should not to send drawio file (unknown media type) when the default media type is blocked', async ({ api, page }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream');
 
 		await page.reload();
@@ -76,6 +78,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.btnModalConfirm).not.toBeVisible();
 	});
 });
+
 test.describe('file-upload-not-member', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
@@ -95,7 +98,7 @@ test.describe('file-upload-not-member', () => {
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
-	test('expect not be able to upload if not a member', async () => {
+	test('should not be able to upload if not a member', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
 	});

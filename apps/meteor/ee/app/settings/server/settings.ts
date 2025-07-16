@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import type { ISetting, SettingValue, LicenseModule } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';

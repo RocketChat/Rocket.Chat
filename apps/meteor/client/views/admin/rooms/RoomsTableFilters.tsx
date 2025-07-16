@@ -1,14 +1,15 @@
 import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
-import React, { useCallback, useMemo, useState } from 'react';
-import type { Dispatch, ReactElement, SetStateAction } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import type { ChangeEvent, Dispatch, FormEvent, ReactElement, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const initialRoomTypeFilterStructure = [
 	{
 		id: 'filter_by_room',
 		text: 'Filter_by_room',
+		isGroupTitle: true,
 	},
 	{
 		id: 'd',
@@ -56,7 +57,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 	}, [roomTypeSelectedOptions]);
 
 	const handleSearchTextChange = useCallback(
-		(event) => {
+		(event: ChangeEvent<HTMLInputElement>) => {
 			const text = event.currentTarget.value;
 			setFilters({ searchText: text, types: roomTypeSelectedOptions });
 			setText(text);
@@ -75,7 +76,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 	return (
 		<Box
 			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
+			onSubmit={useCallback((e: FormEvent) => e.preventDefault(), [])}
 			mb='x8'
 			display='flex'
 			flexWrap='wrap'

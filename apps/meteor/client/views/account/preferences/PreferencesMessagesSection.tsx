@@ -1,7 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldRow, FieldLink, FieldHint, FieldLabel, Accordion, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React, { useMemo } from 'react';
+import { AccordionItem, Field, FieldGroup, FieldHint, FieldLabel, FieldLink, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -27,20 +26,26 @@ const PreferencesMessagesSection = () => {
 		[t],
 	);
 
-	const unreadAlertId = useUniqueId();
-	const showThreadsInMainChannelId = useUniqueId();
-	const alsoSendThreadToChannelId = useUniqueId();
-	const useEmojisId = useUniqueId();
-	const convertAsciiEmojiId = useUniqueId();
-	const autoImageLoadId = useUniqueId();
-	const saveMobileBandwidthId = useUniqueId();
-	const collapseMediaByDefaultId = useUniqueId();
-	const hideFlexTabId = useUniqueId();
-	const displayAvatarsId = useUniqueId();
-	const sendOnEnterId = useUniqueId();
+	const unreadAlertId = useId();
+	const showThreadsInMainChannelId = useId();
+	const alsoSendThreadToChannelId = useId();
+	const useEmojisId = useId();
+	const convertAsciiEmojiId = useId();
+	const autoImageLoadId = useId();
+	const saveMobileBandwidthId = useId();
+	const collapseMediaByDefaultId = useId();
+	const hideFlexTabId = useId();
+	const displayAvatarsId = useId();
+	const sendOnEnterId = useId();
+	const messageTimeFormatLabelId = useId();
+	const messageTimeFormatLinkId = useId();
+	const hideUsernamesLabelId = useId();
+	const hideUsernamesLinkId = useId();
+	const hideRolesLabelId = useId();
+	const hideRolesLinkId = useId();
 
 	return (
-		<Accordion.Item title={t('Messages')}>
+		<AccordionItem title={t('Messages')}>
 			<FieldGroup>
 				<Field>
 					<FieldRow>
@@ -76,14 +81,16 @@ const PreferencesMessagesSection = () => {
 					</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={alsoSendThreadToChannelId}>{t('Also_send_thread_message_to_channel_behavior')}</FieldLabel>
+					<FieldLabel is='span' id={alsoSendThreadToChannelId}>
+						{t('Also_send_thread_message_to_channel_behavior')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='alsoSendThreadToChannel'
 							control={control}
 							render={({ field: { value, onChange } }) => (
 								<Select
-									id={alsoSendThreadToChannelId}
+									aria-labelledby={alsoSendThreadToChannelId}
 									aria-describedby={`${alsoSendThreadToChannelId}-hint`}
 									value={value}
 									onChange={onChange}
@@ -97,8 +104,16 @@ const PreferencesMessagesSection = () => {
 					</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
-					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
+					<FieldLabel is='span' id={messageTimeFormatLabelId}>
+						{t('Message_TimeFormat')}
+					</FieldLabel>
+					<FieldLink
+						id={messageTimeFormatLinkId}
+						aria-labelledby={`${messageTimeFormatLabelId} ${messageTimeFormatLinkId}`}
+						href='/account/accessibility-and-appearance'
+					>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldLink>
 				</Field>
 				<Field>
 					<FieldRow>
@@ -161,12 +176,28 @@ const PreferencesMessagesSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Hide_usernames')}</FieldLabel>
-					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
+					<FieldLabel is='span' id={hideUsernamesLabelId}>
+						{t('Hide_usernames')}
+					</FieldLabel>
+					<FieldLink
+						href='/account/accessibility-and-appearance'
+						id={hideUsernamesLinkId}
+						aria-labelledby={`${hideUsernamesLabelId} ${hideUsernamesLinkId}`}
+					>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldLink>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Hide_roles')}</FieldLabel>
-					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
+					<FieldLabel is='span' id={hideRolesLabelId}>
+						{t('Hide_roles')}
+					</FieldLabel>
+					<FieldLink
+						id={hideRolesLinkId}
+						aria-labelledby={`${hideRolesLabelId} ${hideRolesLinkId}`}
+						href='/account/accessibility-and-appearance'
+					>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldLink>
 				</Field>
 				<Field>
 					<FieldRow>
@@ -193,20 +224,22 @@ const PreferencesMessagesSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={sendOnEnterId}>{t('Enter_Behaviour')}</FieldLabel>
+					<FieldLabel is='span' id={sendOnEnterId}>
+						{t('Enter_Behaviour')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='sendOnEnter'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<Select id={sendOnEnterId} value={value} onChange={onChange} options={sendOnEnterOptions} />
+								<Select aria-labelledby={sendOnEnterId} value={value} onChange={onChange} options={sendOnEnterOptions} />
 							)}
 						/>
 					</FieldRow>
 					<FieldHint>{t('Enter_Behaviour_Description')}</FieldHint>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

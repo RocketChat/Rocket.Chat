@@ -45,6 +45,22 @@ export interface VoIPUserConfiguration {
 	 * @defaultValue undefined
 	 */
 	enableKeepAliveUsingOptionsForUnstableNetworks: boolean;
+
+	/**
+	 * The id of the rocket.chat user that is using this extension
+	 */
+	userId: string;
+
+	/**
+	 * The url of the rocket.chat workspace this user is connecting from
+	 */
+	siteUrl: string;
+
+	/**
+	 * Time to wait for Ice Gathering to complete
+	 * @defaultValue 5000
+	 */
+	iceGatheringTimeout?: number;
 }
 
 export interface IMediaStreamRenderer {

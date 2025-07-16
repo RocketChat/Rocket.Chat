@@ -1,5 +1,7 @@
 import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
+import { ajv } from './Ajv';
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsActions | SettingsUpdatePropsColor;
@@ -25,9 +27,69 @@ type SettingsUpdatePropDefault = {
 
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
+type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string; query?: string }>;
+
+const SettingsPublicWithPaginationSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		_id: {
+			type: 'string',
+		},
+		query: {
+			type: 'string',
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isSettingsPublicWithPaginationProps = ajv.compile<SettingsPublicWithPaginationProps>(SettingsPublicWithPaginationSchema);
+
+type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean; query?: string }>;
+
+const SettingsGetSchema = {
+	type: 'object',
+	properties: {
+		includeDefaults: {
+			type: 'boolean',
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
+		fields: {
+			type: 'string',
+		},
+		query: {
+			type: 'string',
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isSettingsGetParams = ajv.compile<SettingsGetParams>(SettingsGetSchema);
+
 export type SettingsEndpoints = {
 	'/v1/settings.public': {
-		GET: () => PaginatedResult & {
+		GET: (params: SettingsPublicWithPaginationProps) => PaginatedResult & {
 			settings: Array<ISetting>;
 		};
 	};
@@ -43,7 +105,7 @@ export type SettingsEndpoints = {
 	};
 
 	'/v1/settings': {
-		GET: () => {
+		GET: (params: SettingsGetParams) => {
 			settings: ISetting[];
 		};
 	};

@@ -1,6 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannel, deleteChannel } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -15,6 +15,18 @@ test.describe.serial('Threads', () => {
 		await page.goto('/home');
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
+
+	test.afterAll(async ({ api }) => deleteChannel(api, targetChannel));
+
+	test('expect no unread banner when replying to a thread in a fresh channel', async ({ page }) => {
+		await poHomeChannel.content.sendMessage('parent for unread-banner test');
+		await poHomeChannel.content.openReplyInThread();
+		await poHomeChannel.content.sendMessageInThread('first thread reply');
+
+		await page.waitForTimeout(200);
+		await expect(page.getByTitle('Mark as read')).not.toBeVisible();
+	});
+
 	test('expect thread message preview if alsoSendToChannel checkbox is checked', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
 		await page.locator('[data-qa-type="message"]').last().hover();
@@ -60,7 +72,7 @@ test.describe.serial('Threads', () => {
 			await expect(page).toHaveURL(/.*thread/);
 			await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 
-			await poHomeChannel.content.openLastMessageMenu();
+			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('role=menuitem[name="Copy text"]').click();
 
 			await expect(page).toHaveURL(/.*thread/);
@@ -129,11 +141,12 @@ test.describe.serial('Threads', () => {
 			await expect(poHomeChannel.content.lastThreadMessageTextAttachmentEqualsText).toContainText('this is a message for reply');
 		});
 
-		test('expect star the thread message', async ({ page }) => {
+		test('expect star the thread message', async () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
-			await page.locator('role=menuitem[name="Star"]').click();
-			await page.getByRole('button').and(page.getByTitle('Options')).click();
-			await page.locator('[data-key="starred-messages"]').click();
+			await poHomeChannel.content.btnOptionStarMessage.click();
+			await poHomeChannel.content.btnToolbarOptions.click();
+			await poHomeChannel.content.starredMessagesMenuOption.click();
+
 			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('this is a message for reply');
 		});
 

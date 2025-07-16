@@ -15,7 +15,7 @@ const hasIsUserInRole = (
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
 	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IPermission['_id'][]): boolean => {
-		const user = Models.Users.findOneById(userId, { fields: { roles: 1 } });
+		const user = Models.Users.findOne({ _id: userId }, { fields: { roles: 1 } });
 
 		const checkEachPermission = quantifier.bind(permissionIds);
 
@@ -26,14 +26,11 @@ const createPermissionValidator =
 				}
 			}
 
-			const permission = Models.ChatPermissions.findOne(permissionId, {
-				fields: { roles: 1 },
-			});
+			const permission = Models.Permissions.state.get(permissionId);
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleId) => {
-				const role = Models.Roles.findOne(roleId, { fields: { scope: 1 } });
-				const roleScope = role?.scope;
+				const roleScope = Models.Roles.state.get(roleId)?.scope;
 
 				if (!isValidScope(roleScope)) {
 					return false;
@@ -99,18 +96,3 @@ export const userHasAllPermission = (
 ): boolean => validatePermissions(permissions, scope, all, userId);
 
 export const hasPermission = hasAllPermission;
-
-/**
- * This function is used to check if the user will have the permission after something happens.
- * For example, The user is creating a new channel and he wants to set read-only config to true.
- * This is a problem, set-readonly is a permission related with the scoped permissions `owner`
- * so the user cannot set this permission to true during the channel creation, because there is no room yet to be owned and used as scope, but is possible
- * during the channel update, which is weird.
- *
- * @param permissions The permissions to check
- * @param scopedRoles The scoped roles to check to be included in the user roles
- * @returns If the user will have the permission
- */
-
-export const willHavePermission = (permissions: IPermission['_id'] | IPermission['_id'][], scopedRoles: IPermission['_id'][]): boolean =>
-	validatePermissions(permissions, undefined, all, undefined, scopedRoles);

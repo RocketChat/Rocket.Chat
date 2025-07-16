@@ -35,7 +35,9 @@ export type AccountPreferencesData = {
 	sidebarViewMode?: string;
 	sidebarDisplayAvatar?: boolean;
 	sidebarGroupByType?: boolean;
+	masterVolume?: number;
 	notificationsSoundVolume?: number;
+	voipRingerVolume?: number;
 };
 
 export const useAccountPreferencesValues = (): AccountPreferencesData => {
@@ -49,7 +51,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const desktopNotifications = useUserPreference<string>('desktopNotifications');
 	const pushNotifications = useUserPreference<string>('pushNotifications');
 	const emailNotificationMode = useUserPreference<string>('emailNotificationMode');
-	const receiveLoginDetectionEmail = useUserPreference<boolean>('receiveLoginDetectionEmail');
+	const receiveLoginDetectionEmail = useUserPreference<boolean>('receiveLoginDetectionEmail', true);
 	const notifyCalendarEvents = useUserPreference<boolean>('notifyCalendarEvents');
 	const enableMobileRinging = useUserPreference<boolean>('enableMobileRinging');
 
@@ -70,7 +72,10 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const newRoomNotification = useUserPreference<string>('newRoomNotification');
 	const newMessageNotification = useUserPreference<string>('newMessageNotification');
 	const muteFocusedConversations = useUserPreference<boolean>('muteFocusedConversations');
-	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume');
+
+	const masterVolume = useUserPreference<number>('masterVolume', 100);
+	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume', 100);
+	const voipRingerVolume = useUserPreference<number>('voipRingerVolume', 100);
 
 	return {
 		language,
@@ -99,6 +104,8 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		newRoomNotification,
 		newMessageNotification,
 		muteFocusedConversations,
+		masterVolume,
 		notificationsSoundVolume,
+		voipRingerVolume,
 	};
 };

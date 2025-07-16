@@ -1,5 +1,5 @@
+// import { Menu, Option } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ModerationConsoleRowProps } from './ModerationConsoleTableRow';
@@ -16,6 +16,7 @@ const ModerationConsoleActions = ({ report, onClick }: Omit<ModerationConsoleRow
 		<>
 			<GenericMenu
 				title={t('Options')}
+				detached
 				sections={[
 					{
 						items: [

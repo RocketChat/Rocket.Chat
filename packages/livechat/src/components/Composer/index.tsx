@@ -4,8 +4,8 @@ import type { CSSProperties } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
 import { parse } from '../../helpers/parse';
+import DOMPurify from 'dompurify';
 import styles from './styles.scss';
-
 const findLastTextNode = (node: Node): Node | null => {
 	if (node.nodeType === Node.TEXT_NODE) {
 		return node;
@@ -214,7 +214,7 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 		const caretPosition = this.getCaretPosition(this.el);
 		const oldText = this.el?.innerText ?? '';
 		const newText = `${oldText.slice(0, caretPosition)}${emoji}&nbsp;${oldText.slice(caretPosition)}`;
-		this.el.innerHTML = newText;
+		this.el.innerHTML = DOMPurify.sanitize(newText);
 		this.moveCursorToEndAndFocus(caretPosition + emoji.length + 1);
 		onChange?.(this.el.innerText);
 	}

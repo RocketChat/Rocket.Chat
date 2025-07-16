@@ -1,12 +1,11 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouteParameter, useRouter, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useEndpoint, useRouteParameter, useRouter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
-
-import GenericModal from '../../../../components/GenericModal';
+import { useTranslation } from 'react-i18next';
 
 const useDeleteMessagesAction = (userId: string): GenericMenuItemProps => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const deleteMessages = useEndpoint('POST', '/v1/moderation.user.deleteReportedMessages');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();

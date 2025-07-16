@@ -3,12 +3,9 @@
 	z-index: 3;
 	top: 0;
 	left: 0;
-
 	width: 100%;
 	height: 100%;
-
 	transition: transform 0.15s cubic-bezier(0.5, 0, 0.1, 1);
-
 	background-color: var(--flex-nav-background);
 	will-change: transform;
 

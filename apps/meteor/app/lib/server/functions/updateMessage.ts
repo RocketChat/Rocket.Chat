@@ -4,11 +4,11 @@ import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
-import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const updateMessage = async function (
 	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'>,

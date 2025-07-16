@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 type UserColumnProps = {
 	name?: string;

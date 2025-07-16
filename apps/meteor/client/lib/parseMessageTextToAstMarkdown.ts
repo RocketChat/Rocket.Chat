@@ -49,7 +49,7 @@ export const parseMessageTextToAstMarkdown = <
 		md:
 			isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message) || translated
 				? textToMessageToken(text, parseOptions)
-				: msg.md ?? textToMessageToken(text, parseOptions),
+				: (msg.md ?? textToMessageToken(text, parseOptions)),
 		...(msg.attachments && {
 			attachments: parseMessageAttachments(msg.attachments, parseOptions, { autoTranslateLanguage, translated }),
 		}),
@@ -79,12 +79,12 @@ export const parseMessageAttachment = <T extends MessageAttachment>(
 	if (isFileAttachment(attachment) && attachment.description) {
 		attachment.descriptionMd = translated
 			? textToMessageToken(text, parseOptions)
-			: attachment.descriptionMd ?? textToMessageToken(text, parseOptions);
+			: (attachment.descriptionMd ?? textToMessageToken(text, parseOptions));
 	}
 
 	return {
 		...attachment,
-		md: translated ? textToMessageToken(text, parseOptions) : attachment.md ?? textToMessageToken(text, parseOptions),
+		md: translated ? textToMessageToken(text, parseOptions) : (attachment.md ?? textToMessageToken(text, parseOptions)),
 	};
 };
 

@@ -1,8 +1,7 @@
 @use 'sass:math';
-
-@import '../../../../styles/colors';
-@import '../../../../styles/helpers';
-@import '../../../../styles/variables';
+@use '../../../../styles/colors';
+@use '../../../../styles/helpers';
+@use '../../../../styles/variables';
 
 .uikit-button {
 	position: relative;
@@ -16,30 +15,30 @@
 	cursor: pointer;
 	user-select: none;
 	transition:
-		color $default-time-animation,
-		background-color $default-time-animation,
-		border-color $default-time-animation,
-		transform math.div($default-time-animation, 2);
+		color variables.$default-time-animation,
+		background-color variables.$default-time-animation,
+		border-color variables.$default-time-animation,
+		transform math.div(variables.$default-time-animation, 2);
 	white-space: nowrap;
 	text-decoration: none;
 
-	color: $color-text-grey;
+	color: colors.$color-text-grey;
 
-	border: $default-border solid;
+	border: variables.$default-border solid;
 
-	border-color: $bg-color-grey;
-	border-radius: (2 * $default-border-radius);
+	border-color: colors.$bg-color-grey;
+	border-radius: (2 * variables.$default-border-radius);
 	outline: none;
-	background-color: $bg-color-white;
+	background-color: colors.$bg-color-white;
 
-	font-family: $font-family;
+	font-family: variables.$font-family;
 	font-size: 0.875rem;
 	font-weight: normal;
 	line-height: 1.25rem;
 	align-items: center;
 	justify-content: center;
 
-	@include pressable-button(2px, $default-border);
+	@include helpers.pressable-button(2px, variables.$default-border);
 
 	&:focus {
 		box-shadow: 0 0 5px rgba(#000000, 0.5);
@@ -60,11 +59,11 @@
 		content: "";
 
 		transition:
-			opacity math.div($default-time-animation, 2),
-			border-width math.div($default-time-animation, 2),
-			width math.div($default-time-animation, 2),
-			height math.div($default-time-animation, 2),
-			visibility math.div($default-time-animation, 2);
+			opacity math.div(variables.$default-time-animation, 2),
+			border-width math.div(variables.$default-time-animation, 2),
+			width math.div(variables.$default-time-animation, 2),
+			height math.div(variables.$default-time-animation, 2),
+			visibility math.div(variables.$default-time-animation, 2);
 		animation: button-loading-rotation 1s linear infinite;
 
 		opacity: 0;
@@ -81,14 +80,14 @@
 	}
 
 	&:hover:not(:disabled) {
-		color: $color-text-dark;
-		background-color: $bg-color-grey;
+		color: colors.$color-text-dark;
+		background-color: colors.$bg-color-grey;
 	}
 
 	&:disabled {
 		cursor: default;
 
-		opacity: $disabled-opacity;
+		opacity: variables.$disabled-opacity;
 
 		&::before {
 			cursor: default;
@@ -96,22 +95,22 @@
 	}
 
 	&--style-primary {
-		color: var(--color, $color-blue);
+		color: var(--color, colors.$color-blue);
 
 		&:hover:not(:disabled) {
-			color: $color-text-lighter;
-			border-color: var(--color, $color-blue);
-			background-color: var(--color, $color-blue);
+			color: colors.$color-text-lighter;
+			border-color: var(--color, colors.$color-blue);
+			background-color: var(--color, colors.$color-blue);
 		}
 	}
 
 	&--style-danger {
-		color: $color-dark-red;
+		color: colors.$color-dark-red;
 
 		&:hover:not(:disabled) {
-			color: $color-text-lighter;
-			border-color: $color-dark-red;
-			background-color: $color-dark-red;
+			color: colors.$color-text-lighter;
+			border-color: colors.$color-dark-red;
+			background-color: colors.$color-dark-red;
 		}
 	}
 }

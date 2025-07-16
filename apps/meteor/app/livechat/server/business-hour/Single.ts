@@ -1,11 +1,11 @@
 import { ILivechatAgentStatus, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
-import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
-import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior } from './AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from './AbstractBusinessHour';
 import { filterBusinessHoursThatMustBeOpened, makeAgentsUnavailableBasedOnBusinessHour, openBusinessHourDefault } from './Helper';
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
+import { businessHourLogger } from '../lib/logger';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	async openBusinessHoursByDayAndHour(): Promise<void> {

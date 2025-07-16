@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isVoipRoom } from '@rocket.chat/core-typings';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { lazy, memo, useMemo } from 'react';
+import { lazy, memo, useMemo } from 'react';
 
 import { HeaderToolbar } from '../../../components/Header';
 import SidebarToggler from '../../../components/SidebarToggler';
@@ -20,7 +20,7 @@ type HeaderProps<T> = {
 const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	const encrypted = Boolean(room.encrypted);
-	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const shouldDisplayE2EESetup = encrypted && !unencryptedMessagesAllowed;
 
 	const slots = useMemo(

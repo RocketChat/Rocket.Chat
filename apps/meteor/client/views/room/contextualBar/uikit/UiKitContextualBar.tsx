@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
+import { Avatar, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	UiKitComponent,
@@ -9,10 +9,17 @@ import {
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
 import type { FormEvent, UIEvent } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import { getURL } from '../../../../../app/utils/client';
-import { ContextualbarClose, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
+import {
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+} from '../../../../components/Contextualbar';
 import { preventSyntheticEvent } from '../../../../lib/utils/preventSyntheticEvent';
 import { useContextualBarContextValue } from '../../../../uikit/hooks/useContextualBarContextValue';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
@@ -81,31 +88,33 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 
 	return (
 		<UiKitContext.Provider value={contextValue}>
-			<ContextualbarHeader>
-				<Avatar url={getURL(`/api/apps/${view.appId}/icon`)} />
-				<ContextualbarTitle>{contextualBarParser.text(view.title, BlockContext.NONE, 0)}</ContextualbarTitle>
-				{handleClose && <ContextualbarClose onClick={handleClose} />}
-			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
-				<Box is='form' method='post' action='#' onSubmit={handleSubmit}>
-					<UiKitComponent render={UiKitContextualBarSurfaceRender} blocks={view.blocks} />
-				</Box>
-			</ContextualbarScrollableContent>
-			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					{view.close && (
-						<Button danger={view.close.style === 'danger'} onClick={handleCancel}>
-							{contextualBarParser.text(view.close.text, BlockContext.NONE, 0)}
-						</Button>
-					)}
+			<ContextualbarDialog>
+				<ContextualbarHeader>
+					<Avatar url={getURL(`/api/apps/${view.appId}/icon`)} />
+					<ContextualbarTitle>{contextualBarParser.text(view.title, BlockContext.NONE, 0)}</ContextualbarTitle>
+					{handleClose && <ContextualbarClose onClick={handleClose} />}
+				</ContextualbarHeader>
+				<ContextualbarScrollableContent>
+					<Box is='form' method='post' action='#' onSubmit={handleSubmit}>
+						<UiKitComponent render={UiKitContextualBarSurfaceRender} blocks={view.blocks} />
+					</Box>
+				</ContextualbarScrollableContent>
+				<ContextualbarFooter>
+					<ButtonGroup stretch>
+						{view.close && (
+							<Button danger={view.close.style === 'danger'} onClick={handleCancel}>
+								{contextualBarParser.text(view.close.text, BlockContext.NONE, 0)}
+							</Button>
+						)}
 
-					{view.submit && (
-						<Button {...getButtonStyle(view.submit)} onClick={handleSubmit}>
-							{contextualBarParser.text(view.submit.text, BlockContext.NONE, 1)}
-						</Button>
-					)}
-				</ButtonGroup>
-			</ContextualbarFooter>
+						{view.submit && (
+							<Button {...getButtonStyle(view.submit)} onClick={handleSubmit}>
+								{contextualBarParser.text(view.submit.text, BlockContext.NONE, 1)}
+							</Button>
+						)}
+					</ButtonGroup>
+				</ContextualbarFooter>
+			</ContextualbarDialog>
 		</UiKitContext.Provider>
 	);
 };

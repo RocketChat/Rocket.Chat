@@ -1,4 +1,4 @@
-FROM node:14.21.3-alpine
+FROM node:22.16.0-alpine3.21
 
 ARG SERVICE
 
@@ -47,6 +47,12 @@ COPY ./ee/packages/network-broker/dist ee/packages/network-broker/dist
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
 
+COPY ./packages/random/package.json packages/random/package.json
+COPY ./packages/random/dist packages/random/dist
+
+COPY ./packages/sha256/package.json packages/sha256/package.json
+COPY ./packages/sha256/dist packages/sha256/dist
+
 COPY ./ee/packages/omnichannel-services/package.json ee/packages/omnichannel-services/package.json
 COPY ./ee/packages/omnichannel-services/dist ee/packages/omnichannel-services/dist
 
@@ -56,8 +62,17 @@ COPY ./ee/packages/pdf-worker/dist ee/packages/pdf-worker/dist
 COPY ./packages/tools/package.json packages/tools/package.json
 COPY ./packages/tools/dist packages/tools/dist
 
+COPY ./packages/tracing/package.json packages/tracing/package.json
+COPY ./packages/tracing/dist packages/tracing/dist
+
+COPY ./packages/tsconfig packages/tsconfig
+
+
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
+
+COPY ./packages/i18n/package.json packages/i18n/package.json
+COPY ./packages/i18n/dist packages/i18n/dist
 
 COPY ./ee/apps/${SERVICE}/dist .
 
@@ -75,10 +90,15 @@ ENV NODE_ENV=production \
 WORKDIR /app/ee/apps/${SERVICE}
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    apk --no-cache --virtual deps add g++ python3 make py3-setuptools shadow && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
-    apk del build-dependencies
+    groupmod -n rocketchat nogroup && \
+    useradd -u 65533 -r -g rocketchat rocketchat && \
+    apk del deps && \
+    chown -R rocketchat:rocketchat /app
+
+USER rocketchat
 
 EXPOSE 3000 9458
 

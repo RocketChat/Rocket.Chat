@@ -91,7 +91,10 @@ export class VoIPUser extends Emitter<VoipEvents> {
 		return this._userState;
 	}
 
-	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
+	constructor(
+		private readonly config: VoIPUserConfiguration,
+		mediaRenderer?: IMediaStreamRenderer,
+	) {
 		super();
 		this.mediaStreamRendered = mediaRenderer;
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();

@@ -7,6 +7,7 @@ import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import type { Request, Response } from 'express';
 import express from 'express';
+import he from 'he';
 import mem from 'mem';
 import WebSocket from 'ws';
 
@@ -106,7 +107,7 @@ app.post('/api/ecdh_proxy/initEncryptedSession', async (req, res) => {
 			publicKeyString: session.publicKeyString,
 		});
 	} catch (e) {
-		res.status(400).send(e instanceof Error ? e.message : String(e));
+		res.status(400).send(e instanceof Error ? he.escape(e.message) : he.escape(String(e)));
 	}
 });
 
@@ -126,7 +127,8 @@ app.post('/api/ecdh_proxy/echo', async (req, res) => {
 		res.send(await session.encrypt(result));
 	} catch (e) {
 		console.error(e);
-		res.status(400).send(e instanceof Error ? e.message : String(e));
+		const errorMessage = e instanceof Error ? e.message : String(e);
+		res.status(400).send(he.encode(errorMessage));
 	}
 });
 

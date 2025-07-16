@@ -1,11 +1,11 @@
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
-	IOmnichannelRoom,
 	IUpload,
 	MessageAttachment,
 	ServiceData,
 	FileAttachmentProps,
+	IOmnichannelRoomInfo,
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -19,8 +19,11 @@ import { API } from '../../../../api/server';
 import { FileUpload } from '../../../../file-upload/server';
 import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
-import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
-import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
+import { setCustomField } from '../../../server/api/lib/customFields';
+import { registerGuest } from '../../../server/lib/guests';
+import type { ILivechatMessage } from '../../../server/lib/localTypes';
+import { sendMessage } from '../../../server/lib/messages';
+import { createRoom } from '../../../server/lib/rooms';
 
 const logger = new Logger('SMS');
 
@@ -73,7 +76,7 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 		data.department = targetDepartment;
 	}
 
-	const livechatVisitor = await LivechatTyped.registerGuest(data);
+	const livechatVisitor = await registerGuest(data);
 
 	if (!livechatVisitor) {
 		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');
@@ -105,7 +108,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		const smsDepartment = settings.get<string>('SMS_Default_Omnichannel_Department');
 		const SMSService = await OmnichannelIntegration.getSmsService(service);
 
-		if (!SMSService.validateRequest(this.request)) {
+		if (!(await SMSService.validateRequest(this.request.clone(), this.bodyParams))) {
 			return API.v1.failure('Invalid request');
 		}
 
@@ -121,20 +124,21 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}
 
-		const roomInfo = {
+		const roomInfo: IOmnichannelRoomInfo = {
 			sms: {
 				from: sms.to,
 			},
 			source: {
 				type: OmnichannelSourceType.SMS,
 				alias: service,
+				destination: sms.to,
 			},
 		};
 
 		const { token } = visitor;
 		const room =
 			(await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS)) ??
-			(await LivechatTyped.createRoom({
+			(await createRoom({
 				visitor,
 				roomInfo,
 			}));
@@ -236,13 +240,10 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			}
 		}
 
-		const sendMessage: {
+		const messageToSend: {
 			guest: ILivechatVisitor;
 			message: ILivechatMessage;
-			roomInfo: {
-				source?: IOmnichannelRoom['source'];
-				[key: string]: unknown;
-			};
+			roomInfo: IOmnichannelRoomInfo;
 		} = {
 			guest: visitor,
 			roomInfo,
@@ -258,21 +259,21 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 		};
 
 		try {
-			await LivechatTyped.sendMessage(sendMessage);
+			await sendMessage(messageToSend);
 			const msg = SMSService.response();
 			setImmediate(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
+						await setCustomField(messageToSend.message.token, 'country', sms.extra.fromCountry);
 					}
 					if (sms.extra.fromState) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
+						await setCustomField(messageToSend.message.token, 'state', sms.extra.fromState);
 					}
 					if (sms.extra.fromCity) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+						await setCustomField(messageToSend.message.token, 'city', sms.extra.fromCity);
 					}
-					if (sms.extra.toPhone) {
-						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'phoneNumber', sms.extra.toPhone);
+					if (sms.extra.fromZip) {
+						await setCustomField(messageToSend.message.token, 'zip', sms.extra.fromZip);
 					}
 				}
 			});

@@ -1,3 +1,4 @@
+import { AppContactsConverter } from './contacts';
 import { AppDepartmentsConverter } from './departments';
 import { AppMessagesConverter } from './messages';
 import { AppRolesConverter } from './roles';
@@ -9,6 +10,7 @@ import { AppVideoConferencesConverter } from './videoConferences';
 import { AppVisitorsConverter } from './visitors';
 
 export {
+	AppContactsConverter,
 	AppMessagesConverter,
 	AppRoomsConverter,
 	AppSettingsConverter,

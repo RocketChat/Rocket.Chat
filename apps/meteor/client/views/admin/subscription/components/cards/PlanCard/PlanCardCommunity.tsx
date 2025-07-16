@@ -1,6 +1,5 @@
-import { Card, CardBody, CardRow, Icon } from '@rocket.chat/fuselage';
+import { Box, Card, CardBody, Icon } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PlanCardHeader from './PlanCardHeader';
@@ -12,12 +11,12 @@ const PlanCardCommunity = (): ReactElement => {
 		<Card height='full'>
 			<PlanCardHeader name={t('Community')} />
 			<CardBody flexDirection='column'>
-				<CardRow>
+				<Box display='flex' flexDirection='row' alignItems='center'>
 					<Icon name='card' size={24} mie={12} /> {t('free_per_month_user')}
-				</CardRow>
-				<CardRow>
+				</Box>
+				<Box display='flex' flexDirection='row' alignItems='center'>
 					<Icon name='cloud-plus' size={24} mie={12} /> {t('Self_managed_hosting')}
-				</CardRow>
+				</Box>
 			</CardBody>
 		</Card>
 	);

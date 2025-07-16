@@ -1,6 +1,6 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { HTMLAttributes, Ref } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSidebarListNavigation } from './useSidebarListNavigation';

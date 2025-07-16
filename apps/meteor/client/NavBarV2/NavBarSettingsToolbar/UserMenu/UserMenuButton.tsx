@@ -3,7 +3,7 @@ import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ForwardedRef } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 import { UserStatus } from '../../../components/UserStatus';
 
@@ -20,7 +20,7 @@ const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonP
 	const user = useUser();
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
-	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	return (
 		<IconButton

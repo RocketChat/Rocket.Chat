@@ -1,8 +1,8 @@
 import type { IAppRoomsConverter, IAppThreadsConverter, IAppUsersConverter, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
 import type { IMessage as AppsEngineMessage, IMessageAttachment } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { IUser } from '@rocket.chat/core-typings';
-import { isEditedMessage, type IMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
+import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { cachedFunction } from './cachedFunction';

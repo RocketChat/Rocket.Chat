@@ -5,8 +5,7 @@ import { isPOSTLivechatTranscriptParams, isPOSTLivechatTranscriptRequestParams }
 
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/LivechatTyped';
-import { sendTranscript } from '../../lib/sendTranscript';
+import { sendTranscript, requestTranscript } from '../../lib/sendTranscript';
 
 API.v1.addRoute(
 	'livechat/transcript',
@@ -66,7 +65,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-user');
 			}
 
-			await Livechat.requestTranscript({ rid, email, subject, user });
+			await requestTranscript({ rid, email, subject, user });
 
 			return API.v1.success();
 		},

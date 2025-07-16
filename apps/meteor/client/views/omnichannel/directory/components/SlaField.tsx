@@ -1,12 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { FormSkeleton } from './FormSkeleton';
 import Field from '../../components/Field';
 import Info from '../../components/Info';
 import Label from '../../components/Label';
 import { useSlaInfo } from '../hooks/useSlaInfo';
-import { FormSkeleton } from './FormSkeleton';
 
 type SlaFieldProps = {
 	id: string;
@@ -14,9 +13,9 @@ type SlaFieldProps = {
 
 const SlaField = ({ id }: SlaFieldProps) => {
 	const { t } = useTranslation();
-	const { data, isInitialLoading, isError } = useSlaInfo(id);
+	const { data, isLoading, isError } = useSlaInfo(id);
 
-	if (isInitialLoading) {
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 

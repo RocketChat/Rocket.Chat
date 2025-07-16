@@ -1,4 +1,4 @@
-@import '../../styles/colors';
+@use '../../styles/colors';
 
 .trigger-message {
 	&__message {
@@ -34,7 +34,7 @@
 		cursor: pointer;
 		text-decoration: none;
 
-		color: var(--color, $color-blue);
+		color: var(--color, colors.$color-blue);
 		border: 0;
 		background: none;
 

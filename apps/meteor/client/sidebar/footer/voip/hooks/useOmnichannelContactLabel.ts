@@ -8,7 +8,9 @@ export const useOmnichannelContactLabel = (caller: ICallerInfo): string => {
 	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
 	const phone = parseOutboundPhoneNumber(caller.callerId);
 
-	const { data } = useQuery(['getContactsByPhone', phone], async () => getContactBy({ phone }).then(({ contact }) => contact), {
+	const { data } = useQuery({
+		queryKey: ['getContactsByPhone', phone],
+		queryFn: async () => getContactBy({ phone }).then(({ contact }) => contact),
 		enabled: !!phone,
 	});
 

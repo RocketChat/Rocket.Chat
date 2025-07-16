@@ -146,7 +146,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 		expect(results.violations).toEqual([]);
 	});
 
-	test('OC - Current chats - Filters', async () => {
+	test('OC - Current chats - Filters', async ({ page }) => {
 		const [departmentA, departmentB] = departments.map(({ data }) => data);
 
 		await test.step('expect to filter by guest', async () => {
@@ -234,6 +234,12 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 			await poCurrentChats.removeTag('tagB');
 			await expect(poCurrentChats.findRowByName(visitorB)).toBeVisible();
 			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
+		});
+
+		await test.step('expect department filter to show selected value after page reload', async () => {
+			await poCurrentChats.selectDepartment(departmentA.name);
+			await page.reload();
+			await expect(poCurrentChats.inputDepartmentValue).toContainText(departmentA.name);
 		});
 
 		// TODO: Unit test await test.step('expect to filter by period', async () => {});

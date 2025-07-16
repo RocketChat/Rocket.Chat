@@ -29,7 +29,6 @@ to: ee/apps/<%= name %>/package.json
 		"@types/node": "^14.18.51",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^4.0.7",
-		"fibers": "^5.0.3",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.29",
 		"mongodb": "^4.12.1",
@@ -39,11 +38,12 @@ to: ee/apps/<%= name %>/package.json
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/eslint": "~8.44.0",
 		"@types/polka": "^0.5.4",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.1.6"
+		"typescript": "~5.8.3"
 	},
 	"main": "./dist/ee/apps/<%= name %>/src/service.js",
 	"files": [

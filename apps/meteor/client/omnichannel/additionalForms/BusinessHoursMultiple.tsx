@@ -1,24 +1,24 @@
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useId } from 'react';
 import type { ComponentProps } from 'react';
-import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import type { BusinessHoursFormData } from '../../views/omnichannel/businessHours/BusinessHoursForm';
 
 const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
 	const { t } = useTranslation();
 	const {
 		control,
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<BusinessHoursFormData>();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
-	const enabledField = useUniqueId();
-	const nameField = useUniqueId();
-	const departmentsField = useUniqueId();
+	const enabledField = useId();
+	const nameField = useId();
+	const departmentsFieldLabelId = useId();
 
 	if (!hasLicense) {
 		return null;
@@ -45,29 +45,30 @@ const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeo
 						name='name'
 						control={control}
 						rules={{ required: t('Required_field', { field: t('Name') }) }}
-						render={({ field }) => <TextInput id={nameField} {...field} aria-describedby={`${departmentsField}-error`} />}
+						render={({ field }) => <TextInput id={nameField} {...field} aria-describedby={`${nameField}-error`} />}
 					/>
 				</FieldRow>
 				{errors?.name && (
-					<FieldError aria-live='assertive' id={`${departmentsField}-error`}>
+					<FieldError aria-live='assertive' id={`${nameField}-error`}>
 						{errors.name.message}
 					</FieldError>
 				)}
 			</Field>
 			<Field className={className}>
-				<FieldLabel htmlFor={departmentsField}>{t('Departments')}</FieldLabel>
+				<FieldLabel id={departmentsFieldLabelId}>{t('Departments')}</FieldLabel>
 				<FieldRow>
 					<Controller
 						name='departments'
 						control={control}
 						render={({ field: { value, onChange, name, onBlur } }) => (
 							<AutoCompleteDepartmentMultiple
-								id={departmentsField}
+								withCheckbox
 								value={value}
 								onChange={onChange}
 								name={name}
 								onBlur={onBlur}
 								enabled={true}
+								aria-labelledby={departmentsFieldLabelId}
 							/>
 						)}
 					/>

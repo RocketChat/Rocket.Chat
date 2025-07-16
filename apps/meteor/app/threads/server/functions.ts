@@ -15,15 +15,22 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	const { rid, ts, u } = message;
 
-	const [highlightsUids, threadFollowers, { toAll, toHere, mentionIds }] = await Promise.all([
-		getUserIdsFromHighlights(rid, message),
-		Messages.getThreadFollowsByThreadId(tmid),
-		getMentions(message),
-	]);
+	const { toAll, toHere, mentionIds } = await getMentions(message);
 
 	const addToReplies = [
-		...new Set([...followers, ...mentionIds, ...(parentMessage.replies?.length ? [u._id] : [parentMessage.u._id, u._id])]),
+		...new Set([
+			...followers,
+			...mentionIds,
+			...(Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id]),
+		]),
 	];
+
+	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+
+	const [highlightsUids, threadFollowers] = await Promise.all([
+		getUserIdsFromHighlights(rid, message),
+		Messages.getThreadFollowsByThreadId(tmid),
+	]);
 
 	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIds.includes(userId)) || [];
 
@@ -34,7 +41,6 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
 
 	const promises = [
-		Messages.updateRepliesByThreadId(tmid, addToReplies, ts),
 		ReadReceipts.setAsThreadById(tmid),
 		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, notifyOptions),
 	];

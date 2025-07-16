@@ -1,6 +1,6 @@
 import { Box, FieldHint, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import DOMPurify from 'dompurify';
+import { useId } from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,7 @@ const AdminUserSetRandomPasswordRadios = ({
 }: AdminUserSetRandomPasswordProps) => {
 	const { t } = useTranslation();
 
-	const setPasswordManuallyId = useUniqueId();
+	const setPasswordManuallyId = useId();
 
 	const handleSetRandomPasswordChange = (onChange: (...event: any[]) => void, value: boolean) => {
 		setValue('requirePasswordChange', value);
@@ -59,7 +59,7 @@ const AdminUserSetRandomPasswordRadios = ({
 			{!isSmtpEnabled && (
 				<FieldHint
 					id={`${setRandomPasswordId}-hint`}
-					dangerouslySetInnerHTML={{ __html: t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' }) }}
+					dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
 					mbe={16}
 					mbs={0}
 				/>

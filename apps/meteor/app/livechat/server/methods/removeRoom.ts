@@ -4,7 +4,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../lib/LivechatTyped';
+import { removeOmnichannelRoom } from '../lib/rooms';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -40,6 +40,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Livechat.removeRoom(rid);
+		await removeOmnichannelRoom(rid);
 	},
 });

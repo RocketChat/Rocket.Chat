@@ -36,8 +36,8 @@ export class OmnichannelTranscript {
 		return this.page.locator('//tr[1]//td[1]');
 	}
 
-	get viewFullConversation(): Locator {
-		return this.page.locator('//button[@title="View full conversation"]/i');
+	get btnOpenChat(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Open chat', exact: true });
 	}
 
 	get DownloadedPDF(): Locator {

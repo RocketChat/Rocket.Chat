@@ -1,8 +1,9 @@
-import { useEndpoint, useRouter, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 export const useUpdateIntegration = (integrationType: 'webhook-incoming' | 'webhook-outgoing') => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const router = useRouter();
 	const updateIntegration = useEndpoint('PUT', '/v1/integrations.update');
 	const dispatchToastMessage = useToastMessageDispatch();

@@ -13,6 +13,10 @@ import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
+/**
+ * This function adds user to the given room.
+ * Caution - It does not validates if the user has permission to join room
+ */
 export const addUserToRoom = async function (
 	rid: string,
 	user: Pick<IUser, '_id'> | string,
@@ -20,9 +24,11 @@ export const addUserToRoom = async function (
 	{
 		skipSystemMessage,
 		skipAlertSound,
+		createAsHidden = false,
 	}: {
 		skipSystemMessage?: boolean;
 		skipAlertSound?: boolean;
+		createAsHidden?: boolean;
 	} = {},
 ): Promise<boolean | undefined> {
 	const now = new Date();
@@ -84,8 +90,8 @@ export const addUserToRoom = async function (
 
 	const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
-		open: true,
-		alert: !skipAlertSound,
+		open: !createAsHidden,
+		alert: createAsHidden ? false : !skipAlertSound,
 		unread: 1,
 		userMentions: 1,
 		groupMentions: 0,

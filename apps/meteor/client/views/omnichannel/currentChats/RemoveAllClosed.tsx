@@ -1,6 +1,5 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 type RemoveAllClosedProps = {
 	handleClearFilters: any;

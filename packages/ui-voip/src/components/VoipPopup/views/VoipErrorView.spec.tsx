@@ -1,14 +1,15 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
-import { createMockFreeSwitchExtensionDetails, createMockVoipErrorSession } from '../../../tests/mocks';
 import VoipErrorView from './VoipErrorView';
+import { createMockFreeSwitchExtensionDetails, createMockVoipErrorSession } from '../../../tests/mocks';
 
-const wrapper = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
+const appRoot = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
 
 it('should properly render error view', async () => {
 	const errorSession = createMockVoipErrorSession({ error: { status: -1, reason: '' } });
-	render(<VoipErrorView session={errorSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipErrorView session={errorSession} />, { wrapper: appRoot.build() });
 
 	expect(screen.queryByLabelText('Device_settings')).not.toBeInTheDocument();
 	expect(await screen.findByText('Administrator')).toBeInTheDocument();
@@ -16,7 +17,7 @@ it('should properly render error view', async () => {
 
 it('should only enable error actions', () => {
 	const errorSession = createMockVoipErrorSession({ error: { status: -1, reason: '' } });
-	render(<VoipErrorView session={errorSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipErrorView session={errorSession} />, { wrapper: appRoot.build() });
 
 	expect(within(screen.getByTestId('vc-popup-footer')).queryAllByRole('button')).toHaveLength(5);
 	expect(screen.getByRole('button', { name: 'Turn_off_microphone' })).toBeDisabled();
@@ -26,49 +27,49 @@ it('should only enable error actions', () => {
 	expect(screen.getByRole('button', { name: 'End_call' })).toBeEnabled();
 });
 
-it('should properly interact with the voice call session', () => {
+it('should properly interact with the voice call session', async () => {
 	const errorSession = createMockVoipErrorSession({ error: { status: -1, reason: '' } });
-	render(<VoipErrorView session={errorSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipErrorView session={errorSession} />, { wrapper: appRoot.build() });
 
-	screen.getByRole('button', { name: 'End_call' }).click();
+	await userEvent.click(screen.getByRole('button', { name: 'End_call' }));
 	expect(errorSession.end).toHaveBeenCalled();
 });
 
 it('should properly render unknown error calls', async () => {
 	const session = createMockVoipErrorSession({ error: { status: -1, reason: '' } });
-	render(<VoipErrorView session={session} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipErrorView session={session} />, { wrapper: appRoot.build() });
 
-	expect(screen.getByText('Unable_to_complete_call')).toBeInTheDocument();
-	screen.getByRole('button', { name: 'End_call' }).click();
+	expect(screen.getByText('Unable_to_complete_call__code')).toBeInTheDocument();
+	await userEvent.click(screen.getByRole('button', { name: 'End_call' }));
 	expect(session.end).toHaveBeenCalled();
 });
 
 it('should properly render error for unavailable calls', async () => {
 	const session = createMockVoipErrorSession({ error: { status: 480, reason: '' } });
-	render(<VoipErrorView session={session} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipErrorView session={session} />, { wrapper: appRoot.build() });
 
 	expect(screen.getByText('Temporarily_unavailable')).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'End_call' })).toBeEnabled();
-	screen.getByRole('button', { name: 'End_call' }).click();
+	await userEvent.click(screen.getByRole('button', { name: 'End_call' }));
 	expect(session.end).toHaveBeenCalled();
 });
 
 it('should properly render error for busy calls', async () => {
 	const session = createMockVoipErrorSession({ error: { status: 486, reason: '' } });
-	render(<VoipErrorView session={session} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipErrorView session={session} />, { wrapper: appRoot.build() });
 
 	expect(screen.getByText('Caller_is_busy')).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'End_call' })).toBeEnabled();
-	screen.getByRole('button', { name: 'End_call' }).click();
+	await userEvent.click(screen.getByRole('button', { name: 'End_call' }));
 	expect(session.end).toHaveBeenCalled();
 });
 
 it('should properly render error for terminated calls', async () => {
 	const session = createMockVoipErrorSession({ error: { status: 487, reason: '' } });
-	render(<VoipErrorView session={session} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipErrorView session={session} />, { wrapper: appRoot.build() });
 
 	expect(screen.getByText('Call_terminated')).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'End_call' })).toBeEnabled();
-	screen.getByRole('button', { name: 'End_call' }).click();
+	await userEvent.click(screen.getByRole('button', { name: 'End_call' }));
 	expect(session.end).toHaveBeenCalled();
 });

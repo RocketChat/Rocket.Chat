@@ -33,11 +33,38 @@ export const createLivechatRoom = async (visitorToken: string, extraRoomParams?:
 	return response.body.room;
 };
 
-export const createVisitor = (department?: string, visitorName?: string, customEmail?: string): Promise<ILivechatVisitor> =>
+export const createLivechatRoomWidget = async (
+	visitorToken: string,
+	extraRoomParams?: Record<string, string>,
+): Promise<IOmnichannelRoom> => {
+	const urlParams = new URLSearchParams();
+	urlParams.append('token', visitorToken);
+	if (extraRoomParams) {
+		for (const [key, value] of Object.entries(extraRoomParams)) {
+			urlParams.append(key, value);
+		}
+	}
+
+	const response = await request
+		.get(api('livechat/room'))
+		.set('Cookie', [`rc_room_type=l`, `rc_is_widget=t`])
+		.query(urlParams.toString())
+		.set(credentials)
+		.expect(200);
+
+	return response.body.room;
+};
+
+export const createVisitor = (
+	department?: string,
+	visitorName?: string,
+	customEmail?: string,
+	customPhone?: string,
+): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
 		const token = getRandomVisitorToken();
 		const email = customEmail || `${token}@${token}.com`;
-		const phone = `${Math.floor(Math.random() * 10000000000)}`;
+		const phone = customPhone || `${Math.floor(Math.random() * 10000000000)}`;
 		void request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
 			if (!err && res && res.body && res.body.visitor) {
 				return resolve(res.body.visitor);
@@ -94,7 +121,7 @@ export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> =>
 };
 
 export const createDepartment = (
-	agents?: { agentId: string }[],
+	agents?: { agentId: string; count?: number }[],
 	name?: string,
 	enabled = true,
 	opts: Record<string, any> = {},
@@ -199,6 +226,14 @@ export const createManager = (overrideUsername?: string): Promise<ILivechatAgent
 				resolve(res.body.user);
 			});
 	});
+
+export const switchLivechatStatus = async (status: 'available' | 'not-available', overrideCredentials?: Credentials): Promise<void> => {
+	await request
+		.post(api('livechat/agent.status'))
+		.set(overrideCredentials || credentials)
+		.send({ status })
+		.expect(200);
+};
 
 export const makeAgentAvailable = async (overrideCredentials?: Credentials): Promise<Response> => {
 	await restorePermissionToRoles('view-l-room');

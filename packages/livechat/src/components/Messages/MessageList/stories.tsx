@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { MessageList } from '.';
@@ -49,7 +49,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof MessageList>>;
 
-const Template: Story<ComponentProps<typeof MessageList>> = (args) => <MessageList {...args} />;
+const Template: StoryFn<ComponentProps<typeof MessageList>> = (args) => <MessageList {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

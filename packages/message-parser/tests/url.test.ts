@@ -7,7 +7,7 @@ test.each([
     [
       paragraph([
         autoLink(
-          'https://pt.wikipedia.org/wiki/Condi%C3%A7%C3%A3o_de_corrida#:~:text=Uma%20condi%C3%A7%C3%A3o%20de%20corrida%20%C3%A9,sequ%C3%AAncia%20ou%20sincronia%20doutros%20eventos'
+          'https://pt.wikipedia.org/wiki/Condi%C3%A7%C3%A3o_de_corrida#:~:text=Uma%20condi%C3%A7%C3%A3o%20de%20corrida%20%C3%A9,sequ%C3%AAncia%20ou%20sincronia%20doutros%20eventos',
         ),
       ]),
     ],
@@ -90,7 +90,7 @@ test.each([
     [
       paragraph([
         autoLink(
-          'https://developer.rocket.chat/reference/api/rest-api#production-security-concerns'
+          'https://developer.rocket.chat/reference/api/rest-api#production-security-concerns',
         ),
         plain(' look at this'),
       ]),
@@ -111,7 +111,7 @@ test.each([
     [
       paragraph([
         autoLink(
-          'https://developer.rocket.chat/reference/api/rest-api#fragment?query=query'
+          'https://developer.rocket.chat/reference/api/rest-api#fragment?query=query',
         ),
         plain(' look at this'),
       ]),
@@ -261,7 +261,7 @@ test.each([
     [
       paragraph([
         autoLink(
-          'https://github.com/RocketChat/Rocket.Chat/releases/tag/6.0.0-rc.3'
+          'https://github.com/RocketChat/Rocket.Chat/releases/tag/6.0.0-rc.3',
         ),
       ]),
     ],
@@ -279,7 +279,7 @@ test.each([
     [
       paragraph([
         link(
-          'https://rocketchat.atlassian.net/browse/OC-718?filter=10078&jql=%22Defect%20from%5BVersion%20Picker%20(multiple%20versions)%5D%22%20%3D%206.0.0%20AND%20%22Defect%20from%5BVersion%20Picker%20(multiple%20versions)%5D%22%20%3D%206.0.0%20AND%20created%20%3E%3D%20-48h%20ORDER%20BY%20cf%5B10070%5D%20ASC%2C%20status%20ASC%2C%20created%20DESC'
+          'https://rocketchat.atlassian.net/browse/OC-718?filter=10078&jql=%22Defect%20from%5BVersion%20Picker%20(multiple%20versions)%5D%22%20%3D%206.0.0%20AND%20%22Defect%20from%5BVersion%20Picker%20(multiple%20versions)%5D%22%20%3D%206.0.0%20AND%20created%20%3E%3D%20-48h%20ORDER%20BY%20cf%5B10070%5D%20ASC%2C%20status%20ASC%2C%20created%20DESC',
         ),
       ]),
     ],
@@ -301,7 +301,7 @@ describe('autoLink with custom hosts settings comming from Rocket.Chat', () => {
     ],
   ])('parses %p', (input, output) => {
     expect(
-      parse(input, { customDomains: ['local', 'intranet'] })
+      parse(input, { customDomains: ['local', 'intranet'] }),
     ).toMatchObject(output);
   });
 });
@@ -320,29 +320,29 @@ describe('autoLink WITHOUT custom hosts settings comming from Rocket.Chat', () =
 describe('autoLink helper function', () => {
   it('should preserve the original protocol if the protocol is http or https', () => {
     expect(autoLink('https://rocket.chat/test')).toMatchObject(
-      link('https://rocket.chat/test')
+      link('https://rocket.chat/test'),
     );
 
     expect(autoLink('http://rocket.chat/test')).toMatchObject(
-      link('http://rocket.chat/test')
+      link('http://rocket.chat/test'),
     );
   });
 
   it('should preserve the original protocol even if for custom protocols', () => {
     expect(autoLink('custom://rocket.chat/test')).toMatchObject(
-      link('custom://rocket.chat/test')
+      link('custom://rocket.chat/test'),
     );
   });
 
   it('should return // as the protocol if // is the protocol specified', () => {
     expect(autoLink('//rocket.chat/test')).toMatchObject(
-      link('//rocket.chat/test')
+      link('//rocket.chat/test'),
     );
   });
 
   it("should return an url concatenated '//' if the url has no protocol", () => {
     expect(autoLink('rocket.chat/test')).toMatchObject(
-      link('//rocket.chat/test', [plain('rocket.chat/test')])
+      link('//rocket.chat/test', [plain('rocket.chat/test')]),
     );
   });
 
@@ -350,13 +350,13 @@ describe('autoLink helper function', () => {
     expect(autoLink('spark-public.s3.amazonaws.com')).toMatchObject(
       link('//spark-public.s3.amazonaws.com', [
         plain('spark-public.s3.amazonaws.com'),
-      ])
+      ]),
     );
   });
 
   it("should return an plain text url due to invalid TLD that's validate with the external library TLDTS", () => {
     expect(autoLink('rocket.chattt/url_path')).toMatchObject(
-      plain('rocket.chattt/url_path')
+      plain('rocket.chattt/url_path'),
     );
   });
 });

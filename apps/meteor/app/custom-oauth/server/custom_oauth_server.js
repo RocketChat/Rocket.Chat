@@ -9,12 +9,12 @@ import { OAuth } from 'meteor/oauth';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
+import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { settings } from '../../settings/server';
-import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 
 const logger = new Logger('CustomOAuth');
 
@@ -437,14 +437,19 @@ export class CustomOAuth {
 }
 
 const { updateOrCreateUserFromExternalService } = Accounts;
-const updateOrCreateUserFromExternalServiceAsync = async function (...args /* serviceName, serviceData, options*/) {
+
+Accounts.updateOrCreateUserFromExternalService = async function (...args /* serviceName, serviceData, options*/) {
 	for await (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		await hook.apply(this, args);
 	}
 
 	const [serviceName, serviceData] = args;
 
-	const user = updateOrCreateUserFromExternalService.apply(this, args);
+	const user = await updateOrCreateUserFromExternalService.apply(this, args);
+	if (!user.userId) {
+		return undefined;
+	}
+
 	const fullUser = await Users.findOneById(user.userId);
 	if (settings.get('LDAP_Update_Data_On_OAuth_Login')) {
 		await LDAP.loginAuthenticatedUserRequest(fullUser.username);
@@ -457,8 +462,4 @@ const updateOrCreateUserFromExternalServiceAsync = async function (...args /* se
 	});
 
 	return user;
-};
-
-Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/) {
-	return Promise.await(updateOrCreateUserFromExternalServiceAsync.call(this, ...args));
 };

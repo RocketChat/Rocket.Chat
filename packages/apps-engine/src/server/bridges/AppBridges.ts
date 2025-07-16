@@ -3,6 +3,7 @@ import type { AppActivationBridge } from './AppActivationBridge';
 import type { AppDetailChangesBridge } from './AppDetailChangesBridge';
 import type { CloudWorkspaceBridge } from './CloudWorkspaceBridge';
 import type { CommandBridge } from './CommandBridge';
+import type { ContactBridge } from './ContactBridge';
 import type { EmailBridge } from './EmailBridge';
 import type { EnvironmentalVariableBridge } from './EnvironmentalVariableBridge';
 import type { HttpBridge } from './HttpBridge';
@@ -25,77 +26,80 @@ import type { UserBridge } from './UserBridge';
 import type { VideoConferenceBridge } from './VideoConferenceBridge';
 
 export type Bridge =
-    | CommandBridge
-    | ApiBridge
-    | AppDetailChangesBridge
-    | EnvironmentalVariableBridge
-    | HttpBridge
-    | IListenerBridge
-    | LivechatBridge
-    | MessageBridge
-    | PersistenceBridge
-    | AppActivationBridge
-    | RoomBridge
-    | IInternalBridge
-    | ServerSettingBridge
-    | EmailBridge
-    | UploadBridge
-    | UserBridge
-    | UiInteractionBridge
-    | SchedulerBridge
-    | VideoConferenceBridge
-    | OAuthAppsBridge
-    | ModerationBridge
-    | RoleBridge;
+	| CommandBridge
+	| ContactBridge
+	| ApiBridge
+	| AppDetailChangesBridge
+	| EnvironmentalVariableBridge
+	| HttpBridge
+	| IListenerBridge
+	| LivechatBridge
+	| MessageBridge
+	| PersistenceBridge
+	| AppActivationBridge
+	| RoomBridge
+	| IInternalBridge
+	| ServerSettingBridge
+	| EmailBridge
+	| UploadBridge
+	| UserBridge
+	| UiInteractionBridge
+	| SchedulerBridge
+	| VideoConferenceBridge
+	| OAuthAppsBridge
+	| ModerationBridge
+	| RoleBridge;
 
 export abstract class AppBridges {
-    public abstract getCommandBridge(): CommandBridge;
+	public abstract getCommandBridge(): CommandBridge;
 
-    public abstract getApiBridge(): ApiBridge;
+	public abstract getContactBridge(): ContactBridge;
 
-    public abstract getAppDetailChangesBridge(): AppDetailChangesBridge;
+	public abstract getApiBridge(): ApiBridge;
 
-    public abstract getEnvironmentalVariableBridge(): EnvironmentalVariableBridge;
+	public abstract getAppDetailChangesBridge(): AppDetailChangesBridge;
 
-    public abstract getHttpBridge(): HttpBridge;
+	public abstract getEnvironmentalVariableBridge(): EnvironmentalVariableBridge;
 
-    public abstract getListenerBridge(): IListenerBridge;
+	public abstract getHttpBridge(): HttpBridge;
 
-    public abstract getLivechatBridge(): LivechatBridge;
+	public abstract getListenerBridge(): IListenerBridge;
 
-    public abstract getMessageBridge(): MessageBridge;
+	public abstract getLivechatBridge(): LivechatBridge;
 
-    public abstract getPersistenceBridge(): PersistenceBridge;
+	public abstract getMessageBridge(): MessageBridge;
 
-    public abstract getAppActivationBridge(): AppActivationBridge;
+	public abstract getPersistenceBridge(): PersistenceBridge;
 
-    public abstract getRoomBridge(): RoomBridge;
+	public abstract getAppActivationBridge(): AppActivationBridge;
 
-    public abstract getInternalBridge(): IInternalBridge;
+	public abstract getRoomBridge(): RoomBridge;
 
-    public abstract getInternalFederationBridge(): IInternalFederationBridge;
+	public abstract getInternalBridge(): IInternalBridge;
 
-    public abstract getServerSettingBridge(): ServerSettingBridge;
+	public abstract getInternalFederationBridge(): IInternalFederationBridge;
 
-    public abstract getUploadBridge(): UploadBridge;
+	public abstract getServerSettingBridge(): ServerSettingBridge;
 
-    public abstract getEmailBridge(): EmailBridge;
+	public abstract getUploadBridge(): UploadBridge;
 
-    public abstract getUserBridge(): UserBridge;
+	public abstract getEmailBridge(): EmailBridge;
 
-    public abstract getUiInteractionBridge(): UiInteractionBridge;
+	public abstract getUserBridge(): UserBridge;
 
-    public abstract getSchedulerBridge(): SchedulerBridge;
+	public abstract getUiInteractionBridge(): UiInteractionBridge;
 
-    public abstract getCloudWorkspaceBridge(): CloudWorkspaceBridge;
+	public abstract getSchedulerBridge(): SchedulerBridge;
 
-    public abstract getVideoConferenceBridge(): VideoConferenceBridge;
+	public abstract getCloudWorkspaceBridge(): CloudWorkspaceBridge;
 
-    public abstract getOAuthAppsBridge(): OAuthAppsBridge;
+	public abstract getVideoConferenceBridge(): VideoConferenceBridge;
 
-    public abstract getModerationBridge(): ModerationBridge;
+	public abstract getOAuthAppsBridge(): OAuthAppsBridge;
 
-    public abstract getThreadBridge(): ThreadBridge;
+	public abstract getModerationBridge(): ModerationBridge;
 
-    public abstract getRoleBridge(): RoleBridge;
+	public abstract getThreadBridge(): ThreadBridge;
+
+	public abstract getRoleBridge(): RoleBridge;
 }

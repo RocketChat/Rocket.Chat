@@ -4,6 +4,7 @@ import path from 'path';
 import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
+import semver from 'semver';
 
 import { createNpmFile } from './createNpmFile';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
@@ -35,7 +36,9 @@ export async function publishRelease({
 
 	const { version: currentVersion } = await readPackageJson(cwd);
 
-	if (mergeFinal && isPreRelease(cwd)) {
+	const prerelease = isPreRelease(cwd);
+
+	if (mergeFinal && prerelease) {
 		// finish release candidate
 		await exec('yarn', ['changeset', 'pre', 'exit']);
 	}
@@ -69,13 +72,36 @@ export async function publishRelease({
 
 	await commitChanges(`Release ${newVersion}\n\n[no ci]`);
 
-	if (mergeFinal) {
+	const { data: latestRelease } = await octokit.rest.repos.getLatestRelease({
+		...github.context.repo,
+	});
+
+	core.info(`latest release tag: ${latestRelease.tag_name}`);
+
+	const isLatestRelease = semver.gt(newVersion, latestRelease.tag_name) && !prerelease;
+
+	/**
+	 * These conditions are set to allow a patch release, which will be the latest, to be made without the need to merge into master (normalizing how patch releases are done, always via the 'cut' action)
+	 *
+	 * Strangely before, if mergeFinal was true a checkout was performed and then a push was made, which didn’t make sense because in theory mergeFinal is when merging into master (it was redundant but didn’t cause any issues)
+	 *
+	 * Today, we want that if the action is `cut` and the version is a patch, the merge should be performed, the pull request will automatically be closed, and the release will be made.
+	 * However, if the `cut` is for a pre-release version, the merge to master should not be performed, because minor/major releases are still done manually.
+	 *
+	 * by `mergeFinal`  we can know it was triggered by a pull request merge to master
+	 */
+
+	if (!mergeFinal && isLatestRelease) {
 		// get current branch name
 		const branchName = await getCurrentBranch();
 
 		// merge release changes to master
 		await checkoutBranch('master');
 		await mergeBranch(branchName);
+
+		await pushChanges();
+
+		await checkoutBranch(branchName);
 	}
 
 	core.info('fix dependencies in workspace packages');
@@ -92,7 +118,8 @@ export async function publishRelease({
 		name: newVersion,
 		tag_name: newVersion,
 		body: releaseBody,
-		prerelease: newVersion.includes('-'),
+		prerelease,
+		make_latest: isLatestRelease ? 'true' : 'false',
 		...github.context.repo,
 	});
 }

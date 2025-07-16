@@ -15,9 +15,9 @@ import { settings } from '../../../../app/settings/server';
 import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
-import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
+import { LDAPUserConverter } from '../../../../server/lib/ldap/UserConverter';
 import { syncUserRoles } from '../syncUserRoles';
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 
@@ -37,7 +37,7 @@ export class LDAPEEManager extends LDAPManager {
 		options.skipNewUsers = !createNewUsers;
 
 		const ldap = new LDAPConnection();
-		const converter = new LDAPDataConverter(true, options);
+		const converter = new LDAPUserConverter(options);
 		const touchedUsers = new Set<IUser['_id']>();
 
 		try {
@@ -53,7 +53,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
 
-			await converter.convertUsers({
+			await converter.convertData({
 				beforeImportFn: (async ({ options }: IImportRecord): Promise<boolean> => {
 					if (!ldap.options.groupFilterEnabled || !ldap.options.groupFilterGroupMemberFormat) {
 						return true;
@@ -156,7 +156,7 @@ export class LDAPEEManager extends LDAPManager {
 	private static async advancedSync(
 		ldap: LDAPConnection,
 		importUser: IImportUser,
-		converter: LDAPDataConverter,
+		converter: LDAPUserConverter,
 		isNewRecord: boolean,
 	): Promise<void> {
 		const user = await converter.findExistingUser(importUser);
@@ -291,6 +291,10 @@ export class LDAPEEManager extends LDAPManager {
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 
 		const user = await Users.findOneByUsernameIgnoringCase(roomOwner);
+		if (!user) {
+			logger.error(`Unable to find user '${roomOwner}' to be the owner of the channel '${channel}'.`);
+			return;
+		}
 
 		const room = await createRoom('c', channel, user, [], false, false, {
 			customFields: { ldap: true },
@@ -581,7 +585,7 @@ export class LDAPEEManager extends LDAPManager {
 		);
 	}
 
-	private static async importNewUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
+	private static async importNewUsers(ldap: LDAPConnection, converter: LDAPUserConverter): Promise<void> {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
@@ -591,7 +595,7 @@ export class LDAPEEManager extends LDAPManager {
 					count++;
 
 					const userData = this.mapUserData(data);
-					converter.addUserSync(userData, { dn: data.dn, username: this.getLdapUsername(data) });
+					converter.addObjectToMemory(userData, { dn: data.dn, username: this.getLdapUsername(data) });
 					return userData;
 				},
 				endCallback: (error: any): void => {
@@ -608,22 +612,22 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter, disableMissingUsers = false): Promise<void> {
+	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPUserConverter, disableMissingUsers = false): Promise<void> {
 		const users = await Users.findLDAPUsers().toArray();
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addUserSync(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
-			} else if (disableMissingUsers) {
+				converter.addObjectToMemory(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
+			} else if (disableMissingUsers && user.active) {
 				await setUserActiveStatus(user._id, false, true);
 			}
 		}
 	}
 
 	private static async disableMissingUsers(foundUsers: IUser['_id'][]): Promise<void> {
-		const userIds = (await Users.findLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+		const userIds = (await Users.findActiveLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 
 		await Promise.allSettled(userIds.map((id) => setUserActiveStatus(id, false, true)));
 	}

@@ -1,6 +1,6 @@
 import { Box, Table, TableBody } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 type DescriptionListProps = {
 	children: ReactNode;

@@ -14,6 +14,7 @@ Package.onUse(function (api) {
 		'underscore',
 		'mongo',
 		'ddp',
+		'minimongo',
 		// 'ddp-common',
 		// 'ddp-client'
 	]);

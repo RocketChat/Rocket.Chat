@@ -1,9 +1,8 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { TranslationContext } from '@rocket.chat/ui-contexts';
-import type { TOptions } from 'i18next';
 import i18next from 'i18next';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useContext, useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 
 type TranslationContextMockProps = {
 	children: ReactNode;
@@ -31,7 +30,7 @@ const TranslationContextMock = ({ children }: TranslationContextMockProps): Reac
 		const translate = (key: string, ...replaces: unknown[]): string => {
 			if (typeof replaces[0] === 'object' && replaces[0] !== null) {
 				const [options] = replaces;
-				return i18next.t(key, options as TOptions);
+				return i18next.t(key, options);
 			}
 
 			if (replaces.length === 0) {

@@ -4,11 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useDefaultDownload } from './useDefaultDownload';
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
 import { PERIOD_OPTIONS } from '../components/constants';
 import { formatPeriodDescription } from '../utils/formatPeriodDescription';
-import { useDefaultDownload } from './useDefaultDownload';
 
 const colors = {
 	warning: Palette.statusColor['status-font-on-warning'].toString(),
@@ -31,20 +31,20 @@ export const useTagsSection = () => {
 	const {
 		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
 		refetch,
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-tags', period],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-tags', period],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsByTags({ start: start.toISOString(), end: end.toISOString() });
 			return { ...response, data: formatChartData(response.data) };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_tag');
 	const subtitleTotals = t('__count__tags__and__count__conversations__period__', {
@@ -70,10 +70,10 @@ export const useTagsSection = () => {
 			periodSelectorProps,
 			downloadProps,
 			isError,
-			isLoading,
+			isPending,
 			isDataFound: isSuccess && data.length > 0,
 			onRetry: refetch,
 		}),
-		[title, subtitle, emptyStateSubtitle, data, total, isError, isLoading, isSuccess, periodSelectorProps, period, downloadProps, refetch],
+		[title, subtitle, emptyStateSubtitle, data, total, isError, isPending, isSuccess, periodSelectorProps, period, downloadProps, refetch],
 	);
 };

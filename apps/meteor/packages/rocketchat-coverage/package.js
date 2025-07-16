@@ -12,7 +12,7 @@ Package.onUse(function (api) {
 });
 
 Npm.depends({
-	'istanbul-lib-report': '3.0.0',
-	'istanbul-reports': '3.0.2',
-	'istanbul-lib-coverage': '3.0.0',
+	'istanbul-lib-report': '3.0.1',
+	'istanbul-reports': '3.1.7',
+	'istanbul-lib-coverage': '3.2.2',
 });

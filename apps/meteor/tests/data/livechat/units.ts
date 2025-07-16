@@ -31,6 +31,7 @@ export const createUnit = async (
 	username: string,
 	departmentIds: string[],
 	name?: string,
+	extraMonitor: { monitorId: string; username: string }[] = [],
 ): Promise<IOmnichannelBusinessUnit> => {
 	return new Promise((resolve, reject) => {
 		void request
@@ -41,8 +42,11 @@ export const createUnit = async (
 					method: 'livechat:saveUnit',
 					params: [
 						null,
-						{ name: name || faker.person.firstName(), visibility: faker.helpers.arrayElement(['public', 'private']) },
-						[{ monitorId, username }],
+						{
+							name: name || `${faker.person.firstName()} ${faker.string.uuid()}`,
+							visibility: faker.helpers.arrayElement(['public', 'private']),
+						},
+						[{ monitorId, username }, ...extraMonitor],
 						departmentIds.map((departmentId) => ({ departmentId })),
 					],
 					id: '101',

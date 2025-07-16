@@ -2,12 +2,10 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
-import { useUserData } from '../../../../hooks/useUserData';
-import type { UserPresence } from '../../../../lib/presence';
 import { useChat } from '../../../../views/room/contexts/ChatContext';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
@@ -22,6 +20,7 @@ import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
+import { useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 type RoomMessageContentProps = {
@@ -38,8 +37,8 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
 	const broadcast = subscription?.broadcast ?? false;
 	const uid = useUserId();
-	const messageUser: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
-	const readReceiptEnabled = useSetting('Message_Read_Receipt_Enabled', false);
+	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
+	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
 	const chat = useChat();
 	const t = useTranslation();
 
@@ -52,7 +51,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	return (
 		<>
-			{isMessageEncrypted && <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
+			{isMessageEncrypted && <MessageBody data-qa-type='message-body'>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
 
 			{!!quotes?.length && <Attachments attachments={quotes} />}
 
@@ -101,7 +100,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 					unread={unread}
 					mention={mention}
 					all={all}
-					participants={normalizedMessage?.replies?.length}
+					participants={normalizedMessage?.replies}
 				/>
 			)}
 

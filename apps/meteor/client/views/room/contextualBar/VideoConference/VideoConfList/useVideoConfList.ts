@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
+import { VideoConfRecordList } from './VideoConfRecordList';
 import { useScrollableRecordList } from '../../../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
-import { VideoConfRecordList } from './VideoConfRecordList';
 
 export const useVideoConfList = (options: {
 	roomId: IRoom['_id'];
@@ -23,7 +23,7 @@ export const useVideoConfList = (options: {
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (_start, _end) => {
+		async (_start: number, _end: number) => {
 			const { data, total } = await getVideoConfs({
 				roomId: options.roomId,
 			});

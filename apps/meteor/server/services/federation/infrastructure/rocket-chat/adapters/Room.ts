@@ -3,6 +3,7 @@ import type { IDirectMessageRoom, IRoom, IUser } from '@rocket.chat/core-typings
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
+import { getFederatedUserByInternalUsername } from './User';
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
 import { addUserToRoom } from '../../../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../../../app/lib/server/functions/createRoom';
@@ -16,11 +17,11 @@ import {
 import { settings } from '../../../../../../app/settings/server';
 import { getDefaultSubscriptionPref } from '../../../../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../../../../app/utils/server/lib/getValidRoomName';
+import { syncRoomRolePriorityForUserAndRoom } from '../../../../../lib/roles/syncRoomRolePriority';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/FederatedRoomInternalRoles';
-import { getFederatedUserByInternalUsername } from './User';
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
 	[Property in Key]-?: Type[Property];
@@ -340,6 +341,8 @@ export class RocketChatRoomAdapter {
 				);
 			}
 		}
+
+		await syncRoomRolePriorityForUserAndRoom(uid, rid);
 
 		if (settings.get('UI_DisplayRoles')) {
 			this.notifyUIAboutRoomRolesChange(targetFederatedUser, federatedRoom, toAdd, toRemove);

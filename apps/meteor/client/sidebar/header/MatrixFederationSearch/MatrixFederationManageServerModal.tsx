@@ -1,10 +1,25 @@
-import { Divider, Modal, ButtonGroup, Button, Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import {
+	Divider,
+	Modal,
+	ButtonGroup,
+	Button,
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	TextInput,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+} from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { FormEvent } from 'react';
-import React, { useState } from 'react';
+import { useId, useState } from 'react';
 
 import MatrixFederationRemoveServerList from './MatrixFederationRemoveServerList';
 import MatrixFederationSearch from './MatrixFederationSearch';
@@ -37,13 +52,19 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 
 	const {
 		mutate: addServer,
-		isLoading,
+		isPending,
 		isError,
-	} = useMutation(['v1/federation/addServerByUser', serverName], () => addMatrixServer({ serverName }), {
+	} = useMutation({
+		mutationKey: ['v1/federation/addServerByUser', serverName],
+		mutationFn: () => addMatrixServer({ serverName }),
+
 		onSuccess: async () => {
-			await queryClient.invalidateQueries(['federation/listServersByUsers']);
+			await queryClient.invalidateQueries({
+				queryKey: ['federation/listServersByUsers'],
+			});
 			setModal(<MatrixFederationSearch defaultSelectedServer={serverName} onClose={onClickClose} key={serverName} />);
 		},
+
 		onError: (error) => {
 			const errorKey = getErrorKey(error);
 			if (!errorKey) {
@@ -54,24 +75,24 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 		},
 	});
 
-	const { data, isLoading: isLoadingServerList } = useMatrixServerList();
+	const { data, isPending: isLoadingServerList } = useMatrixServerList();
 
-	const titleId = useUniqueId();
-	const serverNameId = useUniqueId();
+	const titleId = useId();
+	const serverNameId = useId();
 
 	return (
 		<Modal maxHeight='x600' open aria-labelledby={titleId}>
-			<Modal.Header>
-				<Modal.Title id={titleId}>{t('Manage_servers')}</Modal.Title>
-				<Modal.Close onClick={onClickClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle id={titleId}>{t('Manage_servers')}</ModalTitle>
+				<ModalClose onClick={onClickClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Field>
 					<FieldLabel htmlFor={serverNameId}>{t('Server_name')}</FieldLabel>
 					<FieldRow>
 						<TextInput
 							id={serverNameId}
-							disabled={isLoading}
+							disabled={isPending}
 							value={serverName}
 							onChange={(e: FormEvent<HTMLInputElement>) => {
 								setServerName(e.currentTarget.value);
@@ -81,7 +102,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 							}}
 							mie={4}
 						/>
-						<Button primary loading={isLoading} onClick={() => addServer()}>
+						<Button primary loading={isPending} onClick={() => addServer()}>
 							{t('Add')}
 						</Button>
 					</FieldRow>
@@ -90,12 +111,12 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 				</Field>
 				<Divider mb={16} />
 				{!isLoadingServerList && data?.servers && <MatrixFederationRemoveServerList servers={data.servers} />}
-			</Modal.Content>
-			<Modal.Footer>
+			</ModalContent>
+			<ModalFooter>
 				<ButtonGroup>
 					<Button onClick={onClickClose}>{t('Cancel')}</Button>
 				</ButtonGroup>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };

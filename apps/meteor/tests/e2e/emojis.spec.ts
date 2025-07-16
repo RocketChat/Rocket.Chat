@@ -19,12 +19,28 @@ test.describe.serial('emoji', () => {
 		await page.goto('/home');
 	});
 
-	test('expect pick and send grinning emoji', async ({ page }) => {
+	test('should display emoji picker properly', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.pickEmoji('grinning');
-		await page.keyboard.press('Enter');
+		await poHomeChannel.content.btnComposerEmoji.click();
 
-		await expect(poHomeChannel.content.lastUserMessage).toContainText('😀');
+		await test.step('should display scroller', async () => {
+			await expect(poHomeChannel.content.scrollerEmojiPicker).toBeVisible();
+		});
+
+		await test.step('should focus the active emoji tab category', async () => {
+			const activityEmojiTab = poHomeChannel.content.getEmojiPickerTabByName('Activity');
+			await activityEmojiTab.click();
+
+			await expect(activityEmojiTab).toBeFocused();
+		});
+
+		await test.step('should pick and send grinning emoji', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.pickEmoji('grinning');
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.content.lastUserMessage).toContainText('😀');
+		});
 	});
 
 	test('expect send emoji via text', async ({ page }) => {

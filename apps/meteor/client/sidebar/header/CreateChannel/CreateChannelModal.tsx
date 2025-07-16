@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Modal,
@@ -14,8 +15,13 @@ import {
 	FieldDescription,
 	Accordion,
 	AccordionItem,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,
@@ -26,7 +32,7 @@ import {
 	usePermissionWithScopedRoles,
 } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
@@ -36,6 +42,7 @@ import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescriptio
 
 type CreateChannelModalProps = {
 	teamId?: string;
+	mainRoom?: IRoom;
 	onClose: () => void;
 	reload?: () => void;
 };
@@ -61,17 +68,17 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 	return 'Federation_Matrix_Federated_Description';
 };
 
-const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModalProps): ReactElement => {
+const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateChannelModalProps): ReactElement => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
-	const federationEnabled = useSetting<boolean>('Federation_Matrix_enabled') || false;
+	const federationEnabled = useSetting('Federation_Matrix_enabled', false);
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const canCreateChannel = usePermission('create-c');
-	const canCreatePrivateChannel = usePermission('create-p');
+	const canCreateGroup = usePermission('create-p');
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
@@ -82,17 +89,20 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
 	const createPrivateChannel = useEndpoint('POST', '/v1/groups.create');
 
+	const canCreateTeamChannel = usePermission('create-team-channel', mainRoom?._id);
+	const canCreateTeamGroup = usePermission('create-team-group', mainRoom?._id);
+
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const canOnlyCreateOneType = useMemo(() => {
-		if (!canCreateChannel && canCreatePrivateChannel) {
+		if ((!teamId && !canCreateChannel && canCreateGroup) || (teamId && !canCreateTeamChannel && canCreateTeamGroup)) {
 			return 'p';
 		}
-		if (canCreateChannel && !canCreatePrivateChannel) {
+		if ((!teamId && canCreateChannel && !canCreateGroup) || (teamId && canCreateTeamChannel && !canCreateTeamGroup)) {
 			return 'c';
 		}
 		return false;
-	}, [canCreateChannel, canCreatePrivateChannel]);
+	}, [canCreateChannel, canCreateGroup, canCreateTeamChannel, canCreateTeamGroup, teamId]);
 
 	const {
 		register,
@@ -189,15 +199,15 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 		[e2eEnabled, e2eEnabledForPrivateByDefault, broadcast, isPrivate],
 	);
 
-	const createChannelFormId = useUniqueId();
-	const nameId = useUniqueId();
-	const topicId = useUniqueId();
-	const privateId = useUniqueId();
-	const federatedId = useUniqueId();
-	const readOnlyId = useUniqueId();
-	const encryptedId = useUniqueId();
-	const broadcastId = useUniqueId();
-	const addMembersId = useUniqueId();
+	const createChannelFormId = useId();
+	const nameId = useId();
+	const topicId = useId();
+	const privateId = useId();
+	const federatedId = useId();
+	const readOnlyId = useId();
+	const encryptedId = useId();
+	const broadcastId = useId();
+	const addMembersId = useId();
 
 	return (
 		<Modal
@@ -207,11 +217,11 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 				<Box is='form' id={createChannelFormId} onSubmit={handleSubmit(handleCreateChannel)} {...props} />
 			)}
 		>
-			<Modal.Header>
-				<Modal.Title id={`${createChannelFormId}-title`}>{t('Create_channel')}</Modal.Title>
-				<Modal.Close tabIndex={-1} title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content mbe={2}>
+			<ModalHeader>
+				<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
+				<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
 				<FieldGroup mbe={24}>
 					<Field>
 						<FieldLabel required htmlFor={nameId}>
@@ -267,7 +277,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 										id={privateId}
 										aria-describedby={`${privateId}-hint`}
 										ref={ref}
-										checked={value}
+										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
 										disabled={!!canOnlyCreateOneType}
 										onChange={onChange}
 									/>
@@ -319,7 +329,6 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 												disabled={e2eDisabled || federated}
 												onChange={onChange}
 												aria-describedby={`${encryptedId}-hint`}
-												aria-labelledby='Encrypted_channel_Label'
 											/>
 										)}
 									/>
@@ -356,7 +365,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 										name='broadcast'
 										render={({ field: { onChange, value, ref } }): ReactElement => (
 											<ToggleSwitch
-												aria-describedby={`${broadcastId}-hint`}
+												aria-describedby={broadcast ? `${broadcastId}-hint` : undefined}
 												id={broadcastId}
 												ref={ref}
 												checked={value}
@@ -371,15 +380,15 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 						</FieldGroup>
 					</AccordionItem>
 				</Accordion>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button type='submit' primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

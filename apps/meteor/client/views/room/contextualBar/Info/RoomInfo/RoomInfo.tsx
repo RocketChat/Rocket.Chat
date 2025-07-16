@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import RoomInfoActions from './RoomInfoActions';
 import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
@@ -12,6 +12,7 @@ import {
 	ContextualbarIcon,
 	ContextualbarClose,
 	ContextualbarTitle,
+	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
 import {
 	InfoPanel,
@@ -28,7 +29,6 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
 import { useSplitRoomActions } from '../hooks/useSplitRoomActions';
-import RoomInfoActions from './RoomInfoActions';
 
 type RoomInfoProps = {
 	room: IRoom;
@@ -51,7 +51,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 	const { buttons, menu } = useSplitRoomActions(actions);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='info-circled' />}
 				<ContextualbarTitle>{isDiscussion ? t('Discussion_info') : t('Channel_info')}</ContextualbarTitle>
@@ -131,7 +131,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

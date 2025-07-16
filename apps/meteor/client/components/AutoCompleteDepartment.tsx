@@ -1,31 +1,32 @@
-import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Option, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRecordList } from '../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
 type AutoCompleteDepartmentProps = {
 	value?: string;
 	onChange: (value: string) => void;
-	excludeDepartmentId?: string;
+	excludeId?: string;
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
 	haveNone?: boolean;
 	showArchived?: boolean;
+	unitId?: string;
 } & Omit<ComponentProps<typeof PaginatedSelectFiltered>, 'options' | 'setFilter'>;
 
 const AutoCompleteDepartment = ({
 	value,
-	excludeDepartmentId,
+	excludeId,
 	onlyMyDepartments,
+	unitId,
 	onChange,
 	haveAll,
 	haveNone,
 	showArchived = false,
+	disabled,
 	...props
 }: AutoCompleteDepartmentProps): ReactElement | null => {
 	const { t } = useTranslation();
@@ -33,21 +34,20 @@ const AutoCompleteDepartment = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const { itemsList: departmentsList, loadMoreItems: loadMoreDepartments } = useDepartmentsList(
-		useMemo(
-			() => ({
-				filter: debouncedDepartmentsFilter,
-				onlyMyDepartments,
-				haveAll,
-				haveNone,
-				excludeDepartmentId,
-				showArchived,
-			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived],
-		),
-	);
-
-	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
+	const {
+		data: departmentsItems,
+		isPending,
+		fetchNextPage,
+	} = useDepartmentsList({
+		filter: debouncedDepartmentsFilter,
+		onlyMyDepartments,
+		haveAll,
+		haveNone,
+		excludeId,
+		showArchived,
+		selectedDepartmentId: value,
+		unitId,
+	});
 
 	return (
 		<PaginatedSelectFiltered
@@ -56,15 +56,15 @@ const AutoCompleteDepartment = ({
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
+			disabled={isPending || disabled}
+			aria-busy={isPending}
+			aria-disabled={disabled}
 			setFilter={setDepartmentsFilter as (value?: string | number) => void}
 			options={departmentsItems}
-			placeholder={t('Select_an_option')}
+			placeholder={isPending ? t('Loading...') : t('Select_an_option')}
 			data-qa='autocomplete-department'
-			endReached={
-				departmentsPhase === AsyncStatePhase.LOADING
-					? (): void => undefined
-					: (start): void => loadMoreDepartments(start, Math.min(50, departmentsTotal))
-			}
+			endReached={() => fetchNextPage()}
+			renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 		/>
 	);
 };

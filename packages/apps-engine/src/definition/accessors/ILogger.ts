@@ -1,5 +1,5 @@
-import type { AppMethod } from '../metadata/AppMethod';
 import type { ILogEntry } from './ILogEntry';
+import type { AppMethod } from '../metadata/AppMethod';
 
 /**
  * This logger provides a way to log various levels to the entire system.
@@ -7,23 +7,23 @@ import type { ILogEntry } from './ILogEntry';
  * allow people to easily see what happened (users) or debug what went wrong.
  */
 export interface ILogger {
-    method: `${AppMethod}`;
+	method: `${AppMethod}`;
 
-    debug(...items: Array<any>): void;
-    info(...items: Array<any>): void;
-    log(...items: Array<any>): void;
-    warn(...items: Array<any>): void;
-    error(...items: Array<any>): void;
-    success(...items: Array<any>): void;
+	debug(...items: Array<any>): void;
+	info(...items: Array<any>): void;
+	log(...items: Array<any>): void;
+	warn(...items: Array<any>): void;
+	error(...items: Array<any>): void;
+	success(...items: Array<any>): void;
 
-    /** Gets the entries logged. */
-    getEntries(): Array<ILogEntry>;
-    /** Gets the method which this logger is for. */
-    getMethod(): `${AppMethod}`;
-    /** Gets when this logger was constructed. */
-    getStartTime(): Date;
-    /** Gets the end time, usually Date.now(). */
-    getEndTime(): Date;
-    /** Gets the amount of time this was a logger, start - Date.now(). */
-    getTotalTime(): number;
+	/** Gets the entries logged. */
+	getEntries(): Array<ILogEntry>;
+	/** Gets the method which this logger is for. */
+	getMethod(): `${AppMethod}`;
+	/** Gets when this logger was constructed. */
+	getStartTime(): Date;
+	/** Gets the end time, usually Date.now(). */
+	getEndTime(): Date;
+	/** Gets the amount of time this was a logger, start - Date.now(). */
+	getTotalTime(): number;
 }

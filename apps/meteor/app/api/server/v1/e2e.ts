@@ -1,5 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	ise2eSetRoomKeyIDParamsPOST,
@@ -7,13 +6,25 @@ import {
 	ise2eUpdateGroupKeyParamsPOST,
 	isE2EProvideUsersGroupKeyProps,
 	isE2EFetchUsersWaitingForGroupKeyProps,
+	isE2EResetRoomKeyProps,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
+import ExpiryMap from 'expiry-map';
 
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSuggestedGroupKey';
 import { provideUsersSuggestedGroupKeys } from '../../../e2e/server/functions/provideUsersSuggestedGroupKeys';
+import { resetRoomKey } from '../../../e2e/server/functions/resetRoomKey';
+import { getUsersOfRoomWithoutKeyMethod } from '../../../e2e/server/methods/getUsersOfRoomWithoutKey';
+import { setRoomKeyIDMethod } from '../../../e2e/server/methods/setRoomKeyID';
+import { setUserPublicAndPrivateKeysMethod } from '../../../e2e/server/methods/setUserPublicAndPrivateKeys';
+import { updateGroupKey } from '../../../e2e/server/methods/updateGroupKey';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
+
+// After 10s the room lock will expire, meaning that if for some reason the process never completed
+// The next reset will be available 10s after
+const LockMap = new ExpiryMap<string, boolean>(10000);
 
 API.v1.addRoute(
 	'e2e.fetchMyKeys',
@@ -22,10 +33,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const result: {
-				public_key: string;
-				private_key: string;
-			} = await Meteor.callAsync('e2e.fetchMyKeys');
+			const result = await Users.fetchKeysByUserId(this.userId);
 
 			return API.v1.success(result);
 		},
@@ -42,9 +50,7 @@ API.v1.addRoute(
 		async get() {
 			const { rid } = this.queryParams;
 
-			const result: {
-				users: IUser[];
-			} = await Meteor.callAsync('e2e.getUsersOfRoomWithoutKey', rid);
+			const result = await getUsersOfRoomWithoutKeyMethod(this.userId, rid);
 
 			return API.v1.success(result);
 		},
@@ -93,7 +99,7 @@ API.v1.addRoute(
 		async post() {
 			const { rid, keyID } = this.bodyParams;
 
-			await Meteor.callAsync('e2e.setRoomKeyID', rid, keyID);
+			await setRoomKeyIDMethod(this.userId, rid, keyID);
 
 			return API.v1.success();
 		},
@@ -144,7 +150,7 @@ API.v1.addRoute(
 			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { public_key, private_key, force } = this.bodyParams;
 
-			await Meteor.callAsync('e2e.setUserPublicAndPrivateKeys', {
+			await setUserPublicAndPrivateKeysMethod(this.userId, {
 				public_key,
 				private_key,
 				force,
@@ -201,7 +207,7 @@ API.v1.addRoute(
 		async post() {
 			const { uid, rid, key } = this.bodyParams;
 
-			await Meteor.callAsync('e2e.updateGroupKey', rid, uid, key);
+			await updateGroupKey(rid, uid, key, this.userId);
 
 			return API.v1.success();
 		},
@@ -281,6 +287,39 @@ API.v1.addRoute(
 			await provideUsersSuggestedGroupKeys(this.userId, this.bodyParams.usersSuggestedGroupKeys);
 
 			return API.v1.success();
+		},
+	},
+);
+
+// This should have permissions
+API.v1.addRoute(
+	'e2e.resetRoomKey',
+	{ authRequired: true, validateParams: isE2EResetRoomKeyProps },
+	{
+		async post() {
+			const { rid, e2eKey, e2eKeyId } = this.bodyParams;
+			if (!(await hasPermissionAsync(this.userId, 'toggle-room-e2e-encryption', rid))) {
+				return API.v1.forbidden();
+			}
+			if (LockMap.has(rid)) {
+				throw new Error('error-e2e-key-reset-in-progress');
+			}
+
+			LockMap.set(rid, true);
+
+			if (!(await canAccessRoomIdAsync(rid, this.userId))) {
+				throw new Error('error-not-allowed');
+			}
+
+			try {
+				await resetRoomKey(rid, this.userId, e2eKey, e2eKeyId);
+				return API.v1.success();
+			} catch (e) {
+				console.error(e);
+				return API.v1.failure('error-e2e-key-reset-failed');
+			} finally {
+				LockMap.delete(rid);
+			}
 		},
 	},
 );

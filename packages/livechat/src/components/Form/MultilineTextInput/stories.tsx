@@ -1,5 +1,5 @@
 import { action } from '@storybook/addon-actions';
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { MultilineTextInput } from '.';
@@ -29,7 +29,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof MultilineTextInput>>;
 
-const Template: Story<ComponentProps<typeof MultilineTextInput>> = (args) => <MultilineTextInput {...args} />;
+const Template: StoryFn<ComponentProps<typeof MultilineTextInput>> = (args) => <MultilineTextInput {...args} />;
 
 export const Empty = Template.bind({});
 Empty.storyName = 'empty';

@@ -1,19 +1,33 @@
+import { ServiceStarter } from '@rocket.chat/core-services';
 import { type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { tracerSpan } from '@rocket.chat/tracing';
 
+import { queueLogger } from './logger';
+import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
 import { getInquirySortMechanismSetting } from '../../../app/livechat/server/lib/settings';
 import { settings } from '../../../app/settings/server';
-import { queueLogger } from './logger';
 
 const DEFAULT_RACE_TIMEOUT = 5000;
 
 export class OmnichannelQueue implements IOmnichannelQueue {
+	private serviceStarter: ServiceStarter;
+
+	private timeoutHandler: ReturnType<typeof setTimeout> | null = null;
+
+	constructor() {
+		this.serviceStarter = new ServiceStarter(
+			() => this._start(),
+			() => this._stop(),
+		);
+	}
+
 	private running = false;
 
-	private queues: (string | undefined)[] = [];
+	private errorDelay = 10 * 1000; // 10 seconds
 
 	private delay() {
 		const timeout = settings.get<number>('Omnichannel_queue_delay_timeout') ?? 5;
@@ -24,7 +38,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		return this.running;
 	}
 
-	async start() {
+	private async _start() {
 		if (this.running) {
 			return;
 		}
@@ -37,7 +51,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		return this.execute();
 	}
 
-	async stop() {
+	private async _stop() {
 		if (!this.running) {
 			return;
 		}
@@ -45,48 +59,66 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		await LivechatInquiry.unlockAll();
 
 		this.running = false;
+
+		if (this.timeoutHandler !== null) {
+			clearTimeout(this.timeoutHandler);
+			this.timeoutHandler = null;
+		}
+
 		queueLogger.info('Service stopped');
 	}
 
-	private async getActiveQueues() {
-		// undefined = public queue(without department)
-		return ([undefined] as typeof this.queues).concat(await LivechatInquiry.getDistinctQueuedDepartments({}));
+	async start() {
+		return this.serviceStarter.start();
 	}
 
-	private async nextQueue() {
-		if (!this.queues.length) {
-			queueLogger.debug('No more registered queues. Refreshing');
-			this.queues = await this.getActiveQueues();
-		}
+	async stop() {
+		return this.serviceStarter.stop();
+	}
 
-		return this.queues.shift();
+	private async getActiveQueues() {
+		return (await LivechatInquiry.getDistinctQueuedDepartments({})).map(({ _id }) => _id);
 	}
 
 	private async execute() {
-		if (!this.running) {
-			queueLogger.debug('Queue stopped. Cannot execute');
-			return;
+		try {
+			if (!this.running) {
+				queueLogger.debug('Queue stopped. Cannot execute');
+				return;
+			}
+
+			if (await License.shouldPreventAction('monthlyActiveContacts', 1)) {
+				queueLogger.debug('MAC limit reached. Queue wont execute');
+				this.running = false;
+				return;
+			}
+
+			// We still go 1 by 1, but we go with every queue every cycle instead of just 1 queue per cycle
+			// And we get tracing :)
+			const queues = await this.getActiveQueues();
+			for await (const queue of queues) {
+				await tracerSpan(
+					'omnichannel.queue',
+					{ attributes: { workerTime: new Date().toISOString(), queue: queue || 'Public' }, root: true },
+					() => this.checkQueue(queue),
+				);
+			}
+
+			this.scheduleExecution();
+		} catch (e) {
+			queueLogger.error({
+				msg: 'Queue Worker Error. Rescheduling with extra delay',
+				extraDelay: this.errorDelay,
+				err: e,
+			});
+			this.scheduleExecution(this.errorDelay);
 		}
-
-		if (await License.shouldPreventAction('monthlyActiveContacts', 1)) {
-			queueLogger.debug('MAC limit reached. Queue wont execute');
-			this.running = false;
-			return;
-		}
-
-		const queue = await this.nextQueue();
-		const queueDelayTimeout = this.delay();
-		queueLogger.debug(`Executing queue ${queue || 'Public'} with timeout of ${queueDelayTimeout}`);
-
-		void this.checkQueue(queue).catch((e) => {
-			queueLogger.error(e);
-		});
 	}
 
-	private async checkQueue(queue: string | undefined) {
+	private async checkQueue(queue: string | null) {
 		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
-			const nextInquiry = await LivechatInquiry.findNextAndLock(getInquirySortMechanismSetting(), queue);
+			const nextInquiry = await LivechatInquiry.findNextAndLock(getOmniChatSortQuery(getInquirySortMechanismSetting()), queue);
 			if (!nextInquiry) {
 				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
 				return;
@@ -95,12 +127,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			const result = await this.processWaitingQueue(queue, nextInquiry as InquiryWithAgentInfo);
 
 			if (!result) {
-				// Note: this removes the "one-shot" behavior of queue, allowing it to take a conversation again in the future
-				// And sorting them by _updatedAt: -1 will make it so that the oldest inquiries are taken first
-				// preventing us from playing with the same inquiry over and over again
 				queueLogger.debug(`Inquiry ${nextInquiry._id} not taken. Unlocking and re-queueing`);
-				const updatedQueue = await LivechatInquiry.unlockAndQueue(nextInquiry._id);
-				return updatedQueue;
+				return await LivechatInquiry.unlock(nextInquiry._id);
 			}
 
 			queueLogger.debug(`Inquiry ${nextInquiry._id} taken successfully. Unlocking`);
@@ -117,9 +145,21 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				queue: queue || 'Public',
 				err: e,
 			});
-		} finally {
-			setTimeout(this.execute.bind(this), this.delay());
 		}
+	}
+
+	private scheduleExecution(extraDelay?: number): void {
+		if (this.timeoutHandler !== null) {
+			return;
+		}
+
+		this.timeoutHandler = setTimeout(
+			() => {
+				this.timeoutHandler = null;
+				return this.execute();
+			},
+			this.delay() + (extraDelay || 0),
+		);
 	}
 
 	async shouldStart() {
@@ -179,7 +219,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		return true;
 	}
 
-	private async processWaitingQueue(department: string | undefined, inquiry: InquiryWithAgentInfo) {
+	private async processWaitingQueue(department: string | null, inquiry: InquiryWithAgentInfo) {
 		const queue = department || 'Public';
 
 		queueLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);

@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Divider } from '@rocket.chat/fuselage';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type InsertPlaceholderDropdownProps = {

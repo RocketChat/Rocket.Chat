@@ -97,16 +97,16 @@ export const useRetentionPolicy = (
 	  }
 	| undefined => {
 	const settings = {
-		enabled: useSetting('RetentionPolicy_Enabled') as boolean,
-		filesOnly: useSetting('RetentionPolicy_FilesOnly') as boolean,
-		doNotPrunePinned: useSetting('RetentionPolicy_DoNotPrunePinned') as boolean,
-		ignoreThreads: useSetting('RetentionPolicy_DoNotPruneThreads') as boolean,
-		appliesToChannels: useSetting('RetentionPolicy_AppliesToChannels') as boolean,
-		maxAgeChannels: useSetting('RetentionPolicy_TTL_Channels') as number,
-		appliesToGroups: useSetting('RetentionPolicy_AppliesToGroups') as boolean,
-		maxAgeGroups: useSetting('RetentionPolicy_TTL_Groups') as number,
-		appliesToDMs: useSetting('RetentionPolicy_AppliesToDMs') as boolean,
-		maxAgeDMs: useSetting('RetentionPolicy_TTL_DMs') as number,
+		enabled: useSetting('RetentionPolicy_Enabled', false),
+		filesOnly: useSetting('RetentionPolicy_FilesOnly', false),
+		doNotPrunePinned: useSetting('RetentionPolicy_DoNotPrunePinned', false),
+		ignoreThreads: useSetting('RetentionPolicy_DoNotPruneThreads', true),
+		appliesToChannels: useSetting('RetentionPolicy_AppliesToChannels', false),
+		maxAgeChannels: useSetting('RetentionPolicy_TTL_Channels', 2592000000),
+		appliesToGroups: useSetting('RetentionPolicy_AppliesToGroups', false),
+		maxAgeGroups: useSetting('RetentionPolicy_TTL_Groups', 2592000000),
+		appliesToDMs: useSetting('RetentionPolicy_AppliesToDMs', false),
+		maxAgeDMs: useSetting('RetentionPolicy_TTL_DMs', 2592000000),
 	} as const;
 
 	if (!room) {

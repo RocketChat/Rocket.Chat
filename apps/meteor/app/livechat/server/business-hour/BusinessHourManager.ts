@@ -2,14 +2,14 @@ import type { ILivechatBusinessHour, IBusinessHourTimezone } from '@rocket.chat/
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { LivechatBusinessHours, LivechatDepartment, Users } from '@rocket.chat/models';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
+import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
+import { closeBusinessHour } from './closeBusinessHour';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { businessHourLogger } from '../lib/logger';
-import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
-import { closeBusinessHour } from './closeBusinessHour';
 
 const CRON_EVERY_MIDNIGHT_EXPRESSION = '0 0 * * *';
 const CRON_DAYLIGHT_JOB_NAME = 'livechat-business-hour-daylight-saving-time-verifier';

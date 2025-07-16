@@ -1,8 +1,8 @@
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { useDecryptedMessage } from './useDecryptedMessage';
+import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 
 // Mock the dependencies
 jest.mock('@rocket.chat/core-typings', () => ({
@@ -30,7 +30,7 @@ describe('useDecryptedMessage', () => {
 		(isE2EEMessage as jest.MockedFunction<typeof isE2EEMessage>).mockReturnValue(false);
 		const message = { msg: 'Hello, world!' };
 
-		const { result } = renderHook(() => useDecryptedMessage(message as any), { legacyRoot: true });
+		const { result } = renderHook(() => useDecryptedMessage(message as any));
 
 		expect(result.current).toBe('Hello, world!');
 		expect(e2e.decryptMessage).not.toHaveBeenCalled();
@@ -40,7 +40,7 @@ describe('useDecryptedMessage', () => {
 		(isE2EEMessage as jest.MockedFunction<typeof isE2EEMessage>).mockReturnValue(true);
 		(e2e.decryptMessage as jest.Mock).mockResolvedValue({ msg: 'Decrypted message' });
 		const message = { msg: 'Encrypted message' };
-		const { result } = renderHook(() => useDecryptedMessage(message as any), { legacyRoot: true });
+		const { result } = renderHook(() => useDecryptedMessage(message as any));
 
 		await waitFor(() => {
 			expect(result.current).not.toBe('E2E_message_encrypted_placeholder');
@@ -57,7 +57,7 @@ describe('useDecryptedMessage', () => {
 		});
 		const message = { msg: 'Encrypted message with attachment' };
 
-		const { result } = renderHook(() => useDecryptedMessage(message as any), { legacyRoot: true });
+		const { result } = renderHook(() => useDecryptedMessage(message as any));
 
 		await waitFor(() => {
 			expect(result.current).toBe('E2E_message_encrypted_placeholder');
@@ -74,13 +74,16 @@ describe('useDecryptedMessage', () => {
 		});
 		const message = { msg: 'Encrypted message with attachment' };
 
-		const { result } = renderHook(() => useDecryptedMessage(message as any), { legacyRoot: true });
+		const { result } = renderHook(() => useDecryptedMessage(message as any));
 
 		await waitFor(() => {
 			expect(result.current).toBe('E2E_message_encrypted_placeholder');
 		});
 
-		expect(result.current).toBe('Message_with_attachment');
+		await waitFor(() => {
+			expect(result.current).toBe('Message_with_attachment');
+		});
+
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
 	});
 });

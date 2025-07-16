@@ -1,19 +1,19 @@
 import type { IWebdavNode, IWebdavAccountIntegration } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Modal, Box, IconButton, Select } from '@rocket.chat/fuselage';
-import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { Modal, Box, IconButton, Select, ModalHeader, ModalTitle, ModalClose, ModalContent, ModalFooter } from '@rocket.chat/fuselage';
+import { useEffectEvent, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
-import FilterByText from '../../../../components/FilterByText';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import FileUploadModal from '../../modals/FileUploadModal';
 import FilePickerBreadcrumbs from './FilePickerBreadcrumbs';
 import WebdavFilePickerGrid from './WebdavFilePickerGrid';
 import WebdavFilePickerTable from './WebdavFilePickerTable';
 import { sortWebdavNodes } from './lib/sortWebdavNodes';
+import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
+import FilterByText from '../../../../components/FilterByText';
+import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import FileUploadModal from '../../modals/FileUploadModal';
 
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';
 
@@ -36,10 +36,10 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 	const [parentFolders, setParentFolders] = useState<string[]>([]);
 	const [webdavNodes, setWebdavNodes] = useState<IWebdavNode[]>([]);
 	const [filterText, setFilterText] = useState('');
-	const debouncedFilter = useDebouncedValue(filterText, 500);
+	const debouncedFilter = useDebouncedValue('', 500);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const showFilePreviews = useMutableCallback(async (accountId, nodes) => {
+	const showFilePreviews = useEffectEvent(async (accountId: string, nodes: (IWebdavNode & { preview?: string })[] | undefined) => {
 		if (!Array.isArray(nodes) || !nodes.length) {
 			return;
 		}
@@ -183,11 +183,11 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.Title>{t('Upload_From', { name: account.name })}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Upload_From', { name: account.name })}</ModalTitle>
+				<ModalClose title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box display='flex' justifyContent='space-between'>
 					<FilePickerBreadcrumbs parentFolders={parentFolders} handleBreadcrumb={handleBreadcrumb} handleBack={handleBack} />
 					<Box>
@@ -196,7 +196,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 					</Box>
 				</Box>
 				<Box display='flex' flexDirection='column'>
-					<FilterByText onChange={setFilterText}>
+					<FilterByText value={filterText} onChange={(event) => setFilterText(event.target.value)}>
 						{typeView === 'grid' && (
 							<Select value={sortBy} onChange={(value): void => handleSort(value as WebdavSortOptions)} options={options} />
 						)}
@@ -213,8 +213,8 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 					/>
 				)}
 				{typeView === 'grid' && <WebdavFilePickerGrid webdavNodes={webdavNodes} onNodeClick={handleNodeClick} isLoading={isLoading} />}
-			</Modal.Content>
-			<Modal.Footer />
+			</ModalContent>
+			<ModalFooter />
 		</Modal>
 	);
 };

@@ -1,10 +1,17 @@
 # Change Log
 
+## 0.31.27
+
+### Patch Changes
+
+- ([#33227](https://github.com/RocketChat/Rocket.Chat/pull/33227)) Improved the performance of the message parser
+
 ## 0.31.27-rc.0
 
 ### Patch Changes
 
 - ([#33227](https://github.com/RocketChat/Rocket.Chat/pull/33227)) Improved the performance of the message parser
+
 ## 0.31.26
 
 ### Patch Changes

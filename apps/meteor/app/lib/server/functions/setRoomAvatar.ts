@@ -4,8 +4,8 @@ import { isRegisterUser } from '@rocket.chat/core-typings';
 import { Avatars, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { FileUpload } from '../../../file-upload/server';
 import { RocketChatFile } from '../../../file/server';
+import { FileUpload } from '../../../file-upload/server';
 
 export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<void> {
 	if (!isRegisterUser(user)) {

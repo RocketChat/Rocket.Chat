@@ -1,23 +1,20 @@
 {
-  "lockfileVersion": 1,
+  "lockfileVersion": 4,
   "dependencies": {
+    "isarray": {
+      "version": "0.0.1",
+      "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
+      "integrity": "sha512-D2S+3GLxWH+uhrNEcoh/fnmYeP8E8/zHl644d/jdA0g2uyXvy3sb0qxotE+ne0LtccHknQzWwZEzhak7oJ0COQ=="
+    },
     "page": {
-      "version": "https://github.com/kadirahq/page.js/archive/34ddf45ea8e4c37269ce3df456b44fc0efc595c6.tar.gz",
-      "integrity": "sha512-BGG5XDCSYGI4C/pGoYdGIIU1YpEYdCYN2HxwuKpYLgIDdT+tlqRs4IOQTJLTRnXKbt9r07Cucj0Y6fTGZcYizw==",
-      "dependencies": {
-        "path-to-regexp": {
-          "version": "1.2.1",
-          "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-1.2.1.tgz",
-          "integrity": "sha512-DBw9IhWfevR2zCVwEZURTuQNseCvu/Q9f5ZgqMCK0Rh61bDa4uyjPAOy9b55yKiPT59zZn+7uYKxmWwsguInwg==",
-          "dependencies": {
-            "isarray": {
-              "version": "0.0.1",
-              "resolved": "https://registry.npmjs.org/isarray/-/isarray-0.0.1.tgz",
-              "integrity": "sha512-D2S+3GLxWH+uhrNEcoh/fnmYeP8E8/zHl644d/jdA0g2uyXvy3sb0qxotE+ne0LtccHknQzWwZEzhak7oJ0COQ=="
-            }
-          }
-        }
-      }
+      "version": "1.6.4",
+      "resolved": "https://github.com/kadirahq/page.js/archive/34ddf45ea8e4c37269ce3df456b44fc0efc595c6.tar.gz",
+      "integrity": "sha512-BGG5XDCSYGI4C/pGoYdGIIU1YpEYdCYN2HxwuKpYLgIDdT+tlqRs4IOQTJLTRnXKbt9r07Cucj0Y6fTGZcYizw=="
+    },
+    "path-to-regexp": {
+      "version": "1.2.1",
+      "resolved": "https://registry.npmjs.org/path-to-regexp/-/path-to-regexp-1.2.1.tgz",
+      "integrity": "sha512-DBw9IhWfevR2zCVwEZURTuQNseCvu/Q9f5ZgqMCK0Rh61bDa4uyjPAOy9b55yKiPT59zZn+7uYKxmWwsguInwg=="
     },
     "qs": {
       "version": "5.2.0",

@@ -7,7 +7,6 @@ it('should be call rest `POST /v1/chat.react` method', async () => {
 	const fn = jest.fn();
 
 	const { result } = renderHook(() => useToggleReactionMutation(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withEndpoint('POST', '/v1/chat.react', fn).withJohnDoe().build(),
 	});
 
@@ -25,7 +24,6 @@ it('should not work for non-logged in users', async () => {
 	const fn = jest.fn();
 
 	const { result } = renderHook(() => useToggleReactionMutation(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withEndpoint('POST', '/v1/chat.react', fn).build(),
 	});
 

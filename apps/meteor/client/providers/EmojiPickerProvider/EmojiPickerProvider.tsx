@@ -1,28 +1,38 @@
-import { useDebouncedState, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedState, useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, ReactElement, ContextType } from 'react';
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 
-import type { EmojiByCategory } from '../../../app/emoji/client';
-import { emoji, getFrequentEmoji, updateRecent, createEmojiList, createPickerEmojis, CUSTOM_CATEGORY } from '../../../app/emoji/client';
+import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
+import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../../app/emoji/client';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
 import EmojiPicker from '../../views/composer/EmojiPicker/EmojiPicker';
-import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 
 const DEFAULT_ITEMS_LIMIT = 90;
+
+// limit recent emojis to 27 (3 rows of 9)
+const RECENT_EMOJIS_LIMIT = 27;
 
 const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [emojiPicker, setEmojiPicker] = useState<ReactElement | null>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
-	const [actualTone, setActualTone] = useLocalStorage('emoji.tone', 0);
-	const [currentCategory, setCurrentCategory] = useState('recent');
-	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
-
 	const [frequentEmojis, setFrequentEmojis] = useLocalStorage<[string, number][]>('emoji.frequent', []);
 
-	const [quickReactions, setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
+	const [actualTone, setActualTone] = useLocalStorage('emoji.tone', 0);
+	const [currentCategory, setCurrentCategory] = useState('recent');
+
+	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
+
+	const [quickReactions, _setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
 		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
 	);
+
+	const setQuickReactions = useEffectEvent(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
+	const [sub, getSnapshot] = useMemo(() => {
+		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions);
+	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions]);
+
+	const [emojiListByCategory, categoriesIndexes] = useSyncExternalStore(sub, getSnapshot);
 
 	useUpdateCustomEmoji();
 
@@ -37,41 +47,10 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 				.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
 
 			setFrequentEmojis(sortedFrequent);
-			setQuickReactions(getFrequentEmoji(sortedFrequent.map(([emoji]) => emoji)));
+			_setQuickReactions(getFrequentEmoji(sortedFrequent.map(([emoji]) => emoji)));
 		},
 		[frequentEmojis, setFrequentEmojis],
 	);
-
-	const [getEmojiListsByCategory, setEmojiListsByCategoryGetter] = useState<() => EmojiByCategory[]>(() => () => []);
-
-	// TODO: improve this update
-	const updateEmojiListByCategory = useCallback(
-		(categoryKey: string, limit: number = DEFAULT_ITEMS_LIMIT) => {
-			setEmojiListsByCategoryGetter(
-				(getEmojiListsByCategory) => () =>
-					getEmojiListsByCategory().map((category) =>
-						categoryKey === category.key
-							? {
-									...category,
-									emojis: {
-										list: createEmojiList(category.key, null, recentEmojis, setRecentEmojis),
-										limit: category.key === CUSTOM_CATEGORY ? limit | customItemsLimit : null,
-									},
-							  }
-							: category,
-					),
-			);
-		},
-		[customItemsLimit, recentEmojis, setRecentEmojis],
-	);
-
-	useEffect(() => {
-		if (recentEmojis?.length > 0) {
-			updateRecent(recentEmojis);
-		}
-
-		setEmojiListsByCategoryGetter(() => () => createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis));
-	}, [actualTone, recentEmojis, customItemsLimit, currentCategory, setRecentEmojis, frequentEmojis]);
 
 	const addRecentEmoji = useCallback(
 		(_emoji: string) => {
@@ -86,14 +65,13 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 
 			recent.unshift(_emoji);
 
-			// limit recent emojis to 27 (3 rows of 9)
-			recent.splice(27);
+			recent.splice(RECENT_EMOJIS_LIMIT);
 
-			setRecentEmojis(recent);
+			// If this value is not cloned, the recent list will not be updated
+			setRecentEmojis([...recent]);
 			emoji.packages.base.emojisByCategory.recent = recent;
-			updateEmojiListByCategory('recent');
 		},
-		[recentEmojis, setRecentEmojis, updateEmojiListByCategory, addFrequentEmojis],
+		[recentEmojis, setRecentEmojis, addFrequentEmojis],
 	);
 
 	const open = useCallback((ref: Element, callback: (emoji: string) => void) => {
@@ -113,12 +91,13 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			handlePreview,
 			handleRemovePreview,
 			addRecentEmoji,
-			getEmojiListsByCategory,
+			emojiListByCategory,
 			recentEmojis,
 			setRecentEmojis,
 			actualTone,
 			currentCategory,
 			setCurrentCategory,
+			categoriesIndexes,
 			customItemsLimit,
 			setCustomItemsLimit,
 			setActualTone,
@@ -129,7 +108,8 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			open,
 			emojiToPreview,
 			addRecentEmoji,
-			getEmojiListsByCategory,
+			emojiListByCategory,
+			categoriesIndexes,
 			recentEmojis,
 			setRecentEmojis,
 			actualTone,

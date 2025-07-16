@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { PieChart, ReportCard } from '../components';
 import { useStatusSection } from '../hooks';
 

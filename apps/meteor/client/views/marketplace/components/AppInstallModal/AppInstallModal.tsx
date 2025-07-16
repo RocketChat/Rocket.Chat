@@ -1,12 +1,19 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import {
+	Button,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
-import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
 
 type AppsInstallationModalProps = {
-	context: MarketplaceRouteContext;
 	enabled: number;
 	limit: number;
 	appName: string;
@@ -16,7 +23,6 @@ type AppsInstallationModalProps = {
 };
 
 const AppInstallationModal = ({
-	context,
 	enabled,
 	limit,
 	appName,
@@ -28,24 +34,23 @@ const AppInstallationModal = ({
 
 	const getTitle = () => {
 		if (enabled === limit) {
-			return context === 'private' ? t('Private_apps_limit_reached') : t('App_limit_reached');
+			return t('App_limit_reached');
 		}
 
 		if (enabled > limit) {
-			return context === 'private' ? t('Private_apps_limit_exceeded') : t('App_limit_exceeded');
+			return t('App_limit_exceeded');
 		}
 
-		return t('Apps_Currently_Enabled', { context: context === 'private' ? context : '', enabled, limit });
+		return t('Apps_Currently_Enabled', { context: '', enabled, limit });
 	};
 
 	const getContent = () => {
 		if (enabled === limit) {
-			return t('Enable_of_limit_apps_currently_enabled', { context: context === 'private' ? context : '', enabled, limit, appName });
+			return t('Enable_of_limit_apps_currently_enabled', { context: '', enabled, limit, appName });
 		}
 
 		if (enabled > limit) {
 			return t('Enable_of_limit_apps_currently_enabled_exceeded', {
-				...(context === 'private' && { context }),
 				enabled,
 				limit,
 				exceed: enabled - limit + 1,
@@ -53,33 +58,33 @@ const AppInstallationModal = ({
 			});
 		}
 
-		return t('Workspaces_on_Community_edition_install_app', { context: context === 'private' ? context : '', enabled, limit });
+		return t('Workspaces_on_Community_edition_install_app', { context: '', enabled, limit });
 	};
 
-	const confirmButtonOverlimitLabel = context === 'private' ? t('Upload_anyway') : t('Install_anyway');
+	const confirmButtonOverLimitLabel = t('Install_anyway');
 
 	return (
 		<>
 			<Modal>
-				<Modal.Header>
-					<Modal.HeaderText>
-						<Modal.Title>{getTitle()}</Modal.Title>
-					</Modal.HeaderText>
-					<Modal.Close onClick={handleClose} />
-				</Modal.Header>
+				<ModalHeader>
+					<ModalHeaderText>
+						<ModalTitle data-qa-id='confirm-app-upload-modal-title'>{getTitle()}</ModalTitle>
+					</ModalHeaderText>
+					<ModalClose onClick={handleClose} />
+				</ModalHeader>
 
-				<Modal.Content>
+				<ModalContent>
 					<MarkdownText content={getContent()} />
-				</Modal.Content>
+				</ModalContent>
 
-				<Modal.Footer>
-					<Modal.FooterControllers>
+				<ModalFooter>
+					<ModalFooterControllers>
 						<Button onClick={handleEnableUnlimitedApps}>{t('Enable_unlimited_apps')}</Button>
 						<Button {...(enabled < limit && { primary: true })} onClick={handleConfirm}>
-							{enabled < limit ? t('Next') : confirmButtonOverlimitLabel}
+							{enabled < limit ? t('Next') : confirmButtonOverLimitLabel}
 						</Button>
-					</Modal.FooterControllers>
-				</Modal.Footer>
+					</ModalFooterControllers>
+				</ModalFooter>
 			</Modal>
 		</>
 	);

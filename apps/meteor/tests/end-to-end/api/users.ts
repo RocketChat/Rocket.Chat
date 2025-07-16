@@ -91,7 +91,7 @@ const setRoomConfig = ({ roomId, favorite, isDefault }: { roomId: IRoom['_id']; 
 				? {
 						defaultValue: true,
 						favorite: false,
-				  }
+					}
 				: undefined,
 		});
 };
@@ -173,7 +173,7 @@ const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) =>
 	await connection
 		.db()
 		.collection('users')
-		.updateOne({ _id: userId }, { $set: { ...userData } });
+		.updateOne({ _id: userId as any }, { $set: { ...userData } });
 
 	await connection.close();
 };
@@ -722,7 +722,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
-					fields: JSON.stringify({ userRooms: 1 }),
+					includeUserRooms: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -750,6 +750,7 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
 		it('should return the rooms when the user request your own rooms but he does NOT have the necessary permission', (done) => {
 			void updatePermission('view-other-user-channels', []).then(() => {
 				void request
@@ -757,7 +758,7 @@ describe('[Users]', () => {
 					.set(credentials)
 					.query({
 						userId: credentials['X-User-Id'],
-						fields: JSON.stringify({ userRooms: 1 }),
+						includeUserRooms: true,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -1100,37 +1101,6 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it('should query all users in the system by custom fields', (done) => {
-			const query = {
-				fields: JSON.stringify({
-					username: 1,
-					_id: 1,
-					customFields: 1,
-				}),
-				query: JSON.stringify({
-					'customFields.customFieldText': 'success',
-				}),
-			};
-
-			void request
-				.get(api('users.list'))
-				.query(query)
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('users');
-					const queriedUser = (res.body.users as IUser[]).find((u) => u._id === user._id);
-					assert.isDefined(queriedUser);
-					expect(queriedUser).to.have.property('customFields');
-					expect(queriedUser.customFields).to.have.property('customFieldText', 'success');
-				})
-				.end(done);
-		});
-
 		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
 			const query = {
 				fields: JSON.stringify({
@@ -1204,7 +1174,7 @@ describe('[Users]', () => {
 			await request.get(api('users.list')).set(user2Credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 
-		it('should exclude inviteToken in the user item for privileged users even when fields={inviteToken:1} is specified', async () => {
+		it('should exclude inviteToken in the user item for privileged users', async () => {
 			await request
 				.post(api('useInviteToken'))
 				.set(user2Credentials)
@@ -1236,7 +1206,7 @@ describe('[Users]', () => {
 				});
 		});
 
-		it('should exclude inviteToken in the user item for normal users even when fields={inviteToken:1} is specified', async () => {
+		it('should exclude inviteToken in the user item for normal users', async () => {
 			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
 			await request
 				.post(api('useInviteToken'))
@@ -1675,6 +1645,42 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
+		it('should return an error when trying to upsert a user by sending an empty userId', () => {
+			return request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: '',
+					data: {},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters [invalid-params]');
+				});
+		});
+
+		it('should return an error when trying to use the joinDefaultChannels param, which is not intended for updates', () => {
+			return request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						joinDefaultChannels: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', 'must NOT have additional properties [invalid-params]');
+				});
+		});
+
 		it("should update a bot's email", (done) => {
 			void request
 				.post(api('users.update'))
@@ -1998,6 +2004,63 @@ describe('[Users]', () => {
 				});
 
 			await deleteUser(user);
+		});
+
+		describe('email verification', () => {
+			let admin: TestUser<IUser>;
+			let userToUpdate: TestUser<IUser>;
+			let userCredentials: Credentials;
+
+			beforeEach(async () => {
+				admin = await createUser({ roles: ['admin'] });
+				userToUpdate = await createUser();
+				userCredentials = await login(admin.username, password);
+			});
+
+			afterEach(async () => {
+				await deleteUser(userToUpdate);
+				await deleteUser(admin);
+			});
+
+			it("should update user's email verified correctly", async () => {
+				await request
+					.post(api('users.update'))
+					.set(userCredentials)
+					.send({
+						userId: userToUpdate._id,
+						data: {
+							verified: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+						expect(res.body).to.not.have.nested.property('user.e2e');
+					});
+			});
+
+			it("should update user's email verified even if email is not changed", (done) => {
+				void request
+					.post(api('users.update'))
+					.set(userCredentials)
+					.send({
+						userId: userToUpdate._id,
+						data: {
+							email: userToUpdate.emails[0].address,
+							verified: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+						expect(res.body).to.not.have.nested.property('user.e2e');
+					})
+					.end(done);
+			});
 		});
 
 		function failUpdateUser(name: string) {
@@ -2982,7 +3045,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
 
@@ -3083,6 +3146,31 @@ describe('[Users]', () => {
 			before(() => updatePermission('create-personal-access-tokens', ['admin']));
 			after(() => updatePermission('create-personal-access-tokens', ['admin']));
 
+			it('should accept loginToken when we call /me', async () => {
+				let loginToken = '';
+				await request
+					.post(api('users.generatePersonalAccessToken'))
+					.set(credentials)
+					.send({
+						tokenName: 'test',
+						loginToken: '1234567890',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('token');
+						loginToken = res.body.token;
+					});
+
+				await request
+					.get(api('me')) // it does not really matter what we call here, we just want to test that the loginToken is accepted
+					.set({
+						'X-Auth-Token': loginToken,
+						'X-User-Id': credentials['X-User-Id'],
+					})
+					.expect(200);
+			});
 			describe('[/users.getPersonalAccessTokens]', () => {
 				it('should return an array when the user does not have personal tokens configured', (done) => {
 					void request
@@ -3245,10 +3333,10 @@ describe('[Users]', () => {
 						.get(api('users.getPersonalAccessTokens'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
-						.expect(400)
+						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body.errorType).to.be.equal('not-authorized');
+							expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 						})
 						.end(done);
 				});
@@ -3369,6 +3457,7 @@ describe('[Users]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});
@@ -3385,6 +3474,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				})
 				.end(done);
 		});
@@ -3401,6 +3491,7 @@ describe('[Users]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});
@@ -3615,7 +3706,7 @@ describe('[Users]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'unauthorized');
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});

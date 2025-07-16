@@ -1,5 +1,5 @@
-import type { ISetting } from '../../definition/settings';
 import { BaseBridge } from './BaseBridge';
+import type { ISetting } from '../../definition/settings';
 
 /**
  * An abstract class which will contain various methods related to Apps
@@ -8,9 +8,9 @@ import { BaseBridge } from './BaseBridge';
  * changes.
  */
 export abstract class AppDetailChangesBridge extends BaseBridge {
-    public doOnAppSettingsChange(appId: string, setting: ISetting): void {
-        return this.onAppSettingsChange(appId, setting);
-    }
+	public doOnAppSettingsChange(appId: string, setting: ISetting): void {
+		return this.onAppSettingsChange(appId, setting);
+	}
 
-    protected abstract onAppSettingsChange(appId: string, setting: ISetting): void;
+	protected abstract onAppSettingsChange(appId: string, setting: ISetting): void;
 }

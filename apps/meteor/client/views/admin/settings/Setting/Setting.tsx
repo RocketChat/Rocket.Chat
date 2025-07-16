@@ -2,13 +2,16 @@ import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/co
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useSettingStructure, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSettingStructure } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import MarkdownText from '../../../../components/MarkdownText';
-import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise } from '../../EditableSettingsContext';
 import MemoizedSetting from './MemoizedSetting';
+import MarkdownText from '../../../../components/MarkdownText';
+import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
+import { useHasSettingModule } from '../hooks/useHasSettingModule';
 
 type SettingProps = {
 	className?: string;
@@ -19,7 +22,7 @@ type SettingProps = {
 function Setting({ className = undefined, settingId, sectionChanged }: SettingProps): ReactElement {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
-	const isEnterprise = useIsEnterprise();
+	const hasSettingModule = useHasSettingModule(setting);
 
 	if (!setting || !persistedSetting) {
 		throw new Error(`Setting ${settingId} not found`);
@@ -53,7 +56,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 		[persistedSetting, dispatch],
 	);
 
-	const t = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	const [value, setValue] = useState(setting.value);
 	const [editor, setEditor] = useState(isSettingColor(setting) ? setting.editor : undefined);
@@ -68,7 +71,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	}, [(setting as ISettingColor).editor]);
 
 	const onChangeValue = useCallback(
-		(value) => {
+		(value: SettingValue) => {
 			setValue(value);
 			update({ value });
 		},
@@ -76,7 +79,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	);
 
 	const onChangeEditor = useCallback(
-		(editor) => {
+		(editor: SettingEditor) => {
 			setEditor(editor);
 			update({ editor });
 		},
@@ -93,18 +96,25 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting]);
 
-	const { _id, disabled, readonly, type, packageValue, i18nLabel, i18nDescription, alert, invisible } = setting;
+	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
 
-	const labelText = (t.has(i18nLabel) && t(i18nLabel)) || (t.has(_id) && t(_id)) || i18nLabel || _id;
+	const disabled = !useEditableSettingVisibilityQuery(persistedSetting.enableQuery);
+	const invisible = !useEditableSettingVisibilityQuery(persistedSetting.displayQuery);
+
+	const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;
 
 	const hint = useMemo(
-		() =>
-			i18nDescription && t.has(i18nDescription) ? <MarkdownText variant='inline' preserveHtml content={t(i18nDescription)} /> : undefined,
-		[i18nDescription, t],
+		() => (i18nDescription && i18n.exists(i18nDescription) ? <MarkdownText variant='inline' content={t(i18nDescription)} /> : undefined),
+		[i18n, i18nDescription, t],
 	);
-	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t.has(alert) ? t(alert) : alert }} />, [alert, t]);
 
-	const shouldDisableEnterprise = setting.enterprise && !isEnterprise;
+	const callout = useMemo(
+		() =>
+			alert && <span dangerouslySetInnerHTML={{ __html: i18n.exists(alert) ? DOMPurify.sanitize(t(alert)) : DOMPurify.sanitize(alert) }} />,
+		[alert, i18n, t],
+	);
+
+	const shouldDisableEnterprise = setting.enterprise && !hasSettingModule;
 
 	const PRICING_URL = 'https://go.rocket.chat/i/see-paid-plan-customize-homepage';
 
@@ -152,7 +162,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			showUpgradeButton={showUpgradeButton}
 			sectionChanged={sectionChanged}
 			{...setting}
-			disabled={setting.disabled || shouldDisableEnterprise}
+			disabled={disabled || shouldDisableEnterprise}
 			value={value}
 			editor={editor}
 			hasResetButton={hasResetButton}

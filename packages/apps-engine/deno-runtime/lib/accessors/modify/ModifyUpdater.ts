@@ -18,136 +18,153 @@ import { RoomBuilder } from '../builders/RoomBuilder.ts';
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 
 import { require } from '../../../lib/require.ts';
+import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
 
 const { UIHelper } = require('@rocket.chat/apps-engine/server/misc/UIHelper.js') as { UIHelper: typeof _UIHelper };
 const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
 const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-    RocketChatAssociationModel: typeof _RocketChatAssociationModel;
+	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
 };
 
 export class ModifyUpdater implements IModifyUpdater {
-    constructor(private readonly senderFn: typeof Messenger.sendRequest) { }
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
 
-    public getLivechatUpdater(): ILivechatUpdater {
-        return new Proxy(
-            { __kind: 'getLivechatUpdater' },
-            {
-                get:
-                    (_target: unknown, prop: string) =>
-                        (...params: unknown[]) =>
-                            prop === 'toJSON'
-                                ? {}
-                                : this.senderFn({
-                                    method: `accessor:getModifier:getUpdater:getLivechatUpdater:${prop}`,
-                                    params,
-                                })
-                                    .then((response) => response.result)
-                                    .catch((err) => {
-                                        throw new Error(err.error);
-                                    }),
-            },
-        ) as ILivechatUpdater;
-    }
+	public getLivechatUpdater(): ILivechatUpdater {
+		return new Proxy(
+			{ __kind: 'getLivechatUpdater' },
+			{
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getUpdater:getLivechatUpdater:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
+			},
+		) as ILivechatUpdater;
+	}
 
-    public getUserUpdater(): IUserUpdater {
-        return new Proxy(
-            { __kind: 'getUserUpdater' },
-            {
-                get:
-                    (_target: unknown, prop: string) =>
-                        (...params: unknown[]) =>
-                            prop === 'toJSON'
-                                ? {}
-                                : this.senderFn({
-                                    method: `accessor:getModifier:getUpdater:getUserUpdater:${prop}`,
-                                    params,
-                                })
-                                    .then((response) => response.result)
-                                    .catch((err) => {
-                                        throw new Error(err.error);
-                                    }),
-            },
-        ) as IUserUpdater;
-    }
+	public getUserUpdater(): IUserUpdater {
+		return new Proxy(
+			{ __kind: 'getUserUpdater' },
+			{
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getUpdater:getUserUpdater:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
+			},
+		) as IUserUpdater;
+	}
 
-    public async message(messageId: string, _updater: IUser): Promise<IMessageBuilder> {
-        const response = await this.senderFn({
-            method: 'bridges:getMessageBridge:doGetById',
-            params: [messageId, AppObjectRegistry.get('id')],
-        });
+	public async message(messageId: string, editor: IUser): Promise<IMessageBuilder> {
+		const response = await this.senderFn({
+			method: 'bridges:getMessageBridge:doGetById',
+			params: [messageId, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
-        return new MessageBuilder(response.result as IMessage);
-    }
+		const builder = new MessageBuilder(response.result as IMessage);
 
-    public async room(roomId: string, _updater: IUser): Promise<IRoomBuilder> {
-        const response = await this.senderFn({
-            method: 'bridges:getRoomBridge:doGetById',
-            params: [roomId, AppObjectRegistry.get('id')],
-        });
+		builder.setEditor(editor);
 
-        return new RoomBuilder(response.result as IRoom);
-    }
+		return builder;
+	}
 
-    public finish(builder: IMessageBuilder | IRoomBuilder): Promise<void> {
-        switch (builder.kind) {
-            case RocketChatAssociationModel.MESSAGE:
-                return this._finishMessage(builder as IMessageBuilder);
-            case RocketChatAssociationModel.ROOM:
-                return this._finishRoom(builder as IRoomBuilder);
-            default:
-                throw new Error('Invalid builder passed to the ModifyUpdater.finish function.');
-        }
-    }
+	public async room(roomId: string, _updater: IUser): Promise<IRoomBuilder> {
+		const response = await this.senderFn({
+			method: 'bridges:getRoomBridge:doGetById',
+			params: [roomId, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
 
-    private async _finishMessage(builder: IMessageBuilder): Promise<void> {
-        const result = builder.getMessage();
+		return new RoomBuilder(response.result as IRoom);
+	}
 
-        if (!result.id) {
-            throw new Error("Invalid message, can't update a message without an id.");
-        }
+	public finish(builder: IMessageBuilder | IRoomBuilder): Promise<void> {
+		switch (builder.kind) {
+			case RocketChatAssociationModel.MESSAGE:
+				return this._finishMessage(builder as MessageBuilder);
+			case RocketChatAssociationModel.ROOM:
+				return this._finishRoom(builder as RoomBuilder);
+			default:
+				throw new Error('Invalid builder passed to the ModifyUpdater.finish function.');
+		}
+	}
 
-        if (!result.sender?.id) {
-            throw new Error('Invalid sender assigned to the message.');
-        }
+	private async _finishMessage(builder: MessageBuilder): Promise<void> {
+		const result = builder.getMessage();
 
-        if (result.blocks?.length) {
-            result.blocks = UIHelper.assignIds(result.blocks, AppObjectRegistry.get('id') || '');
-        }
+		if (!result.id) {
+			throw new Error("Invalid message, can't update a message without an id.");
+		}
 
-        await this.senderFn({
-            method: 'bridges:getMessageBridge:doUpdate',
-            params: [result, AppObjectRegistry.get('id')],
-        });
-    }
+		if (!result.sender?.id) {
+			throw new Error('Invalid sender assigned to the message.');
+		}
 
-    private async _finishRoom(builder: IRoomBuilder): Promise<void> {
-        const result = builder.getRoom();
+		if (result.blocks?.length) {
+			result.blocks = UIHelper.assignIds(result.blocks, AppObjectRegistry.get('id') || '');
+		}
 
-        if (!result.id) {
-            throw new Error("Invalid room, can't update a room without an id.");
-        }
+		const changes = { id: result.id, ...builder.getChanges() };
 
-        if (!result.type) {
-            throw new Error('Invalid type assigned to the room.');
-        }
+		await this.senderFn({
+			method: 'bridges:getMessageBridge:doUpdate',
+			params: [changes, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
+	}
 
-        if (result.type !== RoomType.LIVE_CHAT) {
-            if (!result.creator || !result.creator.id) {
-                throw new Error('Invalid creator assigned to the room.');
-            }
+	private async _finishRoom(builder: RoomBuilder): Promise<void> {
+		const room = builder.getRoom();
 
-            if (!result.slugifiedName || !result.slugifiedName.trim()) {
-                throw new Error('Invalid slugifiedName assigned to the room.');
-            }
-        }
+		if (!room.id) {
+			throw new Error("Invalid room, can't update a room without an id.");
+		}
 
-        if (!result.displayName || !result.displayName.trim()) {
-            throw new Error('Invalid displayName assigned to the room.');
-        }
+		if (!room.type) {
+			throw new Error('Invalid type assigned to the room.');
+		}
 
-        await this.senderFn({
-            method: 'bridges:getRoomBridge:doUpdate',
-            params: [result, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
-        });
-    }
+		if (room.type !== RoomType.LIVE_CHAT) {
+			if (!room.creator || !room.creator.id) {
+				throw new Error('Invalid creator assigned to the room.');
+			}
+
+			if (!room.slugifiedName || !room.slugifiedName.trim()) {
+				throw new Error('Invalid slugifiedName assigned to the room.');
+			}
+		}
+
+		if (!room.displayName || !room.displayName.trim()) {
+			throw new Error('Invalid displayName assigned to the room.');
+		}
+
+		const changes = { id: room.id, ...builder.getChanges() };
+
+		await this.senderFn({
+			method: 'bridges:getRoomBridge:doUpdate',
+			params: [changes, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
+		});
+	}
 }

@@ -48,7 +48,7 @@ describe('licenses', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				})
 				.end(done);
 		});
@@ -66,46 +66,6 @@ describe('licenses', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
 				})
-				.end(done);
-		});
-	});
-
-	describe('[/licenses.get]', () => {
-		it('should fail if not logged in', (done) => {
-			void request
-				.get(api('licenses.get'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
-		});
-
-		it('should fail if user is unauthorized', (done) => {
-			void request
-				.get(api('licenses.get'))
-				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
-				})
-				.end(done);
-		});
-
-		it('should return licenses if user is logged in and is authorized', (done) => {
-			void request
-				.get(api('licenses.get'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('licenses').and.to.be.an('array');
-				})
-
 				.end(done);
 		});
 	});
@@ -152,44 +112,6 @@ describe('licenses', () => {
 					expect(res.body.license).to.have.property('tags').and.to.be.an('array');
 				})
 
-				.end(done);
-		});
-	});
-
-	describe('[/licenses.isEnterprise]', () => {
-		it('should fail if not logged in', (done) => {
-			void request
-				.get(api('licenses.isEnterprise'))
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
-		});
-
-		it('should pass if user has user role', (done) => {
-			void request
-				.get(api('licenses.isEnterprise'))
-				.set(unauthorizedUserCredentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('isEnterprise', Boolean(process.env.IS_EE));
-				})
-				.end(done);
-		});
-
-		it('should pass if user has admin role', (done) => {
-			void request
-				.get(api('licenses.isEnterprise'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('isEnterprise', Boolean(process.env.IS_EE));
-				})
 				.end(done);
 		});
 	});

@@ -5,15 +5,15 @@ import { LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
-import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
-import { Livechat as LivechatTyped } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
-import { settings } from '../../../../../app/settings/server';
 import { schedulerLogger } from './logger';
+import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { returnRoomAsInquiry } from '../../../../../app/livechat/server/lib/rooms';
+import { settings } from '../../../../../app/settings/server';
 
 const SCHEDULER_NAME = 'omnichannel_scheduler';
 
-class AutoTransferChatSchedulerClass {
+export class AutoTransferChatSchedulerClass {
 	scheduler: Agenda;
 
 	running: boolean;
@@ -43,8 +43,16 @@ class AutoTransferChatSchedulerClass {
 		this.logger.info('Service started');
 	}
 
-	private async getSchedulerUser(): Promise<IUser | null> {
-		return Users.findOneById('rocket.cat');
+	private async getSchedulerUser(): Promise<IUser & { userType: 'user' }> {
+		const user = await Users.findOneById('rocket.cat');
+		if (!user) {
+			this.logger.error('Error while transferring room: user not found');
+			throw new Error('error-no-cat');
+		}
+		return {
+			...user,
+			userType: 'user',
+		};
 	}
 
 	public async scheduleRoom(roomId: string, timeout: number): Promise<void> {
@@ -91,7 +99,7 @@ class AutoTransferChatSchedulerClass {
 		if (!RoutingManager.getConfig()?.autoAssignAgent) {
 			this.logger.debug(`Auto-assign agent is disabled, returning room ${roomId} as inquiry`);
 
-			await LivechatTyped.returnRoomAsInquiry(room, departmentId, {
+			await returnRoomAsInquiry(room, departmentId, {
 				scope: 'autoTransferUnansweredChatsToQueue',
 				comment: timeoutDuration,
 				transferredBy: await this.getSchedulerUser(),
@@ -109,14 +117,9 @@ class AutoTransferChatSchedulerClass {
 
 		const transferredBy = await this.getSchedulerUser();
 
-		if (!transferredBy) {
-			this.logger.error(`Error while transferring room ${room._id}: user not found`);
-			return;
-		}
-
 		await forwardRoomToAgent(room, {
 			userId: agent.agentId,
-			transferredBy: { ...transferredBy, userType: 'user' },
+			transferredBy,
 			transferredTo: agent,
 			scope: 'autoTransferUnansweredChatsToAgent',
 			comment: timeoutDuration,

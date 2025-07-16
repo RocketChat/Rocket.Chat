@@ -1,10 +1,10 @@
 import { Box, Input } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
-import React, { useState } from 'react';
-
-import GenericModal from '../../../../components/GenericModal';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, FormEvent, ReactElement } from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type RemoveDepartmentModalProps = {
 	_id: string;
@@ -14,13 +14,13 @@ type RemoveDepartmentModalProps = {
 };
 
 const RemoveDepartmentModal = ({ _id = '', name, reset, onClose }: RemoveDepartmentModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
 
 	const removeDepartment = useEndpoint('DELETE', '/v1/livechat/department/:_id', { _id });
 	const dispatchToast = useToastMessageDispatch();
 
-	const onSubmit = useMutableCallback(async (e) => {
+	const onSubmit = useEffectEvent(async (e: FormEvent) => {
 		e.preventDefault();
 
 		try {

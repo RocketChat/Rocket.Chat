@@ -1,6 +1,6 @@
 import { Select } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { Period } from './periods';
@@ -16,7 +16,7 @@ type PeriodSelectorProps<TPeriod extends Period['key']> = {
 const PeriodSelector = <TPeriod extends Period['key']>({ periods, value, name, onChange }: PeriodSelectorProps<TPeriod>): ReactElement => {
 	const { t } = useTranslation();
 
-	const options = useMemo<[string, string][]>(() => periods.map((period) => [period, t(getPeriod(period).label)]), [periods, t]);
+	const options = useMemo<[string, string][]>(() => periods.map((period) => [period, t(...getPeriod(period).label)]), [periods, t]);
 
 	return (
 		<Select

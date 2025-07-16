@@ -1,5 +1,5 @@
-@import '../../../../styles/colors';
-@import '../../../../styles/variables';
+@use '../../../../styles/colors';
+@use '../../../../styles/variables';
 
 .uikit-image-block {
 	margin: 0 8px 8px;
@@ -7,7 +7,7 @@
 	&__title {
 		letter-spacing: 0.2px;
 
-		color: $color-text-grey;
+		color: colors.$color-text-grey;
 
 		font-size: 0.75rem;
 		font-weight: normal;
@@ -18,7 +18,7 @@
 		overflow: hidden;
 
 		&--loading {
-			opacity: $disabled-opacity;
+			opacity: variables.$disabled-opacity;
 		}
 	}
 
@@ -44,7 +44,7 @@
 		white-space: nowrap;
 		text-indent: 100%;
 
-		border-radius: $default-border-radius;
+		border-radius: variables.$default-border-radius;
 		background-repeat: no-repeat;
 		background-position: 50%;
 		background-size: contain;

@@ -1,10 +1,10 @@
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { renderHook } from '@testing-library/react';
 
+import { useOTR } from './useOTR';
 import OTR from '../../app/otr/client/OTR';
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
 import { useRoom } from '../views/room/contexts/RoomContext';
-import { useOTR } from './useOTR';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserId: jest.fn(),
@@ -27,7 +27,7 @@ describe('useOTR', () => {
 		(useUserId as jest.Mock).mockReturnValue(undefined);
 		(useRoom as jest.Mock).mockReturnValue({ _id: 'roomId' });
 
-		const { result } = renderHook(() => useOTR(), { legacyRoot: true });
+		const { result } = renderHook(() => useOTR());
 
 		expect(result.current.otr).toBeUndefined();
 		expect(result.current.otrState).toBe(OtrRoomState.ERROR);
@@ -37,7 +37,7 @@ describe('useOTR', () => {
 		(useUserId as jest.Mock).mockReturnValue('userId');
 		(useRoom as jest.Mock).mockReturnValue(undefined);
 
-		const { result } = renderHook(() => useOTR(), { legacyRoot: true });
+		const { result } = renderHook(() => useOTR());
 
 		expect(result.current.otr).toBeUndefined();
 		expect(result.current.otrState).toBe(OtrRoomState.ERROR);
@@ -48,7 +48,7 @@ describe('useOTR', () => {
 		(useRoom as jest.Mock).mockReturnValue({ _id: 'roomId' });
 		(OTR.getInstanceByRoomId as jest.Mock).mockReturnValue(undefined);
 
-		const { result } = renderHook(() => useOTR(), { legacyRoot: true });
+		const { result } = renderHook(() => useOTR());
 
 		expect(result.current.otr).toBeUndefined();
 		expect(result.current.otrState).toBe(OtrRoomState.ERROR);
@@ -62,7 +62,7 @@ describe('useOTR', () => {
 		(useRoom as jest.Mock).mockReturnValue({ _id: 'roomId' });
 		(OTR.getInstanceByRoomId as jest.Mock).mockReturnValue(mockOtrInstance);
 
-		const { result } = renderHook(() => useOTR(), { legacyRoot: true });
+		const { result } = renderHook(() => useOTR());
 
 		expect(result.current.otr).toBe(mockOtrInstance);
 		expect(result.current.otrState).toBe(OtrRoomState.NOT_STARTED);

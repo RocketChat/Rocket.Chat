@@ -1,10 +1,10 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
-import React, { useState, useCallback } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
+import DOMPurify from 'dompurify';
+import type { ChangeEvent, FormEvent, ReactElement } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../components/GenericModal';
 
 const EnterE2EPasswordModal = ({
 	onConfirm,
@@ -20,14 +20,14 @@ const EnterE2EPasswordModal = ({
 	const [passwordError, setPasswordError] = useState<string | undefined>();
 
 	const handleChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
+		(e: ChangeEvent<HTMLInputElement>) => {
 			e.target.value !== '' && setPasswordError(undefined);
 			setPassword(e.currentTarget.value);
 		},
 		[setPassword],
 	);
 
-	const handleConfirm = useMutableCallback((e): void => {
+	const handleConfirm = useEffectEvent((e: FormEvent): void => {
 		e.preventDefault();
 		if (password === '') {
 			setPasswordError(t('Invalid_pass'));
@@ -48,7 +48,7 @@ const EnterE2EPasswordModal = ({
 			onClose={onClose}
 			onCancel={onCancel}
 		>
-			<Box dangerouslySetInnerHTML={{ __html: t('E2E_password_request_text') }} />
+			<Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('E2E_password_request_text')) }} />
 			<FieldGroup mbs={24} w='full'>
 				<Field>
 					<FieldRow>

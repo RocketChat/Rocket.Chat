@@ -1,36 +1,32 @@
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { ChatMessage } from '../../../../app/models/client';
+import { Messages } from '../../../../app/models/client';
 
 export const useDeleteUser = () => {
 	const notify = useStream('notify-logged');
 
 	const uid = useUserId();
+
+	const updateMessages = Messages.use((state) => state.update);
+	const removeMessages = Messages.use((state) => state.remove);
+
 	useEffect(() => {
 		if (!uid) {
 			return;
 		}
 		return notify('Users:Deleted', ({ userId, messageErasureType, replaceByUser }) => {
 			if (messageErasureType === 'Unlink' && replaceByUser) {
-				return ChatMessage.update(
-					{
-						'u._id': userId,
-					},
-					{
-						$set: {
-							'alias': replaceByUser.alias,
-							'u._id': replaceByUser._id,
-							'u.username': replaceByUser.username,
-							'u.name': undefined,
-						},
-					},
-					{ multi: true },
+				return updateMessages(
+					(record) => record.u._id === userId,
+					(record) => ({
+						...record,
+						alias: replaceByUser.alias,
+						u: { ...record.u, _id: replaceByUser._id, username: replaceByUser.username ?? record.u.username, name: undefined },
+					}),
 				);
 			}
-			ChatMessage.remove({
-				'u._id': userId,
-			});
+			removeMessages((record) => record.u._id === userId);
 		});
-	}, [notify, uid]);
+	}, [notify, removeMessages, uid, updateMessages]);
 };

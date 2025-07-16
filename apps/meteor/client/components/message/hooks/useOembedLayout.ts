@@ -1,4 +1,6 @@
-import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useLayout } from '@rocket.chat/ui-contexts';
+
+import { useMessageListOembedEnabled } from '../list/MessageListContext';
 
 type OembedLayout = {
 	enabled: boolean;
@@ -15,7 +17,7 @@ export const useOembedLayout = (): OembedLayout => {
   very often, so this hook is not going to be re-evaluated very often either;
   this is why we don't need to memoize the result or store it in a context
   */
-	const enabled = useSetting<boolean>('API_Embed', false);
+	const enabled = useMessageListOembedEnabled();
 	const { isMobile } = useLayout();
 
 	const maxWidth = isMobile ? ('100%' as const) : 368;

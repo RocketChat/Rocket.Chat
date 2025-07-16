@@ -1,4 +1,4 @@
-import type { Meta, Story } from '@storybook/preact';
+import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { MessageAvatars } from '.';
@@ -16,7 +16,7 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof MessageAvatars>>;
 
-const Template: Story<ComponentProps<typeof MessageAvatars>> = (args) => <MessageAvatars {...args} />;
+const Template: StoryFn<ComponentProps<typeof MessageAvatars>> = (args) => <MessageAvatars {...args} />;
 
 export const Empty = Template.bind({});
 Empty.storyName = 'empty';

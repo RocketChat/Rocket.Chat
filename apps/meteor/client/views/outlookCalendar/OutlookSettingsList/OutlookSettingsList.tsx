@@ -1,8 +1,9 @@
 import { ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useTranslation, useUserPreference, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
+import OutlookSettingItem from './OutlookSettingItem';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -10,9 +11,9 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../components/Contextualbar';
 import { useOutlookAuthentication, useOutlookAuthenticationMutationLogout } from '../hooks/useOutlookAuthentication';
-import OutlookSettingItem from './OutlookSettingItem';
 
 type OutlookSettingsListProps = {
 	onClose: () => void;
@@ -60,7 +61,7 @@ const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps)
 	];
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='calendar' />
 				<ContextualbarTitle>{t('Outlook_calendar_settings')}</ContextualbarTitle>
@@ -80,7 +81,7 @@ const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps)
 					<Button onClick={changeRoute}>{t('Back_to_calendar')}</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

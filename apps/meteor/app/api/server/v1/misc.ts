@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
-import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
-import { Settings, Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
 	isSpotlightProps,
@@ -10,7 +10,6 @@ import {
 	isMethodCallAnonProps,
 	isFingerprintProps,
 	isMeteorCall,
-	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
@@ -21,8 +20,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { browseChannelsMethod } from '../../../../server/methods/browseChannels';
+import { spotlightMethod } from '../../../../server/publications/spotlight';
+import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { getLogs } from '../../../../server/stream/stdout';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { passwordPolicy } from '../../../lib/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -177,26 +178,9 @@ API.v1.addRoute(
 	{
 		async get() {
 			const userFields = { ...getBaseUserFields(), services: 1 };
-			const { services, ...user } = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
+			const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
 
-			return API.v1.success(
-				await getUserInfo({
-					...user,
-					isOAuthUser: isOAuthUser({ ...user, services }),
-					...(services && {
-						services: {
-							...(services.github && { github: services.github }),
-							...(services.gitlab && { gitlab: services.gitlab }),
-							...(services.email2fa?.enabled && { email2fa: { enabled: services.email2fa.enabled } }),
-							...(services.totp?.enabled && { totp: { enabled: services.totp.enabled } }),
-							password: {
-								// The password hash shouldn't be leaked but the client may need to know if it exists.
-								exists: Boolean(services?.password?.bcrypt),
-							},
-						},
-					}),
-				}),
-			);
+			return API.v1.success(await getUserInfo(user));
 		},
 	},
 );
@@ -348,7 +332,7 @@ API.v1.addRoute(
 		async get() {
 			const { query } = this.queryParams;
 
-			const result = await Meteor.callAsync('spotlight', query);
+			const result = await spotlightMethod({ text: query, userId: this.userId });
 
 			return API.v1.success(result);
 		},
@@ -365,8 +349,14 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
+			const { text, type, workspace = 'local' } = this.queryParams;
 
-			const { text, type, workspace = 'local' } = query;
+			const filter = {
+				...(query ? { ...query } : {}),
+				...(text ? { text } : {}),
+				...(type ? { type } : {}),
+				...(workspace ? { workspace } : {}),
+			};
 
 			if (sort && Object.keys(sort).length > 1) {
 				return API.v1.failure('This method support only one "sort" parameter');
@@ -374,15 +364,16 @@ API.v1.addRoute(
 			const sortBy = sort ? Object.keys(sort)[0] : undefined;
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
-			const result = await Meteor.callAsync('browseChannels', {
-				text,
-				type,
-				workspace,
-				sortBy,
-				sortDirection,
-				offset: Math.max(0, offset),
-				limit: Math.max(0, count),
-			});
+			const result = await browseChannelsMethod(
+				{
+					...filter,
+					sortBy,
+					sortDirection,
+					offset: Math.max(0, offset),
+					limit: Math.max(0, count),
+				},
+				this.user,
+			);
 
 			if (!result) {
 				return API.v1.failure('Please verify the parameters');
@@ -404,36 +395,6 @@ API.v1.addRoute(
 	},
 	{
 		get() {
-			return API.v1.success(passwordPolicy.getPasswordPolicy());
-		},
-	},
-);
-
-API.v1.addRoute(
-	'pw.getPolicyReset',
-	{
-		authRequired: false,
-		validateParams: validateParamsPwGetPolicyRest,
-		deprecation: {
-			version: '7.0.0',
-			alternatives: ['pw.getPolicy'],
-		},
-	},
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					token: String,
-				}),
-			);
-			const { token } = this.queryParams;
-
-			const user = await Users.findOneByResetToken(token, { projection: { _id: 1 } });
-			if (!user) {
-				return API.v1.unauthorized();
-			}
-
 			return API.v1.success(passwordPolicy.getPasswordPolicy());
 		},
 	},
@@ -477,12 +438,9 @@ API.v1.addRoute(
  */
 API.v1.addRoute(
 	'stdout.queue',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-logs'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-logs'))) {
-				return API.v1.unauthorized();
-			}
 			return API.v1.success({ queue: getLogs() });
 		},
 	},
@@ -695,6 +653,8 @@ API.v1.addRoute(
 			const settingsIds: string[] = [];
 
 			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
+				await WorkspaceCredentials.removeAllCredentials();
+
 				settingsIds.push(
 					'Cloud_Service_Agree_PrivacyTerms',
 					'Cloud_Workspace_Id',
@@ -706,28 +666,38 @@ API.v1.addRoute(
 					'Cloud_Workspace_PublicKey',
 					'Cloud_Workspace_License',
 					'Cloud_Workspace_Had_Trial',
-					'Cloud_Workspace_Access_Token',
 					'uniqueID',
-					'Cloud_Workspace_Access_Token_Expires_At',
 				);
 			}
 
 			settingsIds.push('Deployment_FingerPrint_Verified');
 
+			const auditSettingOperation = updateAuditedByUser({
+				_id: this.userId,
+				username: this.user.username!,
+				ip: this.requestIp,
+				useragent: this.request.headers.get('user-agent') || '',
+			});
+
 			const promises = settingsIds.map((settingId) => {
 				if (settingId === 'uniqueID') {
-					return Settings.resetValueById('uniqueID', process.env.DEPLOYMENT_ID || uuidv4());
+					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || uuidv4());
 				}
 
 				if (settingId === 'Cloud_Workspace_Access_Token_Expires_At') {
-					return Settings.resetValueById('Cloud_Workspace_Access_Token_Expires_At', new Date(0));
+					return auditSettingOperation(Settings.resetValueById, 'Cloud_Workspace_Access_Token_Expires_At', new Date(0));
 				}
 
 				if (settingId === 'Deployment_FingerPrint_Verified') {
-					return Settings.updateValueById('Deployment_FingerPrint_Verified', true);
+					return auditSettingOperation(Settings.updateValueById, 'Deployment_FingerPrint_Verified', true);
 				}
 
-				return Settings.resetValueById(settingId);
+				return resetAuditedSettingByUser({
+					_id: this.userId,
+					username: this.user.username!,
+					ip: this.requestIp,
+					useragent: this.request.headers.get('user-agent') || '',
+				})(Settings.resetValueById, settingId);
 			});
 
 			(await Promise.all(promises)).forEach((value, index) => {

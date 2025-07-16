@@ -1,10 +1,10 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import NotificationPreferencesForm from './NotificationPreferencesForm';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -12,8 +12,8 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import NotificationPreferencesForm from './NotificationPreferencesForm';
 
 type NotificationPreferencesProps = {
 	handleClose: () => void;
@@ -33,10 +33,11 @@ const NotificationPreferences = ({
 	const { t } = useTranslation();
 	const {
 		formState: { isDirty, isSubmitting },
+		reset,
 	} = useFormContext();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='bell' />
 				<ContextualbarTitle>{t('Notifications_Preferences')}</ContextualbarTitle>
@@ -47,13 +48,15 @@ const NotificationPreferences = ({
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					{handleClose && <Button onClick={handleClose}>{t('Cancel')}</Button>}
+					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
+						{t('Reset')}
+					</Button>
 					<Button primary disabled={!isDirty} loading={isSubmitting} onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

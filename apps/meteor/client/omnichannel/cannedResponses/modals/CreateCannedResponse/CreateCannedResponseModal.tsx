@@ -1,11 +1,15 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, useCallback } from 'react';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { memo, useCallback } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
-import CannedResponseForm from '../../components/cannedResponseForm';
+import GenericError from '../../../../components/GenericError';
+import type { CannedResponseEditFormData } from '../../CannedResponseEdit';
+import CannedResponseForm from '../../components/CannedResponseForm';
 
 const getInitialData = (
 	cannedResponseData: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] }) | undefined,
@@ -13,27 +17,22 @@ const getInitialData = (
 	_id: cannedResponseData?._id || '',
 	shortcut: cannedResponseData?.shortcut || '',
 	text: cannedResponseData?.text || '',
-	tags:
-		cannedResponseData?.tags && Array.isArray(cannedResponseData.tags)
-			? cannedResponseData.tags.map((tag: string) => ({ label: tag, value: tag }))
-			: [],
+	tags: cannedResponseData?.tags || [],
 	scope: cannedResponseData?.scope || 'user',
 	departmentId: cannedResponseData?.departmentId || '',
 });
 
-const CreateCannedResponseModal = ({
-	cannedResponseData,
-	onClose,
-	reloadCannedList,
-}: {
+type CreateCannedResponseModalProps = {
 	cannedResponseData?: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
 	onClose: () => void;
 	reloadCannedList: () => void;
-}) => {
-	const t = useTranslation();
+};
+
+const CreateCannedResponseModal = ({ cannedResponseData, onClose, reloadCannedList }: CreateCannedResponseModalProps) => {
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const methods = useForm({ defaultValues: getInitialData(cannedResponseData) });
+	const methods = useForm<CannedResponseEditFormData>({ defaultValues: getInitialData(cannedResponseData) });
 	const {
 		handleSubmit,
 		formState: { isDirty },
@@ -42,11 +41,11 @@ const CreateCannedResponseModal = ({
 	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
 	const handleCreate = useCallback(
-		async ({ departmentId, ...data }) => {
+		async ({ departmentId, ...data }: CannedResponseEditFormData) => {
 			try {
 				await saveCannedResponse({
-					_id: cannedResponseData?._id,
 					...data,
+					_id: cannedResponseData?._id ?? data._id,
 					...(departmentId && { departmentId }),
 				});
 				dispatchToastMessage({
@@ -72,9 +71,11 @@ const CreateCannedResponseModal = ({
 			title={cannedResponseData?._id ? t('Edit_Canned_Response') : t('Create_canned_response')}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 		>
-			<FormProvider {...methods}>
-				<CannedResponseForm />
-			</FormProvider>
+			<ErrorBoundary fallbackRender={() => <GenericError icon='circle-exclamation' />}>
+				<FormProvider {...methods}>
+					<CannedResponseForm />
+				</FormProvider>
+			</ErrorBoundary>
 		</GenericModal>
 	);
 };

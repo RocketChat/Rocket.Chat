@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { differenceInSeconds } from 'date-fns';
 
-import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 import { isMessageNewDay } from './isMessageNewDay';
+import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 
 export const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {

@@ -76,6 +76,7 @@ Meteor.startup(() => {
 		} else {
 			res.setHeader('Last-Modified', new Date().toUTCString());
 		}
+
 		res.setHeader('Content-Type', file.contentType);
 		res.setHeader('Content-Length', file.length);
 

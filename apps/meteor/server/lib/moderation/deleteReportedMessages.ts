@@ -49,13 +49,16 @@ export async function deleteReportedMessages(messages: IMessage[], user: IUser):
 		await Messages.setAsDeletedByIdsAndUser(messageIds, user as any);
 	}
 
-	const transformed = messages.reduce((acc, { rid, _id }) => {
-		if (!acc[rid]) {
-			acc[rid] = [];
-		}
-		acc[rid].push(_id);
-		return acc;
-	}, {} as Record<string, string[]>);
+	const transformed = messages.reduce(
+		(acc, { rid, _id }) => {
+			if (!acc[rid]) {
+				acc[rid] = [];
+			}
+			acc[rid].push(_id);
+			return acc;
+		},
+		{} as Record<string, string[]>,
+	);
 
 	Object.entries(transformed).forEach(([rid, messageIds]) => {
 		void api.broadcast('notify.deleteMessageBulk', rid, {

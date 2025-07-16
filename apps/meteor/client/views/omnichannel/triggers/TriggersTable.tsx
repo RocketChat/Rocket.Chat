@@ -1,9 +1,10 @@
 import { Pagination } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useQuery, hashKey } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
+import TriggersRow from './TriggersRow';
 import GenericError from '../../../components/GenericError';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -14,13 +15,12 @@ import {
 	GenericTableLoadingRow,
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import TriggersRow from './TriggersRow';
 
 const TriggersTable = () => {
 	const t = useTranslation();
 	const router = useRouter();
 
-	const handleAddNew = useMutableCallback(() => {
+	const handleAddNew = useEffectEvent(() => {
 		router.navigate('/omnichannel/triggers/new');
 	});
 
@@ -29,10 +29,13 @@ const TriggersTable = () => {
 	const query = useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]);
 
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery(['livechat-triggers', query], async () => getTriggers(query));
+	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
+		queryKey: ['livechat-triggers', query],
+		queryFn: async () => getTriggers(query),
+	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>

@@ -1,3 +1,7 @@
+import './ServerAudit/IAuditServerSettingEvent';
+import './ServerAudit/IAuditUserChangedEvent';
+
+export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
 export * from './AppOverview';
 export * from './FeaturedApps';
@@ -7,6 +11,7 @@ export * from './IRoom';
 export * from './IMessage';
 export * from './federation';
 export * from './Serialized';
+export * from './Subscribable';
 export * from './ISetting';
 export * from './ISubscription';
 export * from './ITeam';
@@ -42,6 +47,7 @@ export * from './IUserStatus';
 export * from './IUser';
 
 export * from './ee/IAuditLog';
+export * from './ee/IWorkspaceCredentials';
 
 export * from './import';
 export * from './IIncomingMessage';
@@ -142,3 +148,5 @@ export * from './RoomRouteData';
 
 export * as Cloud from './cloud';
 export * from './themes';
+
+export { schemas } from './Ajv';

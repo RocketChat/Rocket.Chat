@@ -1,6 +1,5 @@
-import { Accordion, Field, FieldLabel, FieldRow, NumberInput, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React from 'react';
+import { AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, NumberInput, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -8,20 +7,22 @@ const PreferencesUserPresenceSection = () => {
 	const { t } = useTranslation();
 	const { register, control } = useFormContext();
 
-	const enableAutoAwayId = useUniqueId();
-	const idleTimeLimit = useUniqueId();
+	const enableAutoAwayId = useId();
+	const idleTimeLimit = useId();
 
 	return (
-		<Accordion.Item title={t('User_Presence')}>
+		<AccordionItem title={t('User_Presence')}>
 			<FieldGroup>
 				<Field>
 					<FieldRow>
-						<FieldLabel htmlFor={enableAutoAwayId}>{t('Enable_Auto_Away')}</FieldLabel>
+						<FieldLabel is='span' id={enableAutoAwayId}>
+							{t('Enable_Auto_Away')}
+						</FieldLabel>
 						<Controller
 							name='enableAutoAway'
 							control={control}
 							render={({ field: { ref, value, onChange } }) => (
-								<ToggleSwitch ref={ref} id={enableAutoAwayId} checked={value} onChange={onChange} />
+								<ToggleSwitch ref={ref} aria-labelledby={enableAutoAwayId} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>
@@ -33,7 +34,7 @@ const PreferencesUserPresenceSection = () => {
 					</FieldRow>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

@@ -5,11 +5,11 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../settings/server';
 import { EmailCheck } from './EmailCheck';
 import type { ICodeCheck } from './ICodeCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { TOTPCheck } from './TOTPCheck';
+import { settings } from '../../../settings/server';
 
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;

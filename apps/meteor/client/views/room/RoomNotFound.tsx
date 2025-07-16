@@ -1,26 +1,31 @@
 import { Box } from '@rocket.chat/fuselage';
-import { Header, HeaderToolbar } from '@rocket.chat/ui-client';
-import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn, Header, HeaderToolbar } from '@rocket.chat/ui-client';
+import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
+import RoomLayout from './layout/RoomLayout';
 import NotFoundState from '../../components/NotFoundState';
 import SidebarToggler from '../../components/SidebarToggler';
-import RoomLayout from './layout/RoomLayout';
 
 const RoomNotFound = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { isMobile } = useLayout();
 
 	return (
 		<RoomLayout
 			header={
 				isMobile && (
-					<Header justifyContent='start'>
-						<HeaderToolbar>
-							<SidebarToggler />
-						</HeaderToolbar>
-					</Header>
+					<FeaturePreview feature='newNavigation'>
+						<FeaturePreviewOff>
+							<Header justifyContent='start'>
+								<HeaderToolbar>
+									<SidebarToggler />
+								</HeaderToolbar>
+							</Header>
+						</FeaturePreviewOff>
+						<FeaturePreviewOn>{null}</FeaturePreviewOn>
+					</FeaturePreview>
 				)
 			}
 			body={

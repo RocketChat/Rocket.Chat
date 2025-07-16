@@ -1,20 +1,24 @@
 import type { IIncomingIntegration } from '@rocket.chat/core-typings';
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import EditIncomingWebhook from './incoming/EditIncomingWebhook';
 import EditOutgoingWebhook from './outgoing/EditOutgoingWebhook';
 
 const EditIntegrationsPageWithData = ({ integrationId }: { integrationId: IIncomingIntegration['_id'] }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const params = useMemo(() => ({ integrationId }), [integrationId]);
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.get');
-	const { data, isLoading, isError } = useQuery(['integrations', params], async () => getIntegrations(params));
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['integrations', params],
+		queryFn: async () => getIntegrations(params),
+	});
 
-	if (isLoading) {
+	if (isPending) {
 		return (
 			<Box w='full' p={24}>
 				<Skeleton mbe={4} />

@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
 
 export class HomeSidenav {
@@ -33,12 +34,16 @@ export class HomeSidenav {
 		return this.page.locator('#modal-root [data-qa="create-direct-modal"] [data-qa-type="user-auto-complete-input"]');
 	}
 
+	get btnDirectory(): Locator {
+		return this.page.locator('role=button[name="Directory"]');
+	}
+
 	get btnCreate(): Locator {
 		return this.page.locator('role=button[name="Create"]');
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
+		return this.page.locator('role=search >> role=searchbox').first();
 	}
 
 	get userProfileMenu(): Locator {
@@ -53,40 +58,73 @@ export class HomeSidenav {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
 
+	get sidebarHomeAction(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Home' });
+	}
+
+	get btnDisplay(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Display' });
+	}
+
+	get btnCreateNew(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Create new' });
+	}
+
+	get btnAdministration(): Locator {
+		return this.sidebarToolbar.getByRole('button', { name: 'Administration' });
+	}
+
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
 		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.sidebarToolbar.click();
+		await this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.page.keyboard.press('Escape');
 	}
 
 	// Note: this is different from openChat because queued chats are not searchable
 	getQueuedChat(name: string): Locator {
-		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first();
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: new RegExp(`^${name}$`) }).first();
 	}
 
 	get accountProfileOption(): Locator {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}
 
-	// TODO: refactor getSidebarItemByName to not use data-qa
-	getSidebarItemByName(name: string, isRead?: boolean): Locator {
-		return this.page.locator(
-			['[data-qa="sidebar-item"]', `[aria-label="${name}"]`, isRead && '[data-unread="false"]'].filter(Boolean).join(''),
-		);
+	get accountPreferencesOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Preferences"]');
+	}
+
+	get searchList(): Locator {
+		return this.page.getByRole('search').getByRole('listbox');
+	}
+
+	getSidebarItemByName(name: string): Locator {
+		return this.page.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
+	}
+
+	getSearchItemByName(name: string): Locator {
+		return this.searchList.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
+	}
+
+	getSidebarItemBadge(name: string): Locator {
+		return this.getSidebarItemByName(name).getByRole('status', { name: 'unread' });
+	}
+
+	getSearchItemBadge(name: string): Locator {
+		return this.getSearchItemByName(name).getByRole('status', { name: 'unread' });
 	}
 
 	async selectMarkAsUnread(name: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.focus();
 		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
-		await this.page.getByRole('option', { name: 'Mark Unread' }).click();
+		await this.page.getByRole('menuitem', { name: 'Mark Unread' }).click();
 	}
 
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.focus();
 		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
-		await this.page.locator(`li[value="${priority}"]`).click();
+		await this.page.getByRole('menuitem', { name: priority }).click();
 	}
 
 	async openAdministrationByLabel(text: string): Promise<void> {
@@ -108,10 +146,6 @@ export class HomeSidenav {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
 	}
 
-	getSearchRoomByName(name: string): Locator {
-		return this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`);
-	}
-
 	async searchRoom(name: string): Promise<void> {
 		await this.openSearch();
 		await this.page.locator('role=search >> role=searchbox').fill(name);
@@ -127,9 +161,13 @@ export class HomeSidenav {
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
 
+	async openDirectory(): Promise<void> {
+		await this.btnDirectory.click();
+	}
+
 	async openChat(name: string): Promise<void> {
 		await this.searchRoom(name);
-		await this.getSearchRoomByName(name).click();
+		await this.getSearchItemByName(name).click();
 		await this.waitForChannel();
 	}
 
@@ -174,18 +212,14 @@ export class HomeSidenav {
 	}
 
 	async createEncryptedChannel(name: string) {
+		const toastMessages = new ToastMessages(this.page);
+
 		await this.openNewByLabel('Channel');
-		await this.inputChannelName.type(name);
+		await this.inputChannelName.fill(name);
 		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
-	}
 
-	getRoomBadge(roomName: string): Locator {
-		return this.getSidebarItemByName(roomName).getByRole('status', { exact: true });
-	}
-
-	getSearchChannelBadge(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first().getByRole('status', { exact: true });
+		await toastMessages.dismissToast('success');
 	}
 }
