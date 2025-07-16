@@ -10,7 +10,8 @@ import { TimeFilterSelect } from './TimeFilterSelect';
 import { useCompactMode } from '../../../useCompactMode';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
-export const AppLogsFilter = ({ appId }: { appId: string }) => {
+type AppLogsFilterProps = { appId: string }
+export const AppLogsFilter = ({ appId }: AppLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control } = useAppLogsFilterFormContext();
