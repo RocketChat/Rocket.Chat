@@ -139,6 +139,7 @@ async function executeIntegrationRest(
 	const scriptEngine = getEngine(this.request.integration);
 
 	let { bodyParams } = this;
+	const separateResponse = this.bodyParams?.separateResponse === true;
 	let scriptResponse: Record<string, any> | undefined;
 
 	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
@@ -191,6 +192,11 @@ async function executeIntegrationRest(
 			}
 
 			bodyParams = result && result.content;
+
+			if (!('separateResponse' in bodyParams)) {
+				bodyParams.separateResponse = separateResponse;
+			}
+
 			scriptResponse = result.response;
 			if (result.user) {
 				this.user = result.user;
