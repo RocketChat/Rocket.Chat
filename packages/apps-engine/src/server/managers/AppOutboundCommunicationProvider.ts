@@ -1,5 +1,3 @@
-import type { IBlock } from '@rocket.chat/ui-kit';
-
 import type { AppAccessorManager } from '.';
 import { AppMethod } from '../../definition/metadata';
 import type { IOutboundMessageProviders, ProviderMetadata } from '../../definition/outboundComunication';
