@@ -1,6 +1,5 @@
 import { Box, Button, Field, FieldLabel, FieldRow, Label, Modal, NumberInput, RadioButton } from '@rocket.chat/fuselage';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -17,12 +16,12 @@ type FormDataType = {
 	customExportAmount: number;
 };
 
-export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps): ReactNode => {
+export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps) => {
 	const { t } = useTranslation();
 
 	const appId = useRouteParameter('id');
 
-	const { control, watch } = useForm<FormDataType>({
+	const { control, watch, getValues } = useForm<FormDataType>({
 		defaultValues: {
 			type: 'json',
 			count: 'max',
@@ -30,7 +29,8 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 		},
 	});
 
-	const formData = watch();
+	const type = watch('type');
+	const count = watch('count');
 
 	const getFileUrl = ({
 		severity,
@@ -63,7 +63,7 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 	};
 
 	const handleConfirm = (): void => {
-		const url = getFileUrl({ ...filterValues, type: formData.type, count: formData.count === 'max' ? 2000 : formData.customExportAmount });
+		const url = getFileUrl({ ...filterValues, type, count: count === 'max' ? 2000 : getValues('customExportAmount') });
 		window.open(url, '_blank', 'noopener noreferrer');
 	};
 
@@ -154,7 +154,7 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 							name='customExportAmount'
 							control={control}
 							render={({ field }) => (
-								<NumberInput id='limit' disabled={formData.count !== 'custom'} placeholder='0' {...field} aria-describedby='limitNumber' />
+								<NumberInput id='limit' disabled={count !== 'custom'} placeholder='0' {...field} aria-describedby='limitNumber' />
 							)}
 						/>
 					</Field>

@@ -1,5 +1,5 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 type CompactFilterOptionsProps = {
 	handleExportLogs: () => void;
@@ -7,7 +7,7 @@ type CompactFilterOptionsProps = {
 };
 
 const CompactFilterOptions = ({ handleExportLogs, ...props }: CompactFilterOptionsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const menuOptions = {
 		exportLogs: {
