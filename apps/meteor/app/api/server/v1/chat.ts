@@ -31,7 +31,8 @@ import {
 	isChatGetDiscussionsProps,
 	isChatScheduleMessageProps,
 	isChatUpdateScheduledMessageProps,
-	isChatDeleteScheduledMessageProps
+	isChatDeleteScheduledMessageProps,
+	isChatGetScheduledMessagesProps
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -1031,7 +1032,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getScheduledMessages',
-	{ authRequired: true },
+	{ authRequired: true, validateParams:  isChatGetScheduledMessagesProps},
 	{
 		async get() {
 			const userId = this.userId;
@@ -1040,7 +1041,6 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			// Optional: Filter only current user's scheduled messages
 			const scheduledMessages = await ScheduledMessages.find(
 				{ 'u._id': userId },
 				{ sort: { scheduledAt: 1 } } // sort by schedule time ascending
