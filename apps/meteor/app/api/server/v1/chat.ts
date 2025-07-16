@@ -236,16 +236,15 @@ const ChatPostMessageSchema = {
 				},
 			],
 		},
-		text: { type: 'string', nullable: true },
-		alias: { type: 'string', nullable: true },
-		emoji: { type: 'string', nullable: true },
-		avatar: { type: 'string', nullable: true },
+		text: { type: 'string' },
+		alias: { type: 'string' },
+		emoji: { type: 'string' },
+		avatar: { type: 'string' },
 		attachments: {
 			type: 'array',
 			items: { type: 'object' },
-			nullable: true,
 		},
-		customFields: { type: 'object', nullable: true },
+		customFields: { type: 'object' },
 	},
 	additionalProperties: false,
 	required: [],
@@ -380,7 +379,7 @@ const chatPostMessageEndpoints = API.v1.post(
 				}
 			}
 		}
-		console.log('this:', this);
+		console.log('this:', this.bodyParams);
 		const messageReturn = (
 			await applyAirGappedRestrictionsValidation(() =>
 				processWebhookMessage(this.bodyParams, this.user as IUser & { username: RequiredField<IUser, 'username'> }),
