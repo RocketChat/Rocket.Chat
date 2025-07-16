@@ -20,7 +20,6 @@ export function reaction(federationMatrixService: FederationMatrix, callbacks: I
 		callbacks.priority.HIGH,
 		'federation-matrix-after-set-reaction',
 	);
-	registeredCallbacks.push({ hook: 'afterSetReaction', id: 'federation-matrix-after-set-reaction' });
 
 	callbacks.add(
 		'afterUnsetReaction',
@@ -30,18 +29,6 @@ export function reaction(federationMatrixService: FederationMatrix, callbacks: I
 		callbacks.priority.HIGH,
 		'federation-matrix-after-unset-reaction',
 	);
-	registeredCallbacks.push({ hook: 'afterUnsetReaction', id: 'federation-matrix-after-unset-reaction' });
-}
-
-export function removeReactionListeners(callbacks?: ICallbacks): void {
-	if (!callbacks) {
-		return;
-	}
-
-	for (const { hook, id } of registeredCallbacks) {
-		callbacks.remove(hook, id);
-	}
-	registeredCallbacks = [];
 }
 
 async function handleReactionAdded(

@@ -19,8 +19,6 @@ import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
-import { registerHooks, removeAllHooks } from './hooks';
-import type { ICallbacks } from './types/ICallbacks';
 import { convertEmojiToUnicode } from './utils/emojiConverter';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
@@ -36,16 +34,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private httpRoutes: { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> };
 
-	private callbacks?: ICallbacks;
-
 	private constructor(emitter?: Emitter<HomeserverEventSignatures>) {
 		super();
 		this.eventHandler = emitter || new Emitter<HomeserverEventSignatures>();
 	}
 
-	static async create(emitter?: Emitter<HomeserverEventSignatures>, callbacks?: ICallbacks): Promise<FederationMatrix> {
+	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
-		instance.callbacks = callbacks;
 		const config = new ConfigService();
 		const matrixConfig = config.getMatrixConfig();
 		const serverConfig = config.getServerConfig();
@@ -91,14 +86,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	async created(): Promise<void> {
 		try {
 			registerEvents(this.eventHandler);
-			registerHooks(this, this.callbacks);
 		} catch (error) {
 			this.logger.warn('Homeserver module not available, running in limited mode');
 		}
-	}
-
-	async stopped(): Promise<void> {
-		removeAllHooks(this.callbacks);
 	}
 
 	public async getMatrixDomain(): Promise<string> {
