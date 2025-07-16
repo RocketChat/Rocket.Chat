@@ -118,8 +118,8 @@ const ExportMessages = () => {
 		return outputOptions.filter((option) => option[0] !== 'pdf');
 	}, [outputOptions]);
 
-	const roomExportMutation = useRoomExportMutation();
-	const downloadExportMutation = useDownloadExportMutation();
+	const { mutateAsync: exportRoom } = useRoomExportMutation();
+	const { mutateAsync: exportAndDownload } = useDownloadExportMutation();
 
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const messageCount = useCountSelected();
@@ -129,6 +129,10 @@ const ExportMessages = () => {
 	useEffect(() => {
 		if (type === 'email') {
 			setValue('format', 'html');
+		}
+
+		if (type === 'download') {
+			setValue('format', 'json');
 		}
 	}, [type, setValue]);
 
@@ -146,34 +150,45 @@ const ExportMessages = () => {
 		setValue('messagesCount', messageCount, { shouldDirty: true });
 	}, [messageCount, setValue]);
 
-	const { mutate: exportAsPDF } = useExportMessagesAsPDFMutation();
+	const { mutateAsync: exportAsPDF } = useExportMessagesAsPDFMutation();
 
-	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
+	const handleExport = async ({
+		type,
+		toUsers,
+		dateFrom,
+		dateTo,
+		format,
+		subject,
+		additionalEmails,
+	}: ExportMessagesFormValues): Promise<void> => {
 		const messages = selectedMessageStore.getSelectedMessages();
 
 		if (type === 'download') {
 			if (format === 'pdf') {
-				return exportAsPDF(messages);
+				await exportAsPDF(messages);
+				return;
 			}
 
 			if (format === 'json') {
-				return downloadExportMutation.mutateAsync({
+				await exportAndDownload({
 					mids: messages,
 				});
+				return;
 			}
 		}
 
 		if (type === 'file') {
-			return roomExportMutation.mutateAsync({
+			await exportRoom({
 				rid: room._id,
 				type: 'file',
 				...(dateFrom && { dateFrom }),
 				...(dateTo && { dateTo }),
 				format: format as 'html' | 'json',
 			});
+			return;
 		}
 
-		roomExportMutation.mutateAsync({
+		await exportRoom({
 			rid: room._id,
 			type: 'email',
 			toUsers,
