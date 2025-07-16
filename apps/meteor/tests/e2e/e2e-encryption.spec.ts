@@ -302,7 +302,7 @@ test.describe('basic features', () => {
 
 		// Select Output format as PDF
 		await exportMessagesTab.outputFormat.click();
-		await exportMessagesTab.getMethodByName('PDF').click();
+		await exportMessagesTab.getOutputFormatOptionByName('PDF').click();
 
 		// select messages to be exported
 		await exportMessagesTab.btnSelectMessages.click();
