@@ -1,7 +1,6 @@
 import type {
 	IMessage,
 	IRoom,
-	MessageAttachment,
 	ReadReceipt,
 	OtrSystemMessages,
 	MessageUrl,
