@@ -9,6 +9,11 @@ import { queryClient } from '../../lib/queryClient';
 
 const MeteorProvider = lazy(() => import('../../providers/MeteorProvider'));
 const AppLayout = lazy(() => import('./AppLayout'));
+const OmnichannelRoomIconProvider = lazy(
+	() => import('../../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider'),
+);
+const OmnichannelCallProvider = lazy(() => import('../../providers/CallProvider'));
+const OmnichannelProvider = lazy(() => import('../../providers/OmnichannelProvider'));
 
 const AppRoot = (): ReactElement => (
 	<OutermostErrorBoundary>
@@ -39,7 +44,13 @@ const AppRoot = (): ReactElement => (
 		<Suspense fallback={<PageLoading />}>
 			<QueryClientProvider client={queryClient}>
 				<MeteorProvider>
-					<AppLayout />
+					<OmnichannelRoomIconProvider>
+						<OmnichannelCallProvider>
+							<OmnichannelProvider>
+								<AppLayout />
+							</OmnichannelProvider>
+						</OmnichannelCallProvider>
+					</OmnichannelRoomIconProvider>
 				</MeteorProvider>
 			</QueryClientProvider>
 		</Suspense>
