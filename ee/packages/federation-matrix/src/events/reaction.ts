@@ -3,8 +3,7 @@ import { Message } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
 import { Users, MatrixBridgedMessage, Messages } from '@rocket.chat/models';
-
-import { convertUnicodeToEmoji } from '../utils/emojiConverter';
+import emojione from 'emojione';
 
 const logger = new Logger('federation-matrix:reaction');
 
@@ -56,7 +55,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 				return;
 			}
 
-			const reactionEmoji = convertUnicodeToEmoji(reactionKey);
+			const reactionEmoji = emojione.toShort(reactionKey);
 
 			await Message.reactToMessage(rcMessageId, reactionEmoji, user._id);
 
@@ -77,7 +76,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 			}
 
 			const reactionMappingKey = await MatrixBridgedMessage.getLocalMessageId(redactedEventId);
-			if (!reactionMappingKey || !reactionMappingKey.includes('_reaction_')) {
+			if (!reactionMappingKey?.includes('_reaction_')) {
 				return;
 			}
 

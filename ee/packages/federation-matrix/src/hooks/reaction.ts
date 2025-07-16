@@ -9,8 +9,6 @@ import type { ICallbacks } from '../types/ICallbacks';
 
 const logger = new Logger('federation-matrix:reaction');
 
-let registeredCallbacks: Array<{ hook: string; id: string }> = [];
-
 export function reaction(federationMatrixService: FederationMatrix, callbacks: ICallbacks) {
 	callbacks.add(
 		'afterSetReaction',
