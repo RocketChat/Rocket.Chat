@@ -9,7 +9,7 @@ import { TimeFilterSelect } from './TimeFilterSelect';
 import { useCompactMode } from '../../../useCompactMode';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
-export const AppLogsFilter = () => {
+export const AppLogsFilter = ({ appId }: { appId: string }) => {
 	const { t } = useTranslation();
 
 	const { control } = useAppLogsFilterFormContext();
@@ -60,7 +60,9 @@ export const AppLogsFilter = () => {
 					<Controller
 						control={control}
 						name='instance'
-						render={({ field }) => <InstanceFilterSelect aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />}
+						render={({ field }) => (
+							<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
+						)}
 					/>
 				</Box>
 			)}
