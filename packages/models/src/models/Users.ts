@@ -24,7 +24,6 @@ import type {
 	Document,
 	UpdateFilter,
 	UpdateOptions,
-	UpdateResult,
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,

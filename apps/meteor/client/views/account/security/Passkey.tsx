@@ -1,12 +1,11 @@
 import { Box, Button, ButtonGroup, Icon, IconButton, Tag } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { GenericModal, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { startRegistration } from '@simplewebauthn/browser';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointAction } from '/client/hooks/useEndpointAction';
 import { GenericTable, GenericTableBody, GenericTableCell, GenericTableRow } from '/client/components/GenericTable';
-import GenericModal from '/client/components/GenericModal';
 import { useFormatDate } from '/client/hooks/useFormatDate';
 
 import PasskeyCreateModel from './PasskeyCreateModal';

@@ -9,8 +9,6 @@ import './iframeCommands';
 import './incomingMessages';
 import './messageTypes';
 import './passkey';
-import './notifications';
-import './reloadRoomAfterLogin';
 import './roles';
 import './routes';
 import './slashCommands';

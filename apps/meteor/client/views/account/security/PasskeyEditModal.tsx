@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '/client/components/GenericModal';
+import { GenericModal } from '@rocket.chat/ui-contexts';
 
 type PasskeyEditModalProps = {
 	initialName: string | null;

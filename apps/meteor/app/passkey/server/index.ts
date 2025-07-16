@@ -161,8 +161,7 @@ class Passkey {
 		// TODO fzh075 Should this be included in Users.ts?
 		const user = await Users.findOne({ passkeys: { $elemMatch: { id: authenticationResponse.id } } }); // TODO fzh075 Should this be included in Users.ts?
 		if (!user) throw new Meteor.Error('Authenticator is not registered with this site');
-		const passkeys = await Users.findPasskeysByUserId(user._id);
-		const passkey = passkeys.find((key) => key.id === authenticationResponse.id);
+		const passkey = user.passkeys.find((key) => key.id === authenticationResponse.id);
 		passkey.publicKey = passkey.publicKey.buffer;
 
 		let verification: VerifiedAuthenticationResponse;

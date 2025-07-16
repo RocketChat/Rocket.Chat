@@ -17,15 +17,13 @@ export type AuthenticationContextValue = {
 		getCurrentValue: () => LoginService[];
 		subscribe: (onStoreChange: () => void) => () => void;
 	};
-	loginWithPasskey: () => Promise<void>,
+	loginWithPasskey: () => Promise<void>;
 };
 
 export const AuthenticationContext = createContext<AuthenticationContextValue>({
 	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
 	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
 	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
-	loginWithPasskey: async () => Promise.reject('loginWithPasskey not implemented'),
-
 	loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
 	loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
 	unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
@@ -33,4 +31,5 @@ export const AuthenticationContext = createContext<AuthenticationContextValue>({
 		getCurrentValue: () => [],
 		subscribe: (_: () => void) => () => Promise.reject('queryLoginServices not implemented'),
 	},
+	loginWithPasskey: () => Promise.reject('loginWithPasskey not implemented'),
 });
