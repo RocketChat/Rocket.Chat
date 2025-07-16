@@ -9,6 +9,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixBridgedUser, MatrixBridgedRoom, MatrixBridgedMessage, Users, Messages } from '@rocket.chat/models';
+import emojione from 'emojione';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
@@ -19,7 +20,6 @@ import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
-import { convertEmojiToUnicode } from './utils/emojiConverter';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -247,7 +247,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const reactionKey = convertEmojiToUnicode(reaction);
+			const reactionKey = emojione.shortnameToUnicode(reaction);
 
 			// TODO: Fix hardcoded server
 			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
