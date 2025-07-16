@@ -172,9 +172,10 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		const services: { name: string; nodes: string[] }[] = await this.api?.call('$node.services', { onlyActive: true });
 
 		// We can filter out the local node because we already know its status
-		const availableNodes = services?.find((service) => service.name === 'apps-engine')?.nodes.filter((node) => node !== localNodeId);
+		const availableNodes = services?.find((service) => service.name === 'apps-engine')?.nodes;
 
-		if (!availableNodes || availableNodes.length < 1) {
+		// Subtract 1 for the local node
+		if (!availableNodes || availableNodes.length - 1 < 1) {
 			throw new AppsEngineNoNodesFoundError();
 		}
 
@@ -196,7 +197,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 					statusByApp[appId] = [];
 				}
 
-				statusByApp[appId].push({ instanceId: nodeID, status });
+				statusByApp[appId].push({ instanceId: nodeID, isLocal: nodeID === localNodeId, status });
 			});
 		});
 
