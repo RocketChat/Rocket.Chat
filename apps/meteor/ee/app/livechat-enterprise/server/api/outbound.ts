@@ -11,22 +11,25 @@ const outboundCommsEndpoints = API.v1.get(
 	{
 		response: {
 			200: ajv.compile<{ providers: IOutboundProvider[] }>({
-				providers: {
-					type: 'array',
-					items: {
-						type: 'object',
-						properties: {
-							providerId: {
-								type: 'string',
-							},
-							providerName: {
-								type: 'string',
-							},
-							supportsTemplates: {
-								type: 'boolean',
-							},
-							providerType: {
-								type: 'string',
+				type: 'object',
+				properties: {
+					providers: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								providerId: {
+									type: 'string',
+								},
+								providerName: {
+									type: 'string',
+								},
+								supportsTemplates: {
+									type: 'boolean',
+								},
+								providerType: {
+									type: 'string',
+								},
 							},
 						},
 					},
