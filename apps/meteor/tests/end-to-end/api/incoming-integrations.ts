@@ -12,7 +12,7 @@ import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminUsername, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
-import { createUser, deleteUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login, removeRoleFromUser } from '../../data/users.helper';
 
 describe('[Incoming Integrations]', () => {
 	let integration: IIntegration;
@@ -44,7 +44,7 @@ describe('[Incoming Integrations]', () => {
 			updatePermission('manage-own-outgoing-integrations', ['admin']),
 			updatePermission('manage-outgoing-integrations', ['admin']),
 			deleteRoom({ type: 'c', roomId: channel._id }),
-			// deleteUser(user),
+			deleteUser(user),
 		]);
 	});
 
@@ -1051,6 +1051,7 @@ describe('[Incoming Integrations]', () => {
 				),
 				updatePermission('manage-incoming-integrations', ['admin']),
 			]);
+			await removeRoleFromUser(adminUsername, 'bot');
 		});
 
 		it('should not send a message in public room if token is invalid', async () => {
