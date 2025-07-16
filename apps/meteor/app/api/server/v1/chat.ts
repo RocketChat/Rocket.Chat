@@ -322,33 +322,33 @@ const chatPostMessageEndpoints = API.v1.post(
 		validateParams: isChatPostMessageProps,
 		body: isChatPostMessageProps,
 		response: {
-			400: ajv.compile({
+			400: ajv.compile<{
+				error?: string;
+				errorType?: string;
+				stack?: string;
+				details?: string;
+			}>({
 				type: 'object',
 				properties: {
+					success: { type: 'boolean', enum: [false] },
+					stack: { type: 'string' },
 					error: { type: 'string' },
 					errorType: { type: 'string' },
-					stack: { type: 'string' },
-					details: { type: 'object' },
-					success: {
-						type: 'boolean',
-						enum: [false],
-						description: 'Indicates if the request was successful.',
-					},
+					details: { type: 'string' },
 				},
-				required: ['error', 'success'],
+				required: ['success'],
 				additionalProperties: false,
 			}),
 			401: ajv.compile({
 				type: 'object',
 				properties: {
+					success: { type: 'boolean', enum: [false] },
+					status: { type: 'string' },
+					message: { type: 'string' },
 					error: { type: 'string' },
-					success: {
-						type: 'boolean',
-						enum: [false],
-						description: 'Indicates if the request was successful.',
-					},
+					errorType: { type: 'string' },
 				},
-				required: ['error', 'success'],
+				required: ['success'],
 				additionalProperties: false,
 			}),
 			200: ajv.compile<{
@@ -419,6 +419,7 @@ const chatPostMessageEndpoints = API.v1.post(
 					},
 					success: {
 						type: 'boolean',
+						enum: [true],
 						description: 'Indicates if the request was successful.',
 					},
 				},
