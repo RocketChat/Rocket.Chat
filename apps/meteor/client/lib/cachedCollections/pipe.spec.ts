@@ -5,30 +5,31 @@ describe('pipe', () => {
 		_id: number;
 		name: string;
 		ts: number;
+		date: Date;
 	}
 
 	const sampleData: ITestData[] = [
-		{ _id: 1, name: 'Alice', ts: 30 },
-		{ _id: 2, name: 'Charlie', ts: 25 },
-		{ _id: 3, name: 'Bob', ts: 35 },
-		{ _id: 4, name: 'David', ts: 20 },
-		{ _id: 5, name: 'Eve', ts: 40 },
+		{ _id: 1, name: 'Alice', ts: 30, date: new Date('2025-07-16T01:00:00.000Z') },
+		{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+		{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
+		{ _id: 4, name: 'David', ts: 20, date: new Date('2025-07-16T04:00:00.000Z') },
+		{ _id: 5, name: 'Eve', ts: 40, date: new Date('2025-07-16T05:00:00.000Z') },
 	];
 
 	it('should correctly slice the array with skip and limit', () => {
 		const result = pipe<ITestData>().slice(1, 2).apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 2, name: 'Charlie', ts: 25 },
-			{ _id: 3, name: 'Bob', ts: 35 },
+			{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
 		]);
 	});
 
 	it('should correctly slice the array with only limit', () => {
 		const result = pipe<ITestData>().slice(0, 3).apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 1, name: 'Alice', ts: 30 },
-			{ _id: 2, name: 'Charlie', ts: 25 },
-			{ _id: 3, name: 'Bob', ts: 35 },
+			{ _id: 1, name: 'Alice', ts: 30, date: new Date('2025-07-16T01:00:00.000Z') },
+			{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
 		]);
 	});
 
@@ -40,71 +41,78 @@ describe('pipe', () => {
 	it('should return remaining elements if limit is greater than available', () => {
 		const result = pipe<ITestData>().slice(3, 10).apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 4, name: 'David', ts: 20 },
-			{ _id: 5, name: 'Eve', ts: 40 },
+			{ _id: 4, name: 'David', ts: 20, date: new Date('2025-07-16T04:00:00.000Z') },
+			{ _id: 5, name: 'Eve', ts: 40, date: new Date('2025-07-16T05:00:00.000Z') },
 		]);
 	});
 
 	it('should sort the array by a string field in ascending order', () => {
 		const result = pipe<ITestData>().sortByField('name', 1).apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 1, name: 'Alice', ts: 30 },
-			{ _id: 3, name: 'Bob', ts: 35 },
-			{ _id: 2, name: 'Charlie', ts: 25 },
-			{ _id: 4, name: 'David', ts: 20 },
-			{ _id: 5, name: 'Eve', ts: 40 },
+			{ _id: 1, name: 'Alice', ts: 30, date: new Date('2025-07-16T01:00:00.000Z') },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
+			{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+			{ _id: 4, name: 'David', ts: 20, date: new Date('2025-07-16T04:00:00.000Z') },
+			{ _id: 5, name: 'Eve', ts: 40, date: new Date('2025-07-16T05:00:00.000Z') },
 		]);
+	});
+
+	it('should sort the array by a date field in ascending order', () => {
+		const result = pipe<ITestData>()
+			.sortByField('date', 1)
+			.apply([...sampleData].sort(() => Math.random() - 0.5));
+		expect(result).toEqual(sampleData);
 	});
 
 	it('should sort the array by a string field in descending order', () => {
 		const result = pipe<ITestData>().sortByField('name', -1).apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 5, name: 'Eve', ts: 40 },
-			{ _id: 4, name: 'David', ts: 20 },
-			{ _id: 2, name: 'Charlie', ts: 25 },
-			{ _id: 3, name: 'Bob', ts: 35 },
-			{ _id: 1, name: 'Alice', ts: 30 },
+			{ _id: 5, name: 'Eve', ts: 40, date: new Date('2025-07-16T05:00:00.000Z') },
+			{ _id: 4, name: 'David', ts: 20, date: new Date('2025-07-16T04:00:00.000Z') },
+			{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
+			{ _id: 1, name: 'Alice', ts: 30, date: new Date('2025-07-16T01:00:00.000Z') },
 		]);
 	});
 
 	it('should sort the array by a number field in ascending order', () => {
 		const result = pipe<ITestData>().sortByField('ts', 1).apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 4, name: 'David', ts: 20 },
-			{ _id: 2, name: 'Charlie', ts: 25 },
-			{ _id: 1, name: 'Alice', ts: 30 },
-			{ _id: 3, name: 'Bob', ts: 35 },
-			{ _id: 5, name: 'Eve', ts: 40 },
+			{ _id: 4, name: 'David', ts: 20, date: new Date('2025-07-16T04:00:00.000Z') },
+			{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+			{ _id: 1, name: 'Alice', ts: 30, date: new Date('2025-07-16T01:00:00.000Z') },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
+			{ _id: 5, name: 'Eve', ts: 40, date: new Date('2025-07-16T05:00:00.000Z') },
 		]);
 	});
 
 	it('should sort the array by a number field in descending order', () => {
 		const result = pipe<ITestData>().sortByField('ts', -1).apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 5, name: 'Eve', ts: 40 },
-			{ _id: 3, name: 'Bob', ts: 35 },
-			{ _id: 1, name: 'Alice', ts: 30 },
-			{ _id: 2, name: 'Charlie', ts: 25 },
-			{ _id: 4, name: 'David', ts: 20 },
+			{ _id: 5, name: 'Eve', ts: 40, date: new Date('2025-07-16T05:00:00.000Z') },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
+			{ _id: 1, name: 'Alice', ts: 30, date: new Date('2025-07-16T01:00:00.000Z') },
+			{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+			{ _id: 4, name: 'David', ts: 20, date: new Date('2025-07-16T04:00:00.000Z') },
 		]);
 	});
 
 	it('should apply chained operations correctly (sort then slice)', () => {
 		const result = pipe<ITestData>().sortByField('ts').slice(1, 3).apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 2, name: 'Charlie', ts: 25 },
-			{ _id: 1, name: 'Alice', ts: 30 },
-			{ _id: 3, name: 'Bob', ts: 35 },
+			{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+			{ _id: 1, name: 'Alice', ts: 30, date: new Date('2025-07-16T01:00:00.000Z') },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
 		]);
 	});
 
 	it('should apply chained operations correctly (slice then sort)', () => {
 		const result = pipe<ITestData>().slice(0, 4).sortByField('name', -1).apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 4, name: 'David', ts: 20 },
-			{ _id: 2, name: 'Charlie', ts: 25 },
-			{ _id: 3, name: 'Bob', ts: 35 },
-			{ _id: 1, name: 'Alice', ts: 30 },
+			{ _id: 4, name: 'David', ts: 20, date: new Date('2025-07-16T04:00:00.000Z') },
+			{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
+			{ _id: 1, name: 'Alice', ts: 30, date: new Date('2025-07-16T01:00:00.000Z') },
 		]);
 	});
 
@@ -120,8 +128,8 @@ describe('pipe', () => {
 
 		const result = combinedPipeline.apply(sampleData);
 		expect(result).toEqual([
-			{ _id: 3, name: 'Bob', ts: 35 },
-			{ _id: 2, name: 'Charlie', ts: 25 },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
+			{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
 		]);
 	});
 
@@ -134,8 +142,8 @@ describe('pipe', () => {
 		// Expected order after ts sort: David, Charlie, Alice, Bob, Eve
 		// Slice(2,2) should take: Alice, Bob
 		expect(result).toEqual([
-			{ _id: 1, name: 'Alice', ts: 30 },
-			{ _id: 3, name: 'Bob', ts: 35 },
+			{ _id: 1, name: 'Alice', ts: 30, date: new Date('2025-07-16T01:00:00.000Z') },
+			{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
 		]);
 	});
 
@@ -167,8 +175,8 @@ describe('pipe', () => {
 		it('should slice the array with skip and limit', () => {
 			const result = pipe(sampleData).slice(1, 2).apply();
 			expect(result).toEqual([
-				{ _id: 2, name: 'Charlie', ts: 25 },
-				{ _id: 3, name: 'Bob', ts: 35 },
+				{ _id: 2, name: 'Charlie', ts: 25, date: new Date('2025-07-16T02:00:00.000Z') },
+				{ _id: 3, name: 'Bob', ts: 35, date: new Date('2025-07-16T03:00:00.000Z') },
 			]);
 		});
 	});

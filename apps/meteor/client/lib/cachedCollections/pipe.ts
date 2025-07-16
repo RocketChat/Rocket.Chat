@@ -44,6 +44,10 @@ export function pipe<D>(
 							const aValue = a[fieldName];
 							const bValue = b[fieldName];
 
+							if (aValue instanceof Date && bValue instanceof Date) {
+								return direction * (aValue.getTime() - bValue.getTime());
+							}
+
 							if (typeof aValue === 'string' && typeof bValue === 'string') {
 								return direction * aValue.localeCompare(bValue);
 							}
