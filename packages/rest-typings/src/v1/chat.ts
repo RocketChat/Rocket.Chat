@@ -832,7 +832,6 @@ const ChatPostMessageSchema = {
 				},
 				parseUrls: {
 					type: 'boolean',
-					nullable: true,
 				},
 			},
 			required: ['roomId'],
