@@ -110,7 +110,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
-	public async getMatrixDomain(): Promise<string> {
+	async getMatrixDomain(): Promise<string> {
 		if (this.matrixDomain) {
 			return this.matrixDomain;
 		}
