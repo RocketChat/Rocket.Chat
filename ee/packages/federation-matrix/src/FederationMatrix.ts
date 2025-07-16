@@ -47,7 +47,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const signingKey = signingKeys[0];
 
 		const containerOptions: FederationContainerOptions = {
-			emitter,
+			emitter: instance.eventHandler,
 			federationOptions: {
 				serverName: matrixConfig.serverName,
 				signingKey: toUnpaddedBase64(signingKey.privateKey),
