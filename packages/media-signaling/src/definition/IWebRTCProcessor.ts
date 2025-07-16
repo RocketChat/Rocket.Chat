@@ -10,6 +10,8 @@ export interface IWebRTCProcessor {
 	createAnswer(params: RequestParams<'answer'>): Promise<DeliverParams<'sdp'>>;
 	// Function used to retrieve the local sdp from the peer connection
 	collectLocalDescription(params: RequestParams<'sdp'>): Promise<DeliverParams<'sdp'>>;
+	setRemoteDescription(params: DeliverParams<'sdp'>): Promise<void>;
+	addIceCandidates(params: DeliverParams<'ice-candidates'>): Promise<void>;
 
 	// Function used to add a callback to be executed when an ice candidate is gathered
 	onIceCandidate(cb: unknown): void;

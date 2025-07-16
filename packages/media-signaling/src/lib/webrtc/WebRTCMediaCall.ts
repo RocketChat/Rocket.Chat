@@ -4,14 +4,14 @@ import type { RequestParams } from '../../definition/MediaSignalRequest';
 
 export class WebRTCMediaCall implements IWebRTCProcessor {
 	// #ToDo peer instance state
-	private peer: RTCPeerConnection;
+	private peer: RTCPeerConnection | undefined;
 
 	private iceGatheringFinished = false;
 
 	private restartIce() {
 		this.iceGatheringFinished = false;
 
-		this.peer.restartIce();
+		this.peer?.restartIce();
 	}
 
 	constructor() {
@@ -27,6 +27,10 @@ export class WebRTCMediaCall implements IWebRTCProcessor {
 	// }
 
 	public async createOffer({ iceRestart }: RequestParams<'offer'>): Promise<DeliverParams<'sdp'>> {
+		if (!this.peer) {
+			throw new Error('peer-not-initialized');
+		}
+
 		if (iceRestart) {
 			this.restartIce();
 		}
@@ -41,6 +45,10 @@ export class WebRTCMediaCall implements IWebRTCProcessor {
 	}
 
 	public async createAnswer({ offer }: RequestParams<'answer'>): Promise<DeliverParams<'sdp'>> {
+		if (!this.peer) {
+			throw new Error('peer-not-initialized');
+		}
+
 		if (this.peer.remoteDescription?.sdp !== offer.sdp) {
 			this.peer.setRemoteDescription(offer);
 		}
@@ -55,6 +63,10 @@ export class WebRTCMediaCall implements IWebRTCProcessor {
 	}
 
 	public async collectLocalDescription(_params: RequestParams<'sdp'>): Promise<DeliverParams<'sdp'>> {
+		if (!this.peer) {
+			throw new Error('peer-not-initialized');
+		}
+
 		const sdp = this.peer.localDescription;
 
 		if (!sdp) {
@@ -67,11 +79,33 @@ export class WebRTCMediaCall implements IWebRTCProcessor {
 		};
 	}
 
-	public onIceCandidate(cb: unknown) {
+	public async setRemoteDescription({ sdp }: DeliverParams<'sdp'>): Promise<void> {
+		if (!this.peer) {
+			throw new Error('peer-not-initialized');
+		}
+
+		this.peer.setRemoteDescription(sdp);
+	}
+
+	public async addIceCandidates({ candidates }: DeliverParams<'ice-candidates'>): Promise<void> {
+		if (!this.peer) {
+			throw new Error('peer-not-initialized');
+		}
+
+		const results = await Promise.allSettled(candidates.map((candidate) => this.peer?.addIceCandidate(candidate)));
+
+		for (const result of results) {
+			if (result.status === 'rejected') {
+				throw result.reason;
+			}
+		}
+	}
+
+	public onIceCandidate(_cb: unknown) {
 		//
 	}
 
-	public onNegotiationNeeded(cb: unknown) {
+	public onNegotiationNeeded(_cb: unknown) {
 		//
 	}
 }
