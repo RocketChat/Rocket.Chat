@@ -216,101 +216,39 @@ type ChatPostMessage =
 	  };
 
 const ChatPostMessageSchema = {
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				roomId: {
-					oneOf: [
-						{ type: 'string' },
-						{
-							type: 'array',
-							items: {
-								type: 'string',
-							},
-						},
-					],
-				},
-				text: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
+	type: 'object',
+	properties: {
+		roomId: {
+			oneOf: [
+				{ type: 'string' },
+				{
 					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
+					items: { type: 'string' },
 				},
-				tmid: {
-					type: 'string',
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-			},
-			required: ['roomId'],
-			additionalProperties: false,
+			],
 		},
-		{
-			type: 'object',
-			properties: {
-				channel: {
-					oneOf: [
-						{ type: 'string' },
-						{
-							type: 'array',
-							items: {
-								type: 'string',
-							},
-						},
-					],
-				},
-				text: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
+		channel: {
+			oneOf: [
+				{ type: 'string' },
+				{
 					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
+					items: { type: 'string' },
 				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-			},
-			required: ['channel'],
-			additionalProperties: false,
+			],
 		},
-	],
+		text: { type: 'string', nullable: true },
+		alias: { type: 'string', nullable: true },
+		emoji: { type: 'string', nullable: true },
+		avatar: { type: 'string', nullable: true },
+		attachments: {
+			type: 'array',
+			items: { type: 'object' },
+			nullable: true,
+		},
+		customFields: { type: 'object', nullable: true },
+	},
+	additionalProperties: false,
+	required: [],
 };
 
 const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
@@ -319,7 +257,6 @@ const chatPostMessageEndpoints = API.v1.post(
 	'chat.postMessage',
 	{
 		authRequired: true,
-		validateParams: isChatPostMessageProps,
 		body: isChatPostMessageProps,
 		response: {
 			400: ajv.compile<{
@@ -429,7 +366,7 @@ const chatPostMessageEndpoints = API.v1.post(
 		},
 	},
 	async function action() {
-		const { text, attachments } = this.bodyParams as ChatPostMessage;
+		const { text, attachments } = this.bodyParams;
 		const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
 		if (text && text.length > maxAllowedSize) {
@@ -443,19 +380,19 @@ const chatPostMessageEndpoints = API.v1.post(
 				}
 			}
 		}
-
+		console.log('this:', this);
 		const messageReturn = (
 			await applyAirGappedRestrictionsValidation(() =>
 				processWebhookMessage(this.bodyParams, this.user as IUser & { username: RequiredField<IUser, 'username'> }),
 			)
 		)[0];
-
+		console.log('messageReturn:', messageReturn);
 		if (!messageReturn) {
 			return API.v1.failure('unknown-error');
 		}
 
 		const [message] = (await normalizeMessagesForUser([messageReturn.message], this.userId)) as IMessage[];
-
+		console.log('message:', message);
 		return API.v1.success({
 			ts: Date.now(),
 			channel: messageReturn.channel,
