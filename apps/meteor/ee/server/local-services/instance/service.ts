@@ -2,6 +2,7 @@ import os from 'os';
 
 import type { AppStatusReport } from '@rocket.chat/core-services';
 import { Apps, License, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import EJSON from 'ejson';
@@ -10,6 +11,7 @@ import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
@@ -76,12 +78,9 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			extra: process.env.TRANSPORTER_EXTRA,
 		});
 
-		const activeInstances = InstanceStatusRaw.getActiveInstancesAddress();
+		const isTransporterTCP = typeof transporter !== 'string';
 
-		this.transporter =
-			typeof transporter !== 'string'
-				? new Transporters.TCP({ ...transporter, urls: activeInstances })
-				: new Transporters.NATS({ url: transporter });
+		this.transporter = isTransporterTCP ? new Transporters.TCP(transporter) : new Transporters.NATS({ url: transporter });
 
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
@@ -124,6 +123,42 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 				},
 			},
 		});
+
+		if (isTransporterTCP) {
+			const changeStream = InstanceStatusRaw.watchActiveInstances();
+
+			changeStream
+				.on('change', (change) => {
+					if (change.operationType === 'update') {
+						return;
+					}
+					if (change.operationType === 'insert' && change.fullDocument?.extraInformation?.tcpPort) {
+						this.connectNode(change.fullDocument);
+						return;
+					}
+					if (change.operationType === 'delete') {
+						this.disconnectNode(change.documentKey._id);
+					}
+				})
+				.once('error', (err) => {
+					SystemLogger.error({ msg: 'Error in InstanceStatus change stream:', err });
+				});
+		}
+	}
+
+	private connectNode(record: IInstanceStatus) {
+		if (record._id === InstanceStatus.id()) {
+			return;
+		}
+
+		const { host, tcpPort } = record.extraInformation;
+
+		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
+	}
+
+	private disconnectNode(nodeId: string) {
+		(this.broker.transit?.tx as any).nodes.disconnected(nodeId, false);
+		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
 	}
 
 	async started() {
