@@ -37,6 +37,7 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
+		// TODO: Fix the base component to have a disabled statement and not only a class attribute
 		await expect(poHomeChannel.tabs.exportMessages.getOutputFormat('HTML')).toHaveClass(new RegExp('disabled'));
 
 		await poHomeChannel.tabs.exportMessages.getMethod('Send email').click();
