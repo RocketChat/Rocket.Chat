@@ -284,6 +284,34 @@ test.describe('basic features', () => {
 		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
 		await expect(exportMessagesTab.sendEmailMethod).not.toBeVisible();
 	});
+
+	test('should allow exporting messages as PDF in an encrypted room', async ({ page }) => {
+		const sidenav = new HomeSidenav(page);
+		const encryptedRoomPage = new EncryptedRoomPage(page);
+		const exportMessagesTab = new HomeFlextabExportMessages(page);
+
+		const channelName = faker.string.uuid();
+
+		await sidenav.createEncryptedChannel(channelName);
+		await expect(page).toHaveURL(`/group/${channelName}`);
+		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
+
+		await encryptedRoomPage.sendMessage('This is a message to export as PDF.');
+		await encryptedRoomPage.showExportMessagesTab();
+		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
+
+		// Select Output format as PDF
+		await exportMessagesTab.outputFormat.click();
+		await exportMessagesTab.getMethodByName('PDF').click();
+
+		// select messages to be exported
+		await exportMessagesTab.btnSelectMessages.click();
+
+		// Wait for download event and match format
+		const [download] = await Promise.all([page.waitForEvent('download'), exportMessagesTab.btnDownloadExportMessages.click()]);
+		const suggestedFilename = download.suggestedFilename();
+		expect(suggestedFilename).toMatch(/\.pdf$/);
+	});
 });
 
 test.describe.serial('e2e-encryption', () => {
