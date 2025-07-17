@@ -1,6 +1,7 @@
 {
   "name": "@rocket.chat/peggy-loader",
   "version": "0.31.27",
+  "type": "module",
   "description": "Peggy loader for webpack",
   "keywords": [
     "peggy",
@@ -21,17 +22,17 @@
     "url": "git+https://github.com/RocketChat/fuselage.git",
     "directory": "packages/peggy-loader"
   },
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/esm/index.d.ts",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
   "files": [
     "/dist"
   ],
   "scripts": {
-    "build": "run-s .:build:clean .:build:esm .:build:cjs",
-    ".:build:clean": "rimraf dist",
-    ".:build:esm": "tsc -p tsconfig.json",
-    ".:build:cjs": "tsc -p tsconfig.cjs.json",
+    "build": "tsc -p tsconfig.json",
     "lint": "eslint src"
   },
   "bugs": {

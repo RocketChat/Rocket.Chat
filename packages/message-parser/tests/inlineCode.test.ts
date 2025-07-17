@@ -1,4 +1,5 @@
 import { test, expect } from 'vitest';
+
 import { parse } from '../src';
 import { inlineCode, paragraph, plain } from '../src/utils';
 

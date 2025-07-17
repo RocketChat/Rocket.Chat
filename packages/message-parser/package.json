@@ -2,6 +2,7 @@
   "name": "@rocket.chat/message-parser",
   "description": "Rocket.Chat parser for messages",
   "version": "0.31.32",
+  "type": "module",
   "author": {
     "name": "Rocket.Chat",
     "url": "https://rocket.chat/"
@@ -18,12 +19,7 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "./index": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "import": "./dist/message-parser.js"
     }
   },
   "types": "dist/index.d.ts",
