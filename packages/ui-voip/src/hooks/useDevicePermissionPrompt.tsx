@@ -57,7 +57,8 @@ export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actio
 		(stopTracks = true) => {
 			const onAccept = (stream: MediaStream) => {
 				// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
-				queryClient.invalidateQueries({ queryKey: ['media-devices-list'], exact: true });
+				// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
+				queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
 
 				stream.getTracks().forEach((track) => {
 					const { deviceId } = track.getSettings();
