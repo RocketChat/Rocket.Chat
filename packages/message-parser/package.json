@@ -16,21 +16,19 @@
   "bugs": {
     "url": "https://github.com/RocketChat/fuselage/issues"
   },
-  "main": "messageParser.js",
   "exports": {
     ".": {
-      "default": "./messageParser.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./index": {
-      "default": "./messageParser.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     }
   },
-  "module": "dist/messageParser.mjs",
-  "unpkg": "dist/messageParser.umd.js",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
-    "/dist",
-    "/messageParser.js"
+    "/dist"
   ],
   "directories": {
     "test": "test"
@@ -60,7 +58,7 @@
     "jest": "~30.0.2",
     "peggy": "4.1.1",
     "prettier": "~3.3.3",
-    "prettier-plugin-pegjs": "~0.5.4",
+    "prettier-plugin-pegjs": "~2.0.2",
     "typedoc": "~0.28.5",
     "typescript": "~5.8.3",
     "vite": "^7.0.5",

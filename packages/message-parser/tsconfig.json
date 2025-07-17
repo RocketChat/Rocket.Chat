@@ -1,10 +1,7 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
     "target": "es2019",
     "module": "ESNext",
-    "declaration": true,
-    "declarationMap": true,
     "sourceMap": true,
     "lib": ["es2019"],
     "outDir": "./dist",
@@ -15,6 +12,6 @@
     "moduleResolution": "node",
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "emitDeclarationOnly": true
+    "noEmit": true
   }
 }

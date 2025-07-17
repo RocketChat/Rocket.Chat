@@ -1,4 +1,8 @@
 declare module '*.scss' {
-	export const className: string;
-	export const styles: string;
+	interface ClassNames {
+		[className: string]: string;
+	}
+
+	const classNames: ClassNames;
+	export = classNames;
 }

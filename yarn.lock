@@ -7882,7 +7882,7 @@ __metadata:
     jest: "npm:~30.0.2"
     peggy: "npm:4.1.1"
     prettier: "npm:~3.3.3"
-    prettier-plugin-pegjs: "npm:~0.5.4"
+    prettier-plugin-pegjs: "npm:~2.0.2"
     tldts: "npm:~6.1.86"
     typedoc: "npm:~0.28.5"
     typescript: "npm:~5.8.3"
@@ -12177,6 +12177,15 @@ __metadata:
   version: 14.18.63
   resolution: "@types/node@npm:14.18.63"
   checksum: 10/82a7775898c2ea6db0b610a463512206fb2c7adc1af482c7eb44b99d94375fff51c74f67ae75a63c5532971159f30c866a4d308000624ef02fd9a7175e277019
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.5.6":
+  version: 20.19.8
+  resolution: "@types/node@npm:20.19.8"
+  dependencies:
+    undici-types: "npm:~6.21.0"
+  checksum: 10/f80d8f41597b91fa8a86d4e77fc02aa999412617107bf42b9a99b3bd5509fb354a936608d8ea9ea6110d4ca28ffa23f18f7c1ad0aefa4275b400877028270e9c
   languageName: node
   linkType: hard
 
@@ -29851,21 +29860,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-pegjs@npm:~0.5.4":
-  version: 0.5.4
-  resolution: "prettier-plugin-pegjs@npm:0.5.4"
+"prettier-plugin-pegjs@npm:~2.0.2":
+  version: 2.0.2
+  resolution: "prettier-plugin-pegjs@npm:2.0.2"
   dependencies:
-    prettier: "npm:^2.8.4"
-  checksum: 10/d299a37e4ba03aeea4ba261a8efeec43403dbec345d192c13a9f73e7dbb1625863c4a3e6f4affd1b0b22139619b6534216cead68aa3cec56517e43b831ddacd8
+    "@types/node": "npm:^20.5.6"
+    prettier: "npm:^3.0.2"
+  checksum: 10/418ae45f2c41acefbd44ddf78110cb95d95b16a3f2febb291ef6a2ef58987f86072885973dd963fa2f60516a1fd578d69fe2bd09ecc5a6697e381f5bd8c8a58d
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.7.1, prettier@npm:^2.8.4":
+"prettier@npm:^2.7.1":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:
     prettier: bin-prettier.js
   checksum: 10/00cdb6ab0281f98306cd1847425c24cbaaa48a5ff03633945ab4c701901b8e96ad558eb0777364ffc312f437af9b5a07d0f45346266e8245beaf6247b9c62b24
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^3.0.2":
+  version: 3.6.2
+  resolution: "prettier@npm:3.6.2"
+  bin:
+    prettier: bin/prettier.cjs
+  checksum: 10/1213691706bcef1371d16ef72773c8111106c3533b660b1cc8ec158bd109cdf1462804125f87f981f23c4a3dba053b6efafda30ab0114cc5b4a725606bb9ff26
   languageName: node
   linkType: hard
 
