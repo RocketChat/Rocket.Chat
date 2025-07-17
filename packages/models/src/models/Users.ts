@@ -2502,11 +2502,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find(query, options);
 	}
 
-	async findInactiveByRoomId(rid: IRoom['_id'], options?: FindOptions<IUser>) {
-		const data = (await Subscriptions.findByRoomId(rid).toArray()).map((item) => item.u._id);
+	async findInactive(users: string[], options?: FindOptions<IUser>) {
 		const query = {
 			_id: {
-				$in: data,
+				$in: users,
 			},
 			active: false,
 		};

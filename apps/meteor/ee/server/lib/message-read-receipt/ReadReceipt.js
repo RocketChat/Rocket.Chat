@@ -68,7 +68,9 @@ export const ReadReceipt = {
 			return;
 		}
 
-		const deactivatedUsers = await (await Users.findInactiveByRoomId(roomId)).toArray();
+		const users = (await (await Users.findByRoomId(roomId, { projection: { u: { _id: 1 } } })).toArray()).map((user) => user._id);
+		const deactivatedUsers = await (await Users.findInactive(users, { projection: { _id: 1 } })).toArray();
+
 		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
 
 		await Promise.all(
