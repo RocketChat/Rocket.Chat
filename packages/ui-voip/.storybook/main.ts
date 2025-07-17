@@ -1,18 +1,18 @@
-import { dirname, join, resolve } from 'path';
+import { dirname, join } from 'path';
 
-import type { StorybookConfig } from '@storybook/react-webpack5';
+import type { StorybookConfig } from '@storybook/react-vite';
 
 const config: StorybookConfig = {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 	addons: [
 		getAbsolutePath('@storybook/addon-essentials'),
 		getAbsolutePath('@storybook/addon-a11y'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
+		// getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
 		getAbsolutePath('@storybook/addon-interactions'),
 	],
 
 	framework: {
-		name: getAbsolutePath('@storybook/react-webpack5'),
+		name: getAbsolutePath('@storybook/react-vite'),
 		options: {},
 	},
 
@@ -22,12 +22,8 @@ const config: StorybookConfig = {
 
 	docs: {},
 
-	webpackFinal: (config) => {
+	viteFinal: (config) => {
 		// This is only needed because of Fontello
-		config.resolve = {
-			...config.resolve,
-			roots: [...(config.resolve?.roots ?? []), resolve(__dirname, '../../../apps/meteor/public')],
-		};
 
 		return config;
 	},
