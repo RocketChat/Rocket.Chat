@@ -1,18 +1,25 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import AppearancePage from './AppearancePage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const AppearancePageContainer = () => {
 	const { t } = useTranslation();
 
-	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/appearance');
+	const getLivechatAppearance = useEndpoint('GET', '/v1/livechat/appearance');
+	const { isPending, isError, data } = useQuery({
+		queryKey: omnichannelQueryKeys.livechatAppearance(),
+		queryFn: async () => {
+			const { appearance } = await getLivechatAppearance();
+			return appearance;
+		},
+	});
 
 	const canViewAppearance = usePermission('view-livechat-appearance');
 
@@ -20,11 +27,11 @@ const AppearancePageContainer = () => {
 		return <NotAuthorizedPage />;
 	}
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isPending) {
 		return <PageSkeleton />;
 	}
 
-	if (!data?.appearance || error) {
+	if (isError) {
 		return (
 			<Page>
 				<PageHeader title={t('Edit_Custom_Field')} />
@@ -35,7 +42,7 @@ const AppearancePageContainer = () => {
 		);
 	}
 
-	return <AppearancePage settings={data.appearance} />;
+	return <AppearancePage settings={data} />;
 };
 
 export default AppearancePageContainer;

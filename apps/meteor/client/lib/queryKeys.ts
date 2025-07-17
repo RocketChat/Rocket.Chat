@@ -40,6 +40,7 @@ export const omnichannelQueryKeys = {
 					type: 'free' | 'allocated' | 'available';
 			  },
 	) => [...omnichannelQueryKeys.all, 'extensions', params] as const,
+	livechatAppearance: () => [...omnichannelQueryKeys.all, 'livechat-appearance'] as const,
 };
 
 export const deviceManagementQueryKeys = {
