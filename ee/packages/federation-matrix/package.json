@@ -8,6 +8,7 @@
 		"@babel/preset-env": "~7.26.0",
 		"@babel/preset-typescript": "~7.26.0",
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@types/emojione": "^2.2.9",
 		"@types/node": "~22.14.0",
 		"babel-jest": "~30.0.0",
 		"eslint": "~8.45.0",
@@ -40,6 +41,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
+		"emojione": "^4.5.0",
 		"mongodb": "6.10.0",
 		"pino": "8.21.0",
 		"reflect-metadata": "^0.2.2"
