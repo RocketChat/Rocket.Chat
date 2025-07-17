@@ -1,4 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { StoryObj } from '@storybook/react/*';
 
 import AppInstances from './AppInstances';
 
@@ -32,7 +33,7 @@ const statusTranslations = {
 	Workspace_instance: 'Workspace instance',
 };
 
-export default {
+const meta = {
 	title: 'Components/AppInstances',
 	component: AppInstances,
 	decorators: [
@@ -47,6 +48,24 @@ export default {
 	],
 };
 
+export default meta;
+
 const Template = () => <AppInstances id='app-id' />;
 
+type Story = StoryObj<typeof meta>;
+
 export const Default = Template.bind({});
+
+export const NoResults: Story = {
+	decorators: [
+		mockAppRoot()
+			.withEndpoint('GET', '/apps/:id/status', () => ({
+				status: 'disabled',
+				clusterStatus: [],
+			}))
+			.buildStoryDecorator(),
+	],
+	args: {
+		id: 'app-id',
+	},
+};
