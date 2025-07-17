@@ -35,31 +35,35 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: S
 	usePreventDefault(ref);
 
 	return (
-		<Sidepanel role='tabpanel'>
-			<SidepanelHeader>
-				<Box display='flex' alignItems='center'>
-					{isTablet && <IconButton mie={8} icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
-					<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
-				</Box>
-				<Box display='flex' alignItems='center'>
-					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
-						{t('Unread')}
+		<Box width='x280'>
+			<Sidepanel role='tabpanel'>
+				<SidepanelHeader>
+					<Box display='flex' alignItems='center'>
+						{isTablet && <IconButton mie={8} icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
+						<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
 					</Box>
-					<ToggleSwitch id={unreadFieldId} defaultChecked={unreadOnly} onChange={toggleUnreadOnly} />
+					<Box display='flex' alignItems='center'>
+						<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
+							{t('Unread')}
+						</Box>
+						<ToggleSwitch id={unreadFieldId} checked={unreadOnly} onChange={toggleUnreadOnly} />
+					</Box>
+				</SidepanelHeader>
+				<Box pb={8} h='full' ref={ref}>
+					{rooms && rooms.length === 0 && (
+						<SidePanelNoResults currentTab={currentTab} unreadOnly={unreadOnly} toggleUnreadOnly={toggleUnreadOnly} />
+					)}
+					<VirtualizedScrollbars>
+						<Virtuoso
+							totalCount={rooms.length}
+							data={rooms}
+							components={{ Item: SidepanelListItem, List: SidepanelListWrapper }}
+							itemContent={(_, data) => <RoomSidepanelItem openedRoom={openedRoom} room={data} isRoomFilter={isRoomFilter} />}
+						/>
+					</VirtualizedScrollbars>
 				</Box>
-			</SidepanelHeader>
-			<Box pb={8} h='full' ref={ref}>
-				{rooms && rooms.length === 0 && <SidePanelNoResults currentTab={currentTab} unreadOnly={unreadOnly} />}
-				<VirtualizedScrollbars>
-					<Virtuoso
-						totalCount={rooms.length}
-						data={rooms}
-						components={{ Item: SidepanelListItem, List: SidepanelListWrapper }}
-						itemContent={(_, data) => <RoomSidepanelItem openedRoom={openedRoom} room={data} isRoomFilter={isRoomFilter} />}
-					/>
-				</VirtualizedScrollbars>
-			</Box>
-		</Sidepanel>
+			</Sidepanel>
+		</Box>
 	);
 };
 
