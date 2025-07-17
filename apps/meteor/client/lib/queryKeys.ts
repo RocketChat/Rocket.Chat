@@ -25,3 +25,16 @@ export const rolesQueryKeys = {
 	all: ['roles'] as const,
 	userRoles: () => [...rolesQueryKeys.all, 'user-roles'] as const,
 };
+
+export const omnichannelQueryKeys = {
+	all: ['omnichannel'] as const,
+	department: (id: string) => [...omnichannelQueryKeys.all, 'department', id] as const,
+};
+
+export const deviceManagementQueryKeys = {
+	all: ['device-management'] as const,
+	userSessions: (params: { sort?: string; count?: number; offset?: number }) =>
+		[...deviceManagementQueryKeys.all, 'users-sessions', params] as const,
+	sessions: (params: { sort?: string; count?: number; offset?: number }) =>
+		[...deviceManagementQueryKeys.all, 'all-users-sessions', params] as const,
+};
