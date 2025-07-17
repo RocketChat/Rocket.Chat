@@ -83,5 +83,6 @@ export * from './models/ICronHistoryModel';
 export * from './models/IMigrationsModel';
 export * from './models/IModerationReportsModel';
 export * from './models/IMediaCallsModel';
+export * from './models/IMediaCallChannelsModel';
 export * from './updater';
 export * from './models/IWorkspaceCredentialsModel';
