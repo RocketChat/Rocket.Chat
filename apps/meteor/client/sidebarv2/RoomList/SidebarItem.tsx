@@ -26,7 +26,7 @@ const SidebarItem = ({ icon, title, actions, unread, menu, badges, room, ...prop
 	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
+		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter} is='button'>
 			<SidebarV2ItemAvatarWrapper>
 				<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />
 			</SidebarV2ItemAvatarWrapper>

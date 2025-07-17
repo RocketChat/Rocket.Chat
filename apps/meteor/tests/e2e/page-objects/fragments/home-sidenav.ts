@@ -222,4 +222,12 @@ export class HomeSidenav {
 
 		await toastMessages.dismissToast('success');
 	}
+
+	async waitForHome(): Promise<void> {
+		await this.page.waitForSelector('main');
+	}
+
+	get homepageHeader(): Locator {
+		return this.page.locator('main').getByRole('heading', { name: 'Home' });
+	}
 }

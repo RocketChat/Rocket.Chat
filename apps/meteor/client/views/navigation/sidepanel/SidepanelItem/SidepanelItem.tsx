@@ -41,6 +41,8 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 			selected={selected}
 			onFocus={handleFocus}
 			onPointerEnter={handlePointerEnter}
+			aria-label={title}
+			aria-selected={selected}
 		>
 			<SidebarV2ItemCol>
 				{!isRoomFilter && parentRoomId && (

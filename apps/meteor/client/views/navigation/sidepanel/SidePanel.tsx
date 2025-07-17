@@ -36,8 +36,8 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: S
 
 	return (
 		<Box width='x280'>
-			<Sidepanel role='tabpanel'>
-				<SidepanelHeader>
+			<Sidepanel role='tabpanel' aria-label='sidepanel'>
+				<SidepanelHeader role='heading' aria-label={title}>
 					<Box display='flex' alignItems='center'>
 						{isTablet && <IconButton mie={8} icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
 						<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
@@ -46,7 +46,13 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: S
 						<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 							{t('Unread')}
 						</Box>
-						<ToggleSwitch id={unreadFieldId} checked={unreadOnly} onChange={toggleUnreadOnly} />
+						<ToggleSwitch
+							role='switch'
+							aria-label={t('Unread_toggle')}
+							id={unreadFieldId}
+							checked={unreadOnly}
+							onChange={toggleUnreadOnly}
+						/>
 					</Box>
 				</SidepanelHeader>
 				<Box pb={8} h='full' ref={ref}>

@@ -30,6 +30,9 @@ const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapse
 					</Badge>
 				) : undefined
 			}
+			aria-label={
+				!collapsedGroups.includes(group) ? t('Collapse_group', { group: t(groupTitle) }) : t('Expand_group', { group: t(groupTitle) })
+			}
 			{...props}
 		/>
 	);
