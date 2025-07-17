@@ -38,3 +38,8 @@ export const deviceManagementQueryKeys = {
 	sessions: (params: { sort?: string; count?: number; offset?: number }) =>
 		[...deviceManagementQueryKeys.all, 'all-users-sessions', params] as const,
 };
+
+export const usersQueryKeys = {
+	all: ['users'] as const,
+	personalAccessTokens: ['personal-access-tokens'] as const,
+};
