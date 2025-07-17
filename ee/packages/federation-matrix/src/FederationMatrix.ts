@@ -303,4 +303,61 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw error;
 		}
 	}
+
+	async leaveRoom(roomId: string, user: IUser): Promise<void> {
+		try {
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${roomId}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${user.username}:${matrixDomain}`;
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping room leave');
+				return;
+			}
+
+			// TODO: Fix hardcoded server
+			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+
+			const result = await this.homeserverServices.room.leaveRoom(matrixRoomId, matrixUserId, [targetServer]);
+
+			this.logger.debug('User left Matrix room successfully:', result);
+		} catch (error) {
+			this.logger.error('Failed to leave Matrix room:', error);
+			throw error;
+		}
+	}
+
+	async kickUser(roomId: string, kickedUser: IUser, kickingUser: IUser, reason?: string): Promise<void> {
+		try {
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${roomId}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const kickedMatrixUserId = `@${kickedUser.username}:${matrixDomain}`;
+			const kickingMatrixUserId = `@${kickingUser.username}:${matrixDomain}`;
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping user kick');
+				return;
+			}
+
+			// TODO: Fix hardcoded server
+			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+
+			const result = await this.homeserverServices.room.kickUser(matrixRoomId, kickedMatrixUserId, kickingMatrixUserId, reason, [
+				targetServer,
+			]);
+
+			this.logger.debug('User kicked from Matrix room successfully:', result);
+		} catch (error) {
+			this.logger.error('Failed to kick user from Matrix room:', error);
+			throw error;
+		}
+	}
 }
