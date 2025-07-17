@@ -39,53 +39,63 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-API.v1
-	.get(
-		'endpoint-name',
-		{
-			authRequired: true,
-			query: ajv.compile({
-					type: 'object',
-					properties: {
-						param1: { type: 'string' },
-						param2: { type: 'number' },
+API.v1.get(
+	'endpoint-name',
+	{
+		authRequired: true,
+		query: ajv.compile<{
+			param1: string;
+			param2: number;
+		}>({
+			type: 'object',
+			properties: {
+				param1: { type: 'string' },
+				param2: { type: 'number' },
+			},
+			required: ['param1'],
+		}),
+		body: ajv.compile<{
+			field1: string;
+			field2: boolean;
+		}>({
+			type: 'object',
+			properties: {
+				field1: { type: 'string' },
+				field2: { type: 'boolean' },
+			},
+			required: ['field1'],
+		}),
+		response: {
+			200: ajv.compile<{
+				count: number;
+				offset: number;
+				total: number;
+				items: { _id: string; prop1: number; prop2: string; prop3: string }[];
+			}>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					count: {
+						type: 'number',
+						description: 'The number of sounds returned in this response.',
 					},
-					required: ['param1'],
-			}),
-			body: ajv.compile({
-					type: 'object',
-					properties: {
-						field1: { type: 'string' },
-						field2: { type: 'boolean' },
+					offset: {
+						type: 'number',
+						description: 'The number of sounds that were skipped in this response.',
 					},
-					required: ['field1'],
-			}),
-			response: {
-				200: ajv.compile({
-					additionalProperties: false,
-				    type: 'object',
-                    properties: {
-						count: {
-							type: 'number',
-							description: 'The number of sounds returned in this response.',
-						},
-						offset: {
-							type: 'number',
-							description: 'The number of sounds that were skipped in this response.',
-						},
-						total: {
-							type: 'number',
-							description: 'The total number of sounds that match the query.',
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
+					total: {
+						type: 'number',
+						description: 'The total number of sounds that match the query.',
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+					items: {
+						type: 'array',
 						items: {
-							type: 'array',
-							items: {
-								type: 'object',
-								properties: {
+							type: 'object',
+							properties: {
 								_id: {
 									type: 'string',
 								},
@@ -100,40 +110,40 @@ API.v1
 								},
 							},
 							required: ['_id', 'prop1', 'prop2', 'prop3'],
-							},
 						},
 					},
-				}),
-				401: ajv.compile({
-					additionalProperties: false,
-					type: 'object',
-					properties: {
-						error: {
-							type: 'string',
-						},
-						status: {
-							type: 'string',
-							nullable: true,
-						},
-						message: {
-							type: 'string',
-							nullable: true,
-						},
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
+				},
+			}),
+			401: ajv.compile({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					error: {
+						type: 'string',
 					},
-					required: ['success', 'error'],
-				}),
-			},
+					status: {
+						type: 'string',
+						nullable: true,
+					},
+					message: {
+						type: 'string',
+						nullable: true,
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success', 'error'],
+			}),
 		},
+	},
 
-		async function action() {
-			const result = await anyLogic();
-			return API.v1.success(result);
-		},
-	)
+	async function action() {
+		const result = await anyLogic();
+		return API.v1.success(result);
+	},
+);
 ```
 
 By following these guidelines, you ensure that your API endpoints are well-documented, validated, and maintainable.
