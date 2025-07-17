@@ -1,3 +1,4 @@
+import { describe, test, expect, it } from 'vitest';
 import { parse } from '../src';
 import { lineBreak, autoLink, paragraph, plain, link } from '../src/utils';
 

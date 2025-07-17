@@ -1,3 +1,4 @@
+import { test, expect } from 'vitest';
 import { parse } from '../src';
 import { paragraph, plain, bold, italic, emoticon } from '../src/utils';
 

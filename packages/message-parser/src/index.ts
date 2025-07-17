@@ -1,5 +1,5 @@
-import type { Root } from './definitions';
-import grammar from './grammar.pegjs';
+import type { Root } from './definitions.js';
+import * as grammar from './grammar.pegjs';
 
 export * from './definitions';
 

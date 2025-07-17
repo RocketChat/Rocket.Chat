@@ -1,3 +1,4 @@
+import { test, expect } from 'vitest';
 import { parse } from '../src';
 import { bigEmoji, paragraph, plain, emoticon } from '../src/utils';
 

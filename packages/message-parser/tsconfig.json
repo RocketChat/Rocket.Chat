@@ -12,6 +12,7 @@
     "moduleResolution": "node",
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": ["node"]
   }
 }

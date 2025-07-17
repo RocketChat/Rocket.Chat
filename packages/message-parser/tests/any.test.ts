@@ -1,3 +1,4 @@
+import { test, expect } from 'vitest';
 import { parse } from '../src';
 import { paragraph, plain } from '../src/utils';
 
@@ -8,6 +9,6 @@ test.each([
     'free text with unxpected/unfinished blocks *bold_',
     [paragraph([plain('free text with unxpected/unfinished blocks *bold_')])],
   ],
-])('parses %p', (input, output) => {
+] as const)('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });
