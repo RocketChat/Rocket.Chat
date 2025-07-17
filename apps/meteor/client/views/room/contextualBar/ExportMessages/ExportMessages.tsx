@@ -208,7 +208,7 @@ const ExportMessages = () => {
 	const subjectField = useId();
 
 	return (
-		<ContextualbarDialog>
+		<ContextualbarDialog aria-labelledby={`${formId}-title`}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='mail' />
 				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
