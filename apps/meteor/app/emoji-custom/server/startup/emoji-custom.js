@@ -23,10 +23,10 @@ Meteor.startup(() => {
 
 	SystemLogger.info(`Using ${storeType} for custom emoji storage`);
 
-	let path = '~/uploads';
+	const path = '~/uploads';
 	if (settings.get('EmojiUpload_FileSystemPath') != null) {
 		if (settings.get('EmojiUpload_FileSystemPath').trim() !== '') {
-			path = settings.get('EmojiUpload_FileSystemPath');
+			// path = settings.get('EmojiUpload_FileSystemPath');
 		}
 	}
 
