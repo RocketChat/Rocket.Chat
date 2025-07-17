@@ -574,6 +574,26 @@ test.describe('SAML', () => {
 			expect(autoCreatedMembers).toBeDefined();
 			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser7')).toBe(true);
 		});
+
+		await doLogoutStep(page);
+
+		await doLoginStep(page, 'samluser1');
+
+		await test.step('expect user without channels attribute to not be added to existing channel', async () => {
+			const existingChannelMembersResponse = await api.get(`/channels.members?roomName=${targetChannel}`);
+			expect(existingChannelMembersResponse.status()).toBe(200);
+			const { members: existingMembers } = await existingChannelMembersResponse.json();
+			expect(existingMembers).toBeDefined();
+			expect(existingMembers.some((member: { username: string }) => member.username === 'samluser1')).toBe(false);
+		});
+
+		await test.step('expect user without channels attribute to not be added to auto-created channel', async () => {
+			const autoCreatedChannelMembersResponse = await api.get(`/channels.members?roomName=${autoCreatedChannel}`);
+			expect(autoCreatedChannelMembersResponse.status()).toBe(200);
+			const { members: autoCreatedMembers } = await autoCreatedChannelMembersResponse.json();
+			expect(autoCreatedMembers).toBeDefined();
+			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser1')).toBe(false);
+		});
 	});
 
 	test.fixme('Data Sync - Custom Field Map', async () => {
