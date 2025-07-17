@@ -8,7 +8,7 @@ import constants from '../../lib/constants';
 import store from '../../store';
 import { Button } from '../Button';
 import { type CallStatus, isCallOngoing } from './CallStatus';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type JoinCallButtonProps = {
 	t: TFunction;

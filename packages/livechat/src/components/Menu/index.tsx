@@ -4,7 +4,7 @@ import type { HTMLAttributes, TargetedEvent } from 'preact/compat';
 import { createClassName } from '../../helpers/createClassName';
 import { normalizeDOMRect } from '../../helpers/normalizeDOMRect';
 import { PopoverTrigger } from '../Popover';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type MenuProps = {
 	hidden?: boolean;

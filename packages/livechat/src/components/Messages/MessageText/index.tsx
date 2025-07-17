@@ -5,7 +5,7 @@ import { createClassName } from '../../../helpers/createClassName';
 import isBigEmoji from '../../../lib/emoji/isBigEmoji';
 import shortnameToUnicode from '../../../lib/emoji/shortnameToUnicode';
 import MarkdownBlock from '../../MarkdownBlock';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type MessageTextProps = {
 	text: string;

@@ -12,7 +12,7 @@ import { JoinCallButton } from '../../Calls/JoinCallButton';
 import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 export class MessageList extends MemoizedComponent {
 	static defaultProps = {

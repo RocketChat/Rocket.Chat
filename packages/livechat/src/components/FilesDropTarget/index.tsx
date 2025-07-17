@@ -1,8 +1,8 @@
 import type { ComponentChildren, Ref } from 'preact';
 import { useState, type CSSProperties, type ChangeEvent, type TargetedEvent } from 'preact/compat';
 
+import * as styles from './styles.scss';
 import { createClassName } from '../../helpers/createClassName';
-import styles from './styles.scss';
 
 const escapeForRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 

@@ -3,7 +3,7 @@ import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 
 import { createClassName } from '../../../helpers/createClassName';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type MessageContentProps = {
 	reverse?: boolean;

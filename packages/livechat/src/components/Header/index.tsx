@@ -4,7 +4,7 @@ import type { JSXInternal } from 'preact/src/jsx';
 
 import { type Theme } from '../../Theme';
 import { createClassName } from '../../helpers/createClassName';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type HeaderProps = {
 	children?: ComponentChildren;

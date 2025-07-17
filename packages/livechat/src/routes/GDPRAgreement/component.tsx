@@ -7,7 +7,7 @@ import { ButtonGroup } from '../../components/ButtonGroup';
 import MarkdownBlock from '../../components/MarkdownBlock';
 import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type GDPRProps = {
 	title: string;

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { createClassName } from '../../../../helpers/createClassName';
 import { Button } from '../../../Button';
 import Block from '../Block';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type ActionsBlockProps = uikit.ActionsBlock & {
 	parser: any;

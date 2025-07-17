@@ -3,7 +3,7 @@ import type { TargetedEvent } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
 import { createClassName } from '../../../helpers/createClassName';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type PasswordInputProps = {
 	name?: string;

@@ -1,3 +1,4 @@
 declare module '*.scss' {
-	export = Record<string, string>;
+	export const className: string;
+	export const styles: string;
 }

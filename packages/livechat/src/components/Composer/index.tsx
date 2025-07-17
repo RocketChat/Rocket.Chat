@@ -1,11 +1,12 @@
+import DOMPurify from 'dompurify';
 import type { ComponentChildren } from 'preact';
 import { Component } from 'preact';
 import type { CSSProperties } from 'preact/compat';
 
+import * as styles from './styles.scss';
 import { createClassName } from '../../helpers/createClassName';
 import { parse } from '../../helpers/parse';
-import DOMPurify from 'dompurify';
-import styles from './styles.scss';
+
 const findLastTextNode = (node: Node): Node | null => {
 	if (node.nodeType === Node.TEXT_NODE) {
 		return node;

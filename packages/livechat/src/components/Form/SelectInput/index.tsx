@@ -4,7 +4,7 @@ import type { JSXInternal } from 'preact/src/jsx';
 
 import { createClassName } from '../../../helpers/createClassName';
 import ArrowIcon from '../../../icons/arrowDown.svg';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type SelectInputProps = {
 	name?: string;

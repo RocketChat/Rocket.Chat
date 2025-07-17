@@ -4,7 +4,7 @@ import { memo, useEffect, useState, useMemo } from 'preact/compat';
 
 import { createClassName } from '../../../../helpers/createClassName';
 import Block from '../Block';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 const MAX_SIZE = 360;
 

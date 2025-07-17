@@ -2,7 +2,7 @@ import type { ComponentChildren, RefObject } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
 import { createClassName } from '../../../helpers/createClassName';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 export const FormScrollShadow = ({
 	topRef,

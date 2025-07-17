@@ -63,7 +63,7 @@
     "prettier-plugin-pegjs": "~0.5.4",
     "typedoc": "~0.28.5",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4",
+    "vite": "^7.0.5",
     "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {

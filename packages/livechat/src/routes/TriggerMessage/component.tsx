@@ -8,7 +8,7 @@ import type { ScreenContextValue } from '../../components/Screen/ScreenProvider'
 import { createClassName } from '../../helpers/createClassName';
 import { parentCall } from '../../lib/parentCall';
 import type { StoreState } from '../../store';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type TriggerMessageProps = {
 	title: string;

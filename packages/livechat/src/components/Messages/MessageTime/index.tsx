@@ -6,7 +6,7 @@ import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
 import { createClassName } from '../../../helpers/createClassName';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 const parseDate = (ts: number, t: TFunction) => {
 	const timestamp = new Date(ts).toISOString();
