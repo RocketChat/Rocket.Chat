@@ -48,20 +48,22 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	}
 
 	return (
-		<Sidepanel>
-			<Box pb={8} h='full'>
-				<VirtualizedScrollbars>
-					<Virtuoso
-						totalCount={result.data.length}
-						data={result.data}
-						components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper }}
-						itemContent={(_, data) => (
-							<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
-						)}
-					/>
-				</VirtualizedScrollbars>
-			</Box>
-		</Sidepanel>
+		<Box minWidth='x276'>
+			<Sidepanel>
+				<Box pb={8} h='full'>
+					<VirtualizedScrollbars>
+						<Virtuoso
+							totalCount={result.data.length}
+							data={result.data}
+							components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper }}
+							itemContent={(_, data) => (
+								<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
+							)}
+						/>
+					</VirtualizedScrollbars>
+				</Box>
+			</Sidepanel>
+		</Box>
 	);
 };
 
