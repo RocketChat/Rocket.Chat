@@ -93,11 +93,9 @@ const NavigationRegion = () => {
 					</Box>
 				)}
 				{displaySidePanel && (
-					<Box width='x280'>
-						<FocusScope>
-							<SidePanel />
-						</FocusScope>
-					</Box>
+					<FocusScope>
+						<SidePanel />
+					</FocusScope>
 				)}
 			</Box>
 			{isTablet && (
