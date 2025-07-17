@@ -95,6 +95,7 @@ export class MentionModule implements IUiKitCoreApp {
 				{
 					roomId: mentions.map(({ _id }) => _id),
 					text,
+					separateResponse: true, // so that messages are sent to other DMs even if one or more fails
 				},
 				payload.user,
 			);
