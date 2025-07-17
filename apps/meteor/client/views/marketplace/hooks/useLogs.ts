@@ -1,8 +1,9 @@
+import type { ILogItem } from '@rocket.chat/core-typings';
 import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const useLogs = ({
 	appId,
@@ -13,6 +14,7 @@ export const useLogs = ({
 	startDate,
 	endDate,
 	instanceId,
+	updateExpandedStates,
 }: {
 	appId: string;
 	current: number;
@@ -22,6 +24,7 @@ export const useLogs = ({
 	startDate?: string;
 	endDate?: string;
 	instanceId?: string;
+	updateExpandedStates: (logs: ILogItem[]) => void;
 }): UseQueryResult<OperationResult<'GET', '/apps/:id/logs'>> => {
 	const query = useMemo(
 		() => ({
@@ -40,5 +43,9 @@ export const useLogs = ({
 	return useQuery({
 		queryKey: ['marketplace', 'apps', appId, 'logs', query],
 		queryFn: () => logs(query),
+		select: useCallback((result: OperationResult<'GET', '/apps/:id/logs'>) => {
+			updateExpandedStates(result.logs);
+			return result;
+		}, []),
 	});
 };

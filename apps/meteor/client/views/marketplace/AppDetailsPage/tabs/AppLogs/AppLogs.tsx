@@ -1,6 +1,7 @@
+import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEffect, useMemo, useReducer, type ReactElement } from 'react';
+import { useMemo, useReducer, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
@@ -41,17 +42,6 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const debouncedEvent = useDebouncedValue(event, 500);
 
-	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
-		appId: id,
-		current,
-		itemsPerPage,
-		...(instance !== 'all' && { instanceId: instance }),
-		...(severity !== 'all' && { logLevel: severity }),
-		method: debouncedEvent,
-		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
-		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
-	});
-
 	const [expandedStates, dispatch] = useReducer(expandedReducer, []);
 
 	const handleExpand = ({ id, expanded }: { id: string; expanded: boolean }): void => {
@@ -72,17 +62,26 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 		});
 	};
 
-	// If data changes update the expanded states
-	useEffect(() => {
-		data?.logs?.forEach(({ _id }) => {
+	const updateExpandedStates = (logs: ILogItem[]) => {
+		expandedStates.forEach(({ id }) => {
+			handleRemoveExpandedStatus({ id });
+		});
+		logs.forEach(({ _id }) => {
 			handleAddExpandedStatus({ id: _id });
 		});
+	};
 
-		return () =>
-			data?.logs?.forEach(({ _id }) => {
-				handleRemoveExpandedStatus({ id: _id });
-			});
-	}, [data?.logs]);
+	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
+		appId: id,
+		current,
+		itemsPerPage,
+		...(instance !== 'all' && { instanceId: instance }),
+		...(severity !== 'all' && { logLevel: severity }),
+		method: debouncedEvent,
+		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
+		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
+		updateExpandedStates,
+	});
 
 	const parsedError = useMemo(() => {
 		if (error) {
