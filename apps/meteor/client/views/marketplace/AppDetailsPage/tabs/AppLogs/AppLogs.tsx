@@ -1,30 +1,63 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useMemo, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
 import { CollapsiblePanel } from './Components/CollapsiblePanel';
+import { AppLogsFilter } from './Filters/AppLogsFilter';
+import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
 import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
+import GenericError from '../../../../../components/GenericError';
+import GenericNoResults from '../../../../../components/GenericNoResults';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
 
 const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { t } = useTranslation();
+
+	const { watch } = useAppLogsFilterFormContext();
+
+	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
+
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-	const { data, isSuccess, isError, isLoading } = useLogs({ appId: id, current, itemsPerPage });
+
+	const debouncedEvent = useDebouncedValue(event, 500);
+
+	const { data, isSuccess, isError, error, isFetching } = useLogs({
+		appId: id,
+		current,
+		itemsPerPage,
+		...(instance !== 'all' && { instanceId: instance }),
+		...(severity !== 'all' && { logLevel: severity }),
+		method: debouncedEvent,
+		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
+		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
+	});
+
+	const parsedError = useMemo(() => {
+		if (error) {
+			// TODO: Check why tanstack expects a default Error but we return {error: string}
+			if ((error as unknown as { error: string }).error === 'Invalid date range') {
+				return t('error-invalid-dates');
+			}
+
+			return t('Something_Went_Wrong');
+		}
+	}, [error, t]);
 
 	return (
 		<>
-			{isLoading && <AccordionLoading />}
-			{isError && (
-				<Box maxWidth='x600' alignSelf='center'>
-					{t('App_not_found')}
-				</Box>
-			)}
-			{isSuccess && (
+			<Box pb={16}>
+				<AppLogsFilter noResults={isFetching || !isSuccess || data?.logs?.length === 0} isLoading={isFetching} />
+			</Box>
+			{isFetching && <AccordionLoading />}
+			{isError && <GenericError title={parsedError} />}
+			{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}
+			{!isFetching && isSuccess && data?.logs?.length > 0 && (
 				<CustomScrollbars>
-					<CollapsiblePanel width='100%' alignSelf='center'>
+					<CollapsiblePanel aria-busy={isFetching || event !== debouncedEvent} width='100%' alignSelf='center'>
 						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
 					</CollapsiblePanel>
 				</CustomScrollbars>

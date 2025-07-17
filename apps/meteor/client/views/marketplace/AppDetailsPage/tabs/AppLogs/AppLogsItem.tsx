@@ -32,13 +32,17 @@ const AppLogsItem = ({ regionId, ...props }: AppLogsItemProps) => {
 		</>
 	);
 
+	const handleClick = () => {
+		setExpanded(!expanded);
+	};
+
 	const anchorRef = useRef<HTMLDivElement>(null);
 
 	const formatDateAndTime = useFormatDateAndTime();
 
 	return (
 		<>
-			<CollapseButton regionId={regionId} expanded={expanded} onClick={() => setExpanded(!expanded)}>
+			<CollapseButton regionId={regionId} expanded={expanded} onClick={handleClick}>
 				<Box ref={anchorRef}>{title}</Box>
 			</CollapseButton>
 
