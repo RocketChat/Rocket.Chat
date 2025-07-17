@@ -1,15 +1,15 @@
-import type { Method, PathPattern, UrlParams } from '@rocket.chat/rest-typings'; // TODO fzh075 duplicate
+import type { Method, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
 type UseEndpointActionOptions<TPathPattern extends PathPattern> = (undefined extends UrlParams<TPathPattern>
 	? {
-			keys?: UrlParams<TPathPattern>;
-		}
+		keys?: UrlParams<TPathPattern>;
+	}
 	: {
-			keys: UrlParams<TPathPattern>;
-		}) & {
+		keys: UrlParams<TPathPattern>;
+	}) & {
 	successMessage?: string;
 };
 export function useEndpointAction<TMethod extends Method, TPathPattern extends PathPattern>(

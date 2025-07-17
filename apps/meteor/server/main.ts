@@ -23,6 +23,7 @@ import './publications';
 import '../lib/oauthRedirectUriServer';
 import './lib/pushConfig';
 import './features/EmailInbox/index';
+import './passkey'
 
 await Promise.all([configureServer(settings), registerServices(), startup()]);
 

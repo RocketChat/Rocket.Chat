@@ -8,6 +8,7 @@ import './e2e';
 import './iframeCommands';
 import './incomingMessages';
 import './messageTypes';
+import './passkey';
 import './roles';
 import './routes';
 import './slashCommands';
