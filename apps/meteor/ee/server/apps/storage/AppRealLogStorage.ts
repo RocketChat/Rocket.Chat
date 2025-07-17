@@ -15,6 +15,15 @@ export class AppRealLogStorage extends AppLogStorage {
 		},
 		options: IAppLogStorageFindOptions,
 	) {
+		return this.db.find<ILoggerStorageEntry>(query, options).toArray();
+	}
+
+	async findPaginated(
+		query: {
+			[field: string]: any;
+		},
+		options: IAppLogStorageFindOptions,
+	) {
 		const { cursor, totalCount } = this.db.findPaginated<ILoggerStorageEntry>(query, options);
 
 		const [logs, total] = await Promise.all([cursor.toArray(), totalCount]);
