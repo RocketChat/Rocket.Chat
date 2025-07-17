@@ -110,8 +110,14 @@ export const useHandleUnread = (
 
 				debouncedReadMessageRead();
 			}),
-		[debouncedReadMessageRead, room._id, router, subscribed, subscription?.alert, subscription?.unread],
+		[debouncedReadMessageRead, router],
 	);
+
+	useEffect(() => {
+		if (subscription?.alert || subscription?.unread || subscribed) {
+			debouncedReadMessageRead();
+		}
+	}, [debouncedReadMessageRead, subscription?.alert, subscription?.unread, subscribed]);
 
 	useEffect(() => {
 		if (!unread?.count) {
