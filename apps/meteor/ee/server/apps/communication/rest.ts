@@ -36,6 +36,7 @@ import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { registerAppGeneralLogsHandler } from './endpoints/appGeneralLogsHandler';
+import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 
@@ -109,6 +110,7 @@ export class AppsRestApi {
 		registerAppsCountHandler(this);
 
 		registerAppLogsHandler(this);
+		registerAppLogsExportHandler(this);
 		registerAppGeneralLogsHandler(this);
 
 		this.api.addRoute(
