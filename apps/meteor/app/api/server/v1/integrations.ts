@@ -1,8 +1,9 @@
-import type { IIntegration, INewIncomingIntegration, INewOutgoingIntegration } from '@rocket.chat/core-typings';
+import type { IIntegration, INewIncomingIntegration, INewOutgoingIntegration, IIntegrationHistory } from '@rocket.chat/core-typings';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import {
+	ajv,
 	isIntegrationsCreateProps,
-	isIntegrationsHistoryProps,
 	isIntegrationsRemoveProps,
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
@@ -22,6 +23,7 @@ import { updateIncomingIntegration } from '../../../integrations/server/methods/
 import { addOutgoingIntegration } from '../../../integrations/server/methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../../../integrations/server/methods/outgoing/deleteOutgoingIntegration';
 import { updateOutgoingIntegration } from '../../../integrations/server/methods/outgoing/updateOutgoingIntegration';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findOneIntegration } from '../lib/integrations';
@@ -43,45 +45,106 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+type IntegrationsHistoryProps = PaginatedRequest<{ id: string }>;
+
+const integrationsHistorySchema = {
+	type: 'object',
+	properties: {
+		id: { type: 'string', nullable: false, minLength: 1 },
+		offset: { type: 'number', nullable: true },
+		count: { type: 'number', nullable: true },
+		sort: { type: 'string', nullable: true },
+		query: { type: 'string', nullable: true },
+	},
+	required: ['id'],
+	additionalProperties: false,
+};
+
+const isIntegrationsHistoryProps = ajv.compile<IntegrationsHistoryProps>(integrationsHistorySchema);
+
+const integrationsHistoryEndpoints = API.v1.get(
 	'integrations.history',
 	{
 		authRequired: true,
 		validateParams: isIntegrationsHistoryProps,
+		query: isIntegrationsHistoryProps,
 		permissionsRequired: {
 			GET: { permissions: ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'], operation: 'hasAny' },
 		},
-	},
-	{
-		async get() {
-			const { userId, queryParams } = this;
-
-			if (!queryParams.id || queryParams.id.trim() === '') {
-				return API.v1.failure('Invalid integration id.');
-			}
-
-			const { id } = queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields: projection, query } = await this.parseJsonQuery();
-			const ourQuery = Object.assign(await mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
-
-			const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
-				sort: sort || { _updatedAt: -1 },
-				skip: offset,
-				limit: count,
-				projection,
-			});
-
-			const [history, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				history,
-				offset,
-				items: history.length,
-				count: history.length,
-				total,
-			});
+		response: {
+			400: ajv.compile<{
+				error?: string;
+				errorType?: string;
+				stack?: string;
+				details?: string;
+			}>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					stack: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					details: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					status: { type: 'string' },
+					message: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			200: ajv.compile<PaginatedResult<{ history: IIntegrationHistory[]; items: number }>>({
+				type: 'object',
+				properties: {
+					history: { type: 'array' },
+					offset: { type: 'string' },
+					items: { type: 'integer' },
+					count: { type: 'integer' },
+					total: { type: 'integer' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+
+	async function action() {
+		const { userId, queryParams } = this;
+
+		if (!queryParams.id || queryParams.id.trim() === '') {
+			return API.v1.failure('Invalid integration id.');
+		}
+
+		const { id } = queryParams;
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields: projection, query } = await this.parseJsonQuery();
+		const ourQuery = Object.assign(await mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
+
+		const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
+			sort: sort || { _updatedAt: -1 },
+			skip: offset,
+			limit: count,
+			projection,
+		});
+
+		const [history, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			history,
+			offset,
+			items: history.length,
+			count: history.length,
+			total,
+		});
 	},
 );
 
@@ -272,3 +335,12 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type IntegrationsHistoryEndpoints = ExtractRoutesFromAPI<typeof integrationsHistoryEndpoints>;
+
+export type IntegrationsEndpoints = IntegrationsHistoryEndpoints;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends IntegrationsHistoryEndpoints {}
+}
