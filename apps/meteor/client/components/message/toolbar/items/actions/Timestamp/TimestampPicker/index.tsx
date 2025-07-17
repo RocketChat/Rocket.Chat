@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Modal, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
 import DatePicker from './DatePicker';
@@ -25,19 +25,19 @@ export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => 
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.Title>{t('Add_Date_And_Time')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Add_Date_And_Time')}</ModalTitle>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box display='flex' flexDirection='column' mbs='x16' pi='x16'>
 					<DatePicker selectedDate={selectedDate} onChange={handleDateChange} />
 					<TimePicker selectedDate={selectedDate} onChange={handleTimeChange} />
 					<FormatSelector selectedFormat={selectedFormat} onChange={handleFormatChange} />
 					<Preview date={selectedDate} format={selectedFormat} />
 				</Box>
-			</Modal.Content>
-			<Modal.Footer>
+			</ModalContent>
+			<ModalFooter>
 				<Box w='full'>
 					<ButtonGroup align='end'>
 						<Button onClick={onClose}>{t('Cancel')}</Button>
@@ -46,7 +46,7 @@ export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => 
 						</Button>
 					</ButtonGroup>
 				</Box>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };
