@@ -19,7 +19,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
-import { usersQueryKeys } from '../../../../lib/queryKeys';
+import { miscQueryKeys } from '../../../../lib/queryKeys';
 
 const AccountTokensTable = (): ReactElement => {
 	const { t } = useTranslation();
@@ -32,7 +32,7 @@ const AccountTokensTable = (): ReactElement => {
 
 	const getPersonalAccessTokens = useEndpoint('GET', '/v1/users.getPersonalAccessTokens');
 	const { isPending, isSuccess, data, isError, error } = useQuery({
-		queryKey: usersQueryKeys.personalAccessTokens,
+		queryKey: miscQueryKeys.personalAccessTokens,
 		queryFn: () => getPersonalAccessTokens(),
 	});
 
@@ -87,7 +87,7 @@ const AccountTokensTable = (): ReactElement => {
 						</GenericModal>,
 					);
 
-					queryClient.invalidateQueries({ queryKey: usersQueryKeys.personalAccessTokens });
+					queryClient.invalidateQueries({ queryKey: miscQueryKeys.personalAccessTokens });
 				} catch (error) {
 					setModal(null);
 					dispatchToastMessage({ type: 'error', message: error });
@@ -115,7 +115,7 @@ const AccountTokensTable = (): ReactElement => {
 				try {
 					await removeToken({ tokenName: name });
 					dispatchToastMessage({ type: 'success', message: t('Token_has_been_removed') });
-					queryClient.invalidateQueries({ queryKey: usersQueryKeys.personalAccessTokens });
+					queryClient.invalidateQueries({ queryKey: miscQueryKeys.personalAccessTokens });
 					closeModal();
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
@@ -140,7 +140,7 @@ const AccountTokensTable = (): ReactElement => {
 					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
 					<StatesSubtitle>{error?.message}</StatesSubtitle>
 					<StatesActions>
-						<StatesAction onClick={() => queryClient.invalidateQueries({ queryKey: usersQueryKeys.personalAccessTokens })}>
+						<StatesAction onClick={() => queryClient.invalidateQueries({ queryKey: miscQueryKeys.personalAccessTokens })}>
 							{t('Retry')}
 						</StatesAction>
 					</StatesActions>
@@ -151,7 +151,7 @@ const AccountTokensTable = (): ReactElement => {
 
 	return (
 		<>
-			<AddToken reload={() => queryClient.invalidateQueries({ queryKey: usersQueryKeys.personalAccessTokens })} />
+			<AddToken reload={() => queryClient.invalidateQueries({ queryKey: miscQueryKeys.personalAccessTokens })} />
 			{isPending && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>

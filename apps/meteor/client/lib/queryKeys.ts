@@ -51,7 +51,7 @@ export const deviceManagementQueryKeys = {
 	sessionInfo: (sessionId: string) => [...deviceManagementQueryKeys.all, 'session-info', sessionId] as const,
 };
 
-export const usersQueryKeys = {
-	all: ['users'] as const,
+export const miscQueryKeys = {
 	personalAccessTokens: ['personal-access-tokens'] as const,
+	lookup: (endpoint: string) => ['lookup', endpoint] as const,
 };
