@@ -35,5 +35,8 @@
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"volta": {
+		"extends": "../../package.json"
+	}
 }
