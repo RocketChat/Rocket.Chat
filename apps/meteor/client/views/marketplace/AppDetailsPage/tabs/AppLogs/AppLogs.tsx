@@ -1,6 +1,6 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useMemo, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useReducer, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
@@ -14,6 +14,22 @@ import { usePagination } from '../../../../../components/GenericTable/hooks/useP
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
 
+function expandedReducer(
+	expandedStates: { id: string; expanded: boolean }[],
+	action: { id: string; expanded: boolean; operation?: 'add' | 'update' | 'remove' },
+) {
+	switch (action.operation) {
+		case 'add':
+			return [...expandedStates, { id: action.id, expanded: action.expanded }];
+		case 'update':
+			return expandedStates.map((state) => (state.id === action.id ? { ...state, expanded: action.expanded } : state));
+		case 'remove':
+			return expandedStates.filter((state) => state.id !== action.id);
+		default:
+			return expandedStates;
+	}
+}
+
 const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { t } = useTranslation();
 
@@ -22,10 +38,6 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
-	const [expandOverride, setExpandOverride] = useState(false);
-
-	const expandAll = () => setExpandOverride(true);
 
 	const debouncedEvent = useDebouncedValue(event, 500);
 
@@ -39,6 +51,38 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
 		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
 	});
+
+	const [expandedStates, dispatch] = useReducer(expandedReducer, []);
+
+	const handleExpand = ({ id, expanded }: { id: string; expanded: boolean }): void => {
+		dispatch({ id, expanded, operation: 'update' });
+	};
+
+	const handleAddExpandedStatus = ({ id }: { id: string }): void => {
+		dispatch({ id, expanded: false, operation: 'add' });
+	};
+
+	const handleRemoveExpandedStatus = ({ id }: { id: string }): void => {
+		dispatch({ id, expanded: false, operation: 'remove' });
+	};
+
+	const handleExpandAll = () => {
+		expandedStates.forEach(({ id }) => {
+			handleExpand({ id, expanded: true });
+		});
+	};
+
+	// If data changes update the expanded states
+	useEffect(() => {
+		data?.logs?.forEach(({ _id }) => {
+			handleAddExpandedStatus({ id: _id });
+		});
+
+		return () =>
+			data?.logs?.forEach(({ _id }) => {
+				handleRemoveExpandedStatus({ id: _id });
+			});
+	}, [data?.logs]);
 
 	const parsedError = useMemo(() => {
 		if (error) {
@@ -57,7 +101,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 				<AppLogsFilter
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}
 					isLoading={isFetching}
-					expandAll={expandAll}
+					expandAll={() => handleExpandAll()}
 					refetchLogs={() => refetch()}
 				/>
 			</Box>
@@ -70,8 +114,8 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 						{data?.logs?.map((log, index) => (
 							<AppLogsItem
 								regionId={log._id}
-								setExpandOverride={setExpandOverride}
-								expandOverride={expandOverride}
+								expanded={expandedStates.find((state) => state.id === log._id)?.expanded || false}
+								onExpand={handleExpand}
 								key={`${index}-${log._createdAt}`}
 								{...log}
 							/>

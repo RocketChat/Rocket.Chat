@@ -1,6 +1,6 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Divider } from '@rocket.chat/fuselage';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItemEntry from './AppLogsItemEntry';
@@ -11,13 +11,12 @@ import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime'
 
 export type AppLogsItemProps = {
 	regionId: string;
-	expandOverride?: boolean;
-	setExpandOverride: (value: boolean) => void;
+	expanded: boolean;
+	onExpand: ({ id }: { id: string; expanded: boolean }) => void;
 } & ILogItem;
 
-const AppLogsItem = ({ regionId, expandOverride, setExpandOverride, ...props }: AppLogsItemProps) => {
+const AppLogsItem = ({ regionId, expanded, onExpand, ...props }: AppLogsItemProps) => {
 	const { t } = useTranslation();
-	const [expanded, setExpanded] = useState(false);
 	const title = (
 		<>
 			{props.entries.map(({ severity, timestamp, caller, args }, index) => {
@@ -35,16 +34,8 @@ const AppLogsItem = ({ regionId, expandOverride, setExpandOverride, ...props }: 
 	);
 
 	const handleClick = () => {
-		setExpandOverride(false);
-		setExpanded(!expanded);
+		onExpand({ id: regionId, expanded: !expanded });
 	};
-
-	// Not Ideal :P
-	useEffect(() => {
-		if (expandOverride) {
-			setExpanded(expandOverride);
-		}
-	}, [expandOverride]);
 
 	const anchorRef = useRef<HTMLDivElement>(null);
 
