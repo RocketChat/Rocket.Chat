@@ -56,3 +56,8 @@ export const miscQueryKeys = {
 	personalAccessTokens: ['personal-access-tokens'] as const,
 	lookup: (endpoint: string) => ['lookup', endpoint] as const,
 };
+
+export const voipQueryKeys = {
+	all: ['voip'] as const,
+	room: (rid: IRoom['_id'], token: string) => [...voipQueryKeys.all, 'room', rid, token] as const,
+};
