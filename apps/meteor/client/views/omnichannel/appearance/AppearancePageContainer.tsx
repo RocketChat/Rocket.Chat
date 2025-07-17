@@ -14,7 +14,7 @@ const AppearancePageContainer = () => {
 
 	const getLivechatAppearance = useEndpoint('GET', '/v1/livechat/appearance');
 	const { isPending, isError, data } = useQuery({
-		queryKey: omnichannelQueryKeys.livechatAppearance(),
+		queryKey: omnichannelQueryKeys.livechat.appearance(),
 		queryFn: async () => {
 			const { appearance } = await getLivechatAppearance();
 			return appearance;
