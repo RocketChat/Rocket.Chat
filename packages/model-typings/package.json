@@ -20,5 +20,8 @@
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

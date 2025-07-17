@@ -38,6 +38,7 @@ const AppLogsItem = ({ regionId, expandOverride, setExpandOverride, ...props }: 
 		setExpandOverride(false);
 		setExpanded(!expanded);
 	};
+
 	// Not Ideal :P
 	useEffect(() => {
 		if (expandOverride) {
