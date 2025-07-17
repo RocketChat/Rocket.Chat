@@ -34,6 +34,7 @@ import type {
 	ICustomUserStatus,
 	IWebdavAccount,
 	IOTRMessage,
+	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -104,7 +105,15 @@ export type EventSignatures = {
 			users: string[];
 			ids?: string[]; // message ids have priority over ts
 			showDeletedStatus?: boolean;
-		},
+		} & (
+			| {
+					filesOnly: true;
+					replaceFileAttachmentsWith?: MessageAttachment;
+			  }
+			| {
+					filesOnly?: false;
+			  }
+		),
 	): void;
 	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;
 	'notify.updateCustomSound'(data: { soundData: ICustomSound }): void;

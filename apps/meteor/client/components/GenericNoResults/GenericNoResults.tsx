@@ -9,7 +9,7 @@ type GenericNoResultsProps = {
 	icon?: IconName;
 	title?: string;
 	description?: string;
-	buttonTitle?: string;
+	buttonPrimary?: boolean;
 } & LinkProps &
 	ButtonProps;
 
@@ -19,6 +19,7 @@ const GenericNoResults = ({
 	description,
 	buttonTitle,
 	buttonAction,
+	buttonPrimary = true,
 	linkHref,
 	linkText,
 }: GenericNoResultsProps) => {
@@ -32,7 +33,9 @@ const GenericNoResults = ({
 				{description && <StatesSubtitle>{description}</StatesSubtitle>}
 				{buttonTitle && buttonAction && (
 					<StatesActions>
-						<StatesAction onClick={buttonAction}>{buttonTitle}</StatesAction>
+						<StatesAction primary={buttonPrimary} onClick={buttonAction}>
+							{buttonTitle}
+						</StatesAction>
 					</StatesActions>
 				)}
 				{linkText && linkHref && (

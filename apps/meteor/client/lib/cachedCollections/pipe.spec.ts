@@ -16,6 +16,36 @@ describe('pipe', () => {
 		{ _id: 5, name: 'Eve', ts: 40, date: new Date('2025-07-16T05:00:00.000Z') },
 	];
 
+	describe('missing fields', () => {
+		it('should let the rows with missing fields at the end', () => {
+			const arr = [...sampleData];
+			arr.splice(Math.floor(Math.random() * arr.length), 0, { _id: 6, name: 'A', ts: 50 } as ITestData);
+
+			const result = pipe<ITestData>().sortByField('date', 1).apply(arr);
+			expect(result).toEqual([...sampleData, { _id: 6, name: 'A', ts: 50 }]);
+		});
+		it('should sort by fallback fields if a field is missing', () => {
+			// adds randomly an row if missing date
+			const arr = [...sampleData];
+			arr.splice(Math.floor(Math.random() * arr.length), 0, { _id: 6, name: 'A', ts: 50 } as ITestData);
+			arr.splice(Math.floor(Math.random() * arr.length), 0, { _id: 7, name: 'B', ts: 50 } as ITestData);
+			arr.splice(Math.floor(Math.random() * arr.length), 0, { _id: 8, name: 'C', ts: 50 } as ITestData);
+
+			const result = pipe<ITestData>().sortByField('date', 1, ['name']).apply(arr);
+			expect(result).toEqual([...sampleData, { _id: 6, name: 'A', ts: 50 }, { _id: 7, name: 'B', ts: 50 }, { _id: 8, name: 'C', ts: 50 }]);
+		});
+		it('should sort by fallback fields if a field is missing with second signature', () => {
+			// adds randomly an row if missing date
+			const arr = [...sampleData];
+			arr.splice(Math.floor(Math.random() * arr.length), 0, { _id: 6, name: 'A', ts: 50 } as ITestData);
+			arr.splice(Math.floor(Math.random() * arr.length), 0, { _id: 7, name: 'B', ts: 50 } as ITestData);
+			arr.splice(Math.floor(Math.random() * arr.length), 0, { _id: 8, name: 'C', ts: 50 } as ITestData);
+
+			const result = pipe<ITestData>().sortByField(['date', 'name'], 1).apply(arr);
+			expect(result).toEqual([...sampleData, { _id: 6, name: 'A', ts: 50 }, { _id: 7, name: 'B', ts: 50 }, { _id: 8, name: 'C', ts: 50 }]);
+		});
+	});
+
 	it('should correctly slice the array with skip and limit', () => {
 		const result = pipe<ITestData>().slice(1, 2).apply(sampleData);
 		expect(result).toEqual([

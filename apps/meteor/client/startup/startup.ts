@@ -1,7 +1,6 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { UserPresence } from 'meteor/rocketchat:user-presence';
-import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
@@ -13,8 +12,6 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 Meteor.startup(() => {
 	fireGlobalEvent('startup', true);
-
-	Session.setDefault('AvatarRandom', 0);
 
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};

@@ -8,6 +8,7 @@ import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { modifyMessageOnFilesDelete } from '../../../../client/lib/utils/modifyMessageOnFilesDelete';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Subscriptions } from '../../../models/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
@@ -110,6 +111,41 @@ function getOpenedRoomByRid(rid: IRoom['_id']) {
 		.find((openedRoom) => openedRoom.rid === rid);
 }
 
+function createDeleteQuery({
+	excludePinned,
+	ignoreDiscussion,
+	rid,
+	ts,
+	users,
+	ids,
+}: {
+	rid: IMessage['rid'];
+	excludePinned: boolean;
+	ignoreDiscussion: boolean;
+	ts: Record<string, Date>;
+	users: string[];
+	ids?: string[];
+}) {
+	const query: Filter<IMessage> = { rid };
+
+	if (ids) {
+		query._id = { $in: ids };
+	} else {
+		query.ts = ts;
+	}
+	if (excludePinned) {
+		query.pinned = { $ne: true };
+	}
+	if (ignoreDiscussion) {
+		query.drid = { $exists: false };
+	}
+	if (users?.length) {
+		query['u.username'] = { $in: users };
+	}
+
+	return query;
+}
+
 const openRoom = (typeName: string, record: OpenedRoom) => {
 	if (record.ready === true && record.streamActive === true) {
 		return;
@@ -174,44 +210,28 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 					({ tmid: _, ...record }) => record,
 				);
 			}),
-			sdk.stream(
-				'notify-room',
-				[`${record.rid}/deleteMessageBulk`],
-				({ rid, ts, excludePinned, ignoreDiscussion, users, ids, showDeletedStatus }) => {
-					const query: Filter<IMessage> = { rid };
+			sdk.stream('notify-room', [`${record.rid}/deleteMessageBulk`], async (params) => {
+				const query = createDeleteQuery(params);
+				const predicate = createPredicateFromFilter(query);
 
-					if (ids) {
-						query._id = { $in: ids };
-					} else {
-						query.ts = ts;
-					}
-					if (excludePinned) {
-						query.pinned = { $ne: true };
-					}
-					if (ignoreDiscussion) {
-						query.drid = { $exists: false };
-					}
-					if (users?.length) {
-						query['u.username'] = { $in: users };
-					}
+				if (params.filesOnly) {
+					return Messages.state.update(predicate, (record) => modifyMessageOnFilesDelete(record, params.replaceFileAttachmentsWith));
+				}
 
-					const predicate = createPredicateFromFilter(query);
+				if (params.showDeletedStatus) {
+					return Messages.state.update(predicate, (record) => ({
+						...record,
+						t: 'rm',
+						msg: '',
+						urls: [],
+						mentions: [],
+						attachments: [],
+						reactions: {},
+					}));
+				}
 
-					if (showDeletedStatus) {
-						return Messages.state.update(predicate, (record) => ({
-							...record,
-							t: 'rm',
-							msg: '',
-							urls: [],
-							mentions: [],
-							attachments: [],
-							reactions: {},
-						}));
-					}
-
-					return Messages.state.remove(predicate);
-				},
-			),
+				return Messages.state.remove(predicate);
+			}),
 
 			sdk.stream('notify-room', [`${record.rid}/messagesRead`], ({ tmid, until }) => {
 				if (tmid) {

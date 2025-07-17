@@ -9,7 +9,7 @@ import { useIframe } from '../../../hooks/iframe/useIframe';
 
 const LoginPage = ({ defaultRoute, children }: { defaultRoute?: LoginRoutes; children?: ReactNode }): ReactElement => {
 	const { t } = useTranslation();
-	const showForcedLogoutBanner = useSession('force_logout') as boolean | undefined;
+	const showForcedLogoutBanner = useSession('forceLogout') as boolean | undefined;
 	const { iframeLoginUrl } = useIframe();
 
 	if (iframeLoginUrl) {

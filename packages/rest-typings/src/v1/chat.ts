@@ -830,6 +830,9 @@ const ChatPostMessageSchema = {
 					type: 'object',
 					nullable: true,
 				},
+				parseUrls: {
+					type: 'boolean',
+				},
 			},
 			required: ['roomId'],
 			additionalProperties: false,
@@ -874,6 +877,9 @@ const ChatPostMessageSchema = {
 				customFields: {
 					type: 'object',
 					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
 				},
 			},
 			required: ['channel'],
