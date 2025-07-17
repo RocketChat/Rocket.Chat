@@ -60,7 +60,7 @@ exports[`renders without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
                     <label
-                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+                      class="rcx-box rcx-box--full rcx-field__label rcx-label"
                       for="JSONField"
                     >
                       JSON
@@ -90,7 +90,7 @@ exports[`renders without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
                     <label
-                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+                      class="rcx-box rcx-box--full rcx-field__label rcx-label"
                       for="plainTextField"
                     >
                       CSV
@@ -128,7 +128,7 @@ exports[`renders without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
                     <label
-                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+                      class="rcx-box rcx-box--full rcx-field__label rcx-label"
                       for="maxLogsExport"
                     >
                       Max_logs_export
@@ -158,7 +158,7 @@ exports[`renders without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-field__row"
                   >
                     <label
-                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label"
+                      class="rcx-box rcx-box--full rcx-field__label rcx-label"
                       for="customMaxLogs"
                     >
                       Limit_number_of_logs
