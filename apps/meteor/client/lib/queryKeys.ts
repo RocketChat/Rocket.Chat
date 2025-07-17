@@ -29,6 +29,17 @@ export const rolesQueryKeys = {
 export const omnichannelQueryKeys = {
 	all: ['omnichannel'] as const,
 	department: (id: string) => [...omnichannelQueryKeys.all, 'department', id] as const,
+	extensions: (
+		params:
+			| {
+					userId: string;
+					type: 'free' | 'allocated' | 'available';
+			  }
+			| {
+					username: string;
+					type: 'free' | 'allocated' | 'available';
+			  },
+	) => [...omnichannelQueryKeys.all, 'extensions', params] as const,
 };
 
 export const deviceManagementQueryKeys = {
