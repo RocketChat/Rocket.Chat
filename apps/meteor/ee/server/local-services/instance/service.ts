@@ -1,6 +1,7 @@
 import os from 'os';
 
-import { License, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { AppStatusReport } from '@rocket.chat/core-services';
+import { Apps, License, ServiceClassInternal } from '@rocket.chat/core-services';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import EJSON from 'ejson';
@@ -117,6 +118,11 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 					}
 				},
 			},
+			actions: {
+				getAppsStatus(_ctx) {
+					return Apps.getAppsStatusLocal();
+				},
+			},
 		});
 	}
 
@@ -175,5 +181,46 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	async getInstances(): Promise<BrokerNode[]> {
 		return this.broker.call('$node.list', { onlyAvailable: true });
+	}
+
+	async getAppsStatusInInstances(): Promise<AppStatusReport> {
+		const instances = await this.getInstances();
+
+		const control: Promise<void>[] = [];
+		const statusByApp: AppStatusReport = {};
+
+		instances.forEach((instance) => {
+			if (instance.local) {
+				return;
+			}
+
+			const { id: instanceId } = instance;
+
+			control.push(
+				(async () => {
+					const appsStatus = await this.broker.call<Awaited<ReturnType<(typeof Apps)['getAppsStatusLocal']>>, null>(
+						'matrix.getAppsStatus',
+						null,
+						{ nodeID: instanceId },
+					);
+
+					if (!appsStatus) {
+						throw new Error(`Failed to get apps status from instance ${instanceId}`);
+					}
+
+					appsStatus.forEach(({ status, appId }) => {
+						if (!statusByApp[appId]) {
+							statusByApp[appId] = [];
+						}
+
+						statusByApp[appId].push({ instanceId, status });
+					});
+				})(),
+			);
+		});
+
+		await Promise.all(control);
+
+		return statusByApp;
 	}
 }

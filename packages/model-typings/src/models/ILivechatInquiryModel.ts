@@ -16,12 +16,14 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
 	setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null>;
+	setLastMessageById(inquiryId: string, lastMessage: IMessage): Promise<UpdateResult>;
 	findNextAndLock(
 		queueSortBy: FindOptions<ILivechatInquiryRecord>['sort'],
 		department: string | null,
 	): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAll(): Promise<UpdateResult | Document>;
+	findIdsByVisitorId(_id: ILivechatInquiryRecord['v']['_id']): FindCursor<ILivechatInquiryRecord>;
 	getCurrentSortedQueueAsync(props: {
 		inquiryId?: string;
 		department?: string;
@@ -31,7 +33,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 	takeInquiry(inquiryId: string): Promise<void>;
 	openInquiry(inquiryId: string): Promise<UpdateResult>;
-	queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null>;
+	queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null>;
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult>;
 	readyInquiry(inquiryId: string): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(rid: string, department: string): Promise<void>;

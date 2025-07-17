@@ -1,9 +1,8 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-
-import GenericModal from '../../../../components/GenericModal';
 
 export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 	const t = useTranslation();
@@ -23,6 +22,7 @@ export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 				queryClient.invalidateQueries({
 					queryKey: ['livechat-agents'],
 				});
+				queryClient.invalidateQueries({ queryKey: ['livechat-getAgentDepartments', uid] });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

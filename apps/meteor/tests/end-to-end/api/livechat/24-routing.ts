@@ -16,7 +16,6 @@ import {
 	makeAgentUnavailable,
 	switchLivechatStatus,
 } from '../../../data/livechat/rooms';
-import { sleep } from '../../../data/livechat/utils';
 import { updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login, setUserActiveStatus, setUserAway, setUserStatus } from '../../../data/users.helper';
@@ -285,8 +284,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			await sleep(5000);
-
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
 			expect(roomInfo.servedBy).to.be.an('object');
@@ -297,8 +294,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			await sleep(5000);
-
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
 			expect(roomInfo.servedBy).to.be.an('object');
@@ -307,8 +302,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should route to contact manager if it is online and Omnichannel_contact_manager_routing is enabled', async () => {
 			const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
 			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
@@ -330,8 +323,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			await sleep(5000);
-
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
 			expect(roomInfo.servedBy).to.be.undefined;
@@ -341,8 +332,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
@@ -355,8 +344,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			await sleep(5000);
-
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
@@ -366,8 +353,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
@@ -399,8 +384,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await makeAgentAvailable(testUser.credentials);
 			const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
 			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
@@ -439,8 +422,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			it('should not route to contact manager if it is online but setting is off', async () => {
 				const visitor = await createVisitor(testDepartment2._id, faker.person.fullName(), visitorEmail);
 				const room = await createLivechatRoom(visitor.token);
-
-				await sleep(5000);
 
 				const roomInfo = await getLivechatRoomInfo(room._id);
 
@@ -494,8 +475,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			await sleep(5000);
-
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
 			expect(roomInfo.servedBy).to.be.an('object');
@@ -505,8 +484,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should not route to a not-available agent', async () => {
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
@@ -518,8 +495,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			await sleep(5000);
-
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
 			expect(roomInfo.servedBy).to.be.an('object');
@@ -528,8 +503,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should route again to the less busy agent', async () => {
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
@@ -558,8 +531,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			// Not checking who, just checking it's served
@@ -612,8 +583,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			await sleep(5000);
-
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
 			expect(roomInfo.servedBy).to.be.an('object');
@@ -623,8 +592,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should not route chat to an unavailable agent', async () => {
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
@@ -636,8 +603,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			await sleep(5000);
-
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
 			expect(roomInfo.servedBy).to.be.an('object');
@@ -646,8 +611,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should route again to the agent with the oldest routing time', async () => {
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
-
-			await sleep(5000);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 

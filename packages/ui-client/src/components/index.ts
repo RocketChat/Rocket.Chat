@@ -11,6 +11,7 @@ export * from './Header';
 export * from './HeaderV2';
 export * from './MultiSelectCustom/MultiSelectCustom';
 export * from './FeaturePreview';
-export * from './RoomBanner';
+export { default as AnnouncementBanner } from './AnnouncementBanner';
 export { default as UserAutoComplete } from './UserAutoComplete';
 export * from './GenericMenu';
+export * from './Modal';

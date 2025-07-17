@@ -4,6 +4,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { deleteCustomUserStatus } from '../../../user-status/server/methods/deleteCustomUserStatus';
+import { insertOrUpdateUserStatus } from '../../../user-status/server/methods/insertOrUpdateUserStatus';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
@@ -53,10 +55,10 @@ API.v1.addRoute(
 
 			const userStatusData = {
 				name: this.bodyParams.name,
-				statusType: this.bodyParams.statusType,
+				statusType: this.bodyParams.statusType || '',
 			};
 
-			await Meteor.callAsync('insertOrUpdateUserStatus', userStatusData);
+			await insertOrUpdateUserStatus(this.userId, userStatusData);
 
 			const customUserStatus = await CustomUserStatus.findOneByName(userStatusData.name);
 			if (!customUserStatus) {
@@ -80,7 +82,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "customUserStatusId" params is required!');
 			}
 
-			await Meteor.callAsync('deleteCustomUserStatus', customUserStatusId);
+			await deleteCustomUserStatus(this.userId, customUserStatusId);
 
 			return API.v1.success();
 		},
@@ -111,7 +113,7 @@ API.v1.addRoute(
 				return API.v1.failure(`No custom user status found with the id of "${userStatusData._id}".`);
 			}
 
-			await Meteor.callAsync('insertOrUpdateUserStatus', userStatusData);
+			await insertOrUpdateUserStatus(this.userId, userStatusData);
 
 			const customUserStatus = await CustomUserStatus.findOneById(userStatusData._id);
 

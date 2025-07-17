@@ -25,7 +25,7 @@ export type UpdateContactParams = {
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
 	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels, wipeConflicts } = params;
 
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'customFields' | 'conflictingFields'>>(
+	const contact = await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'name' | 'customFields' | 'conflictingFields'>>(
 		contactId,
 		{
 			projection: { _id: 1, name: 1, customFields: 1, conflictingFields: 1 },
@@ -73,11 +73,11 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 
 	const updatedContact = await LivechatContacts.updateContact(contactId, {
 		name,
-		emails: emails?.map((address) => ({ address })),
-		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
-		contactManager,
-		channels,
-		customFields: customFieldsToUpdate,
+		...(emails && { emails: emails?.map((address) => ({ address })) }),
+		...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
+		...(contactManager && { contactManager }),
+		...(channels && { channels }),
+		...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
 		...(wipeConflicts && { conflictingFields: [] }),
 	});
 

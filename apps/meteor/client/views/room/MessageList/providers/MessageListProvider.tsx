@@ -1,21 +1,23 @@
 import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { ReactNode, RefObject } from 'react';
+import type { ReactNode, RefCallback } from 'react';
 import { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useFormatTime } from '../../../../hooks/useFormatTime';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
-import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages';
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	messageListRef?: RefObject<HTMLElement>;
+	messageListRef?: RefCallback<HTMLElement | undefined>;
 	attachmentDimension?: {
 		width?: number;
 		height?: number;
@@ -37,6 +39,10 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 
 	const { isMobile } = useLayout();
 
+	const autoLinkDomains = useSetting('Message_CustomDomain_AutoLink', '');
+	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false);
+	const readReceiptsStoreUsers = useSetting('Message_Read_Receipt_Store_Users', false);
+	const apiEmbedEnabled = useSetting('API_Embed', false);
 	const showRealName = useSetting('UI_Use_Real_Name', false);
 	const showColors = useSetting('HexColorPreview_Enabled', false);
 
@@ -46,13 +52,14 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 	const highlights = useUserPreference<string[]>('highlights');
 
-	const { showAutoTranslate, autoTranslateLanguage } = useAutoTranslate(subscription);
+	const { showAutoTranslate, autoTranslateLanguage, autoTranslateEnabled } = useAutoTranslate(subscription);
 	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
 
+	const formatDateAndTime = useFormatDateAndTime();
+	const formatTime = useFormatTime();
+	const formatDate = useFormatDate();
 	const hasSubscription = Boolean(subscription);
 	const msgParameter = useSearchParameter('msg');
-
-	useLoadSurroundingMessages(msgParameter);
 
 	const chat = useChat();
 
@@ -67,8 +74,12 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			useShowFollowing: uid
 				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))
 				: (): boolean => false,
-			autoTranslateLanguage,
-			useShowTranslated: showAutoTranslate,
+
+			autoTranslate: {
+				autoTranslateEnabled,
+				autoTranslateLanguage,
+				showAutoTranslate,
+			},
 			useShowStarred: hasSubscription
 				? ({ message }): boolean => Boolean(Array.isArray(message.starred) && message.starred.find((star) => star._id === uid))
 				: (): boolean => false,
@@ -76,6 +87,8 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 				() =>
 				(date: Date): string =>
 					date.toLocaleString(),
+			apiEmbedEnabled,
+			autoLinkDomains,
 			showRoles,
 			showRealName,
 			showUsername,
@@ -103,11 +116,19 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 						}
 				: () => (): void => undefined,
 			username,
+			readReceipts: {
+				enabled: readReceiptsEnabled,
+				storeUsers: readReceiptsStoreUsers,
+			},
+			formatDateAndTime,
+			formatTime,
+			formatDate,
 		}),
 		[
 			username,
 			uid,
 			showAutoTranslate,
+			autoTranslateEnabled,
 			hasSubscription,
 			autoTranslateLanguage,
 			showRoles,
@@ -122,6 +143,13 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			msgParameter,
 			messageListRef,
 			chat?.emojiPicker,
+			readReceiptsEnabled,
+			readReceiptsStoreUsers,
+			apiEmbedEnabled,
+			autoLinkDomains,
+			formatDateAndTime,
+			formatTime,
+			formatDate,
 		],
 	);
 

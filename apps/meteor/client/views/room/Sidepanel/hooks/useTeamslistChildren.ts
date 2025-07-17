@@ -1,6 +1,6 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { Mongo } from 'meteor/mongo';
+import type { Filter } from 'mongodb';
 import { useEffect, useMemo } from 'react';
 
 import { Subscriptions } from '../../../../../app/models/client';
@@ -14,7 +14,7 @@ export const useTeamsListChildrenUpdate = (
 	const options = useSortQueryOptions();
 
 	const query = useMemo(() => {
-		const query: Mongo.Selector<ISubscription> = {
+		const query: Filter<ISubscription> = {
 			$or: [
 				{
 					_id: parentRid,

@@ -9,6 +9,7 @@ export const roomsQueryKeys = {
 	message: (rid: IRoom['_id'], mid: IMessage['_id']) => [...roomsQueryKeys.messages(rid), mid] as const,
 	threads: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'threads'] as const,
 	roles: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'roles'] as const,
+	info: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'info'] as const,
 };
 
 export const subscriptionsQueryKeys = {

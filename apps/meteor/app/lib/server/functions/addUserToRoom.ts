@@ -13,6 +13,10 @@ import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
+/**
+ * This function adds user to the given room.
+ * Caution - It does not validates if the user has permission to join room
+ */
 export const addUserToRoom = async function (
 	rid: string,
 	user: Pick<IUser, '_id'> | string,

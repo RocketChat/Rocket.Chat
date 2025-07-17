@@ -1,8 +1,18 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
-import { createTargetChannel, createTargetTeam, deleteChannel, deleteTeam, setSettingValueById } from './utils';
+import {
+	createTargetChannel,
+	createTargetTeam,
+	deleteChannel,
+	deleteTeam,
+	setSettingValueById,
+	createTargetDiscussion,
+	createChannelWithTeam,
+	deleteRoom,
+} from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { test, expect } from './utils/test';
 
@@ -12,17 +22,20 @@ test.describe.serial('feature preview', () => {
 	let poHomeChannel: HomeChannel;
 	let poAccountProfile: AccountProfile;
 	let targetChannel: string;
+	let targetDiscussion: Record<string, string>;
 	let sidepanelTeam: string;
 	const targetChannelNameInTeam = `channel-from-team-${faker.number.int()}`;
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', true);
 		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+		targetDiscussion = await createTargetDiscussion(api);
 	});
 
 	test.afterAll(async ({ api }) => {
 		await setSettingValueById(api, 'Accounts_AllowFeaturePreview', false);
 		await deleteChannel(api, targetChannel);
+		await deleteRoom(api, targetDiscussion._id);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -32,8 +45,10 @@ test.describe.serial('feature preview', () => {
 
 	test('should show "Message" and "Navigation" feature sections', async ({ page }) => {
 		await page.goto('/account/feature-preview');
+		await page.waitForSelector('#main-content');
 
-		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible();
+		// FIXME: this timeout is too high
+		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible({ timeout: 10_000 });
 		await expect(page.getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
 
@@ -77,11 +92,47 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.navbar.navbar).toBeVisible();
 		});
 
-		test('should display "Recent" button on sidebar search section, and display recent chats when clicked', async ({ page }) => {
+		test('should render global header navigation', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidebar.btnRecent.click();
-			await expect(poHomeChannel.sidebar.sidebar.getByRole('heading', { name: 'Recent' })).toBeVisible();
+			await test.step('should display recent chats when navbar search is clicked', async () => {
+				await poHomeChannel.navbar.searchInput.click();
+				await expect(poHomeChannel.navbar.searchList).toBeVisible();
+				await poHomeChannel.navbar.searchInput.blur();
+			});
+
+			await test.step('should display home and directory button', async () => {
+				await expect(poHomeChannel.navbar.homeButton).toBeVisible();
+				await expect(poHomeChannel.navbar.btnDirectory).toBeVisible();
+			});
+
+			await test.step('should display home and directory inside a menu and sidebar toggler in tablet view', async () => {
+				await page.setViewportSize({ width: 1023, height: 767 });
+				await expect(poHomeChannel.navbar.btnMenuPages).toBeVisible();
+				await expect(poHomeChannel.navbar.btnSidebarToggler).toBeVisible();
+			});
+
+			await test.step('should display voice and omnichannel items inside a menu in mobile view', async () => {
+				await page.setViewportSize({ width: 767, height: 510 });
+				await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).toBeVisible();
+			});
+
+			await test.step('should hide everything else when navbar search is focused in mobile view', async () => {
+				await page.setViewportSize({ width: 767, height: 510 });
+				await poHomeChannel.navbar.searchInput.click();
+
+				await expect(poHomeChannel.navbar.btnMenuPages).not.toBeVisible();
+				await expect(poHomeChannel.navbar.btnSidebarToggler).not.toBeVisible();
+				await expect(poHomeChannel.navbar.btnVoiceAndOmnichannel).not.toBeVisible();
+				await expect(poHomeChannel.navbar.groupHistoryNavigation).not.toBeVisible();
+			});
+		});
+
+		test('should not display room topic in direct message', async ({ page }) => {
+			await page.goto('/direct/user2');
+
+			// Not creating a PO because this will be removed very soon
+			await expect(page.locator('main').getByRole('note')).not.toBeVisible();
 		});
 
 		test('should expand/collapse sidebar groups', async ({ page }) => {
@@ -149,11 +200,13 @@ test.describe.serial('feature preview', () => {
 		test('should show unread badge on collapser when group is collapsed and has unread items', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidebar.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('hello world');
 
-			await poHomeChannel.sidebar.typeSearch(targetChannel);
 			const item = poHomeChannel.sidebar.getSearchRoomByName(targetChannel);
+
+			await expect(item).toBeVisible();
+
 			await poHomeChannel.sidebar.markItemAsUnread(item);
 			await poHomeChannel.sidebar.escSearch();
 
@@ -162,21 +215,75 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
 		});
 
-		test('should not show NavBar in embedded layout', async ({ page }) => {
+		test('embedded layout', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.sidebar.openChat(targetChannel);
-			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
-			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
-			await page.goto(embeddedLayoutURL);
-			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
+			await test.step('should not show NavBar', async () => {
+				await poHomeChannel.navbar.openChat(targetChannel);
+				await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
+				const embeddedLayoutURL = `${page.url()}?layout=embedded`;
+				await page.goto(embeddedLayoutURL);
+				await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
+			});
+
+			await test.step('should show burger menu', async () => {
+				await page.goto('admin/info?layout=embedded');
+				await page.setViewportSize({ width: 767, height: 510 });
+
+				await expect(poHomeChannel.content.burgerButton).toBeVisible();
+			});
 		});
 
-		test('should not display avatar in room header', async ({ page }) => {
+		test('should display the room header properly', async ({ page }) => {
 			await page.goto('/home');
+			await poHomeChannel.navbar.openChat(targetDiscussion.fname);
 
-			await poHomeChannel.sidebar.openChat(targetChannel);
-			await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
+			await test.step('should not display avatar in room header', async () => {
+				await expect(page.locator('main').locator('header').getByRole('figure')).not.toBeVisible();
+			});
+
+			await test.step('should display the back button in the room header when accessing a room with parent', async () => {
+				await expect(
+					page
+						.locator('main')
+						.locator('header')
+						.getByRole('button', { name: /Back to/ }),
+				).toBeVisible();
+			});
+		});
+
+		test.describe('user is not part of the team', () => {
+			let targetTeam: string;
+			let targetChannelWithTeam: string;
+			let user1Page: Page;
+
+			test.beforeAll(async ({ api, browser }) => {
+				await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', [{ name: 'newNavigation', value: true }]);
+
+				const { channelName, teamName } = await createChannelWithTeam(api);
+				targetTeam = teamName;
+				targetChannelWithTeam = channelName;
+				user1Page = await browser.newPage({ storageState: Users.user1.state });
+			});
+
+			test.afterAll(async ({ api }) => {
+				await setSettingValueById(api, 'Accounts_Default_User_Preferences_featuresPreview', []);
+
+				await deleteChannel(api, targetChannelWithTeam);
+				await deleteTeam(api, targetTeam);
+				await user1Page.close();
+			});
+
+			test('should not display back to team button in the room header', async ({ page }) => {
+				await user1Page.goto(`/channel/${targetChannelWithTeam}`);
+
+				await expect(
+					page
+						.locator('main')
+						.locator('header')
+						.getByRole('button', { name: /Back to/ }),
+				).not.toBeVisible();
+			});
 		});
 	});
 
@@ -265,8 +372,8 @@ test.describe.serial('feature preview', () => {
 			await page.goto('/home');
 			const message = 'hello world';
 
-			await poHomeChannel.sidebar.setDisplayMode('Extended');
-			await poHomeChannel.sidebar.openChat(sidepanelTeam);
+			await poHomeChannel.navbar.setDisplayMode('Extended');
+			await poHomeChannel.navbar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 			await expect(poHomeChannel.sidepanel.getExtendedItem(sidepanelTeam, message)).toBeVisible();
 		});
@@ -276,8 +383,8 @@ test.describe.serial('feature preview', () => {
 			const message = 'hello > world';
 			const parsedWrong = 'hello &gt; world';
 
-			await poHomeChannel.sidebar.setDisplayMode('Extended');
-			await poHomeChannel.sidebar.openChat(sidepanelTeam);
+			await poHomeChannel.navbar.setDisplayMode('Extended');
+			await poHomeChannel.navbar.openChat(sidepanelTeam);
 			await poHomeChannel.content.sendMessage(message);
 
 			await expect(poHomeChannel.sidepanel.getExtendedItem(sidepanelTeam, message)).toBeVisible();

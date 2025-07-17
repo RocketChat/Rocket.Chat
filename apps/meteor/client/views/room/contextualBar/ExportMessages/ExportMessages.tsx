@@ -15,11 +15,13 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useDownloadExportMutation } from './useDownloadExportMutation';
+import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation';
 import { useRoomExportMutation } from './useRoomExportMutation';
 import { validateEmail } from '../../../../../lib/emailValidator';
 import {
@@ -29,6 +31,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -40,7 +43,7 @@ export type ExportMessagesFormValues = {
 	type: 'email' | 'file' | 'download';
 	dateFrom: string;
 	dateTo: string;
-	format: 'html' | 'json';
+	format: 'html' | 'json' | 'pdf';
 	toUsers: string[];
 	additionalEmails: string;
 	messagesCount: number;
@@ -50,6 +53,7 @@ export type ExportMessagesFormValues = {
 const ExportMessages = () => {
 	const { t } = useTranslation();
 	const { closeTab } = useRoomToolbox();
+	const pfdExportPermission = usePermission('export-messages-as-pdf');
 	const formFocus = useAutoFocus<HTMLFormElement>();
 	const room = useRoom();
 	const isE2ERoom = room.encrypted;
@@ -58,12 +62,13 @@ const ExportMessages = () => {
 
 	const {
 		control,
-		formState: { errors, isSubmitting },
+		formState: { errors, isSubmitting, isDirty },
 		watch,
 		register,
 		setValue,
 		handleSubmit,
 		clearErrors,
+		reset,
 	} = useForm<ExportMessagesFormValues>({
 		mode: 'onBlur',
 		defaultValues: {
@@ -90,21 +95,39 @@ const ExportMessages = () => {
 		[t],
 	);
 
-	const outputOptions = useMemo<SelectOption[]>(
-		() => [
+	const outputOptions = useMemo<SelectOption[]>(() => {
+		const options: SelectOption[] = [
 			['html', t('HTML')],
 			['json', t('JSON')],
-		],
-		[t],
-	);
+		];
 
-	const roomExportMutation = useRoomExportMutation();
-	const downloadExportMutation = useDownloadExportMutation();
+		if (pfdExportPermission) {
+			options.push(['pdf', t('PDF')]);
+		}
+
+		return options;
+	}, [t, pfdExportPermission]);
+
+	// Remove HTML from download options
+	const downloadOutputOptions = outputOptions.slice(1);
+
+	const { mutateAsync: exportRoom } = useRoomExportMutation();
+	const { mutateAsync: exportAndDownload } = useDownloadExportMutation();
 
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const messageCount = useCountSelected();
 
 	const { type, toUsers } = watch();
+
+	useEffect(() => {
+		if (type === 'email') {
+			setValue('format', 'html');
+		}
+
+		if (type === 'download') {
+			setValue('format', 'json');
+		}
+	}, [type, setValue]);
 
 	useEffect(() => {
 		if (type !== 'file') {
@@ -117,37 +140,48 @@ const ExportMessages = () => {
 	}, [type, selectedMessageStore]);
 
 	useEffect(() => {
-		if (type === 'email') {
-			setValue('format', 'html');
-		}
+		setValue('messagesCount', messageCount, { shouldDirty: true });
+	}, [messageCount, setValue]);
 
-		if (type === 'download') {
-			setValue('format', 'json');
-		}
+	const { mutateAsync: exportAsPDF } = useExportMessagesAsPDFMutation();
 
-		setValue('messagesCount', messageCount);
-	}, [type, setValue, messageCount]);
-
-	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
+	const handleExport = async ({
+		type,
+		toUsers,
+		dateFrom,
+		dateTo,
+		format,
+		subject,
+		additionalEmails,
+	}: ExportMessagesFormValues): Promise<void> => {
 		const messages = selectedMessageStore.getSelectedMessages();
 
 		if (type === 'download') {
-			return downloadExportMutation.mutateAsync({
-				mids: messages,
-			});
+			if (format === 'pdf') {
+				await exportAsPDF(messages);
+				return;
+			}
+
+			if (format === 'json') {
+				await exportAndDownload({
+					mids: messages,
+				});
+				return;
+			}
 		}
 
 		if (type === 'file') {
-			return roomExportMutation.mutateAsync({
+			await exportRoom({
 				rid: room._id,
 				type: 'file',
 				...(dateFrom && { dateFrom }),
 				...(dateTo && { dateTo }),
-				format,
+				format: format as 'html' | 'json',
 			});
+			return;
 		}
 
-		roomExportMutation.mutateAsync({
+		await exportRoom({
 			rid: room._id,
 			type: 'email',
 			toUsers,
@@ -167,7 +201,7 @@ const ExportMessages = () => {
 	const subjectField = useId();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='mail' />
 				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
@@ -205,9 +239,9 @@ const ExportMessages = () => {
 										<Select
 											{...field}
 											id={formatField}
-											disabled={type === 'email' || type === 'download'}
+											disabled={type === 'email'}
 											placeholder={t('Format')}
-											options={outputOptions}
+											options={type === 'download' ? downloadOutputOptions : outputOptions}
 										/>
 									)}
 								/>
@@ -344,13 +378,15 @@ const ExportMessages = () => {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={closeTab}>{t('Cancel')}</Button>
-					<Button loading={isSubmitting} form={formId} primary type='submit'>
+					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
+						{t('Reset')}
+					</Button>
+					<Button disabled={!isDirty} loading={isSubmitting} form={formId} primary type='submit'>
 						{type === 'download' ? t('Download') : t('Send')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

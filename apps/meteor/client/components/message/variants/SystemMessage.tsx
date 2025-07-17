@@ -11,17 +11,16 @@ import {
 	MessageUsername,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement, KeyboardEvent } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import { useFormatTime } from '../../../hooks/useFormatTime';
 import {
 	useIsSelecting,
 	useToggleSelect,
@@ -31,7 +30,12 @@ import {
 import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
-import { useMessageListShowRealName, useMessageListShowUsername } from '../list/MessageListContext';
+import {
+	useMessageListShowRealName,
+	useMessageListShowUsername,
+	useMessageListFormatDateAndTime,
+	useMessageListFormatTime,
+} from '../list/MessageListContext';
 
 type SystemMessageProps = {
 	message: IMessage;
@@ -40,8 +44,8 @@ type SystemMessageProps = {
 
 const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps): ReactElement => {
 	const { t } = useTranslation();
-	const formatTime = useFormatTime();
-	const formatDateAndTime = useFormatDateAndTime();
+	const formatTime = useMessageListFormatTime();
+	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { triggerProps, openUserCard } = useUserCard();
 
 	const showRealName = useMessageListShowRealName();
@@ -56,6 +60,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
+	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
 	return (
 		<MessageSystem
@@ -75,16 +80,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer
-						tabIndex={0}
-						role='button'
-						onClick={(e) => user.username && openUserCard(e, user.username)}
-						onKeyDown={(e: KeyboardEvent<HTMLSpanElement>) => {
-							(e.code === 'Enter' || e.code === 'Space') && openUserCard(e, message.u.username);
-						}}
-						style={{ cursor: 'pointer' }}
-						{...triggerProps}
-					>
+					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
 						<MessageSystemName>{displayName}</MessageSystemName>
 						{showUsername && (
 							<>

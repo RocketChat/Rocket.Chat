@@ -1,0 +1,57 @@
+name: Test Storybook
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      deno-version:
+        required: true
+        type: string
+
+    secrets:
+      CODECOV_TOKEN:
+        required: true
+
+env:
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+
+    name: Test Storybook
+    
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@v1.8
+
+      - name: Restore turbo build
+        uses: actions/download-artifact@v4
+        with:
+          name: turbo-build
+          path: .turbo/cache
+
+      - uses: ./.github/actions/setup-playwright
+
+      - name: Run tests
+        run: yarn test-storybook
+        env:
+          STORYBOOK_DISABLE_TELEMETRY: 1
+
+      - uses: codecov/codecov-action@v3
+        with:
+          flags: unit
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+  

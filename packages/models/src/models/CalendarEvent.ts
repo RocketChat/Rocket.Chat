@@ -50,7 +50,17 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 
 	public async updateEvent(
 		eventId: ICalendarEvent['_id'],
-		{ subject, description, startTime, meetingUrl, reminderMinutesBeforeStart, reminderTime, previousStatus }: Partial<ICalendarEvent>,
+		{
+			subject,
+			description,
+			startTime,
+			endTime,
+			meetingUrl,
+			reminderMinutesBeforeStart,
+			reminderTime,
+			previousStatus,
+			busy,
+		}: Partial<ICalendarEvent>,
 	): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: eventId },
@@ -59,10 +69,12 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					...(subject !== undefined ? { subject } : {}),
 					...(description !== undefined ? { description } : {}),
 					...(startTime ? { startTime } : {}),
+					...(endTime && { endTime }),
 					...(meetingUrl !== undefined ? { meetingUrl } : {}),
 					...(reminderMinutesBeforeStart ? { reminderMinutesBeforeStart } : {}),
 					...(reminderTime ? { reminderTime } : {}),
 					...(previousStatus ? { previousStatus } : {}),
+					...(typeof busy === 'boolean' && { busy }),
 				},
 			},
 		);
@@ -132,6 +144,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		return this.find({
 			_id: { $ne: eventId }, // Exclude current event
 			uid,
+			busy: { $ne: false },
 			$or: [
 				// Event starts during our event
 				{ startTime: { $gte: startTime, $lt: endTime } },

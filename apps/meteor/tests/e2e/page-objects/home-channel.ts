@@ -132,4 +132,8 @@ export class HomeChannel {
 	get btnJoinRoom(): Locator {
 		return this.page.getByRole('button', { name: 'Join' });
 	}
+
+	get statusUploadIndicator(): Locator {
+		return this.page.getByRole('main').getByRole('status');
+	}
 }

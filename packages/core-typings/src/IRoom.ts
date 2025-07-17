@@ -292,9 +292,6 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	slaId?: string;
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes']; // It should always have a default value for sorting mechanism to work
 
-	// Signals if the room already has a pdf transcript requested
-	// This prevents the user from requesting a transcript multiple times
-	pdfTranscriptRequested?: boolean;
 	// The ID of the pdf file generated for the transcript
 	// This will help if we want to have this file shown on other places of the UI
 	pdfTranscriptFileId?: string;

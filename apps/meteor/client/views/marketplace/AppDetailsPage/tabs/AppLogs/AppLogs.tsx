@@ -1,37 +1,77 @@
-import { Accordion, Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { Box, Pagination } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useMemo, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
+import { CollapsiblePanel } from './Components/CollapsiblePanel';
+import { AppLogsFilter } from './Filters/AppLogsFilter';
+import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
+import { CustomScrollbars } from '../../../../../components/CustomScrollbars';
+import GenericError from '../../../../../components/GenericError';
+import GenericNoResults from '../../../../../components/GenericNoResults';
+import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
 
 const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { t } = useTranslation();
-	const formatDateAndTime = useFormatDateAndTime();
-	const { data, isSuccess, isError, isLoading } = useLogs(id);
+
+	const { watch } = useAppLogsFilterFormContext();
+
+	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
+
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+
+	const debouncedEvent = useDebouncedValue(event, 500);
+
+	const { data, isSuccess, isError, isFetching, error } = useLogs({
+		appId: id,
+		current,
+		itemsPerPage,
+		...(instance !== 'all' && { instanceId: instance }),
+		...(severity !== 'all' && { logLevel: severity }),
+		method: debouncedEvent,
+		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
+		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
+	});
+
+	const parsedError = useMemo(() => {
+		if (error) {
+			// TODO: Check why tanstack expects a default Error but we return {error: string}
+			if ((error as unknown as { error: string }).error === 'Invalid date range') {
+				return t('error-invalid-dates');
+			}
+
+			return t('Something_Went_Wrong');
+		}
+	}, [error, t]);
 
 	return (
 		<>
-			{isLoading && <AccordionLoading />}
-			{isError && (
-				<Box maxWidth='x600' alignSelf='center'>
-					{t('App_not_found')}
-				</Box>
+			<Box pb={16}>
+				<AppLogsFilter />
+			</Box>
+			{isFetching && <AccordionLoading />}
+			{isError && <GenericError title={parsedError} />}
+			{isSuccess && data?.logs?.length === 0 ? (
+				<GenericNoResults />
+			) : (
+				<CustomScrollbars>
+					<CollapsiblePanel aria-busy={isFetching || event !== debouncedEvent} width='100%' alignSelf='center'>
+						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
+					</CollapsiblePanel>
+				</CustomScrollbars>
 			)}
-			{isSuccess && (
-				<Accordion width='100%' alignSelf='center'>
-					{data?.logs?.map((log) => (
-						<AppLogsItem
-							key={log._createdAt}
-							title={`${formatDateAndTime(log._createdAt)}: "${log.method}" (${log.totalTime}ms)`}
-							instanceId={log.instanceId}
-							entries={log.entries}
-						/>
-					))}
-				</Accordion>
-			)}
+			<Pagination
+				divider
+				current={current}
+				itemsPerPage={itemsPerPage}
+				count={data?.total || 0}
+				onSetItemsPerPage={onSetItemsPerPage}
+				onSetCurrent={onSetCurrent}
+				{...paginationProps}
+			/>
 		</>
 	);
 };

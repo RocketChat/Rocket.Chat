@@ -37,13 +37,6 @@ const { registerContact } = proxyquire.noCallThru().load('./registerContact', {
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/tools': { wrapExceptions: sinon.stub() },
 	'./Helper': { validateEmail: sinon.stub() },
-	'./LivechatTyped': {
-		Livechat: {
-			logger: {
-				debug: sinon.stub(),
-			},
-		},
-	},
 });
 
 describe('registerContact', () => {

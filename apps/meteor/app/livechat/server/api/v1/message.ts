@@ -17,7 +17,7 @@ import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
 import { settings } from '../../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
-import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
+import { registerGuest } from '../../lib/guests';
 import { updateMessage, deleteMessage, sendMessage } from '../../lib/messages';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 
@@ -256,7 +256,7 @@ API.v1.addRoute(
 			const visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
 			let rid: string;
 			if (visitor) {
-				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
 				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken, {}, extraQuery).toArray();
 				if (rooms && rooms.length > 0) {
 					rid = rooms[0]._id;
@@ -269,7 +269,7 @@ API.v1.addRoute(
 				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown } = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
-				const visitor = await LivechatTyped.registerGuest(guest);
+				const visitor = await registerGuest(guest);
 				if (!visitor) {
 					throw new Error('error-livechat-visitor-registration');
 				}

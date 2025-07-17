@@ -305,16 +305,10 @@ describe('LIVECHAT - Agents', () => {
 			await updatePermission('view-livechat-manager', ['admin']);
 
 			await request
-				.get(api(`livechat/users/invalid-type/invalid-id${agent._id}`))
+				.get(api(`livechat/users/invalid-type/${agent._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400);
-		}).timeout(5000);
-
-		it('should return an error when _id is invalid', async () => {
-			await updatePermission('view-livechat-manager', ['admin']);
-
-			await request.get(api('livechat/users/agent/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		}).timeout(5000);
 
 		it('should return a valid user when all goes fine', async () => {
@@ -339,6 +333,24 @@ describe('LIVECHAT - Agents', () => {
 			const user = await createUser();
 			await request
 				.get(api(`livechat/users/agent/${user._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('user');
+					expect(res.body.user).to.be.null;
+				});
+
+			// cleanup
+			await deleteUser(user);
+		});
+
+		it('should return { user: null } when user is not a manager', async () => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			const user = await createUser();
+			await request
+				.get(api(`livechat/users/manager/${user._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

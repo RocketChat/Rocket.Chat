@@ -7,8 +7,10 @@ import {
 	isGETOmnichannelContactsChannelsProps,
 	isGETOmnichannelContactsSearchProps,
 	isGETOmnichannelContactsCheckExistenceProps,
+	isPOSTOmnichannelContactsConflictsProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -19,6 +21,7 @@ import { getContactChannelsGrouped } from '../../lib/contacts/getContactChannels
 import { getContactHistory } from '../../lib/contacts/getContactHistory';
 import { getContacts } from '../../lib/contacts/getContacts';
 import { registerContact } from '../../lib/contacts/registerContact';
+import { resolveContactConflicts } from '../../lib/contacts/resolveContactConflicts';
 import { updateContact } from '../../lib/contacts/updateContact';
 
 API.v1.addRoute(
@@ -42,7 +45,7 @@ API.v1.addRoute(
 				}),
 			});
 
-			const contact = await registerContact(this.bodyParams);
+			const contact = await registerContact(this.bodyParams, this.userId);
 
 			return API.v1.success({ contact });
 		},
@@ -121,9 +124,21 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
 	{
 		async post() {
-			const contact = await updateContact({ ...this.bodyParams });
+			const contact = await updateContact(removeEmpty(this.bodyParams));
 
 			return API.v1.success({ contact });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.conflicts',
+	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTOmnichannelContactsConflictsProps },
+	{
+		async post() {
+			const result = await resolveContactConflicts(removeEmpty(this.bodyParams));
+
+			return API.v1.success({ result });
 		},
 	},
 );
@@ -139,7 +154,7 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const contact = await LivechatContacts.findOneById(contactId);
+			const contact = await LivechatContacts.findOneEnabledById(contactId);
 
 			if (!contact) {
 				return API.v1.notFound();

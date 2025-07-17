@@ -124,7 +124,6 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 		this.bridge.logFederationStartupInfo('Running Federation Enterprise V2');
 		FederationFactoryEE.removeCEValidators();
 		await import('./infrastructure/rocket-chat/slash-commands');
-		await import('../../api/federation');
 	}
 
 	private async stopFederation(): Promise<void> {

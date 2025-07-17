@@ -15,3 +15,10 @@ export interface ILivechatAgent extends IUser {
 	livechatStatusSystemModified?: boolean;
 	openBusinessHours?: string[];
 }
+
+export type AvailableAgentsAggregation = {
+	agentId: string;
+	username: string;
+	maxChatsForAgent: number;
+	queueInfo: { chats: number; chatsForDepartment?: number };
+};

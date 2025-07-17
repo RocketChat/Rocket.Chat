@@ -1,4 +1,19 @@
-import { Button, Modal, Select, Field, FieldGroup, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
+import {
+	Button,
+	Modal,
+	Select,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	Box,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
@@ -40,11 +55,11 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 
 	return (
 		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleAssignment} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Associate_Agent_to_Extension')}</Modal.Title>
-				<Modal.Close onClick={closeModal} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Associate_Agent_to_Extension')}</ModalTitle>
+				<ModalClose onClick={closeModal} />
+			</ModalHeader>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel>{t('Agent_Without_Extensions')}</FieldLabel>
@@ -65,15 +80,15 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={closeModal}>{t('Cancel')}</Button>
 					<Button primary disabled={!agent || !extension} type='submit'>
 						{t('Associate')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
