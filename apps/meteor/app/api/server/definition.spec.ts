@@ -20,8 +20,8 @@ type ChatPostMessageOptions = TypedOptions & {
 	authRequired: true;
 };
 
-type Post = 'POST';
-type Path = 'v1/chat.postMessage'; // 'v1/chat.postMessage'
+type Post = 'POST'; // try with GET method
+type Path = 'v1/chat.postMessage';
 type Options = ChatPostMessageOptions;
 
 // --- Expected ActionThis shape (single source of truth) ---
