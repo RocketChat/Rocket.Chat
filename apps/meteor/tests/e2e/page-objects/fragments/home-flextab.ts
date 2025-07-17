@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeFlextabChannels } from './home-flextab-channels';
 import { ExportMessagesTab } from './export-messages-tab';
+import { HomeFlextabChannels } from './home-flextab-channels';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
 import { HomeFlextabOtr } from './home-flextab-otr';
