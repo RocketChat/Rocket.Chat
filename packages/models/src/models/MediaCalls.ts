@@ -1,4 +1,4 @@
-import type { IMediaCall, MediaCallParticipant, MediaCallUserChannel, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IMediaCall, RocketChatRecordDeleted, MediaCallActor } from '@rocket.chat/core-typings';
 import type { IMediaCallsModel } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 
@@ -10,11 +10,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [
-			{ key: { rid: 1, createdAt: 1 }, unique: false },
-			// unique key to prevent the same sessionId from getting two channels due to race conditions
-			{ key: { '_id': 1, 'userChannels.uid': 1, 'userChannels.sessionId': 1 }, unique: true },
-		];
+		return [{ key: { rid: 1, createdAt: 1 }, unique: false }];
 	}
 
 	public updateOneById(
@@ -25,7 +21,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		return this.updateOne({ _id }, update, options);
 	}
 
-	public async setEndedById(callId: string, data?: { endedBy?: MediaCallParticipant; endedAt?: Date }): Promise<void> {
+	public async setEndedById(callId: string, data?: { endedBy?: MediaCallActor; endedAt?: Date }): Promise<void> {
 		const { endedBy, endedAt } = { endedAt: new Date(), ...data };
 
 		await this.updateOneById(callId, {
@@ -36,11 +32,19 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		});
 	}
 
-	public async addUserChannel(callId: string, userChannel: MediaCallUserChannel): Promise<void> {
-		await this.updateOneById(callId, {
-			$addToSet: {
-				userChannels: userChannel,
-			},
+	public async setStateById(callId: string, state: IMediaCall['state']): Promise<UpdateResult> {
+		return this.updateOneById(callId, {
+			$set: { state },
 		});
+	}
+
+	public async startRingingById(callId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				state: 'none',
+			},
+			{ $set: { state: 'ringing' } },
+		);
 	}
 }
