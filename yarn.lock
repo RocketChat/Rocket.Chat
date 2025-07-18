@@ -8407,7 +8407,7 @@ __metadata:
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.7.2"
   peerDependencies:
-    "@rocket.chat/apps-engine": 1.52.0
+    "@rocket.chat/apps-engine": 1.52.1
     "@rocket.chat/eslint-config": 0.7.0
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"

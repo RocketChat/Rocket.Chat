@@ -1,5 +1,46 @@
 # @rocket.chat/meteor
 
+## 7.7.5
+
+### Patch Changes
+
+- ([#36431](https://github.com/RocketChat/Rocket.Chat/pull/36431) by [@dionisio-bot](https://github.com/dionisio-bot)) fixes: v1/updateOwnBasicInfo does not trigger user stream
+
+- fixes an issue where depending on some race conditions the subscription stream was not being updated
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36437](https://github.com/RocketChat/Rocket.Chat/pull/36437) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes redirection not being triggered after a required password change
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.5
+  - @rocket.chat/rest-typings@7.7.5
+  - @rocket.chat/license@1.0.20
+  - @rocket.chat/omnichannel-services@0.3.26
+  - @rocket.chat/pdf-worker@0.3.8
+  - @rocket.chat/presence@0.2.29
+  - @rocket.chat/api-client@0.2.29
+  - @rocket.chat/apps@0.5.8
+  - @rocket.chat/core-services@0.9.8
+  - @rocket.chat/cron@0.1.29
+  - @rocket.chat/freeswitch@1.2.16
+  - @rocket.chat/fuselage-ui-kit@19.0.5
+  - @rocket.chat/gazzodown@19.0.5
+  - @rocket.chat/model-typings@1.6.8
+  - @rocket.chat/ui-contexts@19.0.5
+  - @rocket.chat/models@1.5.8
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.8
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@15.0.5
+  - @rocket.chat/ui-client@19.0.5
+  - @rocket.chat/ui-video-conf@19.0.5
+  - @rocket.chat/ui-voip@9.0.5
+  - @rocket.chat/web-ui-registration@19.0.5
+  - @rocket.chat/instance-status@0.1.29
+  </details>
+
 ## 7.7.4
 
 ### Patch Changes
