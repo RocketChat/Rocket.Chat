@@ -97,6 +97,6 @@ export const usersQueryKeys = {
 export const teamsQueryKeys = {
 	all: ['teams'] as const,
 	team: (teamId: ITeam['_id']) => [...teamsQueryKeys.all, teamId] as const,
-	roomsOfUser: (teamId: ITeam['_id'], userId: IUser['_id'], options: { canUserDelete: boolean }) =>
+	roomsOfUser: (teamId: ITeam['_id'], userId: IUser['_id'], options?: { canUserDelete: boolean }) =>
 		[...teamsQueryKeys.team(teamId), 'rooms-of-user', userId, options] as const,
 };
