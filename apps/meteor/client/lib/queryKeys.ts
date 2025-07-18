@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IMessage, IRoom } from '@rocket.chat/core-typings';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
@@ -45,6 +45,27 @@ export const omnichannelQueryKeys = {
 		customFields: () => [...omnichannelQueryKeys.all, 'livechat', 'custom-fields'] as const,
 	},
 	visitorInfo: (uid: string) => [...omnichannelQueryKeys.all, 'visitor-info', uid] as const,
+	analytics: {
+		all: (departmentId: ILivechatDepartment['_id']) => [...omnichannelQueryKeys.all, 'analytics', departmentId] as const,
+		agentsStatus: (departmentId: ILivechatDepartment['_id']) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'agents-status'] as const,
+		timings: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'timings', dateRange] as const,
+		chats: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'chats', dateRange] as const,
+		chatsPerAgent: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'chats-per-agent', dateRange] as const,
+		chatsPerDepartment: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'chats-per-department', dateRange] as const,
+		agentsProductivityTotals: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'agents-productivity', dateRange] as const,
+		chatsTotals: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'chats-totals', dateRange] as const,
+		conversationTotals: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'conversation-totals', dateRange] as const,
+		productivityTotals: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'productivity-totals', dateRange] as const,
+	},
 };
 
 export const deviceManagementQueryKeys = {
