@@ -1,16 +1,16 @@
 
 import { cronJobs } from '@rocket.chat/cron';
-import { Rooms, Messages, ScheduledMessages, Users } from '@rocket.chat/models';
+import { Rooms, ScheduledMessages, Users } from '@rocket.chat/models';
 import { sendMessage } from '/app/lib/server/functions/sendMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '/app/lib/server/lib/notifyListener';
+import { SystemLogger } from '../lib/logger/system';
 
 export async function scheduleMessagesCron(): Promise<void> {
   const name = 'sendScheduledMessages';
 
   return cronJobs.add(name, '*/1 * * * *', async () => {
-    console.log('Checking for scheduled messages...');
+    SystemLogger.info('Checking for scheduled messages..');
     const now = new Date();
-    console.log('Current time:', now.toISOString());
 
     const scheduledMessages = await ScheduledMessages.findByScheduledAtBefore(now);
 
@@ -53,13 +53,6 @@ export async function scheduleMessagesCron(): Promise<void> {
         console.log(`Sending message to room ${message.rid} with original scheduled _id ${message._id}`);
         const result = await sendMessage(user, messageToSend, room);
         console.log(`sendMessage result for scheduled message ${message._id}:`, result);
-
-        const insertedMessage = await Messages.findOneById(result._id);
-        if (!insertedMessage) {
-          console.error(`Message ${result._id} was not inserted into messages collection`);
-        } else {
-          console.log(`Message ${result._id} successfully inserted into messages collection`);
-        }
 
         await notifyOnMessageChange({ id: result._id });
         await notifyOnRoomChangedById(message.rid);

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { Meteor } from 'meteor/meteor';
+import moment from 'moment';
 
 // Helper to format date and time for inputs and ISO string for backend
 const getDefaultDateTime = () => {
@@ -37,12 +38,12 @@ type ScheduleFormData = {
 type ScheduleComposerModalProps = {
   onConfirm: () => void;
   onClose: () => void;
-  value: string; // Message text
-  rid: string; // Room ID
+  value: string;
+  rid: string;
   tmid?: string; // Thread ID (optional)
   tshow?: boolean; // Show in thread (optional)
   previewUrls?: string[]; // Preview URLs (optional)
-  isSlashCommandAllowed?: boolean; // Slash command allowed (optional)
+  isSlashCommandAllowed?: boolean;
 };
 
 const ScheduleComposerModal = ({
@@ -109,7 +110,7 @@ const ScheduleComposerModal = ({
 
     // Log the payload for debugging
     const payload = {
-      msg: value, // Rename `value` to `msg` for the API
+      msg: value,
       scheduledAt,
       rid,
       tmid,
@@ -178,10 +179,11 @@ const ScheduleComposerModal = ({
               }}
               render={({ field }) => (
                 <TextInput
-                  type="date"
                   id={dateFieldId}
                   aria-describedby={errors.date ? dateFieldErrorId : undefined}
+                  min={moment().format('YYYY-MM-DD')}
                   {...field}
+                  {...({ type: 'date' } as any)}
                 />
               )}
             />
@@ -199,10 +201,10 @@ const ScheduleComposerModal = ({
               }}
               render={({ field }) => (
                 <TextInput
-                  type="time"
                   id={timeFieldId}
                   aria-describedby={errors.time ? timeFieldErrorId : undefined}
                   {...field}
+                  {...({ type: 'time' } as any)}
                 />
               )}
             />

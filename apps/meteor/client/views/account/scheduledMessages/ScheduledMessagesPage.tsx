@@ -23,6 +23,14 @@ import { imperativeModal } from '@rocket.chat/ui-client';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import EditScheduledMessageModal from './EditScheduledMessageModal';
 import DeleteScheduledMessageModal from './DeleteScheduledMessageModal';
+import { IScheduledMessage } from '@rocket.chat/core-typings';
+
+interface RoomInfo {
+    t: string;
+    name?: string;
+    usernames?: string[];
+    avatar?: string;
+}
 
 const ScheduledMessagesPage = () => {
     const t = useTranslation();
@@ -32,13 +40,11 @@ const ScheduledMessagesPage = () => {
     const updateScheduledMessage = useEndpoint('POST', '/v1/chat.updateScheduledMessage');
     const deleteScheduledMessage = useEndpoint('POST', '/v1/chat.deleteScheduledMessage');
 
-    const [scheduledMessages, setScheduledMessages] = useState([]);
+    const [scheduledMessages, setScheduledMessages] = useState<IScheduledMessage[]>([]);
     const [loading, setLoading] = useState(true);
-    const [openMenuId, setOpenMenuId] = useState(null);
-    const [roomsInfo, setRoomsInfo] = useState({});
-    const [editModal, setEditModal] = useState({ isOpen: false, message: null });
-    const [deleteModal, setDeleteModal] = useState({ isOpen: false, message: null });
-    const menuRef = useRef(null);
+    const [openMenuId, setOpenMenuId] = useState<string | number | null>(null);
+    const [roomsInfo, setRoomsInfo] = useState<Record<string, RoomInfo>>({});
+    const menuRef = useRef<HTMLDivElement | null>(null);
 
     const user = useUser();
 
@@ -46,15 +52,28 @@ const ScheduledMessagesPage = () => {
         setLoading(true);
         try {
             const { messages = [] } = await getScheduledMessages({});
-            setScheduledMessages(messages);
-            
+
+            const parsedMessages: IScheduledMessage[] = messages.map((msg) => ({
+                ...msg,
+                ts: new Date(msg.ts),
+                scheduledAt: new Date(msg.scheduledAt),
+                _updatedAt: new Date(msg._updatedAt),
+            }));
+
+            setScheduledMessages(parsedMessages);
+
             const uniqueRids = [...new Set(messages.map(msg => msg.rid))];
-            const roomsData = {};
-            
+            const roomsData: Record<string, RoomInfo> = {};
+
             for (const rid of uniqueRids) {
                 try {
                     const roomInfo = await getRoomInfo({ roomId: rid });
-                    roomsData[rid] = roomInfo.room;
+
+                    if (roomInfo?.room) {
+                        roomsData[rid] = roomInfo.room;
+                    } else if (rid === 'GENERAL') {
+                        roomsData[rid] = { name: 'general', t: 'c' };
+                    }
                 } catch (error) {
                     console.error(`Failed to fetch room info for ${rid}:`, error);
                     if (rid === 'GENERAL') {
@@ -62,7 +81,7 @@ const ScheduledMessagesPage = () => {
                     }
                 }
             }
-            
+
             setRoomsInfo(roomsData);
         } catch (error) {
             dispatchToastMessage({ type: 'error', message: error });
@@ -76,8 +95,8 @@ const ScheduledMessagesPage = () => {
     }, [fetchScheduledMessages]);
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setOpenMenuId(null);
             }
         };
@@ -91,7 +110,7 @@ const ScheduledMessagesPage = () => {
         };
     }, [openMenuId]);
 
-    const formatScheduledTime = (scheduledAt) => {
+    const formatScheduledTime = (scheduledAt: string | Date | moment.Moment): string => {
         const scheduledDate = moment(scheduledAt);
         const today = moment().startOf('day');
         const tomorrow = moment().add(1, 'day').startOf('day');
@@ -105,64 +124,58 @@ const ScheduledMessagesPage = () => {
         }
     };
 
-    const truncateText = (text, maxLength = 50) => {
+    const truncateText = (text: string, maxLength = 50) => {
         if (!text) return 'No message content';
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength) + '...';
     };
 
-    const toggleMenu = (messageId) => {
+    const toggleMenu = (messageId: string | number) => {
         setOpenMenuId(openMenuId === messageId ? null : messageId);
     };
 
-    const handleMenuClick = (e) => {
+    const handleMenuClick = (e: React.MouseEvent) => {
         e.stopPropagation();
     };
 
-    const handleEditClick = (message) => {
-    imperativeModal.open({
-        component: EditScheduledMessageModal,
-        props: {
-            message,
-            onSuccess: () => {
-                fetchScheduledMessages();
-                imperativeModal.close();
-            },
-            onClose: () => imperativeModal.close(),
-            updateScheduledMessage,
-            getChannelName,
-            getChannelIcon,
-            getDestinationAvatar
-        }
-    });
-};
+    const handleEditClick = (message: IScheduledMessage) => {
+        imperativeModal.open({
+            component: EditScheduledMessageModal,
+            props: {
+                message,
+                onSuccess: () => {
+                    fetchScheduledMessages();
+                    imperativeModal.close();
+                },
+                onClose: () => imperativeModal.close(),
+                updateScheduledMessage,
+            }
+        });
+    };
 
-    const handleCancelClick = (message) => {
-    imperativeModal.open({
-        component: DeleteScheduledMessageModal,
-        props: {
-            message,
-            onConfirm: async () => {
-                await deleteScheduledMessage({
-                    scheduledMessageId: message._id
-                });
-            },
-            onClose: () => imperativeModal.close(),
-            getChannelName,
-            getChannelIcon,
-            getDestinationAvatar,
-            formatScheduledTime
-        }
-    });
-};
+    const handleCancelClick = (message: IScheduledMessage) => {
+        imperativeModal.open({
+            component: DeleteScheduledMessageModal,
+            props: {
+                message,
+                onConfirm: async () => {
+                    await deleteScheduledMessage({
+                        scheduledMessageId: message._id
+                    });
+                },
+                onClose: () => imperativeModal.close(),
+                formatScheduledTime
+            }
+        });
+    };
 
-    const getChannelName = (rid) => {
+    const getChannelName = (rid: string) => {
         const roomInfo = roomsInfo[rid];
-        
+
         if (!roomInfo) {
             return rid === 'GENERAL' ? 'general' : rid;
         }
-        
+
         switch (roomInfo.t) {
             case 'c':
                 return roomInfo.name;
@@ -170,35 +183,16 @@ const ScheduledMessagesPage = () => {
                 return roomInfo.name;
             case 'd':
                 if (roomInfo.usernames && roomInfo.usernames.length > 0) {
-                    const otherUser = roomInfo.usernames.find(username => username !== user?.username);
+                    const otherUser = roomInfo.usernames.find((username: string | undefined) => username !== user?.username);
                     return otherUser || roomInfo.usernames[0];
                 }
-                return roomInfo.fname || roomInfo.name || roomInfo.username || 'Direct Message';
+                return roomInfo.name || 'Direct Message';
             default:
                 return roomInfo.name || rid;
         }
     };
 
-    const getChannelIcon = (rid) => {
-        const roomInfo = roomsInfo[rid];
-        
-        if (!roomInfo) {
-            return '#';
-        }
-        
-        switch (roomInfo.t) {
-            case 'c':
-                return '#';
-            case 'p':
-                return '🔒';
-            case 'd':
-                return '@';
-            default:
-                return '#';
-        }
-    };
-
-    const getDestinationAvatar = (rid) => {
+    const getDestinationAvatar = (rid: string) => {
         const roomInfo = roomsInfo[rid];
 
         if (!roomInfo) {
@@ -214,7 +208,7 @@ const ScheduledMessagesPage = () => {
                 return roomInfo.avatar || `/avatar/${roomInfo.name}`;
             case 'd':
                 if (roomInfo.usernames && roomInfo.usernames.length > 0) {
-                    const otherUser = roomInfo.usernames.find(username => username !== user?.username);
+                    const otherUser = roomInfo.usernames.find((username: string | undefined) => username !== user?.username);
                     return `/avatar/${otherUser || roomInfo.usernames[0]}`;
                 }
                 return '/default-user-avatar.png';
@@ -230,7 +224,7 @@ const ScheduledMessagesPage = () => {
                 <Box maxWidth='100%' w='full' alignSelf='center'>
                     {loading ? (
                         <States>
-                            <StatesIcon name='hourglass' />
+                            <StatesIcon name='loading' />
                             <StatesTitle>{t('Loading')}</StatesTitle>
                         </States>
                     ) : scheduledMessages.length === 0 ? (
@@ -253,21 +247,23 @@ const ScheduledMessagesPage = () => {
                                     justifyContent='space-between'
                                     alignItems='center'
                                 >
-                                    <Box display='flex' flexDirection='row' alignItems='center' color='white' flex='1' minWidth='0'>
-                                        <Avatar 
-                                            size='x36' 
+                                    <Box display='flex' flexDirection='row' alignItems='center' color='white' flexGrow={1} minWidth='0'>
+                                        <Avatar
+                                            size='x36'
                                             url={getDestinationAvatar(msg.rid)}
-                                            username={getChannelName(msg.rid)}
+                                            title={getChannelName(msg.rid)}
                                         />
-                                        <Box mis='x12' fontScale='p2' flex='1' minWidth='0'>
+                                        <Box mis='x12' fontScale='p2' flexGrow={1} minWidth='0'>
                                             <Box fontWeight='700' color='neutral-500'>{getChannelName(msg.rid)}</Box>
-                                            <Box 
-                                                fontScale='c1' 
+                                            <Box
+                                                fontScale='c1'
                                                 color='neutral-400'
                                                 overflow='hidden'
-                                                textOverflow='ellipsis'
-                                                whiteSpace='nowrap'
-                                                maxWidth='100%'
+                                                style={{
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'nowrap',
+                                                    maxWidth: '100%'
+                                                }}
                                                 title={msg.msg || 'No message content'}
                                             >
                                                 {truncateText(msg.msg)}
@@ -282,7 +278,7 @@ const ScheduledMessagesPage = () => {
                                         color='neutral-400'
                                         height='100%'
                                         justifyContent='center'
-                                        flexShrink='0'
+                                        flexShrink={0}
                                     >
                                         <Box fontScale='c1' mie='x12'>
                                             {formatScheduledTime(msg.scheduledAt)}
@@ -290,7 +286,6 @@ const ScheduledMessagesPage = () => {
                                         <Button
                                             square
                                             small
-                                            ghost
                                             onClick={() => toggleMenu(msg._id)}
                                             title={t('More_actions')}
                                         >
@@ -300,9 +295,13 @@ const ScheduledMessagesPage = () => {
                                             <Box
                                                 ref={menuRef}
                                                 position='absolute'
-                                                top='100%'
-                                                right='0'
-                                                mt='x8'
+                                                style={{
+                                                    top: '100%',
+                                                    right: '0',
+                                                    zIndex: 10,
+                                                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+                                                }}
+                                                mbs='x8'
                                                 p='x8'
                                                 display='flex'
                                                 alignItems='center'
@@ -312,8 +311,6 @@ const ScheduledMessagesPage = () => {
                                                 borderStyle='solid'
                                                 borderColor='neutral-700'
                                                 borderRadius='x4'
-                                                zIndex='10'
-                                                boxShadow='0 4px 12px rgba(0, 0, 0, 0.3)'
                                                 onClick={handleMenuClick}
                                             >
                                                 <ButtonGroup align='end'>
@@ -321,7 +318,7 @@ const ScheduledMessagesPage = () => {
                                                         square
                                                         title={t('Edit')}
                                                         color='neutral-500'
-                                                        bg='none'
+                                                        style={{ background: 'none' }}
                                                         p='x8'
                                                         size='x28'
                                                         onClick={() => handleEditClick(msg)}
@@ -332,7 +329,7 @@ const ScheduledMessagesPage = () => {
                                                         square
                                                         title={t('Cancel')}
                                                         color='neutral-500'
-                                                        bg='none'
+                                                        style={{ background: 'none' }}
                                                         p='x8'
                                                         size='x28'
                                                         onClick={() => handleCancelClick(msg)}
