@@ -1,4 +1,4 @@
-import type { ILivechatDepartment, IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
@@ -86,4 +86,10 @@ export const miscQueryKeys = {
 export const voipQueryKeys = {
 	all: ['voip'] as const,
 	room: (rid: IRoom['_id'], token: string) => [...voipQueryKeys.all, 'room', rid, token] as const,
+};
+
+export const usersQueryKeys = {
+	all: ['users'] as const,
+	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
+		[...usersQueryKeys.all, 'info', { uid, username }] as const,
 };
