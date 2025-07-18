@@ -109,7 +109,14 @@ const ExportMessages = () => {
 	}, [t, pfdExportPermission]);
 
 	// Remove HTML from download options
-	const downloadOutputOptions = outputOptions.slice(1);
+	const downloadOutputOptions = useMemo<SelectOption[]>(() => {
+		return outputOptions.filter((option) => option[0] !== 'html');
+	}, [outputOptions]);
+
+	// Remove PDF from file options
+	const fileOutputOptions = useMemo<SelectOption[]>(() => {
+		return outputOptions.filter((option) => option[0] !== 'pdf');
+	}, [outputOptions]);
 
 	const { mutateAsync: exportRoom } = useRoomExportMutation();
 	const { mutateAsync: exportAndDownload } = useDownloadExportMutation();
@@ -201,7 +208,7 @@ const ExportMessages = () => {
 	const subjectField = useId();
 
 	return (
-		<ContextualbarDialog>
+		<ContextualbarDialog aria-labelledby={`${formId}-title`}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='mail' />
 				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
@@ -224,7 +231,14 @@ const ExportMessages = () => {
 									name='type'
 									control={control}
 									render={({ field }) => (
-										<Select id={methodField} {...field} placeholder={t('Type')} disabled={isE2ERoom} options={exportOptions} />
+										<Select
+											id={methodField}
+											data-testid='export-messages-method'
+											{...field}
+											placeholder={t('Type')}
+											disabled={isE2ERoom}
+											options={exportOptions}
+										/>
 									)}
 								/>
 							</FieldRow>
@@ -235,15 +249,28 @@ const ExportMessages = () => {
 								<Controller
 									name='format'
 									control={control}
-									render={({ field }) => (
-										<Select
-											{...field}
-											id={formatField}
-											disabled={type === 'email'}
-											placeholder={t('Format')}
-											options={type === 'download' ? downloadOutputOptions : outputOptions}
-										/>
-									)}
+									render={({ field }) => {
+										let options: SelectOption[];
+
+										if (type === 'download') {
+											options = downloadOutputOptions;
+										} else if (type === 'file') {
+											options = fileOutputOptions;
+										} else {
+											options = outputOptions;
+										}
+
+										return (
+											<Select
+												{...field}
+												id={formatField}
+												data-testid='export-messages-output-format'
+												disabled={type === 'email'}
+												placeholder={t('Format')}
+												options={options}
+											/>
+										);
+									}}
 								/>
 							</FieldRow>
 						</Field>

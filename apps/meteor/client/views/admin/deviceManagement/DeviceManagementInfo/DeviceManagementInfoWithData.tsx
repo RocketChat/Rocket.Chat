@@ -1,7 +1,8 @@
 import type { Serialized, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementInfo from './DeviceManagementInfo';
@@ -12,8 +13,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarSkeletonBody,
 } from '../../../../components/Contextualbar';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
+import { deviceManagementQueryKeys } from '../../../../lib/queryKeys';
 
 const convertSessionFromAPI = ({
 	loginAt,
@@ -28,17 +28,17 @@ const convertSessionFromAPI = ({
 const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload: () => void }): ReactElement => {
 	const { t } = useTranslation();
 
-	const {
-		value: data,
-		phase,
-		error,
-	} = useEndpointData('/v1/sessions/info.admin', { params: useMemo(() => ({ sessionId: deviceId }), [deviceId]) });
+	const getSessionInfo = useEndpoint('GET', '/v1/sessions/info.admin');
+	const { isPending, isError, error, data } = useQuery({
+		queryKey: deviceManagementQueryKeys.sessionInfo(deviceId),
+		queryFn: () => getSessionInfo({ sessionId: deviceId }),
+	});
 
-	if (phase === AsyncStatePhase.LOADING) {
+	if (isPending) {
 		return <ContextualbarSkeletonBody />;
 	}
 
-	if (error || !data) {
+	if (isError) {
 		return (
 			<>
 				<ContextualbarHeader>
@@ -51,7 +51,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 							<StatesIcon name='warning' variation='danger' />
 							<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 							<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
-							<StatesSubtitle>{error?.message}</StatesSubtitle>
+							<StatesSubtitle>{error.message}</StatesSubtitle>
 						</States>
 					</Box>
 				</ContextualbarContent>
