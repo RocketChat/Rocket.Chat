@@ -1,9 +1,10 @@
-import { Box, Button, Icon, IconButton, Label, Palette, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton, Label } from '@rocket.chat/fuselage';
 import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import CompactFilterOptions from './AppsLogsFilterOptionsCompact';
+import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
@@ -12,11 +13,12 @@ import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 import { ExportLogsModal } from './ExportLogsModal';
 
 type AppsLogsFilterProps = {
+	appId: string;
 	isLoading?: boolean;
 	noResults?: boolean;
 };
 
-export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogsFilterProps) => {
+export const AppLogsFilter = ({ appId, isLoading = false, noResults = false }: AppsLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues } = useAppLogsFilterFormContext();
@@ -44,17 +46,13 @@ export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogs
 	return (
 		<Box display='flex' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
 			<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-				<Label htmlFor='eventFilter'>{t('Event')}</Label>
+				<Label id='eventFilterLabel' htmlFor='eventFilter'>
+					{t('Event')}
+				</Label>
 				<Controller
 					control={control}
 					name='event'
-					render={({ field }) => (
-						<TextInput
-							addon={<Icon color={Palette.text['font-secondary-info']} name='magnifier' size={20} />}
-							id='eventFilter'
-							{...field}
-						/>
-					)}
+					render={({ field }) => <EventFilterSelect appId={appId} aria-labelledby='eventFilterLabel' id='eventFilter' {...field} />}
 				/>
 			</Box>
 			{!compactMode && (
@@ -73,7 +71,9 @@ export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogs
 					<Controller
 						control={control}
 						name='instance'
-						render={({ field }) => <InstanceFilterSelect aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />}
+						render={({ field }) => (
+							<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
+						)}
 					/>
 				</Box>
 			)}

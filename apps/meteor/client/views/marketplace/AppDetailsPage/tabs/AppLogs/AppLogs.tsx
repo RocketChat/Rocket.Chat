@@ -1,5 +1,4 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMemo, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,15 +22,13 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const debouncedEvent = useDebouncedValue(event, 500);
-
 	const { data, isSuccess, isError, error, isFetching } = useLogs({
 		appId: id,
 		current,
 		itemsPerPage,
 		...(instance !== 'all' && { instanceId: instance }),
 		...(severity !== 'all' && { logLevel: severity }),
-		method: debouncedEvent,
+		...(event !== 'all' && { method: event }),
 		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
 		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
 	});
@@ -50,14 +47,14 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	return (
 		<>
 			<Box pb={16}>
-				<AppLogsFilter noResults={isFetching || !isSuccess || data?.logs?.length === 0} isLoading={isFetching} />
+				<AppLogsFilter appId={id} noResults={isFetching || !isSuccess || data?.logs?.length === 0} isLoading={isFetching} />
 			</Box>
 			{isFetching && <AccordionLoading />}
 			{isError && <GenericError title={parsedError} />}
 			{!isFetching && isSuccess && data?.logs?.length === 0 && <GenericNoResults />}
 			{!isFetching && isSuccess && data?.logs?.length > 0 && (
 				<CustomScrollbars>
-					<CollapsiblePanel aria-busy={isFetching || event !== debouncedEvent} width='100%' alignSelf='center'>
+					<CollapsiblePanel aria-busy={isFetching} width='100%' alignSelf='center'>
 						{data?.logs?.map((log, index) => <AppLogsItem regionId={log._id} key={`${index}-${log._createdAt}`} {...log} />)}
 					</CollapsiblePanel>
 				</CustomScrollbars>

@@ -108,6 +108,10 @@ export type AppsEndpoints = {
 		}>;
 	};
 
+	'/apps/:id/logs/distinctValues': {
+		GET: () => { success: boolean; instanceIds: string[]; methods: string[] };
+	};
+
 	'/apps/:id/export-logs': {
 		GET: (params: AppLogsExportProps) => Buffer;
 	};
