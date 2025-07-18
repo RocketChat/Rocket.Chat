@@ -95,7 +95,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 		<>
 			<Box pb={16}>
 				<AppLogsFilter
-          appId={id}
+					appId={id}
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}
 					isLoading={isFetching}
 					expandAll={() => handleExpandAll()}

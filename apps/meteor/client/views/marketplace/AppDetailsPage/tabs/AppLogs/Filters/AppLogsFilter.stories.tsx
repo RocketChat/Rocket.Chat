@@ -34,4 +34,6 @@ export default {
 	},
 } satisfies Meta<typeof AppLogsFilter>;
 
-export const Default = () => <AppLogsFilter appId='app-id' expandAll={action('expandAll')} refetchLogs={action('refetchLogs')} isLoading={false} />;
+export const Default = () => (
+	<AppLogsFilter appId='app-id' expandAll={action('expandAll')} refetchLogs={action('refetchLogs')} isLoading={false} />
+);

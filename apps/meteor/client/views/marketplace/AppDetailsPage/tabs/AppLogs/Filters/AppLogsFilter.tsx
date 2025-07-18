@@ -14,7 +14,7 @@ import { ExportLogsModal } from './ExportLogsModal';
 
 type AppsLogsFilterProps = {
 	appId: string;
-  expandAll: () => void;
+	expandAll: () => void;
 	refetchLogs: () => void;
 	isLoading: boolean;
 	noResults?: boolean;
