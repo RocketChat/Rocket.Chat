@@ -5,7 +5,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
@@ -525,7 +525,7 @@ export class APIClass<
 		invocation.twoFactorChecked = true;
 	}
 
-	protected getFullRouteName(route: string, method: string): string {
+	public getFullRouteName(route: string, method: string): string {
 		return `/${this.apiPath || ''}/${route}${method}`;
 	}
 
@@ -831,7 +831,7 @@ export class APIClass<
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `/${route}${this.request.method.toLowerCase()}`,
+							route: api.getFullRouteName(route, this.request.method.toLowerCase()),
 						};
 
 						let result;

@@ -1,5 +1,5 @@
 import type { IOutboundProvider } from '@rocket.chat/core-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
 import { isGETOutboundProviderParams } from '../outboundcomms/rest';
@@ -11,22 +11,25 @@ const outboundCommsEndpoints = API.v1.get(
 	{
 		response: {
 			200: ajv.compile<{ providers: IOutboundProvider[] }>({
-				providers: {
-					type: 'array',
-					items: {
-						type: 'object',
-						properties: {
-							providerId: {
-								type: 'string',
-							},
-							providerName: {
-								type: 'string',
-							},
-							supportsTemplates: {
-								type: 'boolean',
-							},
-							providerType: {
-								type: 'string',
+				type: 'object',
+				properties: {
+					providers: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								providerId: {
+									type: 'string',
+								},
+								providerName: {
+									type: 'string',
+								},
+								supportsTemplates: {
+									type: 'boolean',
+								},
+								providerType: {
+									type: 'string',
+								},
 							},
 						},
 					},

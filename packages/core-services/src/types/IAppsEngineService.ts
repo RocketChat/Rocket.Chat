@@ -4,7 +4,7 @@ import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFil
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 export type AppStatusReport = {
-	[appId: string]: { instanceId: string; status: AppStatus }[];
+	[appId: string]: { instanceId: string; isLocal: boolean; status: AppStatus }[];
 };
 
 export interface IAppsEngineService {
