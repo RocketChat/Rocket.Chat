@@ -40,7 +40,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!Subscriptions.findOne({ rid: message.rid })) {
+		if (!Subscriptions.state.find(({ rid }) => rid === message.rid)) {
 			return false;
 		}
 

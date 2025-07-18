@@ -133,7 +133,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 			let ls = undefined;
 
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			if (subscription) {
 				({ ls } = subscription);
 			}
@@ -232,7 +232,7 @@ class RoomHistoryManagerClass extends Emitter {
 			(a, b) => b.ts.getTime() - a.ts.getTime(),
 		);
 
-		const subscription = Subscriptions.findOne({ rid });
+		const subscription = Subscriptions.state.find((record) => record.rid === rid);
 
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
@@ -308,8 +308,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const room = this.getRoom(message.rid);
 
-		const subscription = Subscriptions.findOne({ rid: message.rid });
-
+		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
 		this.clear(message.rid);

@@ -1,10 +1,10 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { Filter } from 'mongodb';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { Subscriptions } from '../../../../../app/models/client';
 import { useSortQueryOptions } from '../../../../hooks/useSortQueryOptions';
+import { applyQueryOptions } from '../../../../lib/cachedCollections';
 
 export const useTeamsListChildrenUpdate = (
 	parentRid: string,
@@ -13,32 +13,20 @@ export const useTeamsListChildrenUpdate = (
 ) => {
 	const options = useSortQueryOptions();
 
-	const query = useMemo(() => {
-		const query: Filter<ISubscription> = {
-			$or: [
-				{
-					_id: parentRid,
-				},
-			],
-		};
-
-		if ((!sidepanelItems || sidepanelItems === 'discussions') && query.$or) {
-			query.$or.push({
-				prid: parentRid,
-			});
-		}
-
-		if ((!sidepanelItems || sidepanelItems === 'channels') && teamId && query.$or) {
-			query.$or.push({
-				teamId,
-			});
-		}
-		return query;
-	}, [parentRid, teamId, sidepanelItems]);
+	const predicate = useCallback(
+		(record: SubscriptionWithRoom): boolean => {
+			return (
+				((!sidepanelItems || sidepanelItems === 'channels') && teamId && record.teamId === teamId) ||
+				((!sidepanelItems || sidepanelItems === 'discussions') && record.prid === parentRid) ||
+				record._id === parentRid
+			);
+		},
+		[parentRid, sidepanelItems, teamId],
+	);
 
 	const result = useQuery({
 		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems, options],
-		queryFn: () => Subscriptions.find(query, options).fetch(),
+		queryFn: () => applyQueryOptions(Subscriptions.state.filter(predicate), options),
 		enabled: sidepanelItems !== null && teamId !== null,
 		refetchInterval: 5 * 60 * 1000,
 		placeholderData: keepPreviousData,
@@ -46,17 +34,7 @@ export const useTeamsListChildrenUpdate = (
 
 	const { refetch } = result;
 
-	useEffect(() => {
-		const liveQueryHandle = Subscriptions.find(query).observe({
-			added: () => queueMicrotask(() => refetch()),
-			changed: () => queueMicrotask(() => refetch()),
-			removed: () => queueMicrotask(() => refetch()),
-		});
-
-		return () => {
-			liveQueryHandle.stop();
-		};
-	}, [query, refetch]);
+	useEffect(() => Subscriptions.use.subscribe(() => refetch()), [predicate, refetch]);
 
 	return result;
 };

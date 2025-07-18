@@ -175,7 +175,7 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 				// }
 				// Do not load command messages into channel
 				if (msg.t !== 'command') {
-					const subscription = Subscriptions.findOne({ rid: record.rid }, { reactive: false });
+					const subscription = Subscriptions.state.find(({ rid }) => rid === record.rid);
 					const isNew = !Messages.state.find((record) => record._id === msg._id && record.temp !== true);
 					({ _id: msg._id, temp: { $ne: true } });
 					await upsertMessage({ msg, subscription });

@@ -745,9 +745,9 @@ class E2E extends Emitter {
 	}
 
 	async decryptSubscriptions(): Promise<void> {
-		Subscriptions.find({
-			encrypted: true,
-		}).forEach((subscription) => this.decryptSubscription(subscription._id));
+		Subscriptions.state
+			.filter((subscription) => Boolean(subscription.encrypted))
+			.forEach((subscription) => this.decryptSubscription(subscription._id));
 	}
 
 	openAlert(config: Omit<LegacyBannerPayload, 'id'>): void {
