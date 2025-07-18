@@ -13,6 +13,7 @@ import AppDetailsPageTabs from './AppDetailsPageTabs';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
+import AppInstances from './tabs/AppInstances';
 import AppLogs from './tabs/AppLogs';
 import { AppLogsFilterContextualBar } from './tabs/AppLogs/Filters/AppLogsFilterContextualBar';
 import { useAppLogsFilterForm } from './tabs/AppLogs/useAppLogsFilterForm';
@@ -121,6 +122,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 									isSecurityVisible={isSecurityVisible}
 									settings={settings}
 									tab={tab}
+									hasCluster={!!appData.clusterStatus}
 								/>
 								{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 								{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}
@@ -143,6 +145,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 										<AppLogs id={id} />
 									</FormProvider>
 								)}
+								{tab === 'instances' && <AppInstances id={id} />}
 							</>
 						)}
 					</Box>
