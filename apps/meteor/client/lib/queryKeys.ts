@@ -80,6 +80,7 @@ export const deviceManagementQueryKeys = {
 export const miscQueryKeys = {
 	personalAccessTokens: ['personal-access-tokens'] as const,
 	lookup: (endpoint: string) => ['lookup', endpoint] as const,
+	autotranslateSupportedLanguages: (targetLanguage: string) => ['autotranslate', 'supported-languages', targetLanguage] as const,
 };
 
 export const voipQueryKeys = {
