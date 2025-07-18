@@ -44,6 +44,7 @@ export const omnichannelQueryKeys = {
 		appearance: () => [...omnichannelQueryKeys.all, 'livechat', 'appearance'] as const,
 		customFields: () => [...omnichannelQueryKeys.all, 'livechat', 'custom-fields'] as const,
 	},
+	visitorInfo: (uid: string) => [...omnichannelQueryKeys.all, 'visitor-info', uid] as const,
 };
 
 export const deviceManagementQueryKeys = {
