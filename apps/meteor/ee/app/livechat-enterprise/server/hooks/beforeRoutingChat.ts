@@ -1,7 +1,7 @@
 import { type ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
+import { notifyOnLivechatInquiryChanged, notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { setDepartmentForGuest } from '../../../../../app/livechat/server/lib/departmentsLib';
@@ -46,6 +46,8 @@ callbacks.add(
 				if (updatedLivechatInquiry) {
 					void notifyOnLivechatInquiryChanged(updatedLivechatInquiry, 'updated', { department: updatedLivechatInquiry.department });
 				}
+
+				void notifyOnRoomChangedById(inquiry.rid, 'updated');
 
 				inquiry = updatedLivechatInquiry ?? inquiry;
 			}
