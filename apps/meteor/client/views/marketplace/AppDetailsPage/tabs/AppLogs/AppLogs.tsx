@@ -1,6 +1,6 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useMemo, useReducer, type ReactElement } from 'react';
+import { useEffect, useMemo, useReducer, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppLogsItem from './AppLogsItem';
@@ -48,8 +48,6 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const handleExpandAll = () => dispatch({ type: 'expand-all' });
 
-	const updateExpandedStates = (logs: ILogItem[]) => dispatch({ type: 'reset', logs });
-
 	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
 		appId: id,
 		current,
@@ -59,8 +57,13 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 		...(event !== 'all' && { method: event }),
 		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
 		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
-		updateExpandedStates,
 	});
+
+	useEffect(() => {
+		if (isSuccess) {
+			dispatch({ type: 'reset', logs: data.logs });
+		}
+	}, [data, isSuccess]);
 
 	const parsedError = useMemo(() => {
 		if (error) {
