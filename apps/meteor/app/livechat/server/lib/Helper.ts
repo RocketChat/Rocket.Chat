@@ -98,7 +98,7 @@ export const prepareLivechatRoom = async (
 	const contactId = await migrateVisitorIfMissingContact(_id, source);
 	const contact =
 		contactId &&
-		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
+		(await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
 			projection: { name: 1, channels: 1, activity: 1 },
 		}));
 	if (!contact) {
@@ -480,7 +480,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	if (!agentId) {
 		throw new Error('error-invalid-agent');
 	}
-	const user = await Users.findOneOnlineAgentById(agentId);
+	const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 	if (!user) {
 		logger.debug(`Agent ${agentId} is offline. Cannot forward`);
 		throw new Error('error-user-is-offline');
@@ -603,7 +603,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	const { userId: agentId, clientAction } = transferData;
 	if (agentId) {
 		logger.debug(`Forwarding room ${room._id} to department ${departmentId} (to user ${agentId})`);
-		const user = await Users.findOneOnlineAgentById(agentId);
+		const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 		if (!user) {
 			throw new Error('error-user-is-offline');
 		}

@@ -5,10 +5,12 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
+import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedCollectionManager } from './CachedCollectionManager';
+import type { IDocumentMapStore } from './DocumentMapStore';
 import { MinimongoCollection } from './MinimongoCollection';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
@@ -36,12 +38,16 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 
 localforage.config({ name: baseURI });
 
-export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
+export interface IWithManageableCache {
+	clearCacheOnLogout(): void;
+}
+
+export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements IWithManageableCache {
 	private static readonly MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
-	public collection = new MinimongoCollection<T>();
+	readonly store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>;
 
-	public ready = new ReactiveVar(false);
+	readonly ready = new ReactiveVar(false);
 
 	protected name: Name;
 
@@ -55,9 +61,10 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 
 	private timer: ReturnType<typeof setTimeout>;
 
-	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
+	constructor({ name, eventType, store }: { name: Name; eventType: StreamNames; store: UseBoundStore<StoreApi<IDocumentMapStore<T>>> }) {
 		this.name = name;
 		this.eventType = eventType;
+		this.store = store;
 
 		this.log = [getConfig(`debugCachedCollection-${this.name}`), getConfig('debugCachedCollection'), getConfig('debug')].includes('true')
 			? console.log.bind(console, `%cCachedCollection ${this.name}`, `color: navy; font-weight: bold;`)
@@ -95,7 +102,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			data.updatedAt = new Date(data.updatedAt);
 		}
 
-		if (Date.now() - data.updatedAt.getTime() >= 1000 * CachedCollection.MAX_CACHE_TIME) {
+		if (Date.now() - data.updatedAt.getTime() >= 1000 * CachedStore.MAX_CACHE_TIME) {
 			return false;
 		}
 
@@ -109,7 +116,7 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			this.updatedAt = new Date(updatedAt);
 		}
 
-		this.collection.state.replaceAll(deserializedRecords.filter(hasId));
+		this.store.getState().replaceAll(deserializedRecords.filter(hasId));
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 
@@ -147,28 +154,32 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		const data = await this.callLoad();
 		this.log(`${data.length} records loaded from server`);
 
-		const newRecords = data.map((record) => this.handleLoadFromServer(record)).filter((record) => hasId(record));
+		const newRecords = data.map((record) => {
+			const mapped = this.mapRecord(record);
 
-		newRecords.forEach((record) => {
-			if (hasUpdatedAt(record) && record._updatedAt > this.updatedAt) {
-				this.updatedAt = record._updatedAt;
+			if (hasUpdatedAt(mapped) && mapped._updatedAt > this.updatedAt) {
+				this.updatedAt = mapped._updatedAt;
 			}
+
+			return mapped;
 		});
 
-		this.collection.state.storeMany(newRecords);
+		this.store.getState().storeMany(newRecords);
+		this.handleLoadedFromServer(newRecords);
+
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
 
-	protected handleLoadFromServer(record: U): T {
+	protected mapRecord(record: U): T {
 		return record as unknown as T;
 	}
 
-	protected handleReceived(record: U, _action: 'removed' | 'changed'): T {
-		return record as unknown as T;
+	protected handleLoadedFromServer(_records: T[]): void {
+		// This method can be overridden to handle records after they are loaded from the server
 	}
 
-	protected handleSync(record: U, _action: 'removed' | 'changed'): T {
-		return record as unknown as T;
+	protected handleSyncEvent(_action: 'removed' | 'changed', _record: T): void {
+		// This method can be overridden to handle sync events
 	}
 
 	private async loadFromServerAndPopulate() {
@@ -178,12 +189,11 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 
 	private save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
-		const data = this.collection.state.records;
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
 			token: this.getToken(),
-			records: data,
+			records: Array.from(this.store.getState().records.values()),
 		});
 		this.log('saving cache (done)');
 	});
@@ -193,30 +203,25 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 	protected async clearCache() {
 		this.log('clearing cache');
 		await localforage.removeItem(this.name);
-		this.collection.state.replaceAll([]);
+		this.store.getState().replaceAll([]);
 	}
 
-	protected async setupListener() {
-		sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: any) => {
+	protected setupListener() {
+		return sdk.stream(this.eventType, [this.eventName], (async (action: 'removed' | 'changed', record: U) => {
 			this.log('record received', action, record);
 			await this.handleRecordEvent(action, record);
 		}) as (...args: unknown[]) => void);
 	}
 
-	protected async handleRecordEvent(action: 'removed' | 'changed', record: any) {
-		const newRecord = this.handleReceived(record, action);
-
-		if (!hasId(newRecord)) {
-			return;
-		}
+	protected async handleRecordEvent(action: 'removed' | 'changed', record: U) {
+		const newRecord = this.mapRecord(record);
 
 		if (action === 'removed') {
-			this.collection.state.delete(newRecord._id);
+			this.store.getState().delete(newRecord._id);
 		} else {
-			const { _id } = newRecord;
-			if (!_id) return;
-			this.collection.state.store(newRecord);
+			this.store.getState().store(newRecord);
 		}
+
 		await this.save();
 	}
 
@@ -247,20 +252,16 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		if (data.update && data.update.length > 0) {
 			this.log(`${data.update.length} records updated in sync`);
 			for (const record of data.update) {
-				const action = 'changed';
-				const newRecord = this.handleSync(record, action);
-
-				if (!hasId(newRecord)) {
-					continue;
-				}
+				const newRecord = this.mapRecord(record);
 
 				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
 				changes.push({
 					action: () => {
-						this.collection.state.store(newRecord);
+						this.store.getState().store(newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
+						this.handleSyncEvent('changed', newRecord);
 					},
 					timestamp: actionTime.getTime(),
 				});
@@ -270,20 +271,20 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		if (data.remove && data.remove.length > 0) {
 			this.log(`${data.remove.length} records removed in sync`);
 			for (const record of data.remove) {
-				const action = 'removed';
-				const newRecord = this.handleSync(record, action);
+				const newRecord = this.mapRecord(record);
 
-				if (!hasId(newRecord) || !hasDeletedAt(newRecord)) {
+				if (!hasDeletedAt(newRecord)) {
 					continue;
 				}
 
 				const actionTime = newRecord._deletedAt;
 				changes.push({
 					action: () => {
-						this.collection.state.delete(newRecord._id);
+						this.store.getState().delete(newRecord._id);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
+						this.handleSyncEvent('removed', newRecord);
 					},
 					timestamp: actionTime.getTime(),
 				});
@@ -301,7 +302,9 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 		return true;
 	}
 
-	async init() {
+	private listenerUnsubscriber: (() => void) | undefined;
+
+	private async performInitialization() {
 		if (await this.loadFromCache()) {
 			this.trySync();
 		} else {
@@ -324,28 +327,55 @@ export abstract class CachedCollection<T extends IRocketChatRecord, U = T> {
 			}
 		});
 
-		return this.setupListener();
+		const subscription = this.setupListener();
+		this.listenerUnsubscriber = () => {
+			subscription.stop();
+			this.listenerUnsubscriber = undefined;
+		};
+	}
+
+	private initializationPromise: Promise<void> | undefined;
+
+	init() {
+		if (this.initializationPromise) {
+			return this.initializationPromise;
+		}
+
+		this.initializationPromise = this.performInitialization().finally(() => {
+			this.initializationPromise = undefined;
+		});
+
+		return this.initializationPromise;
+	}
+
+	async release() {
+		if (this.initializationPromise) {
+			await this.initializationPromise;
+		}
+
+		this.listenerUnsubscriber?.();
+		this.ready.set(false);
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
 }
 
-export class PublicCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
-	protected getToken() {
+export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
+	protected override getToken() {
 		return undefined;
 	}
 
-	clearCacheOnLogout() {
+	override clearCacheOnLogout() {
 		// do nothing
 	}
 }
 
-export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
-	protected getToken() {
+export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
+	protected override getToken() {
 		return Accounts._storedLoginToken();
 	}
 
-	clearCacheOnLogout() {
+	override clearCacheOnLogout() {
 		void this.clearCache();
 	}
 
@@ -359,7 +389,57 @@ export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends
 		});
 
 		Accounts.onLogout(() => {
-			this.ready.set(false);
+			this.release();
+		});
+	}
+}
+
+export abstract class CachedCollection<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
+	readonly collection;
+
+	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
+		const collection = new MinimongoCollection<T>();
+
+		super({
+			name,
+			eventType,
+			store: collection.use,
+		});
+
+		this.collection = collection;
+	}
+}
+
+export class PublicCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
+	protected override getToken() {
+		return undefined;
+	}
+
+	override clearCacheOnLogout() {
+		// do nothing
+	}
+}
+
+export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
+	protected override getToken() {
+		return Accounts._storedLoginToken();
+	}
+
+	override clearCacheOnLogout() {
+		void this.clearCache();
+	}
+
+	listen() {
+		if (process.env.NODE_ENV === 'test') {
+			return;
+		}
+
+		onLoggedIn(() => {
+			void this.init();
+		});
+
+		Accounts.onLogout(() => {
+			this.release();
 		});
 	}
 }

@@ -5,7 +5,7 @@ import supertest from 'supertest';
 
 import { adminUsername, adminPassword } from './user';
 
-const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
+export const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
 
 export const request = supertest(apiUrl);
 const prefix = '/api/v1/';
@@ -41,7 +41,7 @@ export const credentials: Credentials = {
 	'X-User-Id': undefined,
 } as unknown as Credentials; // FIXME
 
-type PathWithoutPrefix<TPath> = TPath extends `/v1/${infer U}` ? U : never;
+export type PathWithoutPrefix<TPath> = TPath extends `/v1/${infer U}` ? U : never;
 
 export function api<TPath extends PathWithoutPrefix<Path>>(path: TPath) {
 	return `${prefix}${path}` as const;

@@ -15,11 +15,13 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useContext, useEffect, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useDownloadExportMutation } from './useDownloadExportMutation';
+import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation';
 import { useRoomExportMutation } from './useRoomExportMutation';
 import { validateEmail } from '../../../../../lib/emailValidator';
 import {
@@ -41,7 +43,7 @@ export type ExportMessagesFormValues = {
 	type: 'email' | 'file' | 'download';
 	dateFrom: string;
 	dateTo: string;
-	format: 'html' | 'json';
+	format: 'html' | 'json' | 'pdf';
 	toUsers: string[];
 	additionalEmails: string;
 	messagesCount: number;
@@ -51,6 +53,7 @@ export type ExportMessagesFormValues = {
 const ExportMessages = () => {
 	const { t } = useTranslation();
 	const { closeTab } = useRoomToolbox();
+	const pfdExportPermission = usePermission('export-messages-as-pdf');
 	const formFocus = useAutoFocus<HTMLFormElement>();
 	const room = useRoom();
 	const isE2ERoom = room.encrypted;
@@ -92,21 +95,46 @@ const ExportMessages = () => {
 		[t],
 	);
 
-	const outputOptions = useMemo<SelectOption[]>(
-		() => [
+	const outputOptions = useMemo<SelectOption[]>(() => {
+		const options: SelectOption[] = [
 			['html', t('HTML')],
 			['json', t('JSON')],
-		],
-		[t],
-	);
+		];
 
-	const roomExportMutation = useRoomExportMutation();
-	const downloadExportMutation = useDownloadExportMutation();
+		if (pfdExportPermission) {
+			options.push(['pdf', t('PDF')]);
+		}
+
+		return options;
+	}, [t, pfdExportPermission]);
+
+	// Remove HTML from download options
+	const downloadOutputOptions = useMemo<SelectOption[]>(() => {
+		return outputOptions.filter((option) => option[0] !== 'html');
+	}, [outputOptions]);
+
+	// Remove PDF from file options
+	const fileOutputOptions = useMemo<SelectOption[]>(() => {
+		return outputOptions.filter((option) => option[0] !== 'pdf');
+	}, [outputOptions]);
+
+	const { mutateAsync: exportRoom } = useRoomExportMutation();
+	const { mutateAsync: exportAndDownload } = useDownloadExportMutation();
 
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 	const messageCount = useCountSelected();
 
 	const { type, toUsers } = watch();
+
+	useEffect(() => {
+		if (type === 'email') {
+			setValue('format', 'html');
+		}
+
+		if (type === 'download') {
+			setValue('format', 'json');
+		}
+	}, [type, setValue]);
 
 	useEffect(() => {
 		if (type !== 'file') {
@@ -119,37 +147,48 @@ const ExportMessages = () => {
 	}, [type, selectedMessageStore]);
 
 	useEffect(() => {
-		if (type === 'email') {
-			setValue('format', 'html');
-		}
-
-		if (type === 'download') {
-			setValue('format', 'json');
-		}
-
 		setValue('messagesCount', messageCount, { shouldDirty: true });
-	}, [type, setValue, messageCount]);
+	}, [messageCount, setValue]);
 
-	const handleExport = async ({ type, toUsers, dateFrom, dateTo, format, subject, additionalEmails }: ExportMessagesFormValues) => {
+	const { mutateAsync: exportAsPDF } = useExportMessagesAsPDFMutation();
+
+	const handleExport = async ({
+		type,
+		toUsers,
+		dateFrom,
+		dateTo,
+		format,
+		subject,
+		additionalEmails,
+	}: ExportMessagesFormValues): Promise<void> => {
 		const messages = selectedMessageStore.getSelectedMessages();
 
 		if (type === 'download') {
-			return downloadExportMutation.mutateAsync({
-				mids: messages,
-			});
+			if (format === 'pdf') {
+				await exportAsPDF(messages);
+				return;
+			}
+
+			if (format === 'json') {
+				await exportAndDownload({
+					mids: messages,
+				});
+				return;
+			}
 		}
 
 		if (type === 'file') {
-			return roomExportMutation.mutateAsync({
+			await exportRoom({
 				rid: room._id,
 				type: 'file',
 				...(dateFrom && { dateFrom }),
 				...(dateTo && { dateTo }),
-				format,
+				format: format as 'html' | 'json',
 			});
+			return;
 		}
 
-		roomExportMutation.mutateAsync({
+		await exportRoom({
 			rid: room._id,
 			type: 'email',
 			toUsers,
@@ -169,7 +208,7 @@ const ExportMessages = () => {
 	const subjectField = useId();
 
 	return (
-		<ContextualbarDialog>
+		<ContextualbarDialog aria-labelledby={`${formId}-title`}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='mail' />
 				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
@@ -192,7 +231,14 @@ const ExportMessages = () => {
 									name='type'
 									control={control}
 									render={({ field }) => (
-										<Select id={methodField} {...field} placeholder={t('Type')} disabled={isE2ERoom} options={exportOptions} />
+										<Select
+											id={methodField}
+											data-testid='export-messages-method'
+											{...field}
+											placeholder={t('Type')}
+											disabled={isE2ERoom}
+											options={exportOptions}
+										/>
 									)}
 								/>
 							</FieldRow>
@@ -203,15 +249,28 @@ const ExportMessages = () => {
 								<Controller
 									name='format'
 									control={control}
-									render={({ field }) => (
-										<Select
-											{...field}
-											id={formatField}
-											disabled={type === 'email' || type === 'download'}
-											placeholder={t('Format')}
-											options={outputOptions}
-										/>
-									)}
+									render={({ field }) => {
+										let options: SelectOption[];
+
+										if (type === 'download') {
+											options = downloadOutputOptions;
+										} else if (type === 'file') {
+											options = fileOutputOptions;
+										} else {
+											options = outputOptions;
+										}
+
+										return (
+											<Select
+												{...field}
+												id={formatField}
+												data-testid='export-messages-output-format'
+												disabled={type === 'email'}
+												placeholder={t('Format')}
+												options={options}
+											/>
+										);
+									}}
 								/>
 							</FieldRow>
 						</Field>

@@ -1,6 +1,5 @@
 import { MessageDivider, Message, Avatar, Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
 import VideoConfMessageAction from './VideoConfMessageAction';
@@ -16,7 +15,7 @@ export default {
 	title: 'Components/VideoConfMessage',
 	component: VideoConfMessage,
 	decorators: [
-		(Story): ReactElement => (
+		(Story) => (
 			<Box>
 				<MessageDivider>May, 24, 2020</MessageDivider>
 				<Message className='customclass'>

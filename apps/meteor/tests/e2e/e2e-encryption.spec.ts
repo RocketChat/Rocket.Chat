@@ -16,8 +16,8 @@ import {
 	SaveE2EEPasswordBanner,
 	SaveE2EEPasswordModal,
 } from './page-objects/fragments/e2ee';
+import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
 import { FileUploadModal } from './page-objects/fragments/file-upload-modal';
-import { HomeFlextabExportMessages } from './page-objects/fragments/home-flextab-exportMessages';
 import { LoginPage } from './page-objects/login';
 import { test, expect } from './utils/test';
 
@@ -272,7 +272,7 @@ test.describe('basic features', () => {
 	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {
 		const sidenav = new HomeSidenav(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
-		const exportMessagesTab = new HomeFlextabExportMessages(page);
+		const exportMessagesTab = new ExportMessagesTab(page);
 
 		const channelName = faker.string.uuid();
 
@@ -281,8 +281,34 @@ test.describe('basic features', () => {
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 
 		await encryptedRoomPage.showExportMessagesTab();
-		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
-		await expect(exportMessagesTab.sendEmailMethod).not.toBeVisible();
+		await expect(exportMessagesTab.method).toContainClass('disabled'); // FIXME: looks like the component have an a11y issue
+		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file');
+	});
+
+	test('should allow exporting messages as PDF in an encrypted room', async ({ page }) => {
+		const sidenav = new HomeSidenav(page);
+		const encryptedRoomPage = new EncryptedRoomPage(page);
+		const exportMessagesTab = new ExportMessagesTab(page);
+
+		const channelName = faker.string.uuid();
+
+		await sidenav.createEncryptedChannel(channelName);
+		await expect(page).toHaveURL(`/group/${channelName}`);
+		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
+
+		await encryptedRoomPage.sendMessage('This is a message to export as PDF.');
+		await encryptedRoomPage.showExportMessagesTab();
+		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file');
+
+		// Select Output format as PDF
+		await exportMessagesTab.setOutputFormat('PDF');
+
+		// select messages to be exported
+		await exportMessagesTab.selectAllMessages();
+
+		// Wait for download event and match format
+		const download = await exportMessagesTab.downloadMessages();
+		expect(download.suggestedFilename()).toMatch(/\.pdf$/);
 	});
 });
 
@@ -909,7 +935,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await page.goto('/home');
 
-		await page.waitForSelector('.main-content');
+		await page.waitForSelector('#main-content');
 
 		await expect(poHomeChannel.bannerSaveEncryptionPassword).toBeVisible();
 

@@ -1,10 +1,11 @@
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
+import type { Route, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
@@ -37,8 +38,7 @@ import type {
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
-import type { Route } from './router';
-import { Router } from './router';
+import { RocketChatAPIRouter } from './router';
 import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
 import { isObject } from '../../../lib/utils/isObject';
 import { getNestedProp } from '../../../server/lib/getNestedProp';
@@ -66,14 +66,33 @@ export type Prettify<T> = {
 
 type ExtractValidation<T> = T extends ValidateFunction<infer TSchema> ? TSchema : never;
 
-export type ExtractRoutesFromAPI<T> =
-	T extends APIClass<any, infer TOperations> ? (TOperations extends MinimalRoute ? Prettify<ConvertToRoute<TOperations>> : never) : never;
+type UnionToIntersection<U> = (U extends any ? (x: U) => any : never) extends (x: infer I) => any ? I : never;
+
+export type ExtractRoutesFromAPI<T> = Prettify<
+	UnionToIntersection<
+		T extends APIClass<any, infer TOperations> ? (TOperations extends MinimalRoute ? Prettify<ConvertToRoute<TOperations>> : never) : never
+	>
+>;
 
 type ConvertToRoute<TRoute extends MinimalRoute> = {
 	[K in TRoute['path']]: {
-		[K2 in TRoute['method']]: K2 extends 'GET'
-			? (params: ExtractValidation<TRoute['query']>) => ExtractValidation<TRoute['response'][200]>
-			: (params: ExtractValidation<TRoute['body']>) => ExtractValidation<TRoute['response'][200 | 201]>;
+		[K2 in Extract<TRoute, { path: K }>['method']]: K2 extends 'GET'
+			? (
+					...args: [ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>] extends [never]
+						? [params?: never]
+						: [params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['query']>]
+				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
+			: K2 extends 'POST'
+				? (
+						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
+					) => ExtractValidation<
+						200 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
+							? Extract<TRoute, { path: K; method: K2 }>['response'][200]
+							: 201 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
+								? Extract<TRoute, { path: K; method: K2 }>['response'][201]
+								: never
+					>
+				: never;
 	};
 };
 
@@ -171,7 +190,7 @@ export class APIClass<
 		inviteToken: number;
 	};
 
-	readonly router: Router<any>;
+	readonly router: Router<any, any, any>;
 
 	constructor({ useDefaultAuth, ...properties }: IAPIProperties) {
 		this.version = properties.version;
@@ -206,7 +225,7 @@ export class APIClass<
 			services: 0,
 			inviteToken: 0,
 		};
-		this.router = new Router(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
+		this.router = new RocketChatAPIRouter(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
 		if (useDefaultAuth) {
 			this._initAuth();
@@ -506,7 +525,7 @@ export class APIClass<
 		invocation.twoFactorChecked = true;
 	}
 
-	protected getFullRouteName(route: string, method: string): string {
+	public getFullRouteName(route: string, method: string): string {
 		return `/${this.apiPath || ''}/${route}${method}`;
 	}
 
@@ -564,7 +583,7 @@ export class APIClass<
 		TSubPathPattern extends string,
 		TOptions extends TypedOptions,
 		TPathPattern extends `${TBasePath}/${TSubPathPattern}`,
-	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
+	>(method: MinimalRoute['method'], subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
 		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
@@ -615,17 +634,19 @@ export class APIClass<
 	}
 
 	private method<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
-		method: Method,
+		method: MinimalRoute['method'],
 		subpath: TSubPathPattern,
 		options: TOptions,
 		action: TypedAction<TOptions, TSubPathPattern>,
 	): APIClass<
 		TBasePath,
 		| TOperations
-		| ({
-				method: Method;
-				path: TPathPattern;
-		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: Method;
+					path: TPathPattern;
+				} & Omit<TOptions, 'response'>
+		  >
 	> {
 		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		this.registerTypedRoutes(method, subpath, options);
@@ -660,6 +681,12 @@ export class APIClass<
 				method: 'POST';
 				path: TPathPattern;
 		  } & Omit<TOptions, 'response'>)
+		| Prettify<
+				{
+					method: 'POST';
+					path: TPathPattern;
+				} & TOptions
+		  >
 	> {
 		return this.method('POST', subpath, options, action);
 	}
@@ -804,7 +831,7 @@ export class APIClass<
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `/${route}${this.request.method.toLowerCase()}`,
+							route: api.getFullRouteName(route, this.request.method.toLowerCase()),
 						};
 
 						let result;
