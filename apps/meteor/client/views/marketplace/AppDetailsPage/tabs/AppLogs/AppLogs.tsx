@@ -1,6 +1,5 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMemo, useReducer, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -40,8 +39,6 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
-	const debouncedEvent = useDebouncedValue(event, 500);
-
 	const [expandedStates, dispatch] = useReducer(expandedReducer, []);
 
 	const handleExpand = ({ id, expanded }: { id: string; expanded: boolean }): void => {
@@ -77,7 +74,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 		itemsPerPage,
 		...(instance !== 'all' && { instanceId: instance }),
 		...(severity !== 'all' && { logLevel: severity }),
-		method: debouncedEvent,
+		...(event !== 'all' && { method: event }),
 		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
 		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
 		updateExpandedStates,
@@ -98,6 +95,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 		<>
 			<Box pb={16}>
 				<AppLogsFilter
+          appId={id}
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}
 					isLoading={isFetching}
 					expandAll={() => handleExpandAll()}
