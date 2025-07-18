@@ -1,5 +1,4 @@
 import {
-    Box,
     Field,
     FieldGroup,
     FieldLabel,
@@ -14,8 +13,9 @@ import { useEffect, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { GenericModal } from '@rocket.chat/ui-client';
 import moment from 'moment';
+import { IScheduledMessage } from '@rocket.chat/core-typings';
 
-const getDefaultDateTime = (currentDateTime) => {
+const getDefaultDateTime = (currentDateTime: string | Date) => {
     const date = moment(currentDateTime);
     return {
         date: date.format('YYYY-MM-DD'),
@@ -23,12 +23,19 @@ const getDefaultDateTime = (currentDateTime) => {
     };
 };
 
-const combineDateTimeForBackend = (date, time) => {
+const combineDateTimeForBackend = (date: string, time: string) => {
     return new Date(`${date}T${time}:00`).toISOString();
 };
 
-const EditScheduledMessageModal = ({ 
-    message, 
+interface EditScheduledMessageModalProps {
+    message: IScheduledMessage;
+    onSuccess: () => void;
+    onClose: () => void;
+    updateScheduledMessage: (params: any) => Promise<any>;
+}
+
+const EditScheduledMessageModal: React.FC<EditScheduledMessageModalProps> = ({
+    message,
     onSuccess,
     onClose,
     updateScheduledMessage,
@@ -50,9 +57,8 @@ const EditScheduledMessageModal = ({
         setFocus,
         control,
         formState: { errors, isSubmitting, isValid },
-        watch,
     } = useForm({
-        mode: 'onChange', // Changed from 'onBlur' to 'onChange' for real-time validation
+        mode: 'onChange',
         defaultValues: {
             msg: message.msg || '',
             date: defaultDate,
@@ -60,14 +66,11 @@ const EditScheduledMessageModal = ({
         },
     });
 
-    // Watch the message field for changes
-    const messageContent = watch('msg');
-
     useEffect(() => {
         setFocus('msg');
     }, [setFocus]);
 
-    const onSubmit = async ({ msg, date, time }) => {
+    const onSubmit = async ({ msg, date, time }: { msg: string, date: string, time: string }) => {
         try {
             await updateScheduledMessage({
                 scheduledMessageId: message._id,
@@ -77,16 +80,18 @@ const EditScheduledMessageModal = ({
                 tmid: message.tmid
             });
 
-            dispatchToastMessage({ 
-                type: 'success', 
-                message: t('Scheduled_message_updated_successfully') 
+            dispatchToastMessage({
+                type: 'success',
+                message: t('Scheduled_message_updated_successfully')
             });
             onSuccess();
             onClose();
         } catch (error) {
             dispatchToastMessage({
                 type: 'error',
-                message: error.message || t('Failed_to_update_scheduled_message'),
+                message: error instanceof Error
+                    ? error.message
+                    : t('Failed_to_update_scheduled_message'),
             });
         }
     };
@@ -98,7 +103,7 @@ const EditScheduledMessageModal = ({
             confirmText={t('Save')}
             onCancel={onClose}
             onConfirm={handleSubmit(onSubmit)}
-            confirmDisabled={!isValid || isSubmitting} // Disable if not valid or submitting
+            confirmDisabled={!isValid || isSubmitting}
             title={t('Edit_Scheduled_Message')}
         >
             <FieldGroup mbs={16}>
@@ -134,7 +139,6 @@ const EditScheduledMessageModal = ({
                     )}
                 </Field>
 
-                
                 <Field>
                     <FieldLabel htmlFor={dateFieldId}>{t('Schedule_Date')}</FieldLabel>
                     <FieldRow>
@@ -146,11 +150,11 @@ const EditScheduledMessageModal = ({
                             }}
                             render={({ field }) => (
                                 <TextInput
-                                    type="date"
                                     id={dateFieldId}
                                     aria-describedby={errors.date ? dateFieldErrorId : undefined}
                                     min={moment().format('YYYY-MM-DD')}
                                     {...field}
+                                    {...({ type: 'date' } as any)}
                                 />
                             )}
                         />
@@ -171,10 +175,10 @@ const EditScheduledMessageModal = ({
                             }}
                             render={({ field }) => (
                                 <TextInput
-                                    type="time"
                                     id={timeFieldId}
                                     aria-describedby={errors.time ? timeFieldErrorId : undefined}
                                     {...field}
+                                    {...({ type: 'time' } as any)}
                                 />
                             )}
                         />

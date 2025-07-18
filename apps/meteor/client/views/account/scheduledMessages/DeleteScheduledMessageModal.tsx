@@ -5,15 +5,20 @@ import {
 import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { GenericModal } from '@rocket.chat/ui-client';
+import { IScheduledMessage } from '@rocket.chat/core-typings';
 
-const DeleteScheduledMessageModal = ({ 
+interface DeleteScheduledMessageModalProps {
+    message: IScheduledMessage;
+    onConfirm: () => Promise<void>;
+    onClose: () => void;
+    formatScheduledTime: (time: string | Date | moment.Moment) => string;
+}
+
+const DeleteScheduledMessageModal: React.FC<DeleteScheduledMessageModalProps> = ({
     message, 
     onConfirm,
     onClose,
-    getChannelName,
-    getChannelIcon,
-    getDestinationAvatar,
-    formatScheduledTime
+    formatScheduledTime,
 }) => {
     const t = useTranslation();
     const dispatchToastMessage = useToastMessageDispatch();
@@ -28,10 +33,12 @@ const DeleteScheduledMessageModal = ({
                 message: t('Scheduled_message_cancelled_successfully') 
             });
             onClose();
-        } catch (error) {
+        } catch (error: unknown) {
             dispatchToastMessage({
                 type: 'error',
-                message: error.message || t('Failed_to_cancel_scheduled_message'),
+                message: error instanceof Error
+                    ? error.message
+                    : t('Failed_to_cancel_scheduled_message'),
             });
         } finally {
             setIsSubmitting(false);
@@ -41,7 +48,7 @@ const DeleteScheduledMessageModal = ({
     return (
         <GenericModal
             variant="danger"
-            icon={'trash'}
+            icon="trash"
             confirmText={t('Cancel_Message')}
             cancelText={t('Keep_Message')}
             onCancel={onClose}
