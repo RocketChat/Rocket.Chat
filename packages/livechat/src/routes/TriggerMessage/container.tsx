@@ -1,13 +1,13 @@
 import type { FunctionalComponent } from 'preact';
-import { route } from 'preact-router';
 import { useContext, useEffect } from 'preact/hooks';
+import { route } from 'preact-router';
 
+import TriggerMessage from './component';
 import { ScreenContext } from '../../components/Screen/ScreenProvider';
 import { canRenderMessage } from '../../helpers/canRenderMessage';
 import { formatAgent } from '../../helpers/formatAgent';
 import { parentCall } from '../../lib/parentCall';
 import { StoreContext } from '../../store';
-import TriggerMessage from './component';
 
 export const TriggerMessageContainer: FunctionalComponent<{ path: string }> = ({ ref }) => {
 	const { messages, agent, unread } = useContext(StoreContext);

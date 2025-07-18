@@ -8,8 +8,8 @@ import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NotSubscribedRoom from './NotSubscribedRoom';
+import RoomSidepanel from './RoomSidepanel';
 import RoomSkeleton from './RoomSkeleton';
-import RoomSidepanel from './Sidepanel/RoomSidepanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
 import { CachedChatSubscription } from '../../../app/models/client';
 import { LegacyRoomManager } from '../../../app/ui-utils/client';
