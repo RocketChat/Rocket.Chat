@@ -17,10 +17,11 @@ import {
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
 type AppLogsFilterContextualBarProps = {
+	appId: string;
 	onClose: () => void;
 };
 
-export const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLogsFilterContextualBarProps) => {
+export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }: AppLogsFilterContextualBarProps) => {
 	const { t } = useTranslation();
 
 	const { control } = useAppLogsFilterFormContext();
@@ -54,7 +55,9 @@ export const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLog
 					<Controller
 						control={control}
 						name='instance'
-						render={({ field }) => <InstanceFilterSelect aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />}
+						render={({ field }) => (
+							<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
+						)}
 					/>
 				</Box>
 				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>

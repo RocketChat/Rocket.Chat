@@ -163,7 +163,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 			</Page>
 			{compactMode && contextualBar === 'filter-logs' && (
 				<FormProvider {...logsFilterFormMethods}>
-					<AppLogsFilterContextualBar onClose={handleReturnToLogs} />
+					<AppLogsFilterContextualBar appId={id} onClose={handleReturnToLogs} />
 				</FormProvider>
 			)}
 		</Page>

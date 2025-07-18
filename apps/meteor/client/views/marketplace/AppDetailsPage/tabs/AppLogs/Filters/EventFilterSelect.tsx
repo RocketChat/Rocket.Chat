@@ -6,15 +6,15 @@ import { useTranslation } from 'react-i18next';
 
 import { useLogsDistinctValues } from '../../../../hooks/useLogsDistinctValues';
 
-type InstanceFilterSelectProps = Omit<ComponentProps<typeof Select>, 'options'> & { appId: string };
+type EventFilterSelectProps = Omit<ComponentProps<typeof Select>, 'options'> & { appId: string };
 
-export const InstanceFilterSelect = ({ appId, ...props }: InstanceFilterSelectProps) => {
+export const EventFilterSelect = ({ appId, ...props }: EventFilterSelectProps) => {
 	const { t } = useTranslation();
 
 	const { data, isPending } = useLogsDistinctValues(appId);
 
 	const options: SelectOption[] = useMemo(() => {
-		const mappedData: [string, string][] = data?.instanceIds?.map((id: string) => [id, id]) || [];
+		const mappedData: [string, string][] = data?.methods?.map((id: string) => [id, id]) || [];
 		return [['all', t('All')], ...mappedData];
 	}, [data, t]);
 

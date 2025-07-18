@@ -11,6 +11,12 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
 import { ZodError } from 'zod';
 
+import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
+import { registerAppGeneralLogsHandler } from './endpoints/appGeneralLogsHandler';
+import { registerAppLogsDistinctInstanceHandler } from './endpoints/appLogsDistinctInstanceHandler';
+import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
+import { registerAppLogsHandler } from './endpoints/appLogsHandler';
+import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 import { API } from '../../../../app/api/server';
 import type { APIClass } from '../../../../app/api/server/ApiClass';
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
@@ -34,11 +40,6 @@ import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCateg
 import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { registerAppGeneralLogsHandler } from './endpoints/appGeneralLogsHandler';
-import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
-import { registerAppLogsHandler } from './endpoints/appLogsHandler';
-import { registerAppsCountHandler } from './endpoints/appsCountHandler';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -109,6 +110,7 @@ export class AppsRestApi {
 		registerActionButtonsHandler(this);
 		registerAppsCountHandler(this);
 
+		registerAppLogsDistinctInstanceHandler(this);
 		registerAppLogsHandler(this);
 		registerAppLogsExportHandler(this);
 		registerAppGeneralLogsHandler(this);
