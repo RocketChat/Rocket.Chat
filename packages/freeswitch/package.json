@@ -27,5 +27,8 @@
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
 		"esl": "github:pierre-lehnen-rc/esl"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

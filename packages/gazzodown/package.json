@@ -21,6 +21,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"date-fns": "~4.1.0",
 		"dompurify": "^3.2.6",
 		"highlight.js": "11.8.0",
 		"react-error-boundary": "^3.1.4",
@@ -31,8 +32,8 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.64.0",
-		"@rocket.chat/fuselage-hooks": "^0.36.0",
+		"@rocket.chat/fuselage": "^0.65.0",
+		"@rocket.chat/fuselage-hooks": "^0.37.0",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "^0.43.0",

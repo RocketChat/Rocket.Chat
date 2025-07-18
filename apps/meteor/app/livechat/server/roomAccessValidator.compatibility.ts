@@ -68,6 +68,7 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 			],
 		};
 
+		// TODO: findone filtering if the inquiry is queued instead of checking here
 		const inquiry = await LivechatInquiry.findOne(filter, { projection: { status: 1 } });
 		return inquiry && inquiry.status === 'queued';
 	},
