@@ -76,14 +76,14 @@ export class AppOutboundCommunicationProviderManager {
 		}
 	}
 
-	public unregisterProviders(appId: string): void {
+	public async unregisterProviders(appId: string): Promise<void> {
 		if (!this.outboundMessageProviders.has(appId)) {
 			return;
 		}
 
 		const appProviders = this.outboundMessageProviders.get(appId);
-		for (const [, providerInfo] of appProviders) {
-			this.unregisterProvider(appId, providerInfo);
+		for await (const [, providerInfo] of appProviders) {
+			await this.unregisterProvider(appId, providerInfo);
 		}
 
 		this.outboundMessageProviders.delete(appId);
@@ -97,10 +97,10 @@ export class AppOutboundCommunicationProviderManager {
 		return this.bridge.doRegisterEmailProvider(provider, appId);
 	}
 
-	private unregisterProvider(appId: string, info: OutboundMessageProvider): void {
+	private async unregisterProvider(appId: string, info: OutboundMessageProvider): Promise<void> {
 		const key = info.provider.type;
 
-		this.bridge.doUnRegisterProvider(info.provider, appId);
+		await this.bridge.doUnRegisterProvider(info.provider, appId);
 
 		info.isRegistered = false;
 
