@@ -2,13 +2,13 @@ import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 type CompactFilterOptionsProps = {
-	handleExpandAll: () => void;
-	handleRefreshLogs: () => void;
-	handleExportLogs: () => void;
+	onExpandAll: () => void;
+	onRefreshLogs: () => void;
+	onExportLogs: () => void;
 	isLoading: boolean;
 };
 
-const CompactFilterOptions = ({ handleExportLogs, handleExpandAll, handleRefreshLogs, isLoading, ...props }: CompactFilterOptionsProps) => {
+const CompactFilterOptions = ({ onExportLogs, onExpandAll, onRefreshLogs, isLoading, ...props }: CompactFilterOptionsProps) => {
 	const { t } = useTranslation();
 
 	const menuOptions = {
@@ -19,7 +19,7 @@ const CompactFilterOptions = ({ handleExportLogs, handleExpandAll, handleRefresh
 					{t('Export')}
 				</Box>
 			),
-			action: handleExportLogs,
+			action: onExportLogs,
 		},
 		expandAll: {
 			label: (
@@ -28,7 +28,7 @@ const CompactFilterOptions = ({ handleExportLogs, handleExpandAll, handleRefresh
 					{t('Expand_all')}
 				</Box>
 			),
-			action: handleExpandAll,
+			action: onExpandAll,
 		},
 		refreshLogs: {
 			label: (
@@ -37,7 +37,7 @@ const CompactFilterOptions = ({ handleExportLogs, handleExpandAll, handleRefresh
 					{t('Refresh_logs')}
 				</Box>
 			),
-			action: handleRefreshLogs,
+			action: onRefreshLogs,
 			disabled: isLoading,
 		},
 	};

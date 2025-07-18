@@ -3,7 +3,7 @@ import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import CompactFilterOptions from './AppsLogsFilterOptionsCompact';
+import CompactFilterOptions from './CompactFilterOptions';
 import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
@@ -125,12 +125,7 @@ export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResu
 				</Button>
 			)}
 			{compactMode && (
-				<CompactFilterOptions
-					isLoading={isLoading}
-					handleExportLogs={openExportModal}
-					handleExpandAll={openAllLogs}
-					handleRefreshLogs={refreshLogs}
-				/>
+				<CompactFilterOptions isLoading={isLoading} onExportLogs={openExportModal} onExpandAll={openAllLogs} onRefreshLogs={refreshLogs} />
 			)}
 		</Box>
 	);
