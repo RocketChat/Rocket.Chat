@@ -16,15 +16,18 @@ import { useLogs } from '../../../hooks/useLogs';
 
 function expandedReducer(
 	expandedStates: { id: string; expanded: boolean }[],
-	action: { id: string; expanded: boolean; operation?: 'add' | 'update' | 'remove' },
+	action: { type: 'update'; id: string; expanded: boolean } | { type: 'expand-all' } | { type: 'reset'; logs: ILogItem[] },
 ) {
-	switch (action.operation) {
-		case 'add':
-			return [...expandedStates, { id: action.id, expanded: action.expanded }];
+	switch (action.type) {
 		case 'update':
 			return expandedStates.map((state) => (state.id === action.id ? { ...state, expanded: action.expanded } : state));
-		case 'remove':
-			return expandedStates.filter((state) => state.id !== action.id);
+
+		case 'expand-all':
+			return expandedStates.map((state) => ({ ...state, expanded: true }));
+
+		case 'reset':
+			return action.logs.map((log) => ({ id: log._id, expanded: false }));
+
 		default:
 			return expandedStates;
 	}
@@ -41,32 +44,11 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 
 	const [expandedStates, dispatch] = useReducer(expandedReducer, []);
 
-	const handleExpand = ({ id, expanded }: { id: string; expanded: boolean }): void => {
-		dispatch({ id, expanded, operation: 'update' });
-	};
+	const handleExpand = ({ id, expanded }: { id: string; expanded: boolean }) => dispatch({ id, expanded, type: 'update' });
 
-	const handleAddExpandedStatus = ({ id }: { id: string }): void => {
-		dispatch({ id, expanded: false, operation: 'add' });
-	};
+	const handleExpandAll = () => dispatch({ type: 'expand-all' });
 
-	const handleRemoveExpandedStatus = ({ id }: { id: string }): void => {
-		dispatch({ id, expanded: false, operation: 'remove' });
-	};
-
-	const handleExpandAll = () => {
-		expandedStates.forEach(({ id }) => {
-			handleExpand({ id, expanded: true });
-		});
-	};
-
-	const updateExpandedStates = (logs: ILogItem[]) => {
-		expandedStates.forEach(({ id }) => {
-			handleRemoveExpandedStatus({ id });
-		});
-		logs.forEach(({ _id }) => {
-			handleAddExpandedStatus({ id: _id });
-		});
-	};
+	const updateExpandedStates = (logs: ILogItem[]) => dispatch({ type: 'reset', logs });
 
 	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
 		appId: id,
