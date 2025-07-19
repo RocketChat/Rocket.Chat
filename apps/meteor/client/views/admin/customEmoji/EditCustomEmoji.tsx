@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
-import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
+import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type EditCustomEmojiProps = {
@@ -67,7 +67,13 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		[previousName, name, aliases, previousAliases, emojiFile],
 	);
 
-	const saveAction = useEndpointUpload('/v1/emoji-custom.update', t('Custom_Emoji_Updated_Successfully'));
+	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/emoji-custom.update', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Updated_Successfully') });
+			onChange();
+			close();
+		},
+	});
 
 	const handleSave = useCallback(async () => {
 		if (!name) {
@@ -87,12 +93,8 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		formData.append('_id', _id);
 		formData.append('name', name);
 		formData.append('aliases', aliases);
-		const result = (await saveAction(formData)) as { success: boolean };
-		if (result.success) {
-			onChange();
-			close();
-		}
-	}, [emojiFile, _id, name, aliases, saveAction, onChange, close, newEmojiPreview]);
+		await saveAction(formData);
+	}, [emojiFile, _id, name, aliases, saveAction, newEmojiPreview]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
