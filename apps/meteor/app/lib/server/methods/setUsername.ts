@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { setUsernameWithValidation } from '../functions/setUsername';
 import { RateLimiter } from '../lib';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,6 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setUsername(username, param = {}) {
+		methodDeprecationLogger.method('setUsername', '8.0.0', 'Use the endpoint /v1/users.updateOwnBasicInfo instead');
 		check(username, String);
 
 		const userId = Meteor.userId();

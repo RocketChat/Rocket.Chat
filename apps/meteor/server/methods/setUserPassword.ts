@@ -1,3 +1,4 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
@@ -6,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import type { UpdateResult } from 'mongodb';
 
 import { passwordPolicy } from '../../app/lib/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import { compareUserPassword } from '../lib/compareUserPassword';
 
@@ -16,8 +18,39 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const executeResetPassword = async (user: IUser, password: string) => {
+	if (user.requirePasswordChange !== true) {
+		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			method: 'setUserPassword',
+		});
+	}
+
+	if (await compareUserPassword(user, { plain: password })) {
+		throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
+			method: 'setUserPassword',
+		});
+	}
+
+	passwordPolicy.validate(password);
+
+	await Accounts.setPasswordAsync(user._id, password, {
+		logout: false,
+	});
+
+	const update = await Users.unsetRequirePasswordChange(user._id);
+
+	void notifyOnUserChange({
+		clientAction: 'updated',
+		id: user._id,
+		diff: { requirePasswordChange: false, requirePasswordChangeReason: false },
+	});
+
+	return update;
+};
+
 Meteor.methods<ServerMethods>({
 	async setUserPassword(password) {
+		methodDeprecationLogger.method('setUserPassword', '8.0.0', 'Use the endpoint /v1/users.updateOwnBasicInfo instead');
 		check(password, String);
 
 		const userId = Meteor.userId();
@@ -30,37 +63,12 @@ Meteor.methods<ServerMethods>({
 
 		const user = await Users.findOneById(userId);
 
-		if (user && user.requirePasswordChange !== true) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'setUserPassword',
-			});
-		}
-
 		if (!user) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'setUserPassword',
 			});
 		}
-		if (await compareUserPassword(user, { plain: password })) {
-			throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
-				method: 'setUserPassword',
-			});
-		}
 
-		passwordPolicy.validate(password);
-
-		await Accounts.setPasswordAsync(userId, password, {
-			logout: false,
-		});
-
-		const update = await Users.unsetRequirePasswordChange(userId);
-
-		void notifyOnUserChange({
-			clientAction: 'updated',
-			id: userId,
-			diff: { requirePasswordChange: false, requirePasswordChangeReason: false },
-		});
-
-		return update;
+		return executeResetPassword(user, password);
 	},
 });
