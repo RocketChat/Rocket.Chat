@@ -2,9 +2,9 @@ import type { ComponentChild, Ref } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
+import * as styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 import ArrowIcon from '../../../icons/arrowDown.svg';
-import * as styles from './styles.scss';
 
 type SelectInputProps = {
 	name?: string;

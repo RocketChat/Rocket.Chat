@@ -1,8 +1,8 @@
 import * as uikit from '@rocket.chat/ui-kit';
 import { memo } from 'preact/compat';
 
-import { createClassName } from '../../../../helpers/createClassName';
 import * as styles from './styles.scss';
+import { createClassName } from '../../../../helpers/createClassName';
 
 type ImageElementProps = uikit.ImageElement & {
 	context: uikit.BlockContext;

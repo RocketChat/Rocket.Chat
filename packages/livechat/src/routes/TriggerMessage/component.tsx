@@ -3,12 +3,12 @@ import type { RefObject } from 'preact';
 import { Component, createRef } from 'preact';
 import { withTranslation } from 'react-i18next';
 
+import * as styles from './styles.scss';
 import Screen from '../../components/Screen';
 import type { ScreenContextValue } from '../../components/Screen/ScreenProvider';
 import { createClassName } from '../../helpers/createClassName';
 import { parentCall } from '../../lib/parentCall';
 import type { StoreState } from '../../store';
-import * as styles from './styles.scss';
 
 type TriggerMessageProps = {
 	title: string;

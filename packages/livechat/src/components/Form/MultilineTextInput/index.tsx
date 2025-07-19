@@ -2,8 +2,8 @@ import type { Ref } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
-import { createClassName } from '../../../helpers/createClassName';
 import * as styles from './styles.scss';
+import { createClassName } from '../../../helpers/createClassName';
 
 type MultilineTextInputProps = {
 	rows?: number;

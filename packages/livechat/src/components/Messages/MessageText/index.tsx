@@ -1,11 +1,11 @@
 import { memo } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
+import * as styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 import isBigEmoji from '../../../lib/emoji/isBigEmoji';
 import shortnameToUnicode from '../../../lib/emoji/shortnameToUnicode';
 import MarkdownBlock from '../../MarkdownBlock';
-import * as styles from './styles.scss';
 
 type MessageTextProps = {
 	text: string;

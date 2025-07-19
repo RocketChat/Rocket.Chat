@@ -1,11 +1,11 @@
 import { withTranslation } from 'react-i18next';
 
+import * as styles from './styles.scss';
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
 import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import Triggers from '../../lib/triggers';
-import * as styles from './styles.scss';
 
 type ChatFinishedProps = {
 	title: string;
