@@ -1,3 +1,8 @@
 declare module '*.scss' {
-	export = Record<string, string>;
+	interface ClassNames {
+		[className: string]: string;
+	}
+
+	const classNames: ClassNames;
+	export = classNames;
 }

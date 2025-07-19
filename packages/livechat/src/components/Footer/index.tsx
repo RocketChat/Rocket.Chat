@@ -5,7 +5,7 @@ import { useTranslation, withTranslation } from 'react-i18next';
 
 import { createClassName } from '../../helpers/createClassName';
 import { PopoverMenu } from '../Menu';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 export const Footer = ({ children, className, ...props }: { children: ComponentChildren; className?: string }) => (
 	<footer className={createClassName(styles, 'footer', {}, [className])} {...props}>

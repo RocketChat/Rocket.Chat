@@ -1,38 +1,28 @@
-import type {
-  BuildOptionsBase,
-  OutputFormatAmdCommonjsEs,
-  OutputFormatBare,
-  OutputFormatGlobals,
-  OutputFormatUmd,
-  SourceOptionsBase,
-} from 'peggy';
+import type { SourceBuildOptions } from 'peggy';
 import peggy from 'peggy';
-import type { LoaderContext } from 'webpack';
+import type { Plugin } from 'vite';
 
-type Options = BuildOptionsBase &
-  (
-    | Omit<
-        OutputFormatAmdCommonjsEs<'source'>,
-        keyof SourceOptionsBase<'source'>
-      >
-    | Omit<OutputFormatUmd<'source'>, keyof SourceOptionsBase<'source'>>
-    | Omit<OutputFormatGlobals<'source'>, keyof SourceOptionsBase<'source'>>
-    | Omit<OutputFormatBare<'source'>, keyof SourceOptionsBase<'source'>>
-  );
-
-function peggyLoader(
-  this: LoaderContext<Options>,
-  grammarContent: string,
-): string {
-  const options: Options = {
-    format: 'commonjs',
-    ...this.getOptions(),
+function peggyPlugin(options: SourceBuildOptions<'source-and-map'>): Plugin {
+  return {
+    name: 'vite-plugin-peggy',
+    transform(code, id) {
+      if (id.endsWith('.pegjs')) {
+        const sourceNode = peggy.generate(code, {
+          ...options,
+          format: 'es',
+          output: 'source-and-map',
+          grammarSource: id,
+        });
+        const stringWithSourceMap = sourceNode.toStringWithSourceMap({
+          file: id,
+        });
+        return {
+          code: stringWithSourceMap.code,
+          map: stringWithSourceMap.map.toJSON(),
+        };
+      }
+    },
   };
-
-  return peggy.generate(grammarContent, {
-    output: 'source',
-    ...options,
-  });
 }
 
-export default peggyLoader;
+export default peggyPlugin;

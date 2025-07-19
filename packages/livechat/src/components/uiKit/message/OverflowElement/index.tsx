@@ -8,7 +8,7 @@ import KebabIcon from '../../../../icons/kebab.svg';
 import { Button } from '../../../Button';
 import Menu, { PopoverMenu } from '../../../Menu';
 import { usePerformAction } from '../Block';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type OverflowTriggerProps = {
 	loading: boolean;

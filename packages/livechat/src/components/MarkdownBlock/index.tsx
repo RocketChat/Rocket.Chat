@@ -1,4 +1,4 @@
-import { parse } from '@rocket.chat/message-parser';
+import * as parser from '@rocket.chat/message-parser';
 import { Suspense, lazy } from 'preact/compat';
 
 const Markup = lazy(async () => {
@@ -9,7 +9,7 @@ const Markup = lazy(async () => {
 const MarkdownBlock = ({ text, emoticons }: { text: string; emoticons?: boolean }) => {
 	return (
 		<Suspense fallback={<div>loading...</div>}>
-			<Markup tokens={parse(text, { emoticons })} />
+			<Markup tokens={parser.parse(text, { emoticons })} />
 		</Suspense>
 	);
 };

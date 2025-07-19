@@ -13,7 +13,7 @@ import store, { type Dispatch } from '../../store';
 import { Avatar } from '../Avatar';
 import { Button } from '../Button';
 import { CallStatus } from './CallStatus';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type CallNotificationProps = {
 	callProvider: string;

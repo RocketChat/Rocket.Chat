@@ -1,7 +1,7 @@
 import { memo } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 import isBigEmoji from '../../../lib/emoji/isBigEmoji';
 import shortnameToUnicode from '../../../lib/emoji/shortnameToUnicode';

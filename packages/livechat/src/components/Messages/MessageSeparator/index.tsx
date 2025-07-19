@@ -3,7 +3,7 @@ import type { CSSProperties } from 'preact/compat';
 import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 
 type MessageSeparatorProps = {

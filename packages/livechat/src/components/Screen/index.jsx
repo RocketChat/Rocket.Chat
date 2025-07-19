@@ -9,7 +9,7 @@ import { Sound } from '../Sound';
 import { ChatButton } from './ChatButton';
 import ScreenHeader from './Header';
 import { ScreenContext } from './ScreenProvider';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 export const ScreenContent = ({ children, nopadding, triggered = false, full = false }) => (
 	<main className={createClassName(styles, 'screen__main', { nopadding, triggered, full })}>{children}</main>

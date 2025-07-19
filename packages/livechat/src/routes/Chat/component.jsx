@@ -2,7 +2,7 @@ import { Component, createRef } from 'preact';
 import { Suspense, lazy } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 import { Button } from '../../components/Button';
 import { CallIframe } from '../../components/Calls/CallIFrame';
 import { default as CallNotification } from '../../components/Calls/CallNotification';

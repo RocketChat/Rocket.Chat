@@ -1,6 +1,6 @@
 {{
-  const {
-    autoEmail,
+  import * as utils from './utils';
+  const { autoEmail,
     autoLink,
     bigEmoji,
     bold,
@@ -33,8 +33,7 @@
     tasks,
     unorderedList,
     timestamp,
-  } = require('./utils');
-
+  } = utils;
 let skipBold = false;
 let skipItalic = false;
 let skipStrikethrough = false;

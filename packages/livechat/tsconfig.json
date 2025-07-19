@@ -1,7 +1,8 @@
 {
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
-		"module": "CommonJS",
+		"module": "es2020",
+		"target": "es6",
 		"outDir": "./dist",
 		"allowJs": true,
 		"checkJs": false,

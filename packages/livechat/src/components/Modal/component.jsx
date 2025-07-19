@@ -4,7 +4,7 @@ import { withTranslation } from 'react-i18next';
 import { createClassName } from '../../helpers/createClassName';
 import { Button } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 export class Modal extends Component {
 	static defaultProps = {

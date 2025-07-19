@@ -2,7 +2,7 @@ import type { ComponentChildren } from 'preact';
 import { cloneElement, isValidElement, toChildArray } from 'preact';
 import { memo } from 'preact/compat';
 
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 import { createClassName } from '../../helpers/createClassName';
 
 export const ButtonGroup = memo(({ children, full = false }: { children: ComponentChildren; full?: boolean }) => (
