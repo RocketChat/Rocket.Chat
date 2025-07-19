@@ -29,7 +29,7 @@ export async function findSLA({
 		...(text && { $or: [{ name: new RegExp(escapeRegExp(text), 'i') }, { description: new RegExp(escapeRegExp(text), 'i') }] }),
 	};
 
-	const { cursor, totalCount } = await OmnichannelServiceLevelAgreements.findPaginated(query, {
+	const { cursor, totalCount } = OmnichannelServiceLevelAgreements.findPaginated(query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,
