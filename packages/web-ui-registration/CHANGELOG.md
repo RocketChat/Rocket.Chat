@@ -1,5 +1,133 @@
 # @rocket.chat/web-ui-registration
 
+## 20.0.0
+
+### Patch Changes
+
+- ([#36062](https://github.com/RocketChat/Rocket.Chat/pull/36062)) Removes the `Change to Default` language button from the login page
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0
+  </details>
+
+## 20.0.0-rc.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.9
+  </details>
+
+## 20.0.0-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.8
+  </details>
+
+## 20.0.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.7
+  </details>
+
+## 20.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.6
+  </details>
+
+## 20.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.5
+  </details>
+
+## 20.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.4
+  </details>
+
+## 20.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.3
+  </details>
+
+## 20.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.2
+  </details>
+
+## 20.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@20.0.0-rc.1
+  </details>
+
+## 20.0.0-rc.0
+
+### Patch Changes
+
+- ([#36062](https://github.com/RocketChat/Rocket.Chat/pull/36062)) Removes the `Change to Default` language button from the login page
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.0-rc.0
+  </details>
+
+## 19.0.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@19.0.4
+  </details>
+
+## 19.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.3
+  </details>
+
+## 19.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@19.0.2
+    </details>
+
 ## 19.0.1
 
 ### Patch Changes

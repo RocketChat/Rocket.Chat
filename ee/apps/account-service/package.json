@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/account-service",
 	"private": true,
-	"version": "0.4.25",
+	"version": "0.4.29",
 	"description": "Rocket.Chat Account service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -26,26 +26,26 @@
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.14.1",
+		"@types/node": "~22.16.1",
 		"bcrypt": "^5.1.1",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
-		"gc-stats": "^1.4.1",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
 		"mongodb": "6.10.0",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2",
+		"prometheus-gc-stats": "^1.1.0",
 		"uuid": "^11.0.3"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/bcrypt": "^5.0.2",
-		"@types/gc-stats": "^1.4.3",
 		"@types/polka": "^0.5.7",
+		"@types/prometheus-gc-stats": "^0.6.4",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.8.3"
@@ -53,5 +53,8 @@
 	"main": "./dist/ee/apps/account-service/src/service.js",
 	"files": [
 		"/dist"
-	]
+	],
+	"volta": {
+		"extends": "../../../package.json"
+	}
 }

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps",
-	"version": "0.5.4",
+	"version": "0.5.8",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -22,5 +22,8 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

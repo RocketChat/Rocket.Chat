@@ -67,4 +67,24 @@ describe('GenericUpsellModal', () => {
 
 		expect(screen.getByText('Premium capability')).toBeInTheDocument();
 	});
+
+	it('should render with img properties', () => {
+		const props = {
+			...defaultProps,
+			onCancel: jest.fn(),
+			onConfirm: jest.fn(),
+			imgWidth: 300,
+			imgHeight: 200,
+			imgAlt: 'Alternative text',
+		};
+		render(<GenericUpsellModal {...props} />, { wrapper: appRoot });
+
+		const heroImage = screen.getByRole('img');
+		expect(heroImage).toHaveAttribute('src', 'test-image.png');
+		expect(heroImage).toHaveAttribute('alt', 'Alternative text');
+		expect(heroImage).toHaveStyle({
+			width: '300px',
+			height: '200px',
+		});
+	});
 });

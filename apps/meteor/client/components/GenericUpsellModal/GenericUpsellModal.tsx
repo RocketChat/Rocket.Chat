@@ -1,18 +1,32 @@
-import { Box, Modal } from '@rocket.chat/fuselage';
+import { Box, ModalHeroImage } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement, ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../GenericModal';
 
 type GenericUpsellModalProps = Omit<ComponentProps<typeof GenericModal>, 'variant' | 'children' | 'onClose' | 'onDismiss'> & {
 	subtitle?: string | ReactElement;
 	description?: string | ReactElement;
-	img: ComponentProps<typeof Modal.HeroImage>['src'];
+	img: ComponentProps<typeof ModalHeroImage>['src'];
+
+	imgWidth?: ComponentProps<typeof ModalHeroImage>['width'];
+	imgHeight?: ComponentProps<typeof ModalHeroImage>['height'];
+	imgAlt?: string;
 	onClose: () => void;
 	onConfirm?: () => void;
 };
 
-const GenericUpsellModal = ({ tagline, subtitle, img, description, confirmText, icon = null, ...props }: GenericUpsellModalProps) => {
+const GenericUpsellModal = ({
+	tagline,
+	subtitle,
+	img,
+	imgAlt = '',
+	imgWidth,
+	imgHeight,
+	description,
+	confirmText,
+	icon = null,
+	...props
+}: GenericUpsellModalProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -23,7 +37,7 @@ const GenericUpsellModal = ({ tagline, subtitle, img, description, confirmText, 
 			variant='upsell'
 			confirmText={confirmText ?? t('Upgrade')}
 		>
-			<Modal.HeroImage src={img} alt='' />
+			<ModalHeroImage src={img} alt={imgAlt} width={imgWidth} height={imgHeight} />
 			{subtitle && (
 				<Box is='h3' fontScale='h3'>
 					{subtitle}
