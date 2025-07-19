@@ -8,7 +8,7 @@ export const useAgentsQuery = (query: PaginatedRequest = {}) => {
 	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
 
 	return useQuery({
-		queryKey: omnichannelQueryKeys.agentsAt(query),
+		queryKey: omnichannelQueryKeys.agents(query),
 		queryFn: () => getAgents(query),
 	});
 };

@@ -47,7 +47,7 @@ const ManagersTable = () => {
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
 	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: omnichannelQueryKeys.managersAt(query),
+		queryKey: omnichannelQueryKeys.managers(query),
 		queryFn: async () => getManagers(query),
 	});
 
