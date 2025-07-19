@@ -131,7 +131,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-				language = language.substr(0, 2);
+				language = language.slice(0, 2);
 			}
 
 			try {
@@ -178,7 +178,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
-				language = language.substr(0, 2);
+				language = language.slice(0, 2);
 			}
 
 			try {
