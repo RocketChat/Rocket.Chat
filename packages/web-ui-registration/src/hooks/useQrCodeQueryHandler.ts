@@ -1,15 +1,10 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
 
-export const useQrCodeQueryHandler = () => {
-    const getQrCode = useEndpoint('GET', '/v1/oauth-apps.qrcode');
+export const useQrCodeQueryHandler = async (sessionId: string) => {
+    const getQrCode = useEndpoint('POST', '/v1/qrcode.generate');
 
-    return useQuery({
-        queryKey: ['oauth-app.qrcode'] as const,
-        queryFn: async () => {
-            const data = await getQrCode();
-            return data as string;
-        }
-    } satisfies UseQueryOptions<string, Error, string, readonly ['oauth-app.qrcode']>);
+    const data = await getQrCode({
+        sessionId
+    });
+    return data as string;
 };

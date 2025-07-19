@@ -49,6 +49,7 @@ import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
+import { QRCodeEndpoint } from './v1/qrcode';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
@@ -92,6 +93,7 @@ export interface Endpoints
 		EmailInboxEndpoints,
 		MailerEndpoints,
 		OAuthAppsEndpoint,
+		QRCodeEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
 		ImportEndpoints,

@@ -7,9 +7,6 @@ import { addOAuthApp } from '../../../oauth2-server-config/server/admin/function
 import { deleteOAuthApp } from '../../../oauth2-server-config/server/admin/methods/deleteOAuthApp';
 import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/methods/updateOAuthApp';
 import { API } from '../api';
-import QRCode from 'qrcode';
-import crypto from 'crypto';
-import { generateJWT } from '/app/utils/server/lib/JWTHelper';
 
 API.v1.addRoute(
 	'oauth-apps.list',
@@ -101,23 +98,3 @@ API.v1.addRoute(
 		},
 	},
 );
-
-API.v1.addRoute(
-	'oauth-apps.qrcode',
-	{
-		authRequired: false,
-	},
-	{
-		async get() {
-			const uuid = `${crypto.randomUUID()}-${this.connection.id}`;
-			const finalDataToEncode = generateJWT({ context: { clientAddress: this.connection.clientAddress, uuid } }, process.env.JWT_SECRET || 'defaultSecret', 60);
-			const qrCodeUrl = await QRCode.toDataURL(finalDataToEncode, {
-				width: 256,
-				margin: 2,
-				color: { dark: '#1f2329', light: '#ffffff' },
-				errorCorrectionLevel: 'M',
-				type: 'image/png',
-			});
-			return API.v1.success(qrCodeUrl);
-		},
-	})

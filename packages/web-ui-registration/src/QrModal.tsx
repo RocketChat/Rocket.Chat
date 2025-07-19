@@ -9,20 +9,33 @@ type QrModalProps = {
 
 const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     const [timeLeft, setTimeLeft] = useState<number>(60);
+    const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
+    const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>('');
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const {
-        data: qrCodeUrl,
-        isLoading,
-        error,
-        refetch
-    } = useQrCodeQueryHandler();
-
     const generateQrCode = useCallback(async () => {
-        setTimeLeft(60);
-        await refetch();
-    }, [refetch]);
+        try {
+            setIsLoading(true);
+            setError('');
+            setTimeLeft(60);
+            setSessionId(crypto.randomUUID());
 
+            const newQrCodeUrl = await useQrCodeQueryHandler(sessionId);
+            setQrCodeUrl(newQrCodeUrl);
+        } catch (err) {
+            setError('Failed to generate QR code');
+            console.error('QR code generation error:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [sessionId]);
+
+    useEffect(() => {
+        generateQrCode();
+    }, []); 
+    
     useEffect(() => {
         return () => {
             if (timerRef.current) {
@@ -117,7 +130,7 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
                         ) : error ? (
                             <Box display='flex' flexDirection='column' alignItems='center' padding='x16'>
                                 <Box fontScale='c1' color='danger-500' textAlign='center' marginBlockEnd='x16'>
-                                    Failed to generate QR code. Please try again.
+                                    {error}
                                 </Box>
                                 <Button small secondary onClick={handleRenewCode}>
                                     Try Again
