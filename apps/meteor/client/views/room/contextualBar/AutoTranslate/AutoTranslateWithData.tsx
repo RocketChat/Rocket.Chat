@@ -1,12 +1,13 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useLanguage } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useLanguage } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, ReactElement } from 'react';
-import { useMemo, useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoTranslate from './AutoTranslate';
 import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { miscQueryKeys } from '../../../../lib/queryKeys';
 import { dispatchToastMessage } from '../../../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
@@ -20,10 +21,16 @@ const AutoTranslateWithData = (): ReactElement => {
 	const saveSettings = useEndpointAction('POST', '/v1/autotranslate.saveSettings');
 	const { t } = useTranslation();
 
-	const { value: translateData } = useEndpointData('/v1/autotranslate.getSupportedLanguages', {
-		params: useMemo(() => ({ targetLanguage: userLanguage }), [userLanguage]),
+	const getSupportedLanguages = useEndpoint('GET', '/v1/autotranslate.getSupportedLanguages');
+	const { data: supportedLanguages } = useQuery({
+		queryKey: miscQueryKeys.autotranslateSupportedLanguages(userLanguage),
+		queryFn: async () => {
+			const { languages } = await getSupportedLanguages({ targetLanguage: userLanguage });
+			return languages;
+		},
 	});
-	const languagesDict = translateData ? Object.fromEntries(translateData.languages.map((lang) => [lang.language, lang.name])) : {};
+
+	const languagesDict = supportedLanguages ? Object.fromEntries(supportedLanguages.map((lang) => [lang.language, lang.name])) : {};
 
 	const handleChangeLanguage = useEffectEvent((value: string) => {
 		setCurrentLanguage(value);
@@ -72,7 +79,7 @@ const AutoTranslateWithData = (): ReactElement => {
 	return (
 		<AutoTranslate
 			language={currentLanguage}
-			languages={translateData ? translateData.languages.map((language) => [language.language, language.name]) : []}
+			languages={supportedLanguages ? supportedLanguages.map((language) => [language.language, language.name]) : []}
 			handleSwitch={handleSwitch}
 			handleChangeLanguage={handleChangeLanguage}
 			translateEnable={!!subscription?.autoTranslate}

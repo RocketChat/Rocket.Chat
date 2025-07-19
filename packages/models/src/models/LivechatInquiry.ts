@@ -373,7 +373,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async changeDepartmentIdByRoomId(rid: string, department: string): Promise<void> {
+	async changeDepartmentIdByRoomId(rid: string, department: string): Promise<UpdateResult> {
 		const query = {
 			rid,
 		};
@@ -383,7 +383,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 		};
 
-		await this.updateOne(query, updateObj);
+		return this.updateOne(query, updateObj);
 	}
 
 	async getStatus(inquiryId: string): Promise<ILivechatInquiryRecord['status'] | undefined> {

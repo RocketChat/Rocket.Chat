@@ -3,7 +3,7 @@ import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import CompactFilterOptions from './AppsLogsFilterOptionsCompact';
+import CompactFilterOptions from './CompactFilterOptions';
 import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
@@ -14,11 +14,13 @@ import { ExportLogsModal } from './ExportLogsModal';
 
 type AppsLogsFilterProps = {
 	appId: string;
-	isLoading?: boolean;
+	expandAll: () => void;
+	refetchLogs: () => void;
+	isLoading: boolean;
 	noResults?: boolean;
 };
 
-export const AppLogsFilter = ({ appId, isLoading = false, noResults = false }: AppsLogsFilterProps) => {
+export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResults = false }: AppsLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues } = useAppLogsFilterFormContext();
@@ -37,6 +39,11 @@ export const AppLogsFilter = ({ appId, isLoading = false, noResults = false }: A
 		);
 	};
 
+	const openAllLogs = () => expandAll();
+
+	const refreshLogs = () => {
+		refetchLogs();
+	};
 	const openExportModal = () => {
 		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} />);
 	};
@@ -84,6 +91,22 @@ export const AppLogsFilter = ({ appId, isLoading = false, noResults = false }: A
 				</Box>
 			)}
 			{!compactMode && (
+				<Button alignSelf='flex-end' icon='arrow-expand' secondary mie={10} onClick={() => openAllLogs()}>
+					{t('Expand_all')}
+				</Button>
+			)}
+			{!compactMode && (
+				<IconButton
+					title={isLoading ? t('Loading') : t('Refresh_logs')}
+					alignSelf='flex-end'
+					disabled={isLoading}
+					icon='refresh'
+					secondary
+					mie={10}
+					onClick={() => refreshLogs()}
+				/>
+			)}
+			{!compactMode && (
 				<IconButton
 					title={noResults ? t('No_data_to_export') : t('Export')}
 					alignSelf='flex-end'
@@ -101,7 +124,9 @@ export const AppLogsFilter = ({ appId, isLoading = false, noResults = false }: A
 					{t('Filters')}
 				</Button>
 			)}
-			{compactMode && <CompactFilterOptions isLoading={isLoading} handleExportLogs={openExportModal} />}
+			{compactMode && (
+				<CompactFilterOptions isLoading={isLoading} onExportLogs={openExportModal} onExpandAll={openAllLogs} onRefreshLogs={refreshLogs} />
+			)}
 		</Box>
 	);
 };
