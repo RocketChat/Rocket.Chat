@@ -29,4 +29,12 @@ export type OAuthAppsEndpoint = {
 	'/v1/oauth-apps.delete': {
 		POST: (params: DeleteOAuthAppParams) => boolean;
 	};
+
+	'/v1/oauth-apps.qrcode-generate': {
+		POST: (params: { sessionId: string }) => string;
+	};
+	
+	'/v1/oauth-apps.qrcode-verify': {
+		POST: (params: { code: string }) => { success: boolean; message?: string };
+	};
 };
