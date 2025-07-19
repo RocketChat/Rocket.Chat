@@ -2502,6 +2502,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find(query, options);
 	}
 
+	async findInactive(users: string[], options?: FindOptions<IUser>) {
+		const query = {
+			_id: {
+				$in: users,
+			},
+			active: false,
+		};
+
+		return this.find(query, options);
+	}
+
 	findByUsername(username: string, options?: FindOptions<IUser>) {
 		const query = { username };
 
