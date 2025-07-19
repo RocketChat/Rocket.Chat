@@ -101,6 +101,18 @@ const integrationsHistoryEndpoints = API.v1.get(
 				required: ['success'],
 				additionalProperties: false,
 			}),
+			403: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					status: { type: 'string' },
+					message: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
 			200: ajv.compile<PaginatedResult<{ history: IIntegrationHistory[]; items: number }>>({
 				type: 'object',
 				properties: {
