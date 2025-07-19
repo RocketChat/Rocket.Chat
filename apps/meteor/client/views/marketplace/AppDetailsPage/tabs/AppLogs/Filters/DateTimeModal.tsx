@@ -1,4 +1,15 @@
-import { Box, Button, Label, Modal } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	Label,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -35,11 +46,11 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 
 	return (
 		<Modal title={t('Custom_time_range')}>
-			<Modal.Header>
-				<Modal.Title>{t('Custom_time_range')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle>{t('Custom_time_range')}</ModalTitle>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box display='flex' flexDirection='column' mie={10} mbe={24} flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
 					<DateTimeFilter control={control} type='start' />
@@ -48,15 +59,15 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 					<Label htmlFor='timeFilter'>{t('Until')}</Label>
 					<DateTimeFilter control={control} type='end' />
 				</Box>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary disabled={!watch('startDate') || !watch('endDate')} onClick={handleSave}>
 						{t('Apply')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
