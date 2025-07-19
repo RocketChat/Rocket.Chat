@@ -69,7 +69,6 @@ const DeviceManagementAccountTable = (): ReactElement => {
 					deviceType={session.device?.type}
 					deviceOSName={session.device?.os.name}
 					loginAt={session.loginAt}
-					onReload={queryResult.refetch}
 				/>
 			)}
 			current={current}
