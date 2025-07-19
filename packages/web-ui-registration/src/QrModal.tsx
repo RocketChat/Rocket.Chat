@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { Modal, Button, Box, Throbber, ProgressBar } from '@rocket.chat/fuselage';
+import { Modal, Button, Box, Throbber, ProgressBar, ModalClose, ModalHeader, ModalIcon, ModalTitle, ModalContent } from '@rocket.chat/fuselage';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQrCodeQueryHandler } from './hooks/useQrCodeQueryHandler';
 
@@ -9,20 +9,22 @@ type QrModalProps = {
 
 const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     const [timeLeft, setTimeLeft] = useState<number>(60);
-    const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
+    const [_sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const generateQrCodeRequest = useQrCodeQueryHandler();
 
     const generateQrCode = useCallback(async () => {
         try {
             setIsLoading(true);
             setError('');
             setTimeLeft(60);
-            setSessionId(crypto.randomUUID());
-
-            const newQrCodeUrl = await useQrCodeQueryHandler(sessionId);
+            const newSessionId = crypto.randomUUID();
+            setSessionId(newSessionId);
+            const newQrCodeUrl = await generateQrCodeRequest(newSessionId);
             setQrCodeUrl(newQrCodeUrl);
         } catch (err) {
             setError('Failed to generate QR code');
@@ -30,12 +32,12 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
         } finally {
             setIsLoading(false);
         }
-    }, [sessionId]);
+    }, [generateQrCodeRequest]);
 
     useEffect(() => {
         generateQrCode();
-    }, []); 
-    
+    }, [generateQrCode]);
+
     useEffect(() => {
         return () => {
             if (timerRef.current) {
@@ -83,13 +85,13 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
 
     return (
         <Modal>
-            <Modal.Header>
-                <Modal.Icon name='mobile-check' size='x20' />
-                <Modal.Title>Mobile Authentication</Modal.Title>
-                <Modal.Close onClick={onClose} />
-            </Modal.Header>
+            <ModalHeader>
+                <ModalIcon name='mobile-check' size='x20' />
+                <ModalTitle>Mobile Authentication</ModalTitle>
+                <ModalClose onClick={onClose} />
+            </ModalHeader>
 
-            <Modal.Content>
+            <ModalContent>
                 <Box
                     display='flex'
                     flexDirection='column'
@@ -226,7 +228,7 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
                         </Box>
                     </Box>
                 </Box>
-            </Modal.Content>
+            </ModalContent>
         </Modal>
     );
 };
