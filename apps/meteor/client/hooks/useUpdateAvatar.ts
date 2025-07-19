@@ -3,7 +3,7 @@ import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEndpointAction } from './useEndpointAction';
+import { useEndpointMutation } from './useEndpointMutation';
 import { useEndpointUpload } from './useEndpointUpload';
 
 const isAvatarReset = (avatarObj: AvatarObject): avatarObj is AvatarReset => avatarObj === 'reset';
@@ -25,8 +25,16 @@ export const useUpdateAvatar = (
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const saveAvatarAction = useEndpointUpload('/v1/users.setAvatar', successMessage);
-	const saveAvatarUrlAction = useEndpointAction('POST', '/v1/users.setAvatar', { successMessage });
-	const resetAvatarAction = useEndpointAction('POST', '/v1/users.resetAvatar', { successMessage });
+	const { mutateAsync: saveAvatarUrlAction } = useEndpointMutation('POST', '/v1/users.setAvatar', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: successMessage });
+		},
+	});
+	const { mutateAsync: resetAvatarAction } = useEndpointMutation('POST', '/v1/users.resetAvatar', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: successMessage });
+		},
+	});
 
 	const updateAvatar = useCallback(async () => {
 		if (isAvatarReset(avatarObj)) {

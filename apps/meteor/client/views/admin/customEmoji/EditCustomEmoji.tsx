@@ -12,13 +12,13 @@ import {
 	IconButton,
 } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
+import { useSetModal, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
@@ -36,7 +36,6 @@ type EditCustomEmojiProps = {
 
 const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiProps) => {
 	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const absoluteUrl = useAbsoluteUrl();
 	const [errors, setErrors] = useState({ name: false, aliases: false });
@@ -95,23 +94,25 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		}
 	}, [emojiFile, _id, name, aliases, saveAction, onChange, close, newEmojiPreview]);
 
-	const deleteAction = useEndpointAction('POST', '/v1/emoji-custom.delete');
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { mutateAsync: deleteAction } = useEndpointMutation('POST', '/v1/emoji-custom.delete', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
+		},
+		onSettled: () => {
+			onChange();
+			setModal(null);
+			close();
+		},
+	});
 
 	const handleDeleteButtonClick = useCallback(() => {
-		const handleDelete = async (): Promise<void> => {
-			try {
-				await deleteAction({ emojiId: _id });
-				dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				onChange();
-				setModal(null);
-				close();
-			}
+		const handleDelete = async () => {
+			await deleteAction({ emojiId: _id });
 		};
 
-		const handleCancel = (): void => {
+		const handleCancel = () => {
 			setModal(null);
 		};
 
@@ -120,7 +121,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 				{t('Custom_Emoji_Delete_Warning')}
 			</GenericModal>,
 		);
-	}, [setModal, deleteAction, _id, dispatchToastMessage, t, onChange, close]);
+	}, [setModal, deleteAction, _id, t]);
 
 	const handleChangeAliases = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {

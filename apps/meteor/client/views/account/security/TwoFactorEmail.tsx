@@ -1,10 +1,10 @@
 import { Box, Field, FieldLabel, FieldRow, Margins, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUser } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, FormEvent } from 'react';
 import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 
 const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	const { t } = useTranslation();
@@ -13,11 +13,17 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 
 	const isEnabled = user?.services?.email2fa?.enabled;
 
-	const enable2faAction = useEndpointAction('POST', '/v1/users.2fa.enableEmail', {
-		successMessage: t('Two-factor_authentication_enabled'),
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { mutateAsync: enable2faAction } = useEndpointMutation('POST', '/v1/users.2fa.enableEmail', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_enabled') });
+		},
 	});
-	const disable2faAction = useEndpointAction('POST', '/v1/users.2fa.disableEmail', {
-		successMessage: t('Two-factor_authentication_disabled'),
+	const { mutateAsync: disable2faAction } = useEndpointMutation('POST', '/v1/users.2fa.disableEmail', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Two-factor_authentication_disabled') });
+		},
 	});
 
 	const handleEnable = useCallback(
