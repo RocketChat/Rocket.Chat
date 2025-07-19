@@ -498,6 +498,7 @@ API.v1.addRoute(
 		async get() {
 			const { roomId } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
@@ -506,6 +507,7 @@ API.v1.addRoute(
 			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
 				skip: offset,
 				limit: count,
+				sort: sort || { ts: -1 },
 			});
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
