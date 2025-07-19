@@ -77,9 +77,12 @@ test.describe('private-teams-override', () => {
 
 		await test.step('Search and verify own private team is visible', async () => {
 			// Use search function to isolate target team
-			await page.getByRole('textbox', { name: 'Search' }).fill(privateTeam.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(privateTeam.name ?? '');
 
-			const teamRow = page.getByRole('table').getByRole('link').filter({ hasText: privateTeam.name! });
+			const teamRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: privateTeam.name ?? '' });
 			await expect(teamRow).toBeVisible();
 
 			// Test team access
@@ -93,9 +96,12 @@ test.describe('private-teams-override', () => {
 		});
 
 		await test.step('Search and verify other private team is visible with view-all-p-room permission', async () => {
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name ?? '');
 
-			const otherTeamRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateTeam.name! });
+			const otherTeamRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateTeam.name ?? '' });
 			await expect(otherTeamRow).toBeVisible();
 		});
 
@@ -116,14 +122,20 @@ test.describe('private-teams-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Own team should still be visible (because user is a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(privateTeam.name!);
-			const ownTeamRow = page.getByRole('table').getByRole('link').filter({ hasText: privateTeam.name! });
+			await page.getByRole('textbox', { name: 'Search' }).fill(privateTeam.name ?? '');
+			const ownTeamRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: privateTeam.name ?? '' });
 			await expect(ownTeamRow).toBeVisible();
 
 			// Other team should not be visible (no permission and not a member)
 			await page.getByRole('textbox', { name: 'Search' }).clear();
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name!);
-			const otherTeamRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateTeam.name! });
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name ?? '');
+			const otherTeamRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateTeam.name ?? '' });
 			await expect(otherTeamRow).not.toBeVisible();
 		});
 
@@ -141,8 +153,11 @@ test.describe('private-teams-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search and verify other team is visible again
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name!);
-			const otherTeamRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateTeam.name! });
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name ?? '');
+			const otherTeamRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateTeam.name ?? '' });
 			await expect(otherTeamRow).toBeVisible();
 		});
 	});
@@ -154,9 +169,12 @@ test.describe('private-teams-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search for the private team created by user1 (admin is NOT a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name ?? '');
 
-			const otherTeamRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateTeam.name! });
+			const otherTeamRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateTeam.name ?? '' });
 			await expect(otherTeamRow).toBeVisible();
 
 			// Click to enter the team
@@ -237,9 +255,12 @@ test.describe('private-teams-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search for the private team created by user1 (admin is NOT a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name ?? '');
 
-			const otherTeamRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateTeam.name! });
+			const otherTeamRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateTeam.name ?? '' });
 			await expect(otherTeamRow).toBeVisible();
 
 			// Click to enter the team
@@ -311,9 +332,12 @@ test.describe('private-teams-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search for the private team created by user1 (admin is NOT a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name ?? '');
 
-			const otherTeamRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateTeam.name! });
+			const otherTeamRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateTeam.name ?? '' });
 			await expect(otherTeamRow).toBeVisible();
 
 			// Click to enter the team
@@ -386,9 +410,12 @@ test.describe('private-teams-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search for the private team created by user1 (admin is NOT a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateTeam.name ?? '');
 
-			const otherTeamRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateTeam.name! });
+			const otherTeamRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateTeam.name ?? '' });
 			await expect(otherTeamRow).toBeVisible();
 
 			// Click to enter the team

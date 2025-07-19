@@ -73,9 +73,12 @@ test.describe('private-rooms-override', () => {
 
 		await test.step('Search and verify own private room is visible', async () => {
 			// Use search function to isolate target channel - following mentor's advice
-			await page.getByRole('textbox', { name: 'Search' }).fill(privateRoom.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(privateRoom.name ?? '');
 
-			const roomRow = page.getByRole('table').getByRole('link').filter({ hasText: privateRoom.name! });
+			const roomRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: privateRoom.name ?? '' });
 			await expect(roomRow).toBeVisible();
 
 			// Test room access
@@ -88,9 +91,12 @@ test.describe('private-rooms-override', () => {
 		});
 
 		await test.step('Search and verify other private room is visible with view-all-p-room permission', async () => {
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name ?? '');
 
-			const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+			const otherRoomRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateRoom.name ?? '' });
 			await expect(otherRoomRow).toBeVisible();
 		});
 
@@ -110,14 +116,20 @@ test.describe('private-rooms-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Own room should still be visible (because user is a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(privateRoom.name!);
-			const ownRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: privateRoom.name! });
+			await page.getByRole('textbox', { name: 'Search' }).fill(privateRoom.name ?? '');
+			const ownRoomRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: privateRoom.name ?? '' });
 			await expect(ownRoomRow).toBeVisible();
 
 			// Other room should not be visible (no permission and not a member)
 			await page.getByRole('textbox', { name: 'Search' }).clear();
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
-			const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name ?? '');
+			const otherRoomRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateRoom.name ?? '' });
 			await expect(otherRoomRow).not.toBeVisible();
 		});
 
@@ -135,8 +147,11 @@ test.describe('private-rooms-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search and verify other room is visible again
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
-			const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name ?? '');
+			const otherRoomRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateRoom.name ?? '' });
 			await expect(otherRoomRow).toBeVisible();
 		});
 	});
@@ -147,9 +162,12 @@ test.describe('private-rooms-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search for the private room created by user1 (admin is NOT a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name ?? '');
 
-			const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+			const otherRoomRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateRoom.name ?? '' });
 			await expect(otherRoomRow).toBeVisible();
 
 			// Click to enter the room
@@ -227,9 +245,12 @@ test.describe('private-rooms-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search for the private room created by user1 (admin is NOT a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name ?? '');
 
-			const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+			const otherRoomRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateRoom.name ?? '' });
 			await expect(otherRoomRow).toBeVisible();
 
 			// Click to enter the room
@@ -297,9 +318,12 @@ test.describe('private-rooms-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search for the private room created by user1 (admin is NOT a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name ?? '');
 
-			const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+			const otherRoomRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateRoom.name ?? '' });
 			await expect(otherRoomRow).toBeVisible();
 
 			// Click to enter the room
@@ -367,9 +391,12 @@ test.describe('private-rooms-override', () => {
 			await expect(page.getByRole('textbox', { name: 'Search' })).toBeVisible();
 
 			// Search for the private room created by user1 (admin is NOT a member)
-			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name!);
+			await page.getByRole('textbox', { name: 'Search' }).fill(otherPrivateRoom.name ?? '');
 
-			const otherRoomRow = page.getByRole('table').getByRole('link').filter({ hasText: otherPrivateRoom.name! });
+			const otherRoomRow = page
+				.getByRole('table')
+				.getByRole('link')
+				.filter({ hasText: otherPrivateRoom.name ?? '' });
 			await expect(otherRoomRow).toBeVisible();
 
 			// Click to enter the room
