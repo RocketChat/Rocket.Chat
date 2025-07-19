@@ -1,3 +1,8 @@
+import type {
+	IOutboundEmailMessageProvider,
+	IOutboundPhoneMessageProvider,
+} from '@rocket.chat/apps-engine/definition/outboundComunication';
+
 export interface IOutboundProviderTemplate {
 	id: string;
 	name: string;
@@ -115,6 +120,18 @@ export type IOutboundProviderMetadata = IOutboundProvider & {
 	templates: Record<string, IOutboundProviderTemplate[]>;
 };
 
+export interface IOutboundMessageProvider {
+	registerPhoneProvider(provider: IOutboundPhoneMessageProvider): void;
+	registerEmailProvider(provider: IOutboundEmailMessageProvider): void;
+	getOutboundMessageProviders(type?: ValidOutboundProvider): IOutboundProvider[];
+	unregisterProvider(appId: string, providerType: string): void;
+}
+
 export const ValidOutboundProviderList = ['phone', 'email'] as const;
 
 export type ValidOutboundProvider = (typeof ValidOutboundProviderList)[number];
+
+export interface IOutboundMessageProviderService {
+	outboundMessageProvider: IOutboundMessageProvider;
+	listOutboundProviders(type?: string): IOutboundProvider[];
+}
