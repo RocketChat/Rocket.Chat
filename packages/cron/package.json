@@ -21,6 +21,7 @@
 	"dependencies": {
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
 		"mongodb": "6.10.0"
