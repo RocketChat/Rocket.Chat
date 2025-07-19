@@ -63,10 +63,20 @@ const getChannelsAndGroups = async (
 
 	const canViewAllPrivateRooms = await hasPermissionAsync(user._id, 'view-all-p-room');
 
-	const teams = await Team.getAllPublicTeams();
-	const publicTeamIds = teams.map(({ _id }) => _id);
+	// get all teams (public & private)
+	let allTeamIds: string[] = [];
+	if (canViewAllPrivateRooms) {
+		// can see all channels (public & private) under all the teams (public & private) 
+		const { records: allTeams } = await Team.listAll({ offset: 0, count: 1000 });
+		allTeamIds = allTeams.map(({ _id }) => _id);
+	} else {
+		// can only see public and the subscripted channels and teams
+		const teams = await Team.getAllPublicTeams();
+		const publicTeamIds = teams.map(({ _id }) => _id);
+		const userTeamsIds = (await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
+		allTeamIds = [...userTeamsIds, ...publicTeamIds];
+	}
 
-	const userTeamsIds = (await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
 	const userSubscriptions = await Subscriptions.find({ 'u._id': user._id, 't': 'p' }, { projection: { rid: 1 } }).toArray();
 
 	const userRooms = userSubscriptions.map(({ rid }) => rid);
@@ -74,6 +84,7 @@ const getChannelsAndGroups = async (
 	let additionalRooms: IRoom['_id'][] = [];
 	if (canViewAllPrivateRooms) {
 		try {
+			// get all private rooms
 			const cursor = await Rooms.find(
 				{
 					t: 'p',
@@ -87,7 +98,6 @@ const getChannelsAndGroups = async (
 			);
 
 			const rooms = await cursor.toArray();
-
 			additionalRooms = rooms.map((room) => room._id);
 		} catch (error) {
 			additionalRooms = [];
@@ -96,7 +106,7 @@ const getChannelsAndGroups = async (
 
 	const { cursor, totalCount } = Rooms.findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
-		[...userTeamsIds, ...publicTeamIds],
+		allTeamIds, // 使用所有团队ID，包括私有团队
 		[...userRooms, ...additionalRooms],
 		{
 			...pagination,
