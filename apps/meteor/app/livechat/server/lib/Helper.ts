@@ -55,6 +55,8 @@ import {
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChanged,
+	notifyOnRoomChangedById,
+	notifyOnLivechatInquiryChangedByRoom,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
@@ -555,6 +557,12 @@ export const updateChatDepartment = async ({
 		Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId),
 	]);
 
+	if (responses[0].modifiedCount) {
+		void notifyOnRoomChangedById(rid);
+	}
+	if (responses[1].modifiedCount) {
+		void notifyOnLivechatInquiryChangedByRoom(rid);
+	}
 	if (responses[2].modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomId(rid);
 	}
