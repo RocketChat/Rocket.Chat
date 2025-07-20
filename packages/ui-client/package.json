@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "19.0.5",
+	"version": "19.0.6",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

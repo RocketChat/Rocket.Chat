@@ -1,5 +1,17 @@
 # @rocket.chat/models
 
+## 1.5.9
+
+### Patch Changes
+
+- ([#36475](https://github.com/RocketChat/Rocket.Chat/pull/36475) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes priorities, sla changes & inquiries not being propagated when change streams were not being used
+
+- <details><summary>Updated dependencies [39839cca5096275fa4593c92cb480e4c9eb7631b]:</summary>
+
+  - @rocket.chat/model-typings@1.6.9
+  - @rocket.chat/rest-typings@7.7.6
+  </details>
+
 ## 1.5.8
 
 ### Patch Changes
