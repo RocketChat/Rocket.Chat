@@ -1,5 +1,43 @@
 # @rocket.chat/meteor
 
+## 7.8.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36474](https://github.com/RocketChat/Rocket.Chat/pull/36474) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes priorities, sla changes & inquiries not being propagated when change streams were not being used
+
+- <details><summary>Updated dependencies [617caa8e7be9c650b96cc1fcc5b836eaa3e7ae39]:</summary>
+
+  - @rocket.chat/model-typings@1.6.10
+  - @rocket.chat/models@1.5.10
+  - @rocket.chat/omnichannel-services@0.3.28
+  - @rocket.chat/apps@0.5.10
+  - @rocket.chat/presence@0.2.31
+  - @rocket.chat/core-services@0.9.10
+  - @rocket.chat/cron@0.1.31
+  - @rocket.chat/instance-status@0.1.31
+  - @rocket.chat/network-broker@0.2.10
+  - @rocket.chat/core-typings@7.8.2
+  - @rocket.chat/rest-typings@7.8.2
+  - @rocket.chat/license@1.0.22
+  - @rocket.chat/pdf-worker@0.3.10
+  - @rocket.chat/api-client@0.2.31
+  - @rocket.chat/freeswitch@1.2.18
+  - @rocket.chat/fuselage-ui-kit@20.0.2
+  - @rocket.chat/gazzodown@20.0.2
+  - @rocket.chat/http-router@7.8.2
+  - @rocket.chat/ui-contexts@20.0.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.2
+  - @rocket.chat/ui-client@20.0.2
+  - @rocket.chat/ui-video-conf@20.0.2
+  - @rocket.chat/ui-voip@10.0.2
+  - @rocket.chat/web-ui-registration@20.0.2
+  </details>
+
 ## 7.8.1
 
 ### Patch Changes
