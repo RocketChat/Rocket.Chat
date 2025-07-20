@@ -32,6 +32,13 @@ type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface StreamerEvents {
+	'qr-code': [
+		{ 
+			key: 'qr-code'; 
+			args: [string] 
+		}
+	];
+	
 	'roles': [
 		{
 			key: 'roles';
@@ -59,12 +66,12 @@ export interface StreamerEvents {
 					showDeletedStatus?: boolean;
 				} & (
 					| {
-							filesOnly: true;
-							replaceFileAttachmentsWith?: MessageAttachment;
-					  }
+						filesOnly: true;
+						replaceFileAttachmentsWith?: MessageAttachment;
+					}
 					| {
-							filesOnly?: false;
-					  }
+						filesOnly?: false;
+					}
 				),
 			];
 		},
@@ -115,68 +122,68 @@ export interface StreamerEvents {
 		{
 			key: `${string}/subscriptions-changed`;
 			args:
-				| [
-						'removed',
-						{
-							_id: string;
-							u?: Pick<IUser, '_id' | 'username' | 'name'>;
-							rid?: string;
-							t?: string;
-						},
-				  ]
-				| [
-						'inserted' | 'updated',
-						Pick<
-							ISubscription,
-							| 't'
-							| 'ts'
-							| 'ls'
-							| 'lr'
-							| 'name'
-							| 'fname'
-							| 'rid'
-							| 'code'
-							| 'f'
-							| 'u'
-							| 'open'
-							| 'alert'
-							| 'roles'
-							| 'unread'
-							| 'prid'
-							| 'userMentions'
-							| 'groupMentions'
-							| 'archived'
-							| 'audioNotificationValue'
-							| 'desktopNotifications'
-							| 'mobilePushNotifications'
-							| 'emailNotifications'
-							| 'desktopPrefOrigin'
-							| 'mobilePrefOrigin'
-							| 'emailPrefOrigin'
-							| 'unreadAlert'
-							| '_updatedAt'
-							| 'blocked'
-							| 'blocker'
-							| 'autoTranslate'
-							| 'autoTranslateLanguage'
-							| 'disableNotifications'
-							| 'hideUnreadStatus'
-							| 'hideMentionStatus'
-							| 'muteGroupMentions'
-							| 'ignored'
-							| 'E2EKey'
-							| 'E2ESuggestedKey'
-							| 'oldRoomKeys'
-							| 'tunread'
-							| 'tunreadGroup'
-							| 'tunreadUser'
+			| [
+				'removed',
+				{
+					_id: string;
+					u?: Pick<IUser, '_id' | 'username' | 'name'>;
+					rid?: string;
+					t?: string;
+				},
+			]
+			| [
+				'inserted' | 'updated',
+				Pick<
+					ISubscription,
+					| 't'
+					| 'ts'
+					| 'ls'
+					| 'lr'
+					| 'name'
+					| 'fname'
+					| 'rid'
+					| 'code'
+					| 'f'
+					| 'u'
+					| 'open'
+					| 'alert'
+					| 'roles'
+					| 'unread'
+					| 'prid'
+					| 'userMentions'
+					| 'groupMentions'
+					| 'archived'
+					| 'audioNotificationValue'
+					| 'desktopNotifications'
+					| 'mobilePushNotifications'
+					| 'emailNotifications'
+					| 'desktopPrefOrigin'
+					| 'mobilePrefOrigin'
+					| 'emailPrefOrigin'
+					| 'unreadAlert'
+					| '_updatedAt'
+					| 'blocked'
+					| 'blocker'
+					| 'autoTranslate'
+					| 'autoTranslateLanguage'
+					| 'disableNotifications'
+					| 'hideUnreadStatus'
+					| 'hideMentionStatus'
+					| 'muteGroupMentions'
+					| 'ignored'
+					| 'E2EKey'
+					| 'E2ESuggestedKey'
+					| 'oldRoomKeys'
+					| 'tunread'
+					| 'tunreadGroup'
+					| 'tunreadUser'
 
-							// Omnichannel fields
-							| 'department'
-							| 'v'
-							| 'onHold'
-						>,
-				  ];
+					// Omnichannel fields
+					| 'department'
+					| 'v'
+					| 'onHold'
+				>,
+			];
 		},
 
 		{ key: `${string}/message`; args: [IMessage] },
@@ -200,47 +207,47 @@ export interface StreamerEvents {
 		{
 			key: `${string}/webrtc`;
 			args:
-				| [
-						type: 'candidate',
-						data: {
-							from?: string;
-							room?: string;
-							to?: string;
-							candidate: RTCIceCandidateInit;
-						},
-				  ]
-				| [
-						type: 'description',
-						data:
-							| {
-									from?: string;
-									room?: string;
-									to?: string;
-									type: 'offer';
-									ts: number;
-									media: MediaStreamConstraints;
-									description: RTCSessionDescriptionInit;
-							  }
-							| {
-									from?: string;
-									room?: string;
-									to?: string;
-									type: 'answer';
-									ts: number;
-									media?: undefined;
-									description: RTCSessionDescriptionInit;
-							  },
-				  ]
-				| [
-						type: 'join',
-						data: {
-							from?: string;
-							room?: string;
-							to?: string;
-							media?: MediaStreamConstraints;
-							monitor?: boolean;
-						},
-				  ];
+			| [
+				type: 'candidate',
+				data: {
+					from?: string;
+					room?: string;
+					to?: string;
+					candidate: RTCIceCandidateInit;
+				},
+			]
+			| [
+				type: 'description',
+				data:
+				| {
+					from?: string;
+					room?: string;
+					to?: string;
+					type: 'offer';
+					ts: number;
+					media: MediaStreamConstraints;
+					description: RTCSessionDescriptionInit;
+				}
+				| {
+					from?: string;
+					room?: string;
+					to?: string;
+					type: 'answer';
+					ts: number;
+					media?: undefined;
+					description: RTCSessionDescriptionInit;
+				},
+			]
+			| [
+				type: 'join',
+				data: {
+					from?: string;
+					room?: string;
+					to?: string;
+					media?: MediaStreamConstraints;
+					monitor?: boolean;
+				},
+			];
 		},
 		{
 			key: `${string}/otr`;
@@ -322,15 +329,15 @@ export interface StreamerEvents {
 			key: 'Users:Deleted';
 			args: [
 				| {
-						userId: IUser['_id'];
-						messageErasureType: 'Delete';
-						replaceByUser?: never;
-				  }
+					userId: IUser['_id'];
+					messageErasureType: 'Delete';
+					replaceByUser?: never;
+				}
 				| {
-						userId: IUser['_id'];
-						messageErasureType: 'Unlink';
-						replaceByUser?: { _id: IUser['_id']; username: IUser['username']; alias: string };
-				  },
+					userId: IUser['_id'];
+					messageErasureType: 'Unlink';
+					replaceByUser?: { _id: IUser['_id']; username: IUser['username']; alias: string };
+				},
 			];
 		},
 		{
@@ -382,25 +389,25 @@ export interface StreamerEvents {
 			key: string;
 			args: [
 				| {
-						type: 'agentStatus';
-						status: string;
-				  }
+					type: 'agentStatus';
+					status: string;
+				}
 				| {
-						type: 'queueData';
-						data:
-							| {
-									[k: string]: unknown;
-							  }
-							| undefined;
-				  }
+					type: 'queueData';
+					data:
+					| {
+						[k: string]: unknown;
+					}
+					| undefined;
+				}
 				| {
-						type: 'agentData';
-						data: ILivechatAgent | undefined | { hiddenInfo: boolean };
-				  }
+					type: 'agentData';
+					data: ILivechatAgent | undefined | { hiddenInfo: boolean };
+				}
 				| {
-						type: 'visitorData';
-						visitor: unknown;
-				  },
+					type: 'visitorData';
+					visitor: unknown;
+				},
 			];
 		},
 	];
@@ -414,14 +421,14 @@ export interface StreamerEvents {
 			args: [
 				| { type: 'removed'; id: string }
 				| {
-						id: string;
-						diff: unknown;
-						type: 'updated';
-				  }
+					id: string;
+					diff: unknown;
+					type: 'updated';
+				}
 				| {
-						type: 'inserted';
-						data: Partial<IIntegrationHistory>;
-				  },
+					type: 'inserted';
+					data: Partial<IIntegrationHistory>;
+				},
 			];
 		},
 	];
@@ -430,14 +437,14 @@ export interface StreamerEvents {
 		{
 			key: 'canned-responses';
 			args:
-				| [{ type: 'removed'; _id: string }, { agentsId: string }]
-				| [{ type: 'removed'; _id: string }]
-				| [
-						{ type: 'changed' } & Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'> & {
-								_createdAt?: Date | undefined;
-							},
-				  ]
-				| [{ type: 'changed' } & IOmnichannelCannedResponse, { agentsId: string }];
+			| [{ type: 'removed'; _id: string }, { agentsId: string }]
+			| [{ type: 'removed'; _id: string }]
+			| [
+				{ type: 'changed' } & Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'> & {
+					_createdAt?: Date | undefined;
+				},
+			]
+			| [{ type: 'changed' } & IOmnichannelCannedResponse, { agentsId: string }];
 		},
 	];
 
@@ -511,23 +518,23 @@ export interface StreamerEvents {
 				| [key: 'app/removed', args: [string]]
 				| [key: 'app/updated', args: [string]]
 				| [
-						key: 'app/statusUpdate',
-						args: [
-							{
-								appId: string;
-								status: AppStatus;
-							},
-						],
-				  ]
+					key: 'app/statusUpdate',
+					args: [
+						{
+							appId: string;
+							status: AppStatus;
+						},
+					],
+				]
 				| [
-						key: 'app/settingUpdated',
-						args: [
-							{
-								appId: string;
-								setting: AppsSetting;
-							},
-						],
-				  ]
+					key: 'app/settingUpdated',
+					args: [
+						{
+							appId: string;
+							setting: AppsSetting;
+						},
+					],
+				]
 				| [key: 'command/added', args: [string]]
 				| [key: 'command/disabled', args: [string]]
 				| [key: 'command/updated', args: [string]]
@@ -586,7 +593,7 @@ export type StreamerCallbackArgs<N extends StreamNames, K extends StreamKeys<N>>
 	StreamerConfig<N, K> extends {
 		args: any;
 	}
-		? StreamerConfig<N, K>['args']
-		: never;
+	? StreamerConfig<N, K>['args']
+	: never;
 
 export type StreamerCallback<N extends StreamNames, K extends StreamKeys<N>> = (...args: StreamerCallbackArgs<N, K>) => void;

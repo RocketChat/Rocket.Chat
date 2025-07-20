@@ -1,6 +1,5 @@
 import { OAuthApps } from '@rocket.chat/models';
 import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
-
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
@@ -9,7 +8,7 @@ import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/metho
 import { API } from '../api';
 import QRCode from 'qrcode';
 import crypto from 'crypto';
-import { generateJWT } from '/app/utils/server/lib/JWTHelper';
+import { generateJWT, isValidJWT } from '/app/utils/server/lib/JWTHelper';
 
 API.v1.addRoute(
 	'oauth-apps.list',
@@ -120,4 +119,34 @@ API.v1.addRoute(
 			});
 			return API.v1.success(qrCodeUrl);
 		},
-	})
+	},
+);
+
+API.v1.addRoute(
+	'oauth-apps.qrcode-verify',
+	{
+		authRequired: false,
+	},
+	{
+		async post() {
+			try {
+				const { code } = this.bodyParams;
+
+				if (!code) {
+					return API.v1.failure('Code is required');
+				}
+				const decoded = isValidJWT(code, process.env.JWT_SECRET || 'defaultSecret');
+				// How to stream the QR code verification result to web client using Steamer?
+				if (decoded) {
+					return API.v1.success({ success: true });
+				}
+			} catch (error) {
+				console.error('Error verifying QR code:', error);
+				return API.v1.failure({
+					success: false,
+					message: 'Invalid QR code or session expired',
+				});
+			}
+		}
+	}
+);

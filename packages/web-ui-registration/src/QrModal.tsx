@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { Modal, Button, Box, Throbber, ProgressBar, ModalClose, ModalHeader, ModalIcon, ModalTitle, ModalContent } from '@rocket.chat/fuselage';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQrCodeQueryHandler } from './hooks/useQrCodeQueryHandler';
+import { useStream } from '@rocket.chat/ui-contexts';
 
 type QrModalProps = {
     onClose: () => void;
@@ -13,7 +14,13 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
+    const streamAll = useStream('qr-code');
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    useEffect(() => {
+        return streamAll('qr-code', ([key]) => {
+            console.log('Received QR code update:', key);
+        });
+    }, [streamAll]);
 
     const generateQrCodeRequest = useQrCodeQueryHandler();
 
