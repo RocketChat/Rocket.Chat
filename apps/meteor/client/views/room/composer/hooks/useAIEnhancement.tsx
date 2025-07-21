@@ -1,5 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { RefObject, ReactElement } from 'react';
 
 /*
@@ -24,6 +25,16 @@ const PULSE_ANIMATION_STYLE = `
   50% { opacity: 1; }
   100% { opacity: 0.6; }
 }
+@keyframes aiPopupAnimate {
+	from {
+		opacity: 0;
+		transform: translate(-50%, -90%) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translate(-50%, -110%) scale(1);
+	}
+}
 .ai-enhancement-transform {
   background: rgba(255, 230, 0, 0.25);
   border-radius: 2px;
@@ -31,19 +42,26 @@ const PULSE_ANIMATION_STYLE = `
   user-select: none;
 }
 .ai-enhancement-popup {
-  display: flex;            
-  background: #000;
+  display: flex;
+  gap: 0;
+  background: var(--rc-color-surface, #fff);
   border: 1px solid var(--rc-color-border-light, #ccc);
-  border-radius: 4px;
+  border-radius: 3px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   z-index: 9999;
+  transform: translate(-50%, -110%);
+  animation: aiPopupAnimate 0.25s ease-out;
+  padding: 1px;
 }
 .ai-enhancement-popup button {
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 0.75rem;
-  border-radius: 3px;
+  font-size: 0.6rem;
+  border-radius: 2px;
+  color: var(--rc-color-font-default, #1f2329);
+  line-height: 1;
+  padding: 2px;
 }
 .ai-enhancement-popup button:hover {
   background: var(--rc-color-primary-light, #e8f0fe);
@@ -65,6 +83,7 @@ type PopupState = { x: number; y: number } | null;
 type AIAction = 'summary' | 'emoji' | 'translation';
 
 export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactElement | null => {
+  const { t } = useTranslation();
   const [popup, setPopup] = useState<PopupState>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -141,14 +160,14 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
         setTimeout(() => {
           switch (type) {
             case 'summary':
-              resolve(`----------- Summary: ${selectedText.slice(0, 50)}${selectedText.length > 50 ? '…' : ''} This text is summarized -----------`);
+              resolve(`----------- Summary -----------`);
               break;
             case 'emoji':
               resolve(`-----------😊 ${selectedText} 🤗-----------`);
               break;
             case 'translation':
             default:
-              resolve(`----------- Translated: ${selectedText} This text is translated -----------`);
+              resolve(`----------- Selected text : ${selectedText} is translated -----------`);
           }
         }, 1500);
       });
@@ -182,9 +201,9 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
       style={{ position: 'fixed', top: popup.y, left: popup.x }}
       onMouseDown={(e) => e.preventDefault()} // Prevent focus loss.
     >
-      <Button onClick={() => runAIAction('summary')} icon='keyboard' />
-      <Button onClick={() => runAIAction('emoji')} icon='emoji' />
-      <Button onClick={() => runAIAction('translation')} icon='language' />
+      <Button small onClick={() => runAIAction('summary')} icon='keyboard' data-tooltip={t('AI summarize')} />
+      <Button small onClick={() => runAIAction('emoji')} icon='emoji' data-tooltip={t('AI emojify')} />
+      <Button small onClick={() => runAIAction('translation')} icon='language' data-tooltip={t('AI translate')} />
     </div>
   );
 }; 
