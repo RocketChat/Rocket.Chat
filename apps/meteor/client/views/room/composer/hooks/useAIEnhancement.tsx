@@ -1,6 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import type { RefObject, ReactElement } from 'react';
 
 /*
@@ -101,7 +101,7 @@ type PopupState = { x: number; y: number } | null;
 type AIAction = 'summary' | 'emoji' | 'translation';
 
 export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactElement | null => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   const [popup, setPopup] = useState<PopupState>(null);
 
   // Ensure CSS is available exactly once.
