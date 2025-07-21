@@ -61,13 +61,30 @@ const PULSE_ANIMATION_STYLE = `
 
 .ai-enhancement-suggestion {
 	position: relative;
-	border: 1px dotted #8bb8ff;
-	background-color: rgba(232, 240, 254, 0.5);
-	border-radius: 3px;
-	padding: 1px 2px;
-	margin: -1px -2px;
+	border-radius: 4px;
+	margin: -2px -3px;
 	cursor: default;
-	display: inline-block;
+	display: inline;
+	transition: all 0.2s ease-in-out;
+}
+
+.ai-enhancement-suggestion:hover {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ai-suggestion-summary {
+	background-color: #fffbe6;
+	border: 1px solid #ffe58f;
+}
+
+.ai-suggestion-emoji {
+	background-color: #e6f7ff;
+	border: 1px solid #91d5ff;
+}
+
+.ai-suggestion-translation {
+	background-color: #f6ffed;
+	border: 1px solid #b7eb8f;
 }
 
 .ai-enhancement-suggestion:hover .ai-suggestion-actions {
@@ -76,14 +93,14 @@ const PULSE_ANIMATION_STYLE = `
 
 .ai-suggestion-actions {
 	position: absolute;
-	top: -10px;
-	left: -10px;
+	top: -12px;
+	left: -12px;
 	display: none;
-	gap: 2px;
+	gap: 4px;
 	background: #fff;
-	border-radius: 12px;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-	padding: 2px;
+	border-radius: 16px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	padding: 3px;
 	z-index: 10;
 	line-height: 1;
 }
@@ -92,16 +109,28 @@ const PULSE_ANIMATION_STYLE = `
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 16px;
-	height: 16px;
+	width: 20px;
+	height: 20px;
 	border-radius: 50%;
 	border: none;
 	cursor: pointer;
-	font-size: 10px;
-	background-color: #f0f0f0;
+	font-size: 12px;
+	color: #fff;
+	transition: all 0.2s ease-in-out;
 }
-.ai-suggestion-actions button:hover {
-	background-color: #e0e0e0;
+
+.ai-suggestion-actions .accept {
+	background-color: #52c41a;
+}
+.ai-suggestion-actions .accept:hover {
+	background-color: #73d13d;
+}
+
+.ai-suggestion-actions .reject {
+	background-color: #f5222d;
+}
+.ai-suggestion-actions .reject:hover {
+	background-color: #ff4d4f;
 }
 
 .ai-enhancement-popup {
@@ -248,7 +277,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
       const finalTransformedText = span.textContent;
 
       span.removeAttribute('contenteditable');
-      span.className = 'ai-enhancement-suggestion';
+      span.className = `ai-enhancement-suggestion ai-suggestion-${type}`;
 
       const actions = document.createElement('div');
       actions.className = 'ai-suggestion-actions';
@@ -256,6 +285,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
 
       const acceptBtn = document.createElement('button');
       acceptBtn.textContent = '✓';
+      acceptBtn.className = 'accept';
       acceptBtn.setAttribute('type', 'button');
       acceptBtn.onclick = () => {
         if (span.parentNode) {
@@ -266,6 +296,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
 
       const rejectBtn = document.createElement('button');
       rejectBtn.textContent = '✗';
+      rejectBtn.className = 'reject';
       rejectBtn.setAttribute('type', 'button');
       rejectBtn.onclick = () => {
         if (span.parentNode) {
