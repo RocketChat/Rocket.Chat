@@ -38,3 +38,12 @@ callbacks.add(
 	callbacks.priority.HIGH,
 	'federation-matrix-after-remove-from-room',
 );
+
+callbacks.add(
+	'federation.userRoleChanged',
+	async (data: Record<string, any>): Promise<void> => {
+		await FederationMatrix.handleUserRoleChange(data);
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-user-role-changed',
+);

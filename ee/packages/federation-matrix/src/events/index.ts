@@ -5,6 +5,7 @@ import { invite } from './invite';
 import { membership } from './membership';
 import { message } from './message';
 import { ping } from './ping';
+import { powerLevels } from './powerLevels';
 import { reaction } from './reaction';
 
 export function registerEvents(emitter: Emitter<HomeserverEventSignatures>) {
@@ -13,4 +14,5 @@ export function registerEvents(emitter: Emitter<HomeserverEventSignatures>) {
 	invite(emitter);
 	reaction(emitter);
 	membership(emitter);
+	powerLevels(emitter);
 }

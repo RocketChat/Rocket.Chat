@@ -21,4 +21,6 @@ export interface IFederationMatrixService {
 	removeReaction(messageId: string, reaction: string, user: IUser): Promise<void>;
 	leaveRoom(roomId: string, user: IUser): Promise<void>;
 	kickUser(roomId: string, kickedUser: IUser, kickingUser: IUser, reason?: string): Promise<void>;
+	updateUserPowerLevel(roomId: string, userId: string, roles: string[], actingUserId: string): Promise<void>;
+	handleUserRoleChange(data: Record<string, any>): Promise<void>;
 }
