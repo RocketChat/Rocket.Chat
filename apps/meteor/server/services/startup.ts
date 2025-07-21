@@ -30,7 +30,6 @@ import { UploadService } from './upload/service';
 import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
 import { VoipAsteriskService } from './voip-asterisk/service';
-import { registerFederationRoutes } from '../../ee/server/api/federation';
 import { i18n } from '../lib/i18n';
 
 export const registerServices = async (): Promise<void> => {
@@ -71,12 +70,6 @@ export const registerServices = async (): Promise<void> => {
 
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
-
-		// TODO: Add it to a proper place since it's EE only
-		const { FederationMatrix } = await import('@rocket.chat/federation-matrix');
-		const federationMatrix = await FederationMatrix.create();
-		api.registerService(federationMatrix);
-		await registerFederationRoutes(federationMatrix);
 
 		// Run EE services defined outside of the main repo
 		// Otherwise, monolith would ignore them :(
