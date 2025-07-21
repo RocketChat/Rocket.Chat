@@ -32,6 +32,8 @@ export interface IMediaCall extends IRocketChatRecord {
 	endedBy?: MediaCallActor;
 	endedAt?: Date;
 
+	sequence: number;
+
 	// providerName: string;
 	// providerData?: Record<string, any>;
 }

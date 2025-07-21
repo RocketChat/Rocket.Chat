@@ -1,4 +1,9 @@
-import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallParticipantIdentification } from '@rocket.chat/core-typings';
+import type {
+	IMediaCallChannel,
+	RocketChatRecordDeleted,
+	MediaCallParticipantIdentification,
+	MediaCallChannelWebRTCSession,
+} from '@rocket.chat/core-typings';
 import type { IMediaCallChannelsModel } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 
@@ -41,5 +46,13 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 
 	public async setState(_id: string, state: IMediaCallChannel['state']): Promise<UpdateResult> {
 		return this.updateOneById(_id, { $set: { state } });
+	}
+
+	public async setLocalWebRTCSession(_id: string, session: MediaCallChannelWebRTCSession): Promise<UpdateResult> {
+		return this.updateOneById(_id, { $set: { 'webrtc.local': session } });
+	}
+
+	public async setRemoteWebRTCSession(_id: string, session: MediaCallChannelWebRTCSession): Promise<UpdateResult> {
+		return this.updateOneById(_id, { $set: { 'webrtc.remote': session } });
 	}
 }

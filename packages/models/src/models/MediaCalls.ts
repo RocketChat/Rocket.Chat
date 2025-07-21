@@ -47,4 +47,34 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			{ $set: { state: 'ringing' } },
 		);
 	}
+
+	public async acceptCallById(callId: string, calleeSessionId?: string): Promise<UpdateResult> {
+		if (!calleeSessionId) {
+			return this.updateOne({ _id: callId, state: { $in: ['none', 'ringing'] } }, { $set: { state: 'accepted' } });
+		}
+
+		return this.updateOne(
+			{
+				_id: callId,
+				$or: [
+					{
+						state: { $in: ['none', 'ringing'] },
+					},
+					{
+						'state': 'accepted',
+						'callee.sessionId': { $exists: false },
+					},
+				],
+			},
+			{ $set: { 'state': 'accepted', 'callee.sessionId': calleeSessionId } },
+		);
+	}
+
+	public async setCallerSessionIdById(callId: string, callerSessionId: string): Promise<UpdateResult> {
+		return this.updateOne({ '_id': callId, 'caller.sessionId': { $exists: false } }, { $set: { 'caller.sessionId': callerSessionId } });
+	}
+
+	public async getNewSequence(callId: string): Promise<IMediaCall | null> {
+		return this.findOneAndUpdate({ _id: callId }, { $inc: { sequence: 1 } });
+	}
 }

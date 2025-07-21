@@ -27,6 +27,13 @@ export type MediaCallChannelUserSIP = MediaCallParticipantIdentification & {
 
 export type MediaCallParticipant = MediaCallChannelUserRC | MediaCallChannelUserSIP;
 
+export type MediaCallChannelWebRTCSession = {
+	description: RTCSessionDescriptionInit | null;
+	iceCandidates: RTCIceCandidateInit[];
+	iceGatheringComplete: boolean;
+	assignSequence: number;
+};
+
 export interface IMediaCallChannel extends IRocketChatRecord {
 	callId: string;
 
@@ -44,15 +51,12 @@ export interface IMediaCallChannel extends IRocketChatRecord {
 	leftAt?: Date;
 
 	webrtc?: {
-		local: {
-			description: RTCSessionDescriptionInit | null;
-			iceCandidates: RTCIceCandidateInit[];
-			iceGatheringComplete: boolean;
-		};
-		remote: {
-			description: RTCSessionDescriptionInit | null;
-			iceCandidates: RTCIceCandidateInit[];
-			iceGatheringComplete: boolean;
-		};
+		local?: MediaCallChannelWebRTCSession;
+		remote?: MediaCallChannelWebRTCSession;
 	};
 }
+
+export type ValidSignalChannel = IMediaCallChannel & {
+	// role: 'caller' | 'callee';
+	participant: MediaCallChannelUserRC;
+};

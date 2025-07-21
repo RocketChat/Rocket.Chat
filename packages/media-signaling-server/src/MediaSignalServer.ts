@@ -1,13 +1,12 @@
+import type { IMediaCall, IMediaCallChannel, IUser, MediaCallActor, ValidSignalChannel, AtLeast } from '@rocket.chat/core-typings';
 import type {
-	IMediaCall,
-	IMediaCallChannel,
-	IUser,
-	MediaCallActor,
-	// MediaCallChannelUserRC,
-	// MediaCallParticipant,
-	AtLeast,
-} from '@rocket.chat/core-typings';
-import type { MediaSignal, MediaSignalDeliver, MediaSignalNotify, MediaSignalRequest, RequestParams } from '@rocket.chat/media-signaling';
+	DeliverParams,
+	MediaSignal,
+	MediaSignalDeliver,
+	MediaSignalNotify,
+	MediaSignalRequest,
+	RequestParams,
+} from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Users, MediaCalls, MediaCallChannels } from '@rocket.chat/models';
 
@@ -18,38 +17,133 @@ export class MediaSignalServer {
 		//
 	}
 
-	private async processDeliver(_signal: MediaSignalDeliver): Promise<void> {
-		//
-	}
-
-	private async processNotify(signal: MediaSignalNotify, call: IMediaCall, channel: IMediaCallChannel): Promise<void> {
-		switch (signal.body.notify) {
-			case 'ack':
-				return this.processACK(signal as MediaSignalNotify<'ack'>, call, channel);
+	private async processDeliver(signal: MediaSignalDeliver, call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
+		switch (signal.body.deliver) {
+			case 'sdp':
+				return this.processSDP(signal as MediaSignalDeliver<'sdp'>, call, channel);
 		}
 	}
 
-	private async processACK(_signal: MediaSignalNotify<'ack'>, call: IMediaCall, channel: IMediaCallChannel): Promise<void> {
-		// If the call is still on an empty state and the signal reached a callee, change the state to 'ringing'
+	private async processNotify(signal: MediaSignalNotify, call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
+		switch (signal.body.notify) {
+			case 'ack':
+				return this.processACK(signal as MediaSignalNotify<'ack'>, call, channel);
+			case 'accept':
+				return this.processAccept(signal as MediaSignalNotify<'accept'>, call, channel);
+		}
+	}
+
+	private async processACK(_signal: MediaSignalNotify<'ack'>, call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
+		// If the call is still on an empty state and a signal reached a callee, change the state to 'ringing'
 
 		if (channel.role === 'callee' && call.state === 'none') {
 			const result = await MediaCalls.startRingingById(call._id);
 
 			// If the state was changed, request an offer from the caller
 			if (result.modifiedCount) {
-				await this.requestOffer(call);
+				await this.requestOffer(channel);
 			}
 		}
 	}
 
-	private async requestOffer(call: IMediaCall, params?: RequestParams<'offer'>): Promise<void> {
-		if (call.caller.type !== 'user' || !call.caller.sessionId) {
+	private async processAccept(_signal: MediaSignalNotify<'accept'>, call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
+		if (channel.role === 'callee') {
+			if (!this.compareActorsIgnoringSession(call.callee, channel.participant)) {
+				// Someone else tried to accept the call... should we respond something?
+				return;
+			}
+			const sessionId = (channel.participant.type === 'user' && channel.participant.sessionId) || undefined;
+
+			const result = await MediaCalls.acceptCallById(call._id, sessionId);
+			if (!result.modifiedCount) {
+				// # nothing was changed by this acceptance... should we respond something?
+				return;
+			}
+
+			const newSequence = await this.getNewCallSequence(channel.callId);
+			await this.sendSignalToChannel(newSequence.sequence, channel, {
+				type: 'notify',
+				body: {
+					notify: 'state',
+					callState: 'accepted',
+				},
+			});
+
+			const otherChannel = await this.getOppositeChannel(call, channel);
+			if (otherChannel && this.isValidSignalChannel(otherChannel)) {
+				await this.sendSignalToChannel(newSequence.sequence, otherChannel, {
+					type: 'notify',
+					body: {
+						notify: 'state',
+						callState: 'accepted',
+					},
+				});
+			}
+
+			return;
+		}
+
+		if (channel.role === 'caller' && call.caller.type === 'user' && !call.caller.sessionId) {
+			const result = await MediaCalls.setCallerSessionIdById(call._id, channel.participant.sessionId);
+			if (result.modifiedCount) {
+				// #Todo: Calls initiated without a caller sessionId
+			}
+		}
+	}
+
+	private async getActorChannel(callId: IMediaCall['_id'], actor: MediaCallActor): Promise<IMediaCallChannel | null> {
+		if (actor.type !== 'user') {
 			throw new Error('not-implemented');
 		}
 
-		await this.sendSignal(call, call.caller.id, {
-			role: 'caller',
-			sessionId: call.caller.sessionId,
+		// If there is no sessionId yet, we can't determine which channel is going to be used by this actor
+		if (!actor.sessionId) {
+			return null;
+		}
+
+		return MediaCallChannels.findOneByCallIdAndParticipant(callId, actor);
+	}
+
+	private async getOppositeChannel(call: IMediaCall, channel: IMediaCallChannel): Promise<IMediaCallChannel | null> {
+		switch (channel.role) {
+			case 'callee':
+				return this.getActorChannel(call._id, call.callee);
+			case 'caller':
+				return this.getActorChannel(call._id, call.caller);
+			default:
+				return null;
+		}
+	}
+
+	private async processSDP(signal: MediaSignalDeliver<'sdp'>, call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
+		// Save the SDP for the local session of the channel
+		await MediaCallChannels.setLocalWebRTCSession(channel._id, {
+			description: signal.body.sdp,
+			iceCandidates: [],
+			iceGatheringComplete: Boolean(signal.body.endOfCandidates),
+			assignSequence: signal.sequence,
+		});
+
+		// Find the opposite channel and save the SDP there as well
+		const otherChannel = await this.getOppositeChannel(call, channel);
+		if (otherChannel) {
+			await this.setRemoteSDP(
+				otherChannel,
+				{
+					sdp: signal.body.sdp,
+					endOfCandidates: Boolean(signal.body.endOfCandidates),
+				},
+				signal.sequence,
+			);
+		}
+	}
+
+	private async requestOffer(channel: IMediaCallChannel, params?: RequestParams<'offer'>): Promise<void> {
+		this.validateChannelForSignals(channel);
+
+		const call = await this.getNewCallSequence(channel.callId);
+
+		await this.sendSignalToChannel(call.sequence, channel, {
 			type: 'request',
 			body: {
 				request: 'offer',
@@ -58,27 +152,108 @@ export class MediaSignalServer {
 		});
 	}
 
-	private async sendSignal(
-		call: IMediaCall,
-		uid: IUser['_id'],
-		signal: Omit<MediaSignal, 'version' | 'sequence' | 'callId'>,
-	): Promise<void> {
-		console.log('sendSignal', call, uid, {
-			...signal,
-			version: 1,
-			sequence: 1,
-			callId: call._id,
+	private isValidSignalRole(channelRole: IMediaCallChannel['role']): channelRole is MediaSignal['role'] {
+		return ['caller', 'callee'].includes(channelRole);
+	}
+
+	private isValidSignalChannel(channel: IMediaCallChannel): channel is ValidSignalChannel {
+		return channel.participant.type === 'user';
+	}
+
+	private async getNewCallSequence(callId: IMediaCall['_id']): Promise<IMediaCall> {
+		const call = await MediaCalls.getNewSequence(callId);
+		if (!call) {
+			throw new Error('failed-to-reserve-sequence');
+		}
+
+		return call;
+	}
+
+	private validateChannelForSignals(channel: IMediaCallChannel): asserts channel is ValidSignalChannel {
+		if (channel.participant.type !== 'user') {
+			throw new Error('not-implemented');
+		}
+		if (!channel.participant.sessionId) {
+			throw new Error('SDP may only be sent to specific user sessions.');
+		}
+	}
+
+	private async setRemoteSDP(channel: IMediaCallChannel, params: DeliverParams<'sdp'>, sequence: number): Promise<void> {
+		await MediaCallChannels.setRemoteWebRTCSession(channel._id, {
+			description: params.sdp,
+			iceCandidates: [],
+			iceGatheringComplete: Boolean(params.endOfCandidates),
+			assignSequence: sequence,
+		});
+
+		if (channel.participant.type !== 'user') {
+			// No need to send any signals if the remote participant is not a rocket.chat user
+			return;
+		}
+
+		await this.deliverSDP(channel, {
+			sdp: params.sdp,
+			endOfCandidates: params.endOfCandidates,
 		});
 	}
 
-	private async getChannelForSignal(signal: MediaSignal, call: IMediaCall, user: ValidUser): Promise<IMediaCallChannel> {
+	private async deliverSDP(channel: IMediaCallChannel, params: DeliverParams<'sdp'>): Promise<void> {
+		this.validateChannelForSignals(channel);
+
+		const call = await this.getNewCallSequence(channel.callId);
+
+		// If the sdp is an offer, send an answer request, otherwise simply deliver it
+		if (params.sdp.type === 'offer') {
+			await this.sendSignalToChannel(call.sequence, channel, {
+				type: 'request',
+				body: {
+					request: 'answer',
+					offer: params.sdp,
+				},
+			});
+		} else {
+			await this.sendSignalToChannel(call.sequence, channel, {
+				type: 'deliver',
+				body: {
+					deliver: 'sdp',
+					...params,
+				},
+			});
+		}
+	}
+
+	private async sendSignalToChannel(
+		sequence: number,
+		channel: ValidSignalChannel,
+		signal: Omit<MediaSignal, 'version' | 'sequence' | 'callId' | 'role' | 'sessionId'>,
+	): Promise<void> {
+		if (!this.isValidSignalRole(channel.role)) {
+			// Tried to send a signal to a channel that is neither the caller nor the callee... what to do?
+			return;
+		}
+
+		await this.sendSignal({
+			...signal,
+			role: channel.role,
+			sessionId: channel.participant.sessionId,
+			version: 1,
+			sequence,
+			callId: channel.callId,
+		} as MediaSignal);
+	}
+
+	private async sendSignal(signal: MediaSignal): Promise<void> {
+		console.log('sendSignal', signal);
+	}
+
+	private async getChannelForSignal(signal: MediaSignal, call: IMediaCall, user: ValidUser): Promise<ValidSignalChannel> {
 		const actor = { type: 'user', id: user._id, sessionId: signal.sessionId } as const;
 
 		// Every time the server receives any signal, we need to check if the client that sent it is already in the call's channel list
 		const existingChannel = await MediaCallChannels.findOneByCallIdAndParticipant(call._id, actor);
 
 		if (existingChannel) {
-			return existingChannel;
+			return existingChannel as ValidSignalChannel;
 		}
 
 		const role = this.getRoleForActor(call, actor);
@@ -105,7 +280,7 @@ export class MediaSignalServer {
 			throw new Error('failed-to-insert-channel');
 		}
 
-		return insertedChannel;
+		return insertedChannel as ValidSignalChannel;
 	}
 
 	private getRoleForActor(call: IMediaCall, actor: MediaCallActor): IMediaCallChannel['role'] {
@@ -144,7 +319,7 @@ export class MediaSignalServer {
 				await this.processRequest(signal);
 				break;
 			case 'deliver':
-				await this.processDeliver(signal);
+				await this.processDeliver(signal, call, channel);
 				break;
 			case 'notify':
 				await this.processNotify(signal, call, channel);
@@ -182,6 +357,7 @@ export class MediaSignalServer {
 
 			createdBy: caller,
 			createdAt: new Date(),
+			sequence: 0,
 
 			caller,
 			callee,
