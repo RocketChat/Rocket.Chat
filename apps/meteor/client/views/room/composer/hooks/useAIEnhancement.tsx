@@ -20,11 +20,12 @@ import type { RefObject, ReactElement } from 'react';
  */
 
 const PULSE_ANIMATION_STYLE = `
-@keyframes aiPulseFade {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
+@keyframes aiBackgroundPulse {
+  0% { background-color: var(--pulse-color-start); }
+  50% { background-color: var(--pulse-color-end); }
+  100% { background-color: var(--pulse-color-start); }
 }
+
 @keyframes aiPopupAnimate {
 	from {
 		opacity: 0;
@@ -36,11 +37,28 @@ const PULSE_ANIMATION_STYLE = `
 	}
 }
 .ai-enhancement-transform {
-  background: rgba(255, 230, 0, 0.25);
-  border-radius: 2px;
-  animation: aiPulseFade 1s ease-in-out infinite;
+  border-radius: 3px;
   user-select: none;
+  animation: aiBackgroundPulse 1.5s ease-in-out infinite;
+  padding: 1px 2px;
+  margin: -1px -2px;
 }
+
+.ai-enhancement-summary {
+  --pulse-color-start: rgba(255, 220, 0, 0.25);
+  --pulse-color-end: rgba(255, 220, 0, 0.45);
+}
+
+.ai-enhancement-emoji {
+  --pulse-color-start: rgba(0, 200, 255, 0.25);
+  --pulse-color-end: rgba(0, 200, 255, 0.45);
+}
+
+.ai-enhancement-translation {
+  --pulse-color-start: rgba(0, 255, 120, 0.25);
+  --pulse-color-end: rgba(0, 255, 120, 0.45);
+}
+
 .ai-enhancement-popup {
   display: flex;
   gap: 0;
@@ -85,7 +103,6 @@ type AIAction = 'summary' | 'emoji' | 'translation';
 export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactElement | null => {
   const { t } = useTranslation();
   const [popup, setPopup] = useState<PopupState>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   // Ensure CSS is available exactly once.
   useEffect(() => {
@@ -103,9 +120,6 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
 
   
       const handleMouseUp = (event: MouseEvent) => {
-        if (isProcessing) {
-          return;
-        }
         const selection = window.getSelection();
         if (!selection || selection.isCollapsed) {
           setPopup(null);
@@ -126,10 +140,10 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
     return () => {
       refNode.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [contentRef, isProcessing]);
+  }, [contentRef]);
 
   const runAIAction = useCallback(
-    (type: AIAction) => {
+    async (type: AIAction) => {
       const selection = window.getSelection();
       if (!selection || selection.isCollapsed) {
         clearPopup();
@@ -140,7 +154,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
 
       // Wrap selected text into a span for visual feedback.
       const span = document.createElement('span');
-      span.className = 'ai-enhancement-transform';
+      span.className = `ai-enhancement-transform ai-enhancement-${type}`;
       span.textContent = selectedText;
 
       // Replace range with span.
@@ -150,32 +164,31 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
       // Clear user selection and popup.
       selection.removeAllRanges();
       clearPopup();
-      setIsProcessing(true);
 
       // Disable user interaction with the span while processing.
       span.setAttribute('contenteditable', 'false');
 
       // Simulate API call.
-      const fakeResponse = new Promise<string>((resolve) => {
+      const result = await new Promise<string>((resolve) => {
         setTimeout(() => {
           switch (type) {
             case 'summary':
               resolve(`----------- Summary -----------`);
               break;
             case 'emoji':
-              resolve(`-----------😊 ${selectedText} 🤗-----------`);
+              resolve(`-----------😊 "${selectedText}" 🤗-----------`);
               break;
             case 'translation':
             default:
-              resolve(`----------- Selected text : ${selectedText} is translated -----------`);
+              resolve(`----------- Selected text : "${selectedText}" is translated -----------`);
           }
-        }, 1500);
+        }, 5000);
       });
 
-      fakeResponse.then((result) => {
+      await new Promise<void>((resolve) => {
         const chars = result.split('');
         let idx = 0;
-        span.classList.remove('ai-enhancement-transform');
+        span.classList.remove('ai-enhancement-transform', `ai-enhancement-${type}`);
         const interval = setInterval(() => {
           span.textContent = result.slice(0, idx + 1);
           idx += 1;
@@ -183,7 +196,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
             clearInterval(interval);
             // Re-enable editing.
             span.removeAttribute('contenteditable');
-            setIsProcessing(false);
+            resolve();
           }
         }, 30);
       });
@@ -191,7 +204,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
     [clearPopup],
   );
 
-  if (!popup || isProcessing) {
+  if (!popup) {
     return null;
   }
 
@@ -201,9 +214,9 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
       style={{ position: 'fixed', top: popup.y, left: popup.x }}
       onMouseDown={(e) => e.preventDefault()} // Prevent focus loss.
     >
-      <Button small onClick={() => runAIAction('summary')} icon='keyboard' data-tooltip={t('AI summarize')} />
-      <Button small onClick={() => runAIAction('emoji')} icon='emoji' data-tooltip={t('AI emojify')} />
-      <Button small onClick={() => runAIAction('translation')} icon='language' data-tooltip={t('AI translate')} />
+      <Button small onClick={() => runAIAction('summary')} icon='keyboard' data-tooltip={('AI summarize')} />
+      <Button small onClick={() => runAIAction('emoji')} icon='emoji' data-tooltip={('AI emojify')} />
+      <Button small onClick={() => runAIAction('translation')} icon='language' data-tooltip={('AI translate')} />
     </div>
   );
 }; 
