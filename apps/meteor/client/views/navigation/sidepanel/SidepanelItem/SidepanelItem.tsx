@@ -1,4 +1,5 @@
 import {
+	Box,
 	IconButton,
 	SidebarV2Item,
 	SidebarV2ItemAvatarWrapper,
@@ -43,11 +44,6 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 			onPointerEnter={handlePointerEnter}
 		>
 			<SidebarV2ItemCol>
-				{!isRoomFilter && parentRoomId && (
-					<SidebarV2ItemRow>
-						<SidePanelParent room={room} />
-					</SidebarV2ItemRow>
-				)}
 				<SidebarV2ItemRow>
 					{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 					{icon && icon}
@@ -55,7 +51,14 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
-					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					<Box flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText display='flex'>
+						<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					</Box>
+					{!isRoomFilter && parentRoomId && (
+						<Box withTruncatedText maxWidth='50%' flexShrink={1} flexGrow={0} display='flex'>
+							<SidePanelParent room={room} />
+						</Box>
+					)}
 					{badges && badges}
 					{menu && (
 						<SidebarV2ItemMenu>
