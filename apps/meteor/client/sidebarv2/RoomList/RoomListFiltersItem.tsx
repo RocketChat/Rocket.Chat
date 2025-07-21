@@ -8,6 +8,7 @@ import {
 	type SidePanelFiltersKeys,
 	sidePanelFiltersConfig,
 	useSidePanelFilter,
+	useSwitchSidePanelTab,
 } from '../../views/navigation/contexts/RoomsNavigationContext';
 import { useUnreadGroupData } from '../../views/navigation/contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
@@ -15,13 +16,14 @@ import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 type SidebarFiltersItemProps = {
 	group: SidePanelFiltersKeys;
 	icon: IconName;
-	onClick: () => void;
 };
 
-const RoomListFiltersItem = ({ group, icon, onClick }: SidebarFiltersItemProps) => {
+const RoomListFiltersItem = ({ group, icon }: SidebarFiltersItemProps) => {
 	const { t } = useTranslation();
+	const switchSidePanelTab = useSwitchSidePanelTab();
+
 	const unreadGroupCount = useUnreadGroupData(group);
-	const buttonProps = useButtonPattern(onClick);
+	const buttonProps = useButtonPattern(() => switchSidePanelTab(group));
 	const [currentTab] = useSidePanelFilter();
 	const roomTitle = sidePanelFiltersConfig[group].title;
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(unreadGroupCount);
