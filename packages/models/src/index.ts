@@ -133,6 +133,8 @@ export * from './DatabaseWatcher';
 
 export * from './dummy/ReadReceipts';
 
+export * from './lib';
+
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
 
