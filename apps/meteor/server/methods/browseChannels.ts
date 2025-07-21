@@ -66,14 +66,15 @@ const getChannelsAndGroups = async (
 	// get all teams (public & private)
 	let allTeamIds: string[] = [];
 	if (canViewAllPrivateRooms) {
-		// can see all channels (public & private) under all the teams (public & private) 
+		// can see all channels (public & private) under all the teams (public & private)
 		const { records: allTeams } = await Team.listAll({ offset: 0, count: 1000 });
 		allTeamIds = allTeams.map(({ _id }) => _id);
 	} else {
 		// can only see public and the subscripted channels and teams
 		const teams = await Team.getAllPublicTeams();
 		const publicTeamIds = teams.map(({ _id }) => _id);
-		const userTeamsIds = (await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
+		const userTeamsIds =
+			(await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
 		allTeamIds = [...userTeamsIds, ...publicTeamIds];
 	}
 
