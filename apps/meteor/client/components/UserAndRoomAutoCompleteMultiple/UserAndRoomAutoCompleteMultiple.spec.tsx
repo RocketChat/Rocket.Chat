@@ -1,4 +1,3 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { MockedAppRootBuilder } from '@rocket.chat/mock-providers/dist/MockedAppRootBuilder';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { render, screen, waitFor } from '@testing-library/react';
