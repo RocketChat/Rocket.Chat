@@ -1,13 +1,24 @@
-import type { IOutboundProvider, IOutboundProviderMetadata, ValidOutboundProvider } from '@rocket.chat/core-typings';
+import { Apps } from '@rocket.chat/apps';
+import type {
+	IOutboundProvider,
+	ValidOutboundProvider,
+	IOutboundMessageProviderService,
+	IOutboundProviderMetadata,
+} from '@rocket.chat/core-typings';
 import { ValidOutboundProviderList } from '@rocket.chat/core-typings';
 
+import { getOutboundService } from '../../../../../../app/livechat/server/lib/outboundcommunication';
 import { OutboundMessageProvider } from '../../../../../../server/lib/OutboundMessageProvider';
 
-export class OutboundMessageProviderService {
+export class OutboundMessageProviderService implements IOutboundMessageProviderService {
 	private readonly provider: OutboundMessageProvider;
 
 	constructor() {
 		this.provider = new OutboundMessageProvider();
+	}
+
+	get outboundMessageProvider() {
+		return this.provider;
 	}
 
 	private isProviderValid(type: any): type is ValidOutboundProvider {
@@ -22,14 +33,40 @@ export class OutboundMessageProviderService {
 		return this.provider.getOutboundMessageProviders(type);
 	}
 
-	public async getProviderMetadata(id: string): Promise<IOutboundProviderMetadata> {
-		const provider = this.provider.getProviderById(id);
+	public getProviderMetadata(providerId: string): Promise<IOutboundProviderMetadata> {
+		const provider = this.provider.findOneByProviderId(providerId);
 		if (!provider) {
-			throw new Error('Provider Not Found');
+			throw new Error('error-invalid-provider');
 		}
 
-		return provider.getProviderMetadata();
+		return this.getProviderManager().getProviderMetadata(provider.appId, provider.type);
+	}
+
+	private getProviderManager() {
+		if (!Apps.self?.isLoaded()) {
+			throw new Error('apps-engine-not-loaded');
+		}
+
+		const manager = Apps.self?.getManager()?.getOutboundCommunicationProviderManager();
+		if (!manager) {
+			throw new Error('apps-engine-not-configured-correctly');
+		}
+
+		return manager;
+	}
+
+	public sendMessage(providerId: string, body: any) {
+		const provider = this.provider.findOneByProviderId(providerId);
+		if (!provider) {
+			throw new Error('error-invalid-provider');
+		}
+
+		return this.getProviderManager().sendOutboundMessage(provider.appId, provider.type, body);
 	}
 }
 
 export const outboundMessageProvider = new OutboundMessageProviderService();
+
+getOutboundService.patch(() => {
+	return outboundMessageProvider;
+});

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders AppLogsItem without crashing 1`] = `
 <body>
@@ -12,7 +12,6 @@ exports[`renders AppLogsItem without crashing 1`] = `
         style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;"
       >
         <button
-          aria-expanded="false"
           class="rcx-box rcx-box--full rcx-box--focusable rcx-css-wj27h8 rcx-css-ylkbm1"
           role="button"
         >

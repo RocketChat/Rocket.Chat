@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-client",
-	"version": "0.3.29",
+	"version": "0.3.31",
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -29,7 +29,7 @@
 		"/dist"
 	],
 	"volta": {
-		"extends": "../../../package.json"
+		"extends": "../../package.json"
 	},
 	"dependencies": {
 		"@rocket.chat/api-client": "workspace:^",
