@@ -1,4 +1,5 @@
 import { OAuthApps } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -131,7 +132,10 @@ API.v1.addRoute(
 		async post() {
 			try {
 				const { code } = this.bodyParams;
-
+				await api.broadcast('qr-code', {
+					success: false,
+					message: 'QR code verification started',
+				});
 				if (!code) {
 					return API.v1.failure('Code is required');
 				}

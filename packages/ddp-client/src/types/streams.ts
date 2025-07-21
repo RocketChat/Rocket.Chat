@@ -33,12 +33,16 @@ type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface StreamerEvents {
 	'qr-code': [
-		{ 
-			key: 'qr-code'; 
-			args: [string] 
+		{
+			key: 'verify';
+			args: [{
+				success: boolean;
+				message?: string;
+				authId?: string;
+			}]
 		}
 	];
-	
+
 	'roles': [
 		{
 			key: 'roles';

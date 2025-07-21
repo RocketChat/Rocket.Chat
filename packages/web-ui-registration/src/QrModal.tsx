@@ -17,7 +17,7 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     const streamAll = useStream('qr-code');
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     useEffect(() => {
-        return streamAll('qr-code', ([key]) => {
+        return streamAll('verify', (key) => {
             console.log('Received QR code update:', key);
         });
     }, [streamAll]);
