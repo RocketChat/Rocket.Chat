@@ -1,5 +1,5 @@
 import { Icon, SidebarV2Item, SidebarV2ItemBadge, SidebarV2ItemIcon, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
-import { useButtonPattern, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,10 +22,8 @@ const RoomListFiltersItem = ({ group, icon }: SidebarFiltersItemProps) => {
 	const { t } = useTranslation();
 	const switchSidePanelTab = useSwitchSidePanelTab();
 
-	const handleClick = useEffectEvent(() => switchSidePanelTab(group));
-
 	const unreadGroupCount = useUnreadGroupData(group);
-	const buttonProps = useButtonPattern(handleClick);
+	const buttonProps = useButtonPattern(() => switchSidePanelTab(group));
 	const [currentTab] = useSidePanelFilter();
 	const roomTitle = sidePanelFiltersConfig[group].title;
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(unreadGroupCount);
