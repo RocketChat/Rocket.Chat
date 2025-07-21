@@ -59,6 +59,51 @@ const PULSE_ANIMATION_STYLE = `
   --pulse-color-end: rgba(0, 255, 120, 0.45);
 }
 
+.ai-enhancement-suggestion {
+	position: relative;
+	border: 1px dotted #8bb8ff;
+	background-color: rgba(232, 240, 254, 0.5);
+	border-radius: 3px;
+	padding: 1px 2px;
+	margin: -1px -2px;
+	cursor: default;
+	display: inline-block;
+}
+
+.ai-enhancement-suggestion:hover .ai-suggestion-actions {
+	display: flex;
+}
+
+.ai-suggestion-actions {
+	position: absolute;
+	top: -10px;
+	left: -10px;
+	display: none;
+	gap: 2px;
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+	padding: 2px;
+	z-index: 10;
+	line-height: 1;
+}
+
+.ai-suggestion-actions button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	border: none;
+	cursor: pointer;
+	font-size: 10px;
+	background-color: #f0f0f0;
+}
+.ai-suggestion-actions button:hover {
+	background-color: #e0e0e0;
+}
+
 .ai-enhancement-popup {
   display: flex;
   gap: 0;
@@ -156,6 +201,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
       const span = document.createElement('span');
       span.className = `ai-enhancement-transform ai-enhancement-${type}`;
       span.textContent = selectedText;
+      span.dataset.originalText = selectedText;
 
       // Replace range with span.
       range.deleteContents();
@@ -185,7 +231,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
         }, 5000);
       });
 
-      await new Promise<void>((resolve) => {
+      await new Promise<void>((resolveTyping) => {
         const chars = result.split('');
         let idx = 0;
         span.classList.remove('ai-enhancement-transform', `ai-enhancement-${type}`);
@@ -194,12 +240,43 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
           idx += 1;
           if (idx === chars.length) {
             clearInterval(interval);
-            // Re-enable editing.
-            span.removeAttribute('contenteditable');
-            resolve();
+            resolveTyping();
           }
         }, 30);
       });
+
+      const finalTransformedText = span.textContent;
+
+      span.removeAttribute('contenteditable');
+      span.className = 'ai-enhancement-suggestion';
+
+      const actions = document.createElement('div');
+      actions.className = 'ai-suggestion-actions';
+      actions.setAttribute('contenteditable', 'false');
+
+      const acceptBtn = document.createElement('button');
+      acceptBtn.textContent = '✓';
+      acceptBtn.setAttribute('type', 'button');
+      acceptBtn.onclick = () => {
+        if (span.parentNode) {
+          const textNode = document.createTextNode(finalTransformedText || '');
+          span.parentNode.replaceChild(textNode, span);
+        }
+      };
+
+      const rejectBtn = document.createElement('button');
+      rejectBtn.textContent = '✗';
+      rejectBtn.setAttribute('type', 'button');
+      rejectBtn.onclick = () => {
+        if (span.parentNode) {
+          const textNode = document.createTextNode(span.dataset.originalText || '');
+          span.parentNode.replaceChild(textNode, span);
+        }
+      };
+
+      actions.appendChild(acceptBtn);
+      actions.appendChild(rejectBtn);
+      span.appendChild(actions);
     },
     [clearPopup],
   );
