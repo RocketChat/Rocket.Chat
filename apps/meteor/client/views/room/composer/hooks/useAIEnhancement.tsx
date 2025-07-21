@@ -74,17 +74,17 @@ const PULSE_ANIMATION_STYLE = `
 
 .ai-suggestion-summary {
 	background-color: #fffbe6;
-	border: 1px solid #ffe58f;
+	border: 2px dashed rgb(0, 0, 0);
 }
 
 .ai-suggestion-emoji {
 	background-color: #e6f7ff;
-	border: 1px solid #91d5ff;
+	border: 2px dashed rgb(0, 0, 0);
 }
 
 .ai-suggestion-translation {
 	background-color: #f6ffed;
-	border: 1px solid #b7eb8f;
+	border: 2px dashed rgb(0, 0, 0); 
 }
 
 .ai-enhancement-suggestion:hover .ai-suggestion-actions {
