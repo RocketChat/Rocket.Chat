@@ -32,9 +32,6 @@ const outboundCommsEndpoints = API.v1
 										type: 'string',
 									},
 								},
-								documentationUrl: {
-									type: 'string',
-								},
 							},
 						},
 					},
