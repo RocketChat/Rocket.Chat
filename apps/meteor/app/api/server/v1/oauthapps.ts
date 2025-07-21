@@ -8,8 +8,7 @@ import { deleteOAuthApp } from '../../../oauth2-server-config/server/admin/metho
 import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/methods/updateOAuthApp';
 import { API } from '../api';
 import QRCode from 'qrcode';
-import crypto from 'crypto';
-import { generateJWT, isValidJWT } from '/app/utils/server/lib/JWTHelper';
+import { extractValidJWTPayload, generateJWT } from '/app/utils/server/lib/JWTHelper';
 
 API.v1.addRoute(
 	'oauth-apps.list',
@@ -101,7 +100,6 @@ API.v1.addRoute(
 		},
 	},
 );
-
 API.v1.addRoute(
 	'oauth-apps.qrcode-generate',
 	{
@@ -109,16 +107,43 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const uuid = `${crypto.randomUUID()}-${this.bodyParams.sessionId}`;
-			const finalDataToEncode = generateJWT({ context: { clientAddress: this.bodyParams.sessionId, uuid } }, process.env.JWT_SECRET || 'defaultSecret', 60);
-			const qrCodeUrl = await QRCode.toDataURL(finalDataToEncode, {
-				width: 256,
-				margin: 2,
-				color: { dark: '#1f2329', light: '#ffffff' },
-				errorCorrectionLevel: 'M',
-				type: 'image/png',
-			});
-			return API.v1.success(qrCodeUrl);
+			try {
+
+				const { sessionId } = this.bodyParams;
+				if (!sessionId || typeof sessionId !== 'string') {
+					return API.v1.failure('sessionId is required and must be a string');
+				}
+
+				const jwtPayload = {
+					sessionId,
+					timestamp: Date.now(),
+					type: 'qr-auth'
+				};
+
+				const token = generateJWT(jwtPayload, process.env.JWT_SECRET || 'defaultSecret', 60);
+
+				const qrCodeUrl = await QRCode.toDataURL(token, {
+					width: 256,
+					margin: 2,
+					color: { dark: '#1f2329', light: '#ffffff' },
+					errorCorrectionLevel: 'M',
+					type: 'image/png',
+				});
+
+				return API.v1.success({
+					success: true,
+					qrCodeUrl,
+				});
+
+			} catch (error) {
+				console.error('QR code generation error:', error);
+				return API.v1.failure(
+					{
+						success: false,
+						message: 'Failed to generate QR code',
+					}
+				);
+			}
 		},
 	},
 );
@@ -131,25 +156,40 @@ API.v1.addRoute(
 	{
 		async post() {
 			try {
+
 				const { code } = this.bodyParams;
-				await api.broadcast('qr-code', {
-					success: false,
-					message: 'QR code verification started',
+				if (!code || typeof code !== 'string') {
+					return API.v1.failure({
+						success: false,
+						message: 'Code is required and must be a string'
+					});
+				}
+
+				const decoded = extractValidJWTPayload(code, process.env.JWT_SECRET || 'defaultSecret');
+
+				if (!decoded || decoded.context.type !== 'qr-auth') {
+					return API.v1.failure({ success: false, message: 'Invalid token type' });
+				}
+
+				if (decoded && decoded.context.sessionId) {
+					return API.v1.failure({ success: false, message: 'Invalid QR code or session expired' });
+				}
+
+
+				await api.broadcast('qr-code', { // Only success needs to be relayed to web client, failure will be shown to the mobile client.
+					success: true,
+					message: 'QR code verification successful',
+					sessionId: decoded.context.sessionId
 				});
-				if (!code) {
-					return API.v1.failure('Code is required');
-				}
-				const decoded = isValidJWT(code, process.env.JWT_SECRET || 'defaultSecret');
-				// How to stream the QR code verification result to web client using Steamer?
-				if (decoded) {
-					return API.v1.success({ success: true });
-				}
+
+				return API.v1.success({
+					success: true,
+					sessionId: decoded.context.sessionId,
+					message: 'QR code verified successfully'
+				});
+
 			} catch (error) {
-				console.error('Error verifying QR code:', error);
-				return API.v1.failure({
-					success: false,
-					message: 'Invalid QR code or session expired',
-				});
+				return API.v1.failure({ success: false, message: 'QR code verification failed' });
 			}
 		}
 	}

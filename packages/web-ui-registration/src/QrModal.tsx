@@ -1,5 +1,16 @@
 import type { ReactElement } from 'react';
-import { Modal, Button, Box, Throbber, ProgressBar, ModalClose, ModalHeader, ModalIcon, ModalTitle, ModalContent } from '@rocket.chat/fuselage';
+import {
+    Modal,
+    Button,
+    Box,
+    Throbber,
+    ProgressBar,
+    ModalClose,
+    ModalHeader,
+    ModalIcon,
+    ModalTitle,
+    ModalContent
+} from '@rocket.chat/fuselage';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQrCodeQueryHandler } from './hooks/useQrCodeQueryHandler';
 import { useStream } from '@rocket.chat/ui-contexts';
@@ -10,18 +21,13 @@ type QrModalProps = {
 
 const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     const [timeLeft, setTimeLeft] = useState<number>(60);
-    const [_sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
+    const [sessionId, setSessionId] = useState<string>('');
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
     const streamAll = useStream('qr-code');
     const timerRef = useRef<NodeJS.Timeout | null>(null);
-    useEffect(() => {
-        return streamAll('verify', (key) => {
-            console.log('Received QR code update:', key);
-        });
-    }, [streamAll]);
-
+    const initRef = useRef<boolean>(false); // Important because we want to ensure this runs only once
     const generateQrCodeRequest = useQrCodeQueryHandler();
 
     const generateQrCode = useCallback(async () => {
@@ -42,8 +48,18 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     }, [generateQrCodeRequest]);
 
     useEffect(() => {
-        generateQrCode();
-    }, [generateQrCode]);
+        if (!initRef.current) {
+            initRef.current = true;
+            generateQrCode();
+        }
+    }, []); 
+
+    useEffect(() => {
+        if (!sessionId) return;
+        return streamAll(`${sessionId}/verify`, (key) => {
+            console.log('Received QR code update:', key);
+        });
+    }, [streamAll, sessionId]);
 
     useEffect(() => {
         return () => {
@@ -58,21 +74,23 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
             clearTimeout(timerRef.current);
         }
 
-        if (timeLeft <= 0) {
+        if (timeLeft <= 0 && initRef.current) {
             generateQrCode();
             return;
         }
 
-        timerRef.current = setTimeout(() => {
-            setTimeLeft(prev => prev - 1);
-        }, 1000);
+        if (timeLeft > 0) {
+            timerRef.current = setTimeout(() => {
+                setTimeLeft(prev => prev - 1);
+            }, 1000);
+        }
 
         return () => {
             if (timerRef.current) {
                 clearTimeout(timerRef.current);
             }
         };
-    }, [timeLeft, generateQrCode]);
+    }, [timeLeft]);
 
     const formatTime = (seconds: number): string => {
         const mins = Math.floor(seconds / 60);

@@ -34,7 +34,7 @@ type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 export interface StreamerEvents {
 	'qr-code': [
 		{
-			key: 'verify';
+			key: `${string}/verify`;
 			args: [{
 				success: boolean;
 				message?: string;

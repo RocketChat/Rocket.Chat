@@ -9,7 +9,8 @@ export const useQrCodeQueryHandler = () => {
             const data = await getQrCode({
                 sessionId
             });
-            return data as string;
+            if (!data.success) throw new Error('Failed to generate QR code');
+            return data.qrCodeUrl as string;
         } catch (error) {
             throw error;
         }

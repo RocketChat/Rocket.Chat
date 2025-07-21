@@ -31,9 +31,13 @@ export type OAuthAppsEndpoint = {
 	};
 
 	'/v1/oauth-apps.qrcode-generate': {
-		POST: (params: { sessionId: string }) => string;
+		POST: (params: { sessionId: string }) => {
+			success: boolean;
+			qrCodeUrl?: string;
+			message?: string;
+		};
 	};
-	
+
 	'/v1/oauth-apps.qrcode-verify': {
 		POST: (params: { code: string }) => { success: boolean; message?: string };
 	};
