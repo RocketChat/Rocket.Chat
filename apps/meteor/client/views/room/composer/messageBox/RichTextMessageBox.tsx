@@ -52,6 +52,7 @@ import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
+import { useAIEnhancement } from '../hooks/useAIEnhancement';
 
 // The first boolean will be used to enable/disable the send button
 // The second boolean will be used to show/hide the placeholder
@@ -195,6 +196,9 @@ const RichTextMessageBox = ({
 
 	/* NEW: contenteditableRef */
 	const contentEditableRef = useRef<HTMLDivElement>(null);
+
+	// AI Enhancement popup hook
+	const aiPopup = useAIEnhancement(contentEditableRef);
 
 	const messageComposerRef = useRef<HTMLElement>(null);
 
@@ -495,6 +499,7 @@ const RichTextMessageBox = ({
 
 	return (
 		<>
+			{aiPopup}
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
 			{shouldPopupPreview && popup.option && (
 				<ComposerBoxPopup
