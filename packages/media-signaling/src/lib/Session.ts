@@ -1,3 +1,4 @@
+import type { DefaultEventMap } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { IWebRTCProcessor } from '../definition/IWebRTCProcessor';
@@ -8,11 +9,7 @@ import type { MediaSignalRequest } from '../definition/MediaSignalRequest';
 import { createRandomToken } from './utils/createRandomToken';
 import type { MediaSignalHeaderParams } from '../definition/MediaSignalHeader';
 
-type MediaSignalingEvents = {
-	'state/changed': void;
-};
-
-export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
+export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEventMap> extends Emitter<EventMap> {
 	private _sessionId: string;
 
 	private _userId: string;
@@ -49,10 +46,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		return true;
 	}
-
-	// private changeState() {
-	// 	this.emit('state/changed');
-	// }
 
 	private async processRequest(signal: MediaSignalRequest) {
 		if (!signal.sessionId) {

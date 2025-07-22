@@ -7831,7 +7831,13 @@ __metadata:
   resolution: "@rocket.chat/media-signaling@workspace:packages/media-signaling"
   dependencies:
     "@rocket.chat/emitter": "npm:~0.31.25"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/jest": "npm:~30.0.0"
     ajv: "npm:^8.17.1"
+    eslint: "npm:~8.45.0"
+    jest: "npm:~30.0.5"
+    typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
 
@@ -9253,6 +9259,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/styled": "npm:~0.32.0"
     "@rocket.chat/tsconfig": "workspace:*"
