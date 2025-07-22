@@ -37,6 +37,7 @@ import {
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChanged,
 	notifyOnSubscriptionChanged,
+	notifyOnRoomChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
@@ -277,6 +278,9 @@ export async function removeOmnichannelRoom(rid: string) {
 
 	if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
 		void notifyOnLivechatInquiryChanged(inquiry, 'removed');
+	}
+	if (result[4]?.status === 'fulfilled' && result[4].value?.deletedCount) {
+		void notifyOnRoomChanged(room, 'removed');
 	}
 
 	for (const r of result) {
