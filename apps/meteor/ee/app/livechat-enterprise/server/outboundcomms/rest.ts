@@ -1,4 +1,4 @@
-import type { IOutboundMessage, IOutboundProviderMetadata } from '@rocket.chat/core-typings';
+import type { IOutboundMessage, IOutboundProvider, IOutboundProviderMetadata } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { OutboundCommsEndpoints } from '../api/outbound';
@@ -25,6 +25,48 @@ const GETOutboundProviderSchema = {
 	additionalProperties: false,
 };
 export const isGETOutboundProviderParams = ajv.compile<GETOutboundProviderParams>(GETOutboundProviderSchema);
+
+const isGETOutboundProvidersResponse = {
+	type: 'object',
+	properties: {
+		providers: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					providerId: {
+						type: 'string',
+					},
+					providerName: {
+						type: 'string',
+					},
+					supportsTemplates: {
+						type: 'boolean',
+					},
+					providerType: {
+						type: 'string',
+					},
+				},
+			},
+		},
+	},
+};
+export const GETOutboundProvidersResponseSchema = ajv.compile<{ providers: IOutboundProvider[]}>(isGETOutboundProvidersResponse);
+
+const isOutboundProviderBadRequestError = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+		message: {
+			type: 'string',
+		},
+	},
+};
+export const IsOutboundProviderBadRequestErrorSchema = ajv.compile<{ success: boolean; message: string }>(
+	isOutboundProviderBadRequestError,
+);
 
 type POSTOutboundMessageParams = {
 	message: IOutboundMessage;

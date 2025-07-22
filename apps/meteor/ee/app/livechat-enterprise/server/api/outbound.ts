@@ -1,8 +1,10 @@
-import type { IOutboundProvider } from '@rocket.chat/core-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
-
 import { API } from '../../../../../app/api/server';
-import { isGETOutboundProviderParams, isOutboundProviderMetadataSchema } from '../outboundcomms/rest';
+import {
+	GETOutboundProvidersResponseSchema,
+	isGETOutboundProviderParams,
+	IsOutboundProviderBadRequestErrorSchema,
+	isOutboundProviderMetadataSchema,
+} from '../outboundcomms/rest';
 import { outboundMessageProvider } from './lib/outbound';
 import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
 
@@ -11,31 +13,8 @@ const outboundCommsEndpoints = API.v1
 		'omnichannel/outbound/providers',
 		{
 			response: {
-				200: ajv.compile<{ providers: IOutboundProvider[] }>({
-					type: 'object',
-					properties: {
-						providers: {
-							type: 'array',
-							items: {
-								type: 'object',
-								properties: {
-									providerId: {
-										type: 'string',
-									},
-									providerName: {
-										type: 'string',
-									},
-									supportsTemplates: {
-										type: 'boolean',
-									},
-									providerType: {
-										type: 'string',
-									},
-								},
-							},
-						},
-					},
-				}),
+				200: GETOutboundProvidersResponseSchema,
+				400: IsOutboundProviderBadRequestErrorSchema,
 			},
 			query: isGETOutboundProviderParams,
 			authRequired: true,
@@ -54,6 +33,7 @@ const outboundCommsEndpoints = API.v1
 		{
 			response: {
 				200: isOutboundProviderMetadataSchema,
+				400: IsOutboundProviderBadRequestErrorSchema,
 			},
 			authRequired: true,
 		},
