@@ -119,6 +119,9 @@ export const AppPermissions = {
 		read: { name: 'oauth-app.read' },
 		write: { name: 'oauth-app.write' },
 	},
+	'outboundComms': {
+		provide: { name: 'outbound-communication.provide' },
+	},
 };
 
 /**

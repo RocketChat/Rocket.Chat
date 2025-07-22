@@ -1,13 +1,13 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "16.0.0",
+	"version": "16.0.2",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.26.10",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.64.0",
-		"@rocket.chat/fuselage-hooks": "^0.36.0",
+		"@rocket.chat/fuselage": "^0.65.0",
+		"@rocket.chat/fuselage-hooks": "^0.37.0",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "^0.43.0",

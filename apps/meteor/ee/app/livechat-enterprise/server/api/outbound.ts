@@ -30,6 +30,9 @@ const outboundCommsEndpoints = API.v1.get(
 								providerType: {
 									type: 'string',
 								},
+								documentationUrl: {
+									type: 'string',
+								},
 							},
 						},
 					},
