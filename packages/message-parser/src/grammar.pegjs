@@ -79,7 +79,7 @@ TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
 Unixtime = d:Digit |10| { return d.join(''); }
 
-ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| "Z" { return new Date(year.join('') + '-' + month.join('') + '-' + day.join('') + 'T' + hours.join('') + ':' + minutes.join('') + ':' + seconds.join('') + '.' + milliseconds.join('') + 'Z').getTime(); }
+ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| "Z" { return new Date(year.join('') + '-' + month.join('') + '-' + day.join('') + 'T' + hours.join('') + ':' + minutes.join('') + ':' + seconds.join('') + '.' + milliseconds.join('') + 'Z').getTime().toString(); }
 
 Timestamp = "<t:" date:(Unixtime / ISO8601Date) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date) ">" { return timestamp(date); }
 /**
