@@ -1,6 +1,5 @@
 import type { IIntegration, IIntegrationHistory } from '@rocket.chat/core-typings';
 
-import type { IntegrationsCreateProps } from './IntegrationsCreateProps';
 import type { IntegrationsGetProps } from './IntegrationsGetProps';
 import type { IntegrationsHistoryProps } from './IntegrationsHistoryProps';
 import type { IntegrationsListProps } from './IntegrationsListProps';
@@ -9,10 +8,7 @@ import type { IntegrationsUpdateProps } from './IntegrationsUpdateProps';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export type IntegrationsEndpoints = {
-	'/v1/integrations.create': {
-		POST: (params: IntegrationsCreateProps) => { integration: IIntegration };
-	};
-
+	
 	'/v1/integrations.history': {
 		GET: (params: IntegrationsHistoryProps) => PaginatedResult<{
 			history: IIntegrationHistory[];
