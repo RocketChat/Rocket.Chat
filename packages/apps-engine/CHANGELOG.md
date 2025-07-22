@@ -1,5 +1,17 @@
 # @rocket.chat/apps-engine
 
+## 1.54.0-rc.0
+
+### Minor Changes
+
+- ([#36377](https://github.com/RocketChat/Rocket.Chat/pull/36377)) Adds new endpoints for outbound communications
+
+- ([#36403](https://github.com/RocketChat/Rocket.Chat/pull/36403)) Adds a button to the apps logs UI that exports logs as a downloadable file
+
+### Patch Changes
+
+- ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
 ## 1.53.0
 
 ### Minor Changes
