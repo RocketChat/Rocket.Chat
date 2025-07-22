@@ -20,8 +20,8 @@ type ChatPostMessageOptions = TypedOptions & {
 	authRequired: true;
 };
 
-type Post = 'POST'; // try with GET method
-type Path = 'v1/chat.postMessage';
+type Post = 'POST';
+type Path = '/v1/chat.postMessage';
 type Options = ChatPostMessageOptions;
 
 // --- Expected ActionThis shape (single source of truth) ---
@@ -54,15 +54,15 @@ type ExpectedActionThis = {
 // --- Type-level assertions ---
 type ChatPostMessageThis = TypedThis<Options, Path>;
 type TestChatPostMessageBodyParams = IsTypeEqual<ChatPostMessageThis['bodyParams'], IChatPostMessageBody>;
-true as TestChatPostMessageBodyParams;
+true satisfies TestChatPostMessageBodyParams;
 
 type ActionType = Action<Post, Path, Options>;
 type ActionThisType = ExtractThis<Exclude<ActionType, undefined>>;
 type TestActionBodyParams = IsTypeEqual<ActionThisType['bodyParams'], ExpectedActionThis['bodyParams']>;
-true as TestActionBodyParams;
+true satisfies TestActionBodyParams;
 
 type InnerActionType = InnerAction<Post, Path, Options>;
 type ExpectedInnerActionThis = Mutable<ExpectedActionThis>;
 type InnerActionThisType = ExtractThis<Exclude<InnerActionType, undefined>>;
 type TestInnerActionBodyParams = IsTypeEqual<InnerActionThisType['bodyParams'], ExpectedInnerActionThis['bodyParams']>;
-true as TestInnerActionBodyParams;
+true satisfies TestInnerActionBodyParams;
