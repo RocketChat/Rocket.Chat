@@ -12,6 +12,11 @@ type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 interface IChatPostMessageBody {
 	channal: string;
 	text: string;
+	attachments?: Array<{
+		text: string;
+		color?: string;
+		image_url?: string;
+	}>;
 }
 type ChatPostMessageBodyValidator = ValidateFunction<IChatPostMessageBody>;
 
@@ -31,7 +36,7 @@ type ExpectedActionThis = {
 	urlParams: never;
 	readonly response: Response;
 	readonly queryParams: Record<string, string>;
-	readonly bodyParams: IChatPostMessageBody;
+	readonly bodyParams: ChatPostMessageBodyValidator;
 	readonly request: Request;
 	readonly queryOperations: never;
 	parseJsonQuery: () => Promise<{
