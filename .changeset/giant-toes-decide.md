@@ -1,6 +1,5 @@
 ---
-"@rocket.chat/meteor": patch
-"@rocket.chat/apps-engine": patch
+"@rocket.chat/meteor": minor
 ---
 
 Adds an endpoint to fetch a Outbound Comms Provider's metadata.
