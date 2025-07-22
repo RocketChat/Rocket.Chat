@@ -121,12 +121,8 @@ export const AutoTranslate = {
 			}
 		});
 
-		Subscriptions.find().observeChanges({
-			changed: (_id: string, fields: ISubscription) => {
-				if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
-					mem.clear(this.findSubscriptionByRid);
-				}
-			},
+		Subscriptions.use.subscribe(() => {
+			mem.clear(this.findSubscriptionByRid);
 		});
 
 		this.initialized = true;
