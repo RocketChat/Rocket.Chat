@@ -111,6 +111,10 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			return Palette.statusColor['status-font-on-warning'].toString();
 		}
 
+		if (status.type === 'danger') {
+			return Palette.statusColor['status-font-on-danger'].toString();
+		}
+
 		return Palette.text['font-default'].toString();
 	};
 
