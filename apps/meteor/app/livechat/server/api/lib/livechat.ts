@@ -228,7 +228,11 @@ export function onCheckRoomParams(params: any): any {
 // External settings from HUB
 function getHubConfig(id: number) {
 	try {
-		const { data } = HTTP.get(`https://xvf309bg-52357.use.devtunnels.ms/api/livechat-widgets/config/${id}`);
+		const { data } = HTTP.get(`https://apigateway.ultatel.com/uthub/api/livechat-widgets/config/${id}`, {
+			headers: {
+				'X-Client-Url': `${Meteor.absoluteUrl()}`,
+			},
+		});
 		return data;
 	} catch (err: any) {
 		console.error('Error fetching external config:', err.message);
