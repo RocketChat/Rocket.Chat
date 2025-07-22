@@ -51,7 +51,7 @@ const isGETOutboundProvidersResponse = {
 		},
 	},
 };
-export const GETOutboundProvidersResponseSchema = ajv.compile<{ providers: IOutboundProvider[]}>(isGETOutboundProvidersResponse);
+export const GETOutboundProvidersResponseSchema = ajv.compile<{ providers: IOutboundProvider[] }>(isGETOutboundProvidersResponse);
 
 const isOutboundProviderBadRequestError = {
 	type: 'object',
