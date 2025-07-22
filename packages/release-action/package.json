@@ -20,7 +20,7 @@
 		"@octokit/core": "^5.0.1",
 		"@octokit/plugin-throttling": "^6.1.0",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.0",
 		"mdast-util-to-string": "2.0.0",
 		"remark-parse": "9.0.0",
 		"remark-stringify": "9.0.1",

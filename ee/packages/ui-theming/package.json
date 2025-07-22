@@ -13,7 +13,7 @@
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"@types/react": "~18.3.23",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",

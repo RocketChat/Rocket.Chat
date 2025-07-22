@@ -51,7 +51,7 @@
     "@typescript-eslint/eslint-plugin": "~5.60.1",
     "@typescript-eslint/parser": "~5.60.1",
     "@vitejs/plugin-react": "~4.5.2",
-    "eslint": "~8.45.0",
+    "eslint": "~8.57.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "typescript": "~5.8.3",

@@ -5,7 +5,7 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/jest": "~29.5.14",
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.0",
 		"jest": "~30.0.2",
 		"mongodb": "6.10.0",
 		"typescript": "~5.8.3"

@@ -4,7 +4,7 @@
 	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.0",
 		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},

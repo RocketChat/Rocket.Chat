@@ -5,7 +5,7 @@
 	"devDependencies": {
 		"@types/chalk": "^2.2.4",
 		"@types/ejson": "^2.2.2",
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.0",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {

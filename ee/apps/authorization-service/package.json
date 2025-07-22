@@ -42,7 +42,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/polka": "^0.5.7",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.0",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.8.3"
 	},

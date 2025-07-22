@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@types/node-rsa": "^1.1.4",
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.0",
 		"mongodb": "6.10.0",
 		"typescript": "~5.8.3"
 	},

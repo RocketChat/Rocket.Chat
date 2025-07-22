@@ -81,7 +81,7 @@
 		"@types/react-dom": "~18.3.7",
 		"babel-loader": "~9.2.1",
 		"cross-env": "^7.0.3",
-		"eslint": "~8.45.0",
+		"eslint": "~8.57.0",
 		"i18next": "^23.10.1",
 		"jest": "~30.0.2",
 		"normalize.css": "^8.0.1",
