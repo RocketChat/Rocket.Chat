@@ -7107,6 +7107,8 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/media-signaling": "workspace:^"
+    "@rocket.chat/media-signaling-server": "workspace:^"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
@@ -7807,12 +7809,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/media-signaling-server@workspace:packages/media-signaling-server":
+"@rocket.chat/media-signaling-server@workspace:^, @rocket.chat/media-signaling-server@workspace:packages/media-signaling-server":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/media-signaling-server@workspace:packages/media-signaling-server"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -7828,12 +7831,7 @@ __metadata:
   resolution: "@rocket.chat/media-signaling@workspace:packages/media-signaling"
   dependencies:
     "@rocket.chat/emitter": "npm:~0.31.25"
-    "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/tsconfig": "workspace:*"
-    "@types/jest": "npm:~30.0.0"
-    eslint: "npm:~8.45.0"
-    jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    ajv: "npm:^8.17.1"
   languageName: unknown
   linkType: soft
 
@@ -7939,6 +7937,8 @@ __metadata:
     "@rocket.chat/log-format": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/logo": "npm:^0.32.2"
+    "@rocket.chat/media-signaling": "workspace:^"
+    "@rocket.chat/media-signaling-server": "workspace:^"
     "@rocket.chat/memo": "npm:~0.31.25"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/mock-providers": "workspace:^"
@@ -8766,6 +8766,7 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:~"
+    "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/jest": "npm:~30.0.0"

@@ -23,7 +23,8 @@ export async function processAccept(_signal: MediaSignalNotify<'accept'>, call: 
 		}
 
 		const newSequence = await getNewCallSequence(channel.callId);
-		await sendSignalToChannel(newSequence.sequence, channel, {
+		await sendSignalToChannel(channel, {
+			sequence: newSequence.sequence,
 			type: 'notify',
 			body: {
 				notify: 'state',
@@ -33,7 +34,8 @@ export async function processAccept(_signal: MediaSignalNotify<'accept'>, call: 
 
 		const otherChannel = await getOppositeChannel(call, channel);
 		if (otherChannel && isValidSignalChannel(otherChannel)) {
-			await sendSignalToChannel(newSequence.sequence, otherChannel, {
+			await sendSignalToChannel(otherChannel, {
+				sequence: newSequence.sequence,
 				type: 'notify',
 				body: {
 					notify: 'state',

@@ -25,5 +25,8 @@
 	],
 	"dependencies": {
 		"@rocket.chat/emitter": "~0.31.25"
+	},
+	"devDependencies": {
+		"ajv": "^8.17.1"
 	}
 }

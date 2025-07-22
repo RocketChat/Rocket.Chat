@@ -5,6 +5,7 @@ import { EnterpriseSettings } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import type { MediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../app/settings/server/cached';
@@ -143,6 +144,10 @@ export class ListenersModule {
 				notifications.notifyUserInThisInstance(userId, 'video-conference', { action, params });
 			},
 		);
+
+		service.onEvent('user.media-signal', ({ userId, signal }: { userId: string; signal: MediaSignal }) => {
+			notifications.notifyUserInThisInstance(userId, 'media-signal', signal);
+		});
 
 		service.onEvent('room.video-conference', ({ rid, callId }) => {
 			/* deprecated */

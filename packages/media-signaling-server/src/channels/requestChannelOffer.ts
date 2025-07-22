@@ -10,7 +10,8 @@ export async function requestChannelOffer(channel: IMediaCallChannel, params?: R
 
 	const call = await getNewCallSequence(channel.callId);
 
-	await sendSignalToChannel(call.sequence, channel, {
+	await sendSignalToChannel(channel, {
+		sequence: call.sequence,
 		type: 'request',
 		body: {
 			request: 'offer',

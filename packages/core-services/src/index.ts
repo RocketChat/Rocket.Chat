@@ -14,6 +14,7 @@ import type { IFederationService, IFederationServiceEE } from './types/IFederati
 import type { IImportService } from './types/IImportService';
 import type { ILDAPService } from './types/ILDAPService';
 import type { ILicense } from './types/ILicense';
+import type { IMediaCallService } from './types/IMediaCallService';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IMessageReadsService } from './types/IMessageReadsService';
 import type { IMessageService } from './types/IMessageService';
@@ -104,6 +105,7 @@ export {
 	IOmnichannelVoipService,
 	IPresence,
 	IPushService,
+	IMediaCallService,
 	IMessageReadsService,
 	IRoomService,
 	ISAUMonitorService,
@@ -161,6 +163,7 @@ export const Team = proxify<ITeamService>('team');
 export const MessageReads = proxify<IMessageReadsService>('message-reads');
 export const Room = proxify<IRoomService>('room');
 export const Media = proxify<IMediaService>('media');
+export const MediaCall = proxify<IMediaCallService>('media-call');
 export const VoipAsterisk = proxify<IVoipService>('voip-asterisk');
 export const VoipFreeSwitch = proxify<IVoipFreeSwitchService>('voip-freeswitch');
 export const LivechatVoip = proxify<IOmnichannelVoipService>('omnichannel-voip');

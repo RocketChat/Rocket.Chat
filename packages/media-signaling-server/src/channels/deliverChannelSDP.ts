@@ -12,7 +12,8 @@ export async function deliverChannelSDP(channel: IMediaCallChannel, params: Deli
 
 	// If the sdp is an offer, send an answer request, otherwise simply deliver it
 	if (params.sdp.type === 'offer') {
-		await sendSignalToChannel(call.sequence, channel, {
+		await sendSignalToChannel(channel, {
+			sequence: call.sequence,
 			type: 'request',
 			body: {
 				request: 'answer',
@@ -20,7 +21,8 @@ export async function deliverChannelSDP(channel: IMediaCallChannel, params: Deli
 			},
 		});
 	} else {
-		await sendSignalToChannel(call.sequence, channel, {
+		await sendSignalToChannel(channel, {
+			sequence: call.sequence,
 			type: 'deliver',
 			body: {
 				deliver: 'sdp',

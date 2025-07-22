@@ -3,7 +3,7 @@ import { MediaCalls, Users } from '@rocket.chat/models';
 
 import { createInitialChannel } from '../channels/createInitialChannel';
 
-export async function createCall(caller: MediaCallActor, callee: MediaCallActor): Promise<void> {
+export async function createCall(caller: MediaCallActor, callee: MediaCallActor): Promise<IMediaCall> {
 	if (caller.type !== 'user' || callee.type !== 'user') {
 		throw new Error('not-implemented');
 	}
@@ -40,12 +40,20 @@ export async function createCall(caller: MediaCallActor, callee: MediaCallActor)
 	};
 
 	const insertResult = await MediaCalls.insertOne(call);
-	if (insertResult.insertedId) {
-		await Promise.allSettled([
-			createInitialChannel(insertResult.insertedId, caller, { role: 'caller' }, callerUser),
-			createInitialChannel(insertResult.insertedId, callee, { role: 'callee' }, calleeUser),
-		]);
+	if (!insertResult.insertedId) {
+		throw new Error('failed-to-create-call');
 	}
 
-	console.log(insertResult);
+	await Promise.allSettled([
+		createInitialChannel(insertResult.insertedId, caller, { role: 'caller' }, callerUser),
+		createInitialChannel(insertResult.insertedId, callee, { role: 'callee' }, calleeUser),
+	]);
+
+	const insertedCall = await MediaCalls.findOneById(insertResult.insertedId);
+
+	if (!insertedCall) {
+		throw new Error('failed-to-create-call');
+	}
+
+	return insertedCall;
 }

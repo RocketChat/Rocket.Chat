@@ -153,12 +153,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 				break;
 			case 'ack':
 				break;
-			case 'invalid':
-				break;
-			case 'unable':
-				break;
-			case 'empty':
-				break;
+			// case 'invalid':
+			// 	break;
+			// case 'unable':
+			// 	break;
+			// case 'empty':
+			// 	break;
 			case 'state':
 				break;
 			case 'unavailable':

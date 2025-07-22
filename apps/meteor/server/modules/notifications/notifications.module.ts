@@ -308,6 +308,11 @@ export class NotificationsModule {
 				});
 			}
 
+			if (e === 'media-signal') {
+				console.log('allowWrite', data);
+				return true;
+			}
+
 			return Boolean(this.userId);
 		});
 		this.streamUser.allowRead(async function (eventName) {
