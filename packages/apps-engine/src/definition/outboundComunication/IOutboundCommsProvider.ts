@@ -1,3 +1,4 @@
+import { IHttp, IModify, IPersistence, IRead } from '../accessors';
 import type { IOutboundMessage } from './IOutboundMessage';
 import type { IOutboundProviderTemplate } from './IOutboundProviderTemplate';
 
@@ -14,12 +15,12 @@ interface IOutboundMessageProviderBase {
 	name: string;
 	documentationUrl?: string;
 	supportsTemplates?: boolean;
-	sendOutboundMessage(message: IOutboundMessage): Promise<void>;
+	sendOutboundMessage(message: IOutboundMessage, read: IRead, modify: IModify, http: IHttp, persistence: IPersistence): Promise<void>;
 }
 
 export interface IOutboundPhoneMessageProvider extends IOutboundMessageProviderBase {
 	type: 'phone';
-	getProviderMetadata(): Promise<ProviderMetadata>;
+	getProviderMetadata(read: IRead, modify: IModify, http: IHttp, persistence: IPersistence): Promise<ProviderMetadata>;
 }
 
 /*
