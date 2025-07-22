@@ -10,3 +10,5 @@ export { useOmnichannelShowQueueLink } from './hooks/useOmnichannelShowQueueLink
 export { useQueuedInquiries } from './hooks/useQueuedInquiries';
 export { useOmnichannelPriorities } from './hooks/useOmnichannelPriorities';
 export { useIsRoomOverMacLimit } from './hooks/useIsRoomOverMacLimit';
+
+export { mockOmnichannelProvider } from './testing/mockOmnichannelProvider';

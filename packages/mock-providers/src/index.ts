@@ -9,4 +9,3 @@ export * from './MockedServerContext';
 export * from './MockedSettingsContext';
 export * from './MockedUserContext';
 export * from './MockedDeviceContext';
-export * from './MockedOmnichannelContext';
