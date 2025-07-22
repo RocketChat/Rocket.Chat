@@ -25,3 +25,16 @@ test.each([
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });
+
+test.each([
+  [
+    '<t:2025-07-22T10:00:00.000Z:R>',
+    [paragraph([timestamp('2025-07-22T10:00:00.000Z', 'R')])],
+  ],
+  [
+    '<t:2025-07-22T10:00:00.000Z:R>',
+    [paragraph([timestamp('2025-07-22T10:00:00.000Z', 'R')])],
+  ],
+])('parses %p', (input, output) => {
+  expect(parse(input)).toMatchObject(output);
+});

@@ -79,7 +79,10 @@ TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
 Unixtime = d:Digit |10| { return d.join(''); }
 
-Timestamp = "<t:" date:Unixtime ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:Unixtime ">" { return timestamp(date); }
+// <t:2025-07-22T10:00:00.000Z:R>
+ISO8601Date = year1:Digit year2:Digit year3:Digit year4:Digit "-" month1:Digit month2:Digit "-" day1:Digit day2:Digit "T" hour1:Digit hour2:Digit ":" minute1:Digit minute2:Digit ":" second1:Digit second2:Digit "." millisecond1:Digit millisecond2:Digit millisecond3:Digit "Z" { return year1 + year2 + year3 + year4 + '-' + month1 + month2 + '-' + day1 + day2 + 'T' + hour1 + hour2 + ':' + minute1 + minute2 + ':' + second1 + second2 + '.' + millisecond1 + millisecond2 + millisecond3 + 'Z'; }
+
+Timestamp = "<t:" date:(Unixtime / ISO8601Date) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date) ">" { return timestamp(date); }
 
 /**
  *
