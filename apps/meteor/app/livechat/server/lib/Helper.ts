@@ -641,7 +641,10 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		(department?.allowReceiveForwardOffline && !(await checkOnlineAgents(departmentId))) ||
 		settings.get('Livechat_waiting_queue')
 	) {
-		logger.debug(`Room ${room._id} will be on department queue`);
+		logger.debug({
+			msg: 'Room will be on department queue',
+			roomId: room._id,
+		});
 		await saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId, true);
 	}
