@@ -7984,6 +7984,7 @@ __metadata:
     "@rocket.chat/ui-composer": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
+    "@rocket.chat/ui-omnichannel": "workspace:~"
     "@rocket.chat/ui-theming": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/ui-voip": "workspace:^"
@@ -8296,6 +8297,7 @@ __metadata:
     "@rocket.chat/mongo-adapter": "workspace:~"
     "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:^"
+    "@rocket.chat/ui-omnichannel": "workspace:~"
     "@rocket.chat/ui-video-conf": "workspace:*"
     "@storybook/react": "npm:^8.6.14"
     "@tanstack/react-query": "npm:~5.65.1"
@@ -9125,6 +9127,21 @@ __metadata:
     typia: "npm:~9.3.1"
   peerDependencies:
     "@rocket.chat/icons": "*"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/ui-omnichannel@workspace:packages/ui-omnichannel, @rocket.chat/ui-omnichannel@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-omnichannel@workspace:packages/ui-omnichannel"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:~"
+    "@types/react": "npm:~18.3.17"
+    eslint: "npm:~8.45.0"
+    react: "npm:~18.3.1"
+    typescript: "npm:~5.8.3"
+  peerDependencies:
+    "@rocket.chat/core-typings": "workspace:~"
+    react: ~18.3.1
   languageName: unknown
   linkType: soft
 
@@ -12124,7 +12141,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:~18.3.23":
+"@types/react@npm:*, @types/react@npm:~18.3.17, @types/react@npm:~18.3.23":
   version: 18.3.23
   resolution: "@types/react@npm:18.3.23"
   dependencies:

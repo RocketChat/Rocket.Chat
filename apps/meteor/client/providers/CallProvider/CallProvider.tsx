@@ -44,7 +44,7 @@ type CallProviderProps = {
 	children?: ReactNode;
 };
 
-export const CallProvider = ({ children }: CallProviderProps) => {
+const CallProvider = ({ children }: CallProviderProps) => {
 	const [clientState, setClientState] = useState<'registered' | 'unregistered'>('unregistered');
 
 	const voipEnabled = useSetting('VoIP_Enabled');
@@ -547,3 +547,5 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 		</CallContext.Provider>
 	);
 };
+
+export default CallProvider;

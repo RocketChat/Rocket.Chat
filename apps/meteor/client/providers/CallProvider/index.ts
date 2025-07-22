@@ -1,1 +1,1 @@
-export * from './CallProvider';
+export { default } from './CallProvider';

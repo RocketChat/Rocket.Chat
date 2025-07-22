@@ -1,10 +1,10 @@
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useEndpoint, useMethod, useToastMessageDispatch, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useOmnichannelAgentAvailable } from '@rocket.chat/ui-omnichannel';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
-import { useOmnichannelAgentAvailable } from '../../../../hooks/omnichannel/useOmnichannelAgentAvailable';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
 export const ComposerOmnichannelInquiry = (): ReactElement => {

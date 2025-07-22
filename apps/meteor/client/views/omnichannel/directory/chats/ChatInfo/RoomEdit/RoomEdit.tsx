@@ -2,6 +2,7 @@ import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.cha
 import { Field, FieldLabel, FieldRow, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useOmnichannelPriorities } from '@rocket.chat/ui-omnichannel';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
@@ -10,7 +11,6 @@ import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/
 import { ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import Tags from '../../../../../../components/Omnichannel/Tags';
 import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
-import { useOmnichannelPriorities } from '../../../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';

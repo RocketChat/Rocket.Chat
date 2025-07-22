@@ -1,11 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useOmnichannelPriorities } from '@rocket.chat/ui-omnichannel';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useOmnichannelPriorities } from './useOmnichannelPriorities';
 import { roomsQueryKeys } from '../../lib/queryKeys';
 import { dispatchToastMessage } from '../../lib/toast';
 import { PRIORITY_ICONS } from '../priorities/PriorityIcon';

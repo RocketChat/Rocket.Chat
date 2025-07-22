@@ -1,7 +1,7 @@
 import type { OmichannelRoutingConfig, Inquiries, ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
-export type OmnichannelContextValue = {
+type OmnichannelContextValue = {
 	inquiries: Inquiries;
 	enabled: boolean;
 	isEnterprise: boolean;

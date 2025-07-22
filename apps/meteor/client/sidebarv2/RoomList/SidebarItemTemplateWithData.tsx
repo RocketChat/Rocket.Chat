@@ -3,6 +3,7 @@ import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, is
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
+import { useOmnichannelPriorities } from '@rocket.chat/ui-omnichannel';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
@@ -11,7 +12,6 @@ import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
-import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
