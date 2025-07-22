@@ -481,11 +481,3 @@ test.describe('private-teams-override', () => {
 		});
 	});
 });
-
-// await page.getByRole('button', { name: 'Directory', exact: true }).click();
-// await page.getByRole('tab', { name: 'Teams' }).click();
-// await page.getByRole('link', { name: 'E2EEWithoutAdminTeam' }).click();
-// await page.getByRole('toolbar', { name: 'Primary Room actions' }).getByLabel('Options').click();
-// await page.getByText('Teams Members').click();
-// await page.getByRole('button', { name: 'Online' }).click();
-// await page.getByText('All', { exact: true }).click();
