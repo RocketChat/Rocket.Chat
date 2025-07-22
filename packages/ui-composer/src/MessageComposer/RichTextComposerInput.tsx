@@ -55,10 +55,11 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				pi={12}
 				pb={16}
 				borderWidth={0}
-				is='div'
+				is='span'
 				contentEditable
 				suppressContentEditableWarning
 				style={{
+					display: 'block',
 					whiteSpace: 'pre-wrap',
 					cursor: 'text',
 					overflowY: 'scroll',
