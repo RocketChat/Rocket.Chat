@@ -1,5 +1,4 @@
 import {
-	Box,
 	IconButton,
 	SidebarV2Item,
 	SidebarV2ItemAvatarWrapper,
@@ -51,14 +50,8 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
-					<Box flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText display='flex'>
-						<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
-					</Box>
-					{!isRoomFilter && parentRoomId && (
-						<Box withTruncatedText maxWidth='50%' flexShrink={1} flexGrow={0} display='flex'>
-							<SidePanelParent room={room} />
-						</Box>
-					)}
+					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					{!isRoomFilter && parentRoomId && <SidePanelParent room={room} />}
 					{badges && badges}
 					{menu && (
 						<SidebarV2ItemMenu>

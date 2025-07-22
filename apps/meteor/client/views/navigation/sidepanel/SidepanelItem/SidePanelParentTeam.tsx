@@ -1,7 +1,7 @@
+import { SidebarV2ItemTag } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import SidePanelTag from './SidePanelTag';
 import SidePanelTagIcon from './SidePanelTagIcon';
 import { useParentTeamData } from './useParentTeamData';
 
@@ -18,10 +18,10 @@ const SidePanelParentTeam = ({ room }: { room: SubscriptionWithRoom }) => {
 	}
 
 	return (
-		<SidePanelTag {...buttonProps}>
+		<SidebarV2ItemTag {...buttonProps}>
 			<SidePanelTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
 			{teamName}
-		</SidePanelTag>
+		</SidebarV2ItemTag>
 	);
 };
 

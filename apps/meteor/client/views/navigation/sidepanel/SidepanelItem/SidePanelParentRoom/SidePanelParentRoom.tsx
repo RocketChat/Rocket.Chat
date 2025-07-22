@@ -1,9 +1,9 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { isPrivateRoom } from '@rocket.chat/core-typings';
+import { SidebarV2ItemTag } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import SidePanelTag from '../SidePanelTag';
 import SidePanelTagIcon from '../SidePanelTagIcon';
 
 const SidePanelParentRoom = ({ subscription }: { subscription: ISubscription }) => {
@@ -16,10 +16,10 @@ const SidePanelParentRoom = ({ subscription }: { subscription: ISubscription }) 
 	});
 
 	return (
-		<SidePanelTag {...buttonProps}>
+		<SidebarV2ItemTag {...buttonProps}>
 			{icon && <SidePanelTagIcon icon={{ name: icon }} />}
 			{roomName}
-		</SidePanelTag>
+		</SidebarV2ItemTag>
 	);
 };
 
