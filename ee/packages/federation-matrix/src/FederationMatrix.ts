@@ -4,11 +4,11 @@ import { toUnpaddedBase64 } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isDeletedMessage, isMessageFromMatrixFederation, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
+import { MatrixBridgedUser, MatrixBridgedRoom, Users, Messages } from '@rocket.chat/models';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
@@ -182,7 +182,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			// TODO: We should fix this to not hardcode neither inform the target server
 			// This is on the homeserver mandate to track all the eligible servers in the federated room
-			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+			const targetServer = 'hs1-defendi.tunnel.dev.rocket.chat';
 
 			if (!this.homeserverServices) {
 				this.logger.warn('Homeserver services not available, skipping message send');
@@ -190,6 +190,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			}
 
 			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, matrixUserId, targetServer);
+			await Messages.setFederationEventIdById(message._id, result.event_id);
 
 			// TODO: Store the event ID mapping for future reference (edits, deletions, etc.)
 			// This would allow us to map between Rocket.Chat message IDs and Matrix event IDs
@@ -197,6 +198,43 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			this.logger.debug('Message sent to Matrix successfully:', result.event_id);
 		} catch (error) {
 			this.logger.error('Failed to send message to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async deleteMessage(message: IMessage): Promise<void> {
+		try {
+			if (!isMessageFromMatrixFederation(message) || isDeletedMessage(message)) {
+				return;
+			}
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${message.u.username}:${matrixDomain}`;
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(message.u._id);
+			if (!existingMatrixUserId) {
+				await MatrixBridgedUser.createOrUpdateByLocalId(message.u._id, matrixUserId, true, matrixDomain);
+			}
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping message redaction');
+				return;
+			}
+			// TODO: Fix hardcoded server
+			const targetServer = 'hs1-defendi.tunnel.dev.rocket.chat';
+			const result = await this.homeserverServices.message.redactMessage(
+				matrixRoomId,
+				message.federation.eventId,
+				undefined,
+				matrixUserId,
+				targetServer,
+			);
+
+			this.logger.debug('Message Redaction sent to Matrix successfully:', result.event_id);
+		} catch (error) {
+			this.logger.error('Failed to send redaction to Matrix:', error);
 			throw error;
 		}
 	}
