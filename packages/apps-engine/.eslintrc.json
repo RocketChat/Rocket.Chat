@@ -1,18 +1,11 @@
 {
     "extends": "@rocket.chat/eslint-config",
     "parser": "@typescript-eslint/parser",
+    "ignorePatterns": ["**/client", "**/definition", "**/docs", "**/server", "**/lib", "**/deno-runtime", "**/.deno"],
     "parserOptions": {
         "project": "./tsconfig-lint.json"
     },
     "rules": {
-        "@typescript-eslint/ban-types": [
-            "error",
-            {
-                "types": {
-                    "{}": false
-                }
-            }
-        ],
         "@typescript-eslint/naming-convention": [
             "error",
             {
@@ -51,7 +44,9 @@
             }
         ],
         "@typescript-eslint/no-empty-function": "off",
-        "@typescript-eslint/no-unused-vars": ["error", { "args": "none" }],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": ["error", { "args": "none", "caughtErrors": "none" }],
+        "@typescript-eslint/no-require-imports": "warn",
         "new-cap": "off",
         "no-await-in-loop": "off"
     }

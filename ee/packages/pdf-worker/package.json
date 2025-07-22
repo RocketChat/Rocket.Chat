@@ -10,7 +10,7 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json && cp -r src/public dist/public",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"storybook": "storybook dev -p 6006",
 		"test": "jest",
@@ -41,7 +41,7 @@
 		"@types/react": "~18.3.23",
 		"@types/react-dom": "~18.3.7",
 		"buffer": "~6.0.3",
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"jest": "~30.0.2",
 		"react-dom": "~18.3.1",
 		"storybook": "^8.6.14",

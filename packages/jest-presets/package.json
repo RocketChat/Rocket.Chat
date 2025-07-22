@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "rm -rf ./dist",
 		"build": "tsc",
-		"lint": "eslint ."
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint ."
 	},
 	"files": [
 		"/dist",
@@ -28,7 +28,7 @@
 		"@types/identity-obj-proxy": "^3.0.2",
 		"@types/jest": "~29.5.14",
 		"@types/uuid": "^10.0.0",
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},

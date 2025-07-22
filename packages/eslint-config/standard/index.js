@@ -35,7 +35,7 @@ module.exports = {
 			},
 			plugins: ['@typescript-eslint', 'anti-trojan-source'],
 			rules: {
-				'@typescript-eslint/ban-types': [
+				'@typescript-eslint/no-restricted-types': [
 					'warn',
 					{
 						types: {
@@ -88,14 +88,17 @@ module.exports = {
 				],
 				'@typescript-eslint/no-dupe-class-members': 'error',
 				'@typescript-eslint/no-explicit-any': 'off',
+				'@typescript-eslint/no-empty-object-type': 'off',
 				'@typescript-eslint/no-redeclare': 'error',
 				'@typescript-eslint/no-unused-vars': [
 					'error',
 					{
 						argsIgnorePattern: '^_',
 						ignoreRestSiblings: true,
+						caughtErrors: 'none',
 					},
 				],
+				'@typescript-eslint/no-unused-expressions': 'warn',
 				'@typescript-eslint/prefer-optional-chain': 'warn',
 				'anti-trojan-source/no-bidi': 'error',
 				'func-call-spacing': 'off',

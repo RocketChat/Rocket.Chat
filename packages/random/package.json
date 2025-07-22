@@ -10,7 +10,7 @@
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"typecheck": "tsc --noEmit",
-		"lint": "eslint .",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint .",
 		"lint:fix": "eslint . --fix",
 		"test": "jest"
 	},
@@ -20,9 +20,9 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@typescript-eslint/eslint-plugin": "~5.60.1",
-		"@typescript-eslint/parser": "~5.60.1",
-		"eslint": "~8.57.0",
+		"@typescript-eslint/eslint-plugin": "~8.38.0",
+		"@typescript-eslint/parser": "~8.38.0",
+		"eslint": "~9.31.0",
 		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},

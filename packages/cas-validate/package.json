@@ -4,12 +4,12 @@
 	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",

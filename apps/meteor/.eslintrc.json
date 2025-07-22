@@ -1,5 +1,24 @@
 {
 	"extends": ["@rocket.chat/eslint-config", "@rocket.chat/eslint-config/react", "plugin:you-dont-need-lodash-underscore/compatible"],
+	"ignorePatterns": [
+		"**/node_modules/",
+		"**/packages/",
+		"**/app/emoji-emojione/generateEmojiIndex.js",
+		"**/public/",
+		"**/private/moment-locales/",
+		"**/imports/",
+		"**/ee/server/services/dist/",
+		".mocharc.js",
+		".mocharc.*.js",
+		".scripts/",
+		".storybook/",
+		"client/.eslintrc.js",
+		"ee/client/.eslintrc.js",
+		"**/storybook-static/",
+		"**/packages/",
+		"**/tests",
+		"**/*.d.ts"
+	],
 	"globals": {
 		"__meteor_bootstrap__": false,
 		"__meteor_runtime_config__": false,
@@ -8,6 +27,15 @@
 		"jscolor": false
 	},
 	"rules": {
+		"no-unused-vars": [
+			"error",
+			{
+				"argsIgnorePattern": "^_",
+				"varsIgnorePattern": "^_",
+				"caughtErrors": "none",
+				"ignoreRestSiblings": true
+			}
+		],
 		"import/named": "error",
 		"react-hooks/exhaustive-deps": [
 			"warn",
@@ -79,15 +107,29 @@
 						}
 					}
 				],
+				"@typescript-eslint/no-unsafe-declaration-merging": "off",
+				"no-unused-vars": "off",
 				"@typescript-eslint/no-misused-promises": [
-					"error",
+					"warn",
 					{
 						"checksVoidReturn": {
 							"arguments": false
 						}
 					}
 				],
-				"@typescript-eslint/no-floating-promises": "error",
+				"@typescript-eslint/no-floating-promises": "warn",
+				"@typescript-eslint/no-explicit-any": "off",
+				"@typescript-eslint/no-require-imports": "off",
+
+				"@typescript-eslint/no-unused-vars": [
+					"warn",
+					{
+						"argsIgnorePattern": "^_",
+						"varsIgnorePattern": "^_",
+						"caughtErrors": "none",
+						"ignoreRestSiblings": true
+					}
+				],
 				"no-unreachable-loop": "error"
 			},
 			"parserOptions": {
@@ -99,6 +141,9 @@
 			"files": ["**/*.tests.js", "**/*.tests.ts", "**/*.spec.ts"],
 			"env": {
 				"mocha": true
+			},
+			"rules": {
+				"@typescript-eslint/no-unused-expressions": "off"
 			}
 		},
 		{
@@ -141,5 +186,8 @@
 				"@typescript-eslint/naming-convention": "off"
 			}
 		}
-	]
+	],
+	"parserOptions": {
+		"project": true
+	}
 }

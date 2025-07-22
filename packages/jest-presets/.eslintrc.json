@@ -1,5 +1,8 @@
 {
 	"$schema": "https://json.schemastore.org/eslintrc",
 	"extends": ["@rocket.chat/eslint-config"],
-	"ignorePatterns": ["/dist/**", "/client/**", "/server/**"]
+	"ignorePatterns": ["**/coverage", "/dist/**", "/client/**", "/server/**", "jest.config.ts", "**/*.spec.ts"],
+	"parserOptions": {
+		"project": true
+	}
 }

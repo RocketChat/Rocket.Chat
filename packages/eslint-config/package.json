@@ -7,9 +7,9 @@
 		"@babel/eslint-parser": "~7.25.9",
 		"@types/eslint": "~8.44.9",
 		"@types/prettier": "^2.7.3",
-		"@typescript-eslint/eslint-plugin": "~5.60.1",
-		"@typescript-eslint/parser": "~5.60.1",
-		"eslint": "~8.57.0",
+		"@typescript-eslint/eslint-plugin": "~8.38.0",
+		"@typescript-eslint/parser": "~8.38.0",
+		"eslint": "~9.31.0",
 		"eslint-config-prettier": "~9.1.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
 		"eslint-plugin-import": "~2.31.0",
@@ -19,7 +19,7 @@
 		"prettier": "~3.3.3"
 	},
 	"scripts": {
-		"lint": "eslint --ext .js .",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js .",
 		"lint:fix": "eslint --ext .js . --fix"
 	},
 	"main": "./standard/index.js",

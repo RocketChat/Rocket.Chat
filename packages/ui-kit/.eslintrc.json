@@ -2,5 +2,17 @@
   "extends": "@rocket.chat/eslint-config",
   "env": {
     "jest": true
-  }
+  },
+  "parserOptions": {
+    "project": true
+  },
+  "ignorePatterns": ["**/coverage", "**/dist", "jest.config.ts", "**/*.spec.ts"],
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "rules": {
+        "@typescript-eslint/no-duplicate-enum-values": "warn"
+      }
+    }
+  ]
 }

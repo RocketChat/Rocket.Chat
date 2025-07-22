@@ -9,4 +9,7 @@ module.exports = {
       extends: '@rocket.chat/eslint-config',
     },
   ],
+  parserOptions: {
+    project: true,
+  },
 };

@@ -7,7 +7,7 @@
 		"build": "tsc -p tsconfig.json",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"lint": "eslint src",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint src",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"keywords": [
@@ -52,7 +52,7 @@
 		"@types/polka": "^0.5.7",
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/react": "~18.3.23",
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"react": "~18.3.1",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.8.3"

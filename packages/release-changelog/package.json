@@ -4,14 +4,14 @@
 	"private": true,
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint src"
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint src"
 	},
 	"main": "dist/index.js",
 	"devDependencies": {
 		"@changesets/types": "^6.0.0",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/node": "~22.16.1",
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"typescript": "~5.8.3"
 	},
 	"dependencies": {

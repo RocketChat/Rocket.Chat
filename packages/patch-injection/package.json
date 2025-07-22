@@ -6,7 +6,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~29.5.14",
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},
@@ -14,7 +14,7 @@
 		"build": "rm -rf dist && tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"typecheck": "tsc --noEmit",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest"
 	},

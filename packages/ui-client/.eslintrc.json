@@ -43,7 +43,7 @@
 			}
 		}
 	},
-	"ignorePatterns": ["**/dist"],
+	"ignorePatterns": ["**/coverage", "**/dist", "**/*.spec.ts"],
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],
@@ -52,14 +52,19 @@
 				"@typescript-eslint/indent": "off",
 				"@typescript-eslint/no-extra-parens": "off",
 				"@typescript-eslint/no-explicit-any": "off",
+				"@typescript-eslint/no-empty-object-type": "off",
 				"@typescript-eslint/no-unused-vars": [
 					"error",
 					{
-						"argsIgnorePattern": "^_"
+						"argsIgnorePattern": "^_",
+						"caughtErrors": "none"
 					}
 				],
 				"@typescript-eslint/prefer-optional-chain": "warn"
 			}
 		}
-  ]
+	],
+	"parserOptions": {
+		"project": true
+	}
 }

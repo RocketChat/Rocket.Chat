@@ -43,7 +43,7 @@
 			}
 		}
 	},
-	"ignorePatterns": ["**/dist"],
+	"ignorePatterns": ["**/coverage", "**/dist"],
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],
@@ -62,5 +62,8 @@
 				"@typescript-eslint/prefer-optional-chain": "warn"
 			}
 		}
-  ]
+  ],
+	"parserOptions": {
+		"project": true
+	}
 }

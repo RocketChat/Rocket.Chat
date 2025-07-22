@@ -6,7 +6,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"i18next": "~23.4.9",
 		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
@@ -15,7 +15,7 @@
 		"build": "node ./src/scripts/build.mjs && run .:build:esm && run .:build:cjs",
 		".:build:esm": "tsc -p tsconfig.esm.json",
 		".:build:cjs": "tsc -p tsconfig.cjs.json",
-		"lint": "eslint --ext .mjs,.js,.jsx,.ts,.tsx .",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .mjs,.js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .mjs,.js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
 		"testunit": "jest"

@@ -8,9 +8,12 @@
 			}
 		}
 	],
-	"ignorePatterns": ["**/dist"],
+	"ignorePatterns": ["**/coverage", "**/dist"],
 	"plugins": ["jest"],
 	"env": {
 		"jest/globals": true
+	},
+	"parserOptions": {
+		"project": true
 	}
 }

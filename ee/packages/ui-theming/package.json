@@ -13,7 +13,7 @@
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"@types/react": "~18.3.23",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
@@ -26,7 +26,7 @@
 		"webpack": "~5.99.9"
 	},
 	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"build": "rm -rf dist && tsc -p tsconfig-build.json",
 		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"

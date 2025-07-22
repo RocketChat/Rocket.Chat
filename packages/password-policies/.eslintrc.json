@@ -4,5 +4,8 @@
 	"env": {
 		"jest/globals": true
 	},
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["**/coverage", "**/dist", "jest.config.ts", "**/*.spec.ts"],
+	"parserOptions": {
+		"project": true
+	}
 }

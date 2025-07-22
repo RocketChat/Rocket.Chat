@@ -1,6 +1,6 @@
 {
 	"extends": ["@rocket.chat/eslint-config"],
-	"ignorePatterns": ["**/dist", "**/coverage"],
+	"ignorePatterns": ["**/coverage", "**/dist", "jest.config.ts", "**/__tests__", "**/__mocks__", "**/__examples__"],
 	"rules": {
 		"@typescript-eslint/naming-convention": [
 			"error",
@@ -22,5 +22,8 @@
 				"leadingUnderscore": "require"
 			}
 		]
+	},
+	"parserOptions": {
+		"project": true
 	}
 }

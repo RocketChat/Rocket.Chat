@@ -1,7 +1,10 @@
 {
 	"extends": ["@rocket.chat/eslint-config"],
-	"ignorePatterns": ["**/dist"],
+	"ignorePatterns": ["**/coverage", "**/dist"],
 	"rules": {
 		"@typescript-eslint/explicit-function-return-type": "off"
+	},
+	"parserOptions": {
+		"project": true
 	}
 }

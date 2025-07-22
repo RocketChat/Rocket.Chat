@@ -3,7 +3,7 @@
 	"version": "0.0.2",
 	"private": true,
 	"devDependencies": {
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"typescript": "~5.8.3"
 	},
 	"main": "./src/index.js",

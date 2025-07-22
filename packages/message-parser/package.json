@@ -42,7 +42,7 @@
     "build": "run-s .:build:clean .:build:bundle",
     ".:build:clean": "rimraf dist",
     ".:build:bundle": "webpack-cli",
-    "lint": "eslint .",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint .",
     "test": "jest",
     "testunit": "jest",
     "docs": "typedoc"
@@ -59,7 +59,7 @@
     "@types/node": "~22.16.1",
     "@typescript-eslint/parser": "~5.58.0",
     "babel-loader": "~9.2.1",
-    "eslint": "~8.57.0",
+    "eslint": "~9.31.0",
     "jest": "~30.0.2",
     "npm-run-all": "^4.1.5",
     "peggy": "4.1.1",

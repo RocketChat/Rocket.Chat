@@ -4,14 +4,14 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/license": "workspace:^",
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"typescript": "~5.8.3"
 	},
 	"volta": {
 		"extends": "../../package.json"
 	},
 	"scripts": {
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},

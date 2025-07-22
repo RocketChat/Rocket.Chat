@@ -1,4 +1,7 @@
 {
 	"extends": ["@rocket.chat/eslint-config"],
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["**/coverage", "**/dist", "jest.config.ts", "**/*.spec.ts", "**/__tests__"],
+	"parserOptions": {
+		"project": true
+	}
 }

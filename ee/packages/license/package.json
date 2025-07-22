@@ -8,7 +8,7 @@
 		"@types/bcrypt": "^5.0.2",
 		"@types/jest": "~29.5.14",
 		"@types/ws": "^8.5.13",
-		"eslint": "~8.57.0",
+		"eslint": "~9.31.0",
 		"jest": "~30.0.2",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.8.3"
@@ -16,7 +16,7 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
 		"testunit": "jest"

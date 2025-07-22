@@ -45,7 +45,7 @@
 			"version": "detect"
 		}
 	},
-	"ignorePatterns": ["**/dist"],
+	"ignorePatterns": ["**/coverage", "**/dist", "**/*.spec.ts"],
 	"overrides": [
 		{
 			"files": ["*.ts", "*.tsx"],
@@ -78,5 +78,8 @@
 				"react/no-multi-comp": "off"
 			}
 		}
-	]
+	],
+	"parserOptions": {
+		"project": true
+	}
 }

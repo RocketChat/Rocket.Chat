@@ -1,6 +1,7 @@
 {
 	"extends": ["@rocket.chat/eslint-config", "prettier"],
 	"plugins": ["react", "react-hooks", "prettier"],
+	"ignorePatterns": ["**/dist", "**/node_modules", "**/build", "src/i18next.js"],
 	"env": {
 		"jest": true
 	},
@@ -89,5 +90,8 @@
 				]
 			}
 		}
-	]
+	],
+	"parserOptions": {
+		"project": true
+	}
 }
