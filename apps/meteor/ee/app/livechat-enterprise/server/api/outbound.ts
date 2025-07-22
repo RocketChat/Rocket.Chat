@@ -1,9 +1,9 @@
 import { API } from '../../../../../app/api/server';
 import {
 	GETOutboundProvidersResponseSchema,
-	isGETOutboundProviderParams,
-	IsOutboundProviderBadRequestErrorSchema,
-	isOutboundProviderMetadataSchema,
+	GETOutboundProviderParamsSchema,
+	GETOutboundProviderBadRequestErrorSchema,
+	GETOutboundProviderMetadataSchema,
 } from '../outboundcomms/rest';
 import { outboundMessageProvider } from './lib/outbound';
 import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
@@ -14,9 +14,9 @@ const outboundCommsEndpoints = API.v1
 		{
 			response: {
 				200: GETOutboundProvidersResponseSchema,
-				400: IsOutboundProviderBadRequestErrorSchema,
+				400: GETOutboundProviderBadRequestErrorSchema,
 			},
-			query: isGETOutboundProviderParams,
+			query: GETOutboundProviderParamsSchema,
 			authRequired: true,
 		},
 		async function action() {
@@ -32,8 +32,8 @@ const outboundCommsEndpoints = API.v1
 		'omnichannel/outbound/providers/:id/metadata',
 		{
 			response: {
-				200: isOutboundProviderMetadataSchema,
-				400: IsOutboundProviderBadRequestErrorSchema,
+				200: GETOutboundProviderMetadataSchema,
+				400: GETOutboundProviderBadRequestErrorSchema,
 			},
 			authRequired: true,
 		},

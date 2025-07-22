@@ -24,9 +24,9 @@ const GETOutboundProviderSchema = {
 	required: [],
 	additionalProperties: false,
 };
-export const isGETOutboundProviderParams = ajv.compile<GETOutboundProviderParams>(GETOutboundProviderSchema);
+export const GETOutboundProviderParamsSchema = ajv.compile<GETOutboundProviderParams>(GETOutboundProviderSchema);
 
-const isGETOutboundProvidersResponse = {
+const GETOutboundProvidersResponse = {
 	type: 'object',
 	properties: {
 		providers: {
@@ -51,9 +51,9 @@ const isGETOutboundProvidersResponse = {
 		},
 	},
 };
-export const GETOutboundProvidersResponseSchema = ajv.compile<{ providers: IOutboundProvider[] }>(isGETOutboundProvidersResponse);
+export const GETOutboundProvidersResponseSchema = ajv.compile<{ providers: IOutboundProvider[] }>(GETOutboundProvidersResponse);
 
-const isOutboundProviderBadRequestError = {
+const GETOutboundProviderBadRequestError = {
 	type: 'object',
 	properties: {
 		success: {
@@ -64,8 +64,8 @@ const isOutboundProviderBadRequestError = {
 		},
 	},
 };
-export const IsOutboundProviderBadRequestErrorSchema = ajv.compile<{ success: boolean; message: string }>(
-	isOutboundProviderBadRequestError,
+export const GETOutboundProviderBadRequestErrorSchema = ajv.compile<{ success: boolean; message: string }>(
+	GETOutboundProviderBadRequestError,
 );
 
 type POSTOutboundMessageParams = {
@@ -320,4 +320,4 @@ const OutboundProviderMetadataSchema = {
 	},
 };
 
-export const isOutboundProviderMetadataSchema = ajv.compile<{ metadata: IOutboundProviderMetadata }>(OutboundProviderMetadataSchema);
+export const GETOutboundProviderMetadataSchema = ajv.compile<{ metadata: IOutboundProviderMetadata }>(OutboundProviderMetadataSchema);
