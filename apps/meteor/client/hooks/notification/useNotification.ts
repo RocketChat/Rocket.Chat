@@ -22,7 +22,7 @@ export const useNotification = () => {
 			return;
 		}
 
-		const { rid, name, _id: msgId } = notification.payload;
+		const { rid } = notification.payload;
 		if (!rid) {
 			return;
 		}
@@ -63,54 +63,56 @@ export const useNotification = () => {
 			n.close();
 			window.focus();
 
-			const jump = msgId && { jump: msgId };
+			if (!notification.payload._id || !notification.payload.rid || !notification.payload.name) {
+				return;
+			}
 
 			switch (notification.payload?.type) {
 				case 'd':
 					router.navigate({
 						pattern: '/direct/:rid/:tab?/:context?',
 						params: {
-							rid,
+							rid: notification.payload.rid,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...router.getSearchParameters(), ...jump },
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
 					break;
 				case 'c':
 					return router.navigate({
 						pattern: '/channel/:name/:tab?/:context?',
 						params: {
-							name: name || rid,
+							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...router.getSearchParameters(), ...jump },
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
 				case 'p':
 					return router.navigate({
 						pattern: '/group/:name/:tab?/:context?',
 						params: {
-							name: name || rid,
+							name: notification.payload.name,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...router.getSearchParameters(), ...jump },
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
 				case 'l':
 					return router.navigate({
 						pattern: '/live/:id/:tab?/:context?',
 						params: {
-							id: rid,
+							id: notification.payload.rid,
 							tab: 'room-info',
 						},
-						search: { ...router.getSearchParameters(), ...jump },
+						search: { ...router.getSearchParameters(), jump: notification.payload._id },
 					});
 			}
 		};
