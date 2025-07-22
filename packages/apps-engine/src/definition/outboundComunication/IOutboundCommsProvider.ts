@@ -1,4 +1,4 @@
-import { IHttp, IModify, IPersistence, IRead } from '../accessors';
+import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
 import type { IOutboundMessage } from './IOutboundMessage';
 import type { IOutboundProviderTemplate } from './IOutboundProviderTemplate';
 
