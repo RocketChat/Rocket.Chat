@@ -9,6 +9,14 @@ import type { MediaSignalRequest } from '../definition/MediaSignalRequest';
 import { createRandomToken } from './utils/createRandomToken';
 import type { MediaSignalHeaderParams } from '../definition/MediaSignalHeader';
 
+interface IClientMediaCall {
+	callId: string;
+	role: 'caller' | 'callee';
+	state: 'none' | 'ringing' | 'accepted' | 'active' | 'ignored';
+
+	timeoutHandler?: ReturnType<typeof setTimeout>;
+}
+
 export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEventMap> extends Emitter<EventMap> {
 	private _sessionId: string;
 
@@ -20,6 +28,10 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 
 	// #ToDo: handle processor
 	private processor!: IWebRTCProcessor;
+
+	private knownCalls: Map<string, IClientMediaCall>;
+
+	private ignoredCalls: Set<string>;
 
 	public get agentId(): string {
 		return `${this._userId}-${this._sessionId}`;
@@ -35,8 +47,61 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 
 	constructor(userId: string) {
 		super();
+		this.knownCalls = new Map<string, IClientMediaCall>();
+		this.ignoredCalls = new Set<string>();
 		this._userId = userId;
 		this._sessionId = createRandomToken(8);
+	}
+
+	public isBusy(): boolean {
+		for (const call of this.knownCalls.values()) {
+			if (['ringing', 'accepted', 'active'].includes(call.state)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public async processSignal(signal: MediaSignal) {
+		if (!this.isSignalForUs(signal)) {
+			return;
+		}
+
+		if (this.isCallIgnored(signal.callId)) {
+			if (signal.sessionId) {
+				console.error('Received targeted signal for an ignored call.', signal);
+			}
+
+			return;
+		}
+
+		if (!this.isSignalExpected(signal)) {
+			console.error('Unexpected Signal', signal);
+			throw new Error('Unexpected Signal received.');
+		}
+
+		// if (!this.isCallKnown(signal.callId)) {
+		// 	const isNewNotify = signal.type === 'notify' && signal.body.notify === 'new';
+
+		// 	await this.processNewCall(signal, isNewNotify);
+
+		// 	if (isNewNotify) {
+		// 		return;
+		// 	}
+		// }
+
+		console.log(signal);
+		switch (signal.type) {
+			case 'request':
+				await this.processRequest(signal);
+				break;
+			case 'deliver':
+				await this.processDeliver(signal);
+				break;
+			case 'notify':
+				await this.processNotify(signal);
+				break;
+		}
 	}
 
 	private isSignalForUs(signal: MediaSignal): boolean {
@@ -49,7 +114,13 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 
 	private async processRequest(signal: MediaSignalRequest) {
 		if (!signal.sessionId) {
-			throw new Error('Request signals MUST target a specific session.');
+			console.error('Received an untargeted request.');
+			return;
+		}
+
+		if (!this.isCallKnown(signal.callId)) {
+			console.error('Received a request for an unknown call.');
+			return;
 		}
 
 		switch (signal.body.request) {
@@ -169,8 +240,12 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 		}
 	}
 
-	private isCallKnown(_callId: string): boolean {
-		return false;
+	private isCallKnown(callId: string): boolean {
+		return this.knownCalls.has(callId);
+	}
+
+	private isCallIgnored(callId: string): boolean {
+		return this.ignoredCalls.has(callId);
 	}
 
 	private isSignalExpected(signal: MediaSignal): boolean {
@@ -193,9 +268,18 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 		await this.processor.initializePeerConnection();
 	}
 
+	private isValidRole(role: MediaSignal['role']): boolean {
+		return ['caller', 'callee'].includes(role);
+	}
+
 	private async processNewCall(signal: MediaSignal, isNewNotify = false) {
 		// If we already know about this call, we don't need to process anything
 		if (this.isCallKnown(signal.callId)) {
+			return;
+		}
+
+		if (!this.isValidRole(signal.role)) {
+			console.error('Invalid call role on signal', signal);
 			return;
 		}
 
@@ -221,7 +305,18 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 			this.sendACK(signal);
 		}
 
-		// If isNewNotify and role = 'callee', fire event for incoming call
+		this.registerCall({
+			callId: signal.callId,
+			role: signal.role,
+			// If the call is targeted, flag it as accepted directly
+			state: signal.sessionId ? 'accepted' : 'ringing',
+		});
+	}
+
+	private registerCall(call: IClientMediaCall): void {
+		this.knownCalls.set(call.callId, call);
+
+		// Fire event for new call
 	}
 
 	private deliverToServer<T extends DeliverType>(requestSignal: MediaSignal, type: T, params: DeliverParams<T>) {
@@ -275,43 +370,5 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 			...header,
 		} as T;
 		console.log(newSignal);
-	}
-
-	public isBusy(): boolean {
-		return false;
-	}
-
-	public async processSignal(signal: MediaSignal) {
-		if (!this.isSignalForUs(signal)) {
-			return;
-		}
-
-		if (!this.isSignalExpected(signal)) {
-			console.error('Unexpected Signal', signal);
-			throw new Error('Unexpected Signal received.');
-		}
-
-		if (!this.isCallKnown(signal.callId)) {
-			const isNewNotify = signal.type === 'notify' && signal.body.notify === 'new';
-
-			await this.processNewCall(signal, isNewNotify);
-
-			if (isNewNotify) {
-				return;
-			}
-		}
-
-		console.log(signal);
-		switch (signal.type) {
-			case 'request':
-				await this.processRequest(signal);
-				break;
-			case 'deliver':
-				await this.processDeliver(signal);
-				break;
-			case 'notify':
-				await this.processNotify(signal);
-				break;
-		}
 	}
 }
