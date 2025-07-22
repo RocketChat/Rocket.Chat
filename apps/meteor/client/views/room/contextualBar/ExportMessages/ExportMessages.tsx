@@ -101,12 +101,12 @@ const ExportMessages = () => {
 			['json', t('JSON')],
 		];
 
-		if (pfdExportPermission) {
+		if (pfdExportPermission && isE2ERoom) {
 			options.push(['pdf', t('PDF')]);
 		}
 
 		return options;
-	}, [t, pfdExportPermission]);
+	}, [t, pfdExportPermission, isE2ERoom]);
 
 	// Remove HTML from download options
 	const downloadOutputOptions = useMemo<SelectOption[]>(() => {
