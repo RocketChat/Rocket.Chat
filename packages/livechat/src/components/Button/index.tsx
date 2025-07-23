@@ -3,7 +3,7 @@ import type { CSSProperties } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 import { useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 import { createClassName } from '../../helpers/createClassName';
 
 const handleMouseUp: JSXInternal.EventHandler<JSXInternal.TargetedMouseEvent<HTMLButtonElement>> = ({ target }) =>

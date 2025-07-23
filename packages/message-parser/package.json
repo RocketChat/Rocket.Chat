@@ -2,6 +2,7 @@
   "name": "@rocket.chat/message-parser",
   "description": "Rocket.Chat parser for messages",
   "version": "0.31.32",
+  "type": "module",
   "author": {
     "name": "Rocket.Chat",
     "url": "https://rocket.chat/"
@@ -16,21 +17,14 @@
   "bugs": {
     "url": "https://github.com/RocketChat/fuselage/issues"
   },
-  "main": "messageParser.js",
   "exports": {
     ".": {
-      "default": "./messageParser.js"
-    },
-    "./index": {
-      "default": "./messageParser.js"
+      "import": "./dist/message-parser.js"
     }
   },
-  "module": "dist/messageParser.mjs",
-  "unpkg": "dist/messageParser.umd.js",
   "types": "dist/index.d.ts",
   "files": [
-    "/dist",
-    "/messageParser.js"
+    "/dist"
   ],
   "directories": {
     "test": "test"
@@ -39,12 +33,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "run-s .:build:clean .:build:bundle",
-    ".:build:clean": "rimraf dist",
-    ".:build:bundle": "webpack-cli",
+    "build": "vite build",
     "lint": "eslint .",
-    "test": "jest",
-    "testunit": "jest",
+    "test": "vitest",
+    "testunit": "vitest run",
     "docs": "typedoc"
   },
   "devDependencies": {
@@ -52,25 +44,19 @@
     "@babel/eslint-parser": "~7.25.9",
     "@babel/preset-env": "~7.26.9",
     "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/jest-presets": "workspace:~",
     "@rocket.chat/peggy-loader": "workspace:~",
     "@rocket.chat/prettier-config": "~0.31.25",
-    "@types/jest": "~29.5.14",
     "@types/node": "~22.16.1",
     "@typescript-eslint/parser": "~5.58.0",
-    "babel-loader": "~9.2.1",
     "eslint": "~8.45.0",
-    "jest": "~30.0.2",
-    "npm-run-all": "^4.1.5",
     "peggy": "4.1.1",
     "prettier": "~3.3.3",
-    "prettier-plugin-pegjs": "~0.5.4",
-    "rimraf": "^6.0.1",
-    "ts-loader": "~9.5.2",
+    "prettier-plugin-pegjs": "~2.0.2",
     "typedoc": "~0.28.5",
     "typescript": "~5.8.3",
-    "webpack": "~5.99.9",
-    "webpack-cli": "~5.1.4"
+    "vite": "^7.0.5",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "tldts": "~6.1.86"

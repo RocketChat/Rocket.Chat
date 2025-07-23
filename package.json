@@ -24,7 +24,9 @@
 		"@types/node": "~22.14.1",
 		"ts-node": "^10.9.2",
 		"turbo": "^2.5.4",
-		"typescript": "~5.8.3"
+		"typescript": "~5.8.3",
+		"vite": "^7.0.4",
+		"vite-plugin-peggy-loader": "^2.0.1"
 	},
 	"workspaces": [
 		"apps/*",

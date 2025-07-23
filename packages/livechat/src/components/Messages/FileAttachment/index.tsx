@@ -4,7 +4,7 @@ import { createClassName } from '../../../helpers/createClassName';
 import DownloadIcon from '../../../icons/download.svg';
 import { FileAttachmentIcon } from '../FileAttachmentIcon';
 import { MessageBubble } from '../MessageBubble';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 type FileAttachmentProps = {
 	url: string;

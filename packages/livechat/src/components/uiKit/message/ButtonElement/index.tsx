@@ -5,7 +5,7 @@ import { memo, useCallback } from 'preact/compat';
 
 import { createClassName } from '../../../../helpers/createClassName';
 import { usePerformAction } from '../Block';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 
 const handleMouseUp = ({ currentTarget }: TargetedEvent<HTMLElement, MouseEvent>) => currentTarget.blur();
 

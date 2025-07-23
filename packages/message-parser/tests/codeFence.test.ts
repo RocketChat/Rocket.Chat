@@ -1,3 +1,5 @@
+import { test, expect } from 'vitest';
+
 import { parse } from '../src';
 import { paragraph, plain, codeLine, code } from '../src/utils';
 

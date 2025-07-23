@@ -1,4 +1,4 @@
-import type { Root } from './definitions';
+import type { Root } from './definitions.js';
 import * as grammar from './grammar.pegjs';
 
 export * from './definitions';

@@ -1,7 +1,7 @@
 import { useEffect } from 'preact/hooks';
 
 import { CallStatus } from './CallStatus';
-import styles from './styles.scss';
+import * as styles from './styles.scss';
 import { getConnectionBaseUrl } from '../../helpers/baseUrl';
 import { createClassName } from '../../helpers/createClassName';
 import store from '../../store';

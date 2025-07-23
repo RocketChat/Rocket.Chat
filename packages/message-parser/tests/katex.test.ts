@@ -1,3 +1,5 @@
+import { test, expect } from 'vitest';
+
 import { parse } from '../src';
 import { inlineKatex, katex, paragraph, plain } from '../src/utils';
 

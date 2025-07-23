@@ -1,10 +1,7 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
-    "target": "es5",
+    "target": "es2019",
     "module": "ESNext",
-    "declaration": true,
-    "declarationMap": true,
     "sourceMap": true,
     "lib": ["es2019"],
     "outDir": "./dist",
@@ -12,8 +9,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noImplicitThis": true,
-    "alwaysStrict": true
+    "alwaysStrict": true,
+    "noEmit": true,
+    "types": ["node"]
   }
 }
