@@ -8,7 +8,6 @@ import type { IntegrationsUpdateProps } from './IntegrationsUpdateProps';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export type IntegrationsEndpoints = {
-	
 	'/v1/integrations.history': {
 		GET: (params: IntegrationsHistoryProps) => PaginatedResult<{
 			history: IIntegrationHistory[];

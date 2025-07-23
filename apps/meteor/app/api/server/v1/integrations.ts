@@ -33,7 +33,7 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findOneIntegration } from '../lib/integrations';
 
-type IntegrationsCreateProps =
+export type IntegrationsCreateProps =
 	| {
 			type: 'webhook-incoming';
 			username: string;
