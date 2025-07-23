@@ -337,7 +337,7 @@
 		"cron": "~1.8.2",
 		"cron-validator": "^1.3.1",
 		"css-vars-ponyfill": "^2.4.9",
-		"csv-parse": "^5.5.6",
+		"csv-parse": "patch:csv-parse@npm%3A5.5.6#~/.yarn/patches/csv-parse-npm-5.5.6-ffa5dc42a0.patch",
 		"date-fns": "~4.1.0",
 		"date.js": "~0.3.3",
 		"debug": "~4.3.7",

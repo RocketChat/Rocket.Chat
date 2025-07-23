@@ -8088,7 +8088,7 @@ __metadata:
     cron-validator: "npm:^1.3.1"
     cross-env: "npm:^7.0.3"
     css-vars-ponyfill: "npm:^2.4.9"
-    csv-parse: "npm:^5.5.6"
+    csv-parse: "patch:csv-parse@npm%3A5.5.6#~/.yarn/patches/csv-parse-npm-5.5.6-ffa5dc42a0.patch"
     date-fns: "npm:~4.1.0"
     date.js: "npm:~0.3.3"
     debug: "npm:~4.3.7"
@@ -17317,10 +17317,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csv-parse@npm:^5.5.6":
+"csv-parse@npm:5.5.6":
   version: 5.5.6
   resolution: "csv-parse@npm:5.5.6"
   checksum: 10/8682bd3846d8159eb6f686423d16493fffeceeef742d947e39ea3a3fb9b4a243b41a4cfbac56d721a2f7825b01335ba9b993bf68c4817e7abee0bd20754ee78d
+  languageName: node
+  linkType: hard
+
+"csv-parse@patch:csv-parse@npm%3A5.5.6#~/.yarn/patches/csv-parse-npm-5.5.6-ffa5dc42a0.patch":
+  version: 5.5.6
+  resolution: "csv-parse@patch:csv-parse@npm%3A5.5.6#~/.yarn/patches/csv-parse-npm-5.5.6-ffa5dc42a0.patch::version=5.5.6&hash=6b7e75"
+  checksum: 10/199fdd9808d65eaa20532e783dd764b824fd99fc6ef01ae13c4500d528f2e4d44e3f4f873da13e6680184b803b1b2a6b726092a92ddd72e30b2fd4dadb8c5b94
   languageName: node
   linkType: hard
 
