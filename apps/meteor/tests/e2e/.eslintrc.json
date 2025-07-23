@@ -12,8 +12,8 @@
 			}
 		],
 		"@typescript-eslint/no-floating-promises": "error",
-		"import/named": "error",
-		"import/order": [
+		"import-x/named": "error",
+		"import-x/order": [
 			"error",
 			{
 				"newlines-between": "always",
@@ -25,7 +25,7 @@
 		]
 	},
 	"settings": {
-		"import/resolver": {
+		"import-x/resolver": {
 			"node": {
 				"extensions": [".js", ".ts", ".tsx"]
 			}

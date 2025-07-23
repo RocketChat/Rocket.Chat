@@ -12,8 +12,8 @@
 	"parser": "@typescript-eslint/parser",
 	"plugins": ["@typescript-eslint", "react", "react-hooks", "prettier"],
 	"rules": {
-		"import/named": "error",
-		"import/order": [
+		"import-x/named": "error",
+		"import-x/order": [
 			"error",
 			{
 				"newlines-between": "always",
@@ -36,7 +36,7 @@
 		"react-hooks/exhaustive-deps": "warn"
 	},
 	"settings": {
-		"import/resolver": {
+		"import-x/resolver": {
 			"node": {
 				"extensions": [".js", ".ts", ".tsx"]
 			}

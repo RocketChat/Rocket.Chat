@@ -12,7 +12,6 @@
 		"eslint": "~8.45.0",
 		"eslint-config-prettier": "~9.1.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
-		"eslint-plugin-import": "~2.31.0",
 		"eslint-plugin-jest": "~28.8.3",
 		"eslint-plugin-jsx-a11y": "^6.10.2",
 		"eslint-plugin-prettier": "~5.2.6",
@@ -36,6 +35,8 @@
 		"react.js"
 	],
 	"devDependencies": {
+		"eslint-import-resolver-typescript": "~4.4.4",
+		"eslint-plugin-import-x": "~4.16.1",
 		"typescript": "~5.8.3"
 	},
 	"volta": {

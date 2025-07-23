@@ -13,8 +13,8 @@
 	"plugins": ["@typescript-eslint", "prettier"],
 	"rules": {
 		"func-call-spacing": "off",
-		"import/named": "error",
-		"import/order": [
+		"import-x/named": "error",
+		"import-x/order": [
 			"error",
 			{
 				"newlines-between": "always",
@@ -37,7 +37,7 @@
 		"prettier/prettier": 2
 	},
 	"settings": {
-		"import/resolver": {
+		"import-x/resolver": {
 			"node": {
 				"extensions": [".js", ".ts", ".tsx"]
 			}
@@ -61,5 +61,5 @@
 				"@typescript-eslint/prefer-optional-chain": "warn"
 			}
 		}
-  ]
+	]
 }

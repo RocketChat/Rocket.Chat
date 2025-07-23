@@ -1,11 +1,11 @@
 module.exports = {
-	extends: ['../original/index.js', 'plugin:prettier/recommended', 'plugin:import/typescript'],
+	extends: ['../original/index.js', 'plugin:prettier/recommended', 'plugin:import-x/typescript'],
 	parser: '@babel/eslint-parser',
 	parserOptions: {
 		requireConfigFile: false,
 	},
 	settings: {
-		'import/resolver': {
+		'import-x/resolver': {
 			node: {
 				extensions: ['.js', '.ts', '.tsx'],
 			},
@@ -118,7 +118,7 @@ module.exports = {
 				node: true,
 			},
 			settings: {
-				'import/resolver': {
+				'import-x/resolver': {
 					node: {
 						extensions: ['.js', '.ts', '.tsx'],
 					},

@@ -12,8 +12,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
-import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-import { RateLimiter } from 'meteor/rate-limit';
+import { RateLimiter, type RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import _ from 'underscore';
 
 import type { PermissionsPayload } from './api.helpers';
