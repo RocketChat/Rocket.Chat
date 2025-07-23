@@ -1249,14 +1249,11 @@ describe('LIVECHAT - rooms', () => {
 		);
 
 		(IS_EE ? it : it.skip)(
-			'when manager forward to a department while waiting_queue is active, chat should end in departments queue',
+			'when manager forwards a chat that hasnt been assigned to a user to another department with no online agents, chat should end ready in department (not queued)',
 			async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-				await updateSetting('Livechat_waiting_queue', true);
-				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({
-					allowReceiveForwardOffline: true,
-				});
+				const { department: initialDepartment } = await createDepartmentWithAnOfflineAgent({});
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent({});
 
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
@@ -1274,6 +1271,71 @@ describe('LIVECHAT - rooms', () => {
 
 				const inquiry = await fetchInquiry(newRoom._id);
 
+				// Inquiry status doesn't change, it was ready when created, it keeps ready after forwarding as no assignment was done
+				expect(inquiry.status).to.equal('ready');
+				expect(inquiry.department).to.equal(forwardToOfflineDepartment._id);
+
+				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(forwardToOfflineDepartment._id)]);
+			},
+		);
+
+		(IS_EE ? it : it.skip)(
+			'when manager forward to a department while waiting_queue is active and allowReceiveForwardOffline is true, chat should end in departments queue',
+			async () => {
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: true });
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				const manager = await createUser();
+				const managerCredentials = await login(manager.username, password);
+				await createManager(manager.username);
+
+				// Waiting queue enabled after assignement but before transfer, otherwise, chat will fall on previous test case
+				await updateSetting('Livechat_waiting_queue', true);
+				await request.post(api('livechat/room.forward')).set(managerCredentials).send({
+					roomId: newRoom._id,
+					departmentId: forwardToOfflineDepartment._id,
+					clientAction: true,
+					comment: 'test comment',
+				});
+
+				const inquiry = await fetchInquiry(newRoom._id);
+
+				// Since the agent is `idle` the chat should be on the queue
+				expect(inquiry.status).to.equal('queued');
+				expect(inquiry.department).to.equal(forwardToOfflineDepartment._id);
+
+				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(forwardToOfflineDepartment._id)]);
+			},
+		);
+
+		(IS_EE ? it : it.skip)(
+			'when manager forward to a department while waiting_queue is active and allowReceiveForwardOffline is false, transfer should fail',
+			async () => {
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: false });
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				const manager = await createUser();
+				const managerCredentials = await login(manager.username, password);
+				await createManager(manager.username);
+
+				await request.post(api('livechat/room.forward')).set(managerCredentials).send({
+					roomId: newRoom._id,
+					departmentId: forwardToOfflineDepartment._id,
+					clientAction: true,
+					comment: 'test comment',
+				});
+
+				const inquiry = await fetchInquiry(newRoom._id);
+
+				// Since the agent is `idle` the chat should be on the queue
 				expect(inquiry.status).to.equal('queued');
 				expect(inquiry.department).to.equal(forwardToOfflineDepartment._id);
 
