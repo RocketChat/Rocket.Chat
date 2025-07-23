@@ -1,4 +1,5 @@
 import { License } from '@rocket.chat/license';
+import { patchOmniLib } from '@rocket.chat/omni-lib-ee';
 import { Meteor } from 'meteor/meteor';
 
 import './methods/addMonitor';
@@ -29,6 +30,8 @@ import './lib/AutoCloseOnHoldScheduler';
 import './business-hour';
 import './api';
 import { createDefaultPriorities } from './priorities';
+
+patchOmniLib();
 
 await License.onLicense('livechat-enterprise', async () => {
 	require('./hooks');
