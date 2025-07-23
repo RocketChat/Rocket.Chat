@@ -9,13 +9,22 @@ import type { MediaSignalRequest } from '../definition/MediaSignalRequest';
 import { createRandomToken } from './utils/createRandomToken';
 import type { MediaSignalHeaderParams } from '../definition/MediaSignalHeader';
 
-interface IClientMediaCall {
+export interface IClientMediaCall {
 	callId: string;
 	role: 'caller' | 'callee';
-	state: 'none' | 'ringing' | 'accepted' | 'active' | 'ignored';
+	state: 'none' | 'ringing' | 'accepted' | 'active' | 'error';
+	ignored?: boolean;
 
 	timeoutHandler?: ReturnType<typeof setTimeout>;
 }
+
+const stateWeights: Record<IClientMediaCall['state'], number> = {
+	none: 0,
+	ringing: 1,
+	accepted: 2,
+	error: 3,
+	active: 4,
+} as const;
 
 export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEventMap> extends Emitter<EventMap> {
 	private _sessionId: string;
@@ -54,12 +63,40 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 	}
 
 	public isBusy(): boolean {
-		for (const call of this.knownCalls.values()) {
-			if (['ringing', 'accepted', 'active'].includes(call.state)) {
+		return this.hasAnyCallState(['ringing', 'accepted', 'active']);
+	}
+
+	public getAllCallStates(): IClientMediaCall['state'][] {
+		return this.knownCalls
+			.values()
+			.map(({ state }) => state)
+			.toArray();
+	}
+
+	public hasAnyCallState(states: IClientMediaCall['state'][]): boolean {
+		const knownStates = this.getAllCallStates();
+		for (const state of knownStates) {
+			if (states.includes(state)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public getSortedCalls(): IClientMediaCall[] {
+		return this.knownCalls
+			.values()
+			.toArray()
+			.sort((call1, call2) => {
+				const call1Weight = stateWeights[call1.state] || 0;
+				const call2Weight = stateWeights[call2.state] || 0;
+
+				return call2Weight - call1Weight;
+			});
+	}
+
+	public getMainCall(): IClientMediaCall | null {
+		return this.getSortedCalls().pop() || null;
 	}
 
 	public async processSignal(signal: MediaSignal) {
