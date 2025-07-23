@@ -1194,6 +1194,7 @@ describe('LIVECHAT - rooms', () => {
 						deleteDepartment(initialDepartment._id),
 						deleteDepartment(forwardToOfflineDepartment._id),
 						updateSetting('Livechat_waiting_queue', false),
+						closeOmnichannelRoom(room._id),
 					]);
 				},
 			);
@@ -1230,57 +1231,18 @@ describe('LIVECHAT - rooms', () => {
 						deleteDepartment(initialDepartment._id),
 						deleteDepartment(forwardToOfflineDepartment._id),
 						updateSetting('Livechat_enabled_when_agent_idle', false),
+						closeOmnichannelRoom(newRoom._id),
 					]);
 				},
 			);
 
-			let roomId: string;
-			let visitorToken: string;
-			(IS_EE ? it : it.skip)('should return a success message when transferring to a fallback department', async () => {
-				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToDepartment } = await createDepartmentWithAnOnlineAgent();
-				const forwardToDepartment1 = await createDepartment(undefined, undefined, true, {
-					fallbackForwardDepartment: forwardToDepartment._id,
-				});
-
-				const newVisitor = await createVisitor(initialDepartment._id);
-				const newRoom = await createLivechatRoom(newVisitor.token);
-
-				await request
-					.post(api('livechat/room.forward'))
-					.set(credentials)
-					.send({
-						roomId: newRoom._id,
-						departmentId: forwardToDepartment1._id,
-						clientAction: true,
-						comment: 'test comment',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-					});
-
-				const latestRoom = await getLivechatRoomInfo(newRoom._id);
-
-				expect(latestRoom).to.have.property('departmentId');
-				expect(latestRoom.departmentId).to.be.equal(forwardToDepartment._id);
-
-				expect(latestRoom).to.have.property('lastMessage');
-				expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
-				expect(latestRoom.lastMessage?.u?.username).to.be.equal(adminUsername);
-				expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
-				expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
-				expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToDepartment._id);
-
-				roomId = newRoom._id;
-				visitorToken = newVisitor.token;
-			});
 			(IS_EE ? describe : describe.skip)('fallback department', () => {
 				let fallbackDepartment: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>['department'];
 				let initialDepartment: Awaited<ReturnType<typeof createDepartmentWithAnOfflineAgent>>['department'];
 				let newVisitor: ILivechatVisitor;
 				let latestRoom: IOmnichannelRoom;
+				let roomId: string;
+				let visitorToken: string;
 				before(async () => {
 					fallbackDepartment = (await createDepartmentWithAnOnlineAgent()).department;
 					initialDepartment = (
@@ -1298,7 +1260,49 @@ describe('LIVECHAT - rooms', () => {
 						deleteDepartment(initialDepartment._id),
 						deleteVisitor(newVisitor._id),
 						closeOmnichannelRoom(latestRoom._id),
+						closeOmnichannelRoom(roomId),
 					]);
+				});
+
+				(IS_EE ? it : it.skip)('should return a success message when transferring to a fallback department', async () => {
+					const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+					const { department: forwardToDepartment } = await createDepartmentWithAnOnlineAgent();
+					const forwardToDepartment1 = await createDepartment(undefined, undefined, true, {
+						fallbackForwardDepartment: forwardToDepartment._id,
+					});
+
+					const newVisitor = await createVisitor(initialDepartment._id);
+					const newRoom = await createLivechatRoom(newVisitor.token);
+
+					await request
+						.post(api('livechat/room.forward'))
+						.set(credentials)
+						.send({
+							roomId: newRoom._id,
+							departmentId: forwardToDepartment1._id,
+							clientAction: true,
+							comment: 'test comment',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+						});
+
+					const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+					expect(latestRoom).to.have.property('departmentId');
+					expect(latestRoom.departmentId).to.be.equal(forwardToDepartment._id);
+
+					expect(latestRoom).to.have.property('lastMessage');
+					expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
+					expect(latestRoom.lastMessage?.u?.username).to.be.equal(adminUsername);
+					expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
+					expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
+					expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToDepartment._id);
+
+					roomId = newRoom._id;
+					visitorToken = newVisitor.token;
 				});
 
 				it('should redirect chat to fallback department when all agents in the initial department are offline', async () => {
@@ -1310,22 +1314,22 @@ describe('LIVECHAT - rooms', () => {
 					expect(latestRoom).to.have.property('departmentId');
 					expect(latestRoom.departmentId).to.be.equal(fallbackDepartment._id);
 				});
-			});
 
-			(IS_EE ? it : it.skip)('system messages sent on transfer should be properly generated', async () => {
-				const messagesList = await fetchMessages(roomId, visitorToken);
+				(IS_EE ? it : it.skip)('system messages sent on transfer should be properly generated', async () => {
+					const messagesList = await fetchMessages(roomId, visitorToken);
 
-				const fallbackMessages = messagesList.filter((m) => m.t === 'livechat_transfer_history_fallback');
-				expect(fallbackMessages.length).to.be.equal(1);
+					const fallbackMessages = messagesList.filter((m) => m.t === 'livechat_transfer_history_fallback');
+					expect(fallbackMessages.length).to.be.equal(1);
 
-				const userJoinedMessages = messagesList.filter((m) => m.t === 'uj');
-				expect(userJoinedMessages.length).to.be.equal(2);
+					const userJoinedMessages = messagesList.filter((m) => m.t === 'uj');
+					expect(userJoinedMessages.length).to.be.equal(2);
 
-				const transferMessages = messagesList.filter((m) => m.t === 'livechat_transfer_history');
-				expect(transferMessages.length).to.be.equal(1);
+					const transferMessages = messagesList.filter((m) => m.t === 'livechat_transfer_history');
+					expect(transferMessages.length).to.be.equal(1);
 
-				const userLeavingMessages = messagesList.filter((m) => m.t === 'ul');
-				expect(userLeavingMessages.length).to.be.equal(1);
+					const userLeavingMessages = messagesList.filter((m) => m.t === 'ul');
+					expect(userLeavingMessages.length).to.be.equal(1);
+				});
 			});
 		});
 
