@@ -25,7 +25,6 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
-    const [received, setReceived] = useState(0);
     const streamAll = useStream('qr-code');
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const initRef = useRef<boolean>(false); // Important because we want to ensure this runs only once
@@ -58,7 +57,6 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     useEffect(() => {
         if (!sessionId) return;
         return streamAll(`${sessionId}/verify`, (key) => {
-            setReceived(1);
             console.log('Received QR code update:', key);
         });
     }, [streamAll, sessionId]);
@@ -133,9 +131,6 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
                         <Box fontScale='c1' color='neutral-600'>
                             Open your authenticated mobile app and scan this QR code to sign in
                         </Box>
-                        {received && <Box fontScale='p1' color='neutral-600'>
-                            Data received from websocket!!!
-                        </Box>}
                     </Box>
 
                     <Box

@@ -2,7 +2,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 export const useQrCodeQueryHandler = () => {
-    const getQrCode = useEndpoint('POST', '/v1/oauth-apps.qrcode-generate');
+    const getQrCode = useEndpoint('POST', '/v1/qrcode.generate');
 
     const generateQrCode = useCallback(async (sessionId: string) => {
         try {
