@@ -153,3 +153,40 @@ export const setSelectionRange = (input: HTMLDivElement, selectionStart: number,
 		}
 	}
 };
+
+export const getLineFromCursorPosition = (
+	input: HTMLDivElement,
+	{ selectionStart, selectionEnd }: { selectionStart: number; selectionEnd: number },
+): { startLine: number; endLine: number } => {
+	const text = input.innerText;
+	const lines = text.split('\n');
+
+	let accumulator = 0;
+	let startLine = -1;
+	let endLine = -1;
+
+	for (let i = 0; i < lines.length; i++) {
+		const lineLength = lines[i].length;
+
+		if (i > 0) accumulator += 1; // Account for newline
+		accumulator += lineLength;
+
+		if (startLine === -1 && accumulator >= selectionStart) {
+			startLine = i;
+		}
+		if (endLine === -1 && accumulator >= selectionEnd) {
+			endLine = i;
+		}
+
+		// Exit early if both found
+		if (startLine !== -1 && endLine !== -1) {
+			break;
+		}
+	}
+
+	// Fallback if selection positions exceed text length
+	if (startLine === -1) startLine = lines.length - 1;
+	if (endLine === -1) endLine = lines.length - 1;
+
+	return { startLine, endLine };
+};
