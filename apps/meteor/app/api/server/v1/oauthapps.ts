@@ -108,7 +108,7 @@ const OauthAppsAddParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isOauthAppsAddParams = ajv.compile<OauthAppsAddParams>(OauthAppsAddParamsSchema);
+const isOauthAppsAddParams = ajv.compile<OauthAppsAddParams>(OauthAppsAddParamsSchema);
 
 const oauthAppsCreateEndpoints = API.v1.post(
 	'oauth-apps.create',
