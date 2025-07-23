@@ -158,6 +158,7 @@ API.v1.addRoute(
 			try {
 
 				const { code } = this.bodyParams;
+
 				if (!code || typeof code !== 'string') {
 					return API.v1.failure({
 						success: false,
@@ -168,11 +169,10 @@ API.v1.addRoute(
 				const decoded = extractValidJWTPayload(code, process.env.JWT_SECRET || 'defaultSecret');
 
 				if (!decoded || decoded.context.type !== 'qr-auth') {
-					return API.v1.failure({ success: false, message: 'Invalid token type' });
-				}
-
-				if (decoded && decoded.context.sessionId) {
-					return API.v1.failure({ success: false, message: 'Invalid QR code or session expired' });
+					return API.v1.failure({
+						success: false,
+						message: 'Invalid QR code or session expired'
+					});
 				}
 
 
