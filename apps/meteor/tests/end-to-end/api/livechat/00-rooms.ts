@@ -1251,6 +1251,7 @@ describe('LIVECHAT - rooms', () => {
 		(IS_EE ? it : it.skip)(
 			'when manager forwards a chat that hasnt been assigned to a user to another department with no online agents, chat should end ready in department (not queued)',
 			async () => {
+				await updateSetting('Livechat_accept_chats_with_no_agents', true);
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				const { department: initialDepartment } = await createDepartmentWithAnOfflineAgent({});
 				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent({});
@@ -1275,7 +1276,11 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry.status).to.equal('ready');
 				expect(inquiry.department).to.equal(forwardToOfflineDepartment._id);
 
-				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(forwardToOfflineDepartment._id)]);
+				await Promise.all([
+					deleteDepartment(initialDepartment._id),
+					deleteDepartment(forwardToOfflineDepartment._id),
+					updateSetting('Livechat_accept_chats_with_no_agents', false),
+				]);
 			},
 		);
 
