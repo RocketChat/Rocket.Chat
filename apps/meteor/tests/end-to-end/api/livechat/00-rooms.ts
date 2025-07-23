@@ -1253,7 +1253,7 @@ describe('LIVECHAT - rooms', () => {
 			async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				const { department: initialDepartment } = await createDepartmentWithAnOfflineAgent({});
-				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({});
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOnlineAgent();
 
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
