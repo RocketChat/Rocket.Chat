@@ -56,7 +56,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'qrcode.qverify',
+	'qrcode.verify',
 	{
 		authRequired: false,
 	},
