@@ -15,10 +15,7 @@ const hideUserName = (
 ) => {
 	if (!usersMap || !usersMap.userNameTable) {
 		if (usersMap) usersMap.userNameTable = {};
-		else {
-			usersMap = {};
-			usersMap.userNameTable = {};
-		}
+		else usersMap = { userNameTable: {} };
 	}
 
 	if (!usersMap.userNameTable[username]) {
