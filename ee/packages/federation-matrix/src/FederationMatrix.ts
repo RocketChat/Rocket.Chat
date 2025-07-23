@@ -464,4 +464,40 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		await this.updateUserPowerLevel(roomId, u._id, currentRoles, givenByUserId);
 	}
+
+	async started(): Promise<void> {
+		// Listen for typing events from all rooms
+		this.onEvent('user.typing', async ({ user, isTyping, roomId }) => {
+			try {
+				// Check if the room is federated
+				const bridgedRoom = await MatrixBridgedRoom.findOne({ rid: roomId });
+				if (!bridgedRoom) {
+					// Room is not federated, ignore typing event
+					return;
+				}
+
+				// Check if the user is bridged
+				const bridgedUser = await MatrixBridgedUser.findOne({ uid: user._id });
+				if (!bridgedUser) {
+					// User is not bridged yet, create bridged user
+					const matrixDomain = await this.getMatrixDomain();
+					const matrixUserId = `@${user.username}:${matrixDomain}`;
+					await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
+					bridgedUser = { mui: matrixUserId };
+				}
+
+				// Send typing notification to Matrix
+				if (this.homeserverServices) {
+					await this.homeserverServices.edu.sendTyping(
+						bridgedRoom.mri,
+						bridgedUser.mui,
+						isTyping,
+						30000 // 30 second timeout
+					);
+				}
+			} catch (error) {
+				this.logger.error('Failed to handle typing event:', error);
+			}
+		});
+	}
 }

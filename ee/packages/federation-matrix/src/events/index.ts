@@ -7,6 +7,7 @@ import { message } from './message';
 import { ping } from './ping';
 import { powerLevels } from './powerLevels';
 import { reaction } from './reaction';
+import { typing } from './typing';
 
 export function registerEvents(emitter: Emitter<HomeserverEventSignatures>) {
 	ping(emitter);
@@ -15,4 +16,5 @@ export function registerEvents(emitter: Emitter<HomeserverEventSignatures>) {
 	reaction(emitter);
 	membership(emitter);
 	powerLevels(emitter);
+	typing(emitter);
 }

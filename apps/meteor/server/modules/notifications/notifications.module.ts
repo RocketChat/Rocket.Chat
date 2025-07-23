@@ -1,4 +1,4 @@
-import { Authorization, VideoConf } from '@rocket.chat/core-services';
+import { Authorization, VideoConf, api } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
@@ -241,6 +241,18 @@ export class NotificationsModule {
 
 			if (!(await canType({ extraData, rid, username, userId: this.userId ?? undefined }))) {
 				return false;
+			}
+
+			// Broadcast typing event for federation and other services
+			// This broadcasts ALL typing events. Services like federation-matrix
+			// will listen to this and filter for federated rooms only.
+			if (this.userId && _activity) {
+				const isTyping = Array.isArray(_activity) && _activity.includes('user-typing');
+				void api.broadcast('user.typing', {
+					user: { _id: this.userId, username },
+					isTyping,
+					roomId: rid,
+				});
 			}
 
 			return true;
