@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'fs/promises';
 
-import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType } from '@rocket.chat/core-typings';
+import type { FileProp, IMessage, IRoom, IUser, MessageAttachment, RoomType } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
@@ -13,8 +13,12 @@ const hideUserName = (
 	userData: Pick<IUser, 'username'> | undefined,
 	usersMap: { userNameTable: Record<string, string> },
 ) => {
-	if (!usersMap.userNameTable) {
-		usersMap.userNameTable = {};
+	if (!usersMap || !usersMap.userNameTable) {
+		if (usersMap) usersMap.userNameTable = {};
+		else {
+			usersMap = {};
+			usersMap.userNameTable = {};
+		}
 	}
 
 	if (!usersMap.userNameTable[username]) {
