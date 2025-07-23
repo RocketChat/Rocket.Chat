@@ -1276,7 +1276,11 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry.status).to.equal('ready');
 				expect(inquiry.department).to.equal(forwardToOfflineDepartment._id);
 
-				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(forwardToOfflineDepartment._id)]);
+				await Promise.all([
+					deleteDepartment(initialDepartment._id),
+					deleteDepartment(forwardToOfflineDepartment._id),
+					updateSetting('Livechat_accept_chats_with_no_agents', false),
+				]);
 			},
 		);
 
