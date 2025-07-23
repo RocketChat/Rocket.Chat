@@ -3,7 +3,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useLanguage } from '@rocket.chat/ui-contexts';
 import { sendAt } from 'cron';
-import intlFormat from 'date-fns/intlFormat';
+import { intlFormat } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { useFormattedRelativeTime } from './useFormattedRelativeTime';

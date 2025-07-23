@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom, isMultipleDirectMessageRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isE2EEMessage, isMultipleDirectMessageRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 
@@ -15,6 +15,9 @@ export const getNavigationMessagePreview = (
 	}
 	if (isVideoConfMessage(lastMessage)) {
 		return t('Call_started');
+	}
+	if (isE2EEMessage(lastMessage) && lastMessage.e2e !== 'done') {
+		return t('Encrypted_message_preview_unavailable');
 	}
 	if (!lastMessage.u) {
 		return normalizeNavigationMessage(lastMessage, t);
