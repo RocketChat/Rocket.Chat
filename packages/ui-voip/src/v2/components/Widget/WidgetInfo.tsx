@@ -6,11 +6,11 @@ type Slot = {
 };
 
 type WidgetInfoProps = {
-	slots: [Slot, Slot];
+	slots?: Slot[];
 };
 
 const WidgetInfo = ({ slots }: WidgetInfoProps) => {
-	if (!slots.length) {
+	if (!slots?.length) {
 		return null;
 	}
 	return (

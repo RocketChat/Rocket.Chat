@@ -20,7 +20,7 @@ const getHeldSlot = (held: boolean, t: ReturnType<typeof useTranslation>['t']) =
 	if (held) {
 		return {
 			text: t('On hold'),
-			type: 'warning',
+			type: 'info',
 		} as const;
 	}
 	return undefined;
