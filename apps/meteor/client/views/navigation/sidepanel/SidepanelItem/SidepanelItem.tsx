@@ -45,11 +45,6 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 			onPointerEnter={handlePointerEnter}
 		>
 			<SidebarV2ItemCol>
-				{!isRoomFilter && parentRoomId && (
-					<SidebarV2ItemRow>
-						<SidePanelParent room={room} />
-					</SidebarV2ItemRow>
-				)}
 				<SidebarV2ItemRow>
 					{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 					{icon && icon}
@@ -58,6 +53,7 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					{!isRoomFilter && parentRoomId && <SidePanelParent room={room} />}
 					{priorityTag && <SidebarV2ItemRow>{priorityTag}</SidebarV2ItemRow>}
 					{badges && badges}
 					{menu && (
