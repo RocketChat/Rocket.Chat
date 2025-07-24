@@ -14,6 +14,7 @@ import {
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQrCodeQueryHandler } from './hooks/useQrCodeQueryHandler';
 import { useStream } from '@rocket.chat/ui-contexts';
+import { useLoginWithToken } from '@rocket.chat/ui-contexts';
 
 type QrModalProps = {
     onClose: () => void;
@@ -25,7 +26,8 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
-    const streamAll = useStream('qr-code');
+    const receiveQRVerification = useStream('qr-code');
+    const loginWithToken = useLoginWithToken();
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const initRef = useRef<boolean>(false); // Important because we want to ensure this runs only once
     const generateQrCodeRequest = useQrCodeQueryHandler();
@@ -56,10 +58,10 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
 
     useEffect(() => {
         if (!sessionId) return;
-        return streamAll(`${sessionId}/verify`, (key) => {
-            console.log('Received QR code update:', key);
+        return receiveQRVerification(`${sessionId}/verify`, async (key) => {
+            await loginWithToken(key.authToken);
         });
-    }, [streamAll, sessionId]);
+    }, [receiveQRVerification, sessionId]);
 
     useEffect(() => {
         return () => {
