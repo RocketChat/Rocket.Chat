@@ -84,9 +84,9 @@ TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
 Unixtime = d:Digit |10| { return d.join(''); }
 
-TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "Z"? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join('')); }
+TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join(''), tz); }
 
-TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| "Z"? { return timestampFromHours(hours.join(''), minutes.join('')); }
+TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''),undefined,  tz); }
 
 
 Timestamp = TimestampHoursMinutesSeconds / TimestampHoursMinutes
