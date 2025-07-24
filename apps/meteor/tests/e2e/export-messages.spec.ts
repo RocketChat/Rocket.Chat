@@ -59,9 +59,11 @@ test.describe.serial('export-messages', () => {
 		await exportMessagesTab.setMethod('Download file');
 
 		await exportMessagesTab.exposeOutputFormats();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('html')).not.toBeVisible();
 		await expect(exportMessagesTab.getOutputFormatOptionByName('json')).toBeVisible();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('pdf')).toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('html')).not.toBeVisible();
+
+		// the room is not encrypted
+		await expect(exportMessagesTab.getOutputFormatOptionByName('pdf')).not.toBeVisible();
 	});
 
 	test('should display an error when trying to send email without filling to users or to additional emails', async ({ page }) => {
