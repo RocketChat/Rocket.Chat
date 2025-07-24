@@ -55,7 +55,11 @@ class ExternalQueue implements IRoutingMethod {
 			const result = (await request.json()) as { username?: string };
 
 			if (result?.username) {
-				const agent = await Users.findOneOnlineAgentByUserList(result.username);
+				const agent = await Users.findOneOnlineAgentByUserList(
+					result.username,
+					{},
+					settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+				);
 
 				if (!agent?.username) {
 					return;

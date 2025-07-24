@@ -10,7 +10,7 @@ export class LoginPage {
 	constructor(protected readonly page: Page) {}
 
 	get loginButton() {
-		return this.page.getByRole('button', { name: 'Login' });
+		return this.page.getByRole('button', { name: 'Login', exact: true });
 	}
 
 	/** @deprecated ideally the previous action should ensure the user is logged out and we should just assume to be at the login page */
@@ -41,6 +41,8 @@ export class LoginPage {
 			items.forEach(({ name, value }) => {
 				window.localStorage.setItem(name, value);
 			});
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			require('meteor/accounts-base').Accounts._pollStoredLoginToken();
 		}, userState.state.origins[0].localStorage);
 
 		await this.waitForLogin();

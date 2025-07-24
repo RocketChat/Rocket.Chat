@@ -41,5 +41,6 @@ module.exports = {
 		'tests/unit/server/**/*.spec.ts',
 		'app/api/server/lib/**/*.spec.ts',
 		'app/file-upload/server/**/*.spec.ts',
+		'app/lib/server/functions/notifications/**/*.spec.ts',
 	],
 };

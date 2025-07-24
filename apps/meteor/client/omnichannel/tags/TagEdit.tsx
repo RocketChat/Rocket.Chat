@@ -1,7 +1,7 @@
 import type { ILivechatDepartment, ILivechatTag, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRouter, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -13,7 +13,6 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarTitle,
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarClose,
 } from '../../components/Contextualbar';
@@ -27,11 +26,11 @@ type TagEditPayload = {
 type TagEditProps = {
 	tagData?: ILivechatTag;
 	currentDepartments?: Serialized<ILivechatDepartment>[];
+	onClose: () => void;
 };
 
-const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
+const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const queryClient = useQueryClient();
 	const handleDeleteTag = useRemoveTag();
 
@@ -65,7 +64,7 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			router.navigate('/omnichannel/tags');
+			onClose();
 		}
 	});
 
@@ -75,10 +74,10 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 	const departmentsField = useId();
 
 	return (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{_id ? t('Edit_Tag') : t('New_Tag')}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => router.navigate('/omnichannel/tags')}></ContextualbarClose>
+				<ContextualbarClose onClick={onClose}></ContextualbarClose>
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<Box id={formId} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -122,7 +121,7 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={() => router.navigate('/omnichannel/tags')}>{t('Cancel')}</Button>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button form={formId} disabled={!isDirty} type='submit' primary>
 						{t('Save')}
 					</Button>
@@ -137,7 +136,7 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 					</Box>
 				)}
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

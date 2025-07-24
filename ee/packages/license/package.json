@@ -1,14 +1,15 @@
 {
 	"name": "@rocket.chat/license",
-	"version": "1.0.13-rc.0",
+	"version": "1.0.22",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/bcrypt": "^5.0.2",
 		"@types/jest": "~29.5.14",
 		"@types/ws": "^8.5.13",
 		"eslint": "~8.45.0",
-		"jest": "~29.7.0",
+		"jest": "~30.0.2",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.8.3"
 	},

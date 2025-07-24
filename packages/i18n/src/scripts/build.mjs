@@ -98,12 +98,7 @@ export default languages;`,
 	);
 
 	// ./index
-	await writeFile(
-		join(distDirectory, 'index.mjs'),
-		`export { default } from './resources.mjs';
-export * from './resources.mjs';
-export * from './esm/index.js';`,
-	);
+	await writeFile(join(distDirectory, 'index.mjs'), `export * from './esm/index.js';`);
 
 	await writeFile(
 		join(distDirectory, 'index.js'),
@@ -126,19 +121,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 		return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = void 0;
-var resources_1 = require("./resources");
-Object.defineProperty(exports, "default", { enumerable: true, get: function () { return __importDefault(resources_1).default; } });
-__exportStar(require("./resources"), exports);
 __exportStar(require("./cjs/index"), exports);`,
 	);
 
-	await writeFile(
-		join(distDirectory, 'index.d.ts'),
-		`export { default } from './resources';
-export * from './resources';
-export * from './esm/index';`,
-	);
+	await writeFile(join(distDirectory, 'index.d.ts'), `export * from './esm/index';`);
 }
 
 if (import.meta.url.startsWith('file:')) {

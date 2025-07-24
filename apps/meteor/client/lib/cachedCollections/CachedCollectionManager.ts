@@ -1,9 +1,9 @@
-import type { CachedCollection } from './CachedCollection';
+import type { IWithManageableCache } from './CachedCollection';
 
 class CachedCollectionManager {
-	private items = new Set<CachedCollection<any>>();
+	private items = new Set<IWithManageableCache>();
 
-	register(cachedCollection: CachedCollection<any>) {
+	register(cachedCollection: IWithManageableCache) {
 		this.items.add(cachedCollection);
 	}
 

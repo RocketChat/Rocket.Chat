@@ -5,6 +5,7 @@
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
+		"jest": "~30.0.2",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {
@@ -20,7 +21,9 @@
 		"/dist"
 	],
 	"dependencies": {
-		"cheerio": "1.0.0",
-		"jest": "^29.7.0"
+		"cheerio": "1.0.0"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

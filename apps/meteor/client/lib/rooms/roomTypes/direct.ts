@@ -1,7 +1,7 @@
 import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
+import type { Filter } from 'mongodb';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { Subscriptions, Users, Rooms } from '../../../../app/models/client';
@@ -146,14 +146,14 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: Mongo.Selector<ISubscription> = {
+			const query: Filter<ISubscription> = {
 				t: 'd',
 				$or: [{ name: identifier }, { rid: identifier }],
 			};
 
 			const subscription = Subscriptions.findOne(query);
 			if (subscription?.rid) {
-				return Rooms.findOne(subscription.rid);
+				return Rooms.state.get(subscription.rid);
 			}
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,

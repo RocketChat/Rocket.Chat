@@ -1,7 +1,6 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { Rooms } from '../../../../app/models/client';
@@ -109,16 +108,15 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: Mongo.Selector<IRoom> = {
-				t: 'c',
-				name: identifier,
+			const predicate = (record: IRoom): boolean => {
+				return record.t === 'c' && record.name === identifier;
 			};
-
-			return Rooms.findOne(query);
+			return Rooms.state.find(predicate);
 		},
 
 		showJoinLink(roomId) {
-			return !!Rooms.findOne({ _id: roomId, t: 'c' });
+			const predicate = (record: IRoom): boolean => record.t === 'c' && record._id === roomId;
+			return !!Rooms.state.find(predicate);
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,
 );

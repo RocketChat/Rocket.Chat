@@ -39,7 +39,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
-		Messages.findOne({ _id: mid, _hidden: { $ne: true } }, { reactive: false }) ?? sdk.call('getSingleMessage', mid);
+		Messages.state.find((record) => record._id === mid && record._hidden !== true) ?? sdk.call('getSingleMessage', mid);
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {
 		const message = await findMessageByID(mid);
@@ -52,7 +52,10 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findLastMessage = async (): Promise<IMessage | undefined> =>
-		Messages.findOne({ rid, tmid: tmid ?? { $exists: false }, _hidden: { $ne: true } }, { sort: { ts: -1 }, reactive: false });
+		Messages.state.findFirst(
+			(record) => record.rid === rid && (tmid ? record.tmid === tmid : !record.tmid) && record._hidden !== true,
+			(a, b) => b.ts.getTime() - a.ts.getTime(),
+		);
 
 	const getLastMessage = async (): Promise<IMessage> => {
 		const message = await findLastMessage();
@@ -99,9 +102,14 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return undefined;
 		}
 
-		const msg = Messages.findOne(
-			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { ...(message && { $lt: message.ts }) } },
-			{ sort: { ts: -1 }, reactive: false },
+		const msg = Messages.state.findFirst(
+			(record) =>
+				record.rid === rid &&
+				(tmid ? record.tmid === tmid : !record.tmid) &&
+				record.u._id === uid &&
+				record._hidden !== true &&
+				record.ts.getTime() < (message?.ts.getTime() ?? Date.now()),
+			(a, b) => b.ts.getTime() - a.ts.getTime(),
 		);
 
 		if (!msg) {
@@ -132,9 +140,14 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return undefined;
 		}
 
-		const msg = Messages.findOne(
-			{ rid, 'tmid': tmid ?? { $exists: false }, 'u._id': uid, '_hidden': { $ne: true }, 'ts': { $gt: message.ts } },
-			{ sort: { ts: 1 }, reactive: false },
+		const msg = Messages.state.findFirst(
+			(record) =>
+				record.rid === rid &&
+				(tmid ? record.tmid === tmid : !record.tmid) &&
+				record.u._id === uid &&
+				record._hidden !== true &&
+				record.ts.getTime() > message.ts.getTime(),
+			(a, b) => a.ts.getTime() - b.ts.getTime(),
 		);
 
 		if (!msg) {
@@ -159,7 +172,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
-		Messages.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
+		Messages.state.store({ ...message, rid, ...(tmid && { tmid }) });
 	};
 
 	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> =>
@@ -232,7 +245,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		drafts.set(mid, draft);
 	};
 
-	const findRoom = async (): Promise<IRoom | undefined> => Rooms.findOne({ _id: rid }, { reactive: false });
+	const findRoom = async (): Promise<IRoom | undefined> => Rooms.state.get(rid);
 
 	const getRoom = async (): Promise<IRoom> => {
 		const room = await findRoom();
@@ -251,7 +264,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom | undefined> =>
-		Rooms.findOne({ _id: drid, prid: { $exists: true } }, { reactive: false });
+		Rooms.state.find((record) => Boolean(record._id === drid && record.prid));
 
 	const getDiscussionByID = async (drid: IRoom['_id']): Promise<IRoom> => {
 		const discussion = await findDiscussionByID(drid);

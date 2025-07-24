@@ -1,4 +1,4 @@
 export interface IUserEmail {
-    address: string;
-    verified: boolean;
+	address: string;
+	verified: boolean;
 }

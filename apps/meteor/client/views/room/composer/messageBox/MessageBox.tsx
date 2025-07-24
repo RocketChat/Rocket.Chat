@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
@@ -112,7 +112,7 @@ const MessageBox = ({
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
-
+	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
@@ -137,9 +137,9 @@ const MessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createComposerAPI(node, storageID));
+			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit));
 		},
-		[chat, storageID],
+		[chat, storageID, quoteChainLimit],
 	);
 
 	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
@@ -277,7 +277,23 @@ const MessageBox = ({
 
 	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
 
-	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
+	const federationMatrixEnabled = useSetting('Federation_Matrix_enabled', false);
+	const canSend = useReactiveValue(
+		useCallback(() => {
+			if (!room.t) {
+				return false;
+			}
+
+			if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+				return false;
+			}
+
+			if (isRoomFederated(room)) {
+				return federationMatrixEnabled;
+			}
+			return true;
+		}, [federationMatrixEnabled, room]),
+	);
 
 	const sizes = useContentBoxSize(textareaRef);
 

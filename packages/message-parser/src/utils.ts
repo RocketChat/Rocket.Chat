@@ -251,6 +251,20 @@ export const timestamp = (
   };
 };
 
+export const timestampFromHours = (
+  hours: string,
+  minutes = '00',
+  seconds = '00',
+) => {
+  const date = new Date();
+
+  const yearMonthDay = date.toISOString().split('T')[0];
+
+  return new Date(`${yearMonthDay}T${hours}:${minutes}:${seconds}Z`)
+    .getTime()
+    .toString();
+};
+
 export const extractFirstResult = (
   value: Types[keyof Types]['value'],
 ): Types[keyof Types]['value'] => {
