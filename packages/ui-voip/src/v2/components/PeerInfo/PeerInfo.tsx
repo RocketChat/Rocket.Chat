@@ -2,7 +2,7 @@ import { ComponentProps } from 'react';
 
 import { InternalUser, PhoneNumber } from '.';
 
-type PeerInfoProps = ComponentProps<typeof InternalUser> | ComponentProps<typeof PhoneNumber>;
+export type PeerInfoProps = ComponentProps<typeof InternalUser> | ComponentProps<typeof PhoneNumber>;
 
 const PeerInfo = (props: PeerInfoProps) => {
 	if ('name' in props) {

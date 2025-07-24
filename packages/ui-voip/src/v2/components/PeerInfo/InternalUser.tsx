@@ -3,7 +3,7 @@ import { Avatar, Box } from '@rocket.chat/fuselage';
 type InternalUserProps = {
 	name: string;
 	avatarUrl: string;
-	identifier: string;
+	identifier: string | number;
 };
 
 const InternalUser = ({ name, avatarUrl, identifier }: InternalUserProps) => {
@@ -16,7 +16,7 @@ const InternalUser = ({ name, avatarUrl, identifier }: InternalUserProps) => {
 				<Box display='flex' flexDirection='column' fontScale='p2b'>
 					{name}
 				</Box>
-				<Box fontScale='c1' color='neutral-500'>
+				<Box fontScale='c1' color='secondary-info'>
 					{identifier}
 				</Box>
 			</Box>
