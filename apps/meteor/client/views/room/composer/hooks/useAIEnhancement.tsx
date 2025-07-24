@@ -3,21 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 // import { useTranslation } from 'react-i18next';
 import type { RefObject, ReactElement } from 'react';
 
-/*
- * Hook: useAIEnhancement
- * ----------------------
- * Adds an AI contextual menu to a content-editable message composer.
- *
- * – Shows a small popup with three AI actions (Summary, Emoji, Translation)
- *   when the user selects some text with the mouse.
- * – While an action is running, the selected text gets wrapped in a <span>
- *   with a visual pulse animation and becomes temporarily unselectable.
- * – When the (simulated) AI response resolves, the span is filled with the
- *   resulting string, character-by-character, to create a "typing" effect.
- *
- * The hook returns a React element that must be rendered by the caller so the
- * popup can appear in the DOM tree (usually overlayed via fixed positioning).
- */
+
 
 const PULSE_ANIMATION_STYLE = `
 @keyframes aiBackgroundPulse {
