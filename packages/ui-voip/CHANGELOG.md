@@ -1,5 +1,22 @@
 # @rocket.chat/ui-voip
 
+## 11.0.0-rc.0
+
+### Patch Changes
+
+- ([#36229](https://github.com/RocketChat/Rocket.Chat/pull/36229)) Fixes VoIP widget mute action muting received audio instead of just microphone
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+- ([#36225](https://github.com/RocketChat/Rocket.Chat/pull/36225)) Fixes incoming VoIP calls playing "dial" sound when answered
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@21.0.0-rc.0
+  - @rocket.chat/ui-avatar@17.0.0-rc.0
+  - @rocket.chat/ui-client@21.0.0-rc.0
+  </details>
+
 ## 10.0.2
 
 ### Patch Changes
