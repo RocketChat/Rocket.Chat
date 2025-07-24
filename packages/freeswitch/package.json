@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/freeswitch",
-	"version": "1.2.12",
+	"version": "1.2.18",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
@@ -27,5 +27,8 @@
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
 		"esl": "github:pierre-lehnen-rc/esl"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

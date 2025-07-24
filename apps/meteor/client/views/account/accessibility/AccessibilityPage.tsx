@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import {
 	FieldDescription,
 	Field,
@@ -11,7 +12,6 @@ import {
 	Select,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage-forms';
-import { Accordion, AccordionItem, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -132,7 +132,7 @@ const AccessibilityPage = () => {
 										<Controller
 											control={control}
 											name='fontSize'
-											render={({ field: { onChange, value } }) => <Select value={value} onChange={onChange} options={fontSizes} />}
+											render={({ field: { onChange, value } }) => <Select value={value} onChange={onChange} options={fontSizes(t)} />}
 										/>
 									</FieldRow>
 									<FieldDescription mb={12}>{t('Adjustable_font_size_description')}</FieldDescription>

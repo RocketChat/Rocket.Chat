@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence",
-	"version": "0.2.25",
+	"version": "0.2.31",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.26.10",
@@ -9,7 +9,7 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@types/node": "~22.14.1",
+		"@types/node": "~22.16.1",
 		"babel-jest": "~30.0.2",
 		"eslint": "~8.45.0",
 		"jest": "~30.0.2",

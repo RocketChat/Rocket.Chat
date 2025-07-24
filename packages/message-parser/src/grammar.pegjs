@@ -33,6 +33,7 @@
     tasks,
     unorderedList,
     timestamp,
+    timestampFromHours,
   } = require('./utils');
 
 let skipBold = false;
@@ -74,12 +75,28 @@ Blockquote = b:BlockquoteLine+ { return quote(b); }
 BlockquoteLine = ">" [ \t]* @Paragraph
 
 // <t:1630360800:?{format}>
+// <t:2025-07-22T10:00:00.000Z?:?{format}>
+// <t:2025-07-22T10:00:00:?{format}>
+// <t:00:00:?{format}>
 
 TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
 Unixtime = d:Digit |10| { return d.join(''); }
 
-Timestamp = "<t:" date:Unixtime ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:Unixtime ">" { return timestamp(date); }
+TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "Z"? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join('')); }
+
+TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| "Z"? { return timestampFromHours(hours.join(''), minutes.join('')); }
+
+
+Timestamp = TimestampHoursMinutesSeconds / TimestampHoursMinutes
+
+
+ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| "Z"? { return new Date(year.join('') + '-' + month.join('') + '-' + day.join('') + 'T' + hours.join('') + ':' + minutes.join('') + ':' + seconds.join('') + '.' + milliseconds.join('') + 'Z').getTime().toString(); }
+
+ISO8601DateWithoutMilliseconds = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "Z"? { return new Date(year.join('') + '-' + month.join('') + '-' + day.join('') + 'T' + hours.join('') + ':' + minutes.join('') + ':' + seconds.join('') + 'Z').getTime().toString(); }
+
+
+TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
 
 /**
  *
@@ -230,7 +247,7 @@ InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
 InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
 
 InlineItemPattern = Whitespace
-  / Timestamp
+  / TimestampRules
   / MaybeReferences
   / AutolinkedPhone
   / AutolinkedEmail
@@ -494,7 +511,7 @@ BoldEmoticon = & { return !skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / B
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(Timestamp / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 

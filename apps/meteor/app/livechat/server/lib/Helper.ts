@@ -55,6 +55,8 @@ import {
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChanged,
+	notifyOnRoomChangedById,
+	notifyOnLivechatInquiryChangedByRoom,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
@@ -98,7 +100,7 @@ export const prepareLivechatRoom = async (
 	const contactId = await migrateVisitorIfMissingContact(_id, source);
 	const contact =
 		contactId &&
-		(await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
+		(await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'name' | 'channels' | 'activity'>>(contactId, {
 			projection: { name: 1, channels: 1, activity: 1 },
 		}));
 	if (!contact) {
@@ -555,6 +557,12 @@ export const updateChatDepartment = async ({
 		Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId),
 	]);
 
+	if (responses[0].modifiedCount) {
+		void notifyOnRoomChangedById(rid);
+	}
+	if (responses[1].modifiedCount) {
+		void notifyOnLivechatInquiryChangedByRoom(rid);
+	}
 	if (responses[2].modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomId(rid);
 	}

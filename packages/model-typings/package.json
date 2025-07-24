@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/model-typings",
-	"version": "1.6.4",
+	"version": "1.6.10",
 	"private": true,
 	"devDependencies": {
 		"@types/node-rsa": "^1.1.4",
@@ -20,5 +20,8 @@
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

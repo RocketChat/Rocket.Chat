@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/api-client",
-	"version": "0.2.25",
+	"version": "0.2.31",
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -33,6 +33,6 @@
 		"strict-uri-encode": "^2.0.0"
 	},
 	"volta": {
-		"extends": "../../../package.json"
+		"extends": "../../package.json"
 	}
 }
