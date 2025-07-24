@@ -50,7 +50,6 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 						<SidePanelParent room={room} />
 					</SidebarV2ItemRow>
 				)}
-				{priorityTag && <SidebarV2ItemRow>{priorityTag}</SidebarV2ItemRow>}
 				<SidebarV2ItemRow>
 					{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 					{icon && icon}
@@ -59,6 +58,7 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					{priorityTag && <SidebarV2ItemRow>{priorityTag}</SidebarV2ItemRow>}
 					{badges && badges}
 					{menu && (
 						<SidebarV2ItemMenu>
