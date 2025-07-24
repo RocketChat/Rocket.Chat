@@ -37,11 +37,10 @@ const PULSE_ANIMATION_STYLE = `
 	}
 }
 .ai-enhancement-transform {
-  border-radius: 3px;
   user-select: none;
   animation: aiBackgroundPulse 1.5s ease-in-out infinite;
-  padding: 1px 2px;
-  margin: -1px -2px;
+  margin-left: 1px;
+  margin-right: 1px;
 }
 
 .ai-enhancement-summary {
@@ -74,17 +73,26 @@ const PULSE_ANIMATION_STYLE = `
 
 .ai-suggestion-summary {
 	background-color: #fffbe6;
+  color: rgb(5, 151, 255);
 	border: 2px dashed rgb(0, 0, 0);
+  margin-left: 1px;
+  margin-right: 1px;
 }
 
 .ai-suggestion-emoji {
 	background-color: #e6f7ff;
+  color: rgb(5, 151, 255);
 	border: 2px dashed rgb(0, 0, 0);
+  margin-left: 1px;
+  margin-right: 1px;
 }
 
 .ai-suggestion-translation {
 	background-color: #f6ffed;
+  color: rgb(5, 151, 255);
 	border: 2px dashed rgb(0, 0, 0); 
+  margin-left: 1px;
+  margin-right: 1px;
 }
 
 .ai-enhancement-suggestion:hover .ai-suggestion-actions {
@@ -307,6 +315,22 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
 
       actions.appendChild(acceptBtn);
       actions.appendChild(rejectBtn);
+
+      let tooltipText = '';
+      switch (type) {
+        case 'summary':
+          tooltipText = 'AI Summary';
+          break;
+        case 'emoji':
+          tooltipText = 'AI Emojify';
+          break;
+        case 'translation':
+          tooltipText = 'AI Translation';
+          break;
+      }
+      span.classList.add('with-tooltip');
+      span.dataset.tooltip = tooltipText;
+
       span.appendChild(actions);
     },
     [clearPopup],
