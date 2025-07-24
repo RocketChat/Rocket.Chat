@@ -7255,6 +7255,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/fuselage-forms@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@rocket.chat/fuselage-forms@npm:0.1.0"
+  dependencies:
+    react-aria: "npm:~3.37.0"
+  peerDependencies:
+    "@rocket.chat/fuselage": "*"
+    react: "*"
+    react-dom: "*"
+  checksum: 10/49d92d4b6c7e94f929f314a484e6b3e7b418c124740d70fd40f1b34b0b3af8fd7f0619e0a1520fefaa8ebd22b47dba52092e1b0626d556a5f6ac462e15c4128c
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/fuselage-hooks@npm:^0.37.0":
   version: 0.37.0
   resolution: "@rocket.chat/fuselage-hooks@npm:0.37.0"
@@ -7827,6 +7840,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.65.0"
+    "@rocket.chat/fuselage-forms": "npm:^0.1.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.37.0"
     "@rocket.chat/fuselage-polyfills": "npm:~0.31.25"
     "@rocket.chat/fuselage-toastbar": "npm:^0.35.0"
