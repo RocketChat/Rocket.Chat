@@ -2,16 +2,33 @@
 	"name": "@rocket.chat/jest-presets",
 	"version": "0.0.1",
 	"private": true,
-	"scripts": {
-		"clean": "rm -rf ./dist",
-		"build": "tsc",
-		"lint": "eslint ."
+	"type": "module",
+	"exports": {
+		"./client": {
+			"default": "./dist/client/index.js",
+			"types": "./dist/client/index.d.ts"
+		},
+		"./client/*": {
+			"default": "./dist/client/*"
+		},
+		"./server": {
+			"default": "./dist/server/index.js",
+			"types": "./dist/server/index.d.ts"
+		},
+		"./server/*": {
+			"default": "./dist/server/*"
+		}
 	},
 	"files": [
 		"/dist",
 		"/client",
 		"/server"
 	],
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf ./dist",
+		"lint": "eslint ."
+	},
 	"dependencies": {
 		"@swc/core": "~1.12.4",
 		"@swc/jest": "~0.2.38",

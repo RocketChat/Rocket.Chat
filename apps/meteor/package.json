@@ -40,7 +40,7 @@
 		"testunit": "yarn .testunit:definition && yarn .testunit:client && yarn .testunit:server:cov",
 		".testunit:server": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.js",
 		".testunit:server:cov": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r text -r lcov mocha --config ./.mocharc.js",
-		".testunit:client": "jest",
+		".testunit:client": "TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
 		".testunit:definition": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.definition.js",
 		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
 		"test": "yarn testunit && yarn testapi",
