@@ -45,15 +45,15 @@ type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 type LoginServiceConfigurationEvent = {
 	id: string;
 } & (
-	| {
+		| {
 			clientAction: 'removed';
 			data?: never;
-	  }
-	| {
+		}
+		| {
 			clientAction: Omit<ClientAction, 'removed'>;
 			data: Omit<Partial<ILoginServiceConfiguration>, 'secret'> & { secret?: never };
-	  }
-);
+		}
+	);
 
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
@@ -85,13 +85,13 @@ export type EventSignatures = {
 		uid: string,
 		data:
 			| {
-					type: 'changed';
-					account: Partial<IWebdavAccount>;
-			  }
+				type: 'changed';
+				account: Partial<IWebdavAccount>;
+			}
 			| {
-					type: 'removed';
-					account: { _id: IWebdavAccount['_id'] };
-			  },
+				type: 'removed';
+				account: { _id: IWebdavAccount['_id'] };
+			},
 	): void;
 	'notify.e2e.keyRequest'(rid: string, data: IRoom['e2eKeyId']): void;
 	'notify.deleteMessage'(rid: string, data: { _id: string }): void;
@@ -106,14 +106,14 @@ export type EventSignatures = {
 			ids?: string[]; // message ids have priority over ts
 			showDeletedStatus?: boolean;
 		} & (
-			| {
+				| {
 					filesOnly: true;
 					replaceFileAttachmentsWith?: MessageAttachment;
-			  }
-			| {
+				}
+				| {
 					filesOnly?: false;
-			  }
-		),
+				}
+			),
 	): void;
 	'notify.deleteCustomSound'(data: { soundData: ICustomSound }): void;
 	'notify.updateCustomSound'(data: { soundData: ICustomSound }): void;
@@ -131,12 +131,12 @@ export type EventSignatures = {
 		user: Pick<IUser, '_id'>,
 		data:
 			| {
-					messageErasureType: 'Delete';
-			  }
+				messageErasureType: 'Delete';
+			}
 			| {
-					messageErasureType: 'Unlink';
-					replaceByUser: { _id: IUser['_id']; username: IUser['username']; alias: string };
-			  },
+				messageErasureType: 'Unlink';
+				replaceByUser: { _id: IUser['_id']; username: IUser['username']; alias: string };
+			},
 	): void;
 	'user.deleteCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
 	'user.forceLogout': (uid: string) => void;
@@ -168,78 +168,78 @@ export type EventSignatures = {
 		data:
 			| { clientAction: Exclude<ClientAction, 'removed'>; role: IRole }
 			| {
-					clientAction: 'removed';
-					role: {
-						_id: string;
-						name: string;
-					};
-			  },
+				clientAction: 'removed';
+				role: {
+					_id: string;
+					name: string;
+				};
+			},
 	): void;
 	'watch.rooms'(data: { clientAction: ClientAction; room: Pick<IRoom, '_id'> | IRoom }): void;
 	'watch.subscriptions'(
 		data:
 			| {
-					clientAction: 'updated' | 'inserted';
-					subscription: Pick<
-						ISubscription,
-						| 't'
-						| 'ts'
-						| 'ls'
-						| 'lr'
-						| 'name'
-						| 'fname'
-						| 'rid'
-						| 'code'
-						| 'f'
-						| 'u'
-						| 'open'
-						| 'alert'
-						| 'roles'
-						| 'unread'
-						| 'prid'
-						| 'userMentions'
-						| 'groupMentions'
-						| 'archived'
-						| 'audioNotificationValue'
-						| 'desktopNotifications'
-						| 'mobilePushNotifications'
-						| 'emailNotifications'
-						| 'desktopPrefOrigin'
-						| 'mobilePrefOrigin'
-						| 'emailPrefOrigin'
-						| 'unreadAlert'
-						| '_updatedAt'
-						| 'blocked'
-						| 'blocker'
-						| 'autoTranslate'
-						| 'autoTranslateLanguage'
-						| 'disableNotifications'
-						| 'hideUnreadStatus'
-						| 'hideMentionStatus'
-						| 'muteGroupMentions'
-						| 'ignored'
-						| 'E2EKey'
-						| 'E2ESuggestedKey'
-						| 'oldRoomKeys'
-						| 'tunread'
-						| 'tunreadGroup'
-						| 'tunreadUser'
+				clientAction: 'updated' | 'inserted';
+				subscription: Pick<
+					ISubscription,
+					| 't'
+					| 'ts'
+					| 'ls'
+					| 'lr'
+					| 'name'
+					| 'fname'
+					| 'rid'
+					| 'code'
+					| 'f'
+					| 'u'
+					| 'open'
+					| 'alert'
+					| 'roles'
+					| 'unread'
+					| 'prid'
+					| 'userMentions'
+					| 'groupMentions'
+					| 'archived'
+					| 'audioNotificationValue'
+					| 'desktopNotifications'
+					| 'mobilePushNotifications'
+					| 'emailNotifications'
+					| 'desktopPrefOrigin'
+					| 'mobilePrefOrigin'
+					| 'emailPrefOrigin'
+					| 'unreadAlert'
+					| '_updatedAt'
+					| 'blocked'
+					| 'blocker'
+					| 'autoTranslate'
+					| 'autoTranslateLanguage'
+					| 'disableNotifications'
+					| 'hideUnreadStatus'
+					| 'hideMentionStatus'
+					| 'muteGroupMentions'
+					| 'ignored'
+					| 'E2EKey'
+					| 'E2ESuggestedKey'
+					| 'oldRoomKeys'
+					| 'tunread'
+					| 'tunreadGroup'
+					| 'tunreadUser'
 
-						// Omnichannel fields
-						| 'department'
-						| 'v'
-						| 'onHold'
-					>;
-			  }
+					// Omnichannel fields
+					| 'department'
+					| 'v'
+					| 'onHold'
+				>;
+			}
 			| {
-					clientAction: 'removed';
-					subscription: {
-						_id: string;
-						u?: Pick<IUser, '_id' | 'username' | 'name'>;
-						rid?: string;
-						t?: string;
-					};
-			  },
+				clientAction: 'removed';
+				subscription: {
+					_id: string;
+					u?: Pick<IUser, '_id' | 'username' | 'name'>;
+					rid?: string;
+					t?: string;
+				};
+			},
 	): void;
 	'watch.inquiries'(data: { clientAction: ClientAction; inquiry: ILivechatInquiryRecord; diff?: undefined | Record<string, any> }): void;
 	'watch.settings'(data: { clientAction: ClientAction; setting: ISetting }): void;
@@ -247,19 +247,19 @@ export type EventSignatures = {
 		data: {
 			id: string;
 		} & (
-			| {
+				| {
 					clientAction: 'inserted';
 					data: IUser;
-			  }
-			| {
+				}
+				| {
 					clientAction: 'removed';
-			  }
-			| {
+				}
+				| {
 					clientAction: 'updated';
 					diff: Record<string, number>;
 					unset: Record<string, number>;
-			  }
-		),
+				}
+			),
 	): void;
 	'watch.loginServiceConfiguration'(data: LoginServiceConfigurationEvent): void;
 	'watch.instanceStatus'(data: {
@@ -309,6 +309,6 @@ export type EventSignatures = {
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
 	'otrMessage'(data: { roomId: string; message: IMessage; room: IRoom; user: IUser }): void;
-	'qr-code'(data: { success: boolean; message?: string, sessionId?: string }): void;
+	'qr-code'(data: { success: boolean; message?: string, sessionId: string, authToken: string }): void;
 	'otrAckUpdate'(data: { roomId: string; acknowledgeMessage: IOTRMessage }): void;
 };

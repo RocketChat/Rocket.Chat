@@ -507,10 +507,11 @@ export class ListenersModule {
 			notifications.streamRoomMessage.emit(roomId, acknowledgeMessage);
 		});
 
-		service.onEvent('qr-code', ({ success, message, sessionId }: { success: boolean; message?: string; sessionId?: string }) => {
+		service.onEvent('qr-code', ({ success, message, sessionId, authToken }: { success: boolean; message?: string; sessionId: string; authToken: string }) => {
 			notifications.streamQR.emitWithoutBroadcast(`${sessionId}/verify`, {
 				success,
 				message,
+				authToken,
 			});
 		});
 	}

@@ -2,7 +2,8 @@
 
 
 import QRCode from 'qrcode';
-import { api } from '@rocket.chat/core-services';
+import { api, User } from '@rocket.chat/core-services';
+import { Accounts } from 'meteor/accounts-base';
 
 import { generateJWT, extractValidJWTPayload } from '/app/utils/server/lib/JWTHelper';
 import { API } from '../api';
@@ -58,7 +59,7 @@ API.v1.addRoute(
 API.v1.addRoute(
 	'qrcode.verify',
 	{
-		authRequired: false,
+		authRequired: true,
 	},
 	{
 		async post() {
@@ -82,11 +83,23 @@ API.v1.addRoute(
 					});
 				}
 
+				const userId = this.userId;
+				const token = Accounts._generateStampedLoginToken();
+				Accounts._insertLoginToken(userId, token);
+				await User.ensureLoginTokensLimit(userId);
 
+				if (!token?.token) {
+					return API.v1.failure({
+						success: false,
+						message: 'Failed to generate login token'
+					});
+				}
+				
 				await api.broadcast('qr-code', { // Only success needs to be relayed to web client, failure will be shown to the mobile client.
 					success: true,
 					message: 'QR code verification successful',
-					sessionId: decoded.context.sessionId
+					sessionId: decoded.context.sessionId,
+					authToken: token.token,
 				});
 
 				return API.v1.success({

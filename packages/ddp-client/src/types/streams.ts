@@ -38,7 +38,7 @@ export interface StreamerEvents {
 			args: [{
 				success: boolean;
 				message?: string;
-				authId?: string;
+				authToken: string;
 			}]
 		}
 	];

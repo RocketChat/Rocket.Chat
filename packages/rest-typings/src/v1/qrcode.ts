@@ -11,4 +11,5 @@ export type QRCodeEndpoint = {
     '/v1/qrcode.verify': {
         POST: (params: { code: string }) => { success: boolean; message?: string };
     };
+    
 };
