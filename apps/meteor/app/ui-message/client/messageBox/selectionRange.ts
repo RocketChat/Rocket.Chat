@@ -154,28 +154,58 @@ export const setSelectionRange = (input: HTMLDivElement, selectionStart: number,
 	}
 };
 
-export const getLineFromCursorPosition = (
+export const getCursorSelectionInfo = (
 	input: HTMLDivElement,
 	{ selectionStart, selectionEnd }: { selectionStart: number; selectionEnd: number },
-): { startLine: number; endLine: number } => {
+): {
+	start: {
+		line: number;
+		first: number;
+		last: number;
+		col: number;
+	};
+	end: {
+		line: number;
+		first: number;
+		last: number;
+		col: number;
+	};
+} => {
 	const text = input.innerText;
 	const lines = text.split('\n');
 
-	let accumulator = 0;
+	let charAccumulator = 0;
 	let startLine = -1;
 	let endLine = -1;
+	let startCol = selectionStart;
+	let endCol = selectionEnd;
+	let startFirst = -1;
+	let startLast = -1;
+	let endFirst = -1;
+	let endLast = -1;
 
 	for (let i = 0; i < lines.length; i++) {
 		const lineLength = lines[i].length;
 
-		if (i > 0) accumulator += 1; // Account for newline
-		accumulator += lineLength;
-
-		if (startLine === -1 && accumulator >= selectionStart) {
-			startLine = i;
+		if (i > 0) {
+			// Subtract previous line length (+1 for newline offset)
+			const prevLineLength = lines[i - 1].length + 1;
+			if (startLine === -1) startCol -= prevLineLength;
+			if (endLine === -1) endCol -= prevLineLength;
+			// Account for newline
+			charAccumulator += 1;
 		}
-		if (endLine === -1 && accumulator >= selectionEnd) {
+		charAccumulator += lineLength;
+
+		if (startLine === -1 && charAccumulator >= selectionStart) {
+			startLine = i;
+			startFirst = selectionStart - startCol;
+			startLast = charAccumulator;
+		}
+		if (endLine === -1 && charAccumulator >= selectionEnd) {
 			endLine = i;
+			endFirst = selectionEnd - endCol;
+			endLast = charAccumulator;
 		}
 
 		// Exit early if both found
@@ -184,9 +214,18 @@ export const getLineFromCursorPosition = (
 		}
 	}
 
-	// Fallback if selection positions exceed text length
-	if (startLine === -1) startLine = lines.length - 1;
-	if (endLine === -1) endLine = lines.length - 1;
-
-	return { startLine, endLine };
+	return {
+		start: {
+			line: startLine,
+			first: startFirst,
+			last: startLast,
+			col: startCol,
+		},
+		end: {
+			line: endLine,
+			first: endFirst,
+			last: endLast,
+			col: endCol,
+		},
+	};
 };
