@@ -26,7 +26,6 @@ test.each(testCases)(`renders ThreadMessagePreviewBody without crashing`, async 
 test.each(testCases)('ThreadMessagePreviewBody should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 
-	// Today we do not have exactly a pattern to handle menu cells that don't have a header
 	const results = await axe(container);
 
 	expect(results).toHaveNoViolations();
