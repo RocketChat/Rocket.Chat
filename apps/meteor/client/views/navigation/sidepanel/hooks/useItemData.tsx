@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2ItemBadge as SidebarItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
+import { SidebarV2ItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -11,6 +11,7 @@ import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
+import SidePanelPriorityTag from '../SidePanelPriorityTag';
 import RoomMenu from '../SidepanelItem/RoomMenu';
 
 export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { openedRoom: string | undefined }) => {
@@ -33,14 +34,21 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 		() => (
 			<>
 				{showUnread && (
-					<SidebarItemBadge variant={unreadVariant} title={unreadTitle} role='status'>
+					<SidebarV2ItemBadge
+						variant={unreadVariant}
+						title={unreadTitle}
+						role='status'
+						aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title })}
+					>
 						<span aria-hidden>{unreadCount.total}</span>
-					</SidebarItemBadge>
+					</SidebarV2ItemBadge>
 				)}
 			</>
 		),
-		[showUnread, unreadCount.total, unreadTitle, unreadVariant],
+		[showUnread, t, title, unreadCount.total, unreadTitle, unreadVariant],
 	);
+
+	const priorityTag = useMemo(() => (isOmnichannelRoom(room) ? <SidePanelPriorityTag room={room} /> : null), [room]);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -73,11 +81,12 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 			icon,
 			time,
 			badges,
+			priorityTag,
 			avatar: <RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />,
 			subtitle: message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null,
 			menu,
 		}),
-		[badges, highlighted, icon, menu, message, openedRoom, rid, room, time, title, href],
+		[highlighted, rid, openedRoom, href, title, icon, time, badges, priorityTag, room, message, menu],
 	);
 
 	return itemData;
