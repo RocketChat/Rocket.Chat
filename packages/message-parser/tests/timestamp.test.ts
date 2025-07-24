@@ -35,18 +35,18 @@ test.each([
 
 test.each([
   [
-    '<t:2025-07-22T10:00:00.000Z:R>',
-    [paragraph([timestamp('1753178400000', 'R')])],
-  ],
-  [
-    '<t:2025-07-22T10:00:00.000Z:R>',
-    [paragraph([timestamp('1753178400000', 'R')])],
+    '<t:2025-07-22T10:00:00.000:R>',
+    [paragraph([timestamp('1753189200', 'R')])],
   ],
   [
     '<t:2025-07-22T10:00:00.000:R>',
-    [paragraph([timestamp('1753178400000', 'R')])],
+    [paragraph([timestamp('1753189200', 'R')])],
   ],
-  ['<t:2025-07-22T10:00:00:R>', [paragraph([timestamp('1753178400000', 'R')])]],
+  [
+    '<t:2025-07-22T10:00:00.000:R>',
+    [paragraph([timestamp('1753189200', 'R')])],
+  ],
+  ['<t:2025-07-22T10:00:00:R>', [paragraph([timestamp('1753189200', 'R')])]],
   [
     '<t:10:00:00:R>',
     [paragraph([timestamp(timestampFromHours('10', '00', '00'), 'R')])],

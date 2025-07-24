@@ -260,9 +260,37 @@ export const timestampFromHours = (
 
   const yearMonthDay = date.toISOString().split('T')[0];
 
-  return new Date(`${yearMonthDay}T${hours}:${minutes}:${seconds}Z`)
-    .getTime()
-    .toString();
+  const timestamp =
+    new Date(`${yearMonthDay}T${hours}:${minutes}:${seconds}Z`).getTime() /
+    1000;
+
+  return timestamp.toString();
+};
+
+export const timestampFromIsoTime = ({
+  year,
+  month,
+  day,
+  hours,
+  minutes,
+  seconds,
+  milliseconds,
+  timezone,
+}: {
+  year: string[];
+  month: string[];
+  day: string[];
+  hours: string[];
+  minutes: string[];
+  seconds: string[];
+  milliseconds?: string[];
+  timezone?: string;
+}) => {
+  const date =
+    new Date(
+      `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds || '000'}${timezone ? `${timezone}` : ''}`,
+    ).getTime() / 1000;
+  return date.toString();
 };
 
 export const extractFirstResult = (
