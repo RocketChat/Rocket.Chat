@@ -1388,6 +1388,33 @@ describe('LIVECHAT - rooms', () => {
 		);
 
 		(IS_EE ? it : it.skip)(
+			'when manager forward to a department while waiting_queue is disabled and allowReceiveForwardOffline is false, but department is online, transfer should succeed',
+			async () => {
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: targetDepartment } = await createDepartmentWithAnOnlineAgent();
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				const manager = await createUser();
+				const managerCredentials = await login(manager.username, password);
+				await createManager(manager.username);
+
+				const res = await request.post(api('livechat/room.forward')).set(managerCredentials).send({
+					roomId: newRoom._id,
+					departmentId: targetDepartment._id,
+					clientAction: true,
+					comment: 'test comment',
+				});
+
+				expect(res.status).to.equal(200);
+
+				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(targetDepartment._id)]);
+			},
+		);
+
+		(IS_EE ? it : it.skip)(
 			'when manager forward to online (agent away, accept when agent idle on) department the inquiry should not be set to the queue',
 			async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
