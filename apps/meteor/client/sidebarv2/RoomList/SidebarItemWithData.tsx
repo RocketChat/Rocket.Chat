@@ -14,7 +14,6 @@ import {
 	useRoomsListContext,
 	useIsRoomFilter,
 } from '../../views/navigation/contexts/RoomsNavigationContext';
-import { OmnichannelBadges } from '../badges/OmnichannelBadges';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
@@ -66,7 +65,6 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 					<span aria-hidden>{unreadCount.total}</span>
 				</SidebarV2ItemBadge>
 			)}
-			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
 		</>
 	);
 

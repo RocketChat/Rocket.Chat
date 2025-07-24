@@ -23,7 +23,9 @@ type SidepanelItemProps = {
 };
 
 const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) => {
-	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, { openedRoom });
+	const { href, selected, avatar, unread, icon, title, time, badges, priorityTag, menu, subtitle, ...props } = useItemData(room, {
+		openedRoom,
+	});
 	const { sidebar } = useLayout();
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
@@ -52,6 +54,7 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
 					{!isRoomFilter && parentRoomId && <SidePanelParent room={room} />}
+					{priorityTag && <SidebarV2ItemRow>{priorityTag}</SidebarV2ItemRow>}
 					{badges && badges}
 					{menu && (
 						<SidebarV2ItemMenu>
