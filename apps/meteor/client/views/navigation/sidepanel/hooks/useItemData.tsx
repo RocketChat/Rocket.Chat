@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
+import { RoomActivityIcon } from '../../../../omnichannel/components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
@@ -50,6 +51,8 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 
 	const priorityTag = useMemo(() => (isOmnichannelRoom(room) ? <SidePanelPriorityTag room={room} /> : null), [room]);
 
+	const omnichannelMacLimitWarning = useMemo(() => (isOmnichannelRoom(room) ? <RoomActivityIcon room={room} /> : null), [room]);
+
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
@@ -82,11 +85,12 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 			time,
 			badges,
 			priorityTag,
+			omnichannelMacLimitWarning,
 			avatar: <RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />,
 			subtitle: message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null,
 			menu,
 		}),
-		[highlighted, rid, openedRoom, href, title, icon, time, badges, priorityTag, room, message, menu],
+		[highlighted, rid, openedRoom, href, title, icon, time, badges, priorityTag, room, message, menu, omnichannelMacLimitWarning],
 	);
 
 	return itemData;
