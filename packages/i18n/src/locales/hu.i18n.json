@@ -4791,7 +4791,6 @@
   "error-message-editing-blocked": "Az üzenet szerkesztése tiltva van",
   "error-message-size-exceeded": "Az üzenet mérete túllépi a Message_MaxAllowedSize méretet",
   "error-missing-unsubscribe-link": "Meg kell adnia a [unsubscribe] hivatkozást.",
-  "error-no-agents-online-in-department": "Nincsenek elérhető ügyintézők a részlegen",
   "error-no-message-for-unread": "Nincsenek olvasatlanként megjelölendő üzenetek",
   "error-no-owner-channel": "Csak a tulajdonosok adhatják hozzá ezt a csatornát a csapathoz",
   "error-no-permission-team-channel": "Nincs jogosultsága ahhoz, hogy ezt a csatornát a csapathoz adja",
