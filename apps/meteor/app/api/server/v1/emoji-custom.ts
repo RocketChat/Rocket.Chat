@@ -1,7 +1,7 @@
 import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
-import { isEmojiCustomList } from '@rocket.chat/rest-typings';
+import { ajv, isEmojiCustomList } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -10,6 +10,7 @@ import { insertOrUpdateEmoji } from '../../../emoji-custom/server/lib/insertOrUp
 import { uploadEmojiCustomWithBuffer } from '../../../emoji-custom/server/lib/uploadEmojiCustom';
 import { deleteEmojiCustom } from '../../../emoji-custom/server/methods/deleteEmojiCustom';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findEmojisCustom } from '../lib/emoji-custom';
@@ -94,45 +95,65 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const emojiCustomCreateEndpoints = API.v1.post(
 	'emoji-custom.create',
-	{ authRequired: true },
 	{
-		async post() {
-			const emoji = await getUploadFormData(
-				{
-					request: this.request,
+		authRequired: true,
+		response: {
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					stack: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					details: { type: 'string' },
 				},
-				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize') },
-			);
-
-			const { fields, fileBuffer, mimetype } = emoji;
-
-			const isUploadable = await Media.isImage(fileBuffer);
-			if (!isUploadable) {
-				throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
-			}
-
-			const [, extension] = mimetype.split('/');
-			fields.extension = extension;
-
-			try {
-				const emojiData = await insertOrUpdateEmoji(this.userId, {
-					...fields,
-					newFile: true,
-					aliases: fields.aliases || '',
-					name: fields.name,
-					extension: fields.extension,
-				});
-
-				await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, emojiData);
-			} catch (e) {
-				SystemLogger.error(e);
-				return API.v1.failure();
-			}
-
-			return API.v1.success();
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+	async function action(this, request) {
+		const emoji = await getUploadFormData({ request }, { field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize') });
+
+		const { fields, fileBuffer, mimetype } = emoji;
+
+		const isUploadable = await Media.isImage(fileBuffer);
+		if (!isUploadable) {
+			throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+		}
+
+		const [, extension] = mimetype.split('/');
+		fields.extension = extension;
+
+		try {
+			const emojiData = await insertOrUpdateEmoji(this.userId, {
+				...fields,
+				newFile: true,
+				aliases: fields.aliases || '',
+				name: fields.name,
+				extension: fields.extension,
+			});
+
+			await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, emojiData);
+		} catch (e) {
+			SystemLogger.error(e);
+			return API.v1.failure();
+		}
+
+		return API.v1.success();
 	},
 );
 
@@ -210,3 +231,12 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type EmojiCustomCreateEndpoints = ExtractRoutesFromAPI<typeof emojiCustomCreateEndpoints>;
+
+export type EmojiCustomEndpoints = EmojiCustomCreateEndpoints;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends EmojiCustomCreateEndpoints {}
+}
