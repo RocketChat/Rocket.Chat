@@ -33,6 +33,7 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 	const badges = useMemo(
 		() => (
 			<>
+				{isOmnichannelRoom(room) && <SidePanelOmnichannelBadges room={room} />}
 				{showUnread && (
 					<SidebarV2ItemBadge
 						variant={unreadVariant}
@@ -43,7 +44,6 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 						<span aria-hidden>{unreadCount.total}</span>
 					</SidebarV2ItemBadge>
 				)}
-				{isOmnichannelRoom(room) && <SidePanelOmnichannelBadges room={room} />}
 			</>
 		),
 		[room, showUnread, t, title, unreadCount.total, unreadTitle, unreadVariant],
