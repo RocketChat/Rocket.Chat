@@ -8,11 +8,10 @@ import { useTranslation } from 'react-i18next';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
-import { RoomActivityIcon } from '../../../../omnichannel/components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
-import SidePanelPriorityTag from '../SidePanelPriorityTag';
+import SidePanelOmnichannelBadges from '../SidePanelOmnichannelBadges';
 import RoomMenu from '../SidepanelItem/RoomMenu';
 
 export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { openedRoom: string | undefined }) => {
@@ -44,14 +43,11 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 						<span aria-hidden>{unreadCount.total}</span>
 					</SidebarV2ItemBadge>
 				)}
+				{isOmnichannelRoom(room) && <SidePanelOmnichannelBadges room={room} />}
 			</>
 		),
-		[showUnread, t, title, unreadCount.total, unreadTitle, unreadVariant],
+		[room, showUnread, t, title, unreadCount.total, unreadTitle, unreadVariant],
 	);
-
-	const priorityTag = useMemo(() => (isOmnichannelRoom(room) ? <SidePanelPriorityTag room={room} /> : null), [room]);
-
-	const omnichannelMacLimitWarning = useMemo(() => (isOmnichannelRoom(room) ? <RoomActivityIcon room={room} /> : null), [room]);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -84,13 +80,11 @@ export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { opened
 			icon,
 			time,
 			badges,
-			priorityTag,
-			omnichannelMacLimitWarning,
 			avatar: <RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />,
 			subtitle: message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null,
 			menu,
 		}),
-		[highlighted, rid, openedRoom, href, title, icon, time, badges, priorityTag, room, message, menu, omnichannelMacLimitWarning],
+		[highlighted, rid, openedRoom, href, title, icon, time, badges, room, message, menu],
 	);
 
 	return itemData;
