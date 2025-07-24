@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
-import { getSelectionRange, setSelectionRange, getLineFromCursorPosition } from './selectionRange';
+import { getSelectionRange, setSelectionRange, getCursorSelectionInfo } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
@@ -47,7 +47,7 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 	// Tracking position of text selection range for debugging purpose
 	const printSelection = (): void => {
 		console.log(getSelectionRange(input));
-		console.log(getLineFromCursorPosition(input, getSelectionRange(input)));
+		console.log(getCursorSelectionInfo(input, getSelectionRange(input)));
 	};
 
 	input.addEventListener('input', persist);
