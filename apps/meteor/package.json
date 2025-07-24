@@ -407,7 +407,6 @@
 		"overlayscrollbars-react": "^0.5.6",
 		"path": "^0.12.7",
 		"path-to-regexp": "^6.3.0",
-		"pdfjs-dist": "^4.2.67",
 		"pino": "^8.21.0",
 		"postis": "^2.2.0",
 		"prom-client": "^14.2.0",
