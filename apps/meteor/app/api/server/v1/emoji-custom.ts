@@ -125,8 +125,16 @@ const emojiCustomCreateEndpoints = API.v1.post(
 			}),
 		},
 	},
-	async function action(this, request) {
-		const emoji = await getUploadFormData({ request }, { field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize') });
+	async function action() {
+		const emoji = await getUploadFormData(
+			{
+				request: this.request,
+			},
+			{
+				field: 'emoji',
+				sizeLimit: settings.get('FileUpload_MaxFileSize'),
+			},
+		);
 
 		const { fields, fileBuffer, mimetype } = emoji;
 
