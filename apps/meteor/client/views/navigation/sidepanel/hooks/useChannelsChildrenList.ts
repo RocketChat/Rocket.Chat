@@ -5,23 +5,20 @@ import { useShallow } from 'zustand/shallow';
 import { Subscriptions } from '../../../../../app/models/client';
 import { pipe } from '../../../../lib/cachedCollections';
 
-const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => (unreadOnly ? subscription.unread > 0 : true);
+const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => !unreadOnly || subscription.unread > 0;
+/**
+ * This helper function is used to ensure that the main room (main team room or parent's discussion room)
+ * is always at the top of the list.
+ */
+
+const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
+
+const getMainRoomAndSort = (records: SubscriptionWithRoom[]) => {
+	const [mainRoom, ...rest] = records;
+	return [mainRoom, ...sortByLmPipe.apply(rest)];
+};
 
 export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: string) => {
-	/**
-	 * This helper function is used to ensure that the main room (main team room or parent's discussion room)
-	 * is always at the top of the list.
-	 */
-	const getMainRoomAndSort = (records: SubscriptionWithRoom[]) => {
-		const [mainRoom] = pipe<SubscriptionWithRoom>().slice(0, 1).apply(records);
-		const rest = pipe<SubscriptionWithRoom>()
-			.sortByField('lm', -1)
-			.apply(records)
-			.filter((subscription) => subscription.rid !== mainRoom?.rid);
-
-		return [mainRoom, ...rest];
-	};
-
 	return Subscriptions.use(
 		useShallow((state) => {
 			const records = state.filter((subscription) => {
