@@ -167,7 +167,7 @@ describe('Router', () => {
 			const invalidResponse = await request(app).get('/api/validate-query');
 
 			expect(invalidResponse.status).toBe(400);
-			expect(invalidResponse.body).toHaveProperty('errorType', 'invalid-params');
+			expect(invalidResponse.body).toHaveProperty('errorType', 'error-invalid-params');
 		});
 
 		it('should validate request body', async () => {
