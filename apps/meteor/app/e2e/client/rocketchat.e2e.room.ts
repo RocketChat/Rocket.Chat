@@ -231,15 +231,9 @@ export class E2ERoom extends Emitter {
 
 		const message = await this.decryptMessage(subscription.lastMessage);
 
-		Subscriptions.update(
-			{
-				_id: subscription._id,
-			},
-			{
-				$set: {
-					lastMessage: message,
-				},
-			},
+		Subscriptions.state.update(
+			(record) => record._id === subscription._id,
+			(record) => ({ ...record, lastMessage: message }),
 		);
 		this.log('decryptSubscriptions Done');
 	}
