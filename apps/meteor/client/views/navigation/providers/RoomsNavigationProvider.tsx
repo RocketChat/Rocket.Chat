@@ -117,7 +117,10 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 				}
 
 				if (isOmnichannelRoom(room) && showOmnichannel) {
-					room.onHold && setGroupRoom(SIDE_PANEL_GROUPS.ON_HOLD, room);
+					if (room.onHold) {
+						return setGroupRoom(SIDE_PANEL_GROUPS.ON_HOLD, room);
+					}
+
 					return setGroupRoom(SIDE_PANEL_GROUPS.IN_PROGRESS, room);
 				}
 
