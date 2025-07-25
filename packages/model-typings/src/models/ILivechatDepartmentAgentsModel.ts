@@ -39,6 +39,11 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
 	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
+	findAgentsByDepartmentIdAggregated(
+		departmentId: string,
+		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
+	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
+
 	findByDepartmentIds(departmentIds: string[], options?: Record<string, any>): FindCursor<ILivechatDepartmentAgents>;
 	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): Promise<ILivechatDepartmentAgents[]>;
 	setDepartmentEnabledByDepartmentId(departmentId: string, departmentEnabled: boolean): Promise<Document | UpdateResult>;

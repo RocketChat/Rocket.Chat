@@ -15,6 +15,7 @@ import type {
 } from 'mongodb';
 
 import { Users } from '../index';
+import { readSecondaryPreferred } from '../readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> implements ILivechatDepartmentAgentsModel {
@@ -110,6 +111,67 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		}
 
 		return this.findPaginated(query, options);
+	}
+
+	findAgentsByDepartmentIdAggregated(
+		departmentId: string,
+		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
+	): FindPaginated<FindCursor<ILivechatDepartmentAgents>> {
+		const aggregateParams = {
+			$lookup: {
+				from: 'users',
+				let: {
+					agentId: '$agentId',
+				},
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$eq: ['$_id', '$$agentId'],
+							},
+						},
+					},
+					{
+						$project: {
+							_id: 1,
+							username: 1,
+							name: 1,
+						},
+					},
+				],
+				as: 'user',
+			},
+			$unwind: { path: '$user' },
+		};
+
+		const sort: Document = { $sort: options?.sort || { username: 1 } };
+		const pagination = [sort];
+
+		if (options?.skip) {
+			pagination.push({ $skip: options.skip });
+		}
+
+		if (options?.limit) {
+			pagination.push({ $limit: options.limit });
+		}
+
+		const facet = {
+			$facet: {
+				sortedResult: pagination,
+				totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+			},
+		};
+
+		return this.col.aggregate(
+			[
+				{
+					$match: { departmentId },
+				},
+				aggregateParams,
+				facet,
+			],
+			{ readPreference: readSecondaryPreferred(), allowDiskUse: true },
+		);
 	}
 
 	findByDepartmentIds(departmentIds: string[], options = {}): FindCursor<ILivechatDepartmentAgents> {

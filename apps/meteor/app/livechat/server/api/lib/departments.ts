@@ -169,7 +169,7 @@ export async function findDepartmentAgents({
 	departmentId,
 	pagination: { offset, count, sort },
 }: FindDepartmentAgentsParams): Promise<PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>> {
-	const { cursor, totalCount } = LivechatDepartmentAgents.findAgentsByDepartmentId<ILivechatDepartmentAgents>(departmentId, {
+	const { cursor, totalCount } = LivechatDepartmentAgents.findAgentsByDepartmentIdAggregated(departmentId, {
 		sort: sort || { username: 1 },
 		skip: offset,
 		limit: count,
