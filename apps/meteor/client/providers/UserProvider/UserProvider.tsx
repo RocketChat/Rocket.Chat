@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
@@ -116,6 +116,27 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		return userId ? createSubscriptionFactory(Subscriptions.use) : createSubscriptionFactory(Rooms.use);
 	}, [userId]);
 
+	const querySubscription = useMemo(() => {
+		return (query: object): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom] => {
+			const predicate = createPredicateFromFilter<SubscriptionWithRoom>(query);
+			let snapshot = Subscriptions.use.getState().find(predicate);
+
+			const subscribe = (onStoreChange: () => void) =>
+				Subscriptions.use.subscribe(() => {
+					const newSnapshot = Subscriptions.use.getState().find(predicate);
+					if (newSnapshot === snapshot) return;
+					snapshot = newSnapshot;
+					onStoreChange();
+				});
+
+			// TODO: this type assertion is completely wrong; however, the `useUserSubscriptions` hook might be deleted in
+			// the future, so we can live with it for now
+			const getSnapshot = () => snapshot as SubscriptionWithRoom;
+
+			return [subscribe, getSnapshot];
+		};
+	}, []);
+
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
 			userId,
@@ -123,10 +144,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			queryPreference: createReactiveSubscriptionFactory(
 				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
 			),
-			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query) => {
-				const predicate = createPredicateFromFilter<ISubscription>(query);
-				return Subscriptions.state.find(predicate);
-			}),
+			querySubscription,
 			queryRoom,
 			querySubscriptions,
 			logout: async () => Meteor.logout(),
@@ -134,7 +152,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 				return ee.on('logout', cb);
 			},
 		}),
-		[userId, user, querySubscriptions],
+		[userId, user, querySubscription, querySubscriptions],
 	);
 
 	useEffect(() => {
