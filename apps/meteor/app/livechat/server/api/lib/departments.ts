@@ -169,19 +169,18 @@ export async function findDepartmentAgents({
 	departmentId,
 	pagination: { offset, count, sort },
 }: FindDepartmentAgentsParams): Promise<PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>> {
-	const { cursor, totalCount } = LivechatDepartmentAgents.findAgentsByDepartmentIdAggregated(departmentId, {
+	const cursor = LivechatDepartmentAgents.findAgentsByDepartmentIdAggregated(departmentId, {
 		sort: sort || { username: 1 },
 		skip: offset,
 		limit: count,
 	});
-
-	const [agents, total] = await Promise.all([cursor.toArray(), totalCount]);
+	const { result, totalCount } = (await cursor.toArray())[0];
 
 	return {
-		agents,
-		count: agents.length,
+		agents: result,
+		count: result.length,
 		offset,
-		total,
+		total: totalCount[0].total,
 	};
 }
 

@@ -113,11 +113,8 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.findPaginated(query, options);
 	}
 
-	findAgentsByDepartmentIdAggregated(
-		departmentId: string,
-		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
-	): FindPaginated<FindCursor<ILivechatDepartmentAgents>> {
-		const aggregateParams = {
+	findAgentsByDepartmentIdAggregated(departmentId: string, options?: undefined | FindOptions<ILivechatDepartmentAgents>) {
+		const lookup = {
 			$lookup: {
 				from: 'users',
 				let: {
@@ -141,8 +138,8 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 				],
 				as: 'user',
 			},
-			$unwind: { path: '$user' },
 		};
+		const unwind = { $unwind: { path: '$user' } };
 
 		const sort: Document = { $sort: options?.sort || { username: 1 } };
 		const pagination = [sort];
@@ -157,17 +154,17 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 		const facet = {
 			$facet: {
-				cursor: pagination,
+				result: pagination,
 				totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 			},
 		};
-
-		return this.col.aggregate(
+		return this.col.aggregate<ILivechatDepartmentAgents>(
 			[
 				{
 					$match: { departmentId },
 				},
-				aggregateParams,
+				lookup,
+				unwind,
 				facet,
 			],
 			{ readPreference: readSecondaryPreferred(), allowDiskUse: true },
