@@ -8,6 +8,20 @@ import { pipe } from '../../../../lib/cachedCollections';
 const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => (unreadOnly ? subscription.unread > 0 : true);
 
 export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: string) => {
+	/**
+	 * This helper function is used to ensure that the main room (main team room or parent's discussion room)
+	 * is always at the top of the list.
+	 */
+	const getMainRoomAndSort = (records: SubscriptionWithRoom[]) => {
+		const [mainRoom] = pipe<SubscriptionWithRoom>().slice(0, 1).apply(records);
+		const rest = pipe<SubscriptionWithRoom>()
+			.sortByField('lm', -1)
+			.apply(records)
+			.filter((subscription) => subscription.rid !== mainRoom?.rid);
+
+		return [mainRoom, ...rest];
+	};
+
 	return Subscriptions.use(
 		useShallow((state) => {
 			const records = state.filter((subscription) => {
@@ -20,9 +34,11 @@ export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, 
 				return false;
 			});
 
-			const { apply: transform } = pipe<SubscriptionWithRoom>().sortByField('lm', 1);
+			if (!records.length) {
+				return [];
+			}
 
-			return transform(records);
+			return getMainRoomAndSort(records);
 		}),
 	);
 };
