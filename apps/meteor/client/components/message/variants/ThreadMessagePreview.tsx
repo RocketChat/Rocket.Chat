@@ -60,10 +60,6 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 
 	const handleThreadClick = () => {
 		if (!isSelecting) {
-			if (!sequential) {
-				return parentMessage.isSuccess && goToThread({ rid: message.rid, tmid: message.tmid, msg: parentMessage.data?._id });
-			}
-
 			return goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id });
 		}
 
