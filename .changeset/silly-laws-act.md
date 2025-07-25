@@ -1,5 +1,4 @@
 ---
-"@rocket.chat/meteor": patch
 "@rocket.chat/http-router": patch
 ---
 
