@@ -48,6 +48,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 		case ALL_GROUPS.TEAMS:
 			return (
 				<GenericNoResults
+					icon={null}
 					title={unreadOnly ? t('No_unread_channels_or_discussions') : t('No_channels_or_discussions')}
 					description={unreadOnly ? t('No_unread_channels_or_discussions_description') : t('No_channels_or_discussions_description')}
 					{...buttonProps}
@@ -56,6 +57,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 		case ALL_GROUPS.CHANNELS:
 			return (
 				<GenericNoResults
+					icon={null}
 					title={unreadOnly ? t('No_unread_discussions') : t('No_discussions')}
 					description={
 						unreadOnly ? t('No_unread_discussions_channels_filter_description') : t('No_discussions_channels_filter_description')
@@ -66,6 +68,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 		case ALL_GROUPS.DIRECT_MESSAGES:
 			return (
 				<GenericNoResults
+					icon={null}
 					title={unreadOnly ? t('No_unread_discussions') : t('No_discussions')}
 					description={unreadOnly ? t('No_unread_discussions_dms_filter_description') : t('No_discussions_dms_filter_description')}
 					{...buttonProps}
