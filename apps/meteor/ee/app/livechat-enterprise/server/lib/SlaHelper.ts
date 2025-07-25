@@ -23,7 +23,7 @@ export const removeSLAFromRooms = async (slaId: string, userId: string) => {
 };
 
 export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
-	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { rid: 1, ts: 1 } });
+	const inquiry = await LivechatInquiry.findOneByRoomId(roomId);
 	if (!inquiry) {
 		return;
 	}
