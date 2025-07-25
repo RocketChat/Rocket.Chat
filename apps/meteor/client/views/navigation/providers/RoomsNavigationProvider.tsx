@@ -42,7 +42,8 @@ const updateGroupUnreadInfo = (room: SubscriptionWithRoom, current: GroupedUnrea
 const isUnread = (room: SubscriptionWithRoom | ILivechatInquiryRecord) =>
 	'alert' in room && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus;
 
-const hasMention = (room: SubscriptionWithRoom) => room.userMentions || room.groupMentions || room.tunreadUser || room.tunreadGroup;
+const hasMention = (room: SubscriptionWithRoom) =>
+	room.userMentions || room.groupMentions || room.tunreadUser?.length || room.tunreadGroup?.length;
 
 type GroupMap = Map<AllGroupsKeysWithUnread, Set<SubscriptionWithRoom | ILivechatInquiryRecord>>;
 type UnreadGroupDataMap = Map<AllGroupsKeys, GroupedUnreadInfoData>;
@@ -116,7 +117,10 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 				}
 
 				if (isOmnichannelRoom(room) && showOmnichannel) {
-					room.onHold && setGroupRoom(SIDE_PANEL_GROUPS.ON_HOLD, room);
+					if (room.onHold) {
+						return setGroupRoom(SIDE_PANEL_GROUPS.ON_HOLD, room);
+					}
+
 					return setGroupRoom(SIDE_PANEL_GROUPS.IN_PROGRESS, room);
 				}
 

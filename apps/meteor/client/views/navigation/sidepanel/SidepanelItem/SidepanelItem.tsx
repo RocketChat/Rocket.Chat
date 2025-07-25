@@ -23,7 +23,9 @@ type SidepanelItemProps = {
 };
 
 const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) => {
-	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, { openedRoom });
+	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, {
+		openedRoom,
+	});
 	const { sidebar } = useLayout();
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
@@ -45,11 +47,6 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 			aria-selected={selected}
 		>
 			<SidebarV2ItemCol>
-				{!isRoomFilter && parentRoomId && (
-					<SidebarV2ItemRow>
-						<SidePanelParent room={room} />
-					</SidebarV2ItemRow>
-				)}
 				<SidebarV2ItemRow>
 					{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 					{icon && icon}
@@ -58,6 +55,7 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
+					{!isRoomFilter && parentRoomId && <SidePanelParent room={room} />}
 					{badges && badges}
 					{menu && (
 						<SidebarV2ItemMenu>

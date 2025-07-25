@@ -5,7 +5,18 @@ import { useShallow } from 'zustand/shallow';
 import { Subscriptions } from '../../../../../app/models/client';
 import { pipe } from '../../../../lib/cachedCollections';
 
-const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => (unreadOnly ? subscription.unread > 0 : true);
+const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => !unreadOnly || subscription.unread > 0;
+/**
+ * This helper function is used to ensure that the main room (main team room or parent's discussion room)
+ * is always at the top of the list.
+ */
+
+const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
+
+const getMainRoomAndSort = (records: SubscriptionWithRoom[]) => {
+	const [mainRoom, ...rest] = records;
+	return [mainRoom, ...sortByLmPipe.apply(rest)];
+};
 
 export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: string) => {
 	return Subscriptions.use(
@@ -20,9 +31,11 @@ export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, 
 				return false;
 			});
 
-			const { apply: transform } = pipe<SubscriptionWithRoom>().sortByField('lm', 1);
+			if (!records.length) {
+				return [];
+			}
 
-			return transform(records);
+			return getMainRoomAndSort(records);
 		}),
 	);
 };
