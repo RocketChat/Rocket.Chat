@@ -1,7 +1,7 @@
 import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typings';
+import { createTransformFromUpdateFilter } from '@rocket.chat/mongo-adapter';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { objectKeys } from './objectUtils';
 import { Users } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 
@@ -64,25 +64,18 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 
 	const result = sdk.stream('notify-user', [`${uid}/userData`], (data) => {
 		switch (data.type) {
-			case 'inserted':
+			case 'inserted': {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { type, id, ...user } = data;
 				Users.state.store(user.data);
 				break;
+			}
 
-			case 'updated':
-				const { diff } = data;
-				const unset = objectKeys(data.unset);
-				Users.state.update(
-					({ _id }) => _id === uid,
-					(record) => {
-						unset.forEach((key) => {
-							delete record[key];
-						});
-						return { ...record, ...diff };
-					},
-				);
+			case 'updated': {
+				const transform = createTransformFromUpdateFilter<IUser>({ $unset: data.unset as Record<string, 1>, $set: data.diff });
+				Users.state.update(({ _id }) => _id === uid, transform);
 				break;
+			}
 
 			case 'removed':
 				Users.state.delete(uid);
