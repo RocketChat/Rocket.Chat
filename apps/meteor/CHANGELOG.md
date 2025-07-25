@@ -1,5 +1,50 @@
 # @rocket.chat/meteor
 
+## 7.9.0-rc.2
+
+### Patch Changes
+
+- ([#36532](https://github.com/RocketChat/Rocket.Chat/pull/36532)) Fixes an issue with SLA policies that caused an inquiry to "dissapear" after its SLA being updated
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36494](https://github.com/RocketChat/Rocket.Chat/pull/36494)) Fixes a behavior when transferring a room to another department that was not considering the `waiting queue` setting and attempted to route the chat to an agent instead of leaving it on the department's queue
+
+- ([#36503](https://github.com/RocketChat/Rocket.Chat/pull/36503)) Fixes missing message text in desktop notifications by ensuring the "Show Message in Notification" setting only affects mobile push notifications.
+
+- ([#36504](https://github.com/RocketChat/Rocket.Chat/pull/36504)) Fixes an issue that would leave an app in an unrecoverable state if the installation failed during the construction of the runtime
+
+- <details><summary>Updated dependencies [cfabf2684046e1e336b1f81d548a081c25419677]:</summary>
+
+  - @rocket.chat/apps-engine@1.54.0-rc.1
+  - @rocket.chat/presence@0.2.32-rc.2
+  - @rocket.chat/apps@0.5.11-rc.2
+  - @rocket.chat/core-services@0.9.11-rc.2
+  - @rocket.chat/core-typings@7.9.0-rc.2
+  - @rocket.chat/fuselage-ui-kit@21.0.0-rc.2
+  - @rocket.chat/rest-typings@7.9.0-rc.2
+  - @rocket.chat/license@1.0.23-rc.2
+  - @rocket.chat/omnichannel-services@0.3.29-rc.2
+  - @rocket.chat/pdf-worker@0.3.11-rc.2
+  - @rocket.chat/api-client@0.2.32-rc.2
+  - @rocket.chat/cron@0.1.32-rc.2
+  - @rocket.chat/freeswitch@1.2.19-rc.2
+  - @rocket.chat/gazzodown@21.0.0-rc.2
+  - @rocket.chat/http-router@7.8.3-rc.2
+  - @rocket.chat/model-typings@1.6.11-rc.2
+  - @rocket.chat/ui-avatar@17.0.0-rc.2
+  - @rocket.chat/ui-client@21.0.0-rc.2
+  - @rocket.chat/ui-contexts@21.0.0-rc.2
+  - @rocket.chat/web-ui-registration@21.0.0-rc.2
+  - @rocket.chat/models@1.5.11-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.11-rc.2
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.0-rc.2
+  - @rocket.chat/ui-voip@11.0.0-rc.2
+  - @rocket.chat/instance-status@0.1.32-rc.2
+  </details>
+
 ## 7.9.0-rc.1
 
 ### Patch Changes

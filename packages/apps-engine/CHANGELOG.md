@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.54.0-rc.1
+
+### Patch Changes
+
+- ([#36504](https://github.com/RocketChat/Rocket.Chat/pull/36504)) Fixes an issue that would leave an app in an unrecoverable state if the installation failed during the construction of the runtime
+
 ## 1.54.0-rc.0
 
 ### Minor Changes
