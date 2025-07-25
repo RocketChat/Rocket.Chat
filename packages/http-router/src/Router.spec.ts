@@ -167,7 +167,7 @@ describe('Router', () => {
 			const invalidResponse = await request(app).get('/api/validate-query');
 
 			expect(invalidResponse.status).toBe(400);
-			expect(invalidResponse.body).toHaveProperty('errorType', 'error-invalid-params');
+			expect(invalidResponse.body).toHaveProperty('errorType', 'invalid-params');
 		});
 
 		it('should validate request body', async () => {
@@ -207,12 +207,12 @@ describe('Router', () => {
 			const invalidResponse = await request(app).post('/api/validate-body').send({ name: 'John' });
 
 			expect(invalidResponse.status).toBe(400);
-			expect(invalidResponse.body).toHaveProperty('errorType', 'error-invalid-params');
+			expect(invalidResponse.body).toHaveProperty('errorType', 'invalid-params');
 
 			const invalidTypeResponse = await request(app).post('/api/validate-body').send({ name: 'John', age: 'thirty' });
 
 			expect(invalidTypeResponse.status).toBe(400);
-			expect(invalidTypeResponse.body).toHaveProperty('errorType', 'error-invalid-params');
+			expect(invalidTypeResponse.body).toHaveProperty('errorType', 'invalid-params');
 		});
 
 		it('should validate response body in test mode', async () => {
