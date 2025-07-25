@@ -27,20 +27,22 @@ export const generateJWT = (
 export const isValidJWT = (jwt: string, secret: string): boolean => {
 	try {
 		return jsr.KJUR.jws.JWS.verify(jwt, secret, [HEADER.alg]);
-	} catch (error) {
+	} catch {
 		return false;
 	}
 };
 
 export const extractValidJWTPayload = (jwt: string, secret: string): Record<string, any> | null => {
 	try {
+
 		if (!isValidJWT(jwt, secret)) {
 			return null;
 		}
-		
+
 		const payload = jsr.KJUR.jws.JWS.readSafeJSONString(jsr.b64utoutf8(jwt.split('.')[1]));
 		return payload;
-	} catch (error) {
+
+	} catch {
 		return null;
 	}
 };

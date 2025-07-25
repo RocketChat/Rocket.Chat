@@ -1,6 +1,3 @@
-
-
-
 import QRCode from 'qrcode';
 import { api, User } from '@rocket.chat/core-services';
 import { Accounts } from 'meteor/accounts-base';
@@ -94,10 +91,8 @@ API.v1.addRoute(
 						message: 'Failed to generate login token'
 					});
 				}
-				
+
 				await api.broadcast('qr-code', { // Only success needs to be relayed to web client, failure will be shown to the mobile client.
-					success: true,
-					message: 'QR code verification successful',
 					sessionId: decoded.context.sessionId,
 					authToken: token.token,
 				});

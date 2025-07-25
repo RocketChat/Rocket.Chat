@@ -9,8 +9,7 @@ import {
 	PasswordInput,
 	ButtonGroup,
 	Button,
-	Callout,
-	Box
+	Callout
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
@@ -222,7 +221,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
-
+							<Button
+								onClick={handleQrModal}
+								primary
+							>
+								{t("Login_using_QR")}
+							</Button>
 						</ButtonGroup>
 						<p>
 							<Trans i18nKey='registration.page.login.register'>
@@ -233,16 +237,6 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 				</>
 			)}
 			<LoginServices disabled={loginMutation.isPending} setError={setErrorOnSubmit} />
-			<Box padding='x4'>
-				<ButtonGroup>
-					<Button
-						onClick={handleQrModal}
-						primary
-					>
-						Login using QR
-					</Button>
-				</ButtonGroup>
-			</Box>
 		</Form>
 	);
 };

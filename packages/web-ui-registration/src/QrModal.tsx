@@ -15,12 +15,14 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQrCodeQueryHandler } from './hooks/useQrCodeQueryHandler';
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useLoginWithToken } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 type QrModalProps = {
     onClose: () => void;
 };
 
 const QrModal = ({ onClose }: QrModalProps): ReactElement => {
+    const { t } = useTranslation();
     const [timeLeft, setTimeLeft] = useState<number>(60);
     const [sessionId, setSessionId] = useState<string>('');
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
@@ -29,7 +31,7 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
     const receiveQRVerification = useStream('qr-code');
     const loginWithToken = useLoginWithToken();
     const timerRef = useRef<NodeJS.Timeout | null>(null);
-    const initRef = useRef<boolean>(false); // Important because we want to ensure this runs only once
+    const initRef = useRef<boolean>(false);
     const generateQrCodeRequest = useQrCodeQueryHandler();
 
     const generateQrCode = useCallback(async () => {
@@ -60,6 +62,7 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
         if (!sessionId) return;
         return receiveQRVerification(`${sessionId}/verify`, async (key) => {
             await loginWithToken(key.authToken);
+            onClose();
         });
     }, [receiveQRVerification, sessionId]);
 
@@ -114,7 +117,7 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
         <Modal>
             <ModalHeader>
                 <ModalIcon name='mobile-check' size='x20' />
-                <ModalTitle>Mobile Authentication</ModalTitle>
+                <ModalTitle>{t('Mobile_Authentication')}</ModalTitle>
                 <ModalClose onClick={onClose} />
             </ModalHeader>
 
@@ -128,10 +131,10 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
                 >
                     <Box textAlign='center' marginBlockEnd='x32'>
                         <Box fontScale='p1' color='neutral-700' marginBlockEnd='x8'>
-                            Scan with your mobile device
+                            {t('Scan_with_your_mobile_device')}
                         </Box>
                         <Box fontScale='c1' color='neutral-600'>
-                            Open your authenticated mobile app and scan this QR code to sign in
+                            {t('Open_your_authenticated_mobile_app_and_scan_this_QR_code_to_sign_in')}
                         </Box>
                     </Box>
 
@@ -190,7 +193,7 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
                     <Box width='full' maxWidth='x280' marginBlockEnd='x24'>
                         <Box display='flex' justifyContent='space-between' alignItems='center' marginBlockEnd='x8'>
                             <Box fontScale='c1' color='neutral-600'>
-                                Code expires in
+                                {t('Code_expires_in')}
                             </Box>
                             <Box
                                 fontScale='c1'
@@ -214,20 +217,20 @@ const QrModal = ({ onClose }: QrModalProps): ReactElement => {
                             marginInlineEnd={'x8'}
                             title='Generate a new QR code'
                         >
-                            Renew Code
+                            {t('Renew_Code')}
                         </Button>
                         <Button
                             primary
                             onClick={onClose}
                             title='Close this dialog'
                         >
-                            Close
+                            {t("Close")}
                         </Button>
                     </Box>
 
                     <Box textAlign='center' marginBlockStart='x24'>
                         <Box fontScale='c2' color='neutral-500'>
-                            Don't have the mobile app? Download it on{' '}
+                            {t("Dont_have_app")}{' '}
                             <Box
                                 is='a'
                                 href='https://play.google.com/store/apps/details?id=chat.rocket.android'

@@ -97,9 +97,6 @@ export class NotificationsModule {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
-		this.streamQR.allowWrite('none');
-		this.streamQR.allowRead('all');
-
 		this.streamRoomMessage.allowWrite('none');
 		this.streamRoomMessage.allowRead(async function (eventName, extraData) {
 			const room = await Rooms.findOneById(eventName);
