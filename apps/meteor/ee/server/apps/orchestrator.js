@@ -32,6 +32,7 @@ const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String(proces
 
 export class AppServerOrchestrator {
 	constructor() {
+		console.log('AppServerOrchestrator backport');
 		this._isInitialized = false;
 	}
 
