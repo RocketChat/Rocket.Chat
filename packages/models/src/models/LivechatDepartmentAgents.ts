@@ -157,7 +157,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 		const facet = {
 			$facet: {
-				sortedResult: pagination,
+				cursor: pagination,
 				totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 			},
 		};
