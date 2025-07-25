@@ -1401,6 +1401,7 @@ describe('LIVECHAT - rooms', () => {
 				const managerCredentials = await login(manager.username, password);
 				await createManager(manager.username);
 
+				expect(newRoom).to.have.property('servedBy');
 				const res = await request.post(api('livechat/room.forward')).set(managerCredentials).send({
 					roomId: newRoom._id,
 					departmentId: targetDepartment._id,
@@ -1409,6 +1410,11 @@ describe('LIVECHAT - rooms', () => {
 				});
 
 				expect(res.status).to.equal(200);
+
+				const inquiry = await fetchInquiry(newRoom._id);
+
+				expect(inquiry).to.have.property('department', targetDepartment._id);
+				expect(inquiry).to.have.property('status', 'taken');
 
 				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(targetDepartment._id)]);
 			},
@@ -1447,6 +1453,45 @@ describe('LIVECHAT - rooms', () => {
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(forwardToOfflineDepartment._id),
 					updateSetting('Livechat_enabled_when_agent_idle', false),
+				]);
+			},
+		);
+
+		(IS_EE ? it : it.skip)(
+			'when manager forward to a department while waiting_queue is enabled, but department is online, transfer should succeed but it should end queued on target',
+			async () => {
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: targetDepartment } = await createDepartmentWithAnOnlineAgent();
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				const manager = await createUser();
+				const managerCredentials = await login(manager.username, password);
+				await createManager(manager.username);
+
+				expect(newRoom).to.have.property('servedBy');
+
+				await updateSetting('Livechat_waiting_queue', true);
+				const res = await request.post(api('livechat/room.forward')).set(managerCredentials).send({
+					roomId: newRoom._id,
+					departmentId: targetDepartment._id,
+					clientAction: true,
+					comment: 'test comment',
+				});
+
+				expect(res.status).to.equal(200);
+
+				const inquiry = await fetchInquiry(newRoom._id);
+
+				expect(inquiry).to.have.property('department', targetDepartment._id);
+				expect(inquiry).to.have.property('status', 'queued');
+
+				await Promise.all([
+					deleteDepartment(initialDepartment._id),
+					deleteDepartment(targetDepartment._id),
+					updateSetting('Livechat_waiting_queue', false),
 				]);
 			},
 		);
