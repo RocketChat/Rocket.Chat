@@ -113,7 +113,10 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.findPaginated(query, options);
 	}
 
-	findAgentsByDepartmentIdAggregated(departmentId: string, options?: undefined | FindOptions<ILivechatDepartmentAgents>) {
+	findAgentsByDepartmentIdAggregated(
+		departmentId: string,
+		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
+	): AggregationCursor<ILivechatDepartmentAgents> {
 		const lookup = {
 			$lookup: {
 				from: 'users',
@@ -158,6 +161,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 				totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 			},
 		};
+
 		return this.col.aggregate<ILivechatDepartmentAgents>(
 			[
 				{

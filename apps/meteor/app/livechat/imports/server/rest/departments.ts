@@ -269,11 +269,11 @@ API.v1.addRoute(
 API.v1.addRoute(
 	'livechat/department/:_id/agents',
 	{
-		// authRequired: true,
-		// permissionsRequired: {
-		// 	GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
-		// 	POST: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
-		// },
+		authRequired: true,
+		permissionsRequired: {
+			GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' },
+			POST: { permissions: ['manage-livechat-departments', 'add-livechat-department-agents'], operation: 'hasAny' },
+		},
 		validateParams: { GET: isLivechatDepartmentDepartmentIdAgentsGETProps, POST: isLivechatDepartmentDepartmentIdAgentsPOSTProps },
 	},
 	{
@@ -282,7 +282,7 @@ API.v1.addRoute(
 			const { sort } = await this.parseJsonQuery();
 
 			const agents = await findDepartmentAgents({
-				userId: '8tPZLGPDLQXSbyPGr',
+				userId: this.userId,
 				departmentId: this.urlParams._id,
 				pagination: {
 					offset,
