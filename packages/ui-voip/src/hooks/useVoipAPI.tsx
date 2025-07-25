@@ -2,9 +2,10 @@ import { useContext, useMemo } from 'react';
 
 import type { VoipContextReady } from '../contexts/VoipContext';
 import { VoipContext, isVoipContextReady } from '../contexts/VoipContext';
+import MediaCallsClient from '../lib/MediaCallsClient';
 
 type VoipAPI = {
-	makeCall(calleeURI: string): void;
+	makeCall(callee: { uid?: string; rid?: string; extension?: string } | string): void;
 	endCall(): void;
 	register(): Promise<void>;
 	unregister(): Promise<void>;
@@ -41,8 +42,38 @@ export const useVoipAPI = (): VoipAPI => {
 
 		const { voipClient, changeAudioInputDevice, changeAudioOutputDevice } = context;
 
+		// Workaround to use the MediaCallsClient with the VoipContext for now
+		if (voipClient && voipClient instanceof MediaCallsClient) {
+			const mediaCallsClient = voipClient as MediaCallsClient;
+
+			return {
+				makeCall: (callee) => {
+					if (typeof callee === 'string') {
+						return mediaCallsClient.call({ extension: callee });
+					}
+
+					return mediaCallsClient.call(callee);
+				},
+				endCall: mediaCallsClient.endCall,
+				register: NOOP,
+				unregister: NOOP,
+				transferCall: mediaCallsClient.transfer,
+				openDialer: () => mediaCallsClient.notifyDialer({ open: true }),
+				closeDialer: () => mediaCallsClient.notifyDialer({ open: false }),
+				changeAudioInputDevice,
+				changeAudioOutputDevice,
+				onRegisteredOnce: NOOP,
+				onUnregisteredOnce: NOOP,
+			};
+		}
+
 		return {
-			makeCall: voipClient.call,
+			makeCall: (callee) => {
+				if (typeof callee === 'string') {
+					return voipClient.call(callee);
+				}
+				return voipClient.call(callee.extension as string);
+			},
 			endCall: voipClient.endCall,
 			register: voipClient.register,
 			unregister: voipClient.unregister,

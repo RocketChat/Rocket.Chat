@@ -21,7 +21,7 @@ const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(function 
 	const [number, setNumber] = useState('');
 
 	const handleCall = () => {
-		makeCall(number);
+		makeCall({ extension: number });
 		closeDialer();
 	};
 

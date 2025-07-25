@@ -16,6 +16,14 @@ export type MediaCallActor =
 			id: 'server';
 	  };
 
+export type MediaCallContactInformation = {
+	displayName?: string;
+	username?: string;
+	sipExtension?: string;
+};
+
+export type MediaCallContact = MediaCallActor & MediaCallContactInformation;
+
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
 	kind: 'direct';
@@ -26,8 +34,8 @@ export interface IMediaCall extends IRocketChatRecord {
 	createdBy: MediaCallActor;
 	createdAt: Date;
 
-	caller: MediaCallActor;
-	callee: MediaCallActor;
+	caller: MediaCallContact;
+	callee: MediaCallContact;
 
 	endedBy?: MediaCallActor;
 	endedAt?: Date;

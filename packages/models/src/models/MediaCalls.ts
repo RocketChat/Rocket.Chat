@@ -75,6 +75,6 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	}
 
 	public async getNewSequence(callId: string): Promise<IMediaCall | null> {
-		return this.findOneAndUpdate({ _id: callId }, { $inc: { sequence: 1 } });
+		return this.findOneAndUpdate({ _id: callId }, { $inc: { sequence: 1 } }, { returnDocument: 'after' });
 	}
 }

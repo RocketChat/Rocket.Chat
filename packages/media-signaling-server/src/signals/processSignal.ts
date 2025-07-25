@@ -5,9 +5,11 @@ import { MediaCalls, Users } from '@rocket.chat/models';
 import { processDeliver } from './deliver/processDeliver';
 import { getChannelForSignal } from './getChannelForSignal';
 import { processNotify } from './notify/processNotify';
+import { assertSignalHasSessionId } from '../utils/assertSignalHasSessionId';
 
 export async function processSignal(signal: MediaSignal, uid: IUser['_id']): Promise<void> {
-	console.log(signal);
+	assertSignalHasSessionId(signal);
+	console.log('server.processSignal', signal);
 
 	const call = await MediaCalls.findOneById(signal.callId);
 	if (!call) {

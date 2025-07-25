@@ -1,9 +1,11 @@
-import { useUser } from '@rocket.chat/ui-contexts';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { MediaSignal } from '@rocket.chat/media-signaling';
+import { useEndpoint, useStream, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
 // import { useIceServers } from './useIceServers';
-import MediaCallsClient from '../lib/MediaCallsClient';
+import MediaCallsClient, { type MediaCallsClientConfig } from '../lib/MediaCallsClient';
 
 type MediaCallsClientParams = {
 	enabled?: boolean;
@@ -18,6 +20,26 @@ export const useMediaCallsClient = ({ enabled = true }: MediaCallsClientParams =
 	const { _id: userId } = useUser() || {};
 	const mediaCallsClientRef = useRef<MediaCallsClient | null>(null);
 
+	const mediaCallsStart = useEndpoint('POST', '/v1/media-calls.start');
+	const mediaCallsSignal = useEndpoint('POST', '/v1/media-calls.signal');
+	const notifyUserStream = useStream('notify-user');
+
+	const startCallFn: MediaCallsClientConfig['startCallFn'] = async (params) => {
+		const { call } = await mediaCallsStart(params);
+		const { createdAt, endedAt, _updatedAt, ...callData } = call;
+
+		return {
+			...callData,
+			createdAt: new Date(createdAt),
+			_updatedAt: new Date(_updatedAt),
+			...(endedAt && { endedAt: new Date(endedAt) }),
+		};
+	};
+
+	const sendSignalFn: MediaCallsClientConfig['sendSignalFn'] = async (signal) => {
+		await mediaCallsSignal({ signal });
+	};
+
 	// const iceServers = useIceServers();
 
 	const { data: mediaCallsClient, error } = useQuery<MediaCallsClient | null, Error>({
@@ -31,13 +53,32 @@ export const useMediaCallsClient = ({ enabled = true }: MediaCallsClientParams =
 				throw Error('error-user-not-found');
 			}
 
-			const mediaCallsClient = await MediaCallsClient.create(userId);
+			const config: MediaCallsClientConfig = {
+				userId,
+				startCallFn,
+				sendSignalFn,
+			};
+
+			const mediaCallsClient = await MediaCallsClient.create(config);
 
 			return mediaCallsClient;
 		},
 		initialData: null,
 		enabled,
 	});
+
+	const notifyNewMediaSignal = useEffectEvent((signal: MediaSignal) => {
+		console.log('new media signal', signal);
+		mediaCallsClient?.processSignal(signal);
+	});
+
+	useEffect(() => {
+		const unsubNotification = notifyUserStream(`${userId}/media-signal`, notifyNewMediaSignal);
+
+		return () => {
+			unsubNotification();
+		};
+	}, [notifyNewMediaSignal, notifyUserStream, userId, mediaCallsClient]);
 
 	useEffect(() => {
 		mediaCallsClientRef.current = mediaCallsClient;

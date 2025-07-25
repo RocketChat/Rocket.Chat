@@ -7,7 +7,11 @@ import { getRoleForActor } from '../channels/getRoleForActor';
 
 type ValidUser = AtLeast<Required<IUser>, '_id' | 'username' | 'name'>;
 
-export async function getChannelForSignal(signal: MediaSignal, call: IMediaCall, user: ValidUser): Promise<ValidSignalChannel> {
+export async function getChannelForSignal(
+	signal: MediaSignal & { sessionId: Required<MediaSignal>['sessionId'] },
+	call: IMediaCall,
+	user: ValidUser,
+): Promise<ValidSignalChannel> {
 	const actor = { type: 'user', id: user._id, sessionId: signal.sessionId } as const;
 
 	// Every time the server receives any signal, we need to check if the client that sent it is already in the call's channel list

@@ -21,8 +21,10 @@ export type MediaCallChannelUserSIP = MediaCallParticipantIdentification & {
 	id: string;
 	sessionId?: never;
 
+	displayName?: string;
 	// The SIP username usually matches the extension number
 	username: string;
+	host: string;
 };
 
 export type MediaCallParticipant = MediaCallChannelUserRC | MediaCallChannelUserSIP;

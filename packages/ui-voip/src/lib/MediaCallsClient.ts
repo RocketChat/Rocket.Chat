@@ -1,6 +1,6 @@
-import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, IUser, IRoom, IMediaCall } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { MediaSignalingSession } from '@rocket.chat/media-signaling';
+import { IClientMediaCall, MediaSignal, MediaSignalingSession } from '@rocket.chat/media-signaling';
 
 import type { ContactInfo, VoipSession } from '../definitions';
 import RemoteStream from './RemoteStream';
@@ -19,6 +19,14 @@ type SessionError = {
 	contact: ContactInfo;
 };
 
+export type MediaCallsClientConfig = {
+	userId: IUser['_id'];
+	startCallFn: (params: { roomId: string; sessionId: string }) => Promise<IMediaCall>;
+	sendSignalFn: (signal: MediaSignal) => Promise<void>;
+};
+
+export type MediaCallsCallee = { uid?: IUser['_id']; rid?: IRoom['_id']; extension?: string };
+
 class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 	public networkEmitter: Emitter<SignalingSocketEvents>;
 
@@ -34,12 +42,12 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 
 	private error: SessionError | null = null;
 
-	private contactInfo: ContactInfo | null = null;
-
 	private reconnecting = false;
 
-	constructor(userId: IUser['_id']) {
-		super(userId);
+	private startingNewCall = false;
+
+	constructor(private readonly config: MediaCallsClientConfig) {
+		super(config.userId);
 
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 	}
@@ -49,31 +57,30 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 		window.addEventListener('offline', this.onNetworkLost);
 	}
 
-	static async create(userId: IUser['_id']): Promise<MediaCallsClient> {
-		const mediaCalls = new MediaCallsClient(userId);
-		await mediaCalls.init();
+	static async create(config: MediaCallsClientConfig): Promise<MediaCallsClient> {
+		const mediaCalls = new MediaCallsClient(config);
+		// await mediaCalls.init();
 		return mediaCalls;
 	}
 
-	public async call(calleeURI: string): Promise<void> {
-		if (!calleeURI) {
-			throw new Error('Invalid URI');
+	public isBusy(): boolean {
+		return this.startingNewCall || super.isBusy();
+	}
+
+	public async call(callee: MediaCallsCallee): Promise<void> {
+		console.log('MediaCallsClient.call', callee);
+		if (!callee.rid) {
+			if (callee.uid || callee.extension) {
+				throw new Error('not-implemented');
+			}
+			throw new Error('Invalid Callee');
 		}
 
 		if (this.isBusy()) {
 			throw new Error('Session already exists');
 		}
 
-		// #ToDo: Change calleeURI
-		await this.startCall(calleeURI);
-
-		// this.setContactInfo({
-		// 	id: remoteIdentity.uri.user ?? '',
-		// 	name: remoteIdentity.displayName,
-		// 	host: remoteIdentity.uri.host,
-		// });
-
-		this.emit('stateChanged');
+		await this.startCall(callee.rid);
 	}
 
 	public async transfer(calleeURI: string): Promise<void> {
@@ -140,16 +147,22 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 		}
 	}
 
-	public getContactInfo() {
+	public getContactInfo(): ContactInfo | null {
 		if (this.error) {
 			return this.error.contact;
 		}
 
-		if (!this.isBusy()) {
+		const call = this.getMainCall();
+		if (!call) {
 			return null;
 		}
 
-		return this.contactInfo;
+		const contactData = this.getStoredCallContact(call.callId);
+		return {
+			id: contactData.id,
+			name: contactData.displayName,
+			host: '',
+		};
 	}
 
 	public getReferredBy() {
@@ -314,8 +327,25 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 	}
 
 	public clear(): void {
-		window.removeEventListener('online', this.onNetworkRestored);
-		window.removeEventListener('offline', this.onNetworkLost);
+		// window.removeEventListener('online', this.onNetworkRestored);
+		// window.removeEventListener('offline', this.onNetworkLost);
+	}
+
+	protected callStateChanged(callId: string, state: IClientMediaCall['state']): void {
+		super.callStateChanged(callId, state);
+
+		const call = this.getCallData(callId);
+		if (!call) {
+			this.emit('stateChanged');
+			return;
+		}
+
+		if (call.role === 'callee') {
+			this.emit('incomingcall', this.getContactInfo() as ContactInfo);
+		} else if (call.role === 'caller') {
+			this.emit('outgoingcall', this.getContactInfo() as ContactInfo);
+		}
+		this.emit('stateChanged');
 	}
 
 	// private setContactInfo(contact: ContactInfo) {
@@ -323,8 +353,25 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 	// 	this.emit('stateChanged');
 	// }
 
-	private async startCall(_roomId: IRoom['_id']): Promise<void> {
-		// #ToDo: call 'media-calls.start'
+	private async startCall(roomId: IRoom['_id']): Promise<void> {
+		this.startingNewCall = true;
+		try {
+			this.emit('stateChanged');
+
+			const call = await this.config.startCallFn({ roomId, sessionId: this.sessionId });
+
+			console.log(call);
+			const { _id: callId, callee } = call;
+			this.setCallContact(callId, callee);
+
+			this.emit('stateChanged');
+		} finally {
+			this.startingNewCall = false;
+		}
+	}
+
+	protected async sendSignal(signal: MediaSignal): Promise<void> {
+		return this.config.sendSignalFn(signal);
 	}
 
 	// private setupRemoteMedia() {

@@ -2,7 +2,7 @@ import type { JSONSchemaType } from 'ajv';
 
 export type MediaSignalHeaderParams = {
 	callId: string;
-	sessionId: string;
+	sessionId?: string;
 	version: number;
 	sequence: number;
 
@@ -20,7 +20,7 @@ export const mediaSignalHeaderParamsSchema: JSONSchemaType<MediaSignalHeaderPara
 		},
 		sessionId: {
 			type: 'string',
-			nullable: false,
+			nullable: true,
 		},
 		version: {
 			type: 'number',
@@ -39,7 +39,7 @@ export const mediaSignalHeaderParamsSchema: JSONSchemaType<MediaSignalHeaderPara
 			nullable: true,
 		},
 	},
-	required: ['callId', 'sessionId', 'version', 'sequence', 'role'],
+	required: ['callId', 'version', 'sequence', 'role'],
 	additionalProperties: true,
 };
 

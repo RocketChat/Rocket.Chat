@@ -15,6 +15,8 @@ export interface IClientMediaCall {
 	state: 'none' | 'ringing' | 'accepted' | 'active' | 'error';
 	ignored?: boolean;
 
+	contact?: Record<string, string>;
+
 	timeoutHandler?: ReturnType<typeof setTimeout>;
 }
 
@@ -40,11 +42,10 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 
 	private knownCalls: Map<string, IClientMediaCall>;
 
-	private ignoredCalls: Set<string>;
+	// Store contact information for calls that are not yet known
+	private contactInformation: Map<string, Record<string, string>>;
 
-	public get agentId(): string {
-		return `${this._userId}-${this._sessionId}`;
-	}
+	private ignoredCalls: Set<string>;
 
 	public get sessionId(): string {
 		return this._sessionId;
@@ -57,6 +58,7 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 	constructor(userId: string) {
 		super();
 		this.knownCalls = new Map<string, IClientMediaCall>();
+		this.contactInformation = new Map<string, Record<string, string>>();
 		this.ignoredCalls = new Set<string>();
 		this._userId = userId;
 		this._sessionId = createRandomToken(8);
@@ -64,6 +66,17 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 
 	public isBusy(): boolean {
 		return this.hasAnyCallState(['ringing', 'accepted', 'active']);
+	}
+
+	public getCallData(callId: IClientMediaCall['callId']): IClientMediaCall | null {
+		const call = this.knownCalls.get(callId);
+		if (call) {
+			return {
+				...call,
+			};
+		}
+
+		return null;
 	}
 
 	public getAllCallStates(): IClientMediaCall['state'][] {
@@ -96,7 +109,11 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 	}
 
 	public getMainCall(): IClientMediaCall | null {
-		return this.getSortedCalls().pop() || null;
+		const call = this.getSortedCalls().pop();
+		if (call) {
+			return this.getCallData(call.callId);
+		}
+		return null;
 	}
 
 	public async processSignal(signal: MediaSignal) {
@@ -277,8 +294,31 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 		}
 	}
 
-	private isCallKnown(callId: string): boolean {
+	protected isCallKnown(callId: string): boolean {
 		return this.knownCalls.has(callId);
+	}
+
+	protected getStoredCallContact(callId: string): Record<string, string> {
+		return {
+			...this.contactInformation.get(callId),
+			...this.knownCalls.get(callId)?.contact,
+		};
+	}
+
+	protected setCallContact(callId: string, contact: Record<string, string>): void {
+		const oldContact = this.getStoredCallContact(callId);
+		const fullContact = { ...oldContact, ...contact };
+
+		const call = this.knownCalls.get(callId);
+		if (!call) {
+			this.contactInformation.set(callId, fullContact);
+			return;
+		}
+
+		call.contact = fullContact;
+		if (this.contactInformation.has(callId)) {
+			this.contactInformation.delete(callId);
+		}
 	}
 
 	private isCallIgnored(callId: string): boolean {
@@ -320,13 +360,29 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 			return;
 		}
 
-		// #ToDo: Load call data from the server to get the current state, in case the call was already going for a while
+		// Contact will probaby already be stored if this call was requested by this same session
+		const contact = this.getStoredCallContact(signal.callId);
+		const call: IClientMediaCall = {
+			callId: signal.callId,
+			role: signal.role,
+			state: 'none',
+			ignored: this.isCallIgnored(signal.callId),
+			contact,
+		};
+
+		const busy = this.isBusy();
+
+		this.registerCall(call);
 
 		// If we are busy with another call, we can't take this one - though the server is supposed to know our state
-		if (this.isBusy()) {
+		if (busy) {
 			if (signal.expectACK || isNewNotify) {
 				return this.notifyServer(signal, 'unavailable');
 			}
+			return;
+		}
+
+		if (call.ignored) {
 			return;
 		}
 
@@ -342,18 +398,39 @@ export class MediaSignalingSession<EventMap extends DefaultEventMap = DefaultEve
 			this.sendACK(signal);
 		}
 
-		this.registerCall({
-			callId: signal.callId,
-			role: signal.role,
-			// If the call is targeted, flag it as accepted directly
-			state: signal.sessionId ? 'accepted' : 'ringing',
-		});
+		// If the call is targeted, flag it as accepted directly
+		this.setCallState(signal.callId, signal.sessionId ? 'accepted' : 'ringing');
 	}
 
-	private registerCall(call: IClientMediaCall): void {
+	protected registerCall(call: IClientMediaCall): void {
 		this.knownCalls.set(call.callId, call);
+	}
 
-		// Fire event for new call
+	protected setCallState(callId: string, state: IClientMediaCall['state']): void {
+		const call = this.knownCalls.get(callId);
+		if (!call) {
+			this.unknownCall(callId);
+			return;
+		}
+
+		if (call.state === state) {
+			return;
+		}
+
+		this.knownCalls.set(callId, { ...call, state });
+		this.callStateChanged(callId, state);
+	}
+
+	protected callStateChanged(callId: string, state: IClientMediaCall['state']): void {
+		console.log('callStateChanged', callId, state);
+	}
+
+	protected unknownCall(callId: string): void {
+		if (this.ignoredCalls.has(callId)) {
+			return;
+		}
+
+		throw new Error('invalid-call');
 	}
 
 	private deliverToServer<T extends DeliverType>(requestSignal: MediaSignal, type: T, params: DeliverParams<T>) {
