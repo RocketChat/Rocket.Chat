@@ -40,7 +40,6 @@ export const AutoTranslate = {
 	messageIdsToWait: {} as { [messageId: string]: boolean },
 	supportedLanguages: [] as ISupportedLanguage[] | undefined,
 
-	// findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
 	findSubscriptionByRid: mem((rid) => Subscriptions.state.find((record) => record.rid === rid)),
 
 	getLanguage(rid: IRoom['_id']): string {

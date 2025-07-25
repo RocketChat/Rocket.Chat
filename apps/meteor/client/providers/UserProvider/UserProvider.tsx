@@ -123,9 +123,10 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			queryPreference: createReactiveSubscriptionFactory(
 				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
 			),
-			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields, sort) =>
-				Subscriptions.findOne(query, { fields, sort }),
-			),
+			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query) => {
+				const predicate = createPredicateFromFilter<ISubscription>(query);
+				return Subscriptions.state.find(predicate);
+			}),
 			queryRoom,
 			querySubscriptions,
 			logout: async () => Meteor.logout(),
