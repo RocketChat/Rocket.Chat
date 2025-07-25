@@ -4,7 +4,6 @@ import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { parse } from 'cookie';
 import { json2csv } from 'json-2-csv';
 
-import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import type { AppsRestApi } from '../rest';
 import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 import { APIClass } from '../../../../../app/api/server/ApiClass';
@@ -81,7 +80,6 @@ export const registerAppLogsExportHandler = ({ api, _manager, _orch }: AppsRestA
 			}
 
 			const { sort } = await this.parseJsonQuery();
-
 
 			const options = {
 				sort: sort || { _updatedAt: -1 },
