@@ -86,20 +86,9 @@ const getChannelsAndGroups = async (
 	if (canViewAllPrivateRooms) {
 		try {
 			// get all private rooms
-			const cursor = await Rooms.find(
-				{
-					t: 'p',
-					_id: { $nin: userRooms || [] },
-					_hidden: { $ne: true },
-					archived: { $ne: true },
-				},
-				{
-					projection: { _id: 1, t: 1, name: 1 },
-				},
-			);
-
+			const cursor = await Rooms.findPrivateRoomsNotSubscribedByUser(userRooms);
 			const rooms = await cursor.toArray();
-			additionalRooms = rooms.map((room) => room._id);
+			additionalRooms = rooms.map((room: IRoom) => room._id);
 		} catch (error) {
 			additionalRooms = [];
 		}
@@ -107,7 +96,7 @@ const getChannelsAndGroups = async (
 
 	const { cursor, totalCount } = Rooms.findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
-		allTeamIds, // 使用所有团队ID，包括私有团队
+		allTeamIds,
 		[...userRooms, ...additionalRooms],
 		{
 			...pagination,
