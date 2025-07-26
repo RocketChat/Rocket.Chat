@@ -41,8 +41,11 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 
 	findAgentsByDepartmentIdAggregated(
 		departmentId: string,
-		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
-	): AggregationCursor<ILivechatDepartmentAgents>;
+		options?: FindOptions<ILivechatDepartmentAgents>,
+	): AggregationCursor<{
+		result: (ILivechatDepartmentAgents & { user: { _id: string; username: string; name: string } })[];
+		totalCount: { _id: null; total: number }[];
+	}>;
 
 	findByDepartmentIds(departmentIds: string[], options?: Record<string, any>): FindCursor<ILivechatDepartmentAgents>;
 	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): Promise<ILivechatDepartmentAgents[]>;

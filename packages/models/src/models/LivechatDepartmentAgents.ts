@@ -115,8 +115,11 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	findAgentsByDepartmentIdAggregated(
 		departmentId: string,
-		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
-	): AggregationCursor<ILivechatDepartmentAgents> {
+		options?: FindOptions<ILivechatDepartmentAgents>,
+	): AggregationCursor<{
+		result: (ILivechatDepartmentAgents & { user: { _id: string; username: string; name: string } })[];
+		totalCount: { _id: null; total: number }[];
+	}> {
 		const lookup = {
 			$lookup: {
 				from: 'users',
@@ -162,7 +165,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			},
 		};
 
-		return this.col.aggregate<ILivechatDepartmentAgents>(
+		return this.col.aggregate(
 			[
 				{
 					$match: { departmentId },

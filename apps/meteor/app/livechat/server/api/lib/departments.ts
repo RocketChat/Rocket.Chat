@@ -174,7 +174,7 @@ export async function findDepartmentAgents({
 		skip: offset,
 		limit: count,
 	});
-	const { result, totalCount } = (await cursor.toArray())[0];
+	const [{ result, totalCount }] = await cursor.toArray();
 
 	return {
 		agents: result,
