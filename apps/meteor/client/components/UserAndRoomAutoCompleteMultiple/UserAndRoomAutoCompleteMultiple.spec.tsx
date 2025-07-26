@@ -1,91 +1,90 @@
-import { useUser, useUserSubscriptions, useRoomAvatarPath } from '@rocket.chat/ui-contexts';
+import { MockedAppRootBuilder } from '@rocket.chat/mock-providers/dist/MockedAppRootBuilder';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import UserAndRoomAutoCompleteMultiple from './UserAndRoomAutoCompleteMultiple';
+import { createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
-// Mock dependencies
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	useUser: jest.fn(),
-	useUserSubscriptions: jest.fn(),
-	useRoomAvatarPath: jest.fn(),
-}));
+const user = createFakeUser({
+	active: true,
+	roles: ['admin'],
+	type: 'user',
+});
+
+const direct = createFakeSubscription({
+	t: 'd',
+	name: 'Direct',
+});
+
+const channel = createFakeSubscription({
+	t: 'c',
+	name: 'General',
+});
+
+const appRoot = new MockedAppRootBuilder()
+	.withSubscriptions([
+		{ ...direct, ro: false },
+		{ ...channel, ro: true },
+	] as unknown as SubscriptionWithRoom[])
+	.withUser(user);
+
 jest.mock('../../lib/rooms/roomCoordinator', () => ({
-	roomCoordinator: { readOnly: jest.fn() },
+	roomCoordinator: {
+		readOnly: jest.fn(),
+	},
 }));
 
-const mockUser = { _id: 'user1', username: 'testuser' };
+beforeEach(() => {
+	(roomCoordinator.readOnly as jest.Mock).mockReturnValue(false);
+});
 
-const mockRooms = [
-	{
-		rid: 'room1',
-		fname: 'General',
-		name: 'general',
-		t: 'c',
-		avatarETag: 'etag1',
-	},
-	{
-		rid: 'room2',
-		fname: 'Direct',
-		name: 'direct',
-		t: 'd',
-		avatarETag: 'etag2',
-		blocked: false,
-		blocker: false,
-	},
-];
+afterEach(() => jest.clearAllMocks());
 
-describe('UserAndRoomAutoCompleteMultiple', () => {
-	beforeEach(() => {
-		(useUser as jest.Mock).mockReturnValue(mockUser);
-		(useUserSubscriptions as jest.Mock).mockReturnValue(mockRooms);
-		(useRoomAvatarPath as jest.Mock).mockReturnValue((rid: string) => `/avatar/path/${rid}`);
-		(roomCoordinator.readOnly as jest.Mock).mockReturnValue(false);
+it('should render options based on user subscriptions', async () => {
+	render(<UserAndRoomAutoCompleteMultiple value={[]} onChange={jest.fn()} />, { wrapper: appRoot.build() });
+
+	const input = screen.getByRole('textbox');
+	await userEvent.click(input);
+
+	await waitFor(() => {
+		expect(screen.getByText('Direct')).toBeInTheDocument();
 	});
 
-	it('should render options based on user subscriptions', async () => {
-		render(<UserAndRoomAutoCompleteMultiple value={[]} onChange={jest.fn()} />);
+	await waitFor(() => {
+		expect(screen.getByText('General')).toBeInTheDocument();
+	});
+});
 
-		const input = screen.getByRole('textbox');
-		await userEvent.click(input);
+it('should filter out read-only rooms', async () => {
+	(roomCoordinator.readOnly as jest.Mock).mockReturnValueOnce(true);
 
-		await waitFor(() => {
-			expect(screen.getByText('General')).toBeInTheDocument();
-		});
+	render(<UserAndRoomAutoCompleteMultiple value={[]} onChange={jest.fn()} />, { wrapper: appRoot.build() });
 
-		await waitFor(() => {
-			expect(screen.getByText('Direct')).toBeInTheDocument();
-		});
+	const input = screen.getByRole('textbox');
+	await userEvent.click(input);
+
+	await waitFor(() => {
+		expect(screen.getByText('General')).toBeInTheDocument();
 	});
 
-	it('should filter out read-only rooms', async () => {
-		(roomCoordinator.readOnly as jest.Mock).mockImplementation((rid) => rid === 'room1');
-		render(<UserAndRoomAutoCompleteMultiple value={[]} onChange={jest.fn()} />);
+	await waitFor(() => {
+		expect(screen.queryByText('Direct')).not.toBeInTheDocument();
+	});
+});
 
-		const input = screen.getByRole('textbox');
-		await userEvent.click(input);
+it('should call onChange when selecting an option', async () => {
+	const handleChange = jest.fn();
+	render(<UserAndRoomAutoCompleteMultiple value={[]} onChange={handleChange} />, { wrapper: appRoot.build() });
 
-		await waitFor(() => {
-			expect(screen.queryByText('General')).not.toBeInTheDocument();
-		});
-		await waitFor(() => {
-			expect(screen.getByText('Direct')).toBeInTheDocument();
-		});
+	const input = screen.getByRole('textbox');
+	await userEvent.click(input);
+
+	await waitFor(() => {
+		expect(screen.getByText('General')).toBeInTheDocument();
 	});
 
-	it('should call onChange when selecting an option', async () => {
-		const handleChange = jest.fn();
-		render(<UserAndRoomAutoCompleteMultiple value={[]} onChange={handleChange} />);
-
-		const input = screen.getByRole('textbox');
-		await userEvent.click(input);
-
-		await waitFor(() => {
-			expect(screen.getByText('General')).toBeInTheDocument();
-		});
-
-		await userEvent.click(screen.getByText('General'));
-		expect(handleChange).toHaveBeenCalled();
-	});
+	await userEvent.click(screen.getByText('General'));
+	expect(handleChange).toHaveBeenCalled();
 });

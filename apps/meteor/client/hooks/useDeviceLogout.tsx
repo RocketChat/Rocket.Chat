@@ -1,58 +1,55 @@
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useTranslation, useToastMessageDispatch, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useEndpointAction } from './useEndpointAction';
+import { useEndpointMutation } from './useEndpointMutation';
+import { deviceManagementQueryKeys } from '../lib/queryKeys';
 
-export const useDeviceLogout = (
-	sessionId: string,
-	endpoint: '/v1/sessions/logout' | '/v1/sessions/logout.me',
-): ((onReload: () => void) => void) => {
-	const t = useTranslation();
+export const useDeviceLogout = (sessionId: string, endpoint: '/v1/sessions/logout' | '/v1/sessions/logout.me'): (() => void) => {
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const deviceManagementRouter = useRoute('device-management');
 	const routeId = useRouteParameter('id');
 
-	const logoutDevice = useEndpointAction('POST', endpoint);
+	const queryClient = useQueryClient();
 
-	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
+	const { mutateAsync: logoutDevice } = useEndpointMutation('POST', endpoint, {
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: deviceManagementQueryKeys.all });
+			isContextualBarOpen && handleCloseContextualBar();
+			dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
+		},
+		onSettled: () => {
+			setModal(null);
+		},
+	});
+
+	const handleCloseContextualBar = useCallback(() => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
 	const isContextualBarOpen = routeId === sessionId;
 
-	const handleLogoutDeviceModal = useCallback(
-		(onReload: () => void) => {
-			const closeModal = (): void => setModal(null);
+	return useCallback(() => {
+		const closeModal = () => setModal(null);
 
-			const handleLogoutDevice = async (): Promise<void> => {
-				try {
-					await logoutDevice({ sessionId });
-					onReload();
-					isContextualBarOpen && handleCloseContextualBar();
-					dispatchToastMessage({ type: 'success', message: t('Device_Logged_Out') });
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-				} finally {
-					closeModal();
-				}
-			};
+		const handleLogoutDevice = async () => {
+			await logoutDevice({ sessionId });
+		};
 
-			setModal(
-				<GenericModal
-					title={t('Logout_Device')}
-					variant='danger'
-					confirmText={t('Logout_Device')}
-					cancelText={t('Cancel')}
-					onConfirm={handleLogoutDevice}
-					onCancel={closeModal}
-					onClose={closeModal}
-				>
-					{t('Device_Logout_Text')}
-				</GenericModal>,
-			);
-		},
-		[setModal, t, logoutDevice, sessionId, isContextualBarOpen, handleCloseContextualBar, dispatchToastMessage],
-	);
-
-	return handleLogoutDeviceModal;
+		setModal(
+			<GenericModal
+				title={t('Logout_Device')}
+				variant='danger'
+				confirmText={t('Logout_Device')}
+				cancelText={t('Cancel')}
+				onConfirm={handleLogoutDevice}
+				onCancel={closeModal}
+				onClose={closeModal}
+			>
+				{t('Device_Logout_Text')}
+			</GenericModal>,
+		);
+	}, [setModal, t, logoutDevice, sessionId]);
 };

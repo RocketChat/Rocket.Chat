@@ -1,4 +1,5 @@
-import type { ILivechatDepartment, IMessage, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IMessage, IRoom, ITeam, IUser, ILivechatAgent } from '@rocket.chat/core-typings';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
@@ -29,6 +30,12 @@ export const rolesQueryKeys = {
 export const omnichannelQueryKeys = {
 	all: ['omnichannel'] as const,
 	department: (id: string) => [...omnichannelQueryKeys.all, 'department', id] as const,
+	agents: (query?: PaginatedRequest) =>
+		!query ? ([...omnichannelQueryKeys.all, 'agents'] as const) : ([...omnichannelQueryKeys.all, 'agents', query] as const),
+	agent: (uid: ILivechatAgent['_id']) => [...omnichannelQueryKeys.agents(), uid] as const,
+	agentDepartments: (uid: ILivechatAgent['_id']) => [...omnichannelQueryKeys.agent(uid), 'departments'] as const,
+	managers: (query?: PaginatedRequest) =>
+		!query ? ([...omnichannelQueryKeys.all, 'managers'] as const) : ([...omnichannelQueryKeys.all, 'managers', query] as const),
 	extensions: (
 		params:
 			| {
