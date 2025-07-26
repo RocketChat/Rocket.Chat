@@ -2,7 +2,8 @@ import { Tracker } from 'meteor/tracker';
 
 import { Users } from '../../app/models/client/models/Users';
 
-Meteor.users = Users as unknown as typeof Meteor.users;
+// assertion is needed because global Mongo.Collection differs from the `meteor/mongo` package's Mongo.Collection
+Meteor.users = Users.collection as typeof Meteor.users;
 
 const dep = new Tracker.Dependency();
 

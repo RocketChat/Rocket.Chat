@@ -54,9 +54,7 @@ const updateUser = (userData: IUser): void => {
 
 let cancel: undefined | (() => void);
 export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserData | void> => {
-	if (!uid) {
-		return;
-	}
+	if (!uid) return;
 
 	// Remove data from any other user that we may have retained
 	Users.state.remove((record) => record._id !== uid);
