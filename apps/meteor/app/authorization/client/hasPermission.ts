@@ -1,21 +1,14 @@
-import type { IUser, IRole, IPermission } from '@rocket.chat/core-typings';
+import type { IUser, IPermission } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import * as Models from '../../models/client';
+import { hasRole } from './hasRole';
+import { AuthzCachedCollection, Permissions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
-
-const isValidScope = (scope: unknown): scope is keyof typeof Models => typeof scope === 'string' && scope in Models;
-
-const hasIsUserInRole = (
-	model: unknown,
-): model is {
-	isUserInRole: (this: any, uid: IUser['_id'], roleId: IRole['_id'], scope: string | undefined) => boolean;
-} => typeof model === 'object' && model !== null && typeof (model as { isUserInRole?: unknown }).isUserInRole === 'function';
 
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
 	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IPermission['_id'][]): boolean => {
-		const userRoles = Models.Users.state.get(userId)?.roles;
+		const userRoles = Users.state.get(userId)?.roles;
 
 		const checkEachPermission = quantifier.bind(permissionIds);
 
@@ -26,27 +19,15 @@ const createPermissionValidator =
 				}
 			}
 
-			const permission = Models.Permissions.state.get(permissionId);
+			const permission = Permissions.state.get(permissionId);
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleId) => {
-				const roleScope = Models.Roles.state.get(roleId)?.scope;
-
-				if (!isValidScope(roleScope)) {
-					return false;
-				}
-
-				const model = Models[roleScope];
-
 				if (scopedRoles?.includes(roleId)) {
 					return true;
 				}
 
-				if (hasIsUserInRole(model)) {
-					return model.isUserInRole(userId, roleId, scope);
-				}
-
-				return undefined;
+				return hasRole(userId, roleId, scope);
 			});
 		});
 	};
@@ -73,7 +54,7 @@ const validatePermissions = (
 		return false;
 	}
 
-	if (!Models.AuthzCachedCollection.ready.get()) {
+	if (!AuthzCachedCollection.ready.get()) {
 		return false;
 	}
 
