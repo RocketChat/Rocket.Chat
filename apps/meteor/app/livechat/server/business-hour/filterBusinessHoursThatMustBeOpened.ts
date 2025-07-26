@@ -19,9 +19,26 @@ export const filterBusinessHoursThatMustBeOpened = async (
 						/** because we use `dayOfWeek` moment decides if saturday/sunday belongs to the current week or the next one, this is a bit
 						 * confusing and for that reason we need this workaround
 						 */
+
+						const currentDay = currentTime.format('dddd');
+						const localTimeStartDay = localTimeStart.format('dddd');
+
+						// This only works for sundays (where we can test if sunday is before saturday = something is wrong)
+
 						if (localTimeStart.isAfter(localTimeFinish)) {
 							localTimeStart.subtract(1, 'week');
-						} else if (localTimeFinish.isBefore(localTimeStart)) {
+						}
+						if (localTimeFinish.isBefore(localTimeStart)) {
+							localTimeFinish.add(1, 'week');
+						}
+
+						// During Saturday, if current weekday is the same but the start time is after the current time, we need to subtract a week
+						if (currentDay === localTimeStartDay && localTimeStart.diff(currentTime) > 1) {
+							localTimeStart.subtract(1, 'week');
+						}
+
+						// During Saturday, if current weekday is the same but the finish time is before the current time, we need to add a week
+						if (currentDay === localTimeStartDay && localTimeFinish.diff(currentTime) < 1) {
 							localTimeFinish.add(1, 'week');
 						}
 
