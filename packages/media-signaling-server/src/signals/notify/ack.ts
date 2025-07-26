@@ -2,6 +2,7 @@ import type { IMediaCall, ValidSignalChannel } from '@rocket.chat/core-typings';
 import type { MediaSignalNotify } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
+import { getOppositeChannel } from '../../channels/getOppositeChannel';
 import { requestChannelOffer } from '../../channels/requestChannelOffer';
 
 export async function processACK(_signal: MediaSignalNotify<'ack'>, call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
@@ -12,7 +13,10 @@ export async function processACK(_signal: MediaSignalNotify<'ack'>, call: IMedia
 
 		// If the state was changed, request an offer from the caller
 		if (result.modifiedCount) {
-			await requestChannelOffer(channel);
+			const otherChannel = await getOppositeChannel(call, channel);
+			if (otherChannel) {
+				await requestChannelOffer(channel);
+			}
 		}
 	}
 }

@@ -6,7 +6,6 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
-		"ajv": "^8.17.1",
 		"eslint": "~8.45.0",
 		"jest": "~30.0.5",
 		"typescript": "~5.8.3"

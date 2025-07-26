@@ -3,6 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { IClientMediaCall, MediaSignal, MediaSignalingSession } from '@rocket.chat/media-signaling';
 
 import type { ContactInfo, VoipSession } from '../definitions';
+import { MediaCallWebRTCProcessor } from './MediaCallWebRTCProcessor';
 import RemoteStream from './RemoteStream';
 
 export type VoipEvents = Omit<CoreVoipEvents, 'ringing' | 'callestablished' | 'incomingcall'> & {
@@ -22,12 +23,12 @@ type SessionError = {
 export type MediaCallsClientConfig = {
 	userId: IUser['_id'];
 	startCallFn: (params: { roomId: string; sessionId: string }) => Promise<IMediaCall>;
-	sendSignalFn: (signal: MediaSignal) => Promise<void>;
+	sendSignalFn: (signal: MediaSignal) => void;
 };
 
 export type MediaCallsCallee = { uid?: IUser['_id']; rid?: IRoom['_id']; extension?: string };
 
-class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
+class MediaCallsClient extends Emitter<VoipEvents> {
 	public networkEmitter: Emitter<SignalingSocketEvents>;
 
 	private audioElement: HTMLAudioElement | null = null;
@@ -46,10 +47,22 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 
 	private startingNewCall = false;
 
+	private session: MediaSignalingSession;
+
 	constructor(private readonly config: MediaCallsClientConfig) {
-		super(config.userId);
+		super();
+
+		this.session = new MediaSignalingSession({
+			userId: config.userId,
+			transport: (signal: MediaSignal) => config.sendSignalFn(signal),
+			processorFactories: {
+				webrtc: () => new MediaCallWebRTCProcessor(),
+			},
+		});
 
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
+
+		this.session.on('newCall', ({ call }) => this.onNewCall(call));
 	}
 
 	public async init() {
@@ -64,7 +77,11 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 	}
 
 	public isBusy(): boolean {
-		return this.startingNewCall || super.isBusy();
+		return this.startingNewCall || this.session.isBusy();
+	}
+
+	public async processSignal(signal: MediaSignal): Promise<void> {
+		return this.session.processSignal(signal);
 	}
 
 	public async call(callee: MediaCallsCallee): Promise<void> {
@@ -152,12 +169,16 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 			return this.error.contact;
 		}
 
-		const call = this.getMainCall();
+		const call = this.session.getMainCall();
 		if (!call) {
 			return null;
 		}
 
-		const contactData = this.getStoredCallContact(call.callId);
+		const contactData = this.session.getStoredCallContact(call.callId);
+		if (!contactData) {
+			return null;
+		}
+
 		return {
 			id: contactData.id,
 			name: contactData.displayName,
@@ -198,11 +219,11 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 	}
 
 	public isCaller(): boolean {
-		return this.getMainCall()?.role === 'caller';
+		return this.session.getMainCall()?.role === 'caller';
 	}
 
 	public isCallee(): boolean {
-		return this.getMainCall()?.role === 'callee';
+		return this.session.getMainCall()?.role === 'callee';
 	}
 
 	public isIncoming(): boolean {
@@ -250,7 +271,7 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 	};
 
 	public getSessionType(): VoipSession['type'] | null {
-		const call = this.getMainCall();
+		const call = this.session.getMainCall();
 		if (!call) {
 			return null;
 		}
@@ -331,15 +352,8 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 		// window.removeEventListener('offline', this.onNetworkLost);
 	}
 
-	protected callStateChanged(callId: string, state: IClientMediaCall['state']): void {
-		super.callStateChanged(callId, state);
-
-		const call = this.getCallData(callId);
-		if (!call) {
-			this.emit('stateChanged');
-			return;
-		}
-
+	private onNewCall(call: IClientMediaCall): void {
+		// #ToDo: use call reference for getContactInfo
 		if (call.role === 'callee') {
 			this.emit('incomingcall', this.getContactInfo() as ContactInfo);
 		} else if (call.role === 'caller') {
@@ -358,20 +372,16 @@ class MediaCallsClient extends MediaSignalingSession<VoipEvents> {
 		try {
 			this.emit('stateChanged');
 
-			const call = await this.config.startCallFn({ roomId, sessionId: this.sessionId });
+			const call = await this.config.startCallFn({ roomId, sessionId: this.session.sessionId });
 
-			console.log(call);
+			console.log('startCall', call);
 			const { _id: callId, callee } = call;
-			this.setCallContact(callId, callee);
+			this.session.setCallContact(callId, callee);
 
 			this.emit('stateChanged');
 		} finally {
 			this.startingNewCall = false;
 		}
-	}
-
-	protected async sendSignal(signal: MediaSignal): Promise<void> {
-		return this.config.sendSignalFn(signal);
 	}
 
 	// private setupRemoteMedia() {

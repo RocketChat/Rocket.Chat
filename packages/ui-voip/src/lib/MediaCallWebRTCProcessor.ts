@@ -1,36 +1,20 @@
-import type { IWebRTCProcessor } from '../../definition/IWebRTCProcessor';
-import type { DeliverParams } from '../../definition/MediaSignalDeliver';
-import type { RequestParams } from '../../definition/MediaSignalRequest';
+import { DeliverParams, IWebRTCProcessor, RequestParams } from '@rocket.chat/media-signaling';
 
-export class WebRTCMediaCall implements IWebRTCProcessor {
-	// #ToDo peer instance state
-	private peer: RTCPeerConnection | undefined;
+export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
+	private peer: RTCPeerConnection;
 
 	private iceGatheringFinished = false;
 
+	constructor() {
+		this.peer = new RTCPeerConnection();
+	}
+
 	private restartIce() {
 		this.iceGatheringFinished = false;
-
-		this.peer?.restartIce();
+		this.peer.restartIce();
 	}
-
-	constructor() {
-		//
-	}
-
-	public async initializePeerConnection(configuration?: RTCConfiguration): Promise<void> {
-		this.peer = new RTCPeerConnection(configuration);
-	}
-
-	// private onTrack(event) {
-	// 	//
-	// }
 
 	public async createOffer({ iceRestart }: RequestParams<'offer'>): Promise<DeliverParams<'sdp'>> {
-		if (!this.peer) {
-			throw new Error('peer-not-initialized');
-		}
-
 		if (iceRestart) {
 			this.restartIce();
 		}
@@ -45,10 +29,6 @@ export class WebRTCMediaCall implements IWebRTCProcessor {
 	}
 
 	public async createAnswer({ offer }: RequestParams<'answer'>): Promise<DeliverParams<'sdp'>> {
-		if (!this.peer) {
-			throw new Error('peer-not-initialized');
-		}
-
 		if (this.peer.remoteDescription?.sdp !== offer.sdp) {
 			this.peer.setRemoteDescription(offer);
 		}
@@ -63,10 +43,6 @@ export class WebRTCMediaCall implements IWebRTCProcessor {
 	}
 
 	public async collectLocalDescription(_params: RequestParams<'sdp'>): Promise<DeliverParams<'sdp'>> {
-		if (!this.peer) {
-			throw new Error('peer-not-initialized');
-		}
-
 		const sdp = this.peer.localDescription;
 
 		if (!sdp) {
@@ -80,18 +56,10 @@ export class WebRTCMediaCall implements IWebRTCProcessor {
 	}
 
 	public async setRemoteDescription({ sdp }: DeliverParams<'sdp'>): Promise<void> {
-		if (!this.peer) {
-			throw new Error('peer-not-initialized');
-		}
-
 		this.peer.setRemoteDescription(sdp);
 	}
 
 	public async addIceCandidates({ candidates }: DeliverParams<'ice-candidates'>): Promise<void> {
-		if (!this.peer) {
-			throw new Error('peer-not-initialized');
-		}
-
 		const results = await Promise.allSettled(candidates.map((candidate) => this.peer?.addIceCandidate(candidate)));
 
 		for (const result of results) {
