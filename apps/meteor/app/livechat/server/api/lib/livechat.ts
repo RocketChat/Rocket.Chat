@@ -137,12 +137,20 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 	// Putting this ugly conversion while we type the livechat service
 	const initSettings = Livechat.getInitSettings() as unknown as Record<string, string | number | any>;
 	// Ultatel: Fetching external settings from HUB API.
-	const initExternalSettings = getHubConfig(widgetId);
+	if(!widgetId) {
+		throw new Meteor.Error('error-invalid-widget-id', 'Invalid widget ID');
+	}
+
+	const initExternalSettings: any = await getHubConfig(widgetId);
+
+	if(!initExternalSettings?.department) {
+		throw new Meteor.Error('error-invalid-department', 'Invalid department');
+	}
 
 	const triggers = await findTriggers();
 	// Ultatel: Map company department with rocketchat department.
 	const departments = await findDepartments(businessUnit);
-	const department = departments.find(dep => dep.name === initExternalSettings?.department) || departments[0];
+	const department = departments.find(dep => dep._id === initExternalSettings?.department) || departments[0];
 	const departmentsExternal = [department];
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
@@ -227,14 +235,18 @@ export function onCheckRoomParams(params: any): any {
 
 // External settings from HUB
 function getHubConfig(id: number) {
-	try {
-		const { data } = HTTP.get(`https://apigateway.ultatel.com/uthub/api/livechat-widgets/config/${id}`, {
-			headers: {
-				'X-Client-Url': `${Meteor.absoluteUrl()}`,
-			},
-		});
-		return data;
-	} catch (err: any) {
-		console.error('Error fetching external config:', err.message);
-	}
+	return new Promise((resolve, reject) => {
+		try {
+			const clientUrl = Meteor.absoluteUrl().endsWith('/') ? Meteor.absoluteUrl().slice(0, -1) : Meteor.absoluteUrl();
+			const { data } = HTTP.get(`https://apigateway.ultatel.com/uthub/api/livechat-widgets/config/${id}`, {
+				headers: {
+					'X-Client-Url': clientUrl,
+				},
+			});
+			resolve(data);
+		} catch (err: any) {
+			console.error('Error fetching external config:', err);
+			reject(err);
+		}
+	});
 }
