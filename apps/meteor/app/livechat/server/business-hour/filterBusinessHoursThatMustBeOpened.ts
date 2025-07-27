@@ -16,8 +16,12 @@ export const filterBusinessHoursThatMustBeOpened = async (
 						const localTimeStart = moment(`${hour.start.cron.dayOfWeek}:${hour.start.cron.time}:00`, 'dddd:HH:mm:ss');
 						const localTimeFinish = moment(`${hour.finish.cron.dayOfWeek}:${hour.finish.cron.time}:00`, 'dddd:HH:mm:ss');
 
-						// The way we create the instances sunday will be the first day of the current week not the next one, that way it will never met isBefore
-						if (localTimeFinish.isBefore(localTimeStart)) {
+						/** because we use `dayOfWeek` moment decides if saturday/sunday belongs to the current week or the next one, this is a bit
+						 * confusing and for that reason we need this workaround
+						 */
+						if (localTimeStart.isAfter(localTimeFinish)) {
+							localTimeStart.subtract(1, 'week');
+						} else if (localTimeFinish.isBefore(localTimeStart)) {
 							localTimeFinish.add(1, 'week');
 						}
 
