@@ -1,11 +1,11 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { TimestampPicker } from './TimestampPicker';
 import MessageToolbarItem from '../../../MessageToolbarItem';
 
 const TimestampButton = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [isPickerOpen, setIsPickerOpen] = useState(false);
 
 	const handleClick = () => {

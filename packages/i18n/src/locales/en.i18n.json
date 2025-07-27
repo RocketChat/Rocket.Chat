@@ -6880,6 +6880,13 @@
   "__usernames__and__count__more_joined": "{{usernames}} and {{count}} more joined",
   "__usernames__joined": "{{usernames}} joined",
   "__usersCount__joined": "{{count}} joined",
-  "__usersCount__people_will_be_invited": "{{usersCount}} people will be invited"
+  "__usersCount__people_will_be_invited": "{{usersCount}} people will be invited",
+  "timestamps.shortTime": "Short time",
+  "timestamps.longTime": "Long time",
+  "timestamps.shortDate": "Short date",
+  "timestamps.longDate": "Long date",
+  "timestamps.fullDateTime": "Full date and time",
+  "timestamps.fullDateTimeLong": "Full date and time (long)",
+  "timestamps.relativeTime": "Relative time"
 }
 

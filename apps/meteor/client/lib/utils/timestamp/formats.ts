@@ -2,37 +2,37 @@ import type { TimestampFormat, ITimestampFormatConfig } from './types';
 
 export const TIMESTAMP_FORMATS: Record<TimestampFormat, ITimestampFormatConfig> = {
 	t: {
-		label: 'Short time',
+		label: 'timestamps.shortTime',
 		format: 'p',
 		description: '12:00 AM',
 	},
 	T: {
-		label: 'Long time',
+		label: 'timestamps.longTime',
 		format: 'pp',
 		description: '12:00:00 AM',
 	},
 	d: {
-		label: 'Short date',
+		label: 'timestamps.shortDate',
 		format: 'P',
 		description: '12/31/2020',
 	},
 	D: {
-		label: 'Long date',
+		label: 'timestamps.longDate',
 		format: 'Pp',
-		description: 'Thursday, December 31, 2020',
+		description: '12/31/2020, 12:00 AM',
 	},
 	f: {
-		label: 'Full date and time',
+		label: 'timestamps.fullDateTime',
 		format: 'PPPppp',
-		description: 'Thursday, December 31, 2020 12:00 AM',
+		description: 'December 31, 2020 12:00 AM',
 	},
 	F: {
-		label: 'Full date and time (long)',
+		label: 'timestamps.fullDateTimeLong',
 		format: 'PPPPpppp',
 		description: 'Thursday, December 31, 2020 12:00:00 AM',
 	},
 	R: {
-		label: 'Relative time',
+		label: 'timestamps.relativeTime',
 		format: 'relative',
 		description: '1 year ago',
 	},

@@ -1,6 +1,6 @@
 import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type DatePickerProps = {
 	selectedDate: Date;
@@ -8,7 +8,7 @@ type DatePickerProps = {
 };
 
 const DatePicker = ({ selectedDate, onChange }: DatePickerProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newDate = new Date(selectedDate);

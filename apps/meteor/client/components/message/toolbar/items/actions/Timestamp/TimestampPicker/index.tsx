@@ -1,10 +1,11 @@
 import { Box, Button, ButtonGroup, Modal, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import DatePicker from './DatePicker';
 import FormatSelector from './FormatSelector';
 import Preview from './Preview';
 import TimePicker from './TimePicker';
+import TimezoneSelector from './TimezoneSelector';
 import { useTimestampPicker } from './useTimestampPicker';
 import type { ComposerAPI } from '../../../../../../../lib/chats/ChatAPI';
 
@@ -14,9 +15,17 @@ type TimestampPickerProps = {
 };
 
 export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => {
-	const t = useTranslation();
-	const { selectedDate, selectedFormat, handleDateChange, handleTimeChange, handleFormatChange, handleSubmit } =
-		useTimestampPicker(composer);
+	const { t } = useTranslation();
+	const {
+		selectedDate,
+		selectedFormat,
+		selectedTimezone,
+		handleDateChange,
+		handleTimeChange,
+		handleFormatChange,
+		handleTimezoneChange,
+		handleSubmit,
+	} = useTimestampPicker(composer);
 
 	const handleAddClick = () => {
 		handleSubmit();
@@ -34,7 +43,8 @@ export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => 
 					<DatePicker selectedDate={selectedDate} onChange={handleDateChange} />
 					<TimePicker selectedDate={selectedDate} onChange={handleTimeChange} />
 					<FormatSelector selectedFormat={selectedFormat} onChange={handleFormatChange} />
-					<Preview date={selectedDate} format={selectedFormat} />
+					<TimezoneSelector selectedTimezone={selectedTimezone} onChange={handleTimezoneChange} />
+					<Preview date={selectedDate} format={selectedFormat} timezone={selectedTimezone} />
 				</Box>
 			</ModalContent>
 			<ModalFooter>
