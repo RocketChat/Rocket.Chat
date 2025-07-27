@@ -34,6 +34,7 @@
     unorderedList,
     timestamp,
     timestampFromHours,
+    timestampFromIsoTime,
   } = require('./utils');
 
 let skipBold = false;
@@ -83,17 +84,18 @@ TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
 Unixtime = d:Digit |10| { return d.join(''); }
 
-TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "Z"? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join('')); }
+TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join(''), tz); }
 
-TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| "Z"? { return timestampFromHours(hours.join(''), minutes.join('')); }
+TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''),undefined,  tz); }
 
 
 Timestamp = TimestampHoursMinutesSeconds / TimestampHoursMinutes
 
+Timezone = offset:('+'/'-') tzHour: Digit |2| ':' tzMinute: Digit |2| { return `${offset}${tzHour.join('')}:${tzMinute.join('')}`  }
 
-ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| "Z"? { return new Date(year.join('') + '-' + month.join('') + '-' + day.join('') + 'T' + hours.join('') + ':' + minutes.join('') + ':' + seconds.join('') + '.' + milliseconds.join('') + 'Z').getTime().toString(); }
+ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), milliseconds: milliseconds.join(''), timezone: tz}) }
 
-ISO8601DateWithoutMilliseconds = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "Z"? { return new Date(year.join('') + '-' + month.join('') + '-' + day.join('') + 'T' + hours.join('') + ':' + minutes.join('') + ':' + seconds.join('') + 'Z').getTime().toString(); }
+ISO8601DateWithoutMilliseconds = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), timezone: tz}) }
 
 
 TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
