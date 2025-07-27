@@ -99,7 +99,6 @@ API.v1.addRoute(
 
 				return API.v1.success({
 					success: true,
-					sessionId: decoded.context.sessionId,
 					message: 'QR code verified successfully'
 				});
 
