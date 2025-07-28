@@ -8,7 +8,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, MatrixBridgedMessage, Users, Messages } from '@rocket.chat/models';
+import { MatrixBridgedUser, MatrixBridgedRoom, Users, Messages } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
@@ -193,26 +193,22 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const matrixUserId = `@${user.username}:${matrixDomain}`;
 			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
 			if (!existingMatrixUserId) {
-				const port = await Settings.get<number>('Federation_Service_Matrix_Port');
-				const domain = await Settings.get<string>('Federation_Service_Matrix_Domain');
-				const matrixDomain = port === 443 || port === 80 ? domain : `${domain}:${port}`;
-				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
+				// const port = await Settings.get<number>('Federation_Service_Matrix_Port');
+				// const domain = await Settings.get<string>('Federation_Service_Matrix_Domain');
+				// const matrixDomain = port === 443 || port === 80 ? domain : `${domain}:${port}`;
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, `@${user.username}`, true, matrixDomain);
 			}
-
-			// TODO: We should fix this to not hardcode neither inform the target server
-			// This is on the homeserver mandate to track all the eligible servers in the federated room
-			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
 
 			if (!this.homeserverServices) {
 				this.logger.warn('Homeserver services not available, skipping message send');
 				return;
 			}
 
-			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, matrixUserId, targetServer);
+			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, matrixUserId);
 
-			await MatrixBridgedMessage.createOrUpdate(message._id, result.event_id);
+			await Messages.setFederationEventIdById(message._id, result.eventId);
 
-			this.logger.debug('Message sent to Matrix successfully:', result.event_id);
+			this.logger.debug('Message sent to Matrix successfully:', result.eventId);
 		} catch (error) {
 			this.logger.error('Failed to send message to Matrix:', error);
 			throw error;
@@ -231,7 +227,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
 			}
 
-			const matrixEventId = await MatrixBridgedMessage.getExternalEventId(messageId);
+			const matrixEventId = message.federation?.eventId;
 			if (!matrixEventId) {
 				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
 			}
@@ -250,20 +246,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const reactionKey = emojione.shortnameToUnicode(reaction);
 
-			// TODO: Fix hardcoded server
-			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
-			const result = await this.homeserverServices.message.sendReaction(
-				matrixRoomId,
-				matrixEventId,
-				reactionKey,
-				matrixUserId,
-				targetServer,
-			);
+			const eventId = await this.homeserverServices.message.sendReaction(matrixRoomId, matrixEventId, reactionKey, matrixUserId);
 
-			const reactionMappingKey = `${messageId}_reaction_${reaction}`;
-			await MatrixBridgedMessage.createOrUpdate(reactionMappingKey, result.event_id);
+			await Messages.setFederationReactionEventId(user.username || '', messageId, reaction, eventId);
 
-			this.logger.debug('Reaction sent to Matrix successfully:', result.event_id);
+			this.logger.debug('Reaction sent to Matrix successfully:', eventId);
 		} catch (error) {
 			this.logger.error('Failed to send reaction to Matrix:', error);
 			throw error;
@@ -282,7 +269,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
 			}
 
-			const matrixEventId = await MatrixBridgedMessage.getExternalEventId(messageId);
+			const matrixEventId = message.federation?.eventId;
 			if (!matrixEventId) {
 				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
 			}
@@ -295,27 +282,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			// TODO: Fix hardcoded server
-			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+			const reactionKey = emojione.shortnameToUnicode(reaction);
 
-			const reactionMappingKey = `${messageId}_reaction_${reaction}`;
-			const reactionEventId = await MatrixBridgedMessage.getExternalEventId(reactionMappingKey);
-			if (!reactionEventId) {
-				this.logger.warn(`No reaction event ID found for ${reactionMappingKey}`);
-				return;
-			}
+			const eventId = await this.homeserverServices.message.unsetReaction(matrixRoomId, matrixEventId, reactionKey, matrixUserId);
 
-			const result = await this.homeserverServices.message.redactMessage(
-				matrixRoomId,
-				reactionEventId,
-				undefined,
-				matrixUserId,
-				targetServer,
-			);
+			await Messages.unsetFederationReactionEventId(eventId, messageId, reaction);
 
-			await MatrixBridgedMessage.removeByLocalMessageId(reactionMappingKey);
-
-			this.logger.debug('Reaction removed from Matrix successfully:', result.event_id);
+			this.logger.debug('Reaction removed from Matrix successfully:', eventId);
 		} catch (error) {
 			this.logger.error('Failed to remove reaction from Matrix:', error);
 			throw error;

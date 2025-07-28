@@ -2,7 +2,7 @@ import type { HomeserverEventSignatures } from '@hs/federation-sdk';
 import { Message } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
-import { Users, MatrixBridgedMessage, Messages } from '@rocket.chat/models';
+import { Users, Messages } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 const logger = new Logger('federation-matrix:reaction');
@@ -31,17 +31,14 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 				return;
 			}
 
-			const rcMessageId = await MatrixBridgedMessage.getLocalMessageId(targetEventId);
-			if (!rcMessageId) {
+			const rcMessage = await Messages.findOneByFederationId(targetEventId);
+			if (!rcMessage) {
 				logger.debug(`No RC message mapping found for Matrix event ${targetEventId}`);
 				return;
 			}
+			const rcMessageId = rcMessage._id;
 
-			const message = await Messages.findOneById(rcMessageId);
-			if (!message) {
-				logger.debug(`RC message ${rcMessageId} not found`);
-				return;
-			}
+			// Message already retrieved above
 
 			const [userPart, domain] = data.sender.split(':');
 			if (!userPart || !domain) {
@@ -59,8 +56,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 
 			await Message.reactToMessage(rcMessageId, reactionEmoji, user._id);
 
-			const reactionMappingKey = `${rcMessageId}_reaction_${reactionEmoji}`;
-			await MatrixBridgedMessage.createOrUpdate(reactionMappingKey, data.event_id);
+			await Messages.setFederationReactionEventId(user.username || username, rcMessageId, reactionEmoji, data.event_id);
 
 			logger.debug('Matrix reaction processed successfully');
 		} catch (error) {
@@ -75,12 +71,32 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 				return;
 			}
 
-			const reactionMappingKey = await MatrixBridgedMessage.getLocalMessageId(redactedEventId);
-			if (!reactionMappingKey?.includes('_reaction_')) {
+			// First check if this is a reaction redaction by looking for messages with this reaction event ID
+			const messageWithReaction = await Messages.findOneByFederationIdAndUsernameOnReactions(
+				redactedEventId,
+				data.sender.split(':')[0].substring(1),
+			);
+			if (!messageWithReaction) {
 				return;
 			}
 
-			const [messageId, , reaction] = reactionMappingKey.split('_');
+			// Find which reaction was redacted
+			let redactedReaction: string | null = null;
+			if (messageWithReaction.reactions) {
+				for (const [reaction, reactionData] of Object.entries(messageWithReaction.reactions)) {
+					if (reactionData.federationReactionEventIds?.[redactedEventId]) {
+						redactedReaction = reaction;
+						break;
+					}
+				}
+			}
+
+			if (!redactedReaction) {
+				return;
+			}
+
+			const messageId = messageWithReaction._id;
+			const reaction = redactedReaction;
 
 			const [userPart] = data.sender.split(':');
 			const username = userPart.substring(1);
@@ -93,7 +109,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 
 			await Message.reactToMessage(user._id, reaction, messageId, false);
 
-			await MatrixBridgedMessage.removeByLocalMessageId(reactionMappingKey);
+			await Messages.unsetFederationReactionEventId(redactedEventId, messageId, reaction);
 
 			logger.debug('Matrix reaction redaction processed successfully');
 		} catch (error) {
