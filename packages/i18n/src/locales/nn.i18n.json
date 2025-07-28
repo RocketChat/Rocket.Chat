@@ -5615,7 +5615,6 @@
   "error-message-editing-blocked": "Meldingsredigering er blokkert",
   "error-message-size-exceeded": "Meldingsstørrelsen overstiger Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Du må gi koblingen [oppheve].",
-  "error-no-agents-online-in-department": "Ingen agenter online i avdelingen",
   "error-no-message-for-unread": "Det er ingen meldinger å merke som ulest",
   "error-no-owner-channel": "Bare eiere kan legge til denne kanalen i teamet",
   "error-no-permission-team-channel": "Du har ikke tillatelse til å legge til denne kanalen i teamet",

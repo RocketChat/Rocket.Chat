@@ -5426,7 +5426,6 @@
   "error-message-editing-blocked": "संदेश संपादन अवरुद्ध है",
   "error-message-size-exceeded": "संदेश का आकार Message_MaxAllowedSize से अधिक है",
   "error-missing-unsubscribe-link": "आपको [सदस्यता समाप्त करें] लिंक प्रदान करना होगा।",
-  "error-no-agents-online-in-department": "विभाग में कोई एजेंट ऑनलाइन नहीं है",
   "error-no-message-for-unread": "अपठित चिह्नित करने के लिए कोई संदेश नहीं हैं",
   "error-no-owner-channel": "केवल मालिक ही इस चैनल को टीम में जोड़ सकते हैं",
   "error-no-permission-team-channel": "आपको इस चैनल को टीम में जोड़ने की अनुमति नहीं है",
