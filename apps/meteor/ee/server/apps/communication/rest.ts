@@ -237,7 +237,7 @@ export class AppsRestApi {
 
 							orchestrator
 								.getRocketChatLogger()
-								.warn('Request to /apps/installed with includeClusterStatus=true, but no cluster nodes found');
+								.debug('Request to /apps/installed with includeClusterStatus=true, but no cluster nodes found');
 						}
 					}
 
