@@ -1,5 +1,44 @@
 # @rocket.chat/meteor
 
+## 7.7.7
+
+### Patch Changes
+
+- ([#36539](https://github.com/RocketChat/Rocket.Chat/pull/36539) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue with SLA policies that caused an inquiry to "dissapear" after its SLA being updated
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36536](https://github.com/RocketChat/Rocket.Chat/pull/36536) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a behavior when transferring a room to another department that was not considering the `waiting queue` setting and attempted to route the chat to an agent instead of leaving it on the department's queue
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.7
+  - @rocket.chat/rest-typings@7.7.7
+  - @rocket.chat/license@1.0.22
+  - @rocket.chat/omnichannel-services@0.3.28
+  - @rocket.chat/pdf-worker@0.3.10
+  - @rocket.chat/presence@0.2.31
+  - @rocket.chat/api-client@0.2.31
+  - @rocket.chat/apps@0.5.10
+  - @rocket.chat/core-services@0.9.10
+  - @rocket.chat/cron@0.1.31
+  - @rocket.chat/freeswitch@1.2.18
+  - @rocket.chat/fuselage-ui-kit@19.0.7
+  - @rocket.chat/gazzodown@19.0.7
+  - @rocket.chat/model-typings@1.6.10
+  - @rocket.chat/ui-contexts@19.0.7
+  - @rocket.chat/models@1.5.10
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.10
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@15.0.7
+  - @rocket.chat/ui-client@19.0.7
+  - @rocket.chat/ui-video-conf@19.0.7
+  - @rocket.chat/ui-voip@9.0.7
+  - @rocket.chat/web-ui-registration@19.0.7
+  - @rocket.chat/instance-status@0.1.31
+  </details>
+
 ## 7.7.6
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/fuselage-ui-kit",
-	"version": "19.0.6",
+	"version": "19.0.7",
 	"private": true,
 	"description": "UiKit elements for Rocket.Chat Apps built under Fuselage design system",
 	"homepage": "https://rocketchat.github.io/Rocket.Chat.Fuselage/",
