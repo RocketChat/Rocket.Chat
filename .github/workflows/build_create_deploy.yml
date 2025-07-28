@@ -23,11 +23,6 @@ jobs:
         with:
           node-version: '14.19.3'
           cache: 'yarn'
-      - name: Free disk space
-        run: |
-          sudo apt clean
-          docker rmi $(docker image ls -aq)
-          df -h
 
       - name: Cache meteor local
         uses: actions/cache@v3
