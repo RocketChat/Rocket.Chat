@@ -161,31 +161,7 @@ const oauthAppsCreateEndpoints = API.v1.post(
 			200: ajv.compile<{ application: IOAuthApps }>({
 				type: 'object',
 				properties: {
-					application: {
-						type: 'object',
-						properties: {
-							_id: { type: 'string' },
-							name: { type: 'string' },
-							active: { type: 'boolean' },
-							clientId: { type: 'string' },
-							clientSecret: { type: 'string' },
-							redirectUri: { type: 'string' },
-							_createdAt: { type: 'string' },
-							_createdBy: {
-								type: 'object',
-								properties: {
-									_id: { type: 'string' },
-									username: { type: 'string' },
-								},
-								required: ['_id', 'username'],
-								additionalProperties: false,
-							},
-							_updatedAt: { type: 'string' },
-							appId: { type: 'string' },
-						},
-						required: ['_id', 'name', 'active', 'clientId', 'clientSecret', 'redirectUri', '_createdAt', '_createdBy', '_updatedAt'],
-						additionalProperties: false,
-					},
+					application: { $ref: '#/components/schemas/IOAuthApps' },
 					success: {
 						type: 'boolean',
 						enum: [true],
