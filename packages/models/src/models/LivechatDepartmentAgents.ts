@@ -140,7 +140,10 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 			},
 		};
 
-		return this.col.aggregate(
+		return this.col.aggregate<{
+			result: (ILivechatDepartmentAgents & { user: { _id: string; username: string; name: string } })[];
+			totalCount: { _id: null; total: number }[];
+		}>(
 			[
 				{
 					$match: { departmentId },
