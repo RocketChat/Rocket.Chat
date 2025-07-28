@@ -56,7 +56,7 @@ const RoomList = () => {
 
 	return (
 		<Box position='relative' overflow='hidden' height='full' ref={ref}>
-			<VirtualizedScrollbars ref={parentRef}>
+			<VirtualizedScrollbars ref={parentRef} style={{ height: '100%', overflow: 'auto' }}>
 				<>
 					<RoomsListFilters />
 					<RoomListWrapper>
