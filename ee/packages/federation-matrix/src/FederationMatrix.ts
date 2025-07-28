@@ -20,7 +20,6 @@ import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
-import { convertEmojiToUnicode } from './utils/emojiConverter';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -193,10 +192,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const matrixUserId = `@${user.username}:${matrixDomain}`;
 			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
 			if (!existingMatrixUserId) {
-				// const port = await Settings.get<number>('Federation_Service_Matrix_Port');
-				// const domain = await Settings.get<string>('Federation_Service_Matrix_Domain');
-				// const matrixDomain = port === 443 || port === 80 ? domain : `${domain}:${port}`;
-				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, `@${user.username}`, true, matrixDomain);
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
 			}
 
 			if (!this.homeserverServices) {
