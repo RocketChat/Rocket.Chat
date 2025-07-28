@@ -1,5 +1,5 @@
 import { isDepartmentCreationAvailablePatch } from './isDepartmentCreationAvailable';
 
-export function patchOmniLib(): void {
+export function patchOmniCore(): void {
 	isDepartmentCreationAvailablePatch();
 }
