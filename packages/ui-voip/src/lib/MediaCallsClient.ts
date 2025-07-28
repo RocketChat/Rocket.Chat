@@ -63,6 +63,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 
 		this.session.on('newCall', ({ call }) => this.onNewCall(call));
+		this.session.on('acceptedCall', ({ call }) => this.onAcceptedCall(call));
 	}
 
 	public async init() {
@@ -113,15 +114,30 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	public async answer(): Promise<void> {
-		//
+		const call = this.session.getMainCall();
+		if (!call) {
+			throw new Error('No call available to answer');
+		}
+
+		return call.accept();
 	}
 
 	public async reject(): Promise<void> {
-		//
+		const call = this.session.getMainCall();
+		if (!call) {
+			throw new Error('No call available to reject');
+		}
+
+		return call.reject();
 	}
 
 	public async endCall(): Promise<void> {
-		//
+		const call = this.session.getMainCall();
+		if (!call) {
+			throw new Error('No call available to hangup');
+		}
+
+		return call.hangup();
 	}
 
 	public async setMute(_mute: boolean): Promise<void> {
@@ -174,16 +190,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 			return null;
 		}
 
-		const contactData = this.session.getStoredCallContact(call.callId);
-		if (!contactData) {
-			return null;
-		}
-
-		return {
-			id: contactData.id,
-			name: contactData.displayName,
-			host: '',
-		};
+		return this.getCallContactInfo(call);
 	}
 
 	public getReferredBy() {
@@ -314,11 +321,11 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 					transferedBy: this.getReferredBy(),
 					isMuted: this.isMuted(),
 					isHeld: this.isHeld(),
-					mute: this.setMute,
-					hold: this.setHold,
-					accept: this.answer,
-					end: this.endCall,
-					dtmf: this.sendDTMF,
+					mute: (mute) => this.setMute(mute ?? true),
+					hold: (hold) => this.setHold(hold ?? true),
+					accept: () => this.answer(),
+					end: () => this.endCall(),
+					dtmf: (tone) => this.sendDTMF(tone),
 				};
 			default:
 				return null;
@@ -353,13 +360,41 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	private onNewCall(call: IClientMediaCall): void {
-		// #ToDo: use call reference for getContactInfo
+		const contact = this.getCallContactInfo(call) as ContactInfo;
+
 		if (call.role === 'callee') {
-			this.emit('incomingcall', this.getContactInfo() as ContactInfo);
+			this.emit('incomingcall', contact);
 		} else if (call.role === 'caller') {
-			this.emit('outgoingcall', this.getContactInfo() as ContactInfo);
+			this.emit('outgoingcall', contact);
 		}
 		this.emit('stateChanged');
+	}
+
+	private onAcceptedCall(call: IClientMediaCall): void {
+		const remoteMediaStream = call.getRemoteMediaStream();
+		this.remoteStream = new RemoteStream(remoteMediaStream);
+		this.playRemoteStream();
+
+		const contact = this.getCallContactInfo(call) as ContactInfo;
+		this.emit('callestablished', contact);
+		this.emit('stateChanged');
+	}
+
+	private getCallContactInfo(call: IClientMediaCall): ContactInfo | null {
+		if (this.error) {
+			return this.error.contact;
+		}
+
+		const contactData = this.session.getStoredCallContact(call.callId);
+		if (!contactData) {
+			return null;
+		}
+
+		return {
+			id: contactData.id,
+			name: contactData.displayName,
+			host: '',
+		};
 	}
 
 	// private setContactInfo(contact: ContactInfo) {
@@ -383,13 +418,6 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 			this.startingNewCall = false;
 		}
 	}
-
-	// private setupRemoteMedia() {
-	// 	// const { remoteMediaStream } = this.sessionDescriptionHandler;
-
-	// 	// this.remoteStream = new RemoteStream(remoteMediaStream);
-	// 	this.playRemoteStream();
-	// }
 
 	private playRemoteStream() {
 		if (!this.remoteStream) {

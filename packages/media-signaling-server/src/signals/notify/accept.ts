@@ -2,55 +2,32 @@ import type { IMediaCall, ValidSignalChannel } from '@rocket.chat/core-typings';
 import type { MediaSignalNotify } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
-import { getNewCallSequence } from '../../calls/getNewCallSequence';
-import { getOppositeChannel } from '../../channels/getOppositeChannel';
-import { compareActorsIgnoringSession } from '../../utils/compareActorsIgnoringSession';
-import { isValidSignalChannel } from '../isValidSignalChannel';
-import { sendSignalToChannel } from '../sendSignalToChannel';
+import { processAcceptedCall } from '../../calls/processAcceptedCall';
+import { compareParticipantAndActor } from '../../utils/compareParticipantAndActor';
+import { isValidSignalRole } from '../isValidSignalRole';
 
 export async function processAccept(_signal: MediaSignalNotify<'accept'>, call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
-	if (channel.role === 'callee') {
-		if (!compareActorsIgnoringSession(call.callee, channel.participant)) {
-			// Someone else tried to accept the call... should we respond something?
-			return;
-		}
-		const sessionId = (channel.participant.type === 'user' && channel.participant.sessionId) || undefined;
+	if (!isValidSignalRole(channel.role)) {
+		throw new Error('error-invalid-role');
+	}
 
-		const result = await MediaCalls.acceptCallById(call._id, sessionId);
-		if (!result.modifiedCount) {
-			// # nothing was changed by this acceptance... should we respond something?
-			return;
-		}
-
-		const newSequence = await getNewCallSequence(channel.callId);
-		await sendSignalToChannel(channel, {
-			sequence: newSequence.sequence,
-			type: 'notify',
-			body: {
-				notify: 'state',
-				callState: 'accepted',
-			},
-		});
-
-		const otherChannel = await getOppositeChannel(call, channel);
-		if (otherChannel && isValidSignalChannel(otherChannel)) {
-			await sendSignalToChannel(otherChannel, {
-				sequence: newSequence.sequence,
-				type: 'notify',
-				body: {
-					notify: 'state',
-					callState: 'accepted',
-				},
-			});
-		}
-
+	// If the channel's participant doesn't match the actor assigned to the call for this role, do nothing
+	if (!compareParticipantAndActor(channel.participant, call[channel.role])) {
 		return;
 	}
 
-	if (channel.role === 'caller' && call.caller.type === 'user' && !call.caller.sessionId) {
-		const result = await MediaCalls.setCallerSessionIdById(call._id, channel.participant.sessionId);
-		if (result.modifiedCount) {
-			// #Todo: Calls initiated without a caller sessionId
-		}
+	const result = await MediaCalls.setActorSessionIdByIdAndRole(call._id, channel.participant.sessionId, channel.role);
+	if (!result.modifiedCount) {
+		// If nothing changed, the call already had a sessionId for this actor
+		return;
 	}
+
+	// With session decided for this actor, let's try to move the call state to 'accepted'. This will only work if the other actor also has an assigned session
+	const stateResult = await MediaCalls.acceptCallById(call._id);
+	if (!stateResult.modifiedCount) {
+		return;
+	}
+
+	// #ToDo: notify client if this throws any error
+	return processAcceptedCall(call._id);
 }

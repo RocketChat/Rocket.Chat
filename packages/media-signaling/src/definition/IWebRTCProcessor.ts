@@ -11,10 +11,12 @@ export interface IWebRTCProcessor {
 	setRemoteDescription(params: DeliverParams<'sdp'>): Promise<void>;
 	addIceCandidates(params: DeliverParams<'ice-candidates'>): Promise<void>;
 
-	// Function used to add a callback to be executed when an ice candidate is gathered
-	onIceCandidate(cb: unknown): void;
-	// Function used to add a callback to be executed when ICE needs to be restarted
-	onNegotiationNeeded(cb: unknown): void;
+	getRemoteMediaStream(): MediaStream;
+
+	// // Function used to add a callback to be executed when an ice candidate is gathered
+	// onIceCandidate(cb: unknown): void;
+	// // Function used to add a callback to be executed when ICE needs to be restarted
+	// onNegotiationNeeded(cb: unknown): void;
 }
 
 export type WebRTCProcessorFactory = () => IWebRTCProcessor;

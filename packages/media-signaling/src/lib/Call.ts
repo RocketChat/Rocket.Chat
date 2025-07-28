@@ -51,44 +51,38 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private tricklingSignals = new Set<MediaSignal>();
 
+	private firstSignal: MediaSignalNotify<'new'>;
+
+	private acceptedLocally: boolean;
+
 	// private timeoutHandler?: ReturnType<typeof setTimeout>;
 
-	constructor(config: IClientMediaCallConfig, { callId, role, state, ignored, contact, service }: IClientMediaCallData) {
+	constructor(
+		config: IClientMediaCallConfig,
+		signal: MediaSignalNotify<'new'>,
+		{ ignored, contact }: Pick<IClientMediaCallData, 'ignored' | 'contact'> = {},
+	) {
 		this.emitter = new Emitter<CallEvents>();
+
+		this.firstSignal = signal;
 
 		this.transporter = config.transporter;
 		this.webrtcProcessor = config.webrtcProcessor;
 
-		this.callId = callId;
-		this._role = role;
-		this._service = service;
+		this.callId = signal.callId;
+		this._role = signal.role;
+		this._service = signal.body.service;
 
-		this._state = state || 'none';
+		this.acceptedLocally = false;
+		this._state = 'none';
 		this._ignored = ignored || false;
 		this._contact = contact || null;
+
+		this.initialize(this.firstSignal);
 	}
 
-	public async initialize(signal: MediaSignalNotify<'new'>): Promise<void> {
-		// If it's flagged as ignored even before the initialization, tell the server we're unavailable
-		if (this.ignored) {
-			return this.transporter.notifyServer(signal, 'unavailable');
-		}
-
-		// If the call is targeted, skip the ringing state and go straight to accepted
-		this._state = signal.sessionId ? 'accepted' : 'ringing';
-
-		// Send an ACK so the server knows that this session exists and is reachable
-		this.transporter.notifyServer(signal, 'ack');
-	}
-
-	public changeState(newState: CallState): void {
-		if (newState === this._state) {
-			return;
-		}
-
-		const oldState = this._state;
-		this._state = newState;
-		this.emitter.emit('stateChange', oldState);
+	public getRemoteMediaStream(): MediaStream {
+		return this.webrtcProcessor.getRemoteMediaStream();
 	}
 
 	public setContact(contact: CallContact): void {
@@ -115,6 +109,61 @@ export class ClientMediaCall implements IClientMediaCall {
 			case 'notify':
 				await this.processNotify(signal);
 				break;
+		}
+	}
+
+	public async accept(): Promise<void> {
+		if (!this.isPendingAcceptance()) {
+			throw new Error('call-not-pending-acceptance');
+		}
+		this.acceptedLocally = true;
+		this.transporter.notifyServer(this.firstSignal, 'accept');
+	}
+
+	public async reject(): Promise<void> {
+		if (!this.isPendingAcceptance()) {
+			throw new Error('call-not-pending-acceptance');
+		}
+		this.transporter.notifyServer(this.firstSignal, 'reject');
+	}
+
+	public async hangup(): Promise<void> {
+		this.transporter.notifyServer(this.firstSignal, 'hangup', {
+			reasonCode: 'normal',
+		});
+	}
+
+	public isPendingAcceptance(): boolean {
+		return ['none', 'ringing'].includes(this._state);
+	}
+
+	private initialize(signal: MediaSignalNotify<'new'>): void {
+		// If it's flagged as ignored even before the initialization, tell the server we're unavailable
+		if (this.ignored) {
+			return this.transporter.notifyServer(signal, 'unavailable');
+		}
+
+		// If the call is targeted, assume we already accepted it:
+		if (signal.sessionId) {
+			this.acceptedLocally = true;
+		}
+		this._state = 'ringing';
+
+		// Send an ACK so the server knows that this session exists and is reachable
+		this.transporter.notifyServer(signal, 'ack');
+	}
+
+	private changeState(newState: CallState): void {
+		if (newState === this._state) {
+			return;
+		}
+
+		const oldState = this._state;
+		this._state = newState;
+		this.emitter.emit('stateChange', oldState);
+
+		if (newState === 'accepted') {
+			this.emitter.emit('accepted');
 		}
 	}
 
@@ -229,6 +278,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			case 'unavailable':
 				break;
 			case 'accept':
+				await this.flagAsAccepted(signal);
 				break;
 			case 'reject':
 				break;
@@ -237,5 +287,15 @@ export class ClientMediaCall implements IClientMediaCall {
 			case 'negotiation-needed':
 				break;
 		}
+	}
+
+	private async flagAsAccepted(signal: MediaSignalNotify): Promise<void> {
+		if (!this.acceptedLocally) {
+			this.transporter.sendError(signal, 'not-accepted');
+			throw new Error('Trying to activate a call that was not yet accepted locally.');
+		}
+
+		// Both sides of the call have accepted it, we can change the state now
+		this.changeState('accepted');
 	}
 }

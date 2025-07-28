@@ -19,4 +19,10 @@ export interface IClientMediaCallData {
 
 export interface IClientMediaCall extends Required<IClientMediaCallData> {
 	emitter: Emitter<CallEvents>;
+
+	getRemoteMediaStream(): MediaStream;
+
+	accept(): Promise<void>;
+	reject(): Promise<void>;
+	hangup(): Promise<void>;
 }

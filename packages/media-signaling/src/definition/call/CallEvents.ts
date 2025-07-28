@@ -5,4 +5,6 @@ export type CallEvents = {
 	stateChange: CallState;
 	// contactUpdate may be triggered even if nothing actually changed
 	contactUpdate: void;
+
+	accepted: void;
 };

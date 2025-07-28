@@ -6,6 +6,11 @@ import { sendSignalToChannel } from '../signals/sendSignalToChannel';
 import { validateChannelForSignals } from '../signals/validateChannelForSignals';
 
 export async function requestChannelOffer(channel: IMediaCallChannel, params?: RequestParams<'offer'>): Promise<void> {
+	// If the channel already has a local Sdp, no need to request its offer unless we're restarting ICE
+	if (channel.webrtc?.local && !params?.iceRestart) {
+		return;
+	}
+
 	validateChannelForSignals(channel);
 
 	const call = await getNewCallSequence(channel.callId);

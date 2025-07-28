@@ -5,7 +5,7 @@ import { MediaSignalTransportWrapper } from './TransportWrapper';
 import type { IWebRTCProcessor, MediaSignalNotify } from '../definition';
 import { createRandomToken } from './utils/createRandomToken';
 import type { IServiceProcessorFactoryList } from '../definition/IServiceProcessorFactoryList';
-import type { IClientMediaCall, IClientMediaCallData, CallContact, CallState } from '../definition/call';
+import type { IClientMediaCall, CallContact, CallState } from '../definition/call';
 import { isNotifyNew } from './utils/isNotifyNew';
 import type { MediaSignalTransport } from '../definition/MediaSignalTransport';
 import { isCallRole } from '../definition/call/CallRole';
@@ -22,6 +22,7 @@ const stateWeights: Record<CallState, number> = {
 export type MediaSignalingEvents = {
 	callStateChange: { call: IClientMediaCall; oldState: CallState };
 	newCall: { call: IClientMediaCall };
+	acceptedCall: { call: IClientMediaCall };
 };
 
 export type MediaSignalingSessionConfig = {
@@ -193,21 +194,22 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			if (!isCallRole(signal.role)) {
 				throw new Error('invalid-role');
 			}
+			const webrtcProcessor = await this.createWebRtcProcessor();
 
 			// Contact will probaby already be stored if this call was requested by this same session
 			const contact = this.getStoredCallContact(signal.callId);
-			const callData: IClientMediaCallData = {
-				callId: signal.callId,
-				role: signal.role,
-				state: 'none',
-				service: signal.body.service,
-				ignored: this.isCallIgnored(signal.callId) || this.isBusy(),
-				contact,
+			const ignored = this.isCallIgnored(signal.callId) || this.isBusy();
+
+			const config = {
+				transporter: this.transporter,
+				webrtcProcessor,
 			};
 
-			const call = await this.registerCall(callData);
+			const call = new ClientMediaCall(config, signal, { contact, ignored });
+			this.knownCalls.set(call.callId, call);
 
-			await call.initialize(signal);
+			call.emitter.on('stateChange', (oldState) => this.emit('callStateChange', { call, oldState }));
+			call.emitter.on('accepted', () => this.emit('acceptedCall', { call }));
 
 			this.emit('newCall', { call });
 		} catch (e) {
@@ -217,20 +219,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			this.transporter.sendError(signal, errorCode);
 			throw e;
 		}
-	}
-
-	private async registerCall(callData: IClientMediaCallData): Promise<ClientMediaCall> {
-		const webrtcProcessor = await this.createWebRtcProcessor();
-
-		const config = {
-			transporter: this.transporter,
-			webrtcProcessor,
-		};
-
-		const call = new ClientMediaCall(config, callData);
-
-		this.knownCalls.set(call.callId, call);
-		return call;
 	}
 
 	private async createWebRtcProcessor(): Promise<IWebRTCProcessor> {

@@ -8,6 +8,8 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	setStateById(callId: string, state: IMediaCall['state']): Promise<UpdateResult>;
 	startRingingById(callId: string): Promise<UpdateResult>;
 	getNewSequence(callId: string): Promise<IMediaCall | null>;
-	acceptCallById(callId: string, calleeSessionId?: string): Promise<UpdateResult>;
+	acceptCallById(callId: string): Promise<UpdateResult>;
 	setCallerSessionIdById(callId: string, callerSessionId: string): Promise<UpdateResult>;
+	setCalleeSessionIdById(callId: string, calleeSessionId: string): Promise<UpdateResult>;
+	setActorSessionIdByIdAndRole(callId: string, sessionId: string, role: 'caller' | 'callee'): Promise<UpdateResult>;
 }

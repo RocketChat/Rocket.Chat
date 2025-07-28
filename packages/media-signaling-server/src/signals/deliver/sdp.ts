@@ -16,6 +16,7 @@ export async function processSDP(signal: MediaSignalDeliver<'sdp'>, call: IMedia
 
 	// Find the opposite channel and save the SDP there as well
 	const otherChannel = await getOppositeChannel(call, channel);
+	// otherChannel will only be defined if the other participant has already accepted the call
 	if (otherChannel) {
 		await setRemoteSDP(
 			otherChannel,

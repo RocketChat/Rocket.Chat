@@ -48,30 +48,60 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async acceptCallById(callId: string, calleeSessionId?: string): Promise<UpdateResult> {
-		if (!calleeSessionId) {
-			return this.updateOne({ _id: callId, state: { $in: ['none', 'ringing'] } }, { $set: { state: 'accepted' } });
-		}
-
+	public async acceptCallById(callId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{
-				_id: callId,
-				$or: [
+				'_id': callId,
+				'state': { $in: ['none', 'ringing'] },
+				'caller.type': { $exists: true },
+				'callee.type': { $exists: true },
+				'$and': [
 					{
-						state: { $in: ['none', 'ringing'] },
+						$or: [
+							{
+								'caller.type': 'user',
+								'caller.sessionId': { $exists: true },
+							},
+							{
+								'caller.type': {
+									$ne: 'user',
+								},
+							},
+						],
 					},
 					{
-						'state': 'accepted',
-						'callee.sessionId': { $exists: false },
+						$or: [
+							{
+								'callee.type': 'user',
+								'callee.sessionId': { $exists: true },
+							},
+							{
+								'callee.type': {
+									$ne: 'user',
+								},
+							},
+						],
 					},
 				],
 			},
-			{ $set: { 'state': 'accepted', 'callee.sessionId': calleeSessionId } },
+			{ $set: { state: 'accepted' } },
 		);
 	}
 
 	public async setCallerSessionIdById(callId: string, callerSessionId: string): Promise<UpdateResult> {
 		return this.updateOne({ '_id': callId, 'caller.sessionId': { $exists: false } }, { $set: { 'caller.sessionId': callerSessionId } });
+	}
+
+	public async setCalleeSessionIdById(callId: string, calleeSessionId: string): Promise<UpdateResult> {
+		return this.updateOne({ '_id': callId, 'callee.sessionId': { $exists: false } }, { $set: { 'callee.sessionId': calleeSessionId } });
+	}
+
+	public async setActorSessionIdByIdAndRole(callId: string, sessionId: string, role: 'caller' | 'callee'): Promise<UpdateResult> {
+		if (role === 'caller') {
+			return this.setCallerSessionIdById(callId, sessionId);
+		}
+
+		return this.setCalleeSessionIdById(callId, sessionId);
 	}
 
 	public async getNewSequence(callId: string): Promise<IMediaCall | null> {

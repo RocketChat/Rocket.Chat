@@ -54,7 +54,7 @@ export const useVoipAPI = (): VoipAPI => {
 
 					return mediaCallsClient.call(callee);
 				},
-				endCall: mediaCallsClient.endCall,
+				endCall: () => mediaCallsClient.endCall(),
 				register: NOOP,
 				unregister: NOOP,
 				transferCall: mediaCallsClient.transfer,
