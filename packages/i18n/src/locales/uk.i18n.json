@@ -3184,6 +3184,8 @@
   "mention-here_description": "Дозвіл на використання @here згадати",
   "message_counter_one": "{{count}} повідомлення",
   "message_counter_other": "{{count}} повідомлень",
+  "message_counter_many": "{{count}} повідомлень",
+  "message_counter_few": "{{count}} повідомлень",
   "messages": "повідомлення",
   "messages_pruned": "повідомлення обрізані",
   "meteor_status_try_now_waiting": "Спробуй зараз",
