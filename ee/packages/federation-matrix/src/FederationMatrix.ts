@@ -112,19 +112,21 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			this.logger.warn('Homeserver services not available, skipping room creation');
 			return;
 		}
+		
+		if (!(room.t === 'c' || room.t === 'p')) {
+			throw new Error('Room is not a public or private room');
+		}
 
 		try {
 			const matrixDomain = await this.getMatrixDomain();
 			const matrixUserId = `@${owner.username}:${matrixDomain}`;
 			const roomName = room.name || room.fname || 'Untitled Room';
-			const canonicalAlias = room.fname ? `#${room.fname}:${matrixDomain}` : undefined;
 
+			// canonical alias computed from name
 			const matrixRoomResult = await this.homeserverServices.room.createRoom(
 				matrixUserId,
-				matrixUserId,
 				roomName,
-				canonicalAlias,
-				canonicalAlias,
+				room.t === 'c' ? 'public' : 'invite',
 			);
 
 			this.logger.debug('Matrix room created:', matrixRoomResult);
@@ -152,7 +154,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				// We are not generating bridged users for members outside of the current workspace
 				// They will be created when the invite is accepted
 
-				await this.homeserverServices.invite.inviteUserToRoom(member, matrixRoomResult.room_id, matrixUserId, roomName);
+				await this.homeserverServices.invite.inviteUserToRoom(member, matrixRoomResult.room_id, matrixUserId);
 			}
 
 			this.logger.debug('Room creation completed successfully', room._id);
