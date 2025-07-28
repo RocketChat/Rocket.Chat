@@ -1,0 +1,145 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ut-dev,ut-test,ut-stage]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '14.19.3'
+          cache: 'yarn'
+      - name: Install Meteor
+        run: |
+          # Restore bin from cache
+          set +e
+          METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+          METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+          set -e
+          LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+          if [ -e $LAUNCHER ]
+          then
+            echo "Cached Meteor bin found, restoring it"
+            sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+          else
+            echo "No cached Meteor bin found."
+          fi
+
+          # only install meteor if bin isn't found
+          command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
+      - name: Versions
+        run: |
+          npm --versions
+          yarn -v
+          node -v
+          meteor --version
+          meteor npm --versions
+          meteor node -v
+          git version
+      - name: Run script with bash shell explicitly
+        shell: bash
+        run: |
+          pwd
+          ls -la 
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build application
+        run: yarn build
+
+      - name: Build bundle
+        run: meteor build ../rocketchat-build --directory
+        working-directory: ./apps/meteor/
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: example.com
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Get next version
+        id: version
+        run: |
+          # Get branch name
+          BRANCH_NAME="${{ github.ref_name }}"
+          echo "Building for branch: $BRANCH_NAME"
+          
+          # Your Docker registry and image name
+          REGISTRY="example.com"
+          
+          # Use different image names for different branches
+          if [[ "$BRANCH_NAME" == "ut-dev" ]]; then
+             IMAGE_NAME="utrocketchat_dev"
+          elif [[ "$BRANCH_NAME" == "ut-test" ]]; then
+             IMAGE_NAME="utrocketchat_test"
+          elif [[ "$BRANCH_NAME" == "ut-stage" ]]; then
+             IMAGE_NAME="utrocketchat_stage"
+          else 
+            IMAGE_NAME="utrocketchat_prod"
+          fi
+          
+          echo "Image name: $IMAGE_NAME"
+          
+          # Try to get the latest tag from the registry
+          LATEST_TAG=$(curl -s "https://${REGISTRY}/v2/${IMAGE_NAME}/tags/list" | \
+            grep -o '"[0-9]\+\.[0-9]\+\.[0-9]\+"' | \
+            sed 's/"//g' | \
+            sort -V | \
+            tail -n1)
+          
+          # If no tags found, start with 1.0.0
+          if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG="1.0.0"
+          fi
+          
+          echo "Latest tag: $LATEST_TAG"
+          
+          # Parse version components
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_TAG"
+          
+          # Increment logic
+          if [ "$PATCH" -lt 9 ]; then
+            # Increment patch version
+            PATCH=$((PATCH + 1))
+          else
+            # Reset patch to 0 and increment minor
+            PATCH=0
+            MINOR=$((MINOR + 1))
+          fi
+          
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "New version: $NEW_VERSION"
+          
+          # Set outputs
+          echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "image_tag=${REGISTRY}/${IMAGE_NAME}:${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.version.outputs.image_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
