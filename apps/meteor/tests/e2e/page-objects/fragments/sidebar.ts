@@ -13,11 +13,11 @@ export class Sidebar {
 	}
 
 	get teamCollabFilters(): Locator {
-		return this.sidebar.getByRole('tablist').first();
+		return this.sidebar.getByRole('tablist', { name: 'Team collaboration filters' });
 	}
 
 	get omnichannelFilters(): Locator {
-		return this.sidebar.getByRole('tablist').nth(1);
+		return this.sidebar.getByRole('tablist', { name: 'Omnichannel filters' });
 	}
 
 	get allTeamCollabFilter(): Locator {
@@ -25,7 +25,7 @@ export class Sidebar {
 	}
 
 	get mentionsTeamCollabFilter(): Locator {
-		return this.teamCollabFilters.getByRole('button', { name: 'Mentions' });
+		return this.teamCollabFilters.getByRole('button').filter({ hasText: 'Mentions' });
 	}
 
 	get favoritesTeamCollabFilter(): Locator {
@@ -56,7 +56,7 @@ export class Sidebar {
 	}
 
 	get teamsCollapser(): Locator {
-		return this.topChannelList.getByRole('region', { name: 'Collapse Teams' });
+		return this.sidebar.getByRole('region', { name: 'Collapse Teams' }).first();
 	}
 
 	get channelsCollapser(): Locator {

@@ -29,7 +29,12 @@ const RoomListFiltersItem = ({ group, icon }: SidebarFiltersItemProps) => {
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(unreadGroupCount);
 
 	return (
-		<SidebarV2Item selected={group === currentTab} aria-selected={group === currentTab} {...buttonProps}>
+		<SidebarV2Item
+			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle }) : roomTitle}
+			selected={group === currentTab}
+			aria-selected={group === currentTab}
+			{...buttonProps}
+		>
 			<SidebarV2ItemIcon highlighted={highlighted} icon={<Icon size='x20' name={icon} />} />
 			<SidebarV2ItemTitle unread={highlighted}>{t(roomTitle)}</SidebarV2ItemTitle>
 			{showUnread && (

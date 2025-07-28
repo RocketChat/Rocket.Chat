@@ -19,8 +19,12 @@ export class Sidepanel {
 		return this.sidepanelList.getByRole('listitem').first();
 	}
 
-	get unreadToggle(): Locator {
-		return this.sidepanel.getByRole('heading').getByRole('switch', { name: 'Unread toggle' });
+	get unreadCheckbox(): Locator {
+		return this.sidepanel.getByRole('heading').getByRole('checkbox', { name: 'Unread' });
+	}
+
+	get unreadToggleLabel(): Locator {
+		return this.sidepanel.getByRole('heading').locator('label', { hasText: 'Unread' });
 	}
 
 	get sidepanelBackButton(): Locator {

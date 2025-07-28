@@ -1,5 +1,6 @@
 import { Divider, Box } from '@rocket.chat/fuselage';
 import { forwardRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Components } from 'react-virtuoso';
 
 import OmnichannelFilters from './OmnichannelFilters';
@@ -8,7 +9,7 @@ import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEna
 import { sidePanelFiltersConfig, SIDE_PANEL_GROUPS, TEAM_COLLAB_GROUPS } from '../../views/navigation/contexts/RoomsNavigationContext';
 
 const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrapper(_, ref) {
-	// const favoritesEnabled = useUserPreference('sidebarShowFavorites', true);
+	const { t } = useTranslation();
 	const showOmnichannel = useOmnichannelEnabled();
 
 	if (Object.values(SIDE_PANEL_GROUPS).length === 0) {
@@ -17,7 +18,7 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 
 	return (
 		<Box ref={ref} display='flex' flexDirection='column'>
-			<Box role='tablist' aria-orientation='vertical' mbs={8}>
+			<Box role='tablist' aria-label={t('Team_collaboration_filters')} aria-orientation='vertical' mbs={8}>
 				{Object.values(TEAM_COLLAB_GROUPS).map((group) => (
 					<RoomListFiltersItem key={group} group={group} icon={sidePanelFiltersConfig[group].icon} />
 				))}

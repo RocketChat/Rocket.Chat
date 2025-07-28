@@ -1,5 +1,6 @@
 import { isDirectMessageRoom, isOmnichannelRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
@@ -89,6 +90,8 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 		switchSidePanelTab(SIDE_BAR_GROUPS.CHANNELS, { parentRid: room.rid });
 	}, [room, switchSidePanelTab]);
 
+	const buttonProps = useButtonPattern(handleClick);
+
 	return (
 		<SidebarItem
 			id={id}
@@ -96,7 +99,6 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}
-			onClick={handleClick}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			icon={icon}
@@ -104,6 +106,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 			badges={badges}
 			room={room}
 			actions={actions}
+			{...buttonProps}
 		/>
 	);
 };

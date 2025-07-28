@@ -46,6 +46,10 @@ const NavigationRegion = () => {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
 			transform: translate3d(0px, 0px, 0px);
 		}
+
+		.hidden-visibility {
+			visibility: hidden;
+		}
 	`;
 
 	const navBackdropStyle = css`
@@ -75,32 +79,29 @@ const NavigationRegion = () => {
 		&.collapsed {
 			transform: translateX(-${sidebarSize});
 			margin-right: -${sidebarSize};
-			visibility: hidden;
 		}
 	`;
 
 	const showSideBar = !displaySidePanel || !isTablet;
 	const isSidebarOpen = !sidebar.isCollapsed && isTablet;
-	const isNavRegionHidden = sidebar.isCollapsed && isTablet;
+	const hideSidePanel = sidebar.overlayed || (sidebar.isCollapsed && isTablet);
 
 	return (
 		<>
-			<Box
-				id='navigation-region'
-				className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && navMobileStyle].filter(Boolean)}
-				aria-hidden={isNavRegionHidden}
-			>
+			<Box id='navigation-region' className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && navMobileStyle].filter(Boolean)}>
 				{showSideBar && (
-					<Box className={[sidebarWrapStyle, sidebar.overlayed && !isSidebarOpen && 'collapsed']}>
+					<Box className={[sidebarWrapStyle, sidebar.overlayed && !isSidebarOpen && 'collapsed hidden-visibility']}>
 						<FocusScope>
 							<Sidebar />
 						</FocusScope>
 					</Box>
 				)}
 				{displaySidePanel && (
-					<FocusScope>
-						<SidePanel />
-					</FocusScope>
+					<Box width='x280' className={[hideSidePanel && 'hidden-visibility']}>
+						<FocusScope>
+							<SidePanel />
+						</FocusScope>
+					</Box>
 				)}
 			</Box>
 			{isTablet && (
