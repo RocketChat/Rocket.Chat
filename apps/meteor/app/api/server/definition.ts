@@ -300,7 +300,7 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 		query: Record<string, unknown>;
 	}>;
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
-
+	request: Request;
 	requestIp?: string;
 };
 
