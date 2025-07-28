@@ -24,5 +24,12 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			public: true,
 			alert: 'Federation_Service_Matrix_Port_Alert',
 		});
+
+		await this.add('Federation_Service_Matrix_Signing_Key', '', {
+			type: 'string',
+			i18nLabel: 'Federation_Service_Matrix_Signing_Key',
+			i18nDescription: 'Federation_Service_Matrix_Signing_Key_Description',
+			public: false,
+		});
 	});
 };

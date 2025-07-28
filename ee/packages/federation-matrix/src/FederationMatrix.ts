@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { toUnpaddedBase64 } from '@hs/core';
+import { convertSigningKeyToBase64, type SigningKey } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
@@ -8,7 +8,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
+import { Settings as SettingsModel, MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
@@ -41,17 +41,30 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
 		const config = new ConfigService();
+
 		const matrixConfig = config.getMatrixConfig();
 		const serverConfig = config.getServerConfig();
-		const signingKeys = await config.getSigningKey();
-		const signingKey = signingKeys[0];
+
+		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
+		let signingKey: SigningKey;
+		let base64SigningKey: string;
+
+		if (settingsSigningKey?.trim()) {
+			signingKey = await config.reconstructSigningKey(settingsSigningKey);
+			base64SigningKey = convertSigningKeyToBase64(signingKey);
+		} else {
+			const signingKeys = await config.getSigningKey();
+			signingKey = signingKeys[0];
+
+			base64SigningKey = convertSigningKeyToBase64(signingKey);
+			await SettingsModel.updateValueById('Federation_Service_Matrix_Signing_Key', base64SigningKey);
+		}
 
 		const containerOptions: FederationContainerOptions = {
 			emitter: instance.eventHandler,
 			federationOptions: {
 				serverName: matrixConfig.serverName,
-				signingKey: toUnpaddedBase64(signingKey.privateKey),
-				signingKeyId: `ed25519:${signingKey.version}`,
+				signingKey: base64SigningKey,
 				timeout: 30000,
 				baseUrl: serverConfig.baseUrl,
 			},
