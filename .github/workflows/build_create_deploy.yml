@@ -64,7 +64,10 @@ jobs:
         run: yarn build
 
       - name: Changing Working directory
-        run: cd ./apps/meteor/
+        run:  cd apps/meteor/
+
+      - name: Changing Working directory
+        run:  pwd
 
       - name: Build bundle
         run: meteor build ../rocketchat-build --directory
