@@ -180,7 +180,7 @@ export async function findDepartmentAgents({
 		agents: result,
 		count: result.length,
 		offset,
-		total: totalCount[0].total,
+		total: totalCount[0]?.total || 0,
 	};
 }
 
