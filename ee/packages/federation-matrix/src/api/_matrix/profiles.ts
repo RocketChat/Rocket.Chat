@@ -1,4 +1,5 @@
 import type { HomeserverServices } from '@hs/federation-sdk';
+import type { RoomVersion } from '@hs/room';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -412,25 +413,12 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				const url = new URL(c.req.url);
 				const verParams = url.searchParams.getAll('ver');
 
-				const response = await profile.makeJoin(roomId, userId, verParams.length > 0 ? verParams : ['1']);
+				const response = await profile.makeJoin(roomId, userId, verParams.length > 0 ? verParams as RoomVersion[] : ['1']);
 
 				return {
 					body: {
 						room_version: response.room_version,
-						event: {
-							...response.event,
-							content: {
-								...response.event.content,
-								membership: 'join',
-								join_authorised_via_users_server: response.event.content.join_authorised_via_users_server,
-							},
-							room_id: response.event.room_id,
-							sender: response.event.sender,
-							state_key: response.event.state_key,
-							type: 'm.room.member',
-							origin_server_ts: response.event.origin_server_ts,
-							origin: response.event.origin,
-						},
+						event: response.event,
 					},
 					statusCode: 200,
 				};
