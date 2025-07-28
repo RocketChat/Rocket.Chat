@@ -8,7 +8,8 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
+import { MatrixBridgedUser, MatrixBridgedRoom, MatrixBridgedMessage, Users, Messages, Subscriptions } from '@rocket.chat/models';
+import emojione from 'emojione';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
@@ -32,6 +33,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	private readonly logger = new Logger(this.name);
 
 	private httpRoutes: { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> };
+
+	private readonly MATRIX_POWER_LEVELS = {
+		USER: 0,
+		MODERATOR: 50,
+		ADMIN: 100,
+	} as const;
 
 	private constructor(emitter?: Emitter<HomeserverEventSignatures>) {
 		super();
@@ -57,11 +64,27 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			},
 		};
 
-		await createFederationContainer(containerOptions);
+		createFederationContainer(containerOptions);
 		instance.homeserverServices = getAllServices();
 		instance.buildMatrixHTTPRoutes();
 
 		return instance;
+	}
+
+	private rcRoleToMatrixPowerLevel(roles?: string[]): number {
+		if (!roles || roles.length === 0) {
+			return this.MATRIX_POWER_LEVELS.USER;
+		}
+
+		if (roles.includes('owner')) {
+			return this.MATRIX_POWER_LEVELS.ADMIN;
+		}
+
+		if (roles.includes('moderator')) {
+			return this.MATRIX_POWER_LEVELS.MODERATOR;
+		}
+
+		return this.MATRIX_POWER_LEVELS.USER;
 	}
 
 	private buildMatrixHTTPRoutes() {
@@ -157,6 +180,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				await this.homeserverServices.invite.inviteUserToRoom(member, matrixRoomResult.room_id, matrixUserId);
 			}
 
+			await this.syncInitialPowerLevels(room._id, matrixRoomResult.room_id);
+
 			this.logger.debug('Room creation completed successfully', room._id);
 		} catch (error) {
 			console.log(error);
@@ -193,13 +218,252 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, matrixUserId, targetServer);
 
-			// TODO: Store the event ID mapping for future reference (edits, deletions, etc.)
-			// This would allow us to map between Rocket.Chat message IDs and Matrix event IDs
+			await MatrixBridgedMessage.createOrUpdate(message._id, result.event_id);
 
 			this.logger.debug('Message sent to Matrix successfully:', result.event_id);
 		} catch (error) {
 			this.logger.error('Failed to send message to Matrix:', error);
 			throw error;
 		}
+	}
+
+	async sendReaction(messageId: string, reaction: string, user: IUser): Promise<void> {
+		try {
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				throw new Error(`Message ${messageId} not found`);
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+
+			const matrixEventId = await MatrixBridgedMessage.getExternalEventId(messageId);
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${user.username}:${matrixDomain}`;
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
+			if (!existingMatrixUserId) {
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
+			}
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping reaction send');
+				return;
+			}
+
+			const reactionKey = emojione.shortnameToUnicode(reaction);
+
+			// TODO: Fix hardcoded server
+			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+			const result = await this.homeserverServices.message.sendReaction(
+				matrixRoomId,
+				matrixEventId,
+				reactionKey,
+				matrixUserId,
+				targetServer,
+			);
+
+			const reactionMappingKey = `${messageId}_reaction_${reaction}`;
+			await MatrixBridgedMessage.createOrUpdate(reactionMappingKey, result.event_id);
+
+			this.logger.debug('Reaction sent to Matrix successfully:', result.event_id);
+		} catch (error) {
+			this.logger.error('Failed to send reaction to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async removeReaction(messageId: string, reaction: string, user: IUser): Promise<void> {
+		try {
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				throw new Error(`Message ${messageId} not found`);
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+
+			const matrixEventId = await MatrixBridgedMessage.getExternalEventId(messageId);
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${user.username}:${matrixDomain}`;
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping reaction removal');
+				return;
+			}
+
+			// TODO: Fix hardcoded server
+			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+
+			const reactionMappingKey = `${messageId}_reaction_${reaction}`;
+			const reactionEventId = await MatrixBridgedMessage.getExternalEventId(reactionMappingKey);
+			if (!reactionEventId) {
+				this.logger.warn(`No reaction event ID found for ${reactionMappingKey}`);
+				return;
+			}
+
+			const result = await this.homeserverServices.message.redactMessage(
+				matrixRoomId,
+				reactionEventId,
+				undefined,
+				matrixUserId,
+				targetServer,
+			);
+
+			await MatrixBridgedMessage.removeByLocalMessageId(reactionMappingKey);
+
+			this.logger.debug('Reaction removed from Matrix successfully:', result.event_id);
+		} catch (error) {
+			this.logger.error('Failed to remove reaction from Matrix:', error);
+			throw error;
+		}
+	}
+
+	async leaveRoom(roomId: string, user: IUser): Promise<void> {
+		try {
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${roomId}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${user.username}:${matrixDomain}`;
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping room leave');
+				return;
+			}
+
+			// TODO: Fix hardcoded server
+			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+
+			const result = await this.homeserverServices.room.leaveRoom(matrixRoomId, matrixUserId, [targetServer]);
+
+			this.logger.debug('User left Matrix room successfully:', result);
+		} catch (error) {
+			this.logger.error('Failed to leave Matrix room:', error);
+			throw error;
+		}
+	}
+
+	async kickUser(roomId: string, kickedUser: IUser, kickingUser: IUser, reason?: string): Promise<void> {
+		try {
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${roomId}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const kickedMatrixUserId = `@${kickedUser.username}:${matrixDomain}`;
+			const kickingMatrixUserId = `@${kickingUser.username}:${matrixDomain}`;
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping user kick');
+				return;
+			}
+
+			// TODO: Fix hardcoded server
+			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
+
+			const result = await this.homeserverServices.room.kickUser(matrixRoomId, kickedMatrixUserId, kickingMatrixUserId, reason, [
+				targetServer,
+			]);
+
+			this.logger.debug('User kicked from Matrix room successfully:', result);
+		} catch (error) {
+			this.logger.error('Failed to kick user from Matrix room:', error);
+			throw error;
+		}
+	}
+
+	private async syncInitialPowerLevels(rcRoomId: string, matrixRoomId: string): Promise<void> {
+		try {
+			const subscriptions = await Subscriptions.findByRoomId(rcRoomId).toArray();
+
+			// TODO: For large rooms, consider implementing batching or rate limiting in the future
+			for await (const sub of subscriptions) {
+				const bridgedUser = await MatrixBridgedUser.findOne({ uid: sub.u._id });
+				if (!bridgedUser) {
+					continue;
+				}
+
+				// Calculate power level based on roles (will be 0 for users with no roles)
+				const powerLevel = this.rcRoleToMatrixPowerLevel(sub.roles);
+
+				// TODO: Handle potential conflicts between RC roles and existing Matrix power levels
+				// For now, RC roles take precedence during initial sync
+
+				// Update power level for ALL users, not just those with special roles
+				// This ensures everyone starts with the correct power level
+				await this.homeserverServices.room.updateUserPowerLevel(
+					matrixRoomId,
+					bridgedUser.mui,
+					powerLevel,
+					bridgedUser.mui,
+					['hs1-garim.tunnel.dev.rocket.chat'], // TODO: Dynamic servers
+				);
+
+				this.logger.debug(`Set initial power level ${powerLevel} for user ${bridgedUser.mui}`);
+			}
+
+			this.logger.info(`Synced power levels for ${subscriptions.length} users in room ${rcRoomId}`);
+		} catch (error) {
+			this.logger.error('Failed to sync initial power levels:', error);
+		}
+	}
+
+	async updateUserPowerLevel(roomId: string, userId: string, roles: string[], actingUserId: string): Promise<void> {
+		try {
+			const bridgedRoom = await MatrixBridgedRoom.findOne({ rid: roomId });
+			const bridgedUser = await MatrixBridgedUser.findOne({ uid: userId });
+			const bridgedActingUser = await MatrixBridgedUser.findOne({ uid: actingUserId });
+
+			if (!bridgedRoom || !bridgedUser || !bridgedActingUser) {
+				this.logger.debug('Skipping power level update - not a federated room or user');
+				return;
+			}
+
+			const powerLevel = this.rcRoleToMatrixPowerLevel(roles);
+
+			// TODO: Dynamic target server discovery instead of hardcoded value
+			const targetServers = ['hs1-garim.tunnel.dev.rocket.chat'];
+
+			await this.homeserverServices.room.updateUserPowerLevel(
+				bridgedRoom.mri,
+				bridgedUser.mui,
+				powerLevel,
+				bridgedActingUser.mui,
+				targetServers,
+			);
+
+			this.logger.debug(`Updated power level for ${bridgedUser.mui} to ${powerLevel} based on roles: ${roles.join(', ')}`);
+		} catch (error) {
+			this.logger.error('Failed to update Matrix power level:', error);
+			// Don't throw - we don't want to break RC operations
+		}
+	}
+
+	async handleUserRoleChange(data: Record<string, any>): Promise<void> {
+		const { _id: role, scope: roomId, u, givenByUserId } = data;
+
+		if (!['owner', 'moderator'].includes(role)) {
+			return;
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, u._id);
+		const currentRoles = subscription?.roles || [];
+
+		await this.updateUserPowerLevel(roomId, u._id, currentRoles, givenByUserId);
 	}
 }
