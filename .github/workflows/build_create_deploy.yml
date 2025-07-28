@@ -53,7 +53,6 @@ jobs:
           meteor node -v
           git version
       - name: Run script with bash shell explicitly
-        shell: bash
         run: |
           pwd
           ls -la 
@@ -67,14 +66,16 @@ jobs:
       - name: Build bundle
         run: meteor build ../rocketchat-build --directory
         working-directory: ./apps/meteor/
-
+      - name: Copy  the Bundle
+        run: |
+         cp -r ./apps/rocketchat-build/bundle ./apps/meteor/.docker/
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to Container Registry
         uses: docker/login-action@v3
         with:
-          registry: example.com
+          registry: regdock.ultatel.com
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Get next version
@@ -85,7 +86,7 @@ jobs:
           echo "Building for branch: $BRANCH_NAME"
           
           # Your Docker registry and image name
-          REGISTRY="example.com"
+          REGISTRY="regdock.ultatel.com"
           
           # Use different image names for different branches
           if [[ "$BRANCH_NAME" == "ut-dev" ]]; then
@@ -138,7 +139,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          file: /apps/meteor/.docker/Dockerfile
           push: true
           tags: ${{ steps.version.outputs.image_tag }}
           cache-from: type=gha
