@@ -1056,7 +1056,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-no-agents-online-in-department');
+					expect(res.body).to.have.property('error', 'error-no-agents-available-for-service-on-department');
 				});
 
 			await deleteDepartment(initialDepartment._id);
@@ -1377,7 +1377,7 @@ describe('LIVECHAT - rooms', () => {
 				});
 
 				expect(res.status).to.equal(400);
-				expect(res.body).to.have.property('error', 'error-no-agents-online-in-department');
+				expect(res.body).to.have.property('error', 'error-no-agents-available-for-service-on-department');
 
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
