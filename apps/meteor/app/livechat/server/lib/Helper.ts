@@ -680,6 +680,12 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		if (!department?.fallbackForwardDepartment?.length) {
+			if (department?.allowReceiveForwardOffline) {
+				logger.debug(`Assignment failed. Room ${room._id} will be on department queue`);
+				await saveTransferHistory(room, transferData);
+				return RoutingManager.unassignAgent(inquiry, departmentId, true);
+			}
+
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			throw new Error('error-no-agents-online-in-department');
 		}

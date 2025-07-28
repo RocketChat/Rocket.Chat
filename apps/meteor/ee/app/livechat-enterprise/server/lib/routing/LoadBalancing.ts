@@ -30,8 +30,10 @@ class LoadBalancing {
 	}
 
 	async getNextAgent(department?: string, ignoreAgentId?: string) {
+		const enabledWhenIdle = settings.get<boolean>('Livechat_enabled_when_agent_idle');
 		const extraQuery = await getChatLimitsQuery(department);
-		const unavailableUsers = await Users.getUnavailableAgents(department, extraQuery);
+		const unavailableUsers = await Users.getUnavailableAgents(department, extraQuery, enabledWhenIdle);
+
 		const nextAgent = await Users.getNextLeastBusyAgent(
 			department,
 			ignoreAgentId,

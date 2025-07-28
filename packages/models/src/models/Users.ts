@@ -30,33 +30,7 @@ import type {
 
 import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
-
-const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
-	statusLivechat: 'available',
-	roles: 'livechat-agent',
-	// ignore deactivated users
-	active: true,
-	...(!isLivechatEnabledWhenAgentIdle && {
-		$or: [
-			{
-				status: {
-					$exists: true,
-					$ne: UserStatus.OFFLINE,
-				},
-				roles: {
-					$ne: 'bot',
-				},
-			},
-			{
-				roles: 'bot',
-			},
-		],
-	}),
-	...extraFilters,
-	...(isLivechatEnabledWhenAgentIdle === false && {
-		statusConnection: { $ne: 'away' },
-	}),
-});
+import { queryStatusAgentOnline } from '../lib';
 
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
@@ -1676,6 +1650,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	async getUnavailableAgents(
 		_departmentId?: string,
 		_extraQuery?: Filter<AvailableAgentsAggregation>,
+		_enabledWhenIdle?: boolean,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {
 		return [];
 	}
@@ -1949,7 +1924,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	async getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<AvailableAgentsAggregation>, enabledWhenAgentIdle?: boolean) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
-		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery)).map((u) => u.username);
+		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery, enabledWhenAgentIdle)).map((u) => u.username);
 		const extraFilters = {
 			...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
 			// limit query to remove booked agents
