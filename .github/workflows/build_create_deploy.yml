@@ -80,9 +80,7 @@ jobs:
         run: yarn build
 
       - name: Build bundle
-        run: |
-          export NODE_OPTIONS="--max_old_space_size=4096"
-          meteor build ../rocketchat-build --directory --server-only
+        run:  meteor build ../rocketchat-build --directory --server-only
         working-directory: ./apps/meteor/
 
       - name: Copy  the Bundle
