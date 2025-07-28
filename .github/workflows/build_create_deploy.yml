@@ -5,8 +5,7 @@ on:
     branches: [ut-dev,ut-test,ut-stage]
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  TOOL_NODE_FLAGS: --max_old_space_size=6000
 
 jobs:
   build-and-push:
@@ -24,6 +23,28 @@ jobs:
         with:
           node-version: '14.19.3'
           cache: 'yarn'
+      - name: Free disk space
+        run: |
+          sudo apt clean
+          docker rmi $(docker image ls -aq)
+          df -h
+
+      - name: Cache meteor local
+        uses: actions/cache@v3
+        with:
+          path: ./apps/meteor/.meteor/local
+          key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
+          restore-keys: |
+            meteor-local-cache-${{ runner.os }}-
+
+      - name: Cache meteor
+        uses: actions/cache@v3
+        with:
+          path: ~/.meteor
+          key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
+          restore-keys: |
+            meteor-cache-${{ runner.os }}-
+
       - name: Install Meteor
         run: |
           # Restore bin from cache
