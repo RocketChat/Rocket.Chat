@@ -1,6 +1,7 @@
 import type { AppAccessorManager } from '.';
 import { AppMethod } from '../../definition/metadata';
-import type { IOutboundMessageProviders, ProviderMetadata } from '../../definition/outboundComunication';
+import type { IOutboundMessage, IOutboundMessageProviders, ProviderMetadata } from '../../definition/outboundComunication';
+import { AppOutboundProcessError } from '../errors/AppOutboundProcessError';
 import type { ProxiedApp } from '../ProxiedApp';
 import type { AppLogStorage } from '../storage';
 
@@ -18,7 +19,15 @@ export class OutboundMessageProvider {
 		return this.runTheCode<ProviderMetadata>(AppMethod._OUTBOUND_GET_PROVIDER_METADATA, logStorage, accessors, []);
 	}
 
-	public async runSendOutboundMessage(logStorage: AppLogStorage, accessors: AppAccessorManager, body: any): Promise<void> {
+	public async runSendOutboundMessage(
+		logStorage: AppLogStorage,
+		accessors: AppAccessorManager,
+		body: {
+			to: string;
+			templateProviderPhoneNumber: string;
+			template: IOutboundMessage;
+		},
+	): Promise<void> {
 		await this.runTheCode(AppMethod._OUTBOUND_SEND_MESSAGE, logStorage, accessors, [body]);
 	}
 
@@ -41,7 +50,7 @@ export class OutboundMessageProvider {
 			if (e?.message === 'error-invalid-provider') {
 				throw new Error('error-provider-not-registered');
 			}
-			console.error(e);
+			throw new AppOutboundProcessError(e.message, method);
 		}
 	}
 }

@@ -15,7 +15,17 @@ interface IOutboundMessageProviderBase {
 	name: string;
 	documentationUrl?: string;
 	supportsTemplates?: boolean;
-	sendOutboundMessage(message: IOutboundMessage, read: IRead, modify: IModify, http: IHttp, persistence: IPersistence): Promise<void>;
+	sendOutboundMessage(
+		message: {
+			to: string;
+			templateProviderPhoneNumber: string;
+			template: IOutboundMessage;
+		},
+		read: IRead,
+		modify: IModify,
+		http: IHttp,
+		persistence: IPersistence,
+	): Promise<void>;
 }
 
 export interface IOutboundPhoneMessageProvider extends IOutboundMessageProviderBase {

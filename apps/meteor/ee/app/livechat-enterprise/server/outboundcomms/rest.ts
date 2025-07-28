@@ -1,4 +1,4 @@
-import type { IOutboundMessage, IOutboundProvider, IOutboundProviderMetadata } from '@rocket.chat/core-typings';
+import type { IOutboundMessage, IOutboundProvider, IOutboundProviderMetadata, ValidOutboundProvider } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { OutboundCommsEndpoints } from '../api/outbound';
@@ -12,7 +12,9 @@ declare module '@rocket.chat/rest-typings' {
 	interface Endpoints extends OutboundCommsEndpoints {}
 }
 
-type GETOutboundProviderParams = { type?: string };
+type GenericErrorResponse = { success: boolean; message: string };
+
+type GETOutboundProviderParams = { type?: ValidOutboundProvider };
 const GETOutboundProviderSchema = {
 	type: 'object',
 	properties: {
@@ -64,19 +66,21 @@ const GETOutboundProviderBadRequestError = {
 		},
 	},
 };
-export const GETOutboundProviderBadRequestErrorSchema = ajv.compile<{ success: boolean; message: string }>(
-	GETOutboundProviderBadRequestError,
-);
+export const GETOutboundProviderBadRequestErrorSchema = ajv.compile<GenericErrorResponse>(GETOutboundProviderBadRequestError);
 
-type POSTOutboundMessageParams = {
-	message: IOutboundMessage;
+type POSTOutboundMessageParamsType = {
+	to: string;
+	type: ValidOutboundProvider;
+	templateProviderPhoneNumber: string;
+	template: IOutboundMessage;
 };
+
 const POSTOutboundMessageSchema = {
 	type: 'object',
 	required: ['to', 'type'],
 	properties: {
 		to: { type: 'string' },
-		type: { type: 'string' },
+		type: { type: 'string', enum: ['phone', 'email'] },
 		templateProviderPhoneNumber: { type: 'string' },
 		template: {
 			type: 'object',
@@ -183,7 +187,30 @@ const POSTOutboundMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isPOSTOutboundMessageParams = ajv.compile<POSTOutboundMessageParams>(POSTOutboundMessageSchema);
+export const POSTOutboundMessageParams = ajv.compile<POSTOutboundMessageParamsType>(POSTOutboundMessageSchema);
+
+const POSTOutboundMessageError = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+		message: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTOutboundMessageErrorSchema = ajv.compile<GenericErrorResponse>(POSTOutboundMessageError);
+
+const POSTOutboundMessageSuccess = {
+	type: 'object',
+	properties: {},
+	additionalProperties: false,
+};
+
+export const POSTOutboundMessageSuccessSchema = ajv.compile<void>(POSTOutboundMessageSuccess);
 
 const OutboundProviderMetadataSchema = {
 	type: 'object',
