@@ -1,5 +1,5 @@
 import type { AvailableAgentsAggregation, ILivechatDepartmentAgents, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
+import type { ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
 	FindCursor,
@@ -88,32 +88,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find({ agentId }, options);
 	}
 
-	findAgentsByDepartmentId(departmentId: string): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
-
 	findAgentsByDepartmentId(
-		departmentId: string,
-		options: FindOptions<ILivechatDepartmentAgents>,
-	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
-
-	findAgentsByDepartmentId<P extends Document>(
-		departmentId: string,
-		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindPaginated<FindCursor<P>>;
-
-	findAgentsByDepartmentId(
-		departmentId: string,
-		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
-	): FindPaginated<FindCursor<ILivechatDepartmentAgents>> {
-		const query = { departmentId };
-
-		if (options === undefined) {
-			return this.findPaginated(query);
-		}
-
-		return this.findPaginated(query, options);
-	}
-
-	findAgentsByDepartmentIdAggregated(
 		departmentId: string,
 		options?: FindOptions<ILivechatDepartmentAgents>,
 	): AggregationCursor<{
