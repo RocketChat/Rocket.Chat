@@ -11,7 +11,7 @@ import {
 	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { MouseEvent, KeyboardEvent, ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -28,21 +28,11 @@ import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMes
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
+import { useThreadMessageProps } from './threadPreview/useThreadMessageProps';
 
 type ThreadMessageParentLinkProps = {
 	message: IThreadMessage;
 } & ComponentProps<typeof ThreadMessage>;
-
-const useLinkPattern = ({ onPress }: { onPress: (e: MouseEvent<Element> | KeyboardEvent<Element>) => void }) => {
-	const handleKeyDown = (event: KeyboardEvent) => {
-		if (event.key === 'Enter') {
-			event.preventDefault();
-			onPress(event);
-		}
-	};
-
-	return { onClick: onPress, onKeyDown: handleKeyDown, role: 'link', tabIndex: 0 };
-};
 
 const ThreadMessageParentLink = ({ message, ...props }: ThreadMessageParentLinkProps): ReactElement => {
 	const parentMessage = useParentMessage(message.tmid);
@@ -80,20 +70,10 @@ const ThreadMessageParentLink = ({ message, ...props }: ThreadMessageParentLinkP
 		return toggleSelected();
 	});
 
-	const linkProps = useLinkPattern({
-		onPress: handleClick,
-	});
-
-	const threadMessageProps = {
-		'aria-roledescription': isOTRMsg ? t('OTR_thread_message_preview') : t('thread_message_preview'),
-		isSelected,
-		'data-qa-selected': isSelected,
-		...linkProps,
-		...props,
-	};
+	const threadMessageProps = useThreadMessageProps(handleClick, isOTRMsg, isSelected);
 
 	return (
-		<ThreadMessage {...threadMessageProps}>
+		<ThreadMessage {...threadMessageProps} {...props}>
 			<ThreadMessageRow>
 				<ThreadMessageLeftContainer>
 					<ThreadMessageIconThread />

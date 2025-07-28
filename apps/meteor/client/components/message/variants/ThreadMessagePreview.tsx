@@ -23,6 +23,7 @@ import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import Emoji from '../../Emoji';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
+import { useThreadMessageProps } from './threadPreview/useThreadMessageProps';
 
 type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
@@ -54,17 +55,10 @@ const ThreadMessagePreview = ({ message, showUserAvatar, ...props }: ThreadMessa
 		return toggleSelected();
 	};
 
+	const threadMessageProps = useThreadMessageProps(handleThreadClick, isOTRMsg, isSelected);
+
 	return (
-		<ThreadMessage
-			role='link'
-			aria-roledescription={isOTRMsg ? t('OTR_thread_message_preview') : t('thread_message_preview')}
-			tabIndex={0}
-			onClick={handleThreadClick}
-			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
-			isSelected={isSelected}
-			data-qa-selected={isSelected}
-			{...props}
-		>
+		<ThreadMessage {...threadMessageProps} {...props}>
 			<ThreadMessageRow>
 				<ThreadMessageLeftContainer>
 					{!isSelecting && showUserAvatar && (
