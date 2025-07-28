@@ -13,6 +13,7 @@ export default async function (): Promise<void> {
 		'RC_EXTRA_SERVER_ADMIN_PASSWORD',
 		'RC_EXTRA_SERVER_MATRIX_SERVER_NAME',
 	];
+
 	if (requiredEnvVars.some((envVar) => !process.env[envVar])) {
 		throw new Error(`Missing required environment variables: ${requiredEnvVars.filter((envVar) => !process.env[envVar]).join(', ')}`);
 	}
