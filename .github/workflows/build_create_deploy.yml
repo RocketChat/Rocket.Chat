@@ -63,14 +63,9 @@ jobs:
       - name: Build application
         run: yarn build
 
-      - name: Changing Working directory
-        run:  cd apps/meteor/
-
-      - name: Changing Working directory
-        run:  pwd
-
       - name: Build bundle
         run: meteor build ../rocketchat-build --directory
+        working-directory: ./apps/meteor/
 
       - name: Copy  the Bundle
         run: cp -r ./apps/rocketchat-build/bundle ./apps/meteor/.docker/
