@@ -156,7 +156,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          file: /apps/meteor/.docker/Dockerfile
+          file: ./apps/meteor/.docker/Dockerfile
           push: true
           tags: ${{ steps.version.outputs.image_tag }}
           cache-from: type=gha
