@@ -1,7 +1,7 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents, ILivechatAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
-import { isDepartmentCreationAvailable } from '@rocket.chat/omni-lib';
+import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

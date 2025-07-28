@@ -1,5 +1,5 @@
 import { License } from '@rocket.chat/license';
-import { patchOmniLib } from '@rocket.chat/omni-lib-ee';
+import { patchOmniLib } from '@rocket.chat/omni-core-ee';
 import { Meteor } from 'meteor/meteor';
 
 import './methods/addMonitor';

@@ -1,5 +1,5 @@
 {
-	"name": "@rocket.chat/omni-lib",
+	"name": "@rocket.chat/omni-core-ee",
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
@@ -17,7 +17,7 @@
 		"test": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/omni-lib"
+		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/omni-core-ee"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -26,6 +26,6 @@
 	],
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",
-		"@rocket.chat/patch-injection": "workspace:^"
+		"@rocket.chat/omni-core": "workspace:^"
 	}
 }

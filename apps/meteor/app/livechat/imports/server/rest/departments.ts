@@ -1,6 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
-import { isDepartmentCreationAvailable } from '@rocket.chat/omni-lib';
+import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
 import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import {
 	isLivechatDepartmentDepartmentIdAgentsGETProps,
