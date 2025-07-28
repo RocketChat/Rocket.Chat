@@ -70,7 +70,6 @@ export * from './models/IVoipRoomModel';
 export * from './models/IWebdavAccountsModel';
 export * from './models/IMatrixBridgedRoomModel';
 export * from './models/IMatrixBridgedUserModel';
-export * from './models/IMatrixBridgedMessageModel';
 export * from './models/ICalendarEventModel';
 export * from './models/IOmnichannelServiceLevelAgreementsModel';
 export * from './models/IAppLogsModel';
