@@ -1,6 +1,6 @@
 # @rocket.chat/stream-hub-service
 
-## 0.4.32-rc.2
+## 0.4.33-rc.2
 
 ### Patch Changes
 
@@ -13,7 +13,7 @@
   - @rocket.chat/network-broker@0.2.11-rc.2
   </details>
 
-## 0.4.32-rc.1
+## 0.4.33-rc.1
 
 ### Patch Changes
 
@@ -26,7 +26,7 @@
   - @rocket.chat/network-broker@0.2.11-rc.1
   </details>
 
-## 0.4.32-rc.0
+## 0.4.33-rc.0
 
 ### Patch Changes
 
@@ -37,6 +37,18 @@
   - @rocket.chat/models@1.5.11-rc.0
   - @rocket.chat/core-typings@7.9.0-rc.0
   - @rocket.chat/network-broker@0.2.11-rc.0
+
+## 0.4.32
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.9.11
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/model-typings@1.6.11
+  - @rocket.chat/models@1.5.11
+  - @rocket.chat/network-broker@0.2.11
   </details>
 
 ## 0.4.31

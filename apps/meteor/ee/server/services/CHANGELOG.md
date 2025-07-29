@@ -42,6 +42,21 @@
   - @rocket.chat/apps-engine@1.54.0-rc.0
   - @rocket.chat/core-typings@7.9.0-rc.0
   - @rocket.chat/network-broker@0.2.11-rc.0
+    </details>
+
+## 2.0.23
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3c914ca4b4f9ae3246b149409c893b7610ae6570]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.1
+  - @rocket.chat/core-services@0.9.11
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/rest-typings@7.8.3
+  - @rocket.chat/model-typings@1.6.11
+  - @rocket.chat/models@1.5.11
+  - @rocket.chat/network-broker@0.2.11
   </details>
 
 ## 2.0.22

@@ -41,6 +41,20 @@
   - @rocket.chat/ui-video-conf@21.0.0-rc.0
   </details>
 
+## 20.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3c914ca4b4f9ae3246b149409c893b7610ae6570]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.1
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/gazzodown@20.0.3
+  - @rocket.chat/ui-contexts@20.0.3
+  - @rocket.chat/ui-avatar@16.0.3
+  - @rocket.chat/ui-video-conf@20.0.3
+  </details>
+
 ## 20.0.2
 
 ### Patch Changes

@@ -14,6 +14,8 @@
 
 - ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
 
+## 7.8.3
+
 ## 7.8.2
 
 ## 7.8.1

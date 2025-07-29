@@ -1,15 +1,14 @@
 # @rocket.chat/mock-providers
 
-## 0.2.11-rc.2
+## 0.2.12-rc.2
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@21.0.0-rc.2
   </details>
 
-## 0.2.11-rc.1
+## 0.2.12-rc.1
 
 ### Patch Changes
 
@@ -18,7 +17,7 @@
   - @rocket.chat/ui-contexts@21.0.0-rc.1
   </details>
 
-## 0.2.11-rc.0
+## 0.2.12-rc.0
 
 ### Patch Changes
 
@@ -26,6 +25,14 @@
 
   - @rocket.chat/i18n@1.9.0-rc.0
   - @rocket.chat/ui-contexts@21.0.0-rc.0
+
+## 0.2.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.3
   </details>
 
 ## 0.2.10

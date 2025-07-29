@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.9.0-rc.2
   - @rocket.chat/rest-typings@7.9.0-rc.2
   - @rocket.chat/ddp-client@0.3.32-rc.2
@@ -32,6 +31,15 @@
   - @rocket.chat/i18n@1.9.0-rc.0
   - @rocket.chat/rest-typings@7.9.0-rc.0
   - @rocket.chat/core-typings@7.9.0-rc.0
+
+## 20.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/rest-typings@7.8.3
+  - @rocket.chat/ddp-client@0.3.32
   </details>
 
 ## 20.0.2

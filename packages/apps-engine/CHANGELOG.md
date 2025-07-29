@@ -18,6 +18,12 @@
 
 - ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
 
+## 1.53.1
+
+### Patch Changes
+
+- ([#36543](https://github.com/RocketChat/Rocket.Chat/pull/36543)) Fixes an issue that would leave an app in an unrecoverable state if the installation failed during the construction of the runtime
+
 ## 1.53.0
 
 ### Minor Changes
