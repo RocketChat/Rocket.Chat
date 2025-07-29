@@ -5,6 +5,7 @@ import { MediaSignalTransportWrapper } from './TransportWrapper';
 import type { IWebRTCProcessor, MediaSignalNotify } from '../definition';
 import { createRandomToken } from './utils/createRandomToken';
 import type { IServiceProcessorFactoryList } from '../definition/IServiceProcessorFactoryList';
+import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
 import type { IClientMediaCall, CallContact, CallState } from '../definition/call';
 import { isNotifyNew } from './utils/isNotifyNew';
 import type { MediaSignalTransport } from '../definition/MediaSignalTransport';
@@ -17,17 +18,20 @@ const stateWeights: Record<CallState, number> = {
 	accepted: 2,
 	error: 3,
 	active: 4,
+	hangup: 0,
 } as const;
 
 export type MediaSignalingEvents = {
 	callStateChange: { call: IClientMediaCall; oldState: CallState };
 	newCall: { call: IClientMediaCall };
 	acceptedCall: { call: IClientMediaCall };
+	endedCall: { call: IClientMediaCall };
 };
 
 export type MediaSignalingSessionConfig = {
 	userId: string;
 	processorFactories: IServiceProcessorFactoryList;
+	mediaStreamFactory: MediaStreamFactory;
 	transport: MediaSignalTransport;
 };
 
@@ -113,6 +117,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public async processSignal(signal: MediaSignal): Promise<void> {
+		console.log('session.processSignal', signal.type);
 		if (this.isSignalTargetingAnotherSession(signal)) {
 			return;
 		}
@@ -153,6 +158,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public setCallContact(callId: string, contact: Record<string, string>): void {
+		console.log('session.setCallContact');
 		const oldContact = this.getStoredCallContact(callId);
 		const fullContact = { ...oldContact, ...contact };
 
@@ -185,6 +191,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private async processNewCall(signal: MediaSignalNotify<'new'>) {
+		console.log('session.processNewCall');
 		// If we already know about this call, we don't need to process anything
 		if (this.isCallKnown(signal.callId)) {
 			return;
@@ -210,6 +217,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 			call.emitter.on('stateChange', (oldState) => this.emit('callStateChange', { call, oldState }));
 			call.emitter.on('accepted', () => this.emit('acceptedCall', { call }));
+			call.emitter.on('ended', () => this.emit('endedCall', { call }));
 
 			this.emit('newCall', { call });
 		} catch (e) {
@@ -222,12 +230,17 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private async createWebRtcProcessor(): Promise<IWebRTCProcessor> {
-		const { webrtc: webrtcFactory } = this.config.processorFactories;
+		console.log('session.createWebRtcProcessor');
+
+		const {
+			mediaStreamFactory,
+			processorFactories: { webrtc: webrtcFactory },
+		} = this.config;
 
 		if (!webrtcFactory) {
 			throw new Error('webrtc-not-implemented');
 		}
 
-		return webrtcFactory();
+		return webrtcFactory({ mediaStreamFactory });
 	}
 }

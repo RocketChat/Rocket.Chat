@@ -7,4 +7,6 @@ export type CallEvents = {
 	contactUpdate: void;
 
 	accepted: void;
+
+	ended: void;
 };

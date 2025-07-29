@@ -1,1 +1,1 @@
-export type CallState = 'none' | 'ringing' | 'accepted' | 'active' | 'error';
+export type CallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup' | 'error';

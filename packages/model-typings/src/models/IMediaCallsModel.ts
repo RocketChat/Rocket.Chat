@@ -12,4 +12,5 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	setCallerSessionIdById(callId: string, callerSessionId: string): Promise<UpdateResult>;
 	setCalleeSessionIdById(callId: string, calleeSessionId: string): Promise<UpdateResult>;
 	setActorSessionIdByIdAndRole(callId: string, sessionId: string, role: 'caller' | 'callee'): Promise<UpdateResult>;
+	hangupCallById(callId: string, params: { endedBy?: MediaCallActor; reason?: string } | undefined): Promise<UpdateResult>;
 }

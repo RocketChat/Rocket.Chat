@@ -88,6 +88,25 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public async hangupCallById(callId: string, params?: { endedBy?: MediaCallActor; reason?: string }): Promise<UpdateResult> {
+		const { endedBy, reason } = params || {};
+
+		return this.updateOne(
+			{
+				_id: callId,
+				state: { $ne: 'hangup' },
+			},
+			{
+				$set: {
+					state: 'hangup',
+					endedAt: new Date(),
+					...(endedBy && { endedBy }),
+					...(reason && { hangupReason: reason }),
+				},
+			},
+		);
+	}
+
 	public async setCallerSessionIdById(callId: string, callerSessionId: string): Promise<UpdateResult> {
 		return this.updateOne({ '_id': callId, 'caller.sessionId': { $exists: false } }, { $set: { 'caller.sessionId': callerSessionId } });
 	}

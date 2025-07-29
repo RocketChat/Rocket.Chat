@@ -3,6 +3,7 @@ import type { MediaSignalNotify } from '@rocket.chat/media-signaling';
 
 import { processAccept } from './accept';
 import { processACK } from './ack';
+import { processHangup } from './hangup';
 
 export async function processNotify(signal: MediaSignalNotify, call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
 	switch (signal.body.notify) {
@@ -10,5 +11,7 @@ export async function processNotify(signal: MediaSignalNotify, call: IMediaCall,
 			return processACK(signal as MediaSignalNotify<'ack'>, call, channel);
 		case 'accept':
 			return processAccept(signal as MediaSignalNotify<'accept'>, call, channel);
+		case 'hangup':
+			return processHangup(signal as MediaSignalNotify<'hangup'>, call, channel);
 	}
 }

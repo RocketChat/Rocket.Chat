@@ -1,3 +1,4 @@
+import type { MediaStreamFactory } from './MediaStreamFactory';
 import type { DeliverParams } from './signal/MediaSignalDeliver';
 import type { RequestParams } from './signal/MediaSignalRequest';
 
@@ -12,11 +13,10 @@ export interface IWebRTCProcessor {
 	addIceCandidates(params: DeliverParams<'ice-candidates'>): Promise<void>;
 
 	getRemoteMediaStream(): MediaStream;
-
-	// // Function used to add a callback to be executed when an ice candidate is gathered
-	// onIceCandidate(cb: unknown): void;
-	// // Function used to add a callback to be executed when ICE needs to be restarted
-	// onNegotiationNeeded(cb: unknown): void;
 }
 
-export type WebRTCProcessorFactory = () => IWebRTCProcessor;
+export type WebRTCProcessorConfig = {
+	mediaStreamFactory: MediaStreamFactory;
+};
+
+export type WebRTCProcessorFactory = (config: WebRTCProcessorConfig) => IWebRTCProcessor;

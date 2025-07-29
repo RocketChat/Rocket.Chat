@@ -1,10 +1,10 @@
 import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, IUser, IRoom, IMediaCall } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { IClientMediaCall, MediaSignal, MediaSignalingSession } from '@rocket.chat/media-signaling';
+import { IClientMediaCall, MediaSignal, MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/media-signaling';
 
 import type { ContactInfo, VoipSession } from '../definitions';
-import { MediaCallWebRTCProcessor } from './MediaCallWebRTCProcessor';
 import RemoteStream from './RemoteStream';
+import { getUserMedia } from './getUserMedia';
 
 export type VoipEvents = Omit<CoreVoipEvents, 'ringing' | 'callestablished' | 'incomingcall'> & {
 	callestablished: ContactInfo;
@@ -56,14 +56,16 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 			userId: config.userId,
 			transport: (signal: MediaSignal) => config.sendSignalFn(signal),
 			processorFactories: {
-				webrtc: () => new MediaCallWebRTCProcessor(),
+				webrtc: (config) => new MediaCallWebRTCProcessor(config),
 			},
+			mediaStreamFactory: getUserMedia,
 		});
 
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 
 		this.session.on('newCall', ({ call }) => this.onNewCall(call));
 		this.session.on('acceptedCall', ({ call }) => this.onAcceptedCall(call));
+		this.session.on('endedCall', ({ call }) => this.onEndedCall(call));
 	}
 
 	public async init() {
@@ -114,6 +116,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	public async answer(): Promise<void> {
+		console.log('answer');
 		const call = this.session.getMainCall();
 		if (!call) {
 			throw new Error('No call available to answer');
@@ -123,6 +126,8 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	public async reject(): Promise<void> {
+		console.log('reject');
+
 		const call = this.session.getMainCall();
 		if (!call) {
 			throw new Error('No call available to reject');
@@ -132,6 +137,8 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	public async endCall(): Promise<void> {
+		console.log('endCall');
+
 		const call = this.session.getMainCall();
 		if (!call) {
 			throw new Error('No call available to hangup');
@@ -153,6 +160,8 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	public async changeAudioInputDevice(_constraints: MediaStreamConstraints): Promise<boolean> {
+		console.log('changeAudioInputDevice');
+
 		return true;
 		// if (!this.isBusy()) {
 		// 	console.warn('changeAudioInputDevice() : No session.');
@@ -173,6 +182,8 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	public switchAudioElement(audioElement: HTMLAudioElement | null): void {
+		console.log('switchAudioElement');
+
 		this.audioElement = audioElement;
 
 		if (this.remoteStream) {
@@ -286,14 +297,20 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		if (call.state === 'error') {
 			return 'ERROR';
 		}
-		if (call.state === 'active') {
+		if (['active', 'accepted'].includes(call.state)) {
 			return 'ONGOING';
 		}
-		if (call.role === 'callee') {
-			return 'INCOMING';
+		if (call.state === 'hangup') {
+			return null;
 		}
-		if (call.role === 'caller') {
-			return 'OUTGOING';
+
+		if (['none', 'ringing'].includes(call.state)) {
+			if (call.role === 'callee') {
+				return 'INCOMING';
+			}
+			if (call.role === 'caller') {
+				return 'OUTGOING';
+			}
 		}
 
 		return null;
@@ -360,6 +377,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	private onNewCall(call: IClientMediaCall): void {
+		console.log('onNewCall');
 		const contact = this.getCallContactInfo(call) as ContactInfo;
 
 		if (call.role === 'callee') {
@@ -371,12 +389,22 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	private onAcceptedCall(call: IClientMediaCall): void {
+		console.log('onAcceptedCall');
+
 		const remoteMediaStream = call.getRemoteMediaStream();
 		this.remoteStream = new RemoteStream(remoteMediaStream);
 		this.playRemoteStream();
 
 		const contact = this.getCallContactInfo(call) as ContactInfo;
 		this.emit('callestablished', contact);
+		this.emit('stateChanged');
+	}
+
+	private onEndedCall(_call: IClientMediaCall): void {
+		console.log('onEndedCall');
+
+		this.remoteStream?.clear();
+		this.emit('callterminated');
 		this.emit('stateChanged');
 	}
 
@@ -403,6 +431,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	// }
 
 	private async startCall(roomId: IRoom['_id']): Promise<void> {
+		console.log('startCall');
 		this.startingNewCall = true;
 		try {
 			this.emit('stateChanged');
@@ -420,6 +449,8 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	private playRemoteStream() {
+		console.log('playRemoteStream');
+
 		if (!this.remoteStream) {
 			console.warn(`Attempted to play missing remote media.`);
 			return;

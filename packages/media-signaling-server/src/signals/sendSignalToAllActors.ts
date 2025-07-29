@@ -3,12 +3,19 @@ import type { MediaSignalBody, MediaSignalType } from '@rocket.chat/media-signal
 
 import { sendSignalToActor } from './sendSignalToActor';
 
+type SendSignalToAllActorsOptions = {
+	// default false
+	onlyDefinedSessions?: boolean;
+	// default true for 'deliver' and 'request', or false for 'notify'
+	targetedSignal?: boolean;
+};
+
 function getActorData(
 	call: IMediaCall,
 	role: 'caller' | 'callee',
-	options: { onlyDefinedSessions?: boolean },
+	options: SendSignalToAllActorsOptions,
 ): { actor: MediaCallActor; role: 'caller' | 'callee' } | null {
-	const { onlyDefinedSessions = false } = options || {};
+	const { onlyDefinedSessions = false, targetedSignal = true } = options || {};
 
 	const actor = call[role];
 	if (actor?.type !== 'user') {
@@ -19,15 +26,25 @@ function getActorData(
 		return null;
 	}
 
+	if (!targetedSignal) {
+		const { sessionId, ...actorData } = actor;
+		return { actor: actorData, role };
+	}
+
 	return { actor, role };
 }
 
 export async function sendSignalToAllActors<T extends MediaSignalType>(
 	call: IMediaCall,
 	{ sequence, type, body }: { sequence: number; type: T; body: MediaSignalBody<T> },
-	options: { onlyDefinedSessions?: boolean },
+	options: SendSignalToAllActorsOptions = {},
 ): Promise<void> {
-	const actors = [getActorData(call, 'caller', options), getActorData(call, 'callee', options)].filter((data) => data) as {
+	const subOptions: SendSignalToAllActorsOptions = {
+		onlyDefinedSessions: options.onlyDefinedSessions ?? false,
+		targetedSignal: options.targetedSignal ?? ['deliver', 'request'].includes(type),
+	};
+
+	const actors = [getActorData(call, 'caller', subOptions), getActorData(call, 'callee', subOptions)].filter((data) => data) as {
 		actor: MediaCallActor;
 		role: 'caller' | 'callee';
 	}[];
