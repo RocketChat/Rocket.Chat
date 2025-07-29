@@ -1,4 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
 import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,8 +8,6 @@ import type { ComponentProps } from 'react';
 
 import ReviewStep from './ReviewStep';
 import * as stories from './ReviewStep.stories';
-import { WizardContext } from '../../../../../Wizard/WizardContext';
-import { StepsLinkedList } from '../../../../../Wizard/lib/StepsLinkedList';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

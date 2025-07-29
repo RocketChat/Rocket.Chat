@@ -1,10 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
+import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import ReviewStep from './ReviewStep';
 import { createFakeOutboundTemplate } from '../../../../../../../tests/mocks/data/outbound-message';
-import { WizardContext } from '../../../../../Wizard/WizardContext';
-import { StepsLinkedList } from '../../../../../Wizard/lib/StepsLinkedList';
 
 const steps = new StepsLinkedList([
 	{ id: 'test-step-1', title: 'Test Step 1' },
@@ -17,7 +16,7 @@ const mockWizardApi = {
 	currentStep: steps.head?.next ?? null,
 	next: () => undefined,
 	previous: () => undefined,
-	register: () => undefined,
+	register: () => () => undefined,
 	goTo: () => undefined,
 	resetNextSteps: () => undefined,
 };
