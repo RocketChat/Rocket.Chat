@@ -1,4 +1,4 @@
-import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, IUser, IRoom, IMediaCall } from '@rocket.chat/core-typings';
+import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, IUser, IMediaCall } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { IClientMediaCall, MediaSignal, MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/media-signaling';
 
@@ -20,13 +20,16 @@ type SessionError = {
 	contact: ContactInfo;
 };
 
-export type MediaCallsClientConfig = {
-	userId: IUser['_id'];
-	startCallFn: (params: { roomId: string; sessionId: string }) => Promise<IMediaCall>;
-	sendSignalFn: (signal: MediaSignal) => void;
+export type MediaCallsCallee = {
+	identifier: string;
+	identifierKind: 'user' | 'room' | 'extension';
 };
 
-export type MediaCallsCallee = { uid?: IUser['_id']; rid?: IRoom['_id']; extension?: string };
+export type MediaCallsClientConfig = {
+	userId: IUser['_id'];
+	startCallFn: (params: { sessionId: string } & MediaCallsCallee) => Promise<IMediaCall>;
+	sendSignalFn: (signal: MediaSignal) => void;
+};
 
 class MediaCallsClient extends Emitter<VoipEvents> {
 	public networkEmitter: Emitter<SignalingSocketEvents>;
@@ -89,18 +92,12 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 	public async call(callee: MediaCallsCallee): Promise<void> {
 		console.log('MediaCallsClient.call', callee);
-		if (!callee.rid) {
-			if (callee.uid || callee.extension) {
-				throw new Error('not-implemented');
-			}
-			throw new Error('Invalid Callee');
-		}
 
 		if (this.isBusy()) {
 			throw new Error('Session already exists');
 		}
 
-		await this.startCall(callee.rid);
+		await this.startCall(callee);
 	}
 
 	public async transfer(calleeURI: string): Promise<void> {
@@ -430,13 +427,13 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	// 	this.emit('stateChanged');
 	// }
 
-	private async startCall(roomId: IRoom['_id']): Promise<void> {
+	private async startCall(target: MediaCallsCallee): Promise<void> {
 		console.log('startCall');
 		this.startingNewCall = true;
 		try {
 			this.emit('stateChanged');
 
-			const call = await this.config.startCallFn({ roomId, sessionId: this.session.sessionId });
+			const call = await this.config.startCallFn({ sessionId: this.session.sessionId, ...target });
 
 			console.log('startCall', call);
 			const { _id: callId, callee } = call;

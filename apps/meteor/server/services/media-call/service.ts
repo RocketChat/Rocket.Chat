@@ -2,7 +2,7 @@ import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/
 import type { IUser, IMediaCall, IRoom } from '@rocket.chat/core-typings';
 import type { MediaSignal } from '@rocket.chat/media-signaling';
 import { processSignal, createCall, setSignalHandler } from '@rocket.chat/media-signaling-server';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
 	protected name = 'media-call';
@@ -17,6 +17,11 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	public async createInternalCall(caller: { uid: IUser['_id']; sessionId: string }, callee: { uid: IUser['_id'] }): Promise<IMediaCall> {
+		const user = await Users.findOneActiveById(callee.uid, { projection: { _id: 1 } });
+		if (!user) {
+			throw new Error('invalid-user');
+		}
+
 		return createCall(
 			{
 				type: 'user',
@@ -38,6 +43,27 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 
 		return this.createInternalCall(caller, { uid: calleeId });
+	}
+
+	public async callExtension(caller: { uid: IUser['_id']; sessionId: string }, extension: string): Promise<IMediaCall> {
+		const user = await Users.findOneByFreeSwitchExtension(extension, { projection: { _id: 1 } });
+		if (!user) {
+			throw new Error('invalid-user');
+		}
+
+		return createCall(
+			{
+				type: 'user',
+				id: caller.uid,
+				sessionId: caller.sessionId,
+			},
+			{ type: 'user', id: user._id },
+		);
+	}
+
+	public async callUser(caller: { uid: IUser['_id']; sessionId: string }, userId: IUser['_id']): Promise<IMediaCall> {
+		// For now every call is between two users
+		return this.createInternalCall(caller, { uid: userId });
 	}
 
 	private async sendSignal(toUid: IUser['_id'], signal: MediaSignal): Promise<void> {

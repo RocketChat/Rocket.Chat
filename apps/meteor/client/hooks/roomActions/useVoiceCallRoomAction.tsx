@@ -12,7 +12,7 @@ import { useVoipWarningModal } from '../useVoipWarningModal';
 
 export const useVoiceCallRoomAction = () => {
 	const { t } = useTranslation();
-	const { _id: rid, uids = [] } = useRoom();
+	const { uids = [] } = useRoom();
 	const ownUserId = useUserId();
 	const canStartVoiceCall = usePermission('view-user-voip-extension');
 	const dispatchWarning = useVoipWarningModal();
@@ -48,7 +48,7 @@ export const useVoiceCallRoomAction = () => {
 
 	const handleOnClick = useEffectEvent(() => {
 		if (canMakeVoipCall) {
-			return makeCall({ rid, extension: remoteUser?.freeSwitchExtension });
+			return makeCall(remoteUser?.freeSwitchExtension as string);
 		}
 		dispatchWarning();
 	});

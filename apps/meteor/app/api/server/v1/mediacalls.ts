@@ -1,8 +1,7 @@
 import { MediaCall } from '@rocket.chat/core-services';
+import type { IMediaCall } from '@rocket.chat/core-typings';
 import { isMediaCallsStartProps, isMediaCallsSignalProps } from '@rocket.chat/rest-typings';
 
-import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -10,18 +9,34 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isMediaCallsStartProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 } },
 	{
 		async post() {
-			const { roomId, sessionId } = this.bodyParams;
+			const { sessionId, identifier, identifierKind } = this.bodyParams;
 			const { userId } = this;
-			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
+
+			if (!userId) {
 				return API.v1.failure('invalid-params');
 			}
 
-			if (!(await hasPermissionAsync(userId, 'call-management', roomId))) {
-				return API.v1.forbidden();
+			// #ToDo: Validate access and permissions
+
+			// if (!(await hasPermissionAsync(userId, 'call-management',  roomId))) {
+			// 	return API.v1.forbidden();
+			// }
+
+			const caller = { uid: userId, sessionId };
+
+			const functions: Record<string, () => Promise<IMediaCall>> = {
+				room: () => MediaCall.callRoom(caller, identifier),
+				user: () => MediaCall.callUser(caller, identifier),
+				extension: () => MediaCall.callExtension(caller, identifier),
+			};
+			const startFn = functions[identifierKind];
+
+			if (!startFn) {
+				return API.v1.failure('invalid-params');
 			}
 
 			try {
-				const call = await MediaCall.callRoom({ uid: userId, sessionId }, roomId);
+				const call = await startFn();
 
 				return API.v1.success({
 					call,
@@ -35,7 +50,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'media-calls.signal',
-	{ authRequired: true, validateParams: isMediaCallsSignalProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 } },
+	{ authRequired: true, validateParams: isMediaCallsSignalProps, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 60000 } },
 	{
 		async post() {
 			const { signal } = this.bodyParams;

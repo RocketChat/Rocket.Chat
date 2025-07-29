@@ -3,21 +3,25 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type MediaCallsStartProps = { roomId: string; sessionId: string };
+export type MediaCallsStartProps = { sessionId: string; identifier: string; identifierKind: 'room' | 'user' | 'extension' };
 
 const mediaCallsStartPropsSchema: JSONSchemaType<MediaCallsStartProps> = {
 	type: 'object',
 	properties: {
-		roomId: {
-			type: 'string',
-			nullable: false,
-		},
 		sessionId: {
 			type: 'string',
 			nullable: false,
 		},
+		identifier: {
+			type: 'string',
+			nullable: false,
+		},
+		identifierKind: {
+			type: 'string',
+			nullable: false,
+		},
 	},
-	required: ['roomId', 'sessionId'],
+	required: ['sessionId', 'identifier', 'identifierKind'],
 	additionalProperties: true,
 };
 

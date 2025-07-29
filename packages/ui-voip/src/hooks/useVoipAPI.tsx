@@ -5,7 +5,7 @@ import { VoipContext, isVoipContextReady } from '../contexts/VoipContext';
 import MediaCallsClient from '../lib/MediaCallsClient';
 
 type VoipAPI = {
-	makeCall(callee: { uid?: string; rid?: string; extension?: string } | string): void;
+	makeCall(callee: string): void;
 	endCall(): void;
 	register(): Promise<void>;
 	unregister(): Promise<void>;
@@ -47,13 +47,7 @@ export const useVoipAPI = (): VoipAPI => {
 			const mediaCallsClient = voipClient as MediaCallsClient;
 
 			return {
-				makeCall: (callee) => {
-					if (typeof callee === 'string') {
-						return mediaCallsClient.call({ extension: callee });
-					}
-
-					return mediaCallsClient.call(callee);
-				},
+				makeCall: (callee) => mediaCallsClient.call({ identifier: callee, identifierKind: 'extension' }),
 				endCall: () => mediaCallsClient.endCall(),
 				register: NOOP,
 				unregister: NOOP,
@@ -68,12 +62,7 @@ export const useVoipAPI = (): VoipAPI => {
 		}
 
 		return {
-			makeCall: (callee) => {
-				if (typeof callee === 'string') {
-					return voipClient.call(callee);
-				}
-				return voipClient.call(callee.extension as string);
-			},
+			makeCall: voipClient.call,
 			endCall: voipClient.endCall,
 			register: voipClient.register,
 			unregister: voipClient.unregister,
