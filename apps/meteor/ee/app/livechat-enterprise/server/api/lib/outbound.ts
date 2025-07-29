@@ -56,30 +56,13 @@ export class OutboundMessageProviderService implements IOutboundMessageProviderS
 		return manager;
 	}
 
-	public sendMessage(
-		providerId: string,
-		{
-			to,
-			type,
-			templateProviderPhoneNumber,
-			template,
-		}: {
-			to: string;
-			type: ValidOutboundProvider;
-			templateProviderPhoneNumber: string;
-			template: IOutboundMessage;
-		},
-	) {
+	public sendMessage(providerId: string, message: IOutboundMessage) {
 		const provider = this.provider.findOneByProviderId(providerId);
 		if (!provider) {
 			throw new Error('error-invalid-provider');
 		}
 
-		if (provider.type !== type) {
-			throw new Error('error-invalid-provider-type');
-		}
-
-		return this.getProviderManager().sendOutboundMessage(provider.appId, provider.type, { to, templateProviderPhoneNumber, template });
+		return this.getProviderManager().sendOutboundMessage(provider.appId, provider.type, message);
 	}
 }
 

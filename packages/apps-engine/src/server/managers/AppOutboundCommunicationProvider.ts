@@ -1,8 +1,8 @@
 import type { AppAccessorManager } from '.';
 import { AppMethod } from '../../definition/metadata';
 import type { IOutboundMessage, IOutboundMessageProviders, ProviderMetadata } from '../../definition/outboundComunication';
-import { AppOutboundProcessError } from '../errors/AppOutboundProcessError';
 import type { ProxiedApp } from '../ProxiedApp';
+import { AppOutboundProcessError } from '../errors/AppOutboundProcessError';
 import type { AppLogStorage } from '../storage';
 
 export class OutboundMessageProvider {
@@ -19,15 +19,7 @@ export class OutboundMessageProvider {
 		return this.runTheCode<ProviderMetadata>(AppMethod._OUTBOUND_GET_PROVIDER_METADATA, logStorage, accessors, []);
 	}
 
-	public async runSendOutboundMessage(
-		logStorage: AppLogStorage,
-		accessors: AppAccessorManager,
-		body: {
-			to: string;
-			templateProviderPhoneNumber: string;
-			template: IOutboundMessage;
-		},
-	): Promise<void> {
+	public async runSendOutboundMessage(logStorage: AppLogStorage, accessors: AppAccessorManager, body: IOutboundMessage): Promise<void> {
 		await this.runTheCode(AppMethod._OUTBOUND_SEND_MESSAGE, logStorage, accessors, [body]);
 	}
 

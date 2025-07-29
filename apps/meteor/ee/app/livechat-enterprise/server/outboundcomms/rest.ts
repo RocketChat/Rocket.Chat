@@ -68,19 +68,14 @@ const GETOutboundProviderBadRequestError = {
 };
 export const GETOutboundProviderBadRequestErrorSchema = ajv.compile<GenericErrorResponse>(GETOutboundProviderBadRequestError);
 
-type POSTOutboundMessageParamsType = {
-	to: string;
-	type: ValidOutboundProvider;
-	templateProviderPhoneNumber: string;
-	template: IOutboundMessage;
-};
+type POSTOutboundMessageParamsType = IOutboundMessage;
 
 const POSTOutboundMessageSchema = {
 	type: 'object',
 	required: ['to', 'type'],
 	properties: {
-		to: { type: 'string' },
-		type: { type: 'string', enum: ['phone', 'email'] },
+		to: { type: 'string', minLength: 1 },
+		type: { type: 'string' },
 		templateProviderPhoneNumber: { type: 'string' },
 		template: {
 			type: 'object',

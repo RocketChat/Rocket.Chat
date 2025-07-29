@@ -120,15 +120,7 @@ export class AppOutboundCommunicationProviderManager {
 		return providerInfo.runGetProviderMetadata(this.manager.getLogStorage(), this.accessors);
 	}
 
-	public sendOutboundMessage(
-		appId: string,
-		providerType: ValidOutboundProvider,
-		body: {
-			to: string;
-			templateProviderPhoneNumber: string;
-			template: IOutboundMessage;
-		},
-	) {
+	public sendOutboundMessage(appId: string, providerType: ValidOutboundProvider, body: IOutboundMessage) {
 		const providerInfo = this.outboundMessageProviders.get(appId)?.get(providerType);
 		if (!providerInfo) {
 			throw new Error('provider-not-registered');
