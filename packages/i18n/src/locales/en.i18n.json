@@ -1088,6 +1088,7 @@
   "Cloud_workspace_support": "If you have trouble with a cloud service, please try to sync first.  Should the issue persist, please open a support ticket in the Cloud Console.",
   "Collaborative": "Collaborative",
   "Collapse": "Collapse",
+  "Collapse_all": "Collapse All",
   "Collapse_Embedded_Media_By_Default": "Collapse Embedded Media by Default",
   "Color": "Color",
   "Colors": "Colors",
