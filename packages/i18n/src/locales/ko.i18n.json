@@ -62,7 +62,6 @@
   "API_Tokenpass_URL_Description": "예) `https://domain.com` (후행 슬래시 제외)",
   "API_Upper_Count_Limit": "최대 레코드 수",
   "API_Upper_Count_Limit_Description": "REST API가 반환해야 하는 최대 레코드 수",
-  "API_Use_REST_For_DDP_Calls": "Meteor 호출에 웹 소켓 대신 REST를 사용하십시오.",
   "API_User_Limit": " 채널에 추가할 수 있는 사용자 수 제한",
   "API_Wordpress_URL": "워드프레스 URL",
   "APIs": "APIs",

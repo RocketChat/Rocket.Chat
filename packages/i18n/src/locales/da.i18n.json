@@ -62,7 +62,6 @@
   "API_Tokenpass_URL_Description": "Eksempel: `https://domain.com` (ingen efterfølgende skråstreg)",
   "API_Upper_Count_Limit": "Maks. antal resultater",
   "API_Upper_Count_Limit_Description": "Hvad er det maksimale antal poster, som REST API skal returnere (når det ikke er ubegrænset)?",
-  "API_Use_REST_For_DDP_Calls": "Brug REST i stedet for websocket til Meteor-kald",
   "API_User_Limit": "Brugergrænse for at føje alle brugere til en kanal",
   "API_Wordpress_URL": "WordPress-url",
   "APIs": "API'er",

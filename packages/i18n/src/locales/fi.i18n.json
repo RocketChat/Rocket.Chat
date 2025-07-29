@@ -66,7 +66,6 @@
   "API_Tokenpass_URL_Description": "Esimerkki: `https://domain.com` (ilman kenoviivaa lopussa)",
   "API_Upper_Count_Limit": "Tietueiden enimmäismäärä",
   "API_Upper_Count_Limit_Description": "Mikä on enimmäismäärä tietueita, jotka REST APIn pitäisi palauttaa (jos ei rajoittamaton)?",
-  "API_Use_REST_For_DDP_Calls": "Käytä RESTiä Meteor-puheluihin websocketin sijasta",
   "API_User_Limit": "Käyttäjärajoitus kaikkien käyttäjien lisäämiselle kanavalle",
   "API_Wordpress_URL": "WordPress-URL-osoite",
   "APIs": "APIt",
