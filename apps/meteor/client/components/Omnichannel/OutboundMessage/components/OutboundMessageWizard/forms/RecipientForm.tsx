@@ -139,7 +139,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 		}
 
 		if (!updatedProvider) {
-			throw new FormFetchError('error--provider-not-found');
+			throw new FormFetchError('error-provider-not-found');
 		}
 
 		onSubmit({ ...values, provider: updatedProvider, contact: updatedContact });
