@@ -40,6 +40,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 	const contextualBar = useRouteParameter('contextualBar');
+	const { instanceId: instanceLogsFilter } = router.getSearchParameters();
 	const appData = useAppInfo(id, context || '');
 	const compactMode = useCompactMode();
 
@@ -86,6 +87,14 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	} = settingsFormMethods;
 
 	const logsFilterFormMethods = useAppLogsFilterForm();
+
+	if (instanceLogsFilter) {
+		logsFilterFormMethods.setValue('instance', instanceLogsFilter);
+		router.navigate({
+			name: 'marketplace',
+			params: { ...router.getRouteParameters() },
+		});
+	}
 
 	const saveAppSettings = useCallback(
 		async (data: AppDetailsPageFormData) => {
