@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import { isRoomFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useSafeRefCallback, imperativeModal } from '@rocket.chat/ui-client';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -21,6 +21,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import ScheduleComposerModal from './ScheduleComposerModal/ScheduleComposerModal';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -44,8 +45,6 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import { imperativeModal } from '@rocket.chat/ui-client';
-import ScheduleComposerModal from './ScheduleComposerModal/ScheduleComposerModal';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -380,31 +379,31 @@ const MessageBox = ({
 		label: 'Schedule' as const, // Temporary until 'Schedule' is added to translations
 		icon: 'clock' as const,
 		prompt: (composerApi: ComposerAPI) => {
-		  const onClose = () => {
-			imperativeModal.close();
-			composerApi.focus();
-		  };
-	
-		  const onConfirm = () => {
-			// Clear the composer after scheduling
-			composerApi.clear();
-		  };
-	
-		  imperativeModal.open({
-			component: ScheduleComposerModal,
-			props: {
-			  onConfirm,
-			  onClose,
-			  value: composerApi.text ?? '', // Pass the message text
-			  rid: room._id, // Pass the room ID
-			  tmid, // Pass the thread ID (if any)
-			  tshow: composerApi.tshow, // Pass tshow
-			  previewUrls: composerApi.previewUrls, // Pass previewUrls
-			  isSlashCommandAllowed: composerApi.isSlashCommandAllowed, // Pass isSlashCommandAllowed
-			},
-		  });
+			const onClose = () => {
+				imperativeModal.close();
+				composerApi.focus();
+			};
+
+			const onConfirm = () => {
+				// Clear the composer after scheduling
+				composerApi.clear();
+			};
+
+			imperativeModal.open({
+				component: ScheduleComposerModal,
+				props: {
+					onConfirm,
+					onClose,
+					value: composerApi.text ?? '', // Pass the message text
+					rid: room._id, // Pass the room ID
+					tmid, // Pass the thread ID (if any)
+					tshow: composerApi.tshow, // Pass tshow
+					previewUrls: composerApi.previewUrls, // Pass previewUrls
+					isSlashCommandAllowed: composerApi.isSlashCommandAllowed, // Pass isSlashCommandAllowed
+				},
+			});
 		},
-	  };
+	};
 
 	return (
 		<>

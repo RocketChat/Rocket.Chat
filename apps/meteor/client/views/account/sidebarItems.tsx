@@ -22,6 +22,11 @@ export const {
 		icon: 'customize',
 	},
 	{
+		href: '/account/scheduled-messages',
+		i18nLabel: 'Scheduled_Messages',
+		icon: 'clock',
+	},
+	{
 		href: '/account/security',
 		i18nLabel: 'Security',
 		icon: 'lock',

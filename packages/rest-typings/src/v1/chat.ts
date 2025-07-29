@@ -1022,6 +1022,16 @@ const ChatDeleteScheduledMessageSchema = {
 
 export const isChatDeleteScheduledMessageProps = ajv.compile<ChatDeleteScheduledMessage>(ChatDeleteScheduledMessageSchema);
 
+type ChatGetScheduledMessages = Record<string, never>;
+
+const ChatGetScheduledMessagesSchema = {
+	type: 'object',
+	properties: {},
+	additionalProperties: false,
+};
+
+export const isChatGetScheduledMessagesProps = ajv.compile<ChatGetScheduledMessages>(ChatGetScheduledMessagesSchema);
+
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
 		POST: (params: ChatSendMessage) => {
@@ -1190,6 +1200,11 @@ export type ChatEndpoints = {
 			_id: string;
 			ts: string;
 			message: IScheduledMessage;
+		};
+	};
+	'/v1/chat.getScheduledMessages': {
+		GET: (params: ChatGetScheduledMessages) => {
+			messages: IScheduledMessage[];
 		};
 	};
 };
