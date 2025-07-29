@@ -4397,7 +4397,6 @@
   "error-message-editing-blocked": "La modification de message est bloquée",
   "error-message-size-exceeded": "La taille du message dépasse Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Vous devez fournir le lien [unsubscribe].",
-  "error-no-agents-online-in-department": "Aucun agent en ligne dans le département",
   "error-no-message-for-unread": "Il n'y a aucun message à marquer comme non lu",
   "error-no-owner-channel": "Seuls les propriétaires peuvent ajouter ce canal à l’équipe",
   "error-no-permission-team-channel": "Vous n'avez pas l'autorisation d'ajouter ce canal à l'équipe",

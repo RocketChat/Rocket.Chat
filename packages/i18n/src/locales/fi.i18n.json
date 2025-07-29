@@ -5084,7 +5084,6 @@
   "error-message-editing-blocked": "Viestin muokkaus on estetty",
   "error-message-size-exceeded": "Viestin koko on yli Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Sinun on annettava [unsubscribe] -linkki.",
-  "error-no-agents-online-in-department": "Osastolla ei ole paikalla olevia agentteja",
   "error-no-message-for-unread": "Ei viestejä, joita voi merkitä lukemattomiksi",
   "error-no-owner-channel": "Vain omistajat voivat lisätä tämän kanavan tiimille",
   "error-no-permission-team-channel": "Sinulla ei ole oikeutta lisätä tätä kanavaa tiimille",
