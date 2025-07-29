@@ -140,6 +140,7 @@ export interface IDocumentMapStore<T extends { _id: string }> {
 	 * @param predicate - A function that takes a document and returns true if it matches the condition.
 	 */
 	remove(predicate: (record: T) => boolean): void;
+	count(predicate: (record: T) => boolean): number;
 }
 
 /**
@@ -295,5 +296,14 @@ export const createDocumentMapStore = <T extends { _id: string }>({
 				return { records };
 			});
 			onInvalidate?.(...affected);
+		},
+		count: (predicate: (record: T) => boolean) => {
+			let results = 0;
+			for (const record of get().records.values()) {
+				if (predicate(record)) {
+					results += 1;
+				}
+			}
+			return results;
 		},
 	}));

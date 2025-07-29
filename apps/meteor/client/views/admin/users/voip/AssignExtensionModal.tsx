@@ -1,4 +1,19 @@
-import { Button, Modal, Select, Field, FieldGroup, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
+import {
+	Button,
+	Modal,
+	Select,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	Box,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -83,11 +98,11 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 			aria-labelledby={modalTitleId}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit((data) => handleAssignment.mutateAsync(data))} {...props} />}
 		>
-			<Modal.Header>
-				<Modal.Title id={modalTitleId}>{t('Assign_extension')}</Modal.Title>
-				<Modal.Close aria-label={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle id={modalTitleId}>{t('Assign_extension')}</ModalTitle>
+				<ModalClose aria-label={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={usersWithoutExtensionsId}>{t('User')}</FieldLabel>
@@ -133,15 +148,15 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary disabled={!selectedUsername || !selectedExtension} loading={isSubmitting} type='submit'>
 						{t('Associate')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

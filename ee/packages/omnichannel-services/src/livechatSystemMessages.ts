@@ -1,5 +1,5 @@
 import type { IOmnichannelSystemMessage, MessageTypesValues } from '@rocket.chat/core-typings';
-import formatDistance from 'date-fns/formatDistance';
+import { formatDistance } from 'date-fns/formatDistance';
 import moment from 'moment';
 
 const livechatSystemMessagesMap = new Map<

@@ -26,6 +26,7 @@ import {
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
 } from './managers';
+import { AppOutboundCommunicationProviderManager } from './managers/AppOutboundCommunicationProviderManager';
 import { AppRuntimeManager } from './managers/AppRuntimeManager';
 import { AppSignatureManager } from './managers/AppSignatureManager';
 import { UIActionButtonManager } from './managers/UIActionButtonManager';
@@ -97,6 +98,8 @@ export class AppManager {
 
 	private readonly videoConfProviderManager: AppVideoConfProviderManager;
 
+	private readonly outboundCommunicationProviderManager: AppOutboundCommunicationProviderManager;
+
 	private readonly signatureManager: AppSignatureManager;
 
 	private readonly runtime: AppRuntimeManager;
@@ -147,6 +150,7 @@ export class AppManager {
 		this.schedulerManager = new AppSchedulerManager(this);
 		this.uiActionButtonManager = new UIActionButtonManager(this);
 		this.videoConfProviderManager = new AppVideoConfProviderManager(this);
+		this.outboundCommunicationProviderManager = new AppOutboundCommunicationProviderManager(this);
 		this.signatureManager = new AppSignatureManager(this);
 		this.runtime = new AppRuntimeManager(this);
 
@@ -196,6 +200,10 @@ export class AppManager {
 
 	public getVideoConfProviderManager(): AppVideoConfProviderManager {
 		return this.videoConfProviderManager;
+	}
+
+	public getOutboundCommunicationProviderManager(): AppOutboundCommunicationProviderManager {
+		return this.outboundCommunicationProviderManager;
 	}
 
 	public getLicenseManager(): AppLicenseManager {
@@ -1081,6 +1089,7 @@ export class AppManager {
 		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		this.videoConfProviderManager.unregisterProviders(app.getID());
+		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID());
 	}
 
 	/**
@@ -1154,6 +1163,7 @@ export class AppManager {
 			this.listenerManager.registerListeners(app);
 			this.listenerManager.releaseEssentialEvents(app);
 			this.videoConfProviderManager.registerProviders(app.getID());
+			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
 			await this.purgeAppConfig(app);
 		}

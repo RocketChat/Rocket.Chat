@@ -13,6 +13,7 @@ import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
 const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
@@ -221,14 +222,14 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	async getAppsStatusInInstances(): Promise<AppStatusReport> {
 		const instances = await this.getInstances();
 
+		if (instances.length < 2) {
+			throw new AppsEngineNoNodesFoundError();
+		}
+
 		const control: Promise<void>[] = [];
 		const statusByApp: AppStatusReport = {};
 
 		instances.forEach((instance) => {
-			if (instance.local) {
-				return;
-			}
-
 			const { id: instanceId } = instance;
 
 			control.push(
@@ -248,7 +249,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 							statusByApp[appId] = [];
 						}
 
-						statusByApp[appId].push({ instanceId, status });
+						statusByApp[appId].push({ instanceId, isLocal: instance.local, status });
 					});
 				})(),
 			);

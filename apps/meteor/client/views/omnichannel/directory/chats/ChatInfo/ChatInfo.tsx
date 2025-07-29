@@ -1,20 +1,28 @@
-import type { ILivechatCustomField, IOmnichannelRoom, IVisitor, Serialized } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
+import {
+	useToastMessageDispatch,
+	useRoute,
+	useUserSubscription,
+	useTranslation,
+	usePermission,
+	useEndpoint,
+} from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 import MarkdownText from '../../../../../components/MarkdownText';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
+import { omnichannelQueryKeys } from '../../../../../lib/queryKeys';
 import CustomField from '../../../components/CustomField';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
@@ -32,8 +40,14 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const formatDateAndTime = useFormatDateAndTime();
-	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');
-	const [customFields, setCustomFields] = useState<Serialized<ILivechatCustomField>[]>([]);
+	const getLivechatCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
+	const { data: customFields = [] } = useQuery({
+		queryKey: omnichannelQueryKeys.livechat.customFields(),
+		queryFn: async () => {
+			const { customFields } = await getLivechatCustomFields();
+			return customFields;
+		},
+	});
 	const formatDuration = useFormatDuration();
 
 	const { data: room } = useOmnichannelRoomInfo(id); // FIXME: `room` is serialized, but we need to deserialize it
@@ -54,7 +68,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 		livechatData,
 		source,
 		queuedAt,
-	} = room || { v: {} };
+	} = room ?? {};
 
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
@@ -65,13 +79,6 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 	const queueStartedAt = queuedAt || ts;
 
 	const queueTime = useMemo(() => formatQueuedAt(room), [room]);
-
-	useEffect(() => {
-		if (allCustomFields) {
-			const { customFields: customFieldsAPI } = allCustomFields;
-			setCustomFields(customFieldsAPI);
-		}
-	}, [allCustomFields, stateCustomFields]);
 
 	const checkIsVisibleAndScopeRoom = (key: string) => {
 		const field = customFields.find(({ _id }) => _id === key);

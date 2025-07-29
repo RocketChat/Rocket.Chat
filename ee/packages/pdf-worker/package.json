@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.3.11",
+	"version": "0.3.12-rc.2",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -24,7 +24,7 @@
 		"emoji-assets": "^7.0.1",
 		"emoji-toolkit": "^7.0.1",
 		"moment": "^2.30.1",
-		"moment-timezone": "^0.5.46",
+		"moment-timezone": "^0.5.48",
 		"react": "~18.3.1"
 	},
 	"devDependencies": {
@@ -34,14 +34,15 @@
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
 		"@storybook/react": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
+		"@testing-library/dom": "~10.4.0",
 		"@testing-library/react": "~16.0.1",
 		"@types/emojione": "^2.2.9",
 		"@types/jest": "~29.5.14",
-		"@types/react": "~18.3.17",
-		"@types/react-dom": "~18.3.5",
+		"@types/react": "~18.3.23",
+		"@types/react-dom": "~18.3.7",
 		"buffer": "~6.0.3",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
+		"jest": "~30.0.2",
 		"react-dom": "~18.3.1",
 		"storybook": "^8.6.14",
 		"typescript": "~5.8.3"
