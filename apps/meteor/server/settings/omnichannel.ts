@@ -688,14 +688,6 @@ await settingsRegistry.addGroup('SMS', async function () {
 				key: 'twilio',
 				i18nLabel: 'Twilio',
 			},
-			{
-				key: 'voxtelesys',
-				i18nLabel: 'Voxtelesys',
-			},
-			{
-				key: 'mobex',
-				i18nLabel: 'Mobex',
-			},
 		],
 		i18nLabel: 'Service',
 	});
