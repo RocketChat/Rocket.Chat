@@ -200,7 +200,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, matrixUserId);
+			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
+
+			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
 
 			await Messages.setFederationEventIdById(message._id, result.eventId);
 
@@ -213,6 +215,18 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async sendReaction(messageId: string, reaction: string, user: IUser): Promise<void> {
 		try {
+			const matrixDomain = await this.getMatrixDomain();
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
+			if (existingMatrixUserId) {
+				const userDomain = existingMatrixUserId.split(':')[1];
+				if (userDomain && userDomain !== matrixDomain) {
+					this.logger.debug(
+						`User ${existingMatrixUserId} is from external domain ${userDomain}, skipping federation notification to prevent loop`,
+					);
+					return;
+				}
+			}
+
 			const message = await Messages.findOneById(messageId);
 			if (!message) {
 				throw new Error(`Message ${messageId} not found`);
@@ -228,11 +242,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
 			}
 
-			const matrixDomain = await this.getMatrixDomain();
-			const matrixUserId = `@${user.username}:${matrixDomain}`;
-			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
-			if (!existingMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
+			let actualMatrixUserId = existingMatrixUserId;
+			if (!actualMatrixUserId) {
+				actualMatrixUserId = `@${user.username}:${matrixDomain}`;
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, actualMatrixUserId, true, matrixDomain);
 			}
 
 			if (!this.homeserverServices) {
@@ -242,7 +255,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const reactionKey = emojione.shortnameToUnicode(reaction);
 
-			const eventId = await this.homeserverServices.message.sendReaction(matrixRoomId, matrixEventId, reactionKey, matrixUserId);
+			const eventId = await this.homeserverServices.message.sendReaction(matrixRoomId, matrixEventId, reactionKey, actualMatrixUserId);
 
 			await Messages.setFederationReactionEventId(user.username || '', messageId, reaction, eventId);
 
@@ -255,6 +268,18 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async removeReaction(messageId: string, reaction: string, user: IUser): Promise<void> {
 		try {
+			const matrixDomain = await this.getMatrixDomain();
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
+			if (existingMatrixUserId) {
+				const userDomain = existingMatrixUserId.split(':')[1];
+				if (userDomain && userDomain !== matrixDomain) {
+					this.logger.debug(
+						`User ${existingMatrixUserId} is from external domain ${userDomain}, skipping federation notification to prevent loop`,
+					);
+					return;
+				}
+			}
+
 			const message = await Messages.findOneById(messageId);
 			if (!message) {
 				throw new Error(`Message ${messageId} not found`);
@@ -270,9 +295,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
 			}
 
-			const matrixDomain = await this.getMatrixDomain();
-			const matrixUserId = `@${user.username}:${matrixDomain}`;
-
 			if (!this.homeserverServices) {
 				this.logger.warn('Homeserver services not available, skipping reaction removal');
 				return;
@@ -280,11 +302,18 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const reactionKey = emojione.shortnameToUnicode(reaction);
 
-			const eventId = await this.homeserverServices.message.unsetReaction(matrixRoomId, matrixEventId, reactionKey, matrixUserId);
+			let actualMatrixUserId = existingMatrixUserId;
+			if (!actualMatrixUserId) {
+				actualMatrixUserId = `@${user.username}:${matrixDomain}`;
+			}
 
-			await Messages.unsetFederationReactionEventId(eventId, messageId, reaction);
+			const eventId = await this.homeserverServices.message.unsetReaction(matrixRoomId, matrixEventId, reactionKey, actualMatrixUserId);
 
-			this.logger.debug('Reaction removed from Matrix successfully:', eventId);
+			if (eventId) {
+				await Messages.unsetFederationReactionEventId(eventId, messageId, reaction);
+			} else {
+				this.logger.warn('No reaction event found to remove in Matrix');
+			}
 		} catch (error) {
 			this.logger.error('Failed to remove reaction from Matrix:', error);
 			throw error;
