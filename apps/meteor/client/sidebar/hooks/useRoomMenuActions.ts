@@ -1,7 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUserSubscription } from '@rocket.chat/ui-contexts';
-import type { Fields } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,12 +9,6 @@ import { useToggleFavoriteAction } from '../../hooks/menuActions/useToggleFavori
 import { useToggleReadAction } from '../../hooks/menuActions/useToggleReadAction';
 import { useHideRoomAction } from '../../hooks/useHideRoomAction';
 import { useOmnichannelPrioritiesMenu } from '../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
-
-const fields: Fields = {
-	f: true,
-	t: true,
-	name: true,
-};
 
 type RoomMenuActionsProps = {
 	rid: string;
@@ -37,7 +30,7 @@ export const useRoomMenuActions = ({
 	hideDefaultOptions,
 }: RoomMenuActionsProps): { title: string; items: GenericMenuItemProps[] }[] => {
 	const { t } = useTranslation();
-	const subscription = useUserSubscription(rid, fields);
+	const subscription = useUserSubscription(rid);
 
 	const isFavorite = Boolean(subscription?.f);
 	const canLeaveChannel = usePermission('leave-c');

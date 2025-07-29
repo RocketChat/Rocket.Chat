@@ -6042,7 +6042,6 @@
   "error-message-editing-blocked": "Meddelanderedigering är blockerad",
   "error-message-size-exceeded": "Meddelandestorleken överstiger Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Du måste ge en [unsubscribe]-länk.",
-  "error-no-agents-online-in-department": "Inga agenter online i avdelningen",
   "error-no-message-for-unread": "Det finns inga meddelanden att markera som olästa",
   "error-no-owner-channel": "Det är bara ägare som kan lägga till den här kanalen i teamet",
   "error-no-permission-team-channel": "Du har inte behörighet att lägga till kanalen i teamet",

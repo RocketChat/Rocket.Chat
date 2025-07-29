@@ -4536,7 +4536,6 @@
   "error-message-editing-blocked": "La edición de mensajes está bloqueada",
   "error-message-size-exceeded": "El tamaño de mensaje excede el máximo: Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Debe proporcionar el enlace [unsubscribe].",
-  "error-no-agents-online-in-department": "No hay agentes en línea en el departamento",
   "error-no-message-for-unread": "No hay mensajes para marcar como no leídos",
   "error-no-owner-channel": "Solo los propietarios pueden añadir este canal al equipo",
   "error-no-permission-team-channel": "No tienes permiso para añadir este canal al equipo",

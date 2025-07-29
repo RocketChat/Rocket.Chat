@@ -70,7 +70,7 @@ roomCoordinator.add(
 				return true;
 			}
 
-			const subscription = Subscriptions.findOne({ rid: room._id });
+			const subscription = Subscriptions.state.find((record) => record.rid === room._id);
 			return !subscription;
 		},
 
