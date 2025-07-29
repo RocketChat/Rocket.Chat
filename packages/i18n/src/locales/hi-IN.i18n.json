@@ -66,7 +66,6 @@
   "API_Tokenpass_URL_Description": "उदाहरण: `https://domain.com` (अनुगामी स्लैश को छोड़कर)",
   "API_Upper_Count_Limit": "अधिकतम रिकार्ड राशि",
   "API_Upper_Count_Limit_Description": "REST API को अधिकतम कितने रिकॉर्ड लौटाने चाहिए (जब असीमित न हो)?",
-  "API_Use_REST_For_DDP_Calls": "उल्का कॉल के लिए वेबसोकेट के बजाय REST का उपयोग करें",
   "API_User_Limit": "सभी उपयोगकर्ताओं को चैनल में जोड़ने के लिए उपयोगकर्ता सीमा",
   "API_Wordpress_URL": "वर्डप्रेस यूआरएल",
   "APIs": "शहद की मक्खी",
