@@ -28,11 +28,6 @@ export const createGeneralSettings = () =>
 				enableQuery: { _id: 'API_Enable_CORS', value: true },
 			});
 
-			await this.add('API_Use_REST_For_DDP_Calls', true, {
-				type: 'boolean',
-				public: true,
-			});
-
 			// Should enforce the permission on next Major and remove this setting
 			await this.add('API_Apply_permission_view-outside-room_on_users-list', false, {
 				type: 'boolean',
