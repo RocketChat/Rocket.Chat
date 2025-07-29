@@ -176,11 +176,14 @@ jobs:
       - name: Run remote command
         run: |
           BRANCH_NAME="${{ github.ref_name }}"
-          SSH_OPTS="-o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa,ecdsa-sha2-nistp256,ssh-ed25519,sk-ecdsa-sha2-nistp256@openssh.com,sk-ssh-ed25519@openssh.com -o PubkeyAcceptedKeyTypes=+ssh-rsa,ecdsa-sha2-nistp256,ssh-ed25519,sk-ecdsa-sha2-nistp256@openssh.com,sk-ssh-ed25519@openssh.com"
+    
+          # Explicitly exclude sk-* algorithms and only use standard ones
+          SSH_OPTS="-o StrictHostKeyChecking=no -o HostKeyAlgorithms=ssh-rsa,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,rsa-sha2-256,rsa-sha2-512 -o PubkeyAcceptedKeyTypes=ssh-rsa,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,rsa-sha2-256,rsa-sha2-512"
+    
           if [[ "$BRANCH_NAME" == "ut-dev" ]]; then
           ssh $SSH_OPTS -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "/usr/scripts/update_image.sh dev $image_tag"
-          elif [[ "$BRANCH_NAME" == "ut-test" ]];then
+          elif [[ "$BRANCH_NAME" == "ut-test" ]]; then
           ssh $SSH_OPTS -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "/usr/scripts/update_image.sh test $image_tag"
-          elif [[ "$BRANCH_NAME" == "ut-stage" ]];then
+          elif [[ "$BRANCH_NAME" == "ut-stage" ]]; then
           ssh $SSH_OPTS -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "/usr/scripts/update_image.sh stage $image_tag"
           fi
