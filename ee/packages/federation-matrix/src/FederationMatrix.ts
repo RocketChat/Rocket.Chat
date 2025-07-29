@@ -40,7 +40,26 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
-		const config = new ConfigService();
+		const config = new ConfigService({
+			database: {
+				uri: process.env.MONGODB_URI || 'mongodb://localhost:3001/meteor',
+				name: process.env.DATABASE_NAME || 'meteor',
+				poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
+			},
+			server: {
+				name: process.env.SERVER_NAME || 'rc1',
+				version: process.env.SERVER_VERSION || '1.0',
+				port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
+				baseUrl: process.env.SERVER_BASE_URL || 'http://rc1:8080',
+				host: process.env.SERVER_HOST || '0.0.0.0',
+			},
+			matrix: {
+				serverName: process.env.MATRIX_SERVER_NAME || 'rc1',
+				domain: process.env.MATRIX_DOMAIN || 'rc1',
+				keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
+			},
+			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
+		});
 		const matrixConfig = config.getMatrixConfig();
 		const serverConfig = config.getServerConfig();
 		const signingKeys = await config.getSigningKey();
@@ -57,7 +76,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			},
 		};
 
-		await createFederationContainer(containerOptions);
+		await createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
 		instance.buildMatrixHTTPRoutes();
 
@@ -75,7 +94,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			.use(getMatrixSendJoinRoutes(this.homeserverServices))
 			.use(getMatrixTransactionsRoutes(this.homeserverServices))
 			.use(getKeyServerRoutes(this.homeserverServices))
-			.use(getFederationVersionsRoutes());
+			.use(getFederationVersionsRoutes(this.homeserverServices));
 
 		wellKnown.use(getWellKnownRoutes(this.homeserverServices));
 
