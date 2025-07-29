@@ -19,7 +19,6 @@ declare global {
 		lastMessageWindow?: Record<string, unknown>;
 		lastMessageWindowHistory?: Record<string, unknown>;
 		favico?: any;
-		USE_REST_FOR_DDP_CALLS?: boolean;
 		ECDH_Enabled?: boolean;
 		__meteor_runtime_config__: {
 			ROOT_URL_PATH_PREFIX: string;
