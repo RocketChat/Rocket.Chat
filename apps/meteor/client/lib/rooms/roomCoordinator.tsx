@@ -58,7 +58,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 				return false;
 			},
 			canSendMessage(room: IRoom): boolean {
-				return Subscriptions.find({ rid: room._id }).count() > 0;
+				return Subscriptions.state.count((record) => record.rid === room._id) > 0;
 			},
 			...directives,
 			config: roomConfig,

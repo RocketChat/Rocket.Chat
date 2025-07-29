@@ -4795,7 +4795,6 @@
   "error-message-editing-blocked": "Edytowanie wiadomości jest zablokowane",
   "error-message-size-exceeded": "Rozmiar wiadomości przekracza Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Musisz wstawić w treści znacznik [unsubscribe].",
-  "error-no-agents-online-in-department": "Brak agentów online w dziale",
   "error-no-message-for-unread": "Nie ma żadnych wiadomości do oznaczenia jako nieprzeczytane",
   "error-no-owner-channel": "Tylko właściciele mogą dodać ten kanał do zespołu",
   "error-no-permission-team-channel": "Nie masz uprawnień, aby dodać ten kanał do zespołu",
