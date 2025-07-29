@@ -930,7 +930,7 @@ API.v1.addRoute(
     permissionsRequired: ['force-delete-message'],
   },
   {
-    async POST() {
+    async post() {
       const { userId } = this;
       const { scheduledMessageId, rid, msg, scheduledAt, tmid } = this.bodyParams;
 
@@ -947,13 +947,13 @@ API.v1.addRoute(
       }
 
       // Find the scheduled message
-      const message = await ScheduledMessages.findOneAsync(scheduledMessageId);
+      const message = await ScheduledMessages.findOneAsync({_id: scheduledMessageId });
       if (!message) {
         throw new Error('Scheduled message not found');
       }
 
       // Check if user is the owner or has force-delete-message permission
-      if (message.u._id !== userId && !(await this.hasPermission(['force-delete-message']))) {
+      if (message.u._id !== userId && !(await hasPermissionAsync(userId, 'force-delete-message', rid))) {
         throw new Error('Not allowed to edit messages created by other users');
       }
 
@@ -970,7 +970,7 @@ API.v1.addRoute(
       );
 
       // Fetch the updated message
-      const updatedMessage = await ScheduledMessages.findOneAsync(scheduledMessageId);
+      const updatedMessage = await ScheduledMessages.findOneAsync({_id: scheduledMessageId });
 
       return API.v1.success({ message: updatedMessage });
     },
