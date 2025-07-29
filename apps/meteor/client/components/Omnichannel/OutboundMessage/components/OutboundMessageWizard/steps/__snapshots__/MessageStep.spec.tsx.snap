@@ -11,29 +11,33 @@ exports[`MessageStep renders Default without crashing 1`] = `
           data-testid="message-form"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-start rcx-box rcx-box--full steps-wizard-footer rcx-css-181ybla"
-            role="group"
+            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-h2s0k0"
           >
-            <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
-              type="button"
+            <div
+              class="rcx-button-group rcx-button-group--align-start"
+              role="group"
             >
-              <span
-                class="rcx-button--content"
+              <button
+                class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+                type="button"
               >
-                Back
-              </span>
-            </button>
-            <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-              type="submit"
-            >
-              <span
-                class="rcx-button--content"
+                <span
+                  class="rcx-button--content"
+                >
+                  Back
+                </span>
+              </button>
+              <button
+                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+                type="submit"
               >
-                Next
-              </span>
-            </button>
+                <span
+                  class="rcx-button--content"
+                >
+                  Next
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -53,29 +57,33 @@ exports[`MessageStep renders WithDefaultValues without crashing 1`] = `
           data-testid="message-form"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-start rcx-box rcx-box--full steps-wizard-footer rcx-css-181ybla"
-            role="group"
+            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-h2s0k0"
           >
-            <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
-              type="button"
+            <div
+              class="rcx-button-group rcx-button-group--align-start"
+              role="group"
             >
-              <span
-                class="rcx-button--content"
+              <button
+                class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+                type="button"
               >
-                Back
-              </span>
-            </button>
-            <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
-              type="submit"
-            >
-              <span
-                class="rcx-button--content"
+                <span
+                  class="rcx-button--content"
+                >
+                  Back
+                </span>
+              </button>
+              <button
+                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+                type="submit"
               >
-                Next
-              </span>
-            </button>
+                <span
+                  class="rcx-button--content"
+                >
+                  Next
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
