@@ -43,12 +43,13 @@ const updateUser = (userData: IUser): void => {
 	}
 
 	// delete data already on user's collection as those are newer
-	Object.keys(user).forEach((key) => {
+	for (const key of Object.keys(user)) {
 		delete userData[key as keyof IUser];
-	});
+	}
+
 	Users.state.update(
 		({ _id }) => _id === user._id,
-		() => ({ ...userData }),
+		(user) => ({ ...user, ...userData }),
 	);
 };
 
@@ -85,15 +86,6 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	await result.ready();
 
 	const { ldap, lastLogin, services: rawServices, ...userData } = await sdk.rest.get('/v1/me');
-
-	// email?: {
-	// 	verificationTokens?: IUserEmailVerificationToken[];
-	// };
-	// export interface IUserEmailVerificationToken {
-	// 	token: string;
-	// 	address: string;
-	// 	when: Date;
-	// }
 
 	if (userData) {
 		const { email, cloud, resume, email2fa, emailCode, ...services } = rawServices || {};
