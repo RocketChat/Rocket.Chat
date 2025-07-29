@@ -12,16 +12,59 @@ export class Sidebar {
 		return this.page.getByRole('navigation', { name: 'sidebar' });
 	}
 
+	get teamCollabFilters(): Locator {
+		return this.sidebar.getByRole('tablist', { name: 'Team collaboration filters' });
+	}
+
+	get omnichannelFilters(): Locator {
+		return this.sidebar.getByRole('tablist', { name: 'Omnichannel filters' });
+	}
+
+	get allTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'All' });
+	}
+
+	get mentionsTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button').filter({ hasText: 'Mentions' });
+	}
+
+	get favoritesTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'Favorites' });
+	}
+
+	get discussionsTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'Discussions' });
+	}
+
+	// TODO: fix this filter, workaround due to virtuoso
+	get topChannelList(): Locator {
+		return this.sidebar.getByTestId('virtuoso-top-item-list');
+	}
+
 	get channelsList(): Locator {
-		return this.sidebar.getByRole('list', { name: 'Channels' });
+		// TODO: fix this filter, workaround due to virtuoso
+		// return this.sidebar.getByRole('list', { name: 'Channels' }).filter({ has: this.page.getByRole('listitem') });
+		return this.sidebar.getByTestId('virtuoso-item-list');
 	}
 
 	getSearchRoomByName(name: string) {
-		return this.channelsList.getByRole('link', { name });
+		return this.channelsList.getByRole('button', { name, exact: true });
 	}
 
 	get firstCollapser(): Locator {
-		return this.channelsList.getByRole('button').first();
+		return this.topChannelList.getByRole('region').first();
+	}
+
+	get teamsCollapser(): Locator {
+		return this.sidebar.getByRole('region', { name: 'Collapse Teams' }).first();
+	}
+
+	get channelsCollapser(): Locator {
+		return this.channelsList.getByRole('region', { name: 'Collapse Channels' });
+	}
+
+	get directMessagesCollapser(): Locator {
+		return this.channelsList.getByRole('region', { name: 'Collapse Direct messages' });
 	}
 
 	get firstChannelFromList(): Locator {
