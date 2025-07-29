@@ -24,7 +24,7 @@ export const useVoipCallAction = (user: Pick<IUser, '_id' | 'username' | 'freeSw
 
 	const voipCallOption = useMemo<UserInfoAction | undefined>(() => {
 		const handleClick = () => {
-			makeCall({ uid: user?._id, extension: user?.freeSwitchExtension });
+			makeCall(user?.freeSwitchExtension as string);
 			closeUserCard();
 		};
 
@@ -37,7 +37,7 @@ export const useVoipCallAction = (user: Pick<IUser, '_id' | 'username' | 'freeSw
 					onClick: handleClick,
 				}
 			: undefined;
-	}, [closeUserCard, disabled, isEnabled, isSameUser, makeCall, t, user?._id, user?.freeSwitchExtension]);
+	}, [closeUserCard, disabled, isEnabled, isSameUser, makeCall, t, user?.freeSwitchExtension]);
 
 	return voipCallOption;
 };
