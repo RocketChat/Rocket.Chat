@@ -63,7 +63,6 @@
   "API_Tokenpass_URL_Description": "مثال: `https://domain.com` (باستثناء الشرطة المائلة اللاحقة)",
   "API_Upper_Count_Limit": "الحد الأقصى لكمية السجلات",
   "API_Upper_Count_Limit_Description": "ما أقصى حد لعدد السجلات التي يتعين على واجهة برمجة تطبيقات REST إرجاعها (عندما لا تكون غير محدودة)؟",
-  "API_Use_REST_For_DDP_Calls": "استخدم REST بدلاً من websocket لمكالمات Meteor",
   "API_User_Limit": "حد المستخدم لإضافة جميع المستخدمين إلى Channel",
   "API_Wordpress_URL": "عنوان URL لـ WordPress",
   "APIs": "واجهات برمجة التطبيقات",

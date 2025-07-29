@@ -62,7 +62,6 @@
   "API_Tokenpass_URL_Description": "მაგ: `https://domain.com`",
   "API_Upper_Count_Limit": "ჩანაწერების მაქსიმალური რაოდენობა",
   "API_Upper_Count_Limit_Description": "რა არის ჩანაწერების მაქსიმალური რაოდენობა, რომელიც REST API-ის საშუალებით გაიცემა (როცა არ არის ულიმიტო)?",
-  "API_Use_REST_For_DDP_Calls": "Meteor calls-სთვის გამოიყენეთ REST ვებ სოკეტის ნაცვლად",
   "API_User_Limit": "მომხმარებლების რაოდენობის ლიმიტი არხზე დამატებისას",
   "API_Wordpress_URL": "Word Press-ის URL",
   "A_new_owner_will_be_assigned_automatically_to__count__rooms": "ახალ მფლობელს ავტომატურად მიენიჭება <bold>{{count}}</bold> ოთახებში.",

@@ -62,7 +62,6 @@
   "API_Tokenpass_URL_Description": "Například: `https://domain.com` (bez koncového lomítka)",
   "API_Upper_Count_Limit": "Maximální počet",
   "API_Upper_Count_Limit_Description": "Kolik nejvíce záznamů smí REST API vrátit (pokud není limitovaná)",
-  "API_Use_REST_For_DDP_Calls": "Použít místo websocketů REST",
   "API_User_Limit": "Maximální počet uživatelů přidaných do místnosti",
   "API_Wordpress_URL": "WordPress URL",
   "APIs": "API",
