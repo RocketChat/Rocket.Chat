@@ -27,7 +27,7 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		data: teamInfoData,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useTeamInfoEndpoint(teamId, (_, error) => (error as unknown as APIErrorResult)?.error === 'unauthorized' && false);
+	} = useTeamInfoEndpoint(teamId, (_, error) => (error as unknown as APIErrorResult)?.error !== 'unauthorized');
 
 	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeams(userId);
 
