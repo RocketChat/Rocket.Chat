@@ -1,8 +1,8 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { Rooms, ScheduledMessages, Users } from '@rocket.chat/models';
 
-import { sendMessage } from '/app/lib/server/functions/sendMessage';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '/app/lib/server/lib/notifyListener';
+import { sendMessage } from '../../app/lib/server/functions/sendMessage';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../app/lib/server/lib/notifyListener';
 import { SystemLogger } from '../lib/logger/system';
 
 export async function scheduleMessagesCron(): Promise<void> {

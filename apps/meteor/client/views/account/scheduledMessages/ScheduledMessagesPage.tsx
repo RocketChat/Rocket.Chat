@@ -49,7 +49,6 @@ const ScheduledMessagesPage = () => {
 			const uniqueRids = [...new Set(messages.map((msg) => msg.rid))];
 			const roomsData: Record<string, IRoomInfo> = {};
 
-			
 			const roomInfoPromises = uniqueRids.map(async (rid) => {
 				try {
 					const roomInfo = await getRoomInfo({ roomId: rid });
