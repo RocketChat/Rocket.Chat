@@ -1,4 +1,4 @@
-import { Box, Label } from '@rocket.chat/fuselage';
+import { Box, Button, Label } from '@rocket.chat/fuselage';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -13,6 +13,7 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
+	ContextualbarFooter,
 } from '../../../../../../components/Contextualbar';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
@@ -24,7 +25,7 @@ type AppLogsFilterContextualBarProps = {
 export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }: AppLogsFilterContextualBarProps) => {
 	const { t } = useTranslation();
 
-	const { control } = useAppLogsFilterFormContext();
+	const { control, reset } = useAppLogsFilterFormContext();
 
 	return (
 		<ContextualbarDialog onClose={onClose}>
@@ -71,6 +72,27 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 					/>
 				</Box>
 			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<Button
+					secondary
+					w='full'
+					aria-label={t('Clear_filters')}
+					onClick={() =>
+						reset({
+							startDate: '',
+							endDate: '',
+							startTime: '',
+							endTime: '',
+							instance: '',
+							severity: 'all',
+							event: 'all',
+							timeFilter: '',
+						})
+					}
+				>
+					{t('Clear_filters')}
+				</Button>
+			</ContextualbarFooter>
 		</ContextualbarDialog>
 	);
 };

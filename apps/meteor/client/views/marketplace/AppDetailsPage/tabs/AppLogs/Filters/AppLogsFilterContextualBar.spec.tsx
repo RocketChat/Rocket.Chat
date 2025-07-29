@@ -111,3 +111,31 @@ describe('Time range', () => {
 		});
 	});
 });
+
+it('Should clear time range', async () => {
+	render(<Default />, { wrapper: mockAppRoot().build() });
+
+	const startDate = screen.getByLabelText('Start Date');
+	const endDate = screen.getByLabelText('End Date');
+	const startTime = screen.getByLabelText('Start Time');
+	const endTime = screen.getByLabelText('End Time');
+	const timeSelect = screen.getByLabelText('Time');
+
+	await userEvent.click(timeSelect);
+
+	expect(screen.getByRole('option', { name: 'Last_30_minutes' })).toBeVisible();
+	await userEvent.click(screen.getByRole('option', { name: 'Last_30_minutes' }));
+
+	expect(startDate).toHaveValue('2017-05-19');
+	expect(endDate).toHaveValue('2017-05-19');
+	expect(startTime).toHaveValue('11:50');
+	expect(endTime).toHaveValue('12:20');
+
+	expect(screen.getByRole('button', { name: 'Clear_filters' })).toBeVisible();
+	await userEvent.click(screen.getByRole('button', { name: 'Clear_filters' }));
+
+	expect(startDate).toHaveValue('');
+	expect(endDate).toHaveValue('');
+	expect(startTime).toHaveValue('');
+	expect(endTime).toHaveValue('');
+});

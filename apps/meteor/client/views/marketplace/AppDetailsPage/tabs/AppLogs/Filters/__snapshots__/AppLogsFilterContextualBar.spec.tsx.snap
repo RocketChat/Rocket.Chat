@@ -384,6 +384,21 @@ exports[`renders AppLogsItem without crashing 1`] = `
             </div>
           </div>
         </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-m843eh"
+        >
+          <button
+            aria-label="Clear_filters"
+            class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-css-1qcz93u"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Clear_filters
+            </span>
+          </button>
+        </div>
       </div>
       <span
         data-focus-scope-end="true"
