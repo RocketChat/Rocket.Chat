@@ -1,4 +1,4 @@
-import { ConfigService } from '@hs/federation-sdk';
+import type { HomeserverServices } from '@hs/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
@@ -25,8 +25,8 @@ const GetVersionsResponseSchema = {
 
 const isGetVersionsResponseProps = ajv.compile(GetVersionsResponseSchema);
 
-export const getFederationVersionsRoutes = () => {
-	const configService = new ConfigService();
+export const getFederationVersionsRoutes = (services: HomeserverServices) => {
+	const { config } = services;
 
 	return new Router('/federation').get(
 		'/v1/version',
@@ -38,12 +38,12 @@ export const getFederationVersionsRoutes = () => {
 			license: ['federation'],
 		},
 		async () => {
-			const config = configService.getServerConfig();
+			const serverConfig = config.getServerConfig();
 
 			const response = {
 				server: {
-					name: config.name,
-					version: config.version,
+					name: serverConfig.name,
+					version: serverConfig.version,
 				},
 			};
 
