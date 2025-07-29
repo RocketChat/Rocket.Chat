@@ -7867,6 +7867,8 @@ __metadata:
     "@rocket.chat/mongo-adapter": "workspace:^"
     "@rocket.chat/mp3-encoder": "npm:^0.31.26"
     "@rocket.chat/network-broker": "workspace:^"
+    "@rocket.chat/omni-core": "workspace:^"
+    "@rocket.chat/omni-core-ee": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
     "@rocket.chat/onboarding-ui": "npm:^0.35.2"
     "@rocket.chat/password-policies": "workspace:^"
@@ -8296,6 +8298,38 @@ __metadata:
     pino: "npm:^8.21.0"
     sinon: "npm:^19.0.5"
     typescript: "npm:~5.8.3"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/omni-core-ee@workspace:^, @rocket.chat/omni-core-ee@workspace:ee/packages/omni-core-ee":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/omni-core-ee@workspace:ee/packages/omni-core-ee"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/omni-core": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/jest": "npm:~29.5.14"
+    eslint: "npm:~8.45.0"
+    jest: "npm:~29.7.0"
+    typescript: "npm:~5.7.2"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/omni-core@workspace:^, @rocket.chat/omni-core@workspace:packages/omni-core":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/omni-core@workspace:packages/omni-core"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/patch-injection": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/jest": "npm:~29.5.14"
+    eslint: "npm:~8.45.0"
+    jest: "npm:~29.7.0"
+    typescript: "npm:~5.7.2"
   languageName: unknown
   linkType: soft
 
@@ -9289,8 +9323,8 @@ __metadata:
     typescript: "npm:~5.8.3"
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/tools": "*"
-    "@rocket.chat/ui-contexts": "*"
+    "@rocket.chat/tools": 0.2.3-rc.0
+    "@rocket.chat/ui-contexts": 21.0.0-rc.1
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -34893,6 +34927,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~5.7.2":
+  version: 5.7.3
+  resolution: "typescript@npm:5.7.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/6a7e556de91db3d34dc51cd2600e8e91f4c312acd8e52792f243c7818dfadb27bae677175fad6947f9c81efb6c57eb6b2d0c736f196a6ee2f1f7d57b74fc92fa
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~5.8.3":
   version: 5.8.3
   resolution: "typescript@npm:5.8.3"
@@ -34900,6 +34944,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/65c40944c51b513b0172c6710ee62e951b70af6f75d5a5da745cb7fab132c09ae27ffdf7838996e3ed603bb015dadd099006658046941bd0ba30340cc563ae92
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A~5.7.2#optional!builtin<compat/typescript>":
+  version: 5.7.3
+  resolution: "typescript@patch:typescript@npm%3A5.7.3#optional!builtin<compat/typescript>::version=5.7.3&hash=5786d5"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 10/dc58d777eb4c01973f7fbf1fd808aad49a0efdf545528dab9b07d94fdcb65b8751742804c3057e9619a4627f2d9cc85547fdd49d9f4326992ad0181b49e61d81
   languageName: node
   linkType: hard
 

@@ -4391,7 +4391,6 @@
   "error-message-editing-blocked": "تحرير الرسالة محظور",
   "error-message-size-exceeded": "حجم الرسالة تجاوز الحد المسموح به Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "يلزمك توفير رابط [unsubscribe].",
-  "error-no-agents-online-in-department": "لا يوجد وكلاء على الإنترنت في القسم",
   "error-no-message-for-unread": "لا توجد رسائل لوضع علامة غير مقروء",
   "error-no-owner-channel": "يمكن للمالكين وحدهم إضافة هذه القناة إلى الفريق",
   "error-no-permission-team-channel": "ليس لديك إذن لإضافة هذه القناة إلى الفريق",

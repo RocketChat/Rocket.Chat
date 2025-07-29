@@ -44,8 +44,13 @@ export const AppLogsFilter = ({ appId, expandAll, refetchLogs, isLoading, noResu
 	const refreshLogs = () => {
 		refetchLogs();
 	};
+
+	const onExportConfirm = (url: string) => {
+		window.open(url, '_blank', 'noopener noreferrer');
+	};
+
 	const openExportModal = () => {
-		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} />);
+		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} onConfirm={onExportConfirm} />);
 	};
 
 	const compactMode = useCompactMode();

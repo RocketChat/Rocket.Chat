@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "7.9.0-develop",
+	"version": "7.10.0-develop",
 	"private": true,
 	"type": "commonjs",
 	"author": {
@@ -277,6 +277,8 @@
 		"@rocket.chat/mongo-adapter": "workspace:^",
 		"@rocket.chat/mp3-encoder": "^0.31.26",
 		"@rocket.chat/network-broker": "workspace:^",
+		"@rocket.chat/omni-core": "workspace:^",
+		"@rocket.chat/omni-core-ee": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
 		"@rocket.chat/onboarding-ui": "^0.35.2",
 		"@rocket.chat/password-policies": "workspace:^",

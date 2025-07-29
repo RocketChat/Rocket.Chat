@@ -1,5 +1,11 @@
 # @rocket.chat/tools
 
+## 0.2.3-rc.0
+
+### Patch Changes
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
 ## 0.2.2
 
 ### Patch Changes
