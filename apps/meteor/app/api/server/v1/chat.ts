@@ -32,7 +32,7 @@ import {
 	isChatScheduleMessageProps,
 	isChatUpdateScheduledMessageProps,
 	isChatDeleteScheduledMessageProps,
-	isChatGetScheduledMessagesProps
+	isChatGetScheduledMessagesProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -63,7 +63,6 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
-
 
 API.v1.addRoute(
 	'chat.delete',
@@ -853,130 +852,128 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.scheduleMessage',
-	{ authRequired: true , validateParams: isChatScheduleMessageProps },
+	{ authRequired: true, validateParams: isChatScheduleMessageProps },
 	{
-	  async post() {
-		const { rid, msg, scheduledAt: scheduledAtStr, tmid } = this.bodyParams;
-		const user = this.user;
+		async post() {
+			const { rid, msg, scheduledAt: scheduledAtStr, tmid } = this.bodyParams;
+			const { user } = this;
 
-		// Validate required fields
-		if (!rid || !msg || !scheduledAtStr) {
-		  return API.v1.failure('Missing required fields: rid, msg, or scheduledAt');
-		}
+			// Validate required fields
+			if (!rid || !msg || !scheduledAtStr) {
+				return API.v1.failure('Missing required fields: rid, msg, or scheduledAt');
+			}
 
-		// Validate scheduledAt
-		const scheduledAt = new Date(scheduledAtStr);
-		if (isNaN(scheduledAt.getTime()) || scheduledAt <= new Date()) {
-		  return API.v1.failure('Invalid scheduledAt: Must be a future date');
-		}
+			// Validate scheduledAt
+			const scheduledAt = new Date(scheduledAtStr);
+			if (isNaN(scheduledAt.getTime()) || scheduledAt <= new Date()) {
+				return API.v1.failure('Invalid scheduledAt: Must be a future date');
+			}
 
-		// Validate message size
-		const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
-		if (msg.length > maxAllowedSize) {
-		  return API.v1.failure('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize');
-		}
+			// Validate message size
+			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+			if (msg.length > maxAllowedSize) {
+				return API.v1.failure('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize');
+			}
 
-		// Validate thread
-		if (tmid && !settings.get('Threads_enabled')) {
-		  return API.v1.failure('error-not-allowed', 'Threads are disabled');
-		}
+			// Validate thread
+			if (tmid && !settings.get('Threads_enabled')) {
+				return API.v1.failure('error-not-allowed', 'Threads are disabled');
+			}
 
-		// Validate room
-		const room = await Rooms.findOneById(rid);
-		if (!room) {
-		  return API.v1.failure('Invalid room ID');
-		}
+			// Validate room
+			const room = await Rooms.findOneById(rid);
+			if (!room) {
+				return API.v1.failure('Invalid room ID');
+			}
 
-		// Validate permissions
-		try {
-			await canSendMessageAsync(rid, { uid: this.userId, username: user.username, type: user.type });
-		} catch (error) {
-		  return API.v1.failure('error-not-allowed', 'Not allowed to send messages in this room');
-		}
+			// Validate permissions
+			try {
+				await canSendMessageAsync(rid, { uid: this.userId, username: user.username, type: user.type });
+			} catch (error) {
+				return API.v1.failure('error-not-allowed', 'Not allowed to send messages in this room');
+			}
 
-		const scheduledMessage: Omit<IScheduledMessage, '_id'> = {
-		  t: 'scheduled_message',
-		  rid,
-		  msg,
-		  u: { _id: user._id, username: user.username, name: user.name },
-		  ts: new Date(),
-		  scheduledAt,
-		  tmid,
-		  _updatedAt: new Date(),
-		};
+			const scheduledMessage: Omit<IScheduledMessage, '_id'> = {
+				t: 'scheduled_message',
+				rid,
+				msg,
+				u: { _id: user._id, username: user.username, name: user.name },
+				ts: new Date(),
+				scheduledAt,
+				tmid,
+				_updatedAt: new Date(),
+			};
 
-		try {
-		  const scheduledMessageId = await ScheduledMessages.insertAsync(scheduledMessage);
-		  const createdScheduledMessage = await ScheduledMessages.findOneAsync({ _id: scheduledMessageId });
-		  if (!createdScheduledMessage) {
-			console.error('Failed to find scheduled message after insertion:', scheduledMessageId);
-			return API.v1.failure('Scheduled message created but could not be retrieved');
-		  }
-		  return API.v1.success({ message: createdScheduledMessage });
-		} catch (error) {
-		  console.error('Error creating scheduled message:', error);
-		  return API.v1.failure(`Failed to schedule message: ${(error as Error).message}`);
-		}
-	  },
+			try {
+				const scheduledMessageId = await ScheduledMessages.insertAsync(scheduledMessage);
+				const createdScheduledMessage = await ScheduledMessages.findOneAsync({ _id: scheduledMessageId });
+				if (!createdScheduledMessage) {
+					console.error('Failed to find scheduled message after insertion:', scheduledMessageId);
+					return API.v1.failure('Scheduled message created but could not be retrieved');
+				}
+				return API.v1.success({ message: createdScheduledMessage });
+			} catch (error) {
+				console.error('Error creating scheduled message:', error);
+				return API.v1.failure(`Failed to schedule message: ${(error as Error).message}`);
+			}
+		},
 	},
-  );
-
-
-API.v1.addRoute(
-  'chat.updateScheduledMessage',
-  {
-    authRequired: true,
-    validateParams: isChatUpdateScheduledMessageProps,
-    permissionsRequired: ['force-delete-message'],
-  },
-  {
-    async post() {
-      const { userId } = this;
-      const { scheduledMessageId, rid, msg, scheduledAt, tmid } = this.bodyParams;
-
-      // Validate room exists
-      const room = await Rooms.findOneById(rid);
-      if (!room) {
-        throw new Error('Room not found');
-      }
-
-      // Validate user has access to the room
-      const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection: { _id: 1 } });
-      if (!subscription) {
-        throw new Error('User does not have access to this room');
-      }
-
-      // Find the scheduled message
-      const message = await ScheduledMessages.findOneAsync({_id: scheduledMessageId });
-      if (!message) {
-        throw new Error('Scheduled message not found');
-      }
-
-      // Check if user is the owner or has force-delete-message permission
-      if (message.u._id !== userId && !(await hasPermissionAsync(userId, 'force-delete-message', rid))) {
-        throw new Error('Not allowed to edit messages created by other users');
-      }
-
-      // Validate scheduledAt is in the future
-      const scheduledAtDate = new Date(scheduledAt);
-      if (scheduledAtDate <= new Date()) {
-        throw new Error('Invalid scheduledAt: Must be a future date');
-      }
-
-      // Update the message
-      await ScheduledMessages.updateAsync(
-        { _id: scheduledMessageId },
-        { $set: { msg, scheduledAt: scheduledAtDate, tmid, _updatedAt: new Date() } }
-      );
-
-      // Fetch the updated message
-      const updatedMessage = await ScheduledMessages.findOneAsync({_id: scheduledMessageId });
-
-      return API.v1.success({ message: updatedMessage });
-    },
-  }
 );
 
+API.v1.addRoute(
+	'chat.updateScheduledMessage',
+	{
+		authRequired: true,
+		validateParams: isChatUpdateScheduledMessageProps,
+		permissionsRequired: ['force-delete-message'],
+	},
+	{
+		async post() {
+			const { userId } = this;
+			const { scheduledMessageId, rid, msg, scheduledAt, tmid } = this.bodyParams;
+
+			// Validate room exists
+			const room = await Rooms.findOneById(rid);
+			if (!room) {
+				throw new Error('Room not found');
+			}
+
+			// Validate user has access to the room
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection: { _id: 1 } });
+			if (!subscription) {
+				throw new Error('User does not have access to this room');
+			}
+
+			// Find the scheduled message
+			const message = await ScheduledMessages.findOneAsync({ _id: scheduledMessageId });
+			if (!message) {
+				throw new Error('Scheduled message not found');
+			}
+
+			// Check if user is the owner or has force-delete-message permission
+			if (message.u._id !== userId && !(await hasPermissionAsync(userId, 'force-delete-message', rid))) {
+				throw new Error('Not allowed to edit messages created by other users');
+			}
+
+			// Validate scheduledAt is in the future
+			const scheduledAtDate = new Date(scheduledAt);
+			if (scheduledAtDate <= new Date()) {
+				throw new Error('Invalid scheduledAt: Must be a future date');
+			}
+
+			// Update the message
+			await ScheduledMessages.updateAsync(
+				{ _id: scheduledMessageId },
+				{ $set: { msg, scheduledAt: scheduledAtDate, tmid, _updatedAt: new Date() } },
+			);
+
+			// Fetch the updated message
+			const updatedMessage = await ScheduledMessages.findOneAsync({ _id: scheduledMessageId });
+
+			return API.v1.success({ message: updatedMessage });
+		},
+	},
+);
 
 API.v1.addRoute(
 	'chat.deleteScheduledMessage',
@@ -1028,14 +1025,14 @@ API.v1.addRoute(
 			}
 		},
 	},
-)
+);
 
 API.v1.addRoute(
 	'chat.getScheduledMessages',
-	{ authRequired: true, validateParams:  isChatGetScheduledMessagesProps},
+	{ authRequired: true, validateParams: isChatGetScheduledMessagesProps },
 	{
 		async get() {
-			const userId = this.userId;
+			const { userId } = this;
 
 			if (!userId) {
 				return API.v1.unauthorized();
@@ -1043,10 +1040,10 @@ API.v1.addRoute(
 
 			const scheduledMessages = await ScheduledMessages.find(
 				{ 'u._id': userId },
-				{ sort: { scheduledAt: 1 } } // sort by schedule time ascending
+				{ sort: { scheduledAt: 1 } }, // sort by schedule time ascending
 			).toArray();
 
 			return API.v1.success({ messages: scheduledMessages });
 		},
-	}
+	},
 );
