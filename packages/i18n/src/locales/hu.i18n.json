@@ -64,7 +64,6 @@
   "API_Tokenpass_URL_Description": "Példa: `https://domain.com` (kivéve a záró perjelet)",
   "API_Upper_Count_Limit": "Legnagyobb rekordszám",
   "API_Upper_Count_Limit_Description": "Mi a rekordok legnagyobb száma, amennyit a REST API-nak vissza kell adnia (ha nem korlátlan)?",
-  "API_Use_REST_For_DDP_Calls": "REST használata WebSocket helyett a Meteor-hívásoknál",
   "API_User_Limit": "Felhasználókorlát a csatornához történő összes felhasználó hozzáadásánál",
   "API_Wordpress_URL": "WordPress URL",
   "APIs": "API-k",
