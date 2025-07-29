@@ -9261,6 +9261,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.20"
     eslint4b-prebuilt: "npm:^6.7.2"
     moment: "npm:^2.30.1"
+    prettier: "npm:~3.3.3"
     rc-scrollbars: "npm:^1.1.6"
     react: "npm:~18.3.1"
     react-beautiful-dnd: "npm:^13.1.1"
@@ -9323,8 +9324,8 @@ __metadata:
     typescript: "npm:~5.8.3"
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/tools": "*"
-    "@rocket.chat/ui-contexts": "*"
+    "@rocket.chat/tools": 0.2.3-rc.0
+    "@rocket.chat/ui-contexts": 21.0.0-rc.2
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"

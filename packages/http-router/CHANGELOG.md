@@ -1,5 +1,54 @@
 # @rocket.chat/http-router
 
+## 7.9.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [0de9318f344b49cb4afbce6bf8b26f943346343d, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, d4226a564d699e44eb6264095da8de3850071d6b, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
+
+  - @rocket.chat/rest-typings@7.9.0
+  - @rocket.chat/core-typings@7.9.0
+  </details>
+
+## 7.9.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.0-rc.2
+  - @rocket.chat/rest-typings@7.9.0-rc.2
+  </details>
+
+## 7.9.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.1
+  - @rocket.chat/rest-typings@7.9.0-rc.1
+  </details>
+
+## 7.9.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [0de9318f344b49cb4afbce6bf8b26f943346343d, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, d4226a564d699e44eb6264095da8de3850071d6b, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
+
+  - @rocket.chat/rest-typings@7.9.0-rc.0
+  - @rocket.chat/core-typings@7.9.0-rc.0
+  </details>
+
+## 7.8.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/rest-typings@7.8.3
+  </details>
+
 ## 7.8.2
 
 ### Patch Changes
