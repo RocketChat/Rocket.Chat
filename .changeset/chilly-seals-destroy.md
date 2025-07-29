@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-ensure that read reciepts work properly when there are deactivated users in a room
+Ensures that read receipts work properly by automatically marking messages as read for all deactivated members of the room, preventing inconsistencies in the message read state.
