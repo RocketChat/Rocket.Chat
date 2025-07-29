@@ -131,7 +131,6 @@ const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUn
 const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
-
 API.v1.addRoute(
 	'chat.delete',
 	{ authRequired: true, validateParams: isChatDeleteProps },
@@ -1061,7 +1060,77 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { rid, msg, scheduledAt: scheduledAtStr, tmid } = this.bodyParams;
-			const user = this.user;
+type ChatStarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+type ChatUnstarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+const ChatStarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnstarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+type ChatFollowMessageLocal = {
+	mid: string;
+};
+
+const ChatFollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+type ChatUnfollowMessageLocal = {
+	mid: string;
+};
+
+const ChatUnfollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
+
+const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
+
+const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
+
+const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 
 			// Validate required fields
 			if (!rid || !msg || !scheduledAtStr) {
@@ -1150,13 +1219,153 @@ API.v1.addRoute(
 			}
 
 			// Find the scheduled message
-			const message = await ScheduledMessages.findOneAsync(scheduledMessageId);
+type ChatStarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+type ChatUnstarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+const ChatStarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnstarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+type ChatFollowMessageLocal = {
+	mid: string;
+};
+
+const ChatFollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+type ChatUnfollowMessageLocal = {
+	mid: string;
+};
+
+const ChatUnfollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
+
+const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
+
+const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
+
+const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 			if (!message) {
 				throw new Error('Scheduled message not found');
 			}
 
 			// Check if user is the owner or has force-delete-message permission
-			if (message.u._id !== userId && !(await this.hasPermission(['force-delete-message']))) {
+type ChatStarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+type ChatUnstarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+const ChatStarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnstarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+type ChatFollowMessageLocal = {
+	mid: string;
+};
+
+const ChatFollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+type ChatUnfollowMessageLocal = {
+	mid: string;
+};
+
+const ChatUnfollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
+
+const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
+
+const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
+
+const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 				throw new Error('Not allowed to edit messages created by other users');
 			}
 
@@ -1173,7 +1382,77 @@ API.v1.addRoute(
 			);
 
 			// Fetch the updated message
-			const updatedMessage = await ScheduledMessages.findOneAsync(scheduledMessageId);
+type ChatStarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+type ChatUnstarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+const ChatStarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnstarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+type ChatFollowMessageLocal = {
+	mid: string;
+};
+
+const ChatFollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+type ChatUnfollowMessageLocal = {
+	mid: string;
+};
+
+const ChatUnfollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
+
+const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
+
+const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
+
+const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 
 			return API.v1.success({ message: updatedMessage });
 		},
@@ -1234,10 +1513,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getScheduledMessages',
-	{ authRequired: true, validateParams:  isChatGetScheduledMessagesProps},
+	{ authRequired: true, validateParams: isChatGetScheduledMessagesProps },
 	{
 		async get() {
-			const userId = this.userId;
+			const { userId } = this;
 
 			if (!userId) {
 				return API.v1.unauthorized();
@@ -1245,7 +1524,77 @@ API.v1.addRoute(
 
 			const scheduledMessages = await ScheduledMessages.find(
 				{ 'u._id': userId },
-				{ sort: { scheduledAt: 1 } },
+type ChatStarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+type ChatUnstarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+const ChatStarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnstarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+type ChatFollowMessageLocal = {
+	mid: string;
+};
+
+const ChatFollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+type ChatUnfollowMessageLocal = {
+	mid: string;
+};
+
+const ChatUnfollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
+
+const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
+
+const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
+
+const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 			).toArray();
 
 			return API.v1.success({ messages: scheduledMessages });

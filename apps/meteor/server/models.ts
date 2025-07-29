@@ -1,4 +1,10 @@
-import type { RocketChatRecordDeleted, ISubscription, ILivechatInquiryRecord, ILivechatDepartmentAgents, IScheduledMessage } from '@rocket.chat/core-typings';
+import type {
+	RocketChatRecordDeleted,
+	ISubscription,
+	ILivechatInquiryRecord,
+	ILivechatDepartmentAgents,
+	IScheduledMessage,
+} from '@rocket.chat/core-typings';
 import {
 	AnalyticsRaw,
 	AppsLogsModel,

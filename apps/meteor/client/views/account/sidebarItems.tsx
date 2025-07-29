@@ -65,5 +65,4 @@ export const {
 		i18nLabel: 'Accessibility_and_Appearance',
 		icon: 'person-arms-spread',
 	},
-
 ]);

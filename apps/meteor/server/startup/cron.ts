@@ -2,12 +2,12 @@ import { Logger } from '@rocket.chat/logger';
 
 import { npsCron } from '../cron/nps';
 import { oembedCron } from '../cron/oembed';
+import { scheduleMessagesCron } from '../cron/scheduleMessages';
 import { startCron } from '../cron/start';
 import { temporaryUploadCleanupCron } from '../cron/temporaryUploadsCleanup';
 import { usageReportCron } from '../cron/usageReport';
 import { userDataDownloadsCron } from '../cron/userDataDownloads';
 import { videoConferencesCron } from '../cron/videoConferences';
-import { scheduleMessagesCron } from '../cron/scheduleMessages';
 
 const logger = new Logger('SyncedCron');
 
