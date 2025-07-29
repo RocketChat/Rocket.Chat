@@ -166,24 +166,18 @@ jobs:
           tags: ${{ steps.version.outputs.image_tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.IGNSBC2_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
-
       - name: Run remote command
-        run: |
-          BRANCH_NAME="${{ github.ref_name }}"
-    
-          # Explicitly exclude sk-* algorithms and only use standard ones
-          SSH_OPTS="-o StrictHostKeyChecking=no -o HostKeyAlgorithms=ssh-rsa,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,rsa-sha2-256,rsa-sha2-512 -o PubkeyAcceptedKeyTypes=ssh-rsa,ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,ssh-ed25519,rsa-sha2-256,rsa-sha2-512"
-    
-          if [[ "$BRANCH_NAME" == "ut-dev" ]]; then
-          ssh $SSH_OPTS -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "/usr/scripts/update_image.sh dev $image_tag"
-          elif [[ "$BRANCH_NAME" == "ut-test" ]]; then
-          ssh $SSH_OPTS -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "/usr/scripts/update_image.sh test $image_tag"
-          elif [[ "$BRANCH_NAME" == "ut-stage" ]]; then
-          ssh $SSH_OPTS -i ~/.ssh/id_rsa ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "/usr/scripts/update_image.sh stage $image_tag"
-          fi
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.IGNSBC2_PASS }}
+          script: |
+            BRANCH_NAME="${{ github.ref_name }}"
+            if [[ "$BRANCH_NAME" == "ut-dev" ]]; then
+            /usr/scripts/update_image.sh dev ${{ env.image_tag }}
+            elif [[ "$BRANCH_NAME" == "ut-test" ]]; then
+            /usr/scripts/update_image.sh test ${{ env.image_tag }}
+            elif [[ "$BRANCH_NAME" == "ut-stage" ]]; then
+            /usr/scripts/update_image.sh stage ${{ env.image_tag }}
+            fi
