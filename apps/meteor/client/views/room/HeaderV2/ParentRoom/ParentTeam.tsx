@@ -1,11 +1,12 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ParentRoomButton from './ParentRoomButton';
+import { useTeamInfoEndpoint } from '../../../../hooks/useTeamInfoEndpoint';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
+import { useUserTeams } from '../../hooks/useUserTeams';
 
 type APIErrorResult = { success: boolean; error: string };
 
@@ -27,24 +28,13 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 		throw new Error('invalid uid');
 	}
 
-	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
-	const userTeamsListEndpoint = useEndpoint('GET', '/v1/users.listTeams');
-
 	const {
 		data: teamInfoData,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useQuery({
-		queryKey: ['teamId', teamId],
-		queryFn: async () => teamsInfoEndpoint({ teamId }),
-		placeholderData: keepPreviousData,
-		retry: (_, error: APIErrorResult) => error?.error === 'unauthorized' && false,
-	});
+	} = useTeamInfoEndpoint(teamId, (_, error) => (error as unknown as APIErrorResult)?.error === 'unauthorized' && false);
 
-	const { data: userTeams, isLoading: userTeamsLoading } = useQuery({
-		queryKey: ['userId', userId],
-		queryFn: async () => userTeamsListEndpoint({ userId }),
-	});
+	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeams(userId);
 
 	const userBelongsToTeam = Boolean(userTeams?.teams?.find((team) => team._id === teamId)) || false;
 	const isPublicTeam = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;
