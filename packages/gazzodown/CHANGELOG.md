@@ -1,5 +1,50 @@
 # @rocket.chat/gazzodown
 
+## 21.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.0-rc.2
+  - @rocket.chat/ui-client@21.0.0-rc.2
+  - @rocket.chat/ui-contexts@21.0.0-rc.2
+  </details>
+
+## 21.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.1
+  - @rocket.chat/ui-client@21.0.0-rc.1
+  - @rocket.chat/ui-contexts@21.0.0-rc.1
+  </details>
+
+## 21.0.0-rc.0
+
+### Patch Changes
+
+- ([#36317](https://github.com/RocketChat/Rocket.Chat/pull/36317)) Fixes an issue that causes legitimate URLs to return '#' in links
+
+- <details><summary>Updated dependencies [2cec8acd5beddf5ad0c67c29fe632487cb82b026, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.0
+  - @rocket.chat/ui-contexts@21.0.0-rc.0
+  - @rocket.chat/ui-client@21.0.0-rc.0
+  </details>
+
+## 20.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/ui-contexts@20.0.3
+  - @rocket.chat/ui-client@20.0.3
+  </details>
+
 ## 20.0.2
 
 ### Patch Changes

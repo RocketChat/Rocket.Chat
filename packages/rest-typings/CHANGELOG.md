@@ -1,5 +1,46 @@
 # @rocket.chat/rest-typings
 
+## 7.9.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.0-rc.2
+  </details>
+
+## 7.9.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.1
+  </details>
+
+## 7.9.0-rc.0
+
+### Minor Changes
+
+- ([#36403](https://github.com/RocketChat/Rocket.Chat/pull/36403)) Adds a button to the apps logs UI that exports logs as a downloadable file
+
+### Patch Changes
+
+- ([#36265](https://github.com/RocketChat/Rocket.Chat/pull/36265)) Fixes an issue where chat.postMessage returned an error when using the parseUrls flag.
+
+- ([#35884](https://github.com/RocketChat/Rocket.Chat/pull/35884) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Webdav API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- <details><summary>Updated dependencies [2cec8acd5beddf5ad0c67c29fe632487cb82b026, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.0
+
+## 7.8.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.8.3
+  </details>
+
 ## 7.8.2
 
 ### Patch Changes
