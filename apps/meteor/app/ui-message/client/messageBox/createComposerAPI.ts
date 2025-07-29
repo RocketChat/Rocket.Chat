@@ -351,5 +351,5 @@ export const createComposerAPI = (
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
-	};
+	} as ComposerAPI;
 };
