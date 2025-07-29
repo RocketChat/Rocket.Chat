@@ -49,7 +49,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const registerUser = useMethod('registerUser');
-	const defineUsername = useMethod('setUsername');
+	const defineUsername = useEndpoint('POST', '/v1/users.setUsername');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
@@ -99,7 +99,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 			setForceLogin(false);
 
-			await defineUsername(username);
+			await defineUsername({ username });
 			await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
 			void callbacks.run('usernameSet', {});
 		},

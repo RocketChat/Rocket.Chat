@@ -1375,28 +1375,24 @@ const setUsernameEndpoint = API.v1.post(
 				param: { type: 'object', properties: { joinDefaultChannelsSilenced: { type: 'boolean' } }, additionalProperties: false },
 			},
 			required: ['username'],
+			additionalProperties: false,
 		}),
 		response: {
-			200: ajv.compile({
+			200: ajv.compile<void>({
 				type: 'object',
 				properties: {
-					success: { type: 'boolean' },
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
 				},
+				required: ['success'],
+				additionalProperties: false,
 			}),
 		},
 	},
 	async function action() {
-		const { username, param = {} } = this.bodyParams;
-		check(username, String);
-
-		const userId = Meteor.userId();
-
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
-		}
-
-		await setUsernameWithValidation(userId, username, param.joinDefaultChannelsSilenced);
-
+		await setUsernameWithValidation(this.userId, this.bodyParams.username, this.bodyParams.param?.joinDefaultChannelsSilenced);
 		return API.v1.success();
 	},
 );
