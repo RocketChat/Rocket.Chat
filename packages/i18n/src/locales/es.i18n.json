@@ -63,7 +63,6 @@
   "API_Tokenpass_URL_Description": "Ejemplo: `https://domain.com` (sin barra oblicua final)",
   "API_Upper_Count_Limit": "Cantidad máxima de registros",
   "API_Upper_Count_Limit_Description": "¿Cuál es el número máximo de registros que debe devolver la API REST (cuando no sea ilimitado)?",
-  "API_Use_REST_For_DDP_Calls": "Usar REST en lugar de WebSocket para las llamadas de Meteor",
   "API_User_Limit": "Límite de usuarios al añadir todos los usuarios a Channel",
   "API_Wordpress_URL": "URL de WordPress",
   "APIs": "APIs",
