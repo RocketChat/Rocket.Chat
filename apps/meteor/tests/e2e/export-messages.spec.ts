@@ -22,6 +22,10 @@ test.describe.serial('export-messages', () => {
 		await page.goto('/home');
 	});
 
+	test.afterAll(async ({ api }) => {
+		await api.post('/users.setPreferences', { userId: 'rocketchat.internal.admin.test', data: { hideContextualBar: false } });
+	});
+
 	test('should all export methods be available in targetChannel', async ({ page }) => {
 		const exportMessagesTab = new ExportMessagesTab(page);
 
@@ -105,5 +109,42 @@ test.describe.serial('export-messages', () => {
 		await poHomeChannel.content.sendMessage('hello export');
 
 		await expect(poHomeChannel.content.getMessageByText('hello export')).toBeVisible();
+	});
+
+	test('should be able to select a single message to export', async ({ page }) => {
+		const exportMessagesTab = new ExportMessagesTab(page);
+
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello world');
+		await poHomeChannel.content.sendMessage('hello export');
+
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.btnExportMessages.click();
+
+		await poHomeChannel.content.getMessageByText('hello world').click();
+
+		await exportMessagesTab.setAdditionalEmail('mail@mail.com');
+		await expect(exportMessagesTab.sendButton).toBeEnabled();
+	});
+
+	test.fail('should be able to select a single message to export with hide contextual bar preference enabled', async ({ page, api }) => {
+		await api.post('/users.setPreferences', {
+			userId: 'rocketchat.internal.admin.test',
+			data: { hideContextualBar: true },
+		});
+
+		const exportMessagesTab = new ExportMessagesTab(page);
+
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello world');
+		await poHomeChannel.content.sendMessage('hello export');
+
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.btnExportMessages.click();
+
+		await poHomeChannel.content.getMessageByText('hello world').click();
+
+		await exportMessagesTab.setAdditionalEmail('mail@mail.com');
+		await expect(exportMessagesTab.sendButton).toBeEnabled();
 	});
 });
