@@ -231,10 +231,13 @@ export class E2ERoom extends Emitter {
 
 		const message = await this.decryptMessage(subscription.lastMessage);
 
-		Subscriptions.state.store({
-			...subscription,
-			lastMessage: message,
-		});
+		if (message !== subscription.lastMessage) {
+			this.log('decryptSubscriptions updating lastMessage');
+			Subscriptions.state.store({
+				...subscription,
+				lastMessage: message,
+			});
+		}
 
 		this.log('decryptSubscriptions Done');
 	}
