@@ -18,6 +18,7 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	ajv,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -67,6 +68,7 @@ import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnAccount';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -1361,6 +1363,52 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const setUsernameEndpoint = API.v1.post(
+	'users.setUsername',
+	{
+		authRequired: true,
+		body: ajv.compile<{ username: string; param?: { joinDefaultChannelsSilenced?: boolean } }>({
+			type: 'object',
+			properties: {
+				username: { type: 'string' },
+				param: { type: 'object', properties: { joinDefaultChannelsSilenced: { type: 'boolean' } }, additionalProperties: false },
+			},
+			required: ['username'],
+		}),
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean' },
+				},
+			}),
+		},
+	},
+	async function action() {
+		const { username, param = {} } = this.bodyParams;
+		check(username, String);
+
+		const userId = Meteor.userId();
+
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
+		}
+
+		await setUsernameWithValidation(userId, username, param.joinDefaultChannelsSilenced);
+
+		return API.v1.success();
+	},
+);
+
+type UsersSetUsernameEndpoint = ExtractRoutesFromAPI<typeof setUsernameEndpoint>;
+
+export type UsersEndpoints = UsersSetUsernameEndpoint;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends UsersEndpoints {}
+}
 
 // status: 'online' | 'offline' | 'away' | 'busy';
 // message?: string;

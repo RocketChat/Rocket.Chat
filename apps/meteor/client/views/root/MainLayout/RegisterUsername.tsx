@@ -38,7 +38,7 @@ const RegisterUsername = () => {
 		throw new Error('Invalid user');
 	}
 
-	const setUsername = useMethod('setUsername');
+	const setUsername = useEndpoint('POST', '/v1/users.setUsername');
 	const saveCustomFields = useMethod('saveCustomFields');
 	const usernameSuggestion = useEndpoint('GET', '/v1/users.getUsernameSuggestion');
 	const { data, isLoading } = useQuery({
@@ -69,7 +69,7 @@ const RegisterUsername = () => {
 	const registerUsernameMutation = useMutation({
 		mutationFn: async (data: RegisterUsernamePayload) => {
 			const { username, ...customFields } = data;
-			return Promise.all([setUsername(username), saveCustomFields({ ...customFields })]);
+			return Promise.all([setUsername({ username }), saveCustomFields({ ...customFields })]);
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Username_has_been_updated') });
