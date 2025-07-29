@@ -7,6 +7,5 @@ addMigration({
 	name: 'Remove voxtelesys & mobex related settings',
 	async up() {
 		await Promise.all([Settings.deleteMany({ section: { $in: ['Voxtelesys', 'Mobex'] } })]);
-		// restart
 	},
 });
