@@ -32,22 +32,20 @@ export const saveCustomFieldsWithoutValidation = async function (
 	// configured custom fields in setting
 	const customFieldsMeta = getCustomFieldsMeta(customFieldsSetting);
 
-	const customFields: Record<string, any> = Object.keys(customFieldsMeta).reduce(
-		(acc, currentValue) => ({
-			...acc,
-			[currentValue]: formData[currentValue],
-		}),
-		{},
+	const customFields = Object.fromEntries(
+		Object.keys(customFieldsMeta)
+			.filter((key) => formData[key])
+			.map((key) => [key, formData[key]]),
 	);
 
 	const { _updater, session } = options || {};
 
 	const updater = _updater || Users.getUpdater();
-
-	updater.set('customFields', customFields);
-
 	// add modified records to updater
 	Object.keys(customFields).forEach((fieldName) => {
+		// @ts-expect-error `Updater.set` does not support `customFields.${fieldName}` syntax
+		updater.set(`customFields.${fieldName}`, customFields[fieldName]);
+
 		if (!customFieldsMeta[fieldName].modifyRecordField) {
 			return;
 		}
