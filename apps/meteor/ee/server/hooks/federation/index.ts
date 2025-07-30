@@ -1,7 +1,7 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../lib/callbacks';
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 callbacks.add(
 	'afterSetReaction',
@@ -15,7 +15,7 @@ callbacks.add(
 callbacks.add(
 	'afterUnsetReaction',
 	async (_message: IMessage, params: { user: IUser; reaction: string; oldMessage: IMessage }): Promise<void> => {
-		await FederationMatrix.removeReaction(params.oldMessage._id, params.reaction, params.user);
+		await FederationMatrix.removeReaction(params.oldMessage._id, params.reaction, params.user, params.oldMessage);
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-unset-reaction',
