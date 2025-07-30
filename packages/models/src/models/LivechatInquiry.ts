@@ -15,6 +15,7 @@ import type {
 	DeleteOptions,
 	AggregateOptions,
 	WithId,
+	FindOneAndUpdateOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -331,7 +332,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null> {
+	async queueInquiry(
+		inquiryId: string,
+		lastMessage?: IMessage,
+		options: FindOneAndUpdateOptions = {},
+	): Promise<ILivechatInquiryRecord | null> {
 		return this.findOneAndUpdate(
 			{
 				_id: inquiryId,
@@ -344,7 +349,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 				$unset: { takenAt: 1 },
 			},
-			{ returnDocument: 'after' },
+			{ returnDocument: 'after', ...options },
 		);
 	}
 

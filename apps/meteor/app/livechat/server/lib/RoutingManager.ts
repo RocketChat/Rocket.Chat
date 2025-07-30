@@ -32,7 +32,7 @@ import { afterTakeInquiry, beforeDelegateAgent } from './hooks';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-
+import { client, shouldRetryTransaction } from '../../../../server/database/utils';
 const logger = new Logger('RoutingManager');
 
 type Routing = {
@@ -49,6 +49,12 @@ type Routing = {
 		room?: IOmnichannelRoom,
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
 	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, shouldQueue?: boolean): Promise<boolean>;
+	doUnassignAgent(
+		inquiry: ILivechatInquiryRecord,
+		room: IOmnichannelRoom,
+		shouldQueue?: boolean,
+		attempts?: number,
+	): Promise<{ inquiry: ILivechatInquiryRecord | null; shouldRemoveSubscriptions: boolean } | void>;
 	takeInquiry(
 		inquiry: Omit<
 			ILivechatInquiryRecord,
@@ -157,6 +163,39 @@ export const RoutingManager: Routing = {
 		return { inquiry, user };
 	},
 
+	async doUnassignAgent(inquiryParam, room, shouldQueue = false, attempts = 3) {
+		const session = client.startSession();
+		let inquiry: ILivechatInquiryRecord | null = null;
+		let shouldRemoveSubscriptions = false;
+		try {
+			session.startTransaction();
+			if (shouldQueue) {
+				inquiry = await LivechatInquiry.queueInquiry(inquiryParam._id, room.lastMessage, { session });
+			}
+
+			const { servedBy } = room;
+			if (servedBy) {
+				await LivechatRooms.removeAgentByRoomId(room._id, { session });
+				shouldRemoveSubscriptions = true;
+			}
+			await session.commitTransaction();
+
+			return { inquiry, shouldRemoveSubscriptions };
+		} catch (err) {
+			await session.abortTransaction();
+			if (shouldRetryTransaction(err)) {
+				if (attempts > 0) {
+					logger.debug({ msg: 'Retrying transaction because of transient error', err });
+					return this.doUnassignAgent(inquiryParam, room, shouldQueue, attempts - 1);
+				}
+			}
+
+			logger.error({ msg: 'Failed to unassign agent', err });
+		} finally {
+			await session.endSession();
+		}
+	},
+
 	async unassignAgent(inquiry, departmentId, shouldQueue = false) {
 		const { rid, department } = inquiry;
 		const room = await LivechatRooms.findOneById(rid);
@@ -178,26 +217,24 @@ export const RoutingManager: Routing = {
 			inquiry.department = departmentId;
 		}
 
-		const { servedBy } = room;
+		const { inquiry: queuedInquiry, shouldRemoveSubscriptions } = (await this.doUnassignAgent(inquiry, room, shouldQueue)) || {};
 
-		if (shouldQueue) {
-			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage);
-			if (queuedInquiry) {
-				inquiry = queuedInquiry;
-				void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
-					status: LivechatInquiryStatus.QUEUED,
-					queuedAt: new Date(),
-					takenAt: undefined,
-				});
-			}
+		if (queuedInquiry) {
+			void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
+				status: LivechatInquiryStatus.QUEUED,
+				queuedAt: new Date(),
+				takenAt: undefined,
+			});
 		}
 
-		if (servedBy) {
-			await LivechatRooms.removeAgentByRoomId(rid);
+		if (shouldRemoveSubscriptions) {
+			// TODO: refactor this function to include inside the transaction.
+			// The way it deals with subscriptions & the notifiers + app events inside make hard to pass the transaction around without conflicts
 			await this.removeAllRoomSubscriptions(room);
 			await dispatchAgentDelegated(rid);
 		}
 
+		// TODO: why dispatchInquiryQueued if unassignAgent can be `shouldQueue = false` ?
 		await dispatchInquiryQueued(inquiry);
 
 		return true;

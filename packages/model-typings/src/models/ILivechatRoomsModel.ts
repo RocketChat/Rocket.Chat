@@ -263,7 +263,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	changeDepartmentIdByRoomId(roomId: string, departmentId: string): Promise<UpdateResult>;
 	saveCRMDataByRoomId(roomId: string, crmData: unknown): Promise<UpdateResult>;
 	updateVisitorStatus(token: string, status: ILivechatVisitor['status']): Promise<UpdateResult | Document>;
-	removeAgentByRoomId(roomId: string): Promise<UpdateResult>;
+	removeAgentByRoomId(roomId: string, options?: UpdateOptions): Promise<UpdateResult>;
 	removeByVisitorToken(token: string): Promise<DeleteResult>;
 	removeByVisitorId(_id: string): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;

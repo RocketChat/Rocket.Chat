@@ -2387,7 +2387,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.updateMany(query, update);
 	}
 
-	removeAgentByRoomId(roomId: string) {
+	removeAgentByRoomId(roomId: string, options?: UpdateOptions) {
 		const query: Filter<IOmnichannelRoom> = {
 			_id: roomId,
 			t: 'l',
@@ -2397,7 +2397,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			$unset: { servedBy: 1 },
 		};
 
-		return this.updateOne(query, update);
+		return this.updateOne(query, update, options);
 	}
 
 	removeByVisitorToken(token: string) {
