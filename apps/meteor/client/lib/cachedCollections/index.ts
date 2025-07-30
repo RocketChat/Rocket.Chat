@@ -2,3 +2,4 @@ export { PrivateCachedCollection, PublicCachedCollection } from './CachedCollect
 export { CachedCollectionManager } from './CachedCollectionManager';
 export { pipe } from './pipe';
 export { applyQueryOptions, convertSort } from './utils';
+export { createDocumentMapStore, type IDocumentMapStore } from './DocumentMapStore';
