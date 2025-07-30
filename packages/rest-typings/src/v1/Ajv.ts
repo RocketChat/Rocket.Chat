@@ -21,3 +21,72 @@ ajv.addKeyword({
 	validate: (_schema: unknown, data: unknown): boolean => typeof data === 'string' && !!data.trim(),
 });
 export { ajv };
+
+type BadRequestErrorResponse = {
+	success: false;
+	error?: string;
+	errorType?: string;
+	stack?: string;
+	details?: string;
+};
+
+const BadRequestErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		stack: { type: 'string' },
+		error: { type: 'string' },
+		errorType: { type: 'string' },
+		details: { type: 'string' },
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const validateBadRequestErrorResponse = ajv.compile<BadRequestErrorResponse>(BadRequestErrorResponseSchema);
+
+type UnauthorizedErrorResponse = {
+	success: false;
+	status?: string;
+	message?: string;
+	error?: string;
+	errorType?: string;
+};
+
+const UnauthorizedErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		status: { type: 'string' },
+		message: { type: 'string' },
+		error: { type: 'string' },
+		errorType: { type: 'string' },
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const validateUnauthorizedErrorResponse = ajv.compile<UnauthorizedErrorResponse>(UnauthorizedErrorResponseSchema);
+
+type ForbiddenErrorResponse = {
+	success: false;
+	status?: string;
+	message?: string;
+	error?: string;
+	errorType?: string;
+};
+
+const ForbiddenErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		status: { type: 'string' },
+		message: { type: 'string' },
+		error: { type: 'string' },
+		errorType: { type: 'string' },
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const validateForbiddenErrorResponse = ajv.compile<ForbiddenErrorResponse>(ForbiddenErrorResponseSchema);
