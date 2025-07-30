@@ -1,5 +1,4 @@
 import { type IMessage, type ISubscription, type IRoom, isE2EEMessage } from '@rocket.chat/core-typings';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
@@ -31,7 +30,7 @@ export const useReplyInDMAction = (
 	const dmRoom = Rooms.use(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
 
 	const subsPredicate = useCallback(
-		(record: SubscriptionWithRoom) => record.rid === dmRoom?._id || record.u._id === user?._id,
+		(record: ISubscription) => record.rid === dmRoom?._id || record.u._id === user?._id,
 		[dmRoom, user?._id],
 	);
 	const dmSubs = Subscriptions.use(useShallow((state) => state.find(subsPredicate)));

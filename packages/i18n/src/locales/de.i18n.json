@@ -4900,7 +4900,6 @@
   "error-message-editing-blocked": "Nachrichten bearbeiten ist gesperrt",
   "error-message-size-exceeded": "Nachrichtengröße überschreitet Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Sie müssen einen Link zum [unsubscribe] angeben.",
-  "error-no-agents-online-in-department": "Keine Agenten der Abteilung online",
   "error-no-message-for-unread": "Es gibt keine Nachrichten um sie als ungelesen zu markieren",
   "error-no-owner-channel": "Nur Besitzer können diesen Channel zum Team hinzufügen",
   "error-no-permission-team-channel": "Sie haben nicht die Berechtigung, diesen Channel zum Team hinzuzufügen",
