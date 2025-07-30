@@ -67,7 +67,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 	}
 
 	protected override handleLoadedFromServer(rooms: IRoom[]): void {
-		const indexedSubscriptions = CachedChatSubscription.collection.state.indexBy('rid');
+		const indexedSubscriptions = CachedChatSubscription.store.getState().indexBy('rid');
 
 		const subscriptionsWithRoom = rooms.flatMap((room) => {
 			const sub = indexedSubscriptions.get(room._id);
@@ -77,7 +77,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 			return this.merge(room, sub);
 		});
 
-		CachedChatSubscription.collection.state.storeMany(subscriptionsWithRoom);
+		CachedChatSubscription.store.getState().storeMany(subscriptionsWithRoom);
 	}
 
 	protected override async handleRecordEvent(action: 'removed' | 'changed', room: IRoom) {
@@ -85,7 +85,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 
 		if (action === 'removed') return;
 
-		CachedChatSubscription.collection.state.update(
+		CachedChatSubscription.store.getState().update(
 			(record) => record.rid === room._id,
 			(sub) => this.merge(room, sub),
 		);
@@ -94,7 +94,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 	protected override handleSyncEvent(action: 'removed' | 'changed', room: IRoom): void {
 		if (action === 'removed') return;
 
-		CachedChatSubscription.collection.state.update(
+		CachedChatSubscription.store.getState().update(
 			(record) => record.rid === room._id,
 			(sub) => this.merge(room, sub),
 		);

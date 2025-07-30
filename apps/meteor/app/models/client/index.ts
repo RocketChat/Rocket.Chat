@@ -1,7 +1,8 @@
+import { AuthzCachedCollection } from './models/AuthzCachedCollection';
 import { CachedChatRoom } from './models/CachedChatRoom';
 import { CachedChatSubscription } from './models/CachedChatSubscription';
 import { Messages } from './models/Messages';
-import { AuthzCachedCollection, Permissions } from './models/Permissions';
+import { Permissions } from './models/Permissions';
 import { Roles } from './models/Roles';
 import { Rooms } from './models/Rooms';
 import { Subscriptions } from './models/Subscriptions';

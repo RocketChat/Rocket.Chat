@@ -15,7 +15,7 @@ type SortObject = {
 /**
  * Converts a MongoDB-style sort structure to a sort object.
  */
-export const convertSort = (original: OriginalStructure): SortObject => {
+const convertSort = (original: OriginalStructure): SortObject => {
 	const convertedSort: SortObject = [];
 
 	if (!original) {

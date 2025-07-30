@@ -3,7 +3,8 @@ import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-ty
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { CachedChatRoom } from './CachedChatRoom';
-import { PrivateCachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
+import { PrivateCachedStore } from '../../../../client/lib/cachedCollections/CachedCollection';
+import { createDocumentMapStore } from '../../../../client/lib/cachedCollections/DocumentMapStore';
 
 declare module '@rocket.chat/core-typings' {
 	interface ISubscription {
@@ -12,11 +13,12 @@ declare module '@rocket.chat/core-typings' {
 	}
 }
 
-class CachedChatSubscription extends PrivateCachedCollection<SubscriptionWithRoom, ISubscription> {
+class CachedChatSubscription extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
 	constructor() {
 		super({
 			name: 'subscriptions',
 			eventType: 'notify-user',
+			store: createDocumentMapStore(),
 		});
 	}
 
