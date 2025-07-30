@@ -1,5 +1,6 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useReducer, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -36,7 +37,17 @@ function expandedReducer(
 const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const { t } = useTranslation();
 
-	const { watch } = useAppLogsFilterFormContext();
+	const router = useRouter();
+
+	const { instanceId: instanceLogsFilter } = router.getSearchParameters();
+
+	const { watch, setValue } = useAppLogsFilterFormContext();
+
+	useEffect(() => {
+		if (instanceLogsFilter) {
+			setValue('instance', instanceLogsFilter);
+		}
+	}, [instanceLogsFilter, setValue]);
 
 	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
 
