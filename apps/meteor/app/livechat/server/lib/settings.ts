@@ -44,6 +44,7 @@ export async function getInitSettings() {
 		'Assets_livechat_widget_logo',
 		'Livechat_hide_watermark',
 		'Omnichannel_allow_visitors_to_close_conversation',
+		'Livechat_hide_expand_chat',
 	] as const;
 
 	type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';

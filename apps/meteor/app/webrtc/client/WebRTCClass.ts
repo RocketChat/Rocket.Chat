@@ -1,12 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChromeScreenShare } from './screenShare';
-import GenericModal from '../../../client/components/GenericModal';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Subscriptions, Users } from '../../models/client';
 import { settings } from '../../settings/client';
@@ -826,9 +825,7 @@ class WebRTCClass {
 		if (user?.username) {
 			fromUsername = user.username;
 		}
-		const subscription = Subscriptions.findOne({
-			rid: data.room,
-		})!;
+		const subscription = Subscriptions.state.find(({ rid }) => rid === data.room);
 
 		let icon;
 		let title;
@@ -845,10 +842,10 @@ class WebRTCClass {
 			}
 		} else if (data.media?.video) {
 			icon = 'video' as const;
-			title = t('WebRTC_group_video_call_from_%s', subscription.name);
+			title = t('WebRTC_group_video_call_from_%s', subscription?.name);
 		} else {
 			icon = 'phone' as const;
-			title = t('WebRTC_group_audio_call_from_%s', subscription.name);
+			title = t('WebRTC_group_audio_call_from_%s', subscription?.name);
 		}
 
 		imperativeModal.open({
@@ -1036,7 +1033,7 @@ const WebRTC = new (class {
 	getInstanceByRoomId(rid: IRoom['_id'], visitorId: string | null = null) {
 		let enabled = false;
 		if (!visitorId) {
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			if (!subscription) {
 				return;
 			}

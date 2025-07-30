@@ -93,7 +93,7 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 
 	const groupOptions = [...data, ...(actionButtonApps.data ?? [])]
 		.map((option) => ({
-			variant: option.color === 'alert' ? 'danger' : '',
+			variant: option.variant,
 			id: option.id,
 			icon: option.icon,
 			content: t(option.label),

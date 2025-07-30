@@ -1,28 +1,18 @@
-import { LocalCollection } from './LocalCollection';
+import type { StoreApi, UseBoundStore } from 'zustand';
+import { create } from 'zustand';
 
-// Helper for zustand-like store
-function createStore(initialRecords: any[] = []) {
-	let state = { records: initialRecords };
-	return {
-		getState: () => state,
-		setState: (fnOrObj: any) => {
-			if (typeof fnOrObj === 'function') {
-				state = fnOrObj(state);
-			} else {
-				state = { ...state, ...fnOrObj };
-			}
-		},
-	};
-}
+import { LocalCollection } from './LocalCollection';
 
 const docA = { _id: 'a', foo: 1 };
 const docB = { _id: 'b', foo: 2 };
 
-let store: any;
+let store: UseBoundStore<StoreApi<{ records: Map<string, any> }>>;
 let collection: LocalCollection<typeof docA>;
 
 beforeEach(() => {
-	store = createStore([]);
+	store = create(() => ({
+		records: new Map(),
+	}));
 	collection = new LocalCollection(store);
 });
 
@@ -30,8 +20,8 @@ describe('insert', () => {
 	it('inserts a document', () => {
 		const id = collection.insert({ ...docA });
 		expect(id).toBe('a');
-		expect(store.getState().records).toHaveLength(1);
-		expect(store.getState().records[0]._id).toBe('a');
+		expect(store.getState().records.size).toBe(1);
+		expect(store.getState().records.has('a')).toBe(true);
 	});
 
 	it('throws on duplicate _id', () => {
@@ -56,7 +46,7 @@ describe('insertAsync', () => {
 	it('inserts a document asynchronously', async () => {
 		const id = await collection.insertAsync({ ...docA });
 		expect(id).toBe('a');
-		expect(store.getState().records[0]._id).toBe('a');
+		expect(store.getState().records.has('a')).toBe(true);
 	});
 });
 
@@ -114,14 +104,14 @@ describe('remove/removeAsync', () => {
 	it('removes documents matching selector', () => {
 		const removed = collection.remove({ _id: 'a' });
 		expect(removed).toBe(1);
-		expect(store.getState().records).toHaveLength(1);
-		expect(store.getState().records[0]._id).toBe('b');
+		expect(store.getState().records.size).toBe(1);
+		expect(store.getState().records.has('a')).toBe(false);
 	});
 
 	it('removes all documents with empty selector', () => {
 		const removed = collection.remove({});
 		expect(removed).toBe(2);
-		expect(store.getState().records).toHaveLength(0);
+		expect(store.getState().records.size).toBe(0);
 	});
 
 	it('calls callback if provided', (done) => {
@@ -135,7 +125,7 @@ describe('remove/removeAsync', () => {
 	it('removeAsync removes documents asynchronously', async () => {
 		const removed = await collection.removeAsync({ _id: 'a' });
 		expect(removed).toBe(1);
-		expect(store.getState().records).toHaveLength(1);
+		expect(store.getState().records.size).toBe(1);
 	});
 });
 
@@ -147,19 +137,19 @@ describe('update/updateAsync', () => {
 	it('updates a document', () => {
 		const result = collection.update({ _id: 'a' }, { $set: { foo: 42 } });
 		expect(result).toBe(1);
-		expect(store.getState().records[0].foo).toBe(42);
+		expect(store.getState().records.get('a').foo).toBe(42);
 	});
 
 	it('does not update if selector does not match', () => {
 		const result = collection.update({ _id: 'z' }, { $set: { foo: 99 } });
 		expect(result).toBe(0);
-		expect(store.getState().records[0].foo).toBe(1);
+		expect(store.getState().records.get('a').foo).toBe(1);
 	});
 
 	it('upserts if upsert option is set', () => {
 		const result = collection.update({ _id: 'c' }, { $set: { foo: 7 } }, { upsert: true });
 		expect(typeof result === 'object' ? result.numberAffected : result).toBe(1);
-		expect(store.getState().records.some((d: any) => d._id === 'c')).toBe(true);
+		expect(store.getState().records.has('c')).toBe(true);
 	});
 
 	it('calls callback if provided', (done) => {
@@ -173,7 +163,7 @@ describe('update/updateAsync', () => {
 	it('updateAsync updates a document asynchronously', async () => {
 		const result = await collection.updateAsync({ _id: 'a' }, { $set: { foo: 100 } });
 		expect(result).toBe(1);
-		expect(store.getState().records[0].foo).toBe(100);
+		expect(store.getState().records.get('a').foo).toBe(100);
 	});
 });
 
@@ -181,13 +171,13 @@ describe('upsert/upsertAsync', () => {
 	it('upsert inserts if not found', () => {
 		const result = collection.upsert({ _id: 'd' }, { $set: { foo: 9 } });
 		expect(typeof result === 'object' ? result.numberAffected : result).toBe(1);
-		expect(store.getState().records.some((d: any) => d._id === 'd')).toBe(true);
+		expect(store.getState().records.has('d')).toBe(true);
 	});
 
 	it('upsertAsync inserts if not found', async () => {
 		const result = await collection.upsertAsync({ _id: 'e' }, { $set: { foo: 10 } });
 		expect(typeof result === 'object' ? result.numberAffected : result).toBe(1);
-		expect(store.getState().records.some((d: any) => d._id === 'e')).toBe(true);
+		expect(store.getState().records.has('e')).toBe(true);
 	});
 });
 

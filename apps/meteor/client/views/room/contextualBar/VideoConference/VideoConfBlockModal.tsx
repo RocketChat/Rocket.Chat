@@ -1,9 +1,8 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useCallback } from 'react';
-
-import GenericModal from '../../../../components/GenericModal';
 
 const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onConfirm: () => void }): ReactElement => {
 	const t = useTranslation();
