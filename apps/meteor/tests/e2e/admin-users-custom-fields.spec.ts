@@ -17,42 +17,32 @@ test.describe('Admin users custom fields', () => {
 	test.use({ storageState: Users.admin.state });
 
 	test.beforeAll(async ({ api }) => {
-		await Promise.all([
-			api.post('/settings/Accounts_CustomFields', {
-				value: JSON.stringify({
-					customFieldText1: {
-						type: 'text',
-						required: false,
-						minLength: 2,
-						maxLength: 20,
-					},
-					customFieldText2: {
-						type: 'text',
-						required: false,
-						minLength: 2,
-						maxLength: 20,
-					},
-				}),
+		await api.post('/settings/Accounts_CustomFields', {
+			value: JSON.stringify({
+				customFieldText1: {
+					type: 'text',
+					required: false,
+					minLength: 2,
+					maxLength: 20,
+				},
+				customFieldText2: {
+					type: 'text',
+					required: false,
+					minLength: 2,
+					maxLength: 20,
+				},
 			}),
+		});
+
+		[addTestUser, updateTestUser] = await Promise.all([
+			createTestUser(api),
 			createTestUser(api, {
-				email: 'customfields.adduser@test.com',
-				name: 'Custom Fields Add Test User',
-				username: 'customfieldsadduser',
-			}).then((user) => {
-				addTestUser = user;
-			}),
-			createTestUser(api, {
-				email: 'customfields.updateuser@test.com',
-				name: 'Custom Fields Update Test User',
-				username: 'customfieldsupdateuser',
 				data: {
 					customFields: {
 						customFieldText1: customFieldInitial1,
 						customFieldText2: adminCustomFieldValue2,
 					},
 				},
-			}).then((user) => {
-				updateTestUser = user;
 			}),
 		]);
 	});
