@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
-import { AuthzCachedCollection } from '../../app/models/client';
+import { PermissionsCachedStore } from '../cachedStores';
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 import { Roles } from '../stores';
 
@@ -23,7 +23,7 @@ type AuthorizationProviderProps = {
 
 const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 	useEffect(() => {
-		AuthzCachedCollection.listen();
+		PermissionsCachedStore.listen();
 	}, []);
 
 	return <AuthorizationContext.Provider children={children} value={contextValue} />;

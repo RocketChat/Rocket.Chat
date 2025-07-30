@@ -3,7 +3,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasRole } from './hasRole';
 import { watch } from './watch';
-import { AuthzCachedCollection, Permissions, Users } from '../../models/client';
+import { PermissionsCachedStore } from '../../../client/cachedStores';
+import { Permissions } from '../../../client/stores';
+import { Users } from '../../models/client';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
 const createPermissionValidator =
@@ -55,7 +57,7 @@ const validatePermissions = (
 		return false;
 	}
 
-	if (!AuthzCachedCollection.ready.get()) {
+	if (!PermissionsCachedStore.ready.get()) {
 		return false;
 	}
 
