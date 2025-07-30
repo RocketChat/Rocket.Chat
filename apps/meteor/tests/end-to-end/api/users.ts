@@ -2096,14 +2096,10 @@ describe('[Users]', () => {
 					customFieldText1: {
 						type: 'text',
 						required: false,
-						minLength: 2,
-						maxLength: 10,
 					},
 					customFieldText2: {
 						type: 'text',
 						required: false,
-						minLength: 2,
-						maxLength: 10,
 					},
 				});
 			});

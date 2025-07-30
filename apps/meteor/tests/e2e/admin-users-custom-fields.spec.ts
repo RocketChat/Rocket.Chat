@@ -22,14 +22,10 @@ test.describe('Admin users custom fields', () => {
 				customFieldText1: {
 					type: 'text',
 					required: false,
-					minLength: 2,
-					maxLength: 20,
 				},
 				customFieldText2: {
 					type: 'text',
 					required: false,
-					minLength: 2,
-					maxLength: 20,
 				},
 			}),
 		});
