@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Fixes a race condition between the queueing of an inquiry when transfering and the queue worker processing before the room is updated
+Fixes an issue where rooms transferred to a department's queue could get stuck—marked as taken but with no agent assigned.
