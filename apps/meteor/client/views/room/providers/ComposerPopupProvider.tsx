@@ -11,9 +11,10 @@ import { useTranslation } from 'react-i18next';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { emoji } from '../../../../app/emoji/client';
-import { Messages, Subscriptions } from '../../../../app/models/client';
+import { Messages } from '../../../../app/models/client';
 import { slashCommands } from '../../../../app/utils/client';
 import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
+import { Subscriptions } from '../../../stores';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
 import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';

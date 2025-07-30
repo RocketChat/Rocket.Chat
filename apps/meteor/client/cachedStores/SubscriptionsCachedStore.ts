@@ -2,9 +2,9 @@ import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { CachedChatRoom } from './CachedChatRoom';
-import { PrivateCachedStore } from '../../../../client/lib/cachedCollections/CachedCollection';
-import { createDocumentMapStore } from '../../../../client/lib/cachedCollections/DocumentMapStore';
+import { CachedChatRoom } from '../../app/models/client/models/CachedChatRoom';
+import { PrivateCachedStore } from '../lib/cachedCollections/CachedCollection';
+import { createDocumentMapStore } from '../lib/cachedCollections/DocumentMapStore';
 
 declare module '@rocket.chat/core-typings' {
 	interface ISubscription {
@@ -13,7 +13,7 @@ declare module '@rocket.chat/core-typings' {
 	}
 }
 
-class CachedChatSubscription extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
+class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
 	constructor() {
 		super({
 			name: 'subscriptions',
@@ -92,9 +92,9 @@ class CachedChatSubscription extends PrivateCachedStore<SubscriptionWithRoom, IS
 	}
 }
 
-const instance = new CachedChatSubscription();
+const instance = new SubscriptionsCachedStore();
 
 export {
 	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
-	instance as CachedChatSubscription,
+	instance as SubscriptionsCachedStore,
 };

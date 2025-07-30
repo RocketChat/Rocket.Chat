@@ -58,7 +58,8 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			const { Rooms, Subscriptions } = await import('../../../../app/models/client');
+			const { Rooms } = await import('../../../../app/models/client');
+			const { Subscriptions } = await import('../../../stores');
 
 			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
 			unsetKeys.forEach((key) => {

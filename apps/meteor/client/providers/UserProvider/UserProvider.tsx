@@ -17,7 +17,7 @@ import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { Subscriptions, Rooms, Users } from '../../../app/models/client';
+import { Rooms, Users } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
@@ -26,6 +26,7 @@ import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { applyQueryOptions } from '../../lib/cachedCollections';
 import type { IDocumentMapStore } from '../../lib/cachedCollections/DocumentMapStore';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
+import { Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;

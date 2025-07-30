@@ -7,7 +7,8 @@ import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChromeScreenShare } from './screenShare';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { Subscriptions, Users } from '../../models/client';
+import { Subscriptions } from '../../../client/stores';
+import { Users } from '../../models/client';
 import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';

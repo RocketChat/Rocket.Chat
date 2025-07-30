@@ -28,8 +28,9 @@ import { log, logError } from './logger';
 import { e2e } from './rocketchat.e2e';
 import { RoomManager } from '../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { Subscriptions } from '../../../client/stores';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { Rooms, Messages } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 

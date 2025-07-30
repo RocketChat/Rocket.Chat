@@ -2,7 +2,7 @@ import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy } from '@rocket.
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { CachedChatSubscription } from './CachedChatSubscription';
+import { SubscriptionsCachedStore } from '../../../../client/cachedStores';
 import { PrivateCachedStore } from '../../../../client/lib/cachedCollections/CachedCollection';
 import { createDocumentMapStore } from '../../../../client/lib/cachedCollections/DocumentMapStore';
 
@@ -67,7 +67,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 	}
 
 	protected override handleLoadedFromServer(rooms: IRoom[]): void {
-		const indexedSubscriptions = CachedChatSubscription.store.getState().indexBy('rid');
+		const indexedSubscriptions = SubscriptionsCachedStore.store.getState().indexBy('rid');
 
 		const subscriptionsWithRoom = rooms.flatMap((room) => {
 			const sub = indexedSubscriptions.get(room._id);
@@ -77,7 +77,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 			return this.merge(room, sub);
 		});
 
-		CachedChatSubscription.store.getState().storeMany(subscriptionsWithRoom);
+		SubscriptionsCachedStore.store.getState().storeMany(subscriptionsWithRoom);
 	}
 
 	protected override async handleRecordEvent(action: 'removed' | 'changed', room: IRoom) {
@@ -85,7 +85,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 
 		if (action === 'removed') return;
 
-		CachedChatSubscription.store.getState().update(
+		SubscriptionsCachedStore.store.getState().update(
 			(record) => record.rid === room._id,
 			(sub) => this.merge(room, sub),
 		);
@@ -94,7 +94,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 	protected override handleSyncEvent(action: 'removed' | 'changed', room: IRoom): void {
 		if (action === 'removed') return;
 
-		CachedChatSubscription.store.getState().update(
+		SubscriptionsCachedStore.store.getState().update(
 			(record) => record.rid === room._id,
 			(sub) => this.merge(room, sub),
 		);
