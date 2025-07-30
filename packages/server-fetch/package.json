@@ -3,7 +3,7 @@
 	"version": "0.0.3",
 	"private": true,
 	"devDependencies": {
-		"@types/node-fetch": "~2.6.12",
+		"@types/node-fetch": "~2.6.13",
 		"@types/proxy-from-env": "^1.0.4",
 		"eslint": "~8.45.0",
 		"typescript": "~5.8.3"
@@ -25,7 +25,7 @@
 	"dependencies": {
 		"http-proxy-agent": "^7.0.2",
 		"https-proxy-agent": "^7.0.6",
-		"node-fetch": "~3.3.2",
+		"node-fetch": "~2.7.0",
 		"proxy-from-env": "^1.1.0"
 	}
 }
