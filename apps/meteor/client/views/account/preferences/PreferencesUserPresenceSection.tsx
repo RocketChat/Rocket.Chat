@@ -1,5 +1,5 @@
-import { AccordionItem, NumberInput } from '@rocket.chat/fuselage';
-import { Field, FieldGroup, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage-forms';
+import { AccordionItem } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldLabel, FieldRow, ToggleSwitch, NumberInput } from '@rocket.chat/fuselage-forms';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
