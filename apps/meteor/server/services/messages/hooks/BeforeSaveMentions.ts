@@ -48,7 +48,14 @@ class MentionQueries {
 				$and: [
 					{
 						$or: [
-							{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: { $in: [...new Set(channels)] } }] },
+							{
+								$and: [
+									{
+										$or: [{ federated: { $exists: false } }, { federated: false }],
+									},
+									{ $or: [{ fname: { $in: [...new Set(channels)] } }, { name: { $in: [...new Set(channels)] } }] },
+								],
+							},
 							{ federated: true, fname: { $in: [...new Set(channels)] } },
 						],
 					},

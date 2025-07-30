@@ -180,7 +180,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const { rooms = [] } = await userSpotlight(filter, [], { rooms: true, mentions: true }, rid);
 					return rooms as unknown as ComposerBoxPopupRoomProps[];
 				},
-				getValue: (item) => `${item.name || item.fname}`,
+				getValue: (item) => `${item.fname || item.name}`,
 				renderItem: ({ item }) => <ComposerBoxPopupRoom {...item} />,
 			}) as any,
 			useEmoji &&

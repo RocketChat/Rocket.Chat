@@ -22,7 +22,7 @@ type GazzodownTextProps = {
 		username?: string;
 		name?: string;
 	}[];
-	channels?: Pick<IRoom, '_id' | 'name'>[];
+	channels?: Pick<IRoom, '_id' | 'name' | 'fname'>[];
 	searchText?: string;
 };
 
@@ -92,7 +92,10 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const { isEmbedded, isMobile } = useLayout();
 
-	const resolveChannelMention = useCallback((mention: string) => channels?.find(({ name }) => name === mention), [channels]);
+	const resolveChannelMention = useCallback(
+		(mention: string) => channels?.find(({ fname, name }) => (fname ?? name) === mention),
+		[channels],
+	);
 
 	const router = useRouter();
 
