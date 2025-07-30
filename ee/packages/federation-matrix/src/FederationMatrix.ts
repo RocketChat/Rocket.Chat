@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-import { toUnpaddedBase64 } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
@@ -41,43 +40,27 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
+
 		const config = new ConfigService({
+			serverName: process.env.SERVER_NAME || 'rc1',
+			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
+			version: process.env.SERVER_VERSION || '1.0',
+			matrixDomain: process.env.MATRIX_DOMAIN || 'rc1',
+			keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
+			timeout: 30000,
+			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
 			database: {
 				uri: process.env.MONGODB_URI || 'mongodb://localhost:3001/meteor',
 				name: process.env.DATABASE_NAME || 'meteor',
 				poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
 			},
-			server: {
-				name: process.env.SERVER_NAME || 'rc1',
-				version: process.env.SERVER_VERSION || '1.0',
-				port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
-				baseUrl: process.env.SERVER_BASE_URL || 'http://rc1:8080',
-				host: process.env.SERVER_HOST || '0.0.0.0',
-			},
-			matrix: {
-				serverName: process.env.MATRIX_SERVER_NAME || 'rc1',
-				domain: process.env.MATRIX_DOMAIN || 'rc1',
-				keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
-			},
-			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
 		});
-		const matrixConfig = config.getMatrixConfig();
-		const serverConfig = config.getServerConfig();
-		const signingKeys = await config.getSigningKey();
-		const signingKey = signingKeys[0];
 
 		const containerOptions: FederationContainerOptions = {
 			emitter: instance.eventHandler,
-			federationOptions: {
-				serverName: matrixConfig.serverName,
-				signingKey: toUnpaddedBase64(signingKey.privateKey),
-				signingKeyId: `ed25519:${signingKey.version}`,
-				timeout: 30000,
-				baseUrl: serverConfig.baseUrl,
-			},
 		};
 
-		await createFederationContainer(containerOptions, config);
+		createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
 		instance.buildMatrixHTTPRoutes();
 
@@ -166,7 +149,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				} catch (error) {
 					this.logger.error('Error creating or updating bridged user:', error);
 				}
-
 				// We are not generating bridged users for members outside of the current workspace
 				// They will be created when the invite is accepted
 
