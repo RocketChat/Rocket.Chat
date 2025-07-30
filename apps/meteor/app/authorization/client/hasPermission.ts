@@ -2,13 +2,14 @@ import type { IUser, IPermission } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { hasRole } from './hasRole';
+import { watch } from './watch';
 import { AuthzCachedCollection, Permissions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
 	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IPermission['_id'][]): boolean => {
-		const userRoles = Users.state.get(userId)?.roles;
+		const userRoles = watch(Users.use, (state) => state.get(userId)?.roles);
 
 		const checkEachPermission = quantifier.bind(permissionIds);
 
@@ -19,7 +20,7 @@ const createPermissionValidator =
 				}
 			}
 
-			const permission = Permissions.state.get(permissionId);
+			const permission = watch(Permissions.use, (state) => state.get(permissionId));
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleId) => {
