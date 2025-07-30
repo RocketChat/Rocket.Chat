@@ -1,8 +1,8 @@
 import type { IUser, IRole, IRoom } from '@rocket.chat/core-typings';
 
 import { watch } from './watch';
-import { Subscriptions } from '../../../client/stores';
-import { Roles, Users } from '../../models/client';
+import { Roles, Subscriptions } from '../../../client/stores';
+import { Users } from '../../models/client';
 
 export const hasRole = (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id']): boolean => {
 	const roleScope = watch(Roles.use, (state) => state.get(roleId)?.scope ?? 'Users');

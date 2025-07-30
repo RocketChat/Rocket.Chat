@@ -4,8 +4,9 @@ import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
-import { Roles, AuthzCachedCollection } from '../../app/models/client';
+import { AuthzCachedCollection } from '../../app/models/client';
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
+import { Roles } from '../stores';
 
 const contextValue = {
 	queryPermission: createReactiveSubscriptionFactory((permission, scope, scopeRoles) => hasPermission(permission, scope, scopeRoles)),
