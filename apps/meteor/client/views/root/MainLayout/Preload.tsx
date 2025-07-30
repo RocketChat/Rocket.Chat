@@ -2,10 +2,9 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import { useEffect } from 'react';
 
-import { CachedChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { mainReady } from '../../../../app/ui-utils/client';
-import { SubscriptionsCachedStore } from '../../../cachedStores';
+import { RoomsCachedStore, SubscriptionsCachedStore } from '../../../cachedStores';
 import { useReactiveVar } from '../../../hooks/useReactiveVar';
 import { isSyncReady } from '../../../lib/userData';
 import PageLoading from '../PageLoading';
@@ -24,7 +23,7 @@ const Preload = ({ children }: { children: ReactNode }): ReactElement => {
 
 	useEffect(() => {
 		SubscriptionsCachedStore.listen();
-		CachedChatRoom.listen();
+		RoomsCachedStore.listen();
 	}, []);
 
 	if (!ready) {

@@ -1,20 +1,15 @@
 import { AuthzCachedCollection } from './models/AuthzCachedCollection';
-import { CachedChatRoom } from './models/CachedChatRoom';
 import { Messages } from './models/Messages';
 import { Permissions } from './models/Permissions';
 import { Roles } from './models/Roles';
-import { Rooms } from './models/Rooms';
 import { Users } from './models/Users';
 
 export {
 	Roles,
-	CachedChatRoom,
 	AuthzCachedCollection,
 	Permissions,
 	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	Users,
-	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
-	Rooms,
 	/** @deprecated prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	Messages,
 };

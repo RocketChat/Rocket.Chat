@@ -5,13 +5,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
-import { Rooms } from '../../../../app/models/client';
 import { roomFields } from '../../../../lib/publishFields';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { Rooms } from '../../../stores';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -58,8 +58,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			const { Rooms } = await import('../../../../app/models/client');
-			const { Subscriptions } = await import('../../../stores');
+			const { Rooms, Subscriptions } = await import('../../../stores');
 
 			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
 			unsetKeys.forEach((key) => {

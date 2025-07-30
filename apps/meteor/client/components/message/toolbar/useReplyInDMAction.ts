@@ -3,11 +3,10 @@ import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 
-import { Rooms } from '../../../../app/models/client';
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import { Subscriptions } from '../../../stores';
+import { Rooms, Subscriptions } from '../../../stores';
 
 export const useReplyInDMAction = (
 	message: IMessage,

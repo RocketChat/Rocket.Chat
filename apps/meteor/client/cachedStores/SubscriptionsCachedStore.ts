@@ -2,7 +2,7 @@ import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { CachedChatRoom } from '../../app/models/client/models/CachedChatRoom';
+import { RoomsCachedStore } from './RoomsCachedStore';
 import { PrivateCachedStore } from '../lib/cachedCollections/CachedCollection';
 import { createDocumentMapStore } from '../lib/cachedCollections/DocumentMapStore';
 
@@ -23,7 +23,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 	}
 
 	protected override mapRecord(subscription: ISubscription): SubscriptionWithRoom {
-		const room = CachedChatRoom.store.getState().find((r) => r._id === subscription.rid);
+		const room = RoomsCachedStore.store.getState().find((r) => r._id === subscription.rid);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 
