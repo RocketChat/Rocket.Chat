@@ -79,14 +79,15 @@ test.describe('Admin users custom fields', () => {
 		await test.step('should fill custom fields for user', async () => {
 			await poAdmin.tabs.users.inputName.waitFor();
 
-			await expect(poAdmin.tabs.users.customFieldText1).toBeVisible();
-			await expect(poAdmin.tabs.users.customFieldText2).toBeVisible();
+			await expect(poAdmin.tabs.users.getCustomField('customFieldText1')).toBeVisible();
+			await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toBeVisible();
 
-			await poAdmin.tabs.users.customFieldText1.fill(adminCustomFieldValue1);
-			await poAdmin.tabs.users.customFieldText2.fill(adminCustomFieldValue2);
+			await poAdmin.tabs.users.getCustomField('customFieldText1').fill(adminCustomFieldValue1);
+			await poAdmin.tabs.users.getCustomField('customFieldText2').fill(adminCustomFieldValue2);
 		});
 
 		await test.step('should save user custom fields', async () => {
+			await poAdmin.tabs.users.btnSaveUser.waitFor();
 			await poAdmin.tabs.users.btnSaveUser.click();
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
 			await poHomeChannel.dismissToast();
@@ -97,8 +98,8 @@ test.describe('Admin users custom fields', () => {
 			await poAdmin.getUserRowByUsername(addTestUser.data.username).click();
 			await poAdmin.btnEdit.click();
 
-			await expect(poAdmin.tabs.users.customFieldText1).toHaveValue(adminCustomFieldValue1);
-			await expect(poAdmin.tabs.users.customFieldText2).toHaveValue(adminCustomFieldValue2);
+			await expect(poAdmin.tabs.users.getCustomField('customFieldText1')).toHaveValue(adminCustomFieldValue1);
+			await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
 		});
 	});
 
@@ -118,14 +119,15 @@ test.describe('Admin users custom fields', () => {
 		await test.step('should verify existing values and update one custom field', async () => {
 			await poAdmin.tabs.users.inputName.waitFor();
 
-			await expect(poAdmin.tabs.users.customFieldText1).toHaveValue(customFieldInitial1);
-			await expect(poAdmin.tabs.users.customFieldText2).toHaveValue(adminCustomFieldValue2);
+			await expect(poAdmin.tabs.users.getCustomField('customFieldText1')).toHaveValue(customFieldInitial1);
+			await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
 
-			await poAdmin.tabs.users.customFieldText1.clear();
-			await poAdmin.tabs.users.customFieldText1.fill(adminCustomFieldUpdated1);
+			await poAdmin.tabs.users.getCustomField('customFieldText1').clear();
+			await poAdmin.tabs.users.getCustomField('customFieldText1').fill(adminCustomFieldUpdated1);
 		});
 
 		await test.step('should save and verify partial update', async () => {
+			await poAdmin.tabs.users.btnSaveUser.waitFor();
 			await poAdmin.tabs.users.btnSaveUser.click();
 			await expect(poHomeChannel.toastSuccess).toBeVisible();
 			await poHomeChannel.dismissToast();
@@ -134,8 +136,8 @@ test.describe('Admin users custom fields', () => {
 			await poAdmin.getUserRowByUsername(updateTestUser.data.username).click();
 			await poAdmin.btnEdit.click();
 
-			await expect(poAdmin.tabs.users.customFieldText1).toHaveValue(adminCustomFieldUpdated1);
-			await expect(poAdmin.tabs.users.customFieldText2).toHaveValue(adminCustomFieldValue2);
+			await expect(poAdmin.tabs.users.getCustomField('customFieldText1')).toHaveValue(adminCustomFieldUpdated1);
+			await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toHaveValue(adminCustomFieldValue2);
 		});
 	});
 });

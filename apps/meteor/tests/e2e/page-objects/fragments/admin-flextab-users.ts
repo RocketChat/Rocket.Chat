@@ -80,16 +80,7 @@ export class AdminFlextabUsers {
 		return this.page.locator('button[data-qa="ContextualbarActionClose"]');
 	}
 
-	// Custom Fields methods
 	getCustomField(fieldName: string): Locator {
-		return this.page.locator(`input[name="customFields.${fieldName}"]`);
-	}
-
-	get customFieldText1(): Locator {
-		return this.getCustomField('customFieldText1');
-	}
-
-	get customFieldText2(): Locator {
-		return this.getCustomField('customFieldText2');
+		return this.page.getByRole('textbox', { name: fieldName });
 	}
 }
