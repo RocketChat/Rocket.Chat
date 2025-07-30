@@ -5,9 +5,9 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '../../../components/Header';
-import { useTeamInfoEndpoint } from '../../../hooks/useTeamInfoEndpoint';
+import { useTeamInfoQuery } from '../../../hooks/useTeamInfoQuery';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
-import { useUserTeams } from '../hooks/useUserTeams';
+import { useUserTeamsQuery } from '../hooks/useUserTeamsQuery';
 
 type APIErrorResult = { success: boolean; error: string };
 
@@ -24,18 +24,18 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 	}
 
 	const {
-		data: teamInfoData,
+		data: teamInfo,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useTeamInfoEndpoint(teamId, (_, error) => (error as unknown as APIErrorResult)?.error !== 'unauthorized');
+	} = useTeamInfoQuery(teamId, { retry: (_, error) => (error as unknown as APIErrorResult)?.error !== 'unauthorized' });
 
-	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeams(userId);
+	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeamsQuery(userId);
 
-	const userBelongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
-	const isTeamPublic = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;
+	const userBelongsToTeam = userTeams?.find((team) => team._id === teamId) || false;
+	const isTeamPublic = teamInfo?.type === TEAM_TYPE.PUBLIC;
 
 	const redirectToMainRoom = (): void => {
-		const rid = teamInfoData?.teamInfo.roomId;
+		const rid = teamInfo?.roomId;
 		if (!rid) {
 			return;
 		}
@@ -60,7 +60,7 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 	return (
 		<HeaderTag {...buttonProps}>
 			<HeaderTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-			{teamInfoData?.teamInfo.name}
+			{teamInfo?.name}
 		</HeaderTag>
 	);
 };

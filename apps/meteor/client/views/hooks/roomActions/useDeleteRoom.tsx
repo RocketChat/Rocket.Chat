@@ -6,7 +6,7 @@ import { useSetModal, useToastMessageDispatch, useRouter, usePermission, useEndp
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { useTeamInfoEndpoint } from '../../../hooks/useTeamInfoEndpoint';
+import { useTeamInfoQuery } from '../../../hooks/useTeamInfoQuery';
 import DeleteTeamModal from '../../teams/contextualBar/info/DeleteTeam';
 
 export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { reload }: { reload?: () => void } = {}) => {
@@ -22,10 +22,10 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 	const deleteTeamEndpoint = useEndpoint('POST', '/v1/teams.delete');
 
 	const teamId = room.teamId || '';
-	const { data: teamInfoData } = useTeamInfoEndpoint(teamId);
+	const { data: teamInfo } = useTeamInfoQuery(teamId);
 
 	const hasPermissionToDeleteRoom = usePermission(`delete-${room.t}`, room._id);
-	const hasPermissionToDeleteTeamRoom = usePermission(`delete-team-${room.t === 'c' ? 'channel' : 'group'}`, teamInfoData?.teamInfo.roomId);
+	const hasPermissionToDeleteTeamRoom = usePermission(`delete-team-${room.t === 'c' ? 'channel' : 'group'}`, teamInfo?.roomId);
 	const isTeamRoom = room.teamId;
 	const canDeleteRoom = isRoomFederated(room) ? false : hasPermissionToDeleteRoom && (!isTeamRoom || hasPermissionToDeleteTeamRoom);
 
