@@ -1,33 +1,38 @@
 import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
-import { useState } from 'react';
-// import { useTranslation } from 'react-i18next';
 
-import { ActionButton, PeerInfo, type PeerInfoProps } from '../components';
-import Timer from '../components/Timer';
-import { Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, WidgetInfo } from '../components/Widget';
+import { useMediaCallContext } from '../MediaCallContext';
+import {
+	ToggleButton,
+	PeerInfo,
+	Widget,
+	WidgetFooter,
+	WidgetHandle,
+	WidgetHeader,
+	WidgetContent,
+	WidgetInfo,
+	Timer,
+	DevicePicker,
+} from '../components';
 import { useInfoSlots } from '../useInfoSlots';
-
-const usePeerInfo = (): PeerInfoProps => {
-	return {
-		name: 'John Doe',
-		avatarUrl: '',
-		identifier: '4432',
-	};
-};
+import { useKeypad } from '../useKeypad';
 
 const OngoingCall = () => {
-	const peerInfo = usePeerInfo();
+	const { muted, held, onMute, onHold, onForward, onEndCall, onTone, peerInfo } = useMediaCallContext();
 
-	const [muted, setMuted] = useState(false);
-	const [held, setHeld] = useState(false);
+	const keypad = useKeypad(onTone);
 
 	const slots = useInfoSlots(muted, held);
+
+	// TODO: Figure out how to ensure this always exist before rendering the component
+	if (!peerInfo) {
+		throw new Error('Peer info is required');
+	}
 
 	return (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={<Timer />}>
-				<IconButton name='customize' icon='customize' small />
+				<DevicePicker />
 			</WidgetHeader>
 			<WidgetInfo slots={slots} />
 
@@ -35,12 +40,13 @@ const OngoingCall = () => {
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
 			<WidgetFooter>
+				{keypad?.element}
 				<ButtonGroup large>
-					<ActionButton label='dialpad' icon='dialpad' />
-					<ActionButton label='forward' icon='arrow-forward' />
-					<ActionButton label='hold' icon='pause-shape-unfilled' onClick={() => setHeld((held) => !held)} pressed={held} />
-					<ActionButton label='mute' icon='mic' pressedIcon='mic-off' onClick={() => setMuted(!muted)} pressed={muted} />
-					<ActionButton label='phone' icon='phone' danger />
+					<IconButton label='dialpad' icon='dialpad' onClick={keypad.toggleOpen} />
+					<IconButton label='forward' icon='arrow-forward' onClick={onForward} />
+					<ToggleButton label='hold' icons={['pause-shape-filled', 'pause-shape-unfilled']} pressed={held} onToggle={onHold} />
+					<ToggleButton label='mute' icons={['mic', 'mic-off']} pressed={muted} onToggle={onMute} />
+					<IconButton label='phone' icon='phone' danger onClick={onEndCall} />
 				</ButtonGroup>
 			</WidgetFooter>
 		</Widget>

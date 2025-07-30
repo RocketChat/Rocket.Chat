@@ -1,34 +1,31 @@
-import { Button, ButtonGroup, IconButton } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import { PeerInfo, type PeerInfoProps } from '../components';
-import { Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent } from '../components/Widget';
-
-const usePeerInfo = (): PeerInfoProps => {
-	return {
-		name: 'John Doe',
-		avatarUrl: '',
-		identifier: '4432',
-	};
-};
+import { useMediaCallContext } from '../MediaCallContext';
+import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker } from '../components';
 
 const OutgoingCall = () => {
 	const { t } = useTranslation();
 
-	const peerInfo = usePeerInfo();
+	const { onEndCall, peerInfo } = useMediaCallContext();
+
+	// TODO: Figure out how to ensure this always exist before rendering the component
+	if (!peerInfo) {
+		throw new Error('Peer info is required');
+	}
 
 	return (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={`${t('Calling')}...`}>
-				<IconButton name='customize' icon='customize' small />
+				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
 			<WidgetFooter>
 				<ButtonGroup stretch>
-					<Button medium name='phone' icon='phone-off' danger flexGrow={1}>
+					<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
 						{t('Cancel')}
 					</Button>
 				</ButtonGroup>
