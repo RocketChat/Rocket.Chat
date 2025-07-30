@@ -10,9 +10,9 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/node": "~22.16.1",
-		"babel-jest": "~30.0.2",
+		"babel-jest": "~30.0.5",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.2",
+		"jest": "~30.0.5",
 		"typescript": "~5.8.3"
 	},
 	"scripts": {
