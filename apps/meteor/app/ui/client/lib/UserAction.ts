@@ -72,9 +72,9 @@ export const UserAction = new (class {
 		}
 
 		const handler = function (username: string, activityType: string[], extras?: object): void {
-			const user = Users.findOne(Meteor.userId() || undefined, {
-				fields: { name: 1, username: 1 },
-			}) as IUser;
+			const uid = Meteor.userId();
+			const user = uid ? Users.state.get(uid) : undefined;
+
 			if (username === shownName(user)) {
 				return;
 			}
