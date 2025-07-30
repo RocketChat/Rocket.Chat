@@ -3,8 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { Messages } from '../../../../../app/models/client';
-import { Subscriptions } from '../../../../stores';
+import { Messages, Subscriptions } from '../../../../stores';
 
 export const useUsersNameChanged = () => {
 	const notify = useStream('notify-logged');

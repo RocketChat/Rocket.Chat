@@ -16,8 +16,7 @@ export const getPermaLink = async (msgId: string): Promise<string> => {
 		throw new Error('invalid-parameter');
 	}
 
-	const { Messages } = await import('../../app/models/client');
-	const { Rooms, Subscriptions } = await import('../stores');
+	const { Messages, Rooms, Subscriptions } = await import('../stores');
 
 	const msg = Messages.state.get(msgId) || (await getMessage(msgId));
 	if (!msg) {

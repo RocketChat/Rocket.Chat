@@ -4,10 +4,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-import { Rooms } from '../../../../client/stores';
+import { Messages, Rooms } from '../../../../client/stores';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { t } from '../../../utils/lib/i18n';
 
