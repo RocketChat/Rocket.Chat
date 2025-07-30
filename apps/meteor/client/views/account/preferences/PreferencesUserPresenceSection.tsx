@@ -1,14 +1,11 @@
 import { AccordionItem, NumberInput } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage-forms';
-import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 const PreferencesUserPresenceSection = () => {
 	const { t } = useTranslation();
 	const { register, control } = useFormContext();
-
-	const idleTimeLimit = useId();
 
 	return (
 		<AccordionItem title={t('User_Presence')}>
@@ -26,7 +23,7 @@ const PreferencesUserPresenceSection = () => {
 				<Field>
 					<FieldLabel>{t('Idle_Time_Limit')}</FieldLabel>
 					<FieldRow>
-						<NumberInput id={idleTimeLimit} {...register('idleTimeLimit')} />
+						<NumberInput {...register('idleTimeLimit')} />
 					</FieldRow>
 				</Field>
 			</FieldGroup>
