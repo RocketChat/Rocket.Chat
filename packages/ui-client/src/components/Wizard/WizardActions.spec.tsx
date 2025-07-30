@@ -17,4 +17,3 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	const results = await axe(container);
 	expect(results).toHaveNoViolations();
 });
-
