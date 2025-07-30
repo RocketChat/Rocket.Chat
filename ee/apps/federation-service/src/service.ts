@@ -57,7 +57,7 @@ function handleHealthCheck(app: Hono) {
 
 	app.mount('/_matrix', matrix.getHonoRouter().fetch);
 	app.mount('/.well-known', wellKnown.getHonoRouter().fetch);
-
+	
 	handleHealthCheck(app);
 
 	serve({
