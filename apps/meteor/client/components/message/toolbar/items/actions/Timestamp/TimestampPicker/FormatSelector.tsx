@@ -6,11 +6,11 @@ import { TIMESTAMP_FORMATS } from '../../../../../../../lib/utils/timestamp/form
 import type { TimestampFormat, ITimestampFormatConfig } from '../../../../../../../lib/utils/timestamp/types';
 
 type FormatSelectorProps = {
-	selectedFormat: TimestampFormat;
+	value: TimestampFormat;
 	onChange: (format: TimestampFormat) => void;
 };
 
-const FormatSelector = ({ selectedFormat, onChange }: FormatSelectorProps): ReactElement => {
+const FormatSelector = ({ value, onChange }: FormatSelectorProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const handleFormatChange = (key: Key): void => {
@@ -18,7 +18,7 @@ const FormatSelector = ({ selectedFormat, onChange }: FormatSelectorProps): Reac
 	};
 
 	const formatOptions = Object.entries(TIMESTAMP_FORMATS).map(
-		([format, config]: [string, ITimestampFormatConfig]) => [format, `${t(config.label)} (${config.description})`] as const,
+		([format, config]: [string, ITimestampFormatConfig]) => [format, `${t(config.label)} (${t(config.description)})`] as const,
 	);
 
 	return (
@@ -26,7 +26,7 @@ const FormatSelector = ({ selectedFormat, onChange }: FormatSelectorProps): Reac
 			<Field>
 				<FieldLabel>{t('Format')}</FieldLabel>
 				<FieldRow>
-					<Select value={selectedFormat} onChange={handleFormatChange} options={formatOptions} width='full' />
+					<Select value={value} onChange={handleFormatChange} options={formatOptions} width='full' />
 				</FieldRow>
 			</Field>
 		</Box>

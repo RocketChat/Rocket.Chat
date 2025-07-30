@@ -15,7 +15,6 @@ import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
 import { messageBox } from '../../../../../../app/ui-utils/client';
-import type { MessageBoxAction } from '../../../../../../app/ui-utils/client/lib/messageBox';
 import { isTruthy } from '../../../../../../lib/isTruthy';
 import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageboxAppsActionButtons';
 import { useChat } from '../../../contexts/ChatContext';
@@ -114,7 +113,7 @@ const MessageBoxActionsToolbar = ({
 	const messageBoxActions = Object.entries(groups).map(([name, group]) => {
 		const items: GenericMenuItemProps[] = group
 			.filter((item) => !hiddenActions.includes(item.id))
-			.map((item: MessageBoxAction) => ({
+			.map((item) => ({
 				id: item.id,
 				icon: item.icon as ComponentProps<typeof Icon>['name'],
 				content: t(item.label),
@@ -125,12 +124,12 @@ const MessageBoxActionsToolbar = ({
 						event: event as unknown as Event,
 						chat: chatContext,
 					}),
-				gap: !item.icon,
+				gap: Boolean(!item.icon),
 			}));
 
 		return {
 			title: t(name as TranslationKey),
-			items: items.filter(isTruthy),
+			items: items || [],
 		};
 	});
 

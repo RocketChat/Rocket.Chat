@@ -4,20 +4,19 @@ import { parse } from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { dateToTimestamp, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
-import { type TimestampFormat } from '../../../../../../../lib/utils/timestamp/types';
+import { dateToISOString, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
+import type { TimestampFormat, TimezoneKey } from '../../../../../../../lib/utils/timestamp/types';
 import GazzodownText from '../../../../../../GazzodownText';
 
 type PreviewProps = {
 	date: Date;
 	format: TimestampFormat;
-	timezone: string;
+	timezone: TimezoneKey;
 };
 
 const Preview = ({ date, format, timezone }: PreviewProps): ReactElement => {
 	const { t } = useTranslation();
-
-	const timestamp = dateToTimestamp(date, timezone);
+	const timestamp = dateToISOString(date, timezone);
 	const markup = generateTimestampMarkup(timestamp, format);
 	const tokens = parse(markup);
 

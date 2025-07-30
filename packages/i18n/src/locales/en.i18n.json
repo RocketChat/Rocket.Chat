@@ -6887,6 +6887,13 @@
   "timestamps.longDate": "Long date",
   "timestamps.fullDateTime": "Full date and time",
   "timestamps.fullDateTimeLong": "Full date and time (long)",
-  "timestamps.relativeTime": "Relative time"
+  "timestamps.relativeTime": "Relative time",
+  "timestamps.shortTimeDescription": "12:00 AM",
+  "timestamps.longTimeDescription": "12:00:00 AM",
+  "timestamps.shortDateDescription": "12/31/2020",
+  "timestamps.longDateDescription": "12/31/2020, 12:00 AM",
+  "timestamps.fullDateTimeDescription": "December 31, 2020 12:00 AM",
+  "timestamps.fullDateTimeLongDescription": "Thursday, December 31, 2020 12:00:00 AM",
+  "timestamps.relativeTimeDescription": "1 year ago"
 }
 

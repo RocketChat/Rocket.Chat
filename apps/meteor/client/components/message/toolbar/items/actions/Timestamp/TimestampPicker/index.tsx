@@ -1,4 +1,5 @@
 import { Box, Button, ButtonGroup, Modal, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
+import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import DatePicker from './DatePicker';
@@ -6,8 +7,15 @@ import FormatSelector from './FormatSelector';
 import Preview from './Preview';
 import TimePicker from './TimePicker';
 import TimezoneSelector from './TimezoneSelector';
-import { useTimestampPicker } from './useTimestampPicker';
 import type { ComposerAPI } from '../../../../../../../lib/chats/ChatAPI';
+import { dateToISOString, generateTimestampMarkup } from '../../../../../../../lib/utils/timestamp/conversion';
+import type { TimezoneKey, TimestampFormat } from '../../../../../../../lib/utils/timestamp/types';
+
+type TimestampForm = {
+	date: Date;
+	format: TimestampFormat;
+	timezone: TimezoneKey;
+};
 
 type TimestampPickerProps = {
 	onClose: () => void;
@@ -17,18 +25,29 @@ type TimestampPickerProps = {
 export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => {
 	const { t } = useTranslation();
 	const {
-		selectedDate,
-		selectedFormat,
-		selectedTimezone,
-		handleDateChange,
-		handleTimeChange,
-		handleFormatChange,
-		handleTimezoneChange,
+		control,
 		handleSubmit,
-	} = useTimestampPicker(composer);
+		watch,
+		formState: { isValid },
+	} = useForm<TimestampForm>({
+		defaultValues: {
+			date: new Date(),
+			format: 'f',
+			timezone: 'local',
+		},
+		mode: 'onChange',
+	});
 
-	const handleAddClick = () => {
-		handleSubmit();
+	const currentDate = watch('date');
+	const currentFormat = watch('format');
+	const currentTimezone = watch('timezone');
+
+	const onSubmit = (data: TimestampForm) => {
+		const timestamp = dateToISOString(data.date, data.timezone);
+		const markup = generateTimestampMarkup(timestamp, data.format);
+		if (composer) {
+			composer.insertText(markup);
+		}
 		onClose();
 	};
 
@@ -40,18 +59,18 @@ export const TimestampPicker = ({ onClose, composer }: TimestampPickerProps) => 
 			</ModalHeader>
 			<ModalContent>
 				<Box display='flex' flexDirection='column' mbs='x16' pi='x16'>
-					<DatePicker selectedDate={selectedDate} onChange={handleDateChange} />
-					<TimePicker selectedDate={selectedDate} onChange={handleTimeChange} />
-					<FormatSelector selectedFormat={selectedFormat} onChange={handleFormatChange} />
-					<TimezoneSelector selectedTimezone={selectedTimezone} onChange={handleTimezoneChange} />
-					<Preview date={selectedDate} format={selectedFormat} timezone={selectedTimezone} />
+					<Controller name='date' control={control} render={({ field }) => <DatePicker {...field} />} />
+					<Controller name='date' control={control} render={({ field }) => <TimePicker {...field} />} />
+					<Controller name='format' control={control} render={({ field }) => <FormatSelector {...field} />} />
+					<Controller name='timezone' control={control} render={({ field }) => <TimezoneSelector {...field} />} />
+					<Preview date={currentDate} format={currentFormat} timezone={currentTimezone} />
 				</Box>
 			</ModalContent>
 			<ModalFooter>
 				<Box w='full'>
 					<ButtonGroup align='end'>
 						<Button onClick={onClose}>{t('Cancel')}</Button>
-						<Button primary onClick={handleAddClick}>
+						<Button primary onClick={handleSubmit(onSubmit)} disabled={!isValid}>
 							{t('Add')}
 						</Button>
 					</ButtonGroup>

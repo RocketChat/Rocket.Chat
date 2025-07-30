@@ -1,30 +1,31 @@
 import { Box, Field, FieldLabel, FieldRow, InputBox } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { format } from 'date-fns';
+import type { ChangeEvent, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type TimePickerProps = {
-	selectedDate: Date;
+	value: Date;
 	onChange: (date: Date) => void;
 };
 
-const TimePicker = ({ selectedDate, onChange }: TimePickerProps): ReactElement => {
+const TimePicker = ({ value, onChange }: TimePickerProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const newDate = new Date(selectedDate);
+	const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
+		const newDate = new Date(value);
 		const [hours, minutes] = e.target.value.split(':').map(Number);
-		newDate.setHours(hours, minutes);
+		newDate.setHours(hours, minutes, 0, 0);
 		onChange(newDate);
 	};
 
-	const timeValue = `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}`;
+	const timeValue = value ? format(value, 'HH:mm') : '';
 
 	return (
 		<Box mb='x16'>
 			<Field>
 				<FieldLabel>{t('Time')}</FieldLabel>
 				<FieldRow>
-					<InputBox type='time' value={timeValue} onChange={handleTimeChange} step='60' />
+					<InputBox type='time' value={timeValue} onChange={handleTimeChange} />
 				</FieldRow>
 			</Field>
 		</Box>
