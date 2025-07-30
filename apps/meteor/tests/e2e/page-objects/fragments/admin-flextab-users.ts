@@ -15,6 +15,10 @@ export class AdminFlextabUsers {
 		return this.page.locator('role=button[name="Add user"]');
 	}
 
+	get btnSaveUser(): Locator {
+		return this.page.locator('role=button[name="Save user"]');
+	}
+
 	get btnMoreActions(): Locator {
 		return this.page.locator('role=button[name="More"]');
 	}
@@ -74,5 +78,18 @@ export class AdminFlextabUsers {
 
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('button[data-qa="ContextualbarActionClose"]');
+	}
+
+	// Custom Fields methods
+	getCustomField(fieldName: string): Locator {
+		return this.page.locator(`input[name="customFields.${fieldName}"]`);
+	}
+
+	get customFieldText1(): Locator {
+		return this.getCustomField('customFieldText1');
+	}
+
+	get customFieldText2(): Locator {
+		return this.getCustomField('customFieldText2');
 	}
 }
