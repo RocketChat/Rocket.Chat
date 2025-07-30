@@ -27,7 +27,7 @@ type BadRequestErrorResponse = {
 	error?: string;
 	errorType?: string;
 	stack?: string;
-	details?: string;
+	details?: string | object;
 };
 
 const BadRequestErrorResponseSchema = {
@@ -37,7 +37,7 @@ const BadRequestErrorResponseSchema = {
 		stack: { type: 'string' },
 		error: { type: 'string' },
 		errorType: { type: 'string' },
-		details: { type: 'string' },
+		details: { anyOf: [{ type: 'string' }, { type: 'object' }] },
 	},
 	required: ['success'],
 	additionalProperties: false,
