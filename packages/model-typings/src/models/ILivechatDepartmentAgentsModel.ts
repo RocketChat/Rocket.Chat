@@ -1,7 +1,7 @@
 import type { AvailableAgentsAggregation, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter, AggregationCursor } from 'mongodb';
 
-import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel';
 
 export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepartmentAgents> {
 	findUsersInQueue(usersList: string[]): FindCursor<ILivechatDepartmentAgents>;
@@ -22,22 +22,13 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 	): FindCursor<ILivechatDepartmentAgents> | FindCursor<P>;
 	findByAgentId(agentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
 
-	findAgentsByDepartmentId(departmentId: string): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
-
 	findAgentsByDepartmentId(
 		departmentId: string,
-		options: FindOptions<ILivechatDepartmentAgents>,
-	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
-
-	findAgentsByDepartmentId<P extends Document>(
-		departmentId: string,
-		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindPaginated<FindCursor<P>>;
-
-	findAgentsByDepartmentId(
-		departmentId: string,
-		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
-	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
+		options?: FindOptions<ILivechatDepartmentAgents>,
+	): AggregationCursor<{
+		result: (ILivechatDepartmentAgents & { user: { _id: string; username: string; name: string } })[];
+		totalCount: { _id: null; total: number }[];
+	}>;
 
 	findByDepartmentIds(departmentIds: string[], options?: Record<string, any>): FindCursor<ILivechatDepartmentAgents>;
 	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): Promise<ILivechatDepartmentAgents[]>;
