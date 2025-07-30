@@ -23,7 +23,7 @@ const loadMissedMessages = async (rid: IRoom['_id']): Promise<void> => {
 	try {
 		const result = await callWithErrorHandling('loadMissedMessages', rid, lastMessage.ts);
 		if (result) {
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			await Promise.all(Array.from(result).map((msg) => upsertMessage({ msg, subscription })));
 		}
 	} catch (error) {

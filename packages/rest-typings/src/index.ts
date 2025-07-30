@@ -239,7 +239,6 @@ export * from './v1/omnichannel';
 export * from './v1/oauthapps';
 export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
 export * from './v1/oauthapps/OAuthAppsGetParamsGET';
-export * from './v1/oauthapps/OAuthAppsAddParamsPOST';
 export * from './v1/oauthapps/DeleteOAuthAppParamsDELETE';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';

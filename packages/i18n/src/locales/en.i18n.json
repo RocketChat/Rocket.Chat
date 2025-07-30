@@ -6104,7 +6104,7 @@
   "error-message-editing-blocked": "Message editing is blocked",
   "error-message-size-exceeded": "Message size exceeds Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "You must provide the [unsubscribe] link.",
-  "error-no-agents-online-in-department": "No agents online in the department",
+  "error-no-agents-available-for-service-on-department": "No agents are available for service on this department.",
   "error-no-message-for-unread": "There are no messages to mark unread",
   "error-no-owner-channel": "Only owners can add this channel to the team",
   "error-no-permission-team-channel": "You don't have permission to add this channel to the team",

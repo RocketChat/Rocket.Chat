@@ -83,7 +83,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			const { RoomManager } = await import('../../../lib/RoomManager');
 
-			const sub = Subscriptions.findOne({ rid: room._id });
+			const sub = Subscriptions.state.find((record) => record.rid === room._id);
 
 			// if user doesn't exist at this point, anonymous read is enabled, otherwise an error would have been thrown
 			if (user && !sub && !hasPreviewPermission && isPublicRoom(room)) {
