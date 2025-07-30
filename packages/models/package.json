@@ -16,7 +16,7 @@
 		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/sha256": "workspace:^",
-		"@rocket.chat/string-helpers": "^0.31.25",
+		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
 		"date-fns": "~4.1.0",
 		"node-rsa": "^1.1.1"

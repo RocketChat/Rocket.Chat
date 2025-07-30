@@ -26,7 +26,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
-		"colorette": "^1.4.0",
+		"colorette": "^2.0.20",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
@@ -40,7 +40,7 @@
 		"prometheus-gc-stats": "^1.1.0",
 		"sharp": "^0.33.5",
 		"underscore": "^1.13.7",
-		"uuid": "^11.0.3",
+		"uuid": "~11.1.0",
 		"ws": "^8.18.2"
 	},
 	"devDependencies": {

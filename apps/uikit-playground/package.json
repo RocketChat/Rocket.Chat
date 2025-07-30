@@ -45,7 +45,7 @@
   "devDependencies": {
     "@rocket.chat/emitter": "~0.31.25",
     "@rocket.chat/tsconfig": "workspace:*",
-    "@types/lodash": "~4.17.18",
+    "@types/lodash": "~4.17.20",
     "@types/react": "~18.3.23",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "~18.3.7",
@@ -53,7 +53,7 @@
     "@typescript-eslint/parser": "~5.60.1",
     "@vitejs/plugin-react": "~4.5.2",
     "eslint": "~8.45.0",
-    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-hooks": "~5.0.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "typescript": "~5.8.3",
     "vite": "^6.2.4"
