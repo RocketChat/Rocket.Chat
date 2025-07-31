@@ -1160,8 +1160,11 @@ describe('LIVECHAT - rooms', () => {
 						expect(res.body).to.have.property('success', true);
 					});
 
-				await deleteDepartment(initialDepartment._id);
-				await deleteDepartment(forwardToOfflineDepartment._id);
+				await Promise.all([
+					closeOmnichannelRoom(newRoom._id),
+					deleteDepartment(initialDepartment._id),
+					deleteDepartment(forwardToOfflineDepartment._id),
+				]);
 			},
 		);
 		(IS_EE ? it : it.skip)('inquiry should be taken automatically when agent on department is online again', async () => {
@@ -1193,9 +1196,12 @@ describe('LIVECHAT - rooms', () => {
 			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
 			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToOfflineDepartment._id);
 
-			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
-			await deleteDepartment(initialDepartment._id);
-			await deleteDepartment(forwardToOfflineDepartment._id);
+			await Promise.all([
+				updateSetting('Livechat_Routing_Method', 'Manual_Selection'),
+				deleteDepartment(initialDepartment._id),
+				deleteDepartment(forwardToOfflineDepartment._id),
+				closeOmnichannelRoom(latestRoom._id),
+			]);
 		});
 
 		(IS_EE ? it : it.skip)('when manager forward to offline department the inquiry should be set to the queue', async () => {
@@ -1283,7 +1289,11 @@ describe('LIVECHAT - rooms', () => {
 						expect(res.body).to.have.property('count');
 					});
 
-				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(forwardToOfflineDepartment._id)]);
+				await Promise.all([
+					deleteDepartment(initialDepartment._id),
+					deleteDepartment(forwardToOfflineDepartment._id),
+					closeOmnichannelRoom(newRoom._id),
+				]);
 			},
 		);
 
@@ -1315,7 +1325,11 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry.status).to.equal('ready');
 				expect(inquiry.department).to.equal(forwardToOfflineDepartment._id);
 
-				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(forwardToOfflineDepartment._id)]);
+				await Promise.all([
+					deleteDepartment(initialDepartment._id),
+					deleteDepartment(forwardToOfflineDepartment._id),
+					closeOmnichannelRoom(newRoom._id),
+				]);
 			},
 		);
 
@@ -1352,6 +1366,7 @@ describe('LIVECHAT - rooms', () => {
 					deleteDepartment(forwardToOfflineDepartment._id),
 					updateSetting('Livechat_waiting_queue', true),
 					updateSetting('Livechat_accept_chats_with_no_agents', false),
+					closeOmnichannelRoom(newRoom._id),
 				]);
 			},
 		);
@@ -1387,6 +1402,7 @@ describe('LIVECHAT - rooms', () => {
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(forwardToOfflineDepartment._id),
+					closeOmnichannelRoom(newRoom._id),
 					updateSetting('Livechat_waiting_queue', false),
 				]);
 			},
@@ -1422,6 +1438,7 @@ describe('LIVECHAT - rooms', () => {
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(forwardToOfflineDepartment._id),
 					updateSetting('Livechat_waiting_queue', false),
+					closeOmnichannelRoom(newRoom._id),
 				]);
 			},
 		);
@@ -1455,7 +1472,11 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry).to.have.property('department', targetDepartment._id);
 				expect(inquiry).to.have.property('status', 'taken');
 
-				await Promise.all([deleteDepartment(initialDepartment._id), deleteDepartment(targetDepartment._id)]);
+				await Promise.all([
+					deleteDepartment(initialDepartment._id),
+					deleteDepartment(targetDepartment._id),
+					closeOmnichannelRoom(newRoom._id),
+				]);
 			},
 		);
 
@@ -1491,6 +1512,7 @@ describe('LIVECHAT - rooms', () => {
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(forwardToOfflineDepartment._id),
+					closeOmnichannelRoom(newRoom._id),
 					updateSetting('Livechat_enabled_when_agent_idle', false),
 				]);
 			},
@@ -1530,6 +1552,7 @@ describe('LIVECHAT - rooms', () => {
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(targetDepartment._id),
+					closeOmnichannelRoom(newRoom._id),
 					updateSetting('Livechat_waiting_queue', false),
 				]);
 			},
