@@ -14,7 +14,4 @@ class PublicSettingsCachedStore extends PublicCachedStore<ISetting> {
 
 const instance = new PublicSettingsCachedStore();
 
-export {
-	/** @deprecated prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
-	instance as PublicSettingsCachedStore,
-};
+export { instance as PublicSettingsCachedStore };

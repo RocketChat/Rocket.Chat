@@ -1,9 +1,10 @@
 import type { IPermission } from '@rocket.chat/core-typings';
 
-import { createDocumentMapStore, PrivateCachedStore } from '../lib/cachedStores';
+import { PrivateCachedStore } from '../lib/cachedStores';
+import { Permissions } from '../stores';
 
 export const PermissionsCachedStore = new PrivateCachedStore<IPermission>({
 	name: 'permissions',
 	eventType: 'notify-logged',
-	store: createDocumentMapStore(),
+	store: Permissions.use,
 });

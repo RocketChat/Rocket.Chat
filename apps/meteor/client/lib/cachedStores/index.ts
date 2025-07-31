@@ -5,3 +5,4 @@ export { createDocumentMapStore, type IDocumentMapStore } from './DocumentMapSto
 export { MinimongoCollection } from './MinimongoCollection';
 export { watch } from './watch';
 export { PublicCachedStore, PrivateCachedStore } from './CachedStore';
+export { createGlobalStore } from './createGlobalStore';

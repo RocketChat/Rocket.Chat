@@ -1,9 +1,6 @@
-import { RoomsCachedStore } from '../cachedStores';
+import type { IRoom } from '@rocket.chat/core-typings';
+
+import { createDocumentMapStore, createGlobalStore } from '../lib/cachedStores';
 
 /** @deprecated prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
-export const Rooms = {
-	use: RoomsCachedStore.store,
-	get state() {
-		return this.use.getState();
-	},
-} as const;
+export const Rooms = createGlobalStore(createDocumentMapStore<IRoom>());

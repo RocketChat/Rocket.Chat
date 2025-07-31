@@ -27,7 +27,4 @@ class PrivateSettingsCachedStore extends PrivateCachedStore<ISetting> {
 
 const instance = new PrivateSettingsCachedStore();
 
-export {
-	/** @deprecated prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
-	instance as PrivateSettingsCachedStore,
-};
+export { instance as PrivateSettingsCachedStore };
