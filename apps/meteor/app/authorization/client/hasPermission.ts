@@ -1,52 +1,34 @@
-import type { IUser, IRole, IPermission } from '@rocket.chat/core-typings';
+import type { IUser, IPermission } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import * as Models from '../../models/client';
+import { hasRole } from './hasRole';
+import { watch } from './watch';
+import { AuthzCachedCollection, Permissions, Users } from '../../models/client';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
-
-const isValidScope = (scope: unknown): scope is keyof typeof Models => typeof scope === 'string' && scope in Models;
-
-const hasIsUserInRole = (
-	model: unknown,
-): model is {
-	isUserInRole: (this: any, uid: IUser['_id'], roleId: IRole['_id'], scope: string | undefined) => boolean;
-} => typeof model === 'object' && model !== null && typeof (model as { isUserInRole?: unknown }).isUserInRole === 'function';
 
 const createPermissionValidator =
 	(quantifier: (predicate: (permissionId: IPermission['_id']) => boolean) => boolean) =>
 	(permissionIds: IPermission['_id'][], scope: string | undefined, userId: IUser['_id'], scopedRoles?: IPermission['_id'][]): boolean => {
-		const user = Models.Users.findOne({ _id: userId }, { fields: { roles: 1 } });
+		const userRoles = watch(Users.use, (state) => state.get(userId)?.roles);
 
 		const checkEachPermission = quantifier.bind(permissionIds);
 
 		return checkEachPermission((permissionId) => {
-			if (user?.roles) {
-				if (AuthorizationUtils.isPermissionRestrictedForRoleList(permissionId, user.roles)) {
+			if (userRoles) {
+				if (AuthorizationUtils.isPermissionRestrictedForRoleList(permissionId, userRoles)) {
 					return false;
 				}
 			}
 
-			const permission = Models.Permissions.state.get(permissionId);
+			const permission = watch(Permissions.use, (state) => state.get(permissionId));
 			const roles = permission?.roles ?? [];
 
 			return roles.some((roleId) => {
-				const roleScope = Models.Roles.state.get(roleId)?.scope;
-
-				if (!isValidScope(roleScope)) {
-					return false;
-				}
-
-				const model = Models[roleScope];
-
 				if (scopedRoles?.includes(roleId)) {
 					return true;
 				}
 
-				if (hasIsUserInRole(model)) {
-					return model.isUserInRole(userId, roleId, scope);
-				}
-
-				return undefined;
+				return hasRole(userId, roleId, scope);
 			});
 		});
 	};
@@ -73,7 +55,7 @@ const validatePermissions = (
 		return false;
 	}
 
-	if (!Models.AuthzCachedCollection.ready.get()) {
+	if (!AuthzCachedCollection.ready.get()) {
 		return false;
 	}
 
