@@ -6,7 +6,7 @@ import { createTargetChannel, deleteChannel } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
-test.describe.only('Threads', () => {
+test.describe.serial('Threads', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 	test.beforeAll(async ({ api }) => {
