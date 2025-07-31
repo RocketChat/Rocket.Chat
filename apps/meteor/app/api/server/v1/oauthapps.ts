@@ -1,6 +1,6 @@
 import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
-import { ajv, isUpdateOAuthAppParams, isOauthAppsGetParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
+import { ajv, isOauthAppsGetParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -49,21 +49,105 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+type UpdateOAuthAppParams = {
+	appId: string;
+	name: string;
+	active: boolean;
+	clientId?: string | undefined;
+	clientSecret?: string | undefined;
+	redirectUri: string;
+};
+
+const UpdateOAuthAppParamsSchema = {
+	type: 'object',
+	properties: {
+		appId: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		active: {
+			type: 'boolean',
+		},
+		redirectUri: {
+			type: 'string',
+		},
+	},
+	required: ['appId', 'name', 'active', 'redirectUri'],
+	additionalProperties: false,
+};
+
+const isUpdateOAuthAppParams = ajv.compile<UpdateOAuthAppParams>(UpdateOAuthAppParamsSchema);
+
+const oauthAppsuUpdateEndpoints = API.v1.post(
 	'oauth-apps.update',
 	{
 		authRequired: true,
-		validateParams: isUpdateOAuthAppParams,
+		body: isUpdateOAuthAppParams,
 		permissionsRequired: ['manage-oauth-apps'],
-	},
-	{
-		async post() {
-			const { appId } = this.bodyParams;
-
-			const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
-
-			return API.v1.success(result);
+		response: {
+			400: ajv.compile<{
+				error?: string;
+				errorType?: string;
+				stack?: string;
+				details?: object;
+			}>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					stack: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					details: { type: 'object' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					status: { type: 'string' },
+					message: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			403: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					status: { type: 'string' },
+					message: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			200: ajv.compile<IOAuthApps | null>({
+				allOf: [
+					{ anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
+					{
+						type: 'object',
+						properties: {
+							success: { type: 'boolean', enum: [true] },
+						},
+						required: ['success'],
+					},
+				],
+			}),
 		},
+	},
+	async function action() {
+		const { appId } = this.bodyParams;
+
+		const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
+
+		return API.v1.success(result);
 	},
 );
 
@@ -182,9 +266,13 @@ const oauthAppsCreateEndpoints = API.v1.post(
 
 type OauthAppsCreateEndpoints = ExtractRoutesFromAPI<typeof oauthAppsCreateEndpoints>;
 
-export type OAuthAppsEndpoints = OauthAppsCreateEndpoints;
+type OauthAppsuUpdateEndpoints = ExtractRoutesFromAPI<typeof oauthAppsuUpdateEndpoints>;
+
+export type OAuthAppsEndpoints = OauthAppsCreateEndpoints | OauthAppsuUpdateEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsCreateEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends OauthAppsuUpdateEndpoints {}
 }
