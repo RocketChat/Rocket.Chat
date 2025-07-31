@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Fixes an issue where calling /api/v1/users.update with customFields would replace the whole object instead of just the specified properties.
+Fixes a bug where the `/api/v1/users.update` API call was replacing the entire `customFields` object instead of merging only the specified properties. The fix ensures that when updating custom fields, existing values are preserved while only specified fields are updated or added.
