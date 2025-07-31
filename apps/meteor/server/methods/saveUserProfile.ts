@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { UserStatus } from '@rocket.chat/core-typings';
+import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
@@ -199,6 +199,7 @@ declare module '@rocket.chat/ddp-client' {
 
 export function executeSaveUserProfile(
 	this: Meteor.MethodThisType,
+	user: IUser,
 	settings: {
 		email?: string;
 		username?: string;
@@ -215,7 +216,10 @@ export function executeSaveUserProfile(
 	check(settings, Object);
 	check(customFields, Match.Maybe(Object));
 
-	if (settings.email || settings.newPassword) {
+	if (
+		(settings.email && user.emails?.length) ||
+		(settings.newPassword && Object.keys(user.services || {}).length && !user.requirePasswordChange)
+	) {
 		return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
 	}
 
