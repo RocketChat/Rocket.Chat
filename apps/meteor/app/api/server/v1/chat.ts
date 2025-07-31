@@ -29,6 +29,8 @@ import {
 	isChatSyncThreadMessagesProps,
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -197,35 +199,8 @@ const chatPinMessageEndpoints = API.v1.post(
 		authRequired: true,
 		body: isChatPinMessageProps,
 		response: {
-			400: ajv.compile<{
-				error?: string;
-				errorType?: string;
-				stack?: string;
-				details?: string;
-			}>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					stack: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-					details: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 			200: ajv.compile<{ message: IMessage }>({
 				type: 'object',
 				properties: {
