@@ -14,6 +14,15 @@ const oauthAppsListEndpoints = API.v1.get(
 	'oauth-apps.list',
 	{
 		authRequired: true,
+		query: ajv.compile<{ uid?: string }>({
+			type: 'object',
+			properties: {
+				uid: {
+					type: 'string',
+				},
+			},
+			additionalProperties: false,
+		}),
 		permissionsRequired: ['manage-oauth-apps'],
 		response: {
 			400: ajv.compile<{
