@@ -43,11 +43,7 @@ const RoomList = () => {
 				<GroupedVirtuoso
 					groupCounts={groupCounts}
 					groupContent={(index) => {
-						const { group, unreadInfo, rooms } = roomListGroups[index];
-
-						if (!rooms.length) {
-							return null;
-						}
+						const { group, unreadInfo } = roomListGroups[index];
 
 						return (
 							<RoomListCollapser

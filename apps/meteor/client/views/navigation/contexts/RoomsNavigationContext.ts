@@ -4,6 +4,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 
+import { isTruthy } from '../../../../lib/isTruthy';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 
 export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: TranslationKey; icon: IconName } } = {
@@ -155,8 +156,13 @@ export const useSideBarRoomsList = (): { roomListGroups: RoomListGroup[]; groupC
 		const roomSet = groups.get(group);
 		const rooms = roomSet ? Array.from(roomSet) : [];
 		const unreadInfo = unreadGroupData.get(group) || getEmptyUnreadInfo();
+
+		if (!rooms.length) {
+			return undefined;
+		}
+
 		return { group, rooms, unreadInfo };
-	});
+	}).filter(isTruthy);
 
 	const groupCounts = roomListGroups.map((group) => {
 		if (collapsedGroups.includes(group.group)) {
