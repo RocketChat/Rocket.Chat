@@ -1,4 +1,4 @@
-import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
+import { ButtonGroup } from '@rocket.chat/fuselage';
 
 import { useMediaCallContext } from '../MediaCallContext';
 import {
@@ -12,6 +12,7 @@ import {
 	WidgetInfo,
 	Timer,
 	DevicePicker,
+	ActionButton,
 } from '../components';
 import { useInfoSlots } from '../useInfoSlots';
 import { useKeypad } from '../useKeypad';
@@ -35,18 +36,17 @@ const OngoingCall = () => {
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetInfo slots={slots} />
-
 			<WidgetContent>
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
 			<WidgetFooter>
 				{keypad?.element}
 				<ButtonGroup large>
-					<IconButton label='dialpad' icon='dialpad' onClick={keypad.toggleOpen} />
-					<IconButton label='forward' icon='arrow-forward' onClick={onForward} />
-					<ToggleButton label='hold' icons={['pause-shape-filled', 'pause-shape-unfilled']} pressed={held} onToggle={onHold} />
+					<ActionButton label='dialpad' icon='dialpad' onClick={keypad.toggleOpen} />
+					<ActionButton label='forward' icon='arrow-forward' onClick={onForward} />
+					<ToggleButton label='hold' icons={['pause-shape-unfilled', 'pause-shape-filled']} pressed={held} onToggle={onHold} />
 					<ToggleButton label='mute' icons={['mic', 'mic-off']} pressed={muted} onToggle={onMute} />
-					<IconButton label='phone' icon='phone' danger onClick={onEndCall} />
+					<ActionButton label='phone' icon='phone' danger onClick={onEndCall} />
 				</ButtonGroup>
 			</WidgetFooter>
 		</Widget>
