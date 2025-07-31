@@ -341,7 +341,6 @@ export class NotificationsModule {
 		this.streamAppsEngine.allowEmit('all');
 		this.streamAppsEngine.allowWrite('none');
 
-
 		this.streamQR.serverOnly = true;
 		this.streamQR.allowRead('all');
 		this.streamQR.allowEmit('all');

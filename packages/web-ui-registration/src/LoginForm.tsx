@@ -9,7 +9,7 @@ import {
 	PasswordInput,
 	ButtonGroup,
 	Button,
-	Callout
+	Callout,
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
@@ -217,15 +217,12 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 						{errorOnSubmit && <FieldGroup disabled={loginMutation.isPending}>{renderErrorOnSubmit(errorOnSubmit)}</FieldGroup>}
 					</Form.Container>
 					<Form.Footer>
-						<ButtonGroup >
+						<ButtonGroup>
 							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
-							<Button
-								onClick={handleQrModal}
-								primary
-							>
-								{t("Login_using_QR")}
+							<Button onClick={handleQrModal} primary>
+								{t('Login_using_QR')}
 							</Button>
 						</ButtonGroup>
 						<p>
