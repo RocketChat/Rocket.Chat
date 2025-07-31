@@ -1244,8 +1244,11 @@ describe('LIVECHAT - rooms', () => {
 					expect(res.body).to.have.property('count');
 				});
 
-			await deleteDepartment(initialDepartment._id);
-			await deleteDepartment(forwardToOfflineDepartment._id);
+			await Promise.all([
+				deleteDepartment(initialDepartment._id),
+				deleteDepartment(forwardToOfflineDepartment._id),
+				closeOmnichannelRoom(newRoom._id),
+			]);
 		});
 
 		(IS_EE ? it : it.skip)(
@@ -1614,8 +1617,11 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry.lastMessage).to.have.property('msg', '');
 				expect(inquiry.lastMessage).to.have.property('t', 'livechat_transfer_history');
 
-				await deleteDepartment(initialDepartment._id);
-				await deleteDepartment(forwardToOfflineDepartment._id);
+				await Promise.all([
+					deleteDepartment(initialDepartment._id),
+					deleteDepartment(forwardToOfflineDepartment._id),
+					closeOmnichannelRoom(newRoom._id),
+				]);
 			},
 		);
 
