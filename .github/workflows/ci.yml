@@ -341,7 +341,7 @@ jobs:
       RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      DEBUG_LOG_LEVEL: ${{ runner.debug == '1' && '2' || '0' }}
+      DEBUG_LOG_LEVEL: ${{ runner.debug == '1' ? '2' : '0' }}
 
     strategy:
       fail-fast: false
