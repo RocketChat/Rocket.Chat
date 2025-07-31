@@ -24,6 +24,8 @@ export default class Store {
 
 		this._state = { ...initialState, ...storedState };
 
+		this.setWidgetId();
+
 		window.addEventListener('storage', (e) => {
 			// Cross-tab communication
 			if (e.key !== this.localStorageKey) {
@@ -45,7 +47,6 @@ export default class Store {
 			sessionStorage.setItem('sessionId', sessionId);
 			const { openSessionIds = [] } = this._state;
 			this.setState({ openSessionIds: [sessionId, ...openSessionIds] });
-			this.setWidgetId();
 		});
 
 		window.addEventListener('visibilitychange', () => {
