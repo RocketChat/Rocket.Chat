@@ -1,3 +1,4 @@
+import { Divider, Box } from '@rocket.chat/fuselage';
 import { useMemo, useState } from 'react';
 
 import { Keypad } from './components';
@@ -14,7 +15,12 @@ export const useKeypad = (onPress: (tone: string) => void): UseKeypad => {
 		if (!open) {
 			return null;
 		}
-		return <Keypad onKeyPress={onPress} />;
+		return (
+			<Box display='flex' justifyContent='center' alignItems='center' w='100%' flexDirection='column' mbe={8}>
+				<Keypad onKeyPress={onPress} />
+				<Divider w='100%' />
+			</Box>
+		);
 	}, [onPress, open]);
 
 	return {
