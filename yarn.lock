@@ -9258,6 +9258,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:^0.43.0"
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/styled": "npm:~0.32.0"
     "@rocket.chat/tsconfig": "workspace:*"
