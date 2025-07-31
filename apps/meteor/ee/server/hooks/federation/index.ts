@@ -2,6 +2,8 @@ import { FederationMatrix } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
+import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
 
 callbacks.add(
 	'afterSetReaction',
@@ -29,18 +31,24 @@ callbacks.add(
 	'federation-matrix-after-unset-reaction',
 );
 
-callbacks.add(
-	'afterLeaveRoom',
+afterLeaveRoomCallback.add(
 	async (user: IUser, room: IRoom): Promise<void> => {
+		if (!room.federated) {
+			return;
+		}
+
 		await FederationMatrix.leaveRoom(room._id, user);
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-leave-room',
 );
 
-callbacks.add(
-	'afterRemoveFromRoom',
+afterRemoveFromRoomCallback.add(
 	async (data: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom): Promise<void> => {
+		if (!room.federated) {
+			return;
+		}
+
 		await FederationMatrix.kickUser(room._id, data.removedUser, data.userWhoRemoved);
 	},
 	callbacks.priority.HIGH,
