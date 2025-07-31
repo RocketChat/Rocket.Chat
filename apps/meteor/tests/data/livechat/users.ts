@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import { UserStatus, type ILivechatAgent, type IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 
 import { api, credentials, request, methodCall } from '../api-data';
 import { password } from '../user';
 import { createUser, login, setUserAway, setUserStatus } from '../users.helper';
 import { createAgent, makeAgentAvailable, makeAgentUnavailable } from './rooms';
-import { Random } from '@rocket.chat/random';
 
 export const createBotAgent = async (): Promise<{
 	credentials: Credentials;
