@@ -335,7 +335,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return this.updateOne(
 			{ _id: contactId },
 			{
-				$set: { enabled: false },
+				$set: { unknown: true },
 				$unset: {
 					emails: 1,
 					customFields: 1,
@@ -343,6 +343,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					channels: 1,
 					name: 1,
 					phones: 1,
+					conflictingFields: 1,
 				},
 			},
 		);

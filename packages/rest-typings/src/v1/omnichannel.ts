@@ -4106,6 +4106,9 @@ export type OmnichannelEndpoints = {
 	'/v1/omnichannel/contacts.update': {
 		POST: (params: POSTUpdateOmnichannelContactsProps) => { contact: ILivechatContact };
 	};
+	'/v1/omnichannel/contacts/:id': {
+		DELETE: () => void;
+	};
 	'/v1/omnichannel/contacts.conflicts': {
 		POST: (params: POSTOmnichannelContactsConflictsProps) => { contact: ILivechatContact };
 	};
