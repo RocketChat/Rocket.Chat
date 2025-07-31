@@ -10,10 +10,10 @@ export const useLoadRoomForAllowedAnonymousRead = () => {
 	useEffect(() => {
 		if (!userId && accountsAllowAnonymousRead === true) {
 			RoomsCachedStore.init();
-			SubscriptionsCachedStore.ready.set(true);
+			SubscriptionsCachedStore.setReady(true);
 			return () => {
-				RoomsCachedStore.ready.set(false);
-				SubscriptionsCachedStore.ready.set(false);
+				RoomsCachedStore.setReady(false);
+				SubscriptionsCachedStore.setReady(false);
 			};
 		}
 	}, [accountsAllowAnonymousRead, userId]);

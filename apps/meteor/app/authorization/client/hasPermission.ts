@@ -56,7 +56,7 @@ const validatePermissions = (
 		return false;
 	}
 
-	if (!PermissionsCachedStore.ready.get()) {
+	if (!PermissionsCachedStore.watchReady()) {
 		return false;
 	}
 

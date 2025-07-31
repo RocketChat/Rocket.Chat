@@ -10,8 +10,8 @@ import PageLoading from '../PageLoading';
 
 const Preload = ({ children }: { children: ReactNode }): ReactElement => {
 	const uid = useUserId();
-	const subscriptionsReady = useReactiveVar(SubscriptionsCachedStore.ready);
-	const settingsReady = useReactiveVar(PublicSettingsCachedStore.ready);
+	const subscriptionsReady = SubscriptionsCachedStore.useReady();
+	const settingsReady = PublicSettingsCachedStore.useReady();
 	const userDataReady = useReactiveVar(isSyncReady);
 
 	const ready = !uid || (userDataReady && subscriptionsReady && settingsReady);

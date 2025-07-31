@@ -10,8 +10,8 @@ import PageLoading from '../PageLoading';
 
 const EmbeddedPreload = ({ children }: { children: ReactNode }): ReactElement => {
 	const uid = useUserId();
-	const subscriptionsReady = useReactiveVar(SubscriptionsCachedStore.ready);
-	const settingsReady = useReactiveVar(PublicSettingsCachedStore.ready);
+	const subscriptionsReady = SubscriptionsCachedStore.useReady();
+	const settingsReady = PublicSettingsCachedStore.useReady();
 	const userDataReady = useReactiveVar(isSyncReady);
 
 	const ready = !uid || (userDataReady && subscriptionsReady && settingsReady);
@@ -21,8 +21,8 @@ const EmbeddedPreload = ({ children }: { children: ReactNode }): ReactElement =>
 	}, [ready]);
 
 	useEffect(() => {
-		SubscriptionsCachedStore.ready.set(true);
-		RoomsCachedStore.ready.set(true);
+		SubscriptionsCachedStore.setReady(true);
+		RoomsCachedStore.setReady(true);
 	}, [ready]);
 
 	if (!ready) {

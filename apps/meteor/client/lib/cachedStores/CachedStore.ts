@@ -3,14 +3,14 @@ import type { StreamNames } from '@rocket.chat/ddp-client';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { StoreApi, UseBoundStore } from 'zustand';
+import { create, type StoreApi, type UseBoundStore } from 'zustand';
 
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
+import { watch } from './watch';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
@@ -46,8 +46,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	readonly store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>;
 
-	readonly ready = new ReactiveVar(false);
-
 	protected name: Name;
 
 	protected eventType: StreamNames;
@@ -59,6 +57,8 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	protected log: (...args: any[]) => void;
 
 	private timer: ReturnType<typeof setTimeout>;
+
+	readonly useReady = create(() => false);
 
 	constructor({ name, eventType, store }: { name: Name; eventType: StreamNames; store: UseBoundStore<StoreApi<IDocumentMapStore<T>>> }) {
 		this.name = name;
@@ -310,7 +310,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			await this.loadFromServerAndPopulate();
 		}
 
-		this.ready.set(true);
+		this.setReady(true);
 
 		this.reconnectionComputation?.stop();
 		let wentOffline = Tracker.nonreactive(() => Meteor.status().status === 'offline');
@@ -353,10 +353,18 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		}
 
 		this.listenerUnsubscriber?.();
-		this.ready.set(false);
+		this.setReady(false);
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
+
+	watchReady() {
+		return watch(this.useReady, (ready) => ready);
+	}
+
+	setReady(ready: boolean) {
+		this.useReady.setState(ready);
+	}
 }
 
 export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {

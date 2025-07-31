@@ -3,7 +3,6 @@ import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { SettingsContextQuery, SettingsContextValue } from '@rocket.chat/ui-contexts';
 import { SettingsContext, useAtLeastOnePermission, useMethod } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { Tracker } from 'meteor/tracker';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
@@ -21,7 +20,7 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 
 	const cachedCollection = canManageSettings ? PrivateSettingsCachedStore : PublicSettingsCachedStore;
 
-	const isLoading = Tracker.nonreactive(() => !cachedCollection.ready.get());
+	const isLoading = !cachedCollection.useReady();
 
 	if (isLoading) {
 		throw (async () => {
