@@ -28,7 +28,7 @@ const IncomingCall = () => {
 					<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
 						{t('Reject')}
 					</Button>
-					<Button medium name='phone' icon='phone' success flexGrow={1} onClick={onCall}>
+					<Button medium name='phone' icon='phone' success flexGrow={1} onClick={() => onCall()}>
 						{t('Accept')}
 					</Button>
 				</ButtonGroup>
