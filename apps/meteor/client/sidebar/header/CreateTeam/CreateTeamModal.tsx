@@ -68,6 +68,19 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		return new RegExp(`^${namesValidation}$`);
 	}, [allowSpecialNames, namesValidation]);
 
+	const canCreateChannel = usePermission('create-c');
+	const canCreateGroup = usePermission('create-p');
+
+	const canOnlyCreateOneType = useMemo(() => {
+		if (!canCreateChannel && canCreateGroup) {
+			return 'p';
+		}
+		if (canCreateChannel && !canCreateGroup) {
+			return 'c';
+		}
+		return false;
+	}, [canCreateChannel, canCreateGroup]);
+
 	const validateTeamName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
 			return;
@@ -92,7 +105,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		formState: { errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
-			isPrivate: true,
+			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : false,
 			readOnly: false,
 			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
 			broadcast: false,
@@ -228,7 +241,14 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 								control={control}
 								name='isPrivate'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch id={privateId} aria-describedby={`${privateId}-hint`} onChange={onChange} checked={value} ref={ref} />
+									<ToggleSwitch
+										id={privateId}
+										aria-describedby={`${privateId}-hint`}
+										onChange={onChange}
+										checked={value}
+										disabled={!!canOnlyCreateOneType}
+										ref={ref}
+									/>
 								)}
 							/>
 						</FieldRow>
