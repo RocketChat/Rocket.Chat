@@ -68,7 +68,7 @@ const OutboundMessagePreview = ({
 				<Margins blockStart={24}>
 					<Box is='li' mbs={0}>
 						<PreviewItem icon='doc' label={t('Template')}>
-							{template?.name || t('None')}
+							{template?.name}
 						</PreviewItem>
 					</Box>
 					<Box is='li'>
