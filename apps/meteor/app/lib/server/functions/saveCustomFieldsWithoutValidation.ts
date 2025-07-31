@@ -33,8 +33,8 @@ export const saveCustomFieldsWithoutValidation = async function (
 	const customFieldsMeta = getCustomFieldsMeta(customFieldsSetting);
 
 	const customFields = Object.fromEntries(
-		Object.keys(customFieldsMeta)
-			.filter((key) => formData[key])
+		Object.keys(formData)
+			.filter((key) => customFieldsMeta[key])
 			.map((key) => [key, formData[key]]),
 	);
 
