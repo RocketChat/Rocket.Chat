@@ -341,7 +341,6 @@ jobs:
       RC_DOCKER_TAG: ${{ needs.release-versions.outputs.rc-docker-tag }}.${{ matrix.platform }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      DEBUG_LOG_LEVEL: ${{ runner.debug == '1' ? '2' : '0' }}
 
     strategy:
       fail-fast: false
@@ -350,6 +349,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set DEBUG_LOG_LEVEL
+        run: |
+          if [ "${{ runner.debug }}" = 1 ]; then
+            echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
+          else
+            echo "DEBUG_LOG_LEVEL=0" >> $GITHUB_ENV
+          fi
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
