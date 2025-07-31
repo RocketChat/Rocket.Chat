@@ -331,6 +331,23 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		);
 	}
 
+	disableByContactId(contactId: string): Promise<UpdateResult | Document> {
+		return this.updateOne(
+			{ _id: contactId },
+			{
+				$set: { enabled: false },
+				$unset: {
+					emails: 1,
+					customFields: 1,
+					lastChat: 1,
+					channels: 1,
+					name: 1,
+					phones: 1,
+				},
+			},
+		);
+	}
+
 	async addEmail(contactId: string, email: string): Promise<ILivechatContact | null> {
 		const updatedContact = await this.findOneAndUpdate({ _id: contactId }, { $addToSet: { emails: { address: email } } });
 
