@@ -11,10 +11,7 @@ const contextValue = {
 	queryPermission: createReactiveSubscriptionFactory((permission, scope, scopeRoles) => hasPermission(permission, scope, scopeRoles)),
 	queryAtLeastOnePermission: createReactiveSubscriptionFactory((permissions, scope) => hasAtLeastOnePermission(permissions, scope)),
 	queryAllPermissions: createReactiveSubscriptionFactory((permissions, scope) => hasAllPermission(permissions, scope)),
-	queryRole: createReactiveSubscriptionFactory(
-		(role, scope?, ignoreSubscriptions = false) =>
-			!!Meteor.userId() && hasRole(Meteor.userId() as string, role, scope, ignoreSubscriptions),
-	),
+	queryRole: createReactiveSubscriptionFactory((role, scope?) => !!Meteor.userId() && hasRole(Meteor.userId() as string, role, scope)),
 	getRoles: () => Roles.state.records,
 	subscribeToRoles: (callback: () => void) => Roles.use.subscribe(callback),
 };

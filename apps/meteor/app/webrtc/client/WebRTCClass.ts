@@ -820,25 +820,21 @@ class WebRTCClass {
 			return;
 		}
 
-		const user = Users.findOne(data.from);
-		let fromUsername = undefined;
-		if (user?.username) {
-			fromUsername = user.username;
-		}
+		const username = data.from ? Users.state.get(data.from)?.username : undefined;
 		const subscription = Subscriptions.state.find(({ rid }) => rid === data.room);
 
 		let icon;
 		let title;
 		if (data.monitor === true) {
 			icon = 'eye' as const;
-			title = t('WebRTC_monitor_call_from_%s', fromUsername);
+			title = t('WebRTC_monitor_call_from_%s', username);
 		} else if (subscription && subscription.t === 'd') {
 			if (data.media?.video) {
 				icon = 'video' as const;
-				title = t('WebRTC_direct_video_call_from_%s', fromUsername);
+				title = t('WebRTC_direct_video_call_from_%s', username);
 			} else {
 				icon = 'phone' as const;
-				title = t('WebRTC_direct_audio_call_from_%s', fromUsername);
+				title = t('WebRTC_direct_audio_call_from_%s', username);
 			}
 		} else if (data.media?.video) {
 			icon = 'video' as const;
