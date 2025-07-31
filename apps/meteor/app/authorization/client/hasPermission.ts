@@ -4,8 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasRole } from './hasRole';
 import { watch } from './watch';
 import { PermissionsCachedStore } from '../../../client/cachedStores';
-import { Permissions } from '../../../client/stores';
-import { Users } from '../../models/client';
+import { Permissions, Users } from '../../../client/stores';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
 const createPermissionValidator =

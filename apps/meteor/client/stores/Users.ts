@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { MinimongoCollection } from '../../../../client/lib/cachedCollections/MinimongoCollection';
+import { MinimongoCollection } from '../lib/cachedCollections';
 
 class UsersCollection extends MinimongoCollection<IUser> {}
 
