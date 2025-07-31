@@ -23,6 +23,7 @@ import { getCredentials, api, request, credentials, methodCall } from '../../../
 import { apps, APP_URL } from '../../../data/apps/apps-data';
 import { createCustomField } from '../../../data/livechat/custom-fields';
 import {
+	createDepartmentWith2OnlineAgents,
 	createDepartmentWithAnAwayAgent,
 	createDepartmentWithAnOfflineAgent,
 	createDepartmentWithAnOnlineAgent,
@@ -1096,6 +1097,41 @@ describe('LIVECHAT - rooms', () => {
 			expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
 			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
 			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToDepartment._id);
+		});
+		(IS_EE ? it : it.skip)('should return a success message when transferred successfully to an agent on a department', async () => {
+			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+			const { department: forwardToDepartment, agent1, agent2 } = await createDepartmentWith2OnlineAgents();
+
+			const newVisitor = await createVisitor(initialDepartment._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId: newRoom._id,
+					departmentId: forwardToDepartment._id,
+					userId: agent2.user._id,
+					clientAction: true,
+					comment: 'test comment',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+			expect(latestRoom).to.have.property('departmentId');
+			expect(latestRoom.departmentId).to.be.equal(forwardToDepartment._id);
+
+			expect(latestRoom).to.have.property('servedBy').that.is.an('object');
+			expect(latestRoom.servedBy!._id).to.not.equal(agent1.user._id);
+			expect(latestRoom.servedBy!._id).to.equal(agent2.user._id);
+
+			await deleteDepartment(initialDepartment._id);
+			await deleteDepartment(forwardToDepartment._id);
 		});
 		(IS_EE ? it : it.skip)(
 			'should return a success message when transferred successfully to an offline department when the department accepts it',
