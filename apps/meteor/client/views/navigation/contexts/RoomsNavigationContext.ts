@@ -2,7 +2,7 @@ import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -220,4 +220,14 @@ export const useUnreadGroupData = (key: SidePanelFiltersKeys) => useRoomsListCon
 export const useIsRoomFilter = () => {
 	const [currentTab] = useSidePanelFilter();
 	return useMemo(() => Object.values(SIDE_BAR_GROUPS).some((group) => currentTab === group), [currentTab]);
+};
+
+export const useRedirectToDefaultTab = (shouldRedirect: boolean) => {
+	const switchSidePanelTab = useSwitchSidePanelTab();
+
+	useEffect(() => {
+		if (shouldRedirect) {
+			switchSidePanelTab(ALL_GROUPS.ALL);
+		}
+	}, [shouldRedirect, switchSidePanelTab]);
 };
