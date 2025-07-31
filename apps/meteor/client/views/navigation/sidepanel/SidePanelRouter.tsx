@@ -1,5 +1,7 @@
+import { useSetting } from '@rocket.chat/ui-contexts';
+
 import SidePanelAll from './tabs/SidePanelAll';
-import { ALL_GROUPS, useRoomsListContext, useSidePanelFilter } from '../contexts/RoomsNavigationContext';
+import { ALL_GROUPS, useRoomsListContext, useSidePanelFilter, useSwitchSidePanelTab } from '../contexts/RoomsNavigationContext';
 import SidePanelDiscussions from './tabs/SidePanelDiscussions';
 import SidePanelFavorites from './tabs/SidePanelFavorites';
 import SidepanelInProgress from './tabs/SidePanelInProgress';
@@ -11,6 +13,8 @@ import SidePanelOnHold from './tabs/SidepanelOnHold';
 const SidePanelRouter = () => {
 	const [currentTab] = useSidePanelFilter();
 	const { parentRid } = useRoomsListContext();
+	const switchSidePanelTab = useSwitchSidePanelTab();
+	const isDiscussionEnabled = useSetting('Discussion_enabled');
 
 	switch (currentTab) {
 		case ALL_GROUPS.ALL:
@@ -20,7 +24,10 @@ const SidePanelRouter = () => {
 		case ALL_GROUPS.FAVORITES:
 			return <SidePanelFavorites />;
 		case ALL_GROUPS.DISCUSSIONS:
-			return <SidePanelDiscussions />;
+			if (isDiscussionEnabled) {
+				return <SidePanelDiscussions />;
+			}
+			return switchSidePanelTab(ALL_GROUPS.ALL);
 		case ALL_GROUPS.TEAMS:
 		case ALL_GROUPS.CHANNELS:
 		case ALL_GROUPS.DIRECT_MESSAGES:
