@@ -1,10 +1,10 @@
-import { IconButton } from '@rocket.chat/fuselage';
+import { ActionButton } from '.';
 
 // type DevicePickerProps = {};
 
 // TODO: Implement
-const DevicePicker = () => {
-	return <IconButton name='customize' icon='customize' small flexGrow={0} />;
+const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
+	return <ActionButton label='customize' icon='customize' secondary={secondary} flexGrow={0} />;
 };
 
 export default DevicePicker;
