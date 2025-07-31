@@ -1130,8 +1130,11 @@ describe('LIVECHAT - rooms', () => {
 			expect(latestRoom.servedBy!._id).to.not.equal(agent1.user._id);
 			expect(latestRoom.servedBy!._id).to.equal(agent2.user._id);
 
-			await deleteDepartment(initialDepartment._id);
-			await deleteDepartment(forwardToDepartment._id);
+			await Promise.all([
+				closeOmnichannelRoom(latestRoom._id),
+				deleteDepartment(initialDepartment._id),
+				deleteDepartment(forwardToDepartment._id),
+			]);
 		});
 		(IS_EE ? it : it.skip)(
 			'should return a success message when transferred successfully to an offline department when the department accepts it',
