@@ -104,7 +104,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	// FIXME: replace to endpoint
 	const updateOwnBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');

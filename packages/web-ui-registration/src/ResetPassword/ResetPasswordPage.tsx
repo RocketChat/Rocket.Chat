@@ -24,20 +24,10 @@ const getChangePasswordReason = ({
 	requirePasswordChangeReason = requirePasswordChange ? 'You_need_to_change_your_password' : 'Please_enter_your_new_password_below',
 }: Pick<IUser, 'requirePasswordChange' | 'requirePasswordChangeReason'> = {}) => requirePasswordChangeReason as TranslationKey;
 
-declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints {
-		// check file: apps/meteor/app/api/server/v1/users.ts
-		'/v1/users.setPassword': {
-			POST: ({ password }: { password: string }) => Promise<void>;
-		};
-	}
-}
-
 const ResetPasswordPage = (): ReactElement => {
 	const user = useUser();
 	const t = useTranslation();
-	const setBasicInfo = useEndpoint('POST', '/v1/users.setPassword');
+	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 	const resetPassword = useMethod('resetPassword');
 	const token = useRouteParameter('token');
 
@@ -86,7 +76,11 @@ const ResetPasswordPage = (): ReactElement => {
 				await loginWithToken(result.token);
 				router.navigate('/home');
 			} else {
-				await setBasicInfo({ password });
+				await setBasicInfo({
+					data: {
+						newPassword: password,
+					},
+				});
 			}
 		} catch ({ error, reason }: any) {
 			const _error = reason ?? error;
