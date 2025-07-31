@@ -2186,6 +2186,68 @@ describe('[Users]', () => {
 				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', 'initial1');
 				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText2', 'additional2');
 			});
+
+			it('should update custom field with empty string', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: 'value1',
+							},
+						},
+					})
+					.expect(200);
+
+				const updateResponse = await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: '',
+							},
+						},
+					})
+					.expect(200);
+
+				expect(updateResponse.body).to.have.property('success', true);
+				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', '');
+			});
+
+			it('should update custom field with null', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: 'value1',
+							},
+						},
+					})
+					.expect(200);
+
+				const updateResponse = await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: null,
+							},
+						},
+					})
+					.expect(200);
+
+				expect(updateResponse.body).to.have.property('success', true);
+				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', null);
+			});
 		});
 	});
 

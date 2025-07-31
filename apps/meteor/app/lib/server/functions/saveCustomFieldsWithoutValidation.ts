@@ -34,7 +34,7 @@ export const saveCustomFieldsWithoutValidation = async function (
 
 	const customFields = Object.fromEntries(
 		Object.keys(formData)
-			.filter((key) => customFieldsMeta[key])
+			.filter((key) => Object.hasOwn(customFieldsMeta, key))
 			.map((key) => [key, formData[key]]),
 	);
 
@@ -43,7 +43,7 @@ export const saveCustomFieldsWithoutValidation = async function (
 	const updater = _updater || Users.getUpdater();
 	// add modified records to updater
 	Object.keys(customFields).forEach((fieldName) => {
-		// @ts-expect-error `Updater.set` does not support `customFields.${fieldName}` syntax
+		// @ts-expect-error TODO `Updater.set` does not support `customFields.${fieldName}` syntax
 		updater.set(`customFields.${fieldName}`, customFields[fieldName]);
 
 		if (!customFieldsMeta[fieldName].modifyRecordField) {
