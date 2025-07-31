@@ -820,34 +820,28 @@ class WebRTCClass {
 			return;
 		}
 
-		const user = Users.findOne(data.from);
-		let fromUsername = undefined;
-		if (user?.username) {
-			fromUsername = user.username;
-		}
-		const subscription = Subscriptions.findOne({
-			rid: data.room,
-		})!;
+		const username = data.from ? Users.state.get(data.from)?.username : undefined;
+		const subscription = Subscriptions.state.find(({ rid }) => rid === data.room);
 
 		let icon;
 		let title;
 		if (data.monitor === true) {
 			icon = 'eye' as const;
-			title = t('WebRTC_monitor_call_from_%s', fromUsername);
+			title = t('WebRTC_monitor_call_from_%s', username);
 		} else if (subscription && subscription.t === 'd') {
 			if (data.media?.video) {
 				icon = 'video' as const;
-				title = t('WebRTC_direct_video_call_from_%s', fromUsername);
+				title = t('WebRTC_direct_video_call_from_%s', username);
 			} else {
 				icon = 'phone' as const;
-				title = t('WebRTC_direct_audio_call_from_%s', fromUsername);
+				title = t('WebRTC_direct_audio_call_from_%s', username);
 			}
 		} else if (data.media?.video) {
 			icon = 'video' as const;
-			title = t('WebRTC_group_video_call_from_%s', subscription.name);
+			title = t('WebRTC_group_video_call_from_%s', subscription?.name);
 		} else {
 			icon = 'phone' as const;
-			title = t('WebRTC_group_audio_call_from_%s', subscription.name);
+			title = t('WebRTC_group_audio_call_from_%s', subscription?.name);
 		}
 
 		imperativeModal.open({
@@ -1035,7 +1029,7 @@ const WebRTC = new (class {
 	getInstanceByRoomId(rid: IRoom['_id'], visitorId: string | null = null) {
 		let enabled = false;
 		if (!visitorId) {
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			if (!subscription) {
 				return;
 			}
