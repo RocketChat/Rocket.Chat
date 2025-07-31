@@ -36,6 +36,9 @@ inputs:
   NPM_TOKEN:
     required: false
     description: 'NPM token'
+  DEBUG_LOG_LEVEL:
+    required: false
+    description: 'Debug log level'
 
 runs:
   using: composite
@@ -97,6 +100,8 @@ runs:
         args=(rocketchat ${{ inputs.build-containers }})
 
         export DENO_VERSION="${{ inputs.deno-version }}"
+
+        export DEBUG_LOG_LEVEL="${{ inputs.DEBUG_LOG_LEVEL }}"
 
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 

@@ -350,13 +350,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set DEBUG_LOG_LEVEL
-        run: |
-          if [ "${{ runner.debug }}" = '1' ]; then
-            echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
-          else
-            echo "DEBUG_LOG_LEVEL=0" >> $GITHUB_ENV
-          fi
+      - name: Set DEBUG_LOG_LEVEL (debug enabled)
+        if: runner.debug == '1'
+        run: echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
@@ -369,6 +365,7 @@ jobs:
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == needs.release-versions.outputs.official-platform && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          DEBUG_LOG_LEVEL: ${{ env.DEBUG_LOG_LEVEL }}
 
       - name: Make sure matrix bindings load
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && matrix.platform == 'alpine' && github.actor != 'dependabot[bot]'
