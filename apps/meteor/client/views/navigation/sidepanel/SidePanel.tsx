@@ -45,7 +45,7 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: S
 					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
 						{t('Unread')}
 					</Box>
-					<ToggleSwitch id={unreadFieldId} defaultChecked={unreadOnly} onChange={toggleUnreadOnly} />
+					<ToggleSwitch id={unreadFieldId} checked={unreadOnly} onChange={toggleUnreadOnly} />
 				</Box>
 			</SidepanelHeader>
 			<Box pb={8} h='full' ref={ref}>
