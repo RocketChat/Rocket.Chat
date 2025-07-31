@@ -1,5 +1,7 @@
 import { getBSONType } from '@rocket.chat/mongo-adapter';
 
+import { entriesOf } from '../objectUtils';
+
 export const hasOwn = Object.prototype.hasOwnProperty;
 
 const isBinary = (x: unknown): x is Uint8Array => typeof x === 'object' && x !== null && x instanceof Uint8Array;
@@ -110,10 +112,6 @@ export const equals = <T>(a: T, b: T): boolean => {
 };
 
 export const isPlainObject = (x: any): x is Record<string, any> => x && getBSONType(x) === 3;
-
-export function entriesOf<T extends Record<string, any>>(obj: T): [keyof T, T[keyof T]][] {
-	return Object.entries(obj) as [keyof T, T[keyof T]][];
-}
 
 const invalidCharMsg = {
 	'$': "start with '$'",
