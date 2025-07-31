@@ -352,7 +352,7 @@ jobs:
 
       - name: Set DEBUG_LOG_LEVEL
         run: |
-          if [ "${{ runner.debug }}" = 1 ]; then
+          if [ "${{ runner.debug }}" = '1' ]; then
             echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
           else
             echo "DEBUG_LOG_LEVEL=0" >> $GITHUB_ENV
