@@ -122,33 +122,7 @@ jobs:
           echo "Image name: $IMAGE_NAME"
           
           # Try to get the latest tag from the registry
-          LATEST_TAG=$(curl -s "https://${REGISTRY}/v2/${IMAGE_NAME}/tags/list" | \
-            grep -o '"[0-9]\+\.[0-9]\+\.[0-9]\+"' | \
-            sed 's/"//g' | \
-            sort -V | \
-            tail -n1)
-          
-          # If no tags found, start with 1.0.0
-          if [ -z "$LATEST_TAG" ]; then
-            LATEST_TAG="1.0.0"
-          fi
-          
-          echo "Latest tag: $LATEST_TAG"
-          
-          # Parse version components
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_TAG"
-          
-          # Increment logic
-          if [ "$PATCH" -lt 9 ]; then
-            # Increment patch version
-            PATCH=$((PATCH + 1))
-          else
-            # Reset patch to 0 and increment minor
-            PATCH=0
-            MINOR=$((MINOR + 1))
-          fi
-          
-          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          NEW_VERSION=$(echo "${{ github.sha }}" | cut -c1-12)
           echo "New version: $NEW_VERSION"
           
           # Set outputs
