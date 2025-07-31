@@ -20,7 +20,8 @@ export const ScreenFooter = ({ children, options, limit }) => (
 		<FooterContent>
 			{options}
 			{limit}
-			<PoweredBy />
+			{/* Ultatel: remove rocketchat logo */}
+			{/* <PoweredBy /> */}
 		</FooterContent>
 	</Footer>
 );
@@ -94,6 +95,7 @@ export const Screen = ({
 	onOpenWindow,
 	onSoundStop,
 	queueInfo,
+	onFinishChat,
 	dismissNotification,
 	triggered = false,
 }) => (
@@ -122,6 +124,7 @@ export const Screen = ({
 						onRestore={onRestore}
 						onOpenWindow={onOpenWindow}
 						queueInfo={queueInfo}
+						onFinishChat={onFinishChat}
 					/>
 				)}
 

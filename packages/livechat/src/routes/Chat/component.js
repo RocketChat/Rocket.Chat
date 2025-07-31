@@ -177,29 +177,30 @@ class Chat extends Component {
 					</div>
 				</Screen.Content>
 				<Screen.Footer
-					options={
-						options ? (
-							<FooterOptions>
-								<Menu.Group>
-									{onChangeDepartment && (
-										<Menu.Item onClick={onChangeDepartment} icon={ChangeIcon}>
-											{t('change_department')}
-										</Menu.Item>
-									)}
-									{onRemoveUserData && (
-										<Menu.Item onClick={onRemoveUserData} icon={RemoveIcon}>
-											{t('forget_remove_my_data')}
-										</Menu.Item>
-									)}
-									{onFinishChat && (
-										<Menu.Item danger onClick={onFinishChat} icon={FinishIcon}>
-											{t('finish_this_chat')}
-										</Menu.Item>
-									)}
-								</Menu.Group>
-							</FooterOptions>
-						) : null
-					}
+					// Ultatel: Options wont be needed, but finish chat will be moved to widget header.
+					// options={
+					// 	options ? (
+					// 		<FooterOptions>
+					// 			<Menu.Group>
+					// 				{onChangeDepartment && (
+					// 					<Menu.Item onClick={onChangeDepartment} icon={ChangeIcon}>
+					// 						{t('change_department')}
+					// 					</Menu.Item>
+					// 				)}
+					// 				{onRemoveUserData && (
+					// 					<Menu.Item onClick={onRemoveUserData} icon={RemoveIcon}>
+					// 						{t('forget_remove_my_data')}
+					// 					</Menu.Item>
+					// 				)}
+					// 				{onFinishChat && (
+					// 					<Menu.Item danger onClick={onFinishChat} icon={FinishIcon}>
+					// 						{t('finish_this_chat')}
+					// 					</Menu.Item>
+					// 				)}
+					// 			</Menu.Group>
+					// 		</FooterOptions>
+					// 	) : null
+					// }
 					limit={limitTextLength ? <CharCounter limitTextLength={limitTextLength} textLength={text.length} /> : null}
 				>
 					{registrationRequired ? (

@@ -24,6 +24,8 @@ export default class Store {
 
 		this._state = { ...initialState, ...storedState };
 
+		this.setWidgetId();
+
 		window.addEventListener('storage', (e) => {
 			// Cross-tab communication
 			if (e.key !== this.localStorageKey) {
@@ -95,5 +97,12 @@ export default class Store {
 		}
 		this._state = { ...storedState, ...nonPeristable };
 		this.emit('change', [this._state, prevState]);
+	}
+
+	// Get widget ID from URL parameters
+	setWidgetId() {
+		const params = new URLSearchParams(window.location.search);
+		const id = params.get('id');
+		this.setState({ widgetId: id });
 	}
 }
