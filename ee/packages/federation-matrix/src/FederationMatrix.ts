@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-import { toUnpaddedBase64 } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
@@ -40,24 +39,27 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
-		const config = new ConfigService();
-		const matrixConfig = config.getMatrixConfig();
-		const serverConfig = config.getServerConfig();
-		const signingKeys = await config.getSigningKey();
-		const signingKey = signingKeys[0];
+		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
+		const config = new ConfigService({
+			serverName: process.env.MATRIX_SERVER_NAME || 'rc1',
+			keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
+			matrixDomain: process.env.MATRIX_DOMAIN || 'rc1',
+			version: process.env.SERVER_VERSION || '1.0',
+			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
+			signingKey: settingsSigningKey,
+			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
+			database: {
+				uri: process.env.MONGODB_URI || 'mongodb://localhost:3001/meteor',
+				name: process.env.DATABASE_NAME || 'meteor',
+				poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
+			},
+		});
 
 		const containerOptions: FederationContainerOptions = {
 			emitter: instance.eventHandler,
-			federationOptions: {
-				serverName: matrixConfig.serverName,
-				signingKey: toUnpaddedBase64(signingKey.privateKey),
-				signingKeyId: `ed25519:${signingKey.version}`,
-				timeout: 30000,
-				baseUrl: serverConfig.baseUrl,
-			},
 		};
 
-		await createFederationContainer(containerOptions);
+		await createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
 		instance.buildMatrixHTTPRoutes();
 
@@ -75,7 +77,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			.use(getMatrixSendJoinRoutes(this.homeserverServices))
 			.use(getMatrixTransactionsRoutes(this.homeserverServices))
 			.use(getKeyServerRoutes(this.homeserverServices))
-			.use(getFederationVersionsRoutes());
+			.use(getFederationVersionsRoutes(this.homeserverServices));
 
 		wellKnown.use(getWellKnownRoutes(this.homeserverServices));
 
@@ -113,18 +115,20 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
+		if (!(room.t === 'c' || room.t === 'p')) {
+			throw new Error('Room is not a public or private room');
+		}
+
 		try {
 			const matrixDomain = await this.getMatrixDomain();
 			const matrixUserId = `@${owner.username}:${matrixDomain}`;
 			const roomName = room.name || room.fname || 'Untitled Room';
-			const canonicalAlias = room.fname ? `#${room.fname}:${matrixDomain}` : undefined;
 
+			// canonical alias computed from name
 			const matrixRoomResult = await this.homeserverServices.room.createRoom(
 				matrixUserId,
-				matrixUserId,
 				roomName,
-				canonicalAlias,
-				canonicalAlias,
+				room.t === 'c' ? 'public' : 'invite',
 			);
 
 			this.logger.debug('Matrix room created:', matrixRoomResult);
@@ -152,7 +156,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				// We are not generating bridged users for members outside of the current workspace
 				// They will be created when the invite is accepted
 
-				await this.homeserverServices.invite.inviteUserToRoom(member, matrixRoomResult.room_id, matrixUserId, roomName);
+				await this.homeserverServices.invite.inviteUserToRoom(member, matrixRoomResult.room_id, matrixUserId);
 			}
 
 			this.logger.debug('Room creation completed successfully', room._id);
