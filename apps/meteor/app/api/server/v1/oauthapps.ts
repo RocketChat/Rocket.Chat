@@ -94,47 +94,9 @@ const oauthAppsuUpdateEndpoints = API.v1.post(
 		body: isUpdateOAuthAppParams,
 		permissionsRequired: ['manage-oauth-apps'],
 		response: {
-			400: ajv.compile<{
-				error?: string;
-				errorType?: string;
-				stack?: string;
-				details?: object;
-			}>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					stack: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-					details: { type: 'object' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			403: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			200: ajv.compile<IOAuthApps | null>({
 				allOf: [
 					{ anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
