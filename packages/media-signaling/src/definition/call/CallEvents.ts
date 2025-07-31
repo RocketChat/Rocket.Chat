@@ -1,4 +1,4 @@
-import type { CallState } from './CallState';
+import type { CallState } from './IClientMediaCall';
 
 export type CallEvents = {
 	// stateChange receives the old state as param

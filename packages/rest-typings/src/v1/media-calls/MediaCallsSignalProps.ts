@@ -25,58 +25,13 @@ export const sdpSchema: JSONSchemaType<RTCSessionDescriptionInit> = {
 	required: ['type'],
 };
 
-export type IceCandidate = RTCIceCandidateInit;
-
-export const iceCandidateSchema: JSONSchemaType<IceCandidate> = {
-	type: 'object',
-	properties: {
-		candidate: {
-			type: 'string',
-			nullable: true,
-		},
-		sdpMLineIndex: {
-			type: 'number',
-			nullable: true,
-		},
-		sdpMid: {
-			type: 'string',
-			nullable: true,
-		},
-		usernameFragment: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	additionalProperties: false,
-	nullable: false,
-	required: [],
-};
-
-const mandatoryHeader = {
+const signalHeader = {
 	callId: {
 		type: 'string',
 		nullable: false,
 	},
 	sessionId: {
 		type: 'string',
-		nullable: true,
-	},
-	version: {
-		type: 'number',
-		nullable: false,
-	},
-	sequence: {
-		type: 'number',
-		nullable: false,
-	},
-	role: {
-		type: 'string',
-		nullable: false,
-	},
-};
-const optionalHeader = {
-	expectACK: {
-		type: 'boolean',
 		nullable: true,
 	},
 };
@@ -93,204 +48,155 @@ const mediaCallsSignalPropsSchema: JSONSchemaType<MediaCallsSignalProps> = {
 				{
 					type: 'object',
 					properties: {
-						...mandatoryHeader,
-						...optionalHeader,
+						...signalHeader,
 						type: {
-							const: 'request',
+							const: 'new',
 						},
 						body: {
 							type: 'object',
-							discriminator: { propertyName: 'request' },
-							oneOf: [
-								{
-									properties: {
-										request: { const: 'offer' },
-										iceRestart: {
-											type: 'boolean',
-											nullable: true,
-										},
-									},
+							properties: {
+								service: {
+									type: 'string',
+									nullable: false,
 								},
-								{
-									properties: {
-										request: { const: 'answer' },
-										offer: sdpSchema,
-									},
+								kind: {
+									type: 'string',
+									nullable: false,
 								},
-								{
-									properties: {
-										request: { const: 'sdp' },
-									},
+								role: {
+									type: 'string',
+									nullable: false,
 								},
-							],
-
+							},
 							additionalProperties: true,
-							required: ['request'],
+							required: ['service', 'kind', 'role'],
 						},
 					},
 					additionalProperties: false,
-					required: [...Object.keys(mandatoryHeader), 'type', 'body'],
+					required: [...Object.keys(signalHeader), 'type', 'body'],
 				},
 				{
 					type: 'object',
 					properties: {
-						...mandatoryHeader,
-						...optionalHeader,
+						...signalHeader,
 						type: {
-							const: 'deliver',
+							const: 'sdp',
 						},
 						body: {
 							type: 'object',
-							discriminator: { propertyName: 'deliver' },
-							oneOf: [
-								{
-									properties: {
-										deliver: { const: 'sdp' },
-										sdp: sdpSchema,
-										endOfCandidates: {
-											type: 'boolean',
-											nullable: false,
-										},
-									},
-									required: ['deliver', 'sdp', 'endOfCandidates'],
-								},
-								{
-									properties: {
-										deliver: { const: 'ice-candidates' },
-										candidates: {
-											type: 'array',
-											items: iceCandidateSchema,
-										},
-										endOfCandidates: {
-											type: 'boolean',
-											nullable: false,
-										},
-									},
-									required: ['deliver', 'candidates', 'endOfCandidates'],
-								},
-								{
-									properties: {
-										deliver: { const: 'dtmf' },
-										tone: {
-											type: 'string',
-											nullable: false,
-										},
-										duration: {
-											type: 'number',
-											nullable: true,
-										},
-									},
-									required: ['deliver', 'tone'],
-								},
-							],
-							required: ['deliver'],
+							properties: {
+								sdp: sdpSchema,
+							},
+							required: ['sdp'],
 						},
 					},
 					additionalProperties: false,
-					required: [...Object.keys(mandatoryHeader), 'type', 'body'],
+					required: [...Object.keys(signalHeader), 'type', 'body'],
 				},
 				{
 					type: 'object',
 					properties: {
-						...mandatoryHeader,
-						...optionalHeader,
+						...signalHeader,
 						type: {
-							const: 'notify',
+							const: 'request-offer',
 						},
 						body: {
 							type: 'object',
-							discriminator: { propertyName: 'notify' },
-							oneOf: [
-								{
-									properties: {
-										notify: { const: 'ack' },
-									},
+							properties: {
+								iceRestart: {
+									type: 'boolean',
+									nullable: true,
 								},
-								{
-									properties: {
-										notify: { const: 'error' },
-										errorCode: {
-											type: 'string',
-											nullable: false,
-										},
-										errorText: {
-											type: 'string',
-											nullable: true,
-										},
-									},
-									required: ['notify', 'errorCode'],
-								},
-								{
-									properties: {
-										notify: { const: 'new' },
-										service: {
-											const: 'webrtc',
-										},
-										kind: {
-											const: 'direct',
-										},
-									},
-									required: ['notify', 'service', 'kind'],
-								},
-								{
-									properties: {
-										notify: { const: 'state' },
-										callState: {
-											type: 'string',
-										},
-										serviceState: {
-											type: 'string',
-										},
-										mediaState: {
-											type: 'string',
-										},
-									},
-									required: ['notify', 'callState', 'serviceState', 'mediaState'],
-								},
-								{
-									properties: {
-										notify: { const: 'unavailable' },
-									},
-								},
-								{
-									properties: {
-										notify: { const: 'accept' },
-									},
-								},
-								{
-									properties: {
-										notify: { const: 'reject' },
-									},
-								},
-								{
-									properties: {
-										notify: { const: 'hangup' },
-										reasonCode: {
-											type: 'string',
-											nullable: false,
-										},
-										reasonText: {
-											type: 'string',
-											nullable: true,
-										},
-									},
-									required: ['notify', 'reasonCode'],
-								},
-								{
-									properties: {
-										notify: { const: 'negotiation-needed' },
-										reason: {
-											type: 'string',
-											nullable: true,
-										},
-									},
-								},
-							],
-							required: ['notify'],
+							},
+							required: [],
 						},
 					},
 					additionalProperties: false,
-					required: [...Object.keys(mandatoryHeader), 'type', 'body'],
+					required: [...Object.keys(signalHeader), 'type', 'body'],
+				},
+				{
+					type: 'object',
+					properties: {
+						...signalHeader,
+						type: {
+							const: 'error',
+						},
+						body: {
+							type: 'object',
+							properties: {
+								errorCode: {
+									type: 'string',
+									nullable: false,
+								},
+							},
+							required: ['errorCode'],
+						},
+					},
+					additionalProperties: false,
+					required: [...Object.keys(signalHeader), 'type', 'body'],
+				},
+				{
+					type: 'object',
+					properties: {
+						...signalHeader,
+						type: {
+							const: 'answer',
+						},
+						body: {
+							type: 'object',
+							properties: {
+								answer: {
+									type: 'string',
+									nullable: false,
+								},
+							},
+							required: ['answer'],
+						},
+					},
+					additionalProperties: false,
+					required: [...Object.keys(signalHeader), 'type', 'body'],
+				},
+				{
+					type: 'object',
+					properties: {
+						...signalHeader,
+						type: {
+							const: 'hangup',
+						},
+						body: {
+							type: 'object',
+							properties: {
+								reason: {
+									type: 'string',
+									nullable: false,
+								},
+							},
+							required: ['reason'],
+						},
+					},
+					additionalProperties: false,
+					required: [...Object.keys(signalHeader), 'type', 'body'],
+				},
+				{
+					type: 'object',
+					properties: {
+						...signalHeader,
+						type: {
+							const: 'notification',
+						},
+						body: {
+							type: 'object',
+							properties: {
+								notification: {
+									type: 'string',
+									nullable: false,
+								},
+							},
+							required: ['notification'],
+						},
+					},
+					additionalProperties: false,
+					required: [...Object.keys(signalHeader), 'type', 'body'],
 				},
 			],
 		},

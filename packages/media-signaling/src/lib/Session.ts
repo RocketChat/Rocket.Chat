@@ -2,15 +2,13 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { ClientMediaCall } from './Call';
 import { MediaSignalTransportWrapper } from './TransportWrapper';
-import type { IWebRTCProcessor, MediaSignalNotify } from '../definition';
+import type { IWebRTCProcessor } from '../definition';
 import { createRandomToken } from './utils/createRandomToken';
 import type { IServiceProcessorFactoryList } from '../definition/IServiceProcessorFactoryList';
-import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
-import type { IClientMediaCall, CallContact, CallState } from '../definition/call';
-import { isNotifyNew } from './utils/isNotifyNew';
+import type { MediaSignal } from '../definition/MediaSignal';
 import type { MediaSignalTransport } from '../definition/MediaSignalTransport';
-import { isCallRole } from '../definition/call/CallRole';
-import type { MediaSignal } from '../definition/signal/MediaSignal';
+import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
+import { type IClientMediaCall, type CallContact, type CallState, isCallRole } from '../definition/call';
 
 const stateWeights: Record<CallState, number> = {
 	none: 0,
@@ -130,8 +128,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return;
 		}
 
-		if (isNotifyNew(signal)) {
-			await this.processNewCall(signal);
+		if (signal.type === 'new') {
+			await this.processNewCall(signal as MediaSignal<'new'>);
 			return;
 		}
 
@@ -190,7 +188,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.ignoredCalls.has(callId);
 	}
 
-	private async processNewCall(signal: MediaSignalNotify<'new'>) {
+	private async processNewCall(signal: MediaSignal<'new'>) {
 		console.log('session.processNewCall');
 		// If we already know about this call, we don't need to process anything
 		if (this.isCallKnown(signal.callId)) {
@@ -198,7 +196,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		try {
-			if (!isCallRole(signal.role)) {
+			if (!isCallRole(signal.body.role)) {
 				throw new Error('invalid-role');
 			}
 			const webrtcProcessor = await this.createWebRtcProcessor();
@@ -224,7 +222,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			this.failedCalls.add(signal.callId);
 			const errorCode: string = (e && typeof e === 'object' && (e as any).name) || 'call-initialization-failed';
 
-			this.transporter.sendError(signal, errorCode);
+			this.transporter.sendError(signal.callId, errorCode);
 			throw e;
 		}
 	}

@@ -5,7 +5,7 @@ import { VoipContext, isVoipContextReady } from '../contexts/VoipContext';
 import MediaCallsClient from '../lib/MediaCallsClient';
 
 type VoipAPI = {
-	makeCall(callee: string): void;
+	makeCall(calleeURI: string): void;
 	endCall(): void;
 	register(): Promise<void>;
 	unregister(): Promise<void>;

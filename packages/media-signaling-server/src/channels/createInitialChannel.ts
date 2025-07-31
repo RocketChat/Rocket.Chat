@@ -1,11 +1,11 @@
-import type { IMediaCallChannel, IUser, MediaCallActor } from '@rocket.chat/core-typings';
+import type { AtLeast, IMediaCallChannel, IUser, MediaCallActor } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallChannels } from '@rocket.chat/models';
 
 export async function createInitialChannel(
 	callId: string,
 	actor: MediaCallActor,
-	channelData: Partial<InsertionModel<IMediaCallChannel>>,
+	channelData: AtLeast<InsertionModel<IMediaCallChannel>, 'role'>,
 	userData?: Pick<IUser, '_id' | 'name' | 'username'>,
 ): Promise<void> {
 	// Rocket.Chat users will have a separate channel entry for each session involved in the call
@@ -19,7 +19,6 @@ export async function createInitialChannel(
 	}
 
 	await MediaCallChannels.insertOne({
-		role: 'none',
 		...channelData,
 		callId,
 		participant: {
@@ -31,5 +30,6 @@ export async function createInitialChannel(
 		},
 		state: 'none',
 		joinedAt: new Date(),
+		acknowledged: false,
 	});
 }

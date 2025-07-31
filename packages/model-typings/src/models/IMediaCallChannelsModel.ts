@@ -1,11 +1,11 @@
-import type { IMediaCallChannel, MediaCallParticipantIdentification, MediaCallChannelWebRTCSession } from '@rocket.chat/core-typings';
+import type { IMediaCallChannel, MediaCallParticipantIdentification } from '@rocket.chat/core-typings';
 import type { UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel, InsertionModel } from './IBaseModel';
 
 export interface IMediaCallChannelsModel extends IBaseModel<IMediaCallChannel> {
+	createOrUpdateChannel(channel: InsertionModel<IMediaCallChannel>): Promise<IMediaCallChannel | null>;
 	findOneByCallIdAndParticipant(callId: string, participant: MediaCallParticipantIdentification): Promise<IMediaCallChannel | null>;
 	setState(_id: string, state: IMediaCallChannel['state']): Promise<UpdateResult>;
-	setLocalWebRTCSession(_id: string, session: MediaCallChannelWebRTCSession): Promise<UpdateResult>;
-	setRemoteWebRTCSession(_id: string, session: MediaCallChannelWebRTCSession): Promise<UpdateResult>;
+	setLocalDescription(_id: string, localDescription: RTCSessionDescriptionInit): Promise<UpdateResult>;
 }

@@ -1,10 +1,5 @@
-import type {
-	IMediaCallChannel,
-	RocketChatRecordDeleted,
-	MediaCallParticipantIdentification,
-	MediaCallChannelWebRTCSession,
-} from '@rocket.chat/core-typings';
-import type { IMediaCallChannelsModel } from '@rocket.chat/model-typings';
+import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallParticipantIdentification } from '@rocket.chat/core-typings';
+import type { IMediaCallChannelsModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -44,15 +39,40 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 		return this.updateOne({ _id }, update, options);
 	}
 
+	public createOrUpdateChannel(channel: InsertionModel<IMediaCallChannel>): Promise<IMediaCallChannel | null> {
+		const { acknowledged, localDescription, ...channelData } = channel;
+
+		const dataToUpdate = {
+			// once acknowledged, a channel never unsets this flag
+			...(acknowledged && { acknowledged: true }),
+			...(localDescription && { localDescription }),
+		} as const;
+
+		return this.findOneAndUpdate(
+			{
+				'callId': channel.callId,
+				'participant.type': channel.participant.type,
+				'participant.id': channel.participant.id,
+				...(channel.participant.type === 'user' && { 'participant.sessionId': channel.participant.sessionId }),
+			},
+			{
+				$setOnInsert: {
+					...channelData,
+				},
+				...(Object.keys(dataToUpdate).length > 0 && { $set: dataToUpdate }),
+			},
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+	}
+
 	public async setState(_id: string, state: IMediaCallChannel['state']): Promise<UpdateResult> {
 		return this.updateOneById(_id, { $set: { state } });
 	}
 
-	public async setLocalWebRTCSession(_id: string, session: MediaCallChannelWebRTCSession): Promise<UpdateResult> {
-		return this.updateOneById(_id, { $set: { 'webrtc.local': session } });
-	}
-
-	public async setRemoteWebRTCSession(_id: string, session: MediaCallChannelWebRTCSession): Promise<UpdateResult> {
-		return this.updateOneById(_id, { $set: { 'webrtc.remote': session } });
+	public async setLocalDescription(_id: string, localDescription: RTCSessionDescriptionInit): Promise<UpdateResult> {
+		return this.updateOneById(_id, { $set: { localDescription } });
 	}
 }

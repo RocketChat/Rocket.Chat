@@ -1,46 +1,19 @@
-import type { AtLeast, IMediaCall, IMediaCallChannel, IUser, ValidSignalChannel } from '@rocket.chat/core-typings';
-import type { MediaSignal } from '@rocket.chat/media-signaling';
+import type { IMediaCallChannel, ValidSignalChannel } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallChannels } from '@rocket.chat/models';
 
-import { getRoleForActor } from '../channels/getRoleForActor';
-
-type ValidUser = AtLeast<Required<IUser>, '_id' | 'username' | 'name'>;
-
 export async function getChannelForSignal(
-	signal: MediaSignal & { sessionId: Required<MediaSignal>['sessionId'] },
-	call: IMediaCall,
-	user: ValidUser,
+	channelData: Pick<IMediaCallChannel, 'participant' | 'callId' | 'role'>,
 ): Promise<ValidSignalChannel> {
-	const actor = { type: 'user', id: user._id, sessionId: signal.sessionId } as const;
-
-	// Every time the server receives any signal, we need to check if the client that sent it is already in the call's channel list
-	const existingChannel = await MediaCallChannels.findOneByCallIdAndParticipant(call._id, actor);
-
-	if (existingChannel) {
-		return existingChannel as ValidSignalChannel;
-	}
-
-	const role = getRoleForActor(call, actor);
-
+	console.log('getChannelForSignal', channelData.role);
 	const newChannel: InsertionModel<IMediaCallChannel> = {
-		callId: call._id,
-		participant: {
-			...actor,
-			username: user.username,
-			displayName: user.name,
-		},
-		role,
+		...channelData,
 		state: 'none',
+		acknowledged: true,
 	};
 
-	try {
-		await MediaCallChannels.insertOne(newChannel);
-	} catch (e) {
-		// #ToDo: Check if it was really a race condition?
-	}
-
-	const insertedChannel = await MediaCallChannels.findOneByCallIdAndParticipant(call._id, actor);
+	// Create this channel if it doesn't yet exist, or update it with ack = true if it does
+	const insertedChannel = await MediaCallChannels.createOrUpdateChannel(newChannel);
 	if (!insertedChannel) {
 		throw new Error('failed-to-insert-channel');
 	}

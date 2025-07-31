@@ -1,6 +1,6 @@
 import { LocalStream } from './LocalStream';
 import { RemoteStream } from './RemoteStream';
-import type { DeliverParams, IWebRTCProcessor, RequestParams, WebRTCProcessorConfig } from '../../../definition';
+import type { IWebRTCProcessor, MediaSignalRequestOffer, MediaSignalSDP, WebRTCProcessorConfig } from '../../../definition';
 
 type IceGatheringData = {
 	promise: Promise<void>;
@@ -24,17 +24,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private remoteMediaStream: MediaStream;
 
-	private localCandidates: Set<RTCIceCandidate>;
-
-	private remoteCandidates: Set<RTCIceCandidateInit>;
-
 	private iceGatheringWaiters: Set<IceGatheringData>;
 
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.localMediaStream = new MediaStream();
 		this.remoteMediaStream = new MediaStream();
-		this.localCandidates = new Set();
-		this.remoteCandidates = new Set();
 		this.iceGatheringWaiters = new Set();
 
 		this.localStream = new LocalStream(this.localMediaStream);
@@ -48,7 +42,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.remoteMediaStream;
 	}
 
-	public async createOffer({ iceRestart }: RequestParams<'offer'>): Promise<DeliverParams<'sdp'>> {
+	public async createOffer({ iceRestart }: MediaSignalRequestOffer): Promise<MediaSignalSDP> {
 		console.log('processor.createOffer');
 		await this.initializeLocalMediaStream();
 
@@ -67,12 +61,16 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.getLocalDescription();
 	}
 
-	public async createAnswer({ offer }: RequestParams<'answer'>): Promise<DeliverParams<'sdp'>> {
+	public async createAnswer({ sdp }: MediaSignalSDP): Promise<MediaSignalSDP> {
+		if (sdp.type !== 'offer') {
+			throw new Error('invalid-webrtc-offer');
+		}
+
 		await this.initializeLocalMediaStream();
 
 		// #ToDo: direction changes
-		if (this.peer.remoteDescription?.sdp !== offer.sdp) {
-			this.peer.setRemoteDescription(offer);
+		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
+			this.peer.setRemoteDescription(sdp);
 		}
 
 		const answer = await this.peer.createAnswer();
@@ -81,13 +79,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.getLocalDescription();
 	}
 
-	public async collectLocalDescription(_params: RequestParams<'sdp'>): Promise<DeliverParams<'sdp'>> {
-		await this.initializeLocalMediaStream();
-
-		return this.getLocalDescription();
-	}
-
-	public async setRemoteDescription({ sdp }: DeliverParams<'sdp'>): Promise<void> {
+	public async setRemoteDescription({ sdp }: MediaSignalSDP): Promise<void> {
 		console.log('setRemoteDescription');
 		await this.initializeLocalMediaStream();
 
@@ -98,25 +90,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.peer.setRemoteDescription(sdp);
 	}
 
-	public async addIceCandidates({ candidates }: DeliverParams<'ice-candidates'>): Promise<void> {
-		const results = await Promise.allSettled(
-			candidates.map(async (candidate) => {
-				await this.peer?.addIceCandidate(candidate);
-			}),
-		);
-
-		for (const result of results) {
-			if (result.status === 'rejected') {
-				throw result.reason;
-			}
-		}
-	}
-
 	protected async getuserMedia(constraints: MediaStreamConstraints) {
 		return this.config.mediaStreamFactory(constraints);
 	}
 
-	private async getLocalDescription(): Promise<DeliverParams<'sdp'>> {
+	private async getLocalDescription(): Promise<MediaSignalSDP> {
 		console.log('getLocalDescription');
 		await this.waitForIceGathering();
 		console.log('waited');
@@ -134,7 +112,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		console.log('return sdp');
 		return {
 			sdp,
-			endOfCandidates: this.iceGatheringFinished,
 		};
 	}
 
@@ -185,9 +162,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	private restartIce() {
 		this.iceGatheringFinished = false;
 
-		this.localCandidates.clear();
-		this.remoteCandidates.clear();
-
 		this.clearIceGatheringWaiters(new Error('ice-restart'));
 
 		this.peer.restartIce();
@@ -199,9 +173,9 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		console.log('onIceCandidate event', event.candidate);
-		if (event.candidate) {
-			this.localCandidates.add(event.candidate);
-		}
+		// if (event.candidate) {
+		// 	this.localCandidates.add(event.candidate);
+		// }
 	}
 
 	private onIceCandidateError(peer: RTCPeerConnection, _event: RTCPeerConnectionIceErrorEvent) {

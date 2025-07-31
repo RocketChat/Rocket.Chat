@@ -1,65 +1,51 @@
+import type {
+	MediaSignal,
+	MediaSignalAnswer,
+	MediaSignalBody,
+	MediaSignalBodyAndType,
+	MediaSignalHangup,
+	MediaSignalNotification,
+	MediaSignalType,
+} from '../definition/MediaSignal';
 import type { MediaSignalTransport } from '../definition/MediaSignalTransport';
-import type { ClientMediaSignal, MediaSignal } from '../definition/signal/MediaSignal';
-import type { DeliverBody, DeliverParams, DeliverType } from '../definition/signal/MediaSignalDeliver';
-import type { MediaSignalHeaderParams } from '../definition/signal/MediaSignalHeader';
-import type { NotifyBody, NotifyParams, NotifyType } from '../definition/signal/MediaSignalNotify';
 
 export class MediaSignalTransportWrapper {
-	private readonly version = 1.0;
-
 	constructor(
 		public readonly sessionId: string,
 		private sendSignalFn: MediaSignalTransport,
 	) {}
 
-	public deliverToServer<T extends DeliverType>(requestSignal: MediaSignal, type: T, params: DeliverParams<T>) {
-		return this.sendSignalToServer(
-			{
-				type: 'deliver',
-				body: {
-					deliver: type,
-					...params,
-				} as DeliverBody<T>,
-			},
-			requestSignal,
-		);
-	}
-
-	public notifyServer<T extends NotifyType>(requestSignal: MediaSignal, type: T, params?: NotifyParams<T>) {
-		return this.sendSignalToServer(
-			{
-				type: 'notify',
-				body: {
-					notify: type,
-					...params,
-				} as NotifyBody<T>,
-			},
-			requestSignal,
-		);
-	}
-
-	public sendError(requestSignal: MediaSignal, errorCode: string, errorText?: string) {
-		this.notifyServer(requestSignal, 'error', {
-			errorCode,
-			...(errorText && { errorText }),
+	public sendToServer<T extends MediaSignalType>(callId: string, type: T, body: MediaSignalBody<T>) {
+		return this.sendSignalToServer(callId, {
+			type,
+			body,
 		});
 	}
 
-	public sendSignalToServer<T extends MediaSignal>(signal: ClientMediaSignal<T>, requestSignal: MediaSignal) {
-		const header: MediaSignalHeaderParams = {
-			callId: requestSignal.callId,
-			sequence: requestSignal.sequence,
-			role: requestSignal.role,
-			version: this.version,
-			sessionId: this.sessionId,
-		};
+	public sendError(callId: string, errorCode: string) {
+		this.sendToServer(callId, 'error', {
+			errorCode,
+		});
+	}
 
-		const newSignal = {
+	public answer(callId: string, answer: MediaSignalAnswer['answer']) {
+		return this.sendToServer(callId, 'answer', { answer });
+	}
+
+	public hangup(callId: string, reason: MediaSignalHangup['reason']) {
+		return this.sendToServer(callId, 'hangup', { reason });
+	}
+
+	public notify(callId: string, notification: MediaSignalNotification['notification']) {
+		return this.sendToServer(callId, 'notification', { notification });
+	}
+
+	public sendSignalToServer<T extends MediaSignalType>(callId: string, signal: MediaSignalBodyAndType<T>) {
+		return this.sendSignal({
 			...signal,
-			...header,
-		} as T;
-
-		return this.sendSignal(newSignal);
+			callId,
+			sessionId: this.sessionId,
+		});
 	}
 
 	public sendSignal(signal: MediaSignal): void {

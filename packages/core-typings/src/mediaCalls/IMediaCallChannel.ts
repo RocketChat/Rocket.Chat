@@ -29,19 +29,12 @@ export type MediaCallChannelUserSIP = MediaCallParticipantIdentification & {
 
 export type MediaCallParticipant = MediaCallChannelUserRC | MediaCallChannelUserSIP;
 
-export type MediaCallChannelWebRTCSession = {
-	description: RTCSessionDescriptionInit | null;
-	iceCandidates: RTCIceCandidateInit[];
-	iceGatheringComplete: boolean;
-	assignSequence: number;
-};
-
 export interface IMediaCallChannel extends IRocketChatRecord {
 	callId: string;
 
 	participant: MediaCallParticipant;
 
-	role: 'caller' | 'callee' | 'none';
+	role: 'caller' | 'callee';
 
 	state: 'none' | 'ringing' | 'joining' | 'active' | 'left';
 
@@ -52,10 +45,9 @@ export interface IMediaCallChannel extends IRocketChatRecord {
 	// The moment when the user left the call or hanged up
 	leftAt?: Date;
 
-	webrtc?: {
-		local?: MediaCallChannelWebRTCSession;
-		remote?: MediaCallChannelWebRTCSession;
-	};
+	localDescription?: RTCSessionDescriptionInit;
+
+	acknowledged: boolean;
 }
 
 export type ValidSignalChannel = IMediaCallChannel & {

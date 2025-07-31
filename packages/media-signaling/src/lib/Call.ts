@@ -2,8 +2,18 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
 import type { IWebRTCProcessor } from '../definition/IWebRTCProcessor';
-import type { IClientMediaCall, IClientMediaCallData, CallEvents, CallContact, CallRole, CallState, CallService } from '../definition/call';
-import type { MediaSignalRequest, MediaSignal, DeliverParams, MediaSignalDeliver, MediaSignalNotify } from '../definition/signal';
+import type { MediaSignal, MediaSignalSDP, MediaSignalType } from '../definition/MediaSignal';
+import type {
+	IClientMediaCall,
+	IClientMediaCallData,
+	CallEvents,
+	CallContact,
+	CallRole,
+	CallState,
+	CallService,
+	CallHangupReason,
+} from '../definition/call';
+import { signalTypeRequiresTargeting } from './utils/signalTypeRequiresTargeting';
 
 export interface IClientMediaCallConfig {
 	transporter: MediaSignalTransportWrapper;
@@ -49,9 +59,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private webrtcProcessor: IWebRTCProcessor;
 
-	private tricklingSignals = new Set<MediaSignal>();
-
-	private firstSignal: MediaSignalNotify<'new'>;
+	private firstSignal: MediaSignal<'new'>;
 
 	private acceptedLocally: boolean;
 
@@ -61,7 +69,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	constructor(
 		config: IClientMediaCallConfig,
-		signal: MediaSignalNotify<'new'>,
+		signal: MediaSignal<'new'>,
 		{ ignored, contact }: Pick<IClientMediaCallData, 'ignored' | 'contact'> = {},
 	) {
 		this.emitter = new Emitter<CallEvents>();
@@ -72,7 +80,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.webrtcProcessor = config.webrtcProcessor;
 
 		this.callId = signal.callId;
-		this._role = signal.role;
+		this._role = signal.body.role;
 		this._service = signal.body.service;
 
 		this.acceptedLocally = false;
@@ -100,19 +108,24 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.emitter.emit('contactUpdate');
 	}
 
-	public async processSignal(signal: MediaSignal) {
+	public async processSignal<T extends MediaSignalType>(signal: MediaSignal<T>) {
 		console.log('ClientMediaCall.processSignal', signal.type);
-		switch (signal.type) {
-			case 'request':
-				await this.processRequest(signal);
-				break;
-			case 'deliver':
-				await this.processDeliver(signal);
-				break;
-			case 'notify':
-				await this.processNotify(signal);
-				break;
+
+		if (!signal.sessionId && signalTypeRequiresTargeting(signal.type)) {
+			console.error(`Received an untargeted ${signal.type} signal.`);
+			return;
 		}
+
+		switch (signal.type) {
+			case 'sdp':
+				return this.processRemoteSDP(signal as MediaSignal<'sdp'>);
+			case 'request-offer':
+				return this.processOfferRequest(signal as MediaSignal<'request-offer'>);
+			case 'notification':
+				return this.processNotification(signal as MediaSignal<'notification'>);
+		}
+
+		console.log('signal ignored, as its type is not handled by this agent', signal.type);
 	}
 
 	public async accept(): Promise<void> {
@@ -121,7 +134,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			throw new Error('call-not-pending-acceptance');
 		}
 		this.acceptedLocally = true;
-		this.transporter.notifyServer(this.firstSignal, 'accept');
+		this.transporter.answer(this.callId, 'accept');
 	}
 
 	public async reject(): Promise<void> {
@@ -129,7 +142,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (!this.isPendingAcceptance()) {
 			throw new Error('call-not-pending-acceptance');
 		}
-		this.transporter.notifyServer(this.firstSignal, 'reject');
+		this.transporter.answer(this.callId, 'reject');
 	}
 
 	public async hangup(): Promise<void> {
@@ -139,18 +152,18 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.endedLocally = true;
-		await this.flagAsEnded(this.firstSignal, 'normal');
+		await this.flagAsEnded('normal');
 	}
 
 	public isPendingAcceptance(): boolean {
 		return ['none', 'ringing'].includes(this._state);
 	}
 
-	private initialize(signal: MediaSignalNotify<'new'>): void {
+	private initialize(signal: MediaSignal<'new'>): void {
 		console.log('call.initialize');
 		// If it's flagged as ignored even before the initialization, tell the server we're unavailable
 		if (this.ignored) {
-			return this.transporter.notifyServer(signal, 'unavailable');
+			return this.transporter.answer(signal.callId, 'unavailable');
 		}
 
 		// If the call is targeted, assume we already accepted it:
@@ -160,7 +173,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._state = 'ringing';
 
 		// Send an ACK so the server knows that this session exists and is reachable
-		this.transporter.notifyServer(signal, 'ack');
+		this.transporter.answer(signal.callId, 'ack');
 	}
 
 	private changeState(newState: CallState): void {
@@ -184,143 +197,78 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	private async processRequest(signal: MediaSignalRequest) {
-		console.log('call.processRequest', signal.body.request);
+	private async processOfferRequest(signal: MediaSignal<'request-offer'>) {
+		console.log('call.processOfferRequest');
 		if (!signal.sessionId) {
-			console.error('Received an untargeted request.');
+			console.error('Received an untargeted offer request.');
 			return;
 		}
 
-		switch (signal.body.request) {
-			case 'offer':
-				return this.processOfferRequest(signal as MediaSignalRequest<'offer'>);
-			case 'answer':
-				return this.processAnswerRequest(signal as MediaSignalRequest<'answer'>);
-			case 'sdp':
-				return this.processSdpRequest(signal as MediaSignalRequest<'sdp'>);
-		}
-	}
-
-	private async processOfferRequest(signal: MediaSignalRequest<'offer'>) {
-		console.log('call.processOfferRequest');
-		let offer: DeliverParams<'sdp'> | null = null;
+		let offer: MediaSignalSDP | null = null;
 		try {
 			offer = await this.webrtcProcessor.createOffer(signal.body);
 		} catch (e) {
-			this.transporter.sendError(signal, 'failed-to-create-offer');
+			this.transporter.sendError(this.callId, 'failed-to-create-offer');
 			throw e;
 		}
 
 		if (!offer) {
-			this.transporter.sendError(signal, 'implementation-error');
+			this.transporter.sendError(this.callId, 'implementation-error');
 		}
 
-		await this.deliverSdp(signal, offer);
+		await this.deliverSdp(offer);
 	}
 
-	private async processAnswerRequest(signal: MediaSignalRequest<'answer'>) {
+	private async processAnswerRequest(signal: MediaSignal<'sdp'>) {
 		console.log('Call.processAnswerRequest');
-		let answer: DeliverParams<'sdp'> | null = null;
+		let answer: MediaSignalSDP | null = null;
 		try {
 			answer = await this.webrtcProcessor.createAnswer(signal.body);
 		} catch (e) {
-			this.transporter.sendError(signal, 'failed-to-create-answer');
+			this.transporter.sendError(this.callId, 'failed-to-create-answer');
 			throw e;
 		}
 
 		if (!answer) {
-			this.transporter.sendError(signal, 'implementation-error');
+			this.transporter.sendError(this.callId, 'implementation-error');
 		}
 
-		await this.deliverSdp(signal, answer);
+		await this.deliverSdp(answer);
 	}
 
-	private async processSdpRequest(signal: MediaSignalRequest<'sdp'>) {
-		console.log('call.processSdpRequest');
-		let sdp: DeliverParams<'sdp'> | null = null;
-		try {
-			sdp = await this.webrtcProcessor.collectLocalDescription(signal.body);
-		} catch (e) {
-			this.transporter.sendError(signal, 'failed-to-collect-description');
-			throw e;
+	private async processRemoteSDP(signal: MediaSignal<'sdp'>) {
+		console.log('Call.processRemoteSDP');
+		if (signal.body.sdp.type === 'offer') {
+			return this.processAnswerRequest(signal);
 		}
 
-		if (!sdp) {
-			this.transporter.sendError(signal, 'implementation-error');
-		}
-
-		await this.deliverSdp(signal, sdp);
+		await this.webrtcProcessor.setRemoteDescription(signal.body);
 	}
 
-	private async deliverSdp(requestSignal: MediaSignal, sdp: DeliverParams<'sdp'>) {
+	private async deliverSdp(sdp: MediaSignalSDP) {
 		console.log('Call.deliverSdp');
-		// If we're trickling ICE, keep the signal reference for upcoming candidates
-		if (!sdp.endOfCandidates) {
-			this.tricklingSignals.add(requestSignal);
-		}
 
-		return this.transporter.deliverToServer(requestSignal, 'sdp', sdp);
+		return this.transporter.sendToServer(this.callId, 'sdp', sdp);
 	}
 
-	private async processDeliver(signal: MediaSignalDeliver) {
-		console.log('Call.processDeliver', signal.body.deliver);
+	private async processNotification(signal: MediaSignal<'notification'>) {
+		console.log('Call.processNotification', signal.body.notification);
 
-		if (!signal.sessionId) {
-			throw new Error('Delivery signals MUST target a specific session.');
-		}
-
-		switch (signal.body.deliver) {
-			case 'sdp':
-				await this.webrtcProcessor.setRemoteDescription(signal.body);
-				break;
-			case 'ice-candidates':
-				await this.webrtcProcessor.addIceCandidates(signal.body);
-				break;
-			case 'dtmf':
-				// #ToDo
-				break;
-		}
-	}
-
-	private async processNotify(signal: MediaSignalNotify) {
-		console.log('Call.processNotify', signal.body.notify);
-
-		switch (signal.body.notify) {
-			case 'new':
-				// New notifications should have alreayd been processed by the constructor
-				break;
-			case 'error':
-				break;
-			case 'ack':
-				break;
-			// case 'invalid':
-			// 	break;
-			// case 'unable':
-			// 	break;
-			// case 'empty':
-			// 	break;
-			case 'state':
-				break;
-			case 'unavailable':
-				break;
-			case 'accept':
-				await this.flagAsAccepted(signal);
-				break;
-			case 'reject':
-				break;
+		switch (signal.body.notification) {
+			case 'accepted':
+				return this.flagAsAccepted();
 			case 'hangup':
-				await this.flagAsEnded(signal, 'remote');
-				break;
-			case 'negotiation-needed':
-				break;
+				return this.flagAsEnded('remote');
 		}
+
+		console.log('notification ignored as its type is not handled by this agent', signal.body.notification);
 	}
 
-	private async flagAsAccepted(signal: MediaSignalNotify): Promise<void> {
+	private async flagAsAccepted(): Promise<void> {
 		console.log('flagAsAccepted');
 
 		if (!this.acceptedLocally) {
-			this.transporter.sendError(signal, 'not-accepted');
+			this.transporter.sendError(this.callId, 'not-accepted');
 			throw new Error('Trying to activate a call that was not yet accepted locally.');
 		}
 
@@ -328,16 +276,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.changeState('accepted');
 	}
 
-	private async flagAsEnded(signal: MediaSignal, reasonCode: string): Promise<void> {
+	private async flagAsEnded(reasonCode: CallHangupReason): Promise<void> {
 		console.log('flagAsEnded');
 
 		if (this._state === 'hangup') {
 			return;
 		}
 
-		this.transporter.notifyServer(signal, 'hangup', {
-			reasonCode,
-		});
+		this.transporter.hangup(this.callId, reasonCode);
 
 		this.changeState('hangup');
 	}

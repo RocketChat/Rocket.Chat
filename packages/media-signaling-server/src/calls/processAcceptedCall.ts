@@ -1,10 +1,9 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import { MediaCalls } from '@rocket.chat/models';
 
-import { getNewCallSequence } from './getNewCallSequence';
+import { deliverChannelSDP } from '../channels/deliverChannelSDP';
 import { getActorChannel } from '../channels/getActorChannel';
 // import { requestChannelOffer } from '../channels/requestChannelOffer';
-import { setRemoteSDP } from '../channels/setRemoteSDP';
 import { isValidSignalChannel } from '../signals/isValidSignalChannel';
 import { sendSignalToChannels } from '../signals/sendSignalToChannels';
 import { logger } from '../utils/logger';
@@ -20,7 +19,7 @@ export async function processAcceptedCall(callId: IMediaCall['_id']): Promise<vo
 		throw new Error('error-failed-to-locate-caller-channel');
 	}
 
-	const offer = callerChannel.webrtc?.local;
+	const offer = callerChannel.localDescription;
 
 	// If the caller doesn't have a webrtc offer yet, we need to wait for it
 	if (!offer) {
@@ -28,7 +27,7 @@ export async function processAcceptedCall(callId: IMediaCall['_id']): Promise<vo
 		return;
 	}
 
-	if (offer.description?.type !== 'offer') {
+	if (offer.type !== 'offer') {
 		logger.error({ msg: 'The local description of a caller channel is not an offer', local: offer });
 		throw new Error('unexpected-state');
 	}
@@ -38,30 +37,18 @@ export async function processAcceptedCall(callId: IMediaCall['_id']): Promise<vo
 		throw new Error('error-failed-to-locate-callee-channel');
 	}
 
-	// If the callee doesn't have the offer yet, set it and request an answer, but do not wait for it
-	if (!calleeChannel.webrtc?.remote) {
-		await setRemoteSDP(
-			calleeChannel,
-			{
-				sdp: offer.description,
-				endOfCandidates: offer.iceGatheringComplete,
-			},
-			offer.assignSequence,
-		);
-	}
+	await deliverChannelSDP(calleeChannel, {
+		sdp: offer,
+	});
 
 	const validChannels = [callerChannel, calleeChannel].filter((channel) => isValidSignalChannel(channel));
 
 	if (validChannels.length) {
-		const newSequence = await getNewCallSequence(callId);
-		if (newSequence) {
-			await sendSignalToChannels(validChannels, {
-				sequence: newSequence.sequence,
-				type: 'notify',
-				body: {
-					notify: 'accept',
-				},
-			});
-		}
+		await sendSignalToChannels(validChannels, {
+			type: 'notification',
+			body: {
+				notification: 'accepted',
+			},
+		});
 	}
 }

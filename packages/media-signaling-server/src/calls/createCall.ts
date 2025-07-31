@@ -35,7 +35,6 @@ export async function createCall(caller: MediaCallActor, callee: MediaCallActor)
 
 		createdBy: caller,
 		createdAt: new Date(),
-		sequence: 0,
 
 		caller: {
 			...caller,
