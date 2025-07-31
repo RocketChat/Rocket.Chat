@@ -33,47 +33,9 @@ const oauthAppsListEndpoints = API.v1.get(
 		}),
 		permissionsRequired: ['manage-oauth-apps'],
 		response: {
-			400: ajv.compile<{
-				error?: string;
-				errorType?: string;
-				stack?: string;
-				details?: object;
-			}>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					stack: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-					details: { type: 'object' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			403: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			200: ajv.compile<{ oauthApps: IOAuthApps[] }>({
 				type: 'object',
 				properties: {
