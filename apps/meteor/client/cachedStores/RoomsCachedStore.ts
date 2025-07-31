@@ -3,8 +3,7 @@ import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-ty
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { SubscriptionsCachedStore } from '.';
-import { createDocumentMapStore } from '../lib/cachedCollections';
-import { PrivateCachedStore } from '../lib/cachedCollections/CachedCollection';
+import { createDocumentMapStore, PrivateCachedStore } from '../lib/cachedStores';
 
 class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 	constructor() {

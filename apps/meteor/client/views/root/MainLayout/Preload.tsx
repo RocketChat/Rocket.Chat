@@ -2,9 +2,8 @@ import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import { useEffect } from 'react';
 
-import { settings } from '../../../../app/settings/client';
 import { mainReady } from '../../../../app/ui-utils/client';
-import { RoomsCachedStore, SubscriptionsCachedStore } from '../../../cachedStores';
+import { RoomsCachedStore, SubscriptionsCachedStore, PublicSettingsCachedStore } from '../../../cachedStores';
 import { useReactiveVar } from '../../../hooks/useReactiveVar';
 import { isSyncReady } from '../../../lib/userData';
 import PageLoading from '../PageLoading';
@@ -12,7 +11,7 @@ import PageLoading from '../PageLoading';
 const Preload = ({ children }: { children: ReactNode }): ReactElement => {
 	const uid = useUserId();
 	const subscriptionsReady = useReactiveVar(SubscriptionsCachedStore.ready);
-	const settingsReady = useReactiveVar(settings.cachedCollection.ready);
+	const settingsReady = useReactiveVar(PublicSettingsCachedStore.ready);
 	const userDataReady = useReactiveVar(isSyncReady);
 
 	const ready = !uid || (userDataReady && subscriptionsReady && settingsReady);

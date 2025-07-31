@@ -1,7 +1,6 @@
 import type { IPermission } from '@rocket.chat/core-typings';
 
-import { createDocumentMapStore } from '../lib/cachedCollections';
-import { PrivateCachedStore } from '../lib/cachedCollections/CachedCollection';
+import { createDocumentMapStore, PrivateCachedStore } from '../lib/cachedStores';
 
 export const PermissionsCachedStore = new PrivateCachedStore<IPermission>({
 	name: 'permissions',

@@ -9,9 +9,8 @@ import type { StoreApi, UseBoundStore } from 'zustand';
 
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
-import { CachedCollectionManager } from './CachedCollectionManager';
+import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
-import { MinimongoCollection } from './MinimongoCollection';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
@@ -70,7 +69,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			? console.log.bind(console, `%cCachedCollection ${this.name}`, `color: navy; font-weight: bold;`)
 			: () => undefined;
 
-		CachedCollectionManager.register(this);
+		CachedStoresManager.register(this);
 	}
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
@@ -371,56 +370,6 @@ export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends Cache
 }
 
 export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
-	protected override getToken() {
-		return Accounts._storedLoginToken();
-	}
-
-	override clearCacheOnLogout() {
-		void this.clearCache();
-	}
-
-	listen() {
-		if (process.env.NODE_ENV === 'test') {
-			return;
-		}
-
-		onLoggedIn(() => {
-			void this.init();
-		});
-
-		Accounts.onLogout(() => {
-			this.release();
-		});
-	}
-}
-
-export abstract class CachedCollection<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
-	readonly collection;
-
-	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
-		const collection = new MinimongoCollection<T>();
-
-		super({
-			name,
-			eventType,
-			store: collection.use,
-		});
-
-		this.collection = collection;
-	}
-}
-
-export class PublicCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
-	protected override getToken() {
-		return undefined;
-	}
-
-	override clearCacheOnLogout() {
-		// do nothing
-	}
-}
-
-export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
 	protected override getToken() {
 		return Accounts._storedLoginToken();
 	}

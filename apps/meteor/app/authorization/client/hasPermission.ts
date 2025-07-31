@@ -2,8 +2,8 @@ import type { IUser, IPermission } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { hasRole } from './hasRole';
-import { watch } from './watch';
 import { PermissionsCachedStore } from '../../../client/cachedStores';
+import { watch } from '../../../client/lib/cachedStores';
 import { Permissions, Users } from '../../../client/stores';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 

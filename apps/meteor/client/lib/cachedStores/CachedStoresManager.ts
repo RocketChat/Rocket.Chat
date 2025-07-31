@@ -1,6 +1,6 @@
-import type { IWithManageableCache } from './CachedCollection';
+import type { IWithManageableCache } from './CachedStore';
 
-class CachedCollectionManager {
+class CachedStoresManager {
 	private items = new Set<IWithManageableCache>();
 
 	register(cachedCollection: IWithManageableCache) {
@@ -14,9 +14,9 @@ class CachedCollectionManager {
 	}
 }
 
-const instance = new CachedCollectionManager();
+const instance = new CachedStoresManager();
 
 export {
 	/** @deprecated */
-	instance as CachedCollectionManager,
+	instance as CachedStoresManager,
 };
