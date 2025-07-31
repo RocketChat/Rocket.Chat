@@ -21,11 +21,7 @@ const ReviewStep = ({ onSend, ...props }: ReviewStepProps) => {
 				<OutboundMessagePreview {...props} />
 			</Box>
 
-			<WizardActions>
-				<Box mie='auto' fontScale='c1' color='annotation'>
-					{t('Messages_cannot_be_unsent')}
-				</Box>
-
+			<WizardActions annotation={t('Messages_cannot_be_unsent')}>
 				<WizardBackButton />
 
 				<Button primary icon='send' loading={sendMutation.isPending} onClick={() => sendMutation.mutate()}>
