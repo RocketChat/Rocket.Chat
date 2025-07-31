@@ -17,7 +17,7 @@ import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { Subscriptions, Rooms } from '../../../app/models/client';
+import { Subscriptions, Rooms, Users } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
@@ -69,8 +69,11 @@ const queryRoom = (
 };
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
-	const user = useReactiveValue(getUser);
 	const userId = useReactiveValue(getUserId);
+	const user = Users.use((state) => {
+		if (!userId) return null;
+		return state.get(userId) ?? null;
+	});
 	const previousUserId = useRef(userId);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
