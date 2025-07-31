@@ -11,7 +11,7 @@ exports[`RecipientStep renders Default without crashing 1`] = `
           data-testid="recipient-form"
         >
           <div
-            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-h2s0k0"
+            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
           >
             <div
               class="rcx-button-group rcx-button-group--align-start"
@@ -47,7 +47,7 @@ exports[`RecipientStep renders WithDefaultValues without crashing 1`] = `
           data-testid="recipient-form"
         >
           <div
-            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-h2s0k0"
+            class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
           >
             <div
               class="rcx-button-group rcx-button-group--align-start"
