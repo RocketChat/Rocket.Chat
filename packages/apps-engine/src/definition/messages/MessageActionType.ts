@@ -1,3 +1,3 @@
 export enum MessageActionType {
-    BUTTON = 'button',
+	BUTTON = 'button',
 }

@@ -222,7 +222,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSubscription() {
-		const subscription = Subscriptions.findOne({ rid: this.roomId });
+		const subscription = Subscriptions.state.find((record) => record.rid === this.roomId);
 
 		if (subscription?.lastMessage?.t !== 'e2e') {
 			this.log('decryptSubscriptions nothing to do');
@@ -231,21 +231,16 @@ export class E2ERoom extends Emitter {
 
 		const message = await this.decryptMessage(subscription.lastMessage);
 
-		Subscriptions.update(
-			{
-				_id: subscription._id,
-			},
-			{
-				$set: {
-					lastMessage: message,
-				},
-			},
-		);
+		Subscriptions.state.store({
+			...subscription,
+			lastMessage: message,
+		});
+
 		this.log('decryptSubscriptions Done');
 	}
 
 	async decryptOldRoomKeys() {
-		const sub = Subscriptions.findOne({ rid: this.roomId });
+		const sub = Subscriptions.state.find((record) => record.rid === this.roomId);
 
 		if (!sub?.oldRoomKeys || sub?.oldRoomKeys.length === 0) {
 			this.log('decryptOldRoomKeys nothing to do');
@@ -303,9 +298,10 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptPendingMessages() {
-		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
-			Messages.update({ _id }, await this.decryptMessage({ _id, ...msg }));
-		});
+		await Messages.state.updateAsync(
+			(record) => record.rid === this.roomId && record.t === 'e2e' && record.e2e === 'pending',
+			(record) => this.decryptMessage(record),
+		);
 	}
 
 	// Initiates E2E Encryption
@@ -321,7 +317,7 @@ export class E2ERoom extends Emitter {
 		this.setState(E2ERoomState.ESTABLISHING);
 
 		try {
-			const groupKey = Subscriptions.findOne({ rid: this.roomId })?.E2EKey;
+			const groupKey = Subscriptions.state.find((record) => record.rid === this.roomId)?.E2EKey;
 			if (groupKey) {
 				await this.importGroupKey(groupKey);
 				this.setState(E2ERoomState.READY);
@@ -334,9 +330,8 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const room = Rooms.findOne({ _id: this.roomId })!;
-			if (!room.e2eKeyId) {
+			const room = Rooms.state.get(this.roomId);
+			if (!room?.e2eKeyId) {
 				this.setState(E2ERoomState.CREATING_KEYS);
 				await this.createGroupKey();
 				this.setState(E2ERoomState.READY);
@@ -475,7 +470,7 @@ export class E2ERoom extends Emitter {
 	async encryptKeyForOtherParticipants() {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
-			const mySub = Subscriptions.findOne({ rid: this.roomId });
+			const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 			const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
 			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
 
@@ -769,7 +764,7 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		const mySub = Subscriptions.findOne({ rid: this.roomId });
+		const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 		const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
 		const usersWithKeys = await Promise.all(
 			users.map(async (user) => {

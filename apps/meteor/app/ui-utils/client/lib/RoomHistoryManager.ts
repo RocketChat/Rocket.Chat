@@ -1,12 +1,11 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
+import { differenceInMilliseconds } from 'date-fns';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { MutableRefObject } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
@@ -16,16 +15,7 @@ import { getUserPreference } from '../../../utils/client';
 
 const waitAfterFlush = () => new Promise((resolve) => Tracker.afterFlush(() => resolve(void 0)));
 
-export async function upsertMessage(
-	{
-		msg,
-		subscription,
-	}: {
-		msg: IMessage & { ignored?: boolean };
-		subscription?: ISubscription;
-	},
-	collection: MinimongoCollection<IMessage> = Messages,
-) {
+const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscription }: { subscription?: ISubscription }) => {
 	const userId = msg.u?._id;
 
 	if (subscription?.ignored?.includes(userId)) {
@@ -35,29 +25,23 @@ export async function upsertMessage(
 	if (msg.t === 'e2e' && !msg.file) {
 		msg.e2e = 'pending';
 	}
-	msg = (await onClientMessageReceived(msg)) || msg;
 
-	const { _id } = msg;
+	return (await onClientMessageReceived(msg)) || msg;
+};
 
-	return collection.upsert({ _id }, msg);
+export async function upsertMessage({ msg, subscription }: { msg: IMessage & { ignored?: boolean }; subscription?: ISubscription }) {
+	Messages.state.store(await processMessage(msg, { subscription }));
 }
 
-export async function upsertMessageBulk(
-	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
-	collection: MinimongoCollection<IMessage> = Messages,
-) {
-	const { queries } = collection;
-	collection.queries = [];
-	const lastMessage = msgs.pop();
-
-	for await (const msg of msgs) {
-		await upsertMessage({ msg, subscription }, collection);
-	}
-
-	if (lastMessage) {
-		collection.queries = queries;
-		await upsertMessage({ msg: lastMessage, subscription }, collection);
-	}
+export async function upsertMessageBulk({
+	msgs,
+	subscription,
+}: {
+	msgs: (IMessage & { ignored?: boolean })[];
+	subscription?: ISubscription;
+}) {
+	const processedMsgs = await Promise.all(msgs.map(async (msg) => processMessage(msg, { subscription })));
+	Messages.state.storeMany(processedMsgs);
 }
 
 const defaultLimit = parseInt(getConfig('roomListLimit') ?? '50') || 50;
@@ -149,7 +133,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 			let ls = undefined;
 
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			if (subscription) {
 				({ ls } = subscription);
 			}
@@ -243,9 +227,12 @@ class RoomHistoryManagerClass extends Emitter {
 
 		room.isLoading.set(true);
 
-		const lastMessage = Messages.findOne({ rid, _hidden: { $ne: true } }, { sort: { ts: -1 } });
+		const lastMessage = Messages.state.findFirst(
+			(record) => record.rid === rid && record._hidden !== true,
+			(a, b) => b.ts.getTime() - a.ts.getTime(),
+		);
 
-		const subscription = Subscriptions.findOne({ rid });
+		const subscription = Subscriptions.state.find((record) => record.rid === rid);
 
 		if (lastMessage?.ts) {
 			const { ts } = lastMessage;
@@ -294,13 +281,13 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public close(rid: IRoom['_id']) {
-		Messages.remove({ rid });
+		Messages.state.remove((record) => record.rid === rid);
 		delete this.histories[rid];
 	}
 
 	public clear(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
-		Messages.remove({ rid });
+		Messages.state.remove((record) => record.rid === rid);
 		room.isLoading.set(false);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
@@ -313,7 +300,7 @@ class RoomHistoryManagerClass extends Emitter {
 			return;
 		}
 
-		const messageAlreadyLoaded = Boolean(Messages.findOne({ _id: message._id, _hidden: { $ne: true } }));
+		const messageAlreadyLoaded = Messages.state.some((record) => record._id === message._id && record._hidden !== true);
 
 		if (messageAlreadyLoaded) {
 			return;
@@ -321,8 +308,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const room = this.getRoom(message.rid);
 
-		const subscription = Subscriptions.findOne({ rid: message.rid });
-
+		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
 		this.clear(message.rid);

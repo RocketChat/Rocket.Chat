@@ -4,6 +4,7 @@ import URL from 'url';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
@@ -29,10 +30,8 @@ import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
-import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
@@ -40,6 +39,7 @@ import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { isTruthy } from '../../../lib/isTruthy';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { settings } from '../../settings/client';
+import { limitQuoteChain } from '../../ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
@@ -228,7 +228,7 @@ class E2E extends Emitter {
 	}
 
 	async handleAsyncE2EESuggestedKey() {
-		const subs = Subscriptions.find({ E2ESuggestedKey: { $exists: true } }).fetch();
+		const subs = Subscriptions.state.filter((sub) => typeof sub.E2ESuggestedKey !== 'undefined');
 		await Promise.all(
 			subs
 				.filter((sub) => sub.E2ESuggestedKey && !sub.E2EKey)
@@ -253,8 +253,24 @@ class E2E extends Emitter {
 		);
 	}
 
+	private waitForRoom(rid: IRoom['_id']): Promise<IRoom> {
+		return new Promise((resolve) => {
+			const room = Rooms.state.get(rid);
+
+			if (room) resolve(room);
+
+			const unsubscribe = Rooms.use.subscribe((state) => {
+				const room = state.get(rid);
+				if (room) {
+					unsubscribe();
+					resolve(room);
+				}
+			});
+		});
+	}
+
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await waitUntilFind(() => Rooms.findOne({ _id: rid }));
+		const room = await this.waitForRoom(rid);
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
@@ -716,9 +732,10 @@ class E2E extends Emitter {
 	}
 
 	async decryptPendingMessages(): Promise<void> {
-		return Messages.find({ t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }: IMessage) => {
-			Messages.update({ _id }, await this.decryptMessage(msg as IE2EEMessage));
-		});
+		await Messages.state.updateAsync(
+			(record) => record.t === 'e2e' && record.e2e === 'pending',
+			(record) => this.decryptMessage(record),
+		);
 	}
 
 	async decryptSubscription(subscriptionId: ISubscription['_id']): Promise<void> {
@@ -728,9 +745,9 @@ class E2E extends Emitter {
 	}
 
 	async decryptSubscriptions(): Promise<void> {
-		Subscriptions.find({
-			encrypted: true,
-		}).forEach((subscription) => this.decryptSubscription(subscription._id));
+		Subscriptions.state
+			.filter((subscription) => Boolean(subscription.encrypted))
+			.forEach((subscription) => this.decryptSubscription(subscription._id));
 	}
 
 	openAlert(config: Omit<LegacyBannerPayload, 'id'>): void {
@@ -784,7 +801,7 @@ class E2E extends Emitter {
 					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
 				);
 
-				message.attachments.push(quoteAttachment);
+				message.attachments.push(limitQuoteChain(quoteAttachment, settings.get('Message_QuoteChainLimit') ?? 2));
 			}),
 		);
 
@@ -844,11 +861,12 @@ class E2E extends Emitter {
 			return;
 		}
 
+		const predicate = (record: IRoom) =>
+			Boolean('usersWaitingForE2EKeys' in record && record.usersWaitingForE2EKeys?.every((user) => user.userId !== Meteor.userId()));
+
 		const keyDistribution = async () => {
-			const roomIds = Rooms.find({
-				'usersWaitingForE2EKeys': { $exists: true },
-				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
-			}).map((room) => room._id);
+			const roomIds = Rooms.state.filter(predicate).map((room) => room._id);
+
 			if (!roomIds.length) {
 				return;
 			}

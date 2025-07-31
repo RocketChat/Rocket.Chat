@@ -1,5 +1,6 @@
 import { Message } from '@rocket.chat/fuselage';
-import { memo, ReactElement, useContext, useMemo, KeyboardEvent } from 'react';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { memo, ReactElement, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -16,23 +17,14 @@ const ChannelMentionElement = ({ mention }: ChannelMentionElementProps): ReactEl
 
 	const resolved = useMemo(() => resolveChannelMention?.(mention), [mention, resolveChannelMention]);
 	const handleClick = useMemo(() => (resolved ? onChannelMentionClick?.(resolved) : undefined), [resolved, onChannelMentionClick]);
+	const buttonProps = useButtonPattern((e) => handleClick?.(e));
 
 	if (!resolved) {
 		return <>#{mention}</>;
 	}
 
 	return (
-		<Message.Highlight
-			title={t('Mentions_channel')}
-			tabIndex={0}
-			role='button'
-			variant='link'
-			clickable
-			onClick={handleClick}
-			onKeyDown={(e: KeyboardEvent<HTMLSpanElement>): void => {
-				(e.code === 'Enter' || e.code === 'Space') && handleClick?.(e);
-			}}
-		>
+		<Message.Highlight title={t('Mentions_channel')} variant='link' clickable {...buttonProps}>
 			{handleChannelMention(resolved.fname ?? mention, showMentionSymbol)}
 		</Message.Highlight>
 	);

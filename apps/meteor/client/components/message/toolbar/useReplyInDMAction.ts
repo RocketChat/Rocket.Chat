@@ -1,11 +1,11 @@
 import { type IMessage, type ISubscription, type IRoom, isE2EEMessage } from '@rocket.chat/core-typings';
 import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { Rooms, Subscriptions } from '../../../../app/models/client';
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 export const useReplyInDMAction = (
@@ -18,25 +18,36 @@ export const useReplyInDMAction = (
 	const canCreateDM = usePermission('create-d');
 	const isLayoutEmbedded = useEmbeddedLayout();
 
-	const condition = useReactiveValue(
-		useCallback(() => {
-			if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
-				return false;
-			}
-
-			// Check if we already have a DM started with the message user (not ourselves) or we can start one
-			if (!!user && user._id !== message.u._id && !canCreateDM) {
-				const dmRoom = Rooms.findOne({ _id: [user._id, message.u._id].sort().join('') });
-				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
-					return false;
-				}
-			}
-
-			return true;
-		}, [canCreateDM, isLayoutEmbedded, message.u._id, room.t, subscription, user]),
+	const roomPredicate = useCallback(
+		(record: IRoom): boolean => {
+			const ids = [user?._id, message.u._id].sort().join('');
+			return ids.includes(record._id);
+		},
+		[message.u._id, user],
 	);
 
-	if (!condition) {
+	const shouldFindRoom = useMemo(() => !!user && canCreateDM && user._id !== message.u._id, [canCreateDM, message.u._id, user]);
+	const dmRoom = Rooms.use(useShallow((state) => (shouldFindRoom ? state.find(roomPredicate) : undefined)));
+
+	const subsPredicate = useCallback(
+		(record: ISubscription) => record.rid === dmRoom?._id || record.u._id === user?._id,
+		[dmRoom, user?._id],
+	);
+	const dmSubs = Subscriptions.use(useShallow((state) => state.find(subsPredicate)));
+
+	const canReplyInDM = useMemo(() => {
+		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
+			return false;
+		}
+		if (!!user && user._id !== message.u._id && canCreateDM) {
+			if (!dmRoom || !dmSubs) {
+				return false;
+			}
+		}
+		return true;
+	}, [canCreateDM, dmRoom, dmSubs, isLayoutEmbedded, message.u._id, room.t, subscription, user]);
+
+	if (!canReplyInDM) {
 		return null;
 	}
 

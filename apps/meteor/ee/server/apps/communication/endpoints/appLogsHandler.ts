@@ -32,12 +32,12 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 				let query: Record<string, any>;
 
 				try {
-					query = makeAppLogsQuery(this.queryParams);
+					query = makeAppLogsQuery({ appId: this.urlParams.id, ...this.queryParams });
 				} catch (error) {
 					return api.failure({ error: error instanceof Error ? error.message : 'Unknown error' });
 				}
 
-				const result = await _orch.getLogStorage().find(query, options);
+				const result = await _orch.getLogStorage().findPaginated(query, options);
 
 				return api.success({ offset, logs: result.logs, count: result.logs.length, total: result.total });
 			},

@@ -17,5 +17,6 @@ export * from './IVoipClientEvents';
 export * from './VoIPUserConfiguration';
 export * from './VoIpCallerInfo';
 export * from './ICallDetails';
-export * from './IFreeSwitchCall';
-export * from './IFreeSwitchEvent';
+export * from './IFreeSwitchChannel';
+export * from './IFreeSwitchChannelEvent';
+export * from './IFreeSwitchChannelEventDelta';

@@ -2,7 +2,6 @@ import {
 	Box,
 	Button,
 	ButtonGroup,
-	ContextualbarFooter,
 	Icon,
 	IconButton,
 	Margins,
@@ -20,7 +19,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
-import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
+import { ContextualbarContent, ContextualbarEmptyContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../lib/asyncState';

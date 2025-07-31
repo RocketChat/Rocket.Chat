@@ -146,6 +146,7 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 			offlineColor: initSettings.Livechat_offline_title_color,
 			position: initSettings.Livechat_widget_position || 'right',
 			background: initSettings.Livechat_background,
+			hideExpandChat: initSettings.Livechat_hide_expand_chat,
 			actionLinks: {
 				webrtc: [
 					{

@@ -3,8 +3,9 @@ import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
 import type { AppStatusReport } from '@rocket.chat/core-services';
-import type { IUser, IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
+import { Logger } from '@rocket.chat/logger';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -12,24 +13,31 @@ import { ZodError } from 'zod';
 
 import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { registerAppGeneralLogsHandler } from './endpoints/appGeneralLogsHandler';
+import { registerAppLogsDistinctInstanceHandler } from './endpoints/appLogsDistinctInstanceHandler';
+import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
-import type { APIClass } from '../../../../app/api/server';
 import { API } from '../../../../app/api/server';
+import type { APIClass } from '../../../../app/api/server/ApiClass';
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
+import { loggerMiddleware } from '../../../../app/api/server/middlewares/logger';
+import { metricsMiddleware } from '../../../../app/api/server/middlewares/metrics';
+import { tracerSpanMiddleware } from '../../../../app/api/server/middlewares/tracer';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
+import { metrics } from '../../../../app/metrics/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
 import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
 import { fetchAppsStatusFromCluster } from '../../../lib/misc/fetchAppsStatusFromCluster';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { fetchMarketplaceApps } from '../marketplace/fetchMarketplaceApps';
 import { fetchMarketplaceCategories } from '../marketplace/fetchMarketplaceCategories';
-import { MarketplaceConnectionError, MarketplaceAppsError, MarketplaceUnsupportedVersionError } from '../marketplace/marketplaceErrors';
+import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from '../marketplace/marketplaceErrors';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
 
@@ -63,8 +71,13 @@ export class AppsRestApi {
 			version: 'apps',
 		});
 
-		await this.addManagementRoutes();
+		const logger = new Logger('APPS');
+		this.api.router
+			.use(loggerMiddleware(logger))
+			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/apps\//), api: this.api, settings, summary: metrics.rocketchatRestApi }))
+			.use(tracerSpanMiddleware);
 
+		this.addManagementRoutes();
 		// Using the same instance of the existing API for now, to be able to use the same api prefix(/api)
 		API.api.use(this.api.router);
 	}
@@ -97,7 +110,9 @@ export class AppsRestApi {
 		registerActionButtonsHandler(this);
 		registerAppsCountHandler(this);
 
+		registerAppLogsDistinctInstanceHandler(this);
 		registerAppLogsHandler(this);
+		registerAppLogsExportHandler(this);
 		registerAppGeneralLogsHandler(this);
 
 		this.api.addRoute(
@@ -213,7 +228,17 @@ export class AppsRestApi {
 					let clusterStatus: AppStatusReport | undefined;
 
 					if (this.queryParams.includeClusterStatus === 'true') {
-						clusterStatus = await fetchAppsStatusFromCluster();
+						try {
+							clusterStatus = await fetchAppsStatusFromCluster();
+						} catch (error) {
+							if (!(error instanceof AppsEngineNoNodesFoundError)) {
+								throw error;
+							}
+
+							orchestrator
+								.getRocketChatLogger()
+								.debug('Request to /apps/installed with includeClusterStatus=true, but no cluster nodes found');
+						}
 					}
 
 					const formatted = await Promise.all(apps.map((app) => formatAppInstanceForRest(app, clusterStatus)));

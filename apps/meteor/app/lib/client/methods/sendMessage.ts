@@ -16,7 +16,7 @@ Meteor.methods<ServerMethods>({
 		if (!uid || trim(message.msg) === '') {
 			return false;
 		}
-		const messageAlreadyExists = message._id && Messages.findOne({ _id: message._id });
+		const messageAlreadyExists = message._id && Messages.state.get(message._id);
 		if (messageAlreadyExists) {
 			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
@@ -36,13 +36,13 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// If the room is federated, send the message to matrix only
-		const room = Rooms.findOne({ _id: message.rid }, { fields: { federated: 1, name: 1 } });
+		const room = Rooms.state.get(message.rid);
 		if (room?.federated) {
 			return;
 		}
 
 		await onClientMessageReceived(message as IMessage).then((message) => {
-			Messages.insert(message);
+			Messages.state.store(message);
 			return callbacks.run('afterSaveMessage', message, { room });
 		});
 	},

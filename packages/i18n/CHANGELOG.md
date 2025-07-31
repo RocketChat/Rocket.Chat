@@ -1,5 +1,91 @@
 # @rocket.chat/i18n
 
+## 1.9.0
+
+### Minor Changes
+
+- ([#36359](https://github.com/RocketChat/Rocket.Chat/pull/36359)) Adds a new tab on App Details page to see all instances and it's statuses.
+  Adds a new variant to the status tag, mixed status.
+- ([#36142](https://github.com/RocketChat/Rocket.Chat/pull/36142)) Implements new component for Apps Logs View
+
+- ([#36339](https://github.com/RocketChat/Rocket.Chat/pull/36339)) Improves the message exportation content for PDF method including images and information about threads and files
+
+- ([#36413](https://github.com/RocketChat/Rocket.Chat/pull/36413)) Adds 2 new buttons to the App Logs Filters, "Expand all" and "Refresh"
+
+### Patch Changes
+
+- ([#36406](https://github.com/RocketChat/Rocket.Chat/pull/36406)) add some missing translations for sound names and font sizes
+
+- ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
+
+- <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
+
+  - @rocket.chat/tools@0.2.3
+  </details>
+
+## 1.9.0-rc.0
+
+### Minor Changes
+
+- ([#36359](https://github.com/RocketChat/Rocket.Chat/pull/36359)) Adds a new tab on App Details page to see all instances and it's statuses.
+  Adds a new variant to the status tag, mixed status.
+- ([#36142](https://github.com/RocketChat/Rocket.Chat/pull/36142)) Implements new component for Apps Logs View
+
+- ([#36339](https://github.com/RocketChat/Rocket.Chat/pull/36339)) Improves the message exportation content for PDF method including images and information about threads and files
+
+- ([#36413](https://github.com/RocketChat/Rocket.Chat/pull/36413)) Adds 2 new buttons to the App Logs Filters, "Expand all" and "Refresh"
+
+### Patch Changes
+
+- ([#36406](https://github.com/RocketChat/Rocket.Chat/pull/36406)) add some missing translations for sound names and font sizes
+
+- ([#36259](https://github.com/RocketChat/Rocket.Chat/pull/36259)) Introduces PDF file as an export type for room messages
+
+- <details><summary>Updated dependencies [fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
+
+  - @rocket.chat/tools@0.2.3-rc.0
+  </details>
+
+## 1.8.0
+
+### Minor Changes
+
+- ([#35315](https://github.com/RocketChat/Rocket.Chat/pull/35315) by [@xmaxlad](https://github.com/xmaxlad)) Prevents creation of unnamed Personal Access Tokens by requiring the form's `name` field fullfilment.
+
+- ([#36013](https://github.com/RocketChat/Rocket.Chat/pull/36013)) Resolves some accessibility violations in the rooms file list context bar, including issues with ARIA attributes and focus management.
+
+- ([#36037](https://github.com/RocketChat/Rocket.Chat/pull/36037)) Adds a new setting to select which algorithm to use when signing SAML requests and responses
+
+- ([#36153](https://github.com/RocketChat/Rocket.Chat/pull/36153)) Adds a new setting to override outlook calendar settings per user email domain
+
+## 1.8.0-rc.0
+
+### Minor Changes
+
+- ([#35315](https://github.com/RocketChat/Rocket.Chat/pull/35315) by [@xmaxlad](https://github.com/xmaxlad)) Prevents creation of unnamed Personal Access Tokens by requiring the form's `name` field fullfilment.
+
+- ([#36013](https://github.com/RocketChat/Rocket.Chat/pull/36013)) Resolves some accessibility violations in the rooms file list context bar, including issues with ARIA attributes and focus management.
+
+- ([#36037](https://github.com/RocketChat/Rocket.Chat/pull/36037)) Adds a new setting to select which algorithm to use when signing SAML requests and responses
+
+- ([#36153](https://github.com/RocketChat/Rocket.Chat/pull/36153)) Adds a new setting to override outlook calendar settings per user email domain
+
+## 1.7.0
+
+### Minor Changes
+
+- ([#35830](https://github.com/RocketChat/Rocket.Chat/pull/35830)) Introduces a new feature which enables dragging the VoIP call widget to change its position on the screen.
+
+- ([#35996](https://github.com/RocketChat/Rocket.Chat/pull/35996)) Improves the alert shown after pruning messages to reflect that files have been pruned when the "files only" option was selected.
+
+- ([#35776](https://github.com/RocketChat/Rocket.Chat/pull/35776)) Improves handling of errors during voice calls
+
+### Patch Changes
+
+- ([#35815](https://github.com/RocketChat/Rocket.Chat/pull/35815)) Fixes some warnings on delete user modal when deleting a user who has owner role in some rooms.
+
+- ([#35903](https://github.com/RocketChat/Rocket.Chat/pull/35903)) fixes a typo in "High scalability" word
+
 ## 1.7.0-rc.0
 
 ### Minor Changes

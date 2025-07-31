@@ -41,7 +41,8 @@ Meteor.startup(async () => {
 			SystemLogger.error('An error occurred syncing workspace.', e.message);
 		}
 	});
-	await cronJobs.add(licenseCronName, '0 */12 * * *', async () => {
+	const minute = Math.floor(Math.random() * 60);
+	await cronJobs.add(licenseCronName, `${minute} */12 * * *`, async () => {
 		try {
 			await syncWorkspace();
 		} catch (e: any) {

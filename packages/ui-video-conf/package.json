@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-video-conf",
-	"version": "19.0.0-rc.0",
+	"version": "21.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -21,14 +21,17 @@
 		"@rocket.chat/emitter": "~0.31.25"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.0",
+		"@babel/core": "~7.26.10",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "^0.62.2",
-		"@rocket.chat/fuselage-hooks": "~0.35.0",
+		"@rocket.chat/fuselage": "^0.66.0",
+		"@rocket.chat/fuselage-hooks": "^0.37.0",
+		"@rocket.chat/fuselage-polyfills": "~0.31.25",
+		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/styled": "~0.32.0",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-a11y": "^8.6.14",
@@ -39,18 +42,22 @@
 		"@storybook/addon-webpack5-compiler-babel": "^3.0.6",
 		"@storybook/react": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
-		"@types/jest": "~29.5.14",
+		"@types/jest": "~30.0.0",
 		"@types/jest-axe": "~3.5.9",
-		"@types/react": "~18.3.17",
+		"@types/react": "~18.3.23",
+		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
-		"eslint-plugin-react": "~7.37.2",
+		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
-		"eslint-plugin-storybook": "~0.11.4",
-		"jest": "~29.7.0",
-		"jest-axe": "~9.0.0",
+		"eslint-plugin-storybook": "~0.11.6",
+		"jest": "~30.0.5",
+		"jest-axe": "~10.0.0",
 		"react": "~18.3.1",
+		"react-dom": "~18.3.1",
+		"react-virtuoso": "^4.12.0",
 		"storybook": "^8.6.14",
-		"typescript": "~5.8.3"
+		"typescript": "~5.8.3",
+		"webpack": "~5.99.9"
 	},
 	"peerDependencies": {
 		"@rocket.chat/css-in-js": "*",
@@ -60,8 +67,8 @@
 		"@rocket.chat/styled": "*",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"react": "~17.0.2",
-		"react-dom": "^17.0.2"
+		"react": "*",
+		"react-dom": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"

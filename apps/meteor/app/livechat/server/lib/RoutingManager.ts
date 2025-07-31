@@ -97,7 +97,12 @@ export const RoutingManager: Routing = {
 	async delegateInquiry(inquiry, agent, options = {}, room) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
-		if (!agent || (agent.username && !(await Users.findOneOnlineAgentByUserList(agent.username)) && !(await allowAgentSkipQueue(agent)))) {
+		if (
+			!agent ||
+			(agent.username &&
+				!(await Users.findOneOnlineAgentByUserList(agent.username, {}, settings.get<boolean>('Livechat_enabled_when_agent_idle'))) &&
+				!(await allowAgentSkipQueue(agent)))
+		) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
 			agent = await this.getNextAgent(department);
 			logger.debug(`Routing method returned agent ${agent?.agentId} for inquiry ${inquiry._id}`);
@@ -175,6 +180,12 @@ export const RoutingManager: Routing = {
 
 		const { servedBy } = room;
 
+		if (servedBy) {
+			await LivechatRooms.removeAgentByRoomId(rid);
+			await this.removeAllRoomSubscriptions(room);
+			await dispatchAgentDelegated(rid);
+		}
+
 		if (shouldQueue) {
 			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage);
 			if (queuedInquiry) {
@@ -185,12 +196,6 @@ export const RoutingManager: Routing = {
 					takenAt: undefined,
 				});
 			}
-		}
-
-		if (servedBy) {
-			await LivechatRooms.removeAgentByRoomId(rid);
-			await this.removeAllRoomSubscriptions(room);
-			await dispatchAgentDelegated(rid);
 		}
 
 		await dispatchInquiryQueued(inquiry);
