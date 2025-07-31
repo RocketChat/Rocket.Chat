@@ -1,5 +1,19 @@
 # @rocket.chat/freeswitch
 
+## 1.2.20
+
+### Patch Changes
+
+- ([#36230](https://github.com/RocketChat/Rocket.Chat/pull/36230)) Fixes FreeSwitch event parser to automatically reconnect when connection is lost
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+- <details><summary>Updated dependencies [2cec8acd5beddf5ad0c67c29fe632487cb82b026, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
+
+  - @rocket.chat/core-typings@7.9.0
+  - @rocket.chat/tools@0.2.3
+  </details>
+
 ## 1.2.20-rc.2
 
 ### Patch Changes
