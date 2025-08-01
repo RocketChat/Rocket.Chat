@@ -445,12 +445,17 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
     if (char === '@') {
       // Check if @ is preceded by a word boundary (whitespace, start of string, or punctuation)
       const prevChar = i > 0 ? text[i - 1] : '';
-      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
+      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(prevChar);
       
       if (atWordBoundary) {
-        // Look for username pattern - letters, numbers, dots, dashes, underscores
+        // Look for username pattern - use permissive Unicode character detection
         let j = i + 1;
-        while (j < text.length && /[a-zA-Z0-9._\-:@]/.test(text[j])) {
+        while (j < text.length) {
+          const char = text[j];
+          // Stop only at whitespace - allow all other characters including : and punctuation
+          if (/[\s\n\r\t]/.test(char)) {
+            break;
+          }
           j++;
         }
         if (j > i + 1) {
@@ -465,9 +470,14 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
 
     // Channel mentions with #channel
     if (char === '#') {
-      // Look for channel pattern - letters, numbers, dashes, underscores
+      // Look for channel pattern - use permissive Unicode character detection like emails
       let j = i + 1;
-      while (j < text.length && /[a-zA-Z0-9._\-]/.test(text[j])) {
+      while (j < text.length) {
+        const char = text[j];
+        // Stop at clear separators (whitespace, punctuation, etc.) - allow Unicode characters
+        if (/[\s\n\r\t\(\)\[\]{},;:!?]/.test(char)) {
+          break;
+        }
         j++;
       }
       if (j > i + 1) {
