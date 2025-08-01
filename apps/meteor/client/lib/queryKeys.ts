@@ -104,6 +104,8 @@ export const usersQueryKeys = {
 export const teamsQueryKeys = {
 	all: ['teams'] as const,
 	team: (teamId: ITeam['_id']) => [...teamsQueryKeys.all, teamId] as const,
+	teamInfo: (teamId: ITeam['_id']) => [...teamsQueryKeys.team(teamId), 'info'] as const,
 	roomsOfUser: (teamId: ITeam['_id'], userId: IUser['_id'], options?: { canUserDelete: boolean }) =>
 		[...teamsQueryKeys.team(teamId), 'rooms-of-user', userId, options] as const,
+	listUserTeams: (userId: IUser['_id']) => [...teamsQueryKeys.all, 'listUserTeams', userId] as const,
 };
