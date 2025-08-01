@@ -5,13 +5,6 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { PrivateCachedStore } from '../lib/cachedStores';
 import { Rooms, Subscriptions } from '../stores';
 
-declare module '@rocket.chat/core-typings' {
-	interface ISubscription {
-		lowerCaseName: string;
-		lowerCaseFName: string;
-	}
-}
-
 class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
 	constructor() {
 		super({
