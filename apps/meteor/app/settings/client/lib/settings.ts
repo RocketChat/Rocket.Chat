@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
-import { PublicSettingsCachedStore } from '../../../../client/cachedStores';
 import { watch } from '../../../../client/lib/cachedStores';
+import { PublicSettings } from '../../../../client/stores';
 import { SettingsBase } from '../../lib/settings';
 
 class Settings extends SettingsBase {
-	private readonly store = PublicSettingsCachedStore.store;
+	private readonly store = PublicSettings.use;
 
 	override get<TValue = any>(_id: string | RegExp, ...args: []): TValue {
 		if (_id instanceof RegExp) {

@@ -1,13 +1,14 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { createDocumentMapStore, PublicCachedStore } from '../lib/cachedStores';
+import { PublicCachedStore } from '../lib/cachedStores';
+import { PublicSettings } from '../stores';
 
 class PublicSettingsCachedStore extends PublicCachedStore<ISetting> {
 	constructor() {
 		super({
 			name: 'public-settings',
 			eventType: 'notify-all',
-			store: createDocumentMapStore(),
+			store: PublicSettings.use,
 		});
 	}
 }

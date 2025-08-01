@@ -1,14 +1,15 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
-import { createDocumentMapStore, PrivateCachedStore } from '../lib/cachedStores';
+import { PrivateCachedStore } from '../lib/cachedStores';
+import { PrivateSettings } from '../stores';
 
 class PrivateSettingsCachedStore extends PrivateCachedStore<ISetting> {
 	constructor() {
 		super({
 			name: 'private-settings',
 			eventType: 'notify-logged',
-			store: createDocumentMapStore(),
+			store: PrivateSettings.use,
 		});
 	}
 
