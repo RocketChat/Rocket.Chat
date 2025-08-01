@@ -3,7 +3,7 @@ import type { IServiceProcessorFactoryList } from '../definition/IServiceProcess
 import type { MediaSignal } from '../definition/MediaSignal';
 import type { MediaSignalTransport } from '../definition/MediaSignalTransport';
 import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
-import { type IClientMediaCall, type CallContact, type CallState } from '../definition/call';
+import type { IClientMediaCall, CallState } from '../definition/call';
 export type MediaSignalingEvents = {
     callStateChange: {
         call: IClientMediaCall;
@@ -30,9 +30,7 @@ export declare class MediaSignalingSession extends Emitter<MediaSignalingEvents>
     private _userId;
     private readonly _sessionId;
     private knownCalls;
-    private contactInformation;
     private ignoredCalls;
-    private failedCalls;
     private transporter;
     get sessionId(): string;
     get userId(): string;
@@ -44,12 +42,9 @@ export declare class MediaSignalingSession extends Emitter<MediaSignalingEvents>
     getSortedCalls(): IClientMediaCall[];
     getMainCall(): IClientMediaCall | null;
     processSignal(signal: MediaSignal): Promise<void>;
-    getStoredCallContact(callId: string): CallContact;
-    setCallContact(callId: string, contact: Record<string, string>): void;
+    registerOutboundCall(callId: string, contact: Record<string, string>): Promise<void>;
     private isSignalTargetingAnotherSession;
-    private isCallKnown;
     private isCallIgnored;
-    private processNewCall;
-    private createWebRtcProcessor;
+    private getOrCreateCall;
 }
 //# sourceMappingURL=Session.d.ts.map

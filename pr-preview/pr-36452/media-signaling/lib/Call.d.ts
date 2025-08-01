@@ -1,13 +1,17 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
+import type { IServiceProcessorFactoryList } from '../definition';
 import type { IWebRTCProcessor } from '../definition/IWebRTCProcessor';
-import type { MediaSignal, MediaSignalType } from '../definition/MediaSignal';
-import type { IClientMediaCall, IClientMediaCallData, CallEvents, CallContact, CallRole, CallState, CallService } from '../definition/call';
+import type { MediaSignal, MediaSignalSDP } from '../definition/MediaSignal';
+import type { IClientMediaCall, CallEvents, CallContact, CallRole, CallState, CallService, CallHangupReason } from '../definition/call';
+import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
 export interface IClientMediaCallConfig {
     transporter: MediaSignalTransportWrapper;
-    webrtcProcessor: IWebRTCProcessor;
+    processorFactories: IServiceProcessorFactoryList;
+    mediaStreamFactory: MediaStreamFactory;
 }
 export declare class ClientMediaCall implements IClientMediaCall {
+    private readonly config;
     readonly callId: string;
     readonly emitter: Emitter<CallEvents>;
     private _role;
@@ -19,28 +23,41 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private _contact;
     get contact(): CallContact;
     private _service;
-    get service(): CallService;
-    private transporter;
-    private webrtcProcessor;
-    private firstSignal;
+    get service(): CallService | null;
+    protected webrtcProcessor: IWebRTCProcessor | null;
     private acceptedLocally;
     private endedLocally;
-    constructor(config: IClientMediaCallConfig, signal: MediaSignal<'new'>, { ignored, contact }?: Pick<IClientMediaCallData, 'ignored' | 'contact'>);
+    private hasRemoteData;
+    private acknowledged;
+    private earlySignals;
+    constructor(config: IClientMediaCallConfig, callId: string);
+    initializeOutboundCall(contact: CallContact): Promise<void>;
+    initializeRemoteCall(signal: MediaSignal<'new'>): Promise<void>;
     getRemoteMediaStream(): MediaStream;
     setContact(contact: CallContact): void;
-    processSignal<T extends MediaSignalType>(signal: MediaSignal<T>): Promise<void>;
+    processSignal(signal: MediaSignal): Promise<void>;
     accept(): Promise<void>;
     reject(): Promise<void>;
-    hangup(): Promise<void>;
+    hangup(reason?: CallHangupReason): Promise<void>;
     isPendingAcceptance(): boolean;
-    private initialize;
+    isOver(): boolean;
     private changeState;
-    private processOfferRequest;
-    private processAnswerRequest;
-    private processRemoteSDP;
-    private deliverSdp;
+    protected processOfferRequest(signal: MediaSignal<'request-offer'>): Promise<void>;
+    protected shouldIgnoreWebRTC(): boolean;
+    protected processAnswerRequest(signal: MediaSignal<'sdp'>): Promise<void>;
+    protected processRemoteSDP(signal: MediaSignal<'sdp'>): Promise<void>;
+    protected deliverSdp(sdp: MediaSignalSDP): Promise<void>;
+    protected rejectAsUnavailable(): Promise<void>;
+    protected processEarlySignals(): Promise<void>;
+    protected acknowledge(): void;
     private processNotification;
     private flagAsAccepted;
     private flagAsEnded;
+    private prepareWebRtcProcessor;
+    private requireWebRTC;
+}
+export declare class ClientMediaCallWebRTC extends ClientMediaCall {
+    webrtcProcessor: IWebRTCProcessor;
+    constructor(config: IClientMediaCallConfig, callId: string);
 }
 //# sourceMappingURL=Call.d.ts.map

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processAnswer = processAnswer;
 const models_1 = require("@rocket.chat/models");
+const processHangup_1 = require("./processHangup");
 const acknowledgeCallee_1 = require("../calls/acknowledgeCallee");
 const acknowledgeCaller_1 = require("../calls/acknowledgeCaller");
 const processAcceptedCall_1 = require("../calls/processAcceptedCall");
@@ -19,6 +20,18 @@ async function processAccept(call, channel) {
     // #ToDo: notify client if this throws any error
     return (0, processAcceptedCall_1.processAcceptedCall)(call._id);
 }
+async function processReject(call, channel) {
+    if (channel.role !== 'callee') {
+        return;
+    }
+    if (!['none', 'ringing'].includes(call.state)) {
+        console.log('cant reject an ongoing call.');
+        return;
+    }
+    return (0, processHangup_1.processHangup)({
+        reason: 'rejected',
+    }, call, channel);
+}
 async function processACK(call, channel) {
     if (channel.role === 'callee') {
         return (0, acknowledgeCallee_1.acknowledgeCallee)(call, channel);
@@ -33,9 +46,10 @@ async function processAnswer(params, call, channel) {
         case 'accept':
             return processAccept(call, channel);
         case 'unavailable':
+            // return processUnavailable(call, channel);
             break;
         case 'reject':
-            break;
+            return processReject(call, channel);
     }
 }
 //# sourceMappingURL=processAnswer.js.map

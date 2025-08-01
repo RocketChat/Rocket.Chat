@@ -11,14 +11,12 @@ import { Emitter } from '@rocket.chat/emitter';
 import { ClientMediaCall } from './Call';
 import { MediaSignalTransportWrapper } from './TransportWrapper';
 import { createRandomToken } from './utils/createRandomToken';
-import { isCallRole } from '../definition/call';
 const stateWeights = {
     none: 0,
     ringing: 1,
     accepted: 2,
-    error: 3,
-    active: 4,
-    hangup: 0,
+    active: 3,
+    hangup: -1,
 };
 export class MediaSignalingSession extends Emitter {
     get sessionId() {
@@ -33,9 +31,7 @@ export class MediaSignalingSession extends Emitter {
         this._userId = config.userId;
         this._sessionId = createRandomToken(8);
         this.knownCalls = new Map();
-        this.contactInformation = new Map();
         this.ignoredCalls = new Set();
-        this.failedCalls = new Set();
         this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport);
     }
     isBusy() {
@@ -79,49 +75,18 @@ export class MediaSignalingSession extends Emitter {
     processSignal(signal) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('session.processSignal', signal.type);
-            if (this.isSignalTargetingAnotherSession(signal)) {
+            if (this.isSignalTargetingAnotherSession(signal) || this.isCallIgnored(signal.callId)) {
                 return;
             }
-            if (this.isCallIgnored(signal.callId)) {
-                if (signal.sessionId) {
-                    console.error('Received targeted signal for an ignored call.', signal);
-                }
-                return;
-            }
-            if (signal.type === 'new') {
-                yield this.processNewCall(signal);
-                return;
-            }
-            const call = this.knownCalls.get(signal.callId);
-            if (!call) {
-                if (this.failedCalls.has(signal.callId)) {
-                    // do something?
-                    return;
-                }
-                // #ToDo: Hold on to unexpected untargeted signals for a few seconds and process them if a notifyNew arrives
-                console.error('Unexpected Signal', signal);
-                throw new Error('Unexpected Signal received.');
-            }
+            const call = yield this.getOrCreateCall(signal.callId);
             yield call.processSignal(signal);
         });
     }
-    getStoredCallContact(callId) {
-        var _a;
-        return Object.assign(Object.assign({}, this.contactInformation.get(callId)), (_a = this.knownCalls.get(callId)) === null || _a === void 0 ? void 0 : _a.contact);
-    }
-    setCallContact(callId, contact) {
-        console.log('session.setCallContact');
-        const oldContact = this.getStoredCallContact(callId);
-        const fullContact = Object.assign(Object.assign({}, oldContact), contact);
-        const call = this.knownCalls.get(callId);
-        if (!call) {
-            this.contactInformation.set(callId, fullContact);
-            return;
-        }
-        call.setContact(fullContact);
-        if (this.contactInformation.has(callId)) {
-            this.contactInformation.delete(callId);
-        }
+    registerOutboundCall(callId, contact) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const call = yield this.getOrCreateCall(callId);
+            return call.initializeOutboundCall(contact);
+        });
     }
     isSignalTargetingAnotherSession(signal) {
         if (!signal.sessionId) {
@@ -129,54 +94,30 @@ export class MediaSignalingSession extends Emitter {
         }
         return signal.sessionId !== this._sessionId;
     }
-    isCallKnown(callId) {
-        return this.knownCalls.has(callId);
-    }
     isCallIgnored(callId) {
         return this.ignoredCalls.has(callId);
     }
-    processNewCall(signal) {
+    getOrCreateCall(callId) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('session.processNewCall');
-            // If we already know about this call, we don't need to process anything
-            if (this.isCallKnown(signal.callId)) {
-                return;
+            const existingCall = this.knownCalls.get(callId);
+            if (existingCall) {
+                return existingCall;
             }
-            try {
-                if (!isCallRole(signal.body.role)) {
-                    throw new Error('invalid-role');
-                }
-                const webrtcProcessor = yield this.createWebRtcProcessor();
-                // Contact will probaby already be stored if this call was requested by this same session
-                const contact = this.getStoredCallContact(signal.callId);
-                const ignored = this.isCallIgnored(signal.callId) || this.isBusy();
-                const config = {
-                    transporter: this.transporter,
-                    webrtcProcessor,
-                };
-                const call = new ClientMediaCall(config, signal, { contact, ignored });
-                this.knownCalls.set(call.callId, call);
-                call.emitter.on('stateChange', (oldState) => this.emit('callStateChange', { call, oldState }));
-                call.emitter.on('accepted', () => this.emit('acceptedCall', { call }));
-                call.emitter.on('ended', () => this.emit('endedCall', { call }));
-                this.emit('newCall', { call });
-            }
-            catch (e) {
-                this.failedCalls.add(signal.callId);
-                const errorCode = (e && typeof e === 'object' && e.name) || 'call-initialization-failed';
-                this.transporter.sendError(signal.callId, errorCode);
-                throw e;
-            }
-        });
-    }
-    createWebRtcProcessor() {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log('session.createWebRtcProcessor');
-            const { mediaStreamFactory, processorFactories: { webrtc: webrtcFactory }, } = this.config;
-            if (!webrtcFactory) {
-                throw new Error('webrtc-not-implemented');
-            }
-            return webrtcFactory({ mediaStreamFactory });
+            const config = {
+                transporter: this.transporter,
+                processorFactories: this.config.processorFactories,
+                mediaStreamFactory: this.config.mediaStreamFactory,
+            };
+            const call = new ClientMediaCall(config, callId);
+            this.knownCalls.set(callId, call);
+            call.emitter.on('stateChange', (oldState) => this.emit('callStateChange', { call, oldState }));
+            call.emitter.on('accepted', () => this.emit('acceptedCall', { call }));
+            call.emitter.on('ended', () => {
+                this.ignoredCalls.add(call.callId);
+                this.emit('endedCall', { call });
+            });
+            this.emit('newCall', { call });
+            return call;
         });
     }
 }
