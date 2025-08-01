@@ -1,13 +1,8 @@
 import { Tracker } from 'meteor/tracker';
-import type { UseBoundStore, StoreApi } from 'zustand';
-
-import type { IDocumentMapStore } from '../../../client/lib/cachedCollections';
+import type { StoreApi, UseBoundStore } from 'zustand';
 
 /** Adds Meteor Tracker reactivity to a Zustand store lookup */
-export const watch = <T, U extends { _id: string }>(
-	store: UseBoundStore<StoreApi<IDocumentMapStore<U>>>,
-	fn: (state: IDocumentMapStore<U>) => T,
-): T => {
+export const watch = <T, U>(store: UseBoundStore<StoreApi<U>>, fn: (state: U) => T): T => {
 	const value = fn(store.getState());
 
 	const computation = Tracker.currentComputation;

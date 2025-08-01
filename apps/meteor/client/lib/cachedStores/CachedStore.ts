@@ -3,15 +3,14 @@ import type { StreamNames } from '@rocket.chat/ddp-client';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { StoreApi, UseBoundStore } from 'zustand';
+import { create, type StoreApi, type UseBoundStore } from 'zustand';
 
 import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
-import { CachedCollectionManager } from './CachedCollectionManager';
+import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
-import { MinimongoCollection } from './MinimongoCollection';
+import { watch } from './watch';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
@@ -47,8 +46,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	readonly store: UseBoundStore<StoreApi<IDocumentMapStore<T>>>;
 
-	readonly ready = new ReactiveVar(false);
-
 	protected name: Name;
 
 	protected eventType: StreamNames;
@@ -61,6 +58,8 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	private timer: ReturnType<typeof setTimeout>;
 
+	readonly useReady = create(() => false);
+
 	constructor({ name, eventType, store }: { name: Name; eventType: StreamNames; store: UseBoundStore<StoreApi<IDocumentMapStore<T>>> }) {
 		this.name = name;
 		this.eventType = eventType;
@@ -70,7 +69,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			? console.log.bind(console, `%cCachedCollection ${this.name}`, `color: navy; font-weight: bold;`)
 			: () => undefined;
 
-		CachedCollectionManager.register(this);
+		CachedStoresManager.register(this);
 	}
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
@@ -311,7 +310,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			await this.loadFromServerAndPopulate();
 		}
 
-		this.ready.set(true);
+		this.setReady(true);
 
 		this.reconnectionComputation?.stop();
 		let wentOffline = Tracker.nonreactive(() => Meteor.status().status === 'offline');
@@ -354,10 +353,18 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		}
 
 		this.listenerUnsubscriber?.();
-		this.ready.set(false);
+		this.setReady(false);
 	}
 
 	private reconnectionComputation: Tracker.Computation | undefined;
+
+	watchReady() {
+		return watch(this.useReady, (ready) => ready);
+	}
+
+	setReady(ready: boolean) {
+		this.useReady.setState(ready);
+	}
 }
 
 export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
@@ -371,56 +378,6 @@ export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends Cache
 }
 
 export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
-	protected override getToken() {
-		return Accounts._storedLoginToken();
-	}
-
-	override clearCacheOnLogout() {
-		void this.clearCache();
-	}
-
-	listen() {
-		if (process.env.NODE_ENV === 'test') {
-			return;
-		}
-
-		onLoggedIn(() => {
-			void this.init();
-		});
-
-		Accounts.onLogout(() => {
-			this.release();
-		});
-	}
-}
-
-export abstract class CachedCollection<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
-	readonly collection;
-
-	constructor({ name, eventType }: { name: Name; eventType: StreamNames }) {
-		const collection = new MinimongoCollection<T>();
-
-		super({
-			name,
-			eventType,
-			store: collection.use,
-		});
-
-		this.collection = collection;
-	}
-}
-
-export class PublicCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
-	protected override getToken() {
-		return undefined;
-	}
-
-	override clearCacheOnLogout() {
-		// do nothing
-	}
-}
-
-export class PrivateCachedCollection<T extends IRocketChatRecord, U = T> extends CachedCollection<T, U> {
 	protected override getToken() {
 		return Accounts._storedLoginToken();
 	}

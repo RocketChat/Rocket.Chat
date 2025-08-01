@@ -2,26 +2,20 @@ import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { CachedChatRoom } from './CachedChatRoom';
-import { PrivateCachedCollection } from '../../../../client/lib/cachedCollections/CachedCollection';
+import { PrivateCachedStore } from '../lib/cachedStores';
+import { Rooms, Subscriptions } from '../stores';
 
-declare module '@rocket.chat/core-typings' {
-	interface ISubscription {
-		lowerCaseName: string;
-		lowerCaseFName: string;
-	}
-}
-
-class CachedChatSubscription extends PrivateCachedCollection<SubscriptionWithRoom, ISubscription> {
+class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
 	constructor() {
 		super({
 			name: 'subscriptions',
 			eventType: 'notify-user',
+			store: Subscriptions.use,
 		});
 	}
 
 	protected override mapRecord(subscription: ISubscription): SubscriptionWithRoom {
-		const room = CachedChatRoom.store.getState().find((r) => r._id === subscription.rid);
+		const room = Rooms.use.getState().find((r) => r._id === subscription.rid);
 
 		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 
@@ -90,9 +84,6 @@ class CachedChatSubscription extends PrivateCachedCollection<SubscriptionWithRoo
 	}
 }
 
-const instance = new CachedChatSubscription();
+const instance = new SubscriptionsCachedStore();
 
-export {
-	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
-	instance as CachedChatSubscription,
-};
+export { instance as SubscriptionsCachedStore };
