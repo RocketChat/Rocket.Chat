@@ -350,10 +350,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set DEBUG_LOG_LEVEL (debug enabled)
-        if: runner.debug == '1'
-        run: echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
-
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
