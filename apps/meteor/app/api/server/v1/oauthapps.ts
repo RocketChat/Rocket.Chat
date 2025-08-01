@@ -236,12 +236,11 @@ type OauthAppsListEndpoints = ExtractRoutesFromAPI<typeof oauthAppsListEndpoints
 
 export type OAuthAppsEndpoints = OauthAppsCreateEndpoints | OauthAppsListEndpoints | OauthAppsuUpdateEndpoints;
 
-
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsCreateEndpoints {}
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsuUpdateEndpoints {}
-  // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsListEndpoints {}
 }
