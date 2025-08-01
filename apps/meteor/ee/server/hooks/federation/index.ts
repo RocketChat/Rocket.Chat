@@ -17,7 +17,8 @@ callbacks.add(
 	'native-federation-on-after-add-users-to-room ',
 );
 
-callbacks.add('afterSetReaction',
+callbacks.add(
+	'afterSetReaction',
 	async (message: IMessage, params: { user: IUser; reaction: string }): Promise<void> => {
 		// Don't federate reactions that came from Matrix
 		if (params.user.username?.includes(':')) {
