@@ -8,6 +8,7 @@ import ThreadMessagePreview from '../../../components/message/variants/ThreadMes
 import { useDateRef } from '../providers/DateListProvider';
 import { isMessageNewDay } from './lib/isMessageNewDay';
 import { useMessageListFormatDate } from '../../../components/message/list/MessageListContext';
+import ThreadMessageParentLink from '../../../components/message/variants/ThreadMessageParentLink';
 
 type MessageListItemProps = {
 	message: IMessage;
@@ -79,12 +80,12 @@ export const MessageListItem = ({
 			)}
 			{isThreadMessage(message) && (
 				<li>
+					{!shouldShowAsSequential && <ThreadMessageParentLink message={message} />}
 					<ThreadMessagePreview
 						data-mid={message._id}
 						data-tmid={message.tmid}
 						data-unread={showUnreadDivider}
 						data-sequential={sequential}
-						sequential={shouldShowAsSequential}
 						message={message}
 						showUserAvatar={showUserAvatar}
 					/>
