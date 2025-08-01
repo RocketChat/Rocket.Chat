@@ -15,7 +15,10 @@ export type RoomRoles = {
 };
 
 export async function getRoomRoles(rid: IRoom['_id']): Promise<RoomRoles[]> {
-	const options = {
+	const useRealName = settings.get('UI_Use_Real_Name') === true;
+
+	const roles = await Roles.find({ scope: 'Subscriptions', description: { $exists: true, $ne: '' } }).toArray();
+	const subscriptions = await Subscriptions.findByRoomIdAndRoles<RoomRoles>(rid, _.pluck(roles, '_id'), {
 		sort: {
 			'u.username': 1 as const,
 		},
@@ -24,15 +27,10 @@ export async function getRoomRoles(rid: IRoom['_id']): Promise<RoomRoles[]> {
 			u: 1,
 			roles: 1,
 		},
-	};
-
-	const useRealName = settings.get('UI_Use_Real_Name') === true;
-
-	const roles = await Roles.find({ scope: 'Subscriptions', description: { $exists: true, $ne: '' } }).toArray();
-	const subscriptions = await Subscriptions.findByRoomIdAndRoles(rid, _.pluck(roles, '_id'), options).toArray();
+	}).toArray();
 
 	if (!useRealName) {
-		return subscriptions as unknown as RoomRoles[];
+		return subscriptions;
 	}
 
 	return Promise.all(
@@ -41,5 +39,5 @@ export async function getRoomRoles(rid: IRoom['_id']): Promise<RoomRoles[]> {
 			subscription.u.name = user?.name;
 			return subscription;
 		}),
-	) as unknown as RoomRoles[];
+	);
 }

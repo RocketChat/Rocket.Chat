@@ -129,11 +129,12 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private getUserFromRoles = mem(
 		async (roleIds: string[]) => {
-			const users = Users.findUsersInRoles(roleIds, null, {
+			const users = Users.findUsersInRoles<Pick<Required<IUser>, '_id' | 'username' | 'roles'>>(roleIds, null, {
 				sort: {
 					username: 1,
 				},
 				projection: {
+					_id: 0,
 					username: 1,
 					roles: 1,
 				},
@@ -144,11 +145,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 					...user,
 					roles: user.roles.filter((roleId: string) => roleIds.includes(roleId)),
 				}))
-				.toArray() as unknown as {
-				_id: string;
-				username: string;
-				roles: string[];
-			}[];
+				.toArray();
 		},
 		{ maxAge: 10000 },
 	);
