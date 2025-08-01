@@ -84,6 +84,13 @@ page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 page.getByRole('dialog', name: 'Modal name example').getByRole('button', { name: 'Confirm', exact: true });
 ```
 
+### 3. By label with `has`:
+Our input elements hide the native input and render a custom component.
+
+To target the input and trigger changes, you should locate the label that wraps the input and use the `has` locator.
+```ts
+page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
+```
 ## Use our page-objects:
 > apps/meteor/tests/e2e/page-objects
 - page-objects are a great way to reuse locators across tests using `getters` and `methods`.
@@ -113,6 +120,7 @@ Usage example:
 		return this.sidebar.getByRole('list', { name: 'Channels' });
 	}
 
+  // Restricted scope: inside navigation > sidebar > list named Channels > link with name
 	getSearchRoomByName(name: string) {
 		return this.channelsList.getByRole('link', { name });
 	}
