@@ -702,7 +702,13 @@ const detectEmailsInText = (text: string): AST.Inlines[] => {
     if (atIndex === -1) break;
     
     let emailStart = atIndex;
-    while (emailStart > 0 && /[a-zA-Z0-9._'-]/.test(text[emailStart - 1])) {
+    // Use same permissive character checking as detectEmail - allow Unicode characters
+    while (emailStart > 0) {
+      const char = text[emailStart - 1];
+      // Stop at clear separators (same logic as detectEmail)
+      if (/[\s\n\r\t\(\)\[\]{},;:!?]/.test(char)) {
+        break;
+      }
       emailStart--;
     }
     
@@ -739,7 +745,13 @@ const detectEmailsInText = (text: string): AST.Inlines[] => {
 
     // Find start of potential email
     let emailStart = atIndex;
-    while (emailStart > 0 && /[a-zA-Z0-9._'-]/.test(text[emailStart - 1])) {
+    // Use same permissive character checking as detectEmail - allow Unicode characters
+    while (emailStart > 0) {
+      const char = text[emailStart - 1];
+      // Stop at clear separators (same logic as detectEmail)
+      if (/[\s\n\r\t\(\)\[\]{},;:!?]/.test(char)) {
+        break;
+      }
       emailStart--;
     }
     
