@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 
-import { toUnpaddedBase64 } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
@@ -9,6 +8,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users, Messages } from '@rocket.chat/models';
+import emojione from 'emojione';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
@@ -40,24 +40,27 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
-		const config = new ConfigService();
-		const matrixConfig = config.getMatrixConfig();
-		const serverConfig = config.getServerConfig();
-		const signingKeys = await config.getSigningKey();
-		const signingKey = signingKeys[0];
+		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
+		const config = new ConfigService({
+			serverName: process.env.MATRIX_SERVER_NAME || 'rc1',
+			keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
+			matrixDomain: process.env.MATRIX_DOMAIN || 'rc1',
+			version: process.env.SERVER_VERSION || '1.0',
+			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
+			signingKey: settingsSigningKey,
+			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
+			database: {
+				uri: process.env.MONGODB_URI || 'mongodb://localhost:3001/meteor',
+				name: process.env.DATABASE_NAME || 'meteor',
+				poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
+			},
+		});
 
 		const containerOptions: FederationContainerOptions = {
 			emitter: instance.eventHandler,
-			federationOptions: {
-				serverName: matrixConfig.serverName,
-				signingKey: toUnpaddedBase64(signingKey.privateKey),
-				signingKeyId: `ed25519:${signingKey.version}`,
-				timeout: 30000,
-				baseUrl: serverConfig.baseUrl,
-			},
 		};
 
-		await createFederationContainer(containerOptions);
+		createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
 		instance.buildMatrixHTTPRoutes();
 
@@ -75,7 +78,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			.use(getMatrixSendJoinRoutes(this.homeserverServices))
 			.use(getMatrixTransactionsRoutes(this.homeserverServices))
 			.use(getKeyServerRoutes(this.homeserverServices))
-			.use(getFederationVersionsRoutes());
+			.use(getFederationVersionsRoutes(this.homeserverServices));
 
 		wellKnown.use(getWellKnownRoutes(this.homeserverServices));
 
@@ -113,19 +116,17 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
+		if (!(room.t === 'c' || room.t === 'p')) {
+			throw new Error('Room is not a public or private room');
+		}
+
 		try {
 			const matrixDomain = await this.getMatrixDomain();
 			const matrixUserId = `@${owner.username}:${matrixDomain}`;
 			const roomName = room.name || room.fname || 'Untitled Room';
-			const canonicalAlias = room.fname ? `#${room.fname}:${matrixDomain}` : undefined;
 
-			const matrixRoomResult = await this.homeserverServices.room.createRoom(
-				matrixUserId,
-				matrixUserId,
-				roomName,
-				canonicalAlias,
-				canonicalAlias,
-			);
+			// canonical alias computed from name
+			const matrixRoomResult = await this.homeserverServices.room.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
 
 			this.logger.debug('Matrix room created:', matrixRoomResult);
 
@@ -148,11 +149,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				} catch (error) {
 					this.logger.error('Error creating or updating bridged user:', error);
 				}
-
 				// We are not generating bridged users for members outside of the current workspace
 				// They will be created when the invite is accepted
 
-				await this.homeserverServices.invite.inviteUserToRoom(member, matrixRoomResult.room_id, matrixUserId, roomName);
+				await this.homeserverServices.invite.inviteUserToRoom(member, matrixRoomResult.room_id, matrixUserId);
 			}
 
 			this.logger.debug('Room creation completed successfully', room._id);
@@ -174,28 +174,21 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const matrixUserId = `@${user.username}:${matrixDomain}`;
 			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
 			if (!existingMatrixUserId) {
-				const port = await Settings.get<number>('Federation_Service_Matrix_Port');
-				const domain = await Settings.get<string>('Federation_Service_Matrix_Domain');
-				const matrixDomain = port === 443 || port === 80 ? domain : `${domain}:${port}`;
 				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
 			}
-
-			// TODO: We should fix this to not hardcode neither inform the target server
-			// This is on the homeserver mandate to track all the eligible servers in the federated room
-			const targetServer = 'hs1-defendi.tunnel.dev.rocket.chat';
 
 			if (!this.homeserverServices) {
 				this.logger.warn('Homeserver services not available, skipping message send');
 				return;
 			}
 
-			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, matrixUserId, targetServer);
-			await Messages.setFederationEventIdById(message._id, result.event_id);
+			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
 
-			// TODO: Store the event ID mapping for future reference (edits, deletions, etc.)
-			// This would allow us to map between Rocket.Chat message IDs and Matrix event IDs
+			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
 
-			this.logger.debug('Message sent to Matrix successfully:', result.event_id);
+			await Messages.setFederationEventIdById(message._id, result.eventId);
+
+			this.logger.debug('Message sent to Matrix successfully:', result.eventId);
 		} catch (error) {
 			this.logger.error('Failed to send message to Matrix:', error);
 			throw error;
@@ -222,11 +215,15 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				this.logger.warn('Homeserver services not available, skipping message redaction');
 				return;
 			}
+			const matrixEventId = message.federation?.eventId;
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${message._id}`);
+			}
 			// TODO: Fix hardcoded server
 			const targetServer = 'hs1-defendi.tunnel.dev.rocket.chat';
 			const result = await this.homeserverServices.message.redactMessage(
 				matrixRoomId,
-				message.federation.eventId,
+				matrixEventId,
 				undefined,
 				matrixUserId,
 				targetServer,
@@ -235,6 +232,113 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			this.logger.debug('Message Redaction sent to Matrix successfully:', result.event_id);
 		} catch (error) {
 			this.logger.error('Failed to send redaction to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async sendReaction(messageId: string, reaction: string, user: IUser): Promise<void> {
+		try {
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				throw new Error(`Message ${messageId} not found`);
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+
+			const matrixEventId = message.federation?.eventId;
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
+			}
+
+			const reactionKey = emojione.shortnameToUnicode(reaction);
+
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
+			if (!existingMatrixUserId) {
+				this.logger.error(`No Matrix user ID mapping found for user ${user._id}`);
+				return;
+			}
+
+			const eventId = await this.homeserverServices.message.sendReaction(matrixRoomId, matrixEventId, reactionKey, existingMatrixUserId);
+
+			await Messages.setFederationReactionEventId(user.username || '', messageId, reaction, eventId);
+
+			this.logger.debug('Reaction sent to Matrix successfully:', eventId);
+		} catch (error) {
+			this.logger.error('Failed to send reaction to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async removeReaction(messageId: string, reaction: string, user: IUser, oldMessage: IMessage): Promise<void> {
+		try {
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				this.logger.error(`Message ${messageId} not found`);
+				return;
+			}
+
+			const targetEventId = message.federation?.eventId;
+			if (!targetEventId) {
+				this.logger.warn(`No federation event ID found for message ${messageId}`);
+				return;
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				this.logger.error(`No Matrix room mapping found for room ${message.rid}`);
+				return;
+			}
+
+			const reactionKey = emojione.shortnameToUnicode(reaction);
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
+			if (!existingMatrixUserId) {
+				this.logger.error(`No Matrix user ID mapping found for user ${user._id}`);
+				return;
+			}
+
+			const reactionData = oldMessage.reactions?.[reaction];
+			if (!reactionData?.federationReactionEventIds) {
+				return;
+			}
+
+			for await (const [eventId, username] of Object.entries(reactionData.federationReactionEventIds)) {
+				if (username !== user.username) {
+					continue;
+				}
+
+				const redactionEventId = await this.homeserverServices.message.unsetReaction(
+					matrixRoomId,
+					eventId,
+					reactionKey,
+					existingMatrixUserId,
+				);
+				if (!redactionEventId) {
+					this.logger.warn('No reaction event found to remove in Matrix');
+					return;
+				}
+
+				await Messages.unsetFederationReactionEventId(eventId, messageId, reaction);
+				break;
+			}
+		} catch (error) {
+			this.logger.error('Failed to remove reaction from Matrix:', error);
+			throw error;
+		}
+	}
+
+	async getEventById(eventId: string): Promise<any | null> {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available');
+			return null;
+		}
+
+		try {
+			return await this.homeserverServices.event.getEventById(eventId);
+		} catch (error) {
+			this.logger.error('Failed to get event by ID:', error);
 			throw error;
 		}
 	}

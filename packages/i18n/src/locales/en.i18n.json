@@ -2126,6 +2126,8 @@
   "Federation_Service_Matrix_Port_Description": "The port of the Matrix server to use for federation.",
   "Federation_Service_Matrix_Port_Alert": "If you're using a DNS or a reverse proxy, you should set this to the port of the DNS handling the federation traffic. E.g. your server is running on port 3000 and you're using a DNS to handle incoming traffic from port 3000 to the DNS name rc1.server.com only. In this case, you should set this to 443.",
   "Federation_Service_Alert": "This feature is in beta and may not be stable. Please be aware that it may change, break, or even be removed in the future without any notice.",
+  "Federation_Service_Matrix_Signing_Key": "Matrix server signing key",
+  "Federation_Service_Matrix_Signing_Key_Description": "The private signing key used by your Matrix server to authenticate federation requests. Format should be: algorithm version base64<privateKey>. This is typically an Ed25519 algorithm key (version 4), encoded as base64. It is essential for secure communication between federated Matrix servers and should be kept confidential.",
   "Field": "Field",
   "Field_removed": "Field removed",
   "Field_required": "Field required",
