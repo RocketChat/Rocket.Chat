@@ -559,24 +559,8 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
             const url = content.slice(0, pipeIndex);
             const label = content.slice(pipeIndex + 1);
             
-            // Parse label content for nested markup
-            const labelContent = label
-              ? parseInlineContent(label, options).filter(
-                  (
-                    token,
-                  ): token is
-                    | AST.Plain
-                    | AST.Bold
-                    | AST.Italic
-                    | AST.Strike
-                    | AST.ChannelMention =>
-                    token.type === 'PLAIN_TEXT' ||
-                    token.type === 'BOLD' ||
-                    token.type === 'ITALIC' ||
-                    token.type === 'STRIKE' ||
-                    token.type === 'MENTION_CHANNEL',
-                )
-              : [ast.plain(url)];
+            // Treat label as plain text to avoid URL detection conflicts
+            const labelContent = label ? [ast.plain(label)] : [ast.plain(url)];
 
             tokens.push(ast.link(url, labelContent));
             i = closeAngle + 1;
