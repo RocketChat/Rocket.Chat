@@ -1,19 +1,20 @@
 {
   "compilerOptions": {
     "rootDir": ".",
-    "target": "es2020",
-    "module": "ESNext",
+    "target": "es2024",
+    "module": "preserve",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "lib": ["es2020"],
+    "lib": ["es2024"],
     "outDir": "./dist",
     "strict": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noImplicitThis": true,
-    "alwaysStrict": true
+    "alwaysStrict": true,
+    "erasableSyntaxOnly": true,
+    "rewriteRelativeImportExtensions": true
   }
 }

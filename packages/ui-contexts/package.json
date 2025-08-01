@@ -18,7 +18,7 @@
 		"i18next": "~23.4.9",
 		"mongodb": "6.10.0",
 		"react": "~18.3.1",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",

@@ -2,6 +2,7 @@
   "name": "@rocket.chat/message-parser",
   "description": "Rocket.Chat parser for messages",
   "version": "0.31.32",
+  "type": "module",
   "author": {
     "name": "Rocket.Chat",
     "url": "https://rocket.chat/"
@@ -16,7 +17,7 @@
   "bugs": {
     "url": "https://github.com/RocketChat/fuselage/issues"
   },
-  "main": "messageParser.js",
+  "bin": "bin.js",
   "exports": {
     ".": {
       "default": "./messageParser.js"
@@ -65,7 +66,7 @@
     "rimraf": "^6.0.1",
     "ts-loader": "~9.5.2",
     "typedoc": "~0.28.5",
-    "typescript": "~5.8.3",
+    "typescript": "~5.9.2",
     "webpack": "~5.99.9",
     "webpack-cli": "~5.1.4"
   },

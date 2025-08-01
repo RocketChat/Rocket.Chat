@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { lineBreak, autoLink, paragraph, plain, link } from '../src/utils';
+import { parse } from '../src/index.ts';
+import { lineBreak, autoLink, paragraph, plain, link } from '../src/utils.ts';
 
 test.each([
   [

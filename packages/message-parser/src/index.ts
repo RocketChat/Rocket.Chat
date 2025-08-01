@@ -1,10 +1,10 @@
 /* eslint-disable complexity */
 import type * as AST from './definitions';
-import * as ast from './utils';
+import * as ast from './utils.ts';
 
-export * from './definitions';
+export type * from './definitions';
 
-export { isNodeOfType } from './guards';
+export { isNodeOfType } from './guards.ts';
 
 export type Options = {
   colors?: boolean;
@@ -541,6 +541,49 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
           }
         }
       }
+    }
+
+    // Slack-style links <url|label> - only at word boundaries
+    if (char === '<') {
+      // Check if this is at a word boundary (start of string or after whitespace/punctuation)  
+      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(text[i - 1]);
+      
+      if (atWordBoundary) {
+        const closeAngle = text.indexOf('>', i + 1);
+        if (closeAngle !== -1) {
+          const content = text.slice(i + 1, closeAngle);
+          const pipeIndex = content.indexOf('|');
+          
+          if (pipeIndex !== -1) {
+            // Slack-style link with label: <url|label>
+            const url = content.slice(0, pipeIndex);
+            const label = content.slice(pipeIndex + 1);
+            
+            // Parse label content for nested markup
+            const labelContent = label
+              ? parseInlineContent(label, options).filter(
+                  (
+                    token,
+                  ): token is
+                    | AST.Plain
+                    | AST.Bold
+                    | AST.Italic
+                    | AST.Strike
+                    | AST.ChannelMention =>
+                    token.type === 'PLAIN_TEXT' ||
+                    token.type === 'BOLD' ||
+                    token.type === 'ITALIC' ||
+                    token.type === 'STRIKE' ||
+                    token.type === 'MENTION_CHANNEL',
+                )
+              : [ast.plain(url)];
+
+            tokens.push(ast.link(url, labelContent));
+            i = closeAngle + 1;
+            continue;
+          }
+        }
+      }
     }    // Accumulate plain text until we hit markup or special characters
     let plainText = '';
     let tempI = i;
@@ -579,7 +622,7 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
       }
       
       // Stop if we hit markup characters, but be careful with @ for emails
-      if (['*', '_', '~', '#', '`', '['].includes(currentChar)) {
+      if (['*', '_', '~', '#', '`', '[', '<'].includes(currentChar)) {
         break;
       }
       
