@@ -7,12 +7,12 @@ import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
-import { updatePermission } from '../../data/permissions.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
-import { password } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
-import { createUser, deleteUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login, removeRoleFromUser } from '../../data/users.helper';
 
 describe('[Incoming Integrations]', () => {
 	let integration: IIntegration;
@@ -889,7 +889,7 @@ describe('[Incoming Integrations]', () => {
 		});
 	});
 
-	describe('Additional Tests for Message Delivery Permissions And Authentication', () => {
+	describe('Additional Tests for Message Delivery, Permissions, and Authentication', () => {
 		let nonMemberUser: IUser;
 		let privateTeam: ITeam;
 		let publicChannelInPrivateTeam: IRoom;
@@ -898,6 +898,8 @@ describe('[Incoming Integrations]', () => {
 		let integration2: IIntegration;
 		let integration3: IIntegration;
 		let integration4: IIntegration;
+		let integrationMixed1: IIntegration;
+		let integrationMixed2: IIntegration;
 
 		before(async () => {
 			nonMemberUser = await createUser({ username: `g_${Random.id()}` });
@@ -990,6 +992,48 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body).to.have.property('integration').and.to.be.an('object');
 					integration4 = res.body.integration;
 				});
+
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test Mixed - Sending Messages',
+					enabled: true,
+					alias: 'Incoming test Mixed - Sending Messages',
+					username: nonMemberUser.username as string,
+					scriptEnabled: false,
+					overrideDestinationChannelEnabled: false,
+					channel: `#${publicRoom.fname}, #${privateRoom.fname}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					integrationMixed1 = res.body.integration;
+				});
+
+			await request
+				.post(api('integrations.create'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test Mixed - Sending Messages',
+					enabled: true,
+					alias: 'Incoming test Mixed - Sending Messages',
+					username: adminUsername,
+					scriptEnabled: false,
+					overrideDestinationChannelEnabled: false,
+					channel: `#${publicRoom.fname}, #${privateRoom.fname}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration').and.to.be.an('object');
+					integrationMixed2 = res.body.integration;
+				});
 		});
 
 		after(async () => {
@@ -999,7 +1043,7 @@ describe('[Incoming Integrations]', () => {
 			await deleteTeam(credentials, privateTeam.name);
 			await deleteUser(nonMemberUser);
 			await Promise.all([
-				...[integration2, integration3, integration4].map((integration) =>
+				...[integration2, integration3, integration4, integrationMixed1, integrationMixed2].map((integration) =>
 					request.post(api('integrations.remove')).set(credentials).send({
 						integrationId: integration._id,
 						type: integration.type,
@@ -1007,6 +1051,7 @@ describe('[Incoming Integrations]', () => {
 				),
 				updatePermission('manage-incoming-integrations', ['admin']),
 			]);
+			await removeRoleFromUser(adminUsername, 'bot');
 		});
 
 		it('should not send a message in public room if token is invalid', async () => {
@@ -1201,6 +1246,257 @@ describe('[Incoming Integrations]', () => {
 					expect(res.body).to.have.property('members').and.to.be.an('array');
 					expect((res.body.members as AtLeast<IUser, '_id'>[]).find((m) => m._id === nonMemberUser._id)).not.to.be.undefined;
 				});
+		});
+
+		describe('Message Settings', async () => {
+			const maxSize = 5000;
+			before(() => updateSetting('Message_MaxAllowedSize', maxSize));
+			after(() => updateSetting('Message_MaxAllowedSize', maxSize));
+
+			it('should not send a message if message size is greater than the Message_MaxAllowedSize', async () => {
+				const largeMesssage = Array.from({ length: maxSize + 1 })
+					.map(() => 'A')
+					.join('');
+				await request
+					.post(`/hooks/${integration4._id}/${integration4.token}`)
+					.send({
+						text: largeMesssage,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body.error).to.be.equal('error-message-size-exceeded');
+					});
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: publicRoom._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect((res.body.messages as IMessage[]).find((m) => m.msg === largeMesssage)).to.be.undefined;
+					});
+			});
+
+			it('should send a message if message size is less than the Message_MaxAllowedSize', async () => {
+				const smallerMessage = Array.from({ length: maxSize - 1 })
+					.map(() => 'A')
+					.join('');
+				await request
+					.post(`/hooks/${integration4._id}/${integration4.token}`)
+					.send({
+						text: smallerMessage,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body.success).to.be.equal(true);
+					});
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: publicRoom._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect((res.body.messages as IMessage[]).find((m) => m.msg === smallerMessage)).to.not.be.undefined;
+					});
+			});
+		});
+
+		describe('Multiple channels delivery', () => {
+			it('should not return separate responses when separateResponse is not provided', async () => {
+				const testMsg = `msg-${Random.id()}`;
+
+				await request
+					.post(`/hooks/${integrationMixed1._id}/${integrationMixed1.token}`)
+					.send({
+						text: testMsg,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.not.have.property('responses');
+					});
+			});
+
+			it('should not return separate responses when separateResponse = false', async () => {
+				const testMsg = `msg-${Random.id()}`;
+
+				await request
+					.post(`/hooks/${integrationMixed1._id}/${integrationMixed1.token}`)
+					.send({
+						text: testMsg,
+						separateResponse: false,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.not.have.property('responses');
+					});
+			});
+
+			it('should return separate responses when separateResponse = true', async () => {
+				const testMsg = `msg-${Random.id()}`;
+
+				await request
+					.post(`/hooks/${integrationMixed1._id}/${integrationMixed1.token}`)
+					.send({
+						text: testMsg,
+						separateResponse: true,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.responses).to.be.an('array').and.to.have.lengthOf(2);
+						const publicResponse = res.body.responses.find((r: any) => r.channel === `#${publicRoom.fname}`);
+						const privateResponse = res.body.responses.find((r: any) => r.channel === `#${privateRoom.fname}`);
+						expect(publicResponse).not.to.have.property('error');
+						expect(privateResponse).to.have.property('error');
+					});
+			});
+
+			it('should not deliver to any channel if one fails when separateResponse is not provided', async () => {
+				const testMsg = `msg-${Random.id()}`;
+				await request
+					.post(`/hooks/${integrationMixed1._id}/${integrationMixed1.token}`)
+					.send({
+						text: testMsg,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('error');
+					});
+
+				await request
+					.get(api('groups.messages'))
+					.set(credentials)
+					.query({ roomId: privateRoom._id })
+					.expect(200)
+					.expect((res) => {
+						expect((res.body.messages as IMessage[]).find((m) => m.msg === testMsg)).to.be.undefined;
+					});
+
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: publicRoom._id })
+					.expect(200)
+					.expect((res) => {
+						expect((res.body.messages as IMessage[]).find((m) => m.msg === testMsg)).to.be.undefined;
+					});
+			});
+
+			it('should not deliver to any channel if one fails when separateResponse = false', async () => {
+				const testMsg = `msg-${Random.id()}`;
+
+				await request
+					.post(`/hooks/${integrationMixed1._id}/${integrationMixed1.token}`)
+					.send({
+						text: testMsg,
+						separateResponse: false,
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('error');
+					});
+
+				await request
+					.get(api('groups.messages'))
+					.set(credentials)
+					.query({ roomId: privateRoom._id })
+					.expect(200)
+					.expect((res) => {
+						expect((res.body.messages as IMessage[]).find((m) => m.msg === testMsg)).to.be.undefined;
+					});
+
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: publicRoom._id })
+					.expect(200)
+					.expect((res) => {
+						expect((res.body.messages as IMessage[]).find((m) => m.msg === testMsg)).to.be.undefined;
+					});
+			});
+
+			it('should send message to only public channel when separateResponse = true', async () => {
+				const testMsg = `msg-${Random.id()}`;
+
+				await request
+					.post(`/hooks/${integrationMixed1._id}/${integrationMixed1.token}`)
+					.send({
+						text: testMsg,
+						separateResponse: true,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await request
+					.get(api('groups.messages'))
+					.set(credentials)
+					.query({ roomId: privateRoom._id })
+					.expect(200)
+					.expect((res) => {
+						expect((res.body.messages as IMessage[]).find((m) => m.msg === testMsg)).to.be.undefined;
+					});
+
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: publicRoom._id })
+					.expect(200)
+					.expect((res) => {
+						const found = (res.body.messages as IMessage[]).filter((m) => m.msg === testMsg);
+						expect(found).to.have.lengthOf(1);
+					});
+			});
+
+			it('should send messages to all channels when message could be delivered to all channels', async () => {
+				const testMsg = `msg-${Random.id()}`;
+
+				await request
+					.post(`/hooks/${integrationMixed2._id}/${integrationMixed2.token}`)
+					.send({
+						text: testMsg,
+						separateResponse: true,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.responses).to.be.an('array').and.to.have.lengthOf(2);
+						const publicResponse = res.body.responses.find((r: any) => r.channel === `#${publicRoom.fname}`);
+						const privateResponse = res.body.responses.find((r: any) => r.channel === `#${privateRoom.fname}`);
+						expect(publicResponse).not.to.have.property('error');
+						expect(privateResponse).not.to.have.property('error');
+					});
+
+				await request
+					.get(api('groups.messages'))
+					.set(credentials)
+					.query({ roomId: privateRoom._id })
+					.expect(200)
+					.expect((res) => {
+						const found = (res.body.messages as IMessage[]).filter((m) => m.msg === testMsg);
+						expect(found).to.have.lengthOf(1);
+					});
+
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: publicRoom._id })
+					.expect(200)
+					.expect((res) => {
+						const found = (res.body.messages as IMessage[]).filter((m) => m.msg === testMsg);
+						expect(found).to.have.lengthOf(1);
+					});
+			});
 		});
 	});
 });

@@ -157,11 +157,20 @@ export interface IUserEmail {
 	verified?: boolean;
 }
 
+export interface IOutlook {
+	Enabled: boolean;
+	Exchange_Url: string;
+	Outlook_Url: string;
+}
+
+export interface IUserCalendar {
+	outlook?: IOutlook;
+}
+
 export interface IUserSettings {
-	profile?: any;
-	preferences?: {
-		[key: string]: any;
-	};
+	profile?: Record<string, unknown>;
+	preferences?: Record<string, any>;
+	calendar?: IUserCalendar;
 }
 
 export interface IGetRoomRoles {
@@ -263,7 +272,7 @@ export type IUserDataEvent = {
 	| {
 			type: 'updated';
 			diff: Partial<IUser>;
-			unset: Record<string, number>;
+			unset: Partial<Record<keyof IUser, number>>;
 	  }
 );
 

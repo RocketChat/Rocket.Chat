@@ -41,16 +41,9 @@ export const useUsersNameChanged = () => {
 				}),
 			);
 
-			Subscriptions.update(
-				{
-					name: username,
-					t: 'd',
-				},
-				{
-					$set: {
-						fname: name,
-					},
-				},
+			Subscriptions.state.update(
+				(record) => record.name === username && record.t === 'd',
+				(record) => ({ ...record, fname: name }),
 			);
 		});
 	}, [notify, updateMessages]);

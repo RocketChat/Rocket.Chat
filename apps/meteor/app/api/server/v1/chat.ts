@@ -2,6 +2,7 @@ import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
+	ajv,
 	isChatReportMessageProps,
 	isChatGetURLPreviewProps,
 	isChatUpdateProps,
@@ -9,7 +10,6 @@ import {
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
-	isChatPinMessageProps,
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
@@ -56,6 +56,7 @@ import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
@@ -172,25 +173,87 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'chat.pinMessage',
-	{ authRequired: true, validateParams: isChatPinMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
+type ChatPinMessage = {
+	messageId: IMessage['_id'];
+};
 
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			const pinnedMessage = await pinMessage(msg, this.userId);
-
-			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
-
-			return API.v1.success({
-				message,
-			});
+const ChatPinMessageSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
 		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
+
+const chatPinMessageEndpoints = API.v1.post(
+	'chat.pinMessage',
+	{
+		authRequired: true,
+		body: isChatPinMessageProps,
+		response: {
+			400: ajv.compile<{
+				error?: string;
+				errorType?: string;
+				stack?: string;
+				details?: string;
+			}>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					stack: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+					details: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			401: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [false] },
+					status: { type: 'string' },
+					message: { type: 'string' },
+					error: { type: 'string' },
+					errorType: { type: 'string' },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			200: ajv.compile<{ message: IMessage }>({
+				type: 'object',
+				properties: {
+					message: { $ref: '#/components/schemas/IMessage' },
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['message', 'success'],
+				additionalProperties: false,
+			}),
+		},
+	},
+	async function action() {
+		const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+		if (!msg) {
+			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+		}
+
+		const pinnedMessage = await pinMessage(msg, this.userId);
+
+		const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
+
+		return API.v1.success({
+			message,
+		});
 	},
 );
 
@@ -216,7 +279,7 @@ API.v1.addRoute(
 
 			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
 
-			if (!messageReturn) {
+			if (!messageReturn?.message) {
 				return API.v1.failure('unknown-error');
 			}
 
@@ -845,3 +908,12 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type ChatPinMessageEndpoints = ExtractRoutesFromAPI<typeof chatPinMessageEndpoints>;
+
+export type ChatEndpoints = ChatPinMessageEndpoints;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ChatPinMessageEndpoints {}
+}

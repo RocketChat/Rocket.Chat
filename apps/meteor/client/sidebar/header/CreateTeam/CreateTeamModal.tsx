@@ -14,6 +14,12 @@ import {
 	FieldHint,
 	Accordion,
 	AccordionItem,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import {
 	useEndpoint,
@@ -162,11 +168,11 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 				<Box is='form' id={createTeamFormId} onSubmit={handleSubmit(handleCreateTeam)} {...props} />
 			)}
 		>
-			<Modal.Header>
-				<Modal.Title id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
-			</Modal.Header>
-			<Modal.Content mbe={2}>
+			<ModalHeader>
+				<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>
+				<ModalClose title={t('Close')} onClick={onClose} tabIndex={-1} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
 				<Box fontScale='p2' mbe={16}>
 					{t('Teams_new_description')}
 				</Box>
@@ -301,15 +307,15 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						</FieldGroup>
 					</AccordionItem>
 				</Accordion>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!canCreateTeam} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

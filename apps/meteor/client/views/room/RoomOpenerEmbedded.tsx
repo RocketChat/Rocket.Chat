@@ -8,8 +8,8 @@ import { lazy, Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NotSubscribedRoom from './NotSubscribedRoom';
+import RoomSidepanel from './RoomSidepanel';
 import RoomSkeleton from './RoomSkeleton';
-import RoomSidepanel from './Sidepanel/RoomSidepanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
 import { CachedChatSubscription } from '../../../app/models/client';
 import { LegacyRoomManager } from '../../../app/ui-utils/client';
@@ -63,8 +63,10 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 
 		CachedChatSubscription.upsertSubscription(mapSubscriptionFromApi(subscriptionData.subscription));
 
-		LegacyRoomManager.computation.invalidate();
-	}, [subscriptionData]);
+		// yes this must be done here, this is already called in useOpenRoom, but it skips subscription streams because of the subscriptions list is empty
+		// now that we inserted the subscription, we can open the room
+		LegacyRoomManager.open({ typeName: type + reference, rid: subscriptionData.subscription.rid });
+	}, [subscriptionData, type, rid, reference]);
 
 	useEffect(() => {
 		if (!uid) {

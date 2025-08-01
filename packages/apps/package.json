@@ -1,8 +1,9 @@
 {
 	"name": "@rocket.chat/apps",
-	"version": "0.5.3",
+	"version": "0.5.12",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "~8.45.0",
 		"typescript": "~5.8.3"
 	},
@@ -21,5 +22,8 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

@@ -50,7 +50,7 @@ export class ReadStateManager extends Emitter {
 		const firstUpdate = !this.subscription;
 
 		this.subscription = subscription;
-		LegacyRoomManager.getOpenedRoomByRid(this.rid)?.unreadSince.set(this.subscription.ls);
+		LegacyRoomManager.setPropertyByRid(this.rid, 'unreadSince', this.subscription.ls);
 
 		const { unread, alert } = this.subscription;
 		if (!unread && !alert) {

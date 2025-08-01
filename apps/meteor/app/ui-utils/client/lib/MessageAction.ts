@@ -24,8 +24,6 @@ export type MessageActionConfig = {
 	variant?: 'danger' | 'success' | 'warning';
 	label: TranslationKey;
 	order: number;
-	/** @deprecated */
-	color?: 'alert';
 	group: MessageActionGroup;
 	context?: MessageActionContext[];
 	action: (e: Pick<Event, 'preventDefault' | 'stopPropagation' | 'currentTarget'> | undefined) => any;

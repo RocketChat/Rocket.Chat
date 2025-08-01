@@ -1,7 +1,7 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps } from '@rocket.chat/rest-typings';
+import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -302,7 +302,7 @@ API.v1.addRoute(
 			if (access || joined) {
 				msgs = room.msgs;
 				latest = lm;
-				members = room.usersCount;
+				members = await Users.countActiveUsersInNonDMRoom(room._id);
 			}
 
 			return API.v1.success({
@@ -390,7 +390,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.files',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsFilesProps },
 	{
 		async get() {
 			const typeGroup = typeof this.queryParams.typeGroup === 'string' ? this.queryParams.typeGroup : undefined;
@@ -417,6 +417,7 @@ API.v1.addRoute(
 				...(typeGroup ? { typeGroup } : {}),
 			};
 
+			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
 			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,

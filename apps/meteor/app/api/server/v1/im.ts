@@ -32,21 +32,12 @@ import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-// TODO: Refact or remove
-
-type findDirectMessageRoomProps =
-	| {
-			roomId: string;
-	  }
-	| {
-			username: string;
-	  };
-
 const findDirectMessageRoom = async (
-	keys: findDirectMessageRoomProps,
+	keys: { roomId?: string; username?: string },
 	uid: string,
 ): Promise<{ room: IRoom; subscription: ISubscription | null }> => {
-	if (!('roomId' in keys) && !('username' in keys)) {
+	const nameOrId = 'roomId' in keys ? keys.roomId : keys.username;
+	if (typeof nameOrId !== 'string') {
 		throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
 	}
 
@@ -59,7 +50,7 @@ const findDirectMessageRoom = async (
 
 	const room = await getRoomByNameOrIdWithOptionToJoin({
 		user,
-		nameOrId: 'roomId' in keys ? keys.roomId : keys.username,
+		nameOrId,
 		type: 'd',
 	});
 
@@ -211,7 +202,7 @@ API.v1.addRoute(
 			if (access || joined) {
 				msgs = room.msgs;
 				latest = lm;
-				members = room.usersCount;
+				members = await Users.countActiveUsersInDMRoom(room._id);
 			}
 
 			return API.v1.success({
@@ -240,7 +231,7 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
+			const { room } = await findDirectMessageRoom(roomId ? { roomId } : { username }, this.userId);
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 
@@ -255,7 +246,7 @@ API.v1.addRoute(
 				...(typeGroup ? { typeGroup } : {}),
 			};
 
-			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
+			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
