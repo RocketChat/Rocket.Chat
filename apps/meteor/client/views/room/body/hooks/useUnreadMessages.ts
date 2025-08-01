@@ -3,13 +3,13 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Messages } from '../../../../../app/models/client';
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useOpenedRoomUnreadSince } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
+import { Messages } from '../../../../stores';
 import { useChat } from '../../contexts/ChatContext';
 
 interface IUnreadMessages {

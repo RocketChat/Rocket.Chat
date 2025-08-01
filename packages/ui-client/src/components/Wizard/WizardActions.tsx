@@ -2,11 +2,18 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 type WizardActionsProps = {
+	annotation?: string;
 	children: ReactNode;
 };
 
-const WizardActions = ({ children }: WizardActionsProps) => (
-	<Box className='steps-wizard-footer' pbs={24} display='flex' justifyContent='end'>
+const WizardActions = ({ annotation, children }: WizardActionsProps) => (
+	<Box className='steps-wizard-footer' pbs={24} display='flex' alignItems='center' justifyContent='end'>
+		{annotation ? (
+			<Box mie='auto' fontScale='c1' color='annotation'>
+				{annotation}
+			</Box>
+		) : null}
+
 		<ButtonGroup>{children}</ButtonGroup>
 	</Box>
 );

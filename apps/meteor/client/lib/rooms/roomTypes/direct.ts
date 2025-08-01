@@ -1,10 +1,9 @@
-import type { AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { Subscriptions, Users, Rooms } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
@@ -12,6 +11,7 @@ import { getUserAvatarURL } from '../../../../app/utils/client/getUserAvatarURL'
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
+import { Users, Rooms, Subscriptions } from '../../../stores';
 import * as Federation from '../../federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
@@ -122,8 +122,8 @@ roomCoordinator.add(
 
 			const subscriptionName = Subscriptions.state.find((record) => record.rid === room._id)?.name;
 			if (subscriptionName) {
-				const user = Users.findOne({ username: subscriptionName }, { fields: { username: 1, avatarETag: 1 } }) as IUser | undefined;
-				return getUserAvatarURL(user?.username || subscriptionName, user?.avatarETag);
+				const { username, avatarETag } = Users.state.find((record) => record.username === subscriptionName) || {};
+				return getUserAvatarURL(username || subscriptionName, avatarETag);
 			}
 
 			return getUserAvatarURL(room.name || this.roomName(room) || '');
