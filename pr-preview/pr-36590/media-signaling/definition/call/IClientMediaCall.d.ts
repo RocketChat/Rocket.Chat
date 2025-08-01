@@ -4,7 +4,7 @@ export type CallContact = Record<string, string> | null;
 export type CallRole = 'caller' | 'callee';
 export type CallService = 'webrtc';
 export type CallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
-export type CallHangupReason = 'normal' | 'remote' | 'rejected' | 'unavailable' | 'signaling-error' | 'service-error' | 'media-error' | 'error';
+export type CallHangupReason = 'normal' | 'remote' | 'rejected' | 'unavailable' | 'timeout' | 'signaling-error' | 'service-error' | 'media-error' | 'error';
 export interface IClientMediaCallData {
     callId: string;
     role: CallRole;
@@ -20,5 +20,4 @@ export interface IClientMediaCall extends Required<IClientMediaCallData> {
     reject(): Promise<void>;
     hangup(): Promise<void>;
 }
-export declare function isCallRole(role: string): role is CallRole;
 //# sourceMappingURL=IClientMediaCall.d.ts.map
