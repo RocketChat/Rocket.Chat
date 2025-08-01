@@ -2,7 +2,6 @@ import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
 import {
 	ajv,
-	isUpdateOAuthAppParams,
 	isOauthAppsGetParams,
 	isDeleteOAuthAppParams,
 	validateUnauthorizedErrorResponse,
@@ -90,21 +89,67 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+type UpdateOAuthAppParams = {
+	appId: string;
+	name: string;
+	active: boolean;
+	clientId?: string | undefined;
+	clientSecret?: string | undefined;
+	redirectUri: string;
+};
+
+const UpdateOAuthAppParamsSchema = {
+	type: 'object',
+	properties: {
+		appId: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		active: {
+			type: 'boolean',
+		},
+		redirectUri: {
+			type: 'string',
+		},
+	},
+	required: ['appId', 'name', 'active', 'redirectUri'],
+	additionalProperties: false,
+};
+
+const isUpdateOAuthAppParams = ajv.compile<UpdateOAuthAppParams>(UpdateOAuthAppParamsSchema);
+
+const oauthAppsuUpdateEndpoints = API.v1.post(
 	'oauth-apps.update',
 	{
 		authRequired: true,
-		validateParams: isUpdateOAuthAppParams,
+		body: isUpdateOAuthAppParams,
 		permissionsRequired: ['manage-oauth-apps'],
-	},
-	{
-		async post() {
-			const { appId } = this.bodyParams;
-
-			const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
-
-			return API.v1.success(result);
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			200: ajv.compile<IOAuthApps | null>({
+				allOf: [
+					{ anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
+					{
+						type: 'object',
+						properties: {
+							success: { type: 'boolean', enum: [true] },
+						},
+						required: ['success'],
+					},
+				],
+			}),
 		},
+	},
+	async function action() {
+		const { appId } = this.bodyParams;
+
+		const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
+
+		return API.v1.success(result);
 	},
 );
 
@@ -185,13 +230,17 @@ const oauthAppsCreateEndpoints = API.v1.post(
 
 type OauthAppsCreateEndpoints = ExtractRoutesFromAPI<typeof oauthAppsCreateEndpoints>;
 
+type OauthAppsuUpdateEndpoints = ExtractRoutesFromAPI<typeof oauthAppsuUpdateEndpoints>;
+
 type OauthAppsListEndpoints = ExtractRoutesFromAPI<typeof oauthAppsListEndpoints>;
 
-export type OAuthAppsEndpoints = OauthAppsCreateEndpoints | OauthAppsListEndpoints;
+export type OAuthAppsEndpoints = OauthAppsCreateEndpoints | OauthAppsListEndpoints | OauthAppsuUpdateEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsCreateEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends OauthAppsuUpdateEndpoints {}
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsListEndpoints {}
 }
