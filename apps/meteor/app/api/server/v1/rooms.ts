@@ -4,6 +4,7 @@ import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
+	ajv,
 	isGETRoomsNameExists,
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
@@ -23,6 +24,7 @@ import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
+import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
@@ -37,12 +39,14 @@ import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMes
 import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
 import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { cleanRoomHistoryMethod } from '../../../lib/server/methods/cleanRoomHistory';
+import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import type { NotificationFieldType } from '../../../push-notifications/server/methods/saveNotificationSettings';
 import { saveNotificationSettingsMethod } from '../../../push-notifications/server/methods/saveNotificationSettings';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -1005,3 +1009,62 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const isRoomGetRolesPropsSchema = {
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+	},
+	additionalProperties: false,
+	required: ['rid'],
+};
+export const roomEndpoints = API.v1.get(
+	'rooms.roles',
+	{
+		authRequired: true,
+		query: ajv.compile<{
+			rid: string;
+		}>(isRoomGetRolesPropsSchema),
+		response: {
+			200: ajv.compile<{
+				roles: RoomRoles[];
+			}>({
+				type: 'object',
+				properties: {
+					roles: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								rid: { type: 'string' },
+								u: {
+									type: 'object',
+									properties: { _id: { type: 'string' }, username: { type: 'string' } },
+									required: ['_id', 'username'],
+								},
+								roles: { type: 'array', items: { type: 'string' } },
+							},
+							required: ['rid', 'u', 'roles'],
+						},
+					},
+				},
+				required: ['roles'],
+			}),
+		},
+	},
+	async function () {
+		const { rid } = this.queryParams;
+		const roles = await executeGetRoomRoles(rid, this.userId);
+
+		return API.v1.success({
+			roles,
+		});
+	},
+);
+
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends RoomEndpoints {}
+}

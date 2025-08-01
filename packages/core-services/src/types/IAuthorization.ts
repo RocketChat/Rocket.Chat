@@ -1,4 +1,4 @@
-import type { IRocketChatRecord, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 export type RoomAccessValidator = (
 	room?: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>,
@@ -13,5 +13,5 @@ export interface IAuthorization {
 	canAccessRoom: RoomAccessValidator;
 	canReadRoom: RoomAccessValidator;
 	canAccessRoomId(rid: IRoom['_id'], uid?: IUser['_id']): Promise<boolean>;
-	getUsersFromPublicRoles(): Promise<(IRocketChatRecord & Pick<IUser, '_id' | 'username' | 'roles'>)[]>;
+	getUsersFromPublicRoles(): Promise<Pick<Required<IUser>, '_id' | 'username' | 'roles'>[]>;
 }
