@@ -105,7 +105,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		formState: { errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
-			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : false,
+			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 			readOnly: false,
 			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
 			broadcast: false,
