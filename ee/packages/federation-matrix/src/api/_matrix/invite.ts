@@ -142,9 +142,9 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 		},
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const { event, room_version } = await c.req.json();
+			const { event, room_version: roomVersion } = await c.req.json();
 
-			const response = await invite.processInvite(event, roomId, eventId, room_version);
+			const response = await invite.processInvite(event, roomId, eventId, roomVersion);
 
 			return {
 				body: response,
