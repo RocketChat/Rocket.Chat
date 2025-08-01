@@ -1,13 +1,17 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { Wizard, useWizard, WizardContent, WizardTabs } from '@rocket.chat/ui-client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import type { SubmitPayload } from './forms';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import GenericError from '../../../../GenericError';
+import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
+import { useOutboundMessageUpsellModal } from '../../modals';
+import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
 
 type OutboundMessageWizardProps = {
 	defaultValues?: Partial<SubmitPayload>;
@@ -19,6 +23,13 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	const { contact, sender, provider, department, agent, template, templateParameters, recipient } = state;
 
 	const templates = sender ? provider?.templates[sender] : [];
+	const upsellModal = useOutboundMessageUpsellModal();
+	const hasModule = useHasLicenseModule('outbound-messaging');
+	const isLoadingModule = hasModule === 'loading';
+
+	const { data: hasProviders, isLoading: isLoadingProviders } = useOutboundProvidersList<boolean>({
+		select: ({ providers = [] }) => providers.length > 0,
+	});
 
 	const wizardApi = useWizard({
 		steps: [
@@ -29,13 +40,28 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 		],
 	});
 
+	useEffect(() => {
+		if (!isLoadingProviders && !isLoadingModule && !hasModule && !hasProviders) {
+			upsellModal.open();
+		}
+	}, [hasModule, hasProviders, isLoadingModule, isLoadingProviders, upsellModal]);
+
 	const handleSubmit = useEffectEvent((values: SubmitPayload) => {
+		if (!hasModule) {
+			upsellModal.open();
+			return;
+		}
+
 		setState((state) => ({ ...state, ...values }));
 	});
 
 	const handleSend = useEffectEvent(async () => {
 		console.log('Message sent with values:', state);
 	});
+
+	if (isLoadingModule || isLoadingProviders) {
+		return <OutboubdMessageWizardSkeleton />;
+	}
 
 	return (
 		<ErrorBoundary fallbackRender={() => <GenericError icon='circle-exclamation' />}>
