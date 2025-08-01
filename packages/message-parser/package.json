@@ -20,10 +20,12 @@
   "bin": "bin.js",
   "exports": {
     ".": {
-      "default": "./messageParser.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./index": {
-      "default": "./messageParser.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     }
   },
   "module": "dist/index.js",
@@ -39,7 +41,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc -p tsconfig-bundle.json",
+    "build": "tsc -p tsconfig-bundle.json --noCheck",
+    "typecheck": "tsc -p tsconfig-bundle.json",
     "lint": "eslint .",
     "test": "jest",
     "testunit": "jest",

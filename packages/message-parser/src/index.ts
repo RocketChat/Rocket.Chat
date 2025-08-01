@@ -289,7 +289,48 @@ const parseItalicMarkup = (
   // Try single underscore first, then double if that fails
   
   // Try single underscore parsing first
-  const singleEnd = text.indexOf('_', i + 1);
+  // Find the closing underscore, but skip over emoji shortcodes that contain underscores
+  let singleEnd = -1;
+  let searchPos = i + 1;
+  
+  while (searchPos < text.length) {
+    const nextUnderscore = text.indexOf('_', searchPos);
+    if (nextUnderscore === -1) break;
+    
+    // Check if this underscore is inside an emoji shortcode
+    // Look for the pattern :emoji_name: that would contain this underscore
+    let insideEmoji = false;
+    
+    // Look backwards from this underscore to find a potential opening colon
+    for (let j = nextUnderscore - 1; j >= searchPos; j--) {
+      if (text[j] === ':') {
+        // Found a colon before the underscore, now look for closing colon after underscore
+        const closingColon = text.indexOf(':', nextUnderscore + 1);
+        if (closingColon !== -1) {
+          // Check if the content between colons is a valid emoji shortcode pattern
+          const potentialShortcode = text.slice(j + 1, closingColon);
+          if (potentialShortcode && !potentialShortcode.includes(' ') && !potentialShortcode.includes(':')) {
+            insideEmoji = true;
+            break;
+          }
+        }
+        break; // Stop at the first colon we find
+      }
+    }
+    
+    if (insideEmoji) {
+      // Skip this underscore and continue searching after the emoji
+      const colonBefore = text.lastIndexOf(':', nextUnderscore);
+      const colonAfter = text.indexOf(':', nextUnderscore + 1);
+      searchPos = colonAfter !== -1 ? colonAfter + 1 : nextUnderscore + 1;
+      continue;
+    }
+    
+    // This underscore is not inside an emoji shortcode
+    singleEnd = nextUnderscore;
+    break;
+  }
+  
   if (singleEnd !== -1 && singleEnd > i + 1) {
     // Check word boundary after closing delimiter
     const nextCharAfterSingle = singleEnd + 1 < text.length ? text[singleEnd + 1] : '';
