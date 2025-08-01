@@ -7,7 +7,8 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users, Subscriptions } from '@rocket.chat/models';
+import { MatrixBridgedUser, MatrixBridgedRoom, Users, Subscriptions, Messages } from '@rocket.chat/models';
+import emojione from 'emojione';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
@@ -59,7 +60,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			emitter: instance.eventHandler,
 		};
 
-		await createFederationContainer(containerOptions, config);
+		createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
 		instance.buildMatrixHTTPRoutes();
 
@@ -125,11 +126,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const roomName = room.name || room.fname || 'Untitled Room';
 
 			// canonical alias computed from name
-			const matrixRoomResult = await this.homeserverServices.room.createRoom(
-				matrixUserId,
-				roomName,
-				room.t === 'c' ? 'public' : 'invite',
-			);
+			const matrixRoomResult = await this.homeserverServices.room.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
 
 			this.logger.debug('Matrix room created:', matrixRoomResult);
 
@@ -152,7 +149,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				} catch (error) {
 					this.logger.error('Error creating or updating bridged user:', error);
 				}
-
 				// We are not generating bridged users for members outside of the current workspace
 				// They will be created when the invite is accepted
 
@@ -178,27 +174,21 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const matrixUserId = `@${user.username}:${matrixDomain}`;
 			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
 			if (!existingMatrixUserId) {
-				const port = await Settings.get<number>('Federation_Service_Matrix_Port');
-				const domain = await Settings.get<string>('Federation_Service_Matrix_Domain');
-				const matrixDomain = port === 443 || port === 80 ? domain : `${domain}:${port}`;
 				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
 			}
-
-			// TODO: We should fix this to not hardcode neither inform the target server
-			// This is on the homeserver mandate to track all the eligible servers in the federated room
-			const targetServer = 'hs1-garim.tunnel.dev.rocket.chat';
 
 			if (!this.homeserverServices) {
 				this.logger.warn('Homeserver services not available, skipping message send');
 				return;
 			}
 
-			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, matrixUserId, targetServer);
+			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
 
-			// TODO: Store the event ID mapping for future reference (edits, deletions, etc.)
-			// This would allow us to map between Rocket.Chat message IDs and Matrix event IDs
+			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
 
-			this.logger.debug('Message sent to Matrix successfully:', result.event_id);
+			await Messages.setFederationEventIdById(message._id, result.eventId);
+
+			this.logger.debug('Message sent to Matrix successfully:', result.eventId);
 		} catch (error) {
 			this.logger.error('Failed to send message to Matrix:', error);
 			throw error;
@@ -229,7 +219,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						if (alreadyCreatedLocally) {
 							externalUsernameToInvite = `@${username}`;
 						}
-						await this.homeserverServices.invite.inviteUserToRoom(externalUsernameToInvite, matrixRoomId, inviterUserId, room.fname);
+						await this.homeserverServices.invite.inviteUserToRoom(externalUsernameToInvite, matrixRoomId, inviterUserId);
 						return;
 					}
 
@@ -241,12 +231,119 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 							externalUserId = `@${username}:${matrixDomain}`;
 							await MatrixBridgedUser.createOrUpdateByLocalId(localUser._id, externalUserId, false, matrixDomain);
 						}
-						await this.homeserverServices.invite.inviteUserToRoom(externalUserId, matrixRoomId, inviterUserId, room.fname);
+						await this.homeserverServices.invite.inviteUserToRoom(externalUserId, matrixRoomId, inviterUserId);
 					}
 				}),
 			);
 		} catch (error) {
 			this.logger.error('Failed to invite an user to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async sendReaction(messageId: string, reaction: string, user: IUser): Promise<void> {
+		try {
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				throw new Error(`Message ${messageId} not found`);
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+
+			const matrixEventId = message.federation?.eventId;
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
+			}
+
+			const reactionKey = emojione.shortnameToUnicode(reaction);
+
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
+			if (!existingMatrixUserId) {
+				this.logger.error(`No Matrix user ID mapping found for user ${user._id}`);
+				return;
+			}
+
+			const eventId = await this.homeserverServices.message.sendReaction(matrixRoomId, matrixEventId, reactionKey, existingMatrixUserId);
+
+			await Messages.setFederationReactionEventId(user.username || '', messageId, reaction, eventId);
+
+			this.logger.debug('Reaction sent to Matrix successfully:', eventId);
+		} catch (error) {
+			this.logger.error('Failed to send reaction to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async removeReaction(messageId: string, reaction: string, user: IUser, oldMessage: IMessage): Promise<void> {
+		try {
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				this.logger.error(`Message ${messageId} not found`);
+				return;
+			}
+
+			const targetEventId = message.federation?.eventId;
+			if (!targetEventId) {
+				this.logger.warn(`No federation event ID found for message ${messageId}`);
+				return;
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				this.logger.error(`No Matrix room mapping found for room ${message.rid}`);
+				return;
+			}
+
+			const reactionKey = emojione.shortnameToUnicode(reaction);
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
+			if (!existingMatrixUserId) {
+				this.logger.error(`No Matrix user ID mapping found for user ${user._id}`);
+				return;
+			}
+
+			const reactionData = oldMessage.reactions?.[reaction];
+			if (!reactionData?.federationReactionEventIds) {
+				return;
+			}
+
+			for await (const [eventId, username] of Object.entries(reactionData.federationReactionEventIds)) {
+				if (username !== user.username) {
+					continue;
+				}
+
+				const redactionEventId = await this.homeserverServices.message.unsetReaction(
+					matrixRoomId,
+					eventId,
+					reactionKey,
+					existingMatrixUserId,
+				);
+				if (!redactionEventId) {
+					this.logger.warn('No reaction event found to remove in Matrix');
+					return;
+				}
+
+				await Messages.unsetFederationReactionEventId(eventId, messageId, reaction);
+				break;
+			}
+		} catch (error) {
+			this.logger.error('Failed to remove reaction from Matrix:', error);
+			throw error;
+		}
+	}
+
+	async getEventById(eventId: string): Promise<any | null> {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available');
+			return null;
+		}
+
+		try {
+			return await this.homeserverServices.event.getEventById(eventId);
+		} catch (error) {
+			this.logger.error('Failed to get event by ID:', error);
 			throw error;
 		}
 	}
