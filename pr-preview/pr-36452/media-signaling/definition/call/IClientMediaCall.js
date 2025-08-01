@@ -1,4 +1,2 @@
-export function isCallRole(role) {
-    return ['caller', 'callee'].includes(role);
-}
+export {};
 //# sourceMappingURL=IClientMediaCall.js.map

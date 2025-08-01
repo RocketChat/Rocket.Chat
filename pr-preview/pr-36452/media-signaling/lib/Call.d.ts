@@ -10,6 +10,7 @@ export interface IClientMediaCallConfig {
     processorFactories: IServiceProcessorFactoryList;
     mediaStreamFactory: MediaStreamFactory;
 }
+type ClientState = 'pending' | 'accepting' | 'accepted' | 'has-offer' | 'has-answer' | 'active' | 'hangup';
 export declare class ClientMediaCall implements IClientMediaCall {
     private readonly config;
     readonly callId: string;
@@ -28,11 +29,15 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private acceptedLocally;
     private endedLocally;
     private hasRemoteData;
+    private hasLocalDescription;
+    private hasRemoteDescription;
     private acknowledged;
     private earlySignals;
+    private stateTimeoutHandlers;
     constructor(config: IClientMediaCallConfig, callId: string);
     initializeOutboundCall(contact: CallContact): Promise<void>;
     initializeRemoteCall(signal: MediaSignal<'new'>): Promise<void>;
+    getClientState(): ClientState;
     getRemoteMediaStream(): MediaStream;
     setContact(contact: CallContact): void;
     processSignal(signal: MediaSignal): Promise<void>;
@@ -40,6 +45,7 @@ export declare class ClientMediaCall implements IClientMediaCall {
     reject(): Promise<void>;
     hangup(reason?: CallHangupReason): Promise<void>;
     isPendingAcceptance(): boolean;
+    isPendingOurAcceptance(): boolean;
     isOver(): boolean;
     private changeState;
     protected processOfferRequest(signal: MediaSignal<'request-offer'>): Promise<void>;
@@ -53,6 +59,8 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private processNotification;
     private flagAsAccepted;
     private flagAsEnded;
+    private addStateTimeout;
+    private updateStateTimeouts;
     private prepareWebRtcProcessor;
     private requireWebRTC;
 }
@@ -60,4 +68,5 @@ export declare class ClientMediaCallWebRTC extends ClientMediaCall {
     webrtcProcessor: IWebRTCProcessor;
     constructor(config: IClientMediaCallConfig, callId: string);
 }
+export {};
 //# sourceMappingURL=Call.d.ts.map

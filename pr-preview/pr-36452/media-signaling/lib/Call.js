@@ -16,6 +16,9 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
 };
 import { Emitter } from '@rocket.chat/emitter';
 import { signalTypeRequiresTargeting } from './utils/signalTypeRequiresTargeting';
+const TIMEOUT_TO_ACCEPT = 30000;
+const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
+const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
 export class ClientMediaCall {
     get role() {
         return this._role;
@@ -32,7 +35,6 @@ export class ClientMediaCall {
     get service() {
         return this._service;
     }
-    // private timeoutHandler?: ReturnType<typeof setTimeout>;
     constructor(config, callId) {
         this.config = config;
         this.webrtcProcessor = null;
@@ -43,7 +45,10 @@ export class ClientMediaCall {
         this.endedLocally = false;
         this.hasRemoteData = false;
         this.acknowledged = false;
+        this.hasLocalDescription = false;
+        this.hasRemoteDescription = false;
         this.earlySignals = new Set();
+        this.stateTimeoutHandlers = new Set();
         this._role = 'callee';
         this._state = 'none';
         this._ignored = false;
@@ -52,9 +57,15 @@ export class ClientMediaCall {
     }
     initializeOutboundCall(contact) {
         return __awaiter(this, void 0, void 0, function* () {
-            this._role = 'caller';
+            if (this.acceptedLocally) {
+                return;
+            }
+            if (!this.hasRemoteData) {
+                this._role = 'caller';
+            }
             this.acceptedLocally = true;
             this._contact = contact;
+            this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
         });
     }
     initializeRemoteCall(signal) {
@@ -81,8 +92,33 @@ export class ClientMediaCall {
             }
             // Send an ACK so the server knows that this session exists and is reachable
             this.acknowledge();
+            if (this._role === 'callee' || !this.acceptedLocally) {
+                this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
+            }
             yield this.processEarlySignals();
         });
+    }
+    getClientState() {
+        switch (this._state) {
+            case 'none':
+            case 'ringing':
+                if (this.hasRemoteData && this._role === 'callee' && this.acceptedLocally) {
+                    return 'accepting';
+                }
+                return 'pending';
+            case 'accepted':
+                if (this.hasLocalDescription && this.hasRemoteDescription) {
+                    return 'has-answer';
+                }
+                if (this.hasLocalDescription !== this.hasRemoteDescription) {
+                    return 'has-offer';
+                }
+                return 'accepted';
+            case 'active':
+                return 'active';
+            case 'hangup':
+                return 'hangup';
+        }
     }
     getRemoteMediaStream() {
         if (this.shouldIgnoreWebRTC()) {
@@ -129,18 +165,29 @@ export class ClientMediaCall {
     accept() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('call.accept');
-            if (!this.isPendingAcceptance()) {
+            if (!this.isPendingOurAcceptance()) {
                 throw new Error('call-not-pending-acceptance');
+            }
+            if (!this.hasRemoteData) {
+                throw new Error('missing-remote-data');
             }
             this.acceptedLocally = true;
             this.config.transporter.answer(this.callId, 'accept');
+            if (this.getClientState() === 'accepting') {
+                this.updateStateTimeouts();
+                this.addStateTimeout('accepting', TIMEOUT_TO_CONFIRM_ACCEPTANCE);
+                this.emitter.emit('accepting');
+            }
         });
     }
     reject() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('call.reject');
-            if (!this.isPendingAcceptance()) {
+            if (!this.isPendingOurAcceptance()) {
                 throw new Error('call-not-pending-acceptance');
+            }
+            if (!this.hasRemoteData) {
+                throw new Error('missing-remote-data');
             }
             this.config.transporter.answer(this.callId, 'reject');
             this.changeState('hangup');
@@ -157,13 +204,16 @@ export class ClientMediaCall {
         });
     }
     isPendingAcceptance() {
+        return ['none', 'ringing'].includes(this._state);
+    }
+    isPendingOurAcceptance() {
         if (this._role !== 'callee') {
             return false;
         }
         if (this.acceptedLocally) {
             return false;
         }
-        return ['none', 'ringing'].includes(this._state);
+        return this.isPendingAcceptance();
     }
     isOver() {
         return this.ignored || this._state === 'hangup';
@@ -175,6 +225,7 @@ export class ClientMediaCall {
         console.log('call.changeState', newState);
         const oldState = this._state;
         this._state = newState;
+        this.updateStateTimeouts();
         this.emitter.emit('stateChange', oldState);
         switch (newState) {
             case 'accepted':
@@ -232,7 +283,9 @@ export class ClientMediaCall {
             }
             if (!answer) {
                 this.config.transporter.sendError(this.callId, 'implementation-error');
+                return;
             }
+            this.hasRemoteDescription = true;
             yield this.deliverSdp(answer);
         });
     }
@@ -247,11 +300,13 @@ export class ClientMediaCall {
                 return this.processAnswerRequest(signal);
             }
             yield this.webrtcProcessor.setRemoteDescription(signal.body);
+            this.hasRemoteDescription = true;
         });
     }
     deliverSdp(sdp) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Call.deliverSdp');
+            this.hasLocalDescription = true;
             return this.config.transporter.sendToServer(this.callId, 'sdp', sdp);
         });
     }
@@ -299,11 +354,11 @@ export class ClientMediaCall {
         if (this.acknowledged) {
             return;
         }
-        if (this._state === 'none') {
-            this._state = 'ringing';
-        }
         this.acknowledged = true;
         this.config.transporter.answer(this.callId, 'ack');
+        if (this._state === 'none') {
+            this.changeState('ringing');
+        }
     }
     processNotification(signal) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -321,20 +376,58 @@ export class ClientMediaCall {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('flagAsAccepted');
             if (!this.acceptedLocally) {
+                // #ToDo: test this situation; remove exception, read this response on the server
                 this.config.transporter.sendError(this.callId, 'not-accepted');
                 throw new Error('Trying to activate a call that was not yet accepted locally.');
             }
             // Both sides of the call have accepted it, we can change the state now
             this.changeState('accepted');
+            this.addStateTimeout('accepted', TIMEOUT_TO_PROGRESS_SIGNALING);
+            this.addStateTimeout('has-offer', TIMEOUT_TO_PROGRESS_SIGNALING);
         });
     }
-    flagAsEnded(reasonCode) {
+    flagAsEnded(reason) {
         console.log('flagAsEnded');
         if (this._state === 'hangup') {
             return;
         }
-        this.config.transporter.hangup(this.callId, reasonCode);
+        this.config.transporter.hangup(this.callId, reason);
         this.changeState('hangup');
+    }
+    addStateTimeout(state, timeout, callback) {
+        if (this.getClientState() !== state) {
+            return;
+        }
+        console.log(`adding a timeout of ${timeout / 1000} seconds to the state [${state}]`);
+        const handler = {
+            state,
+            handler: setTimeout(() => {
+                if (this.stateTimeoutHandlers.has(handler)) {
+                    this.stateTimeoutHandlers.delete(handler);
+                }
+                if (state !== this.getClientState()) {
+                    return;
+                }
+                console.log(`reached timeout for the [${state}] state.`);
+                if (callback) {
+                    callback();
+                }
+                else {
+                    void this.hangup('timeout');
+                }
+            }, timeout),
+        };
+        this.stateTimeoutHandlers.add(handler);
+    }
+    updateStateTimeouts() {
+        const clientState = this.getClientState();
+        for (const handler of this.stateTimeoutHandlers.values()) {
+            if (handler.state === clientState) {
+                continue;
+            }
+            clearTimeout(handler.handler);
+            this.stateTimeoutHandlers.delete(handler);
+        }
     }
     prepareWebRtcProcessor() {
         if (this.webrtcProcessor) {
