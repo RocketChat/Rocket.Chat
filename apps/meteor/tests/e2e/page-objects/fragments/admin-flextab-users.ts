@@ -75,4 +75,60 @@ export class AdminFlextabUsers {
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('button[data-qa="ContextualbarActionClose"]');
 	}
+
+	get btnMoreActionsMenu(): Locator {
+		return this.page.getByRole('button', { name: 'More actions' });
+	}
+
+	get menuItemDeactivated(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Deactivate' });
+	}
+
+	get menuItemActivate(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Activate' });
+	}
+
+	get tabActive(): Locator {
+		return this.page.getByRole('tab', { name: 'Active' });
+	}
+
+	get tabDeactivated(): Locator {
+		return this.page.getByRole('tab', { name: 'Deactivated' });
+	}
+
+	get tabPending(): Locator {
+		return this.page.getByRole('tab', { name: 'Pending' });
+	}
+
+	get tabAll(): Locator {
+		return this.page.getByRole('tab', { name: 'All' });
+	}
+
+	get inputSearch(): Locator {
+		return this.page.getByRole('textbox', { name: 'Search Users' });
+	}
+
+	get menuItemMakeAdmin(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Make Admin' });
+	}
+
+	get menuItemRemoveAdmin(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Remove Admin' });
+	}
+
+	get openDialog(): Locator {
+		return this.page.getByRole('dialog');
+	}
+
+	get toastMessage(): Locator {
+		return this.page.getByRole('alert');
+	}
+
+	getUserRowByUsername(username: string): Locator {
+		return this.page.getByRole('link', { name: username });
+	}
+
+	async openUserActionMenu(username: string): Promise<void> {
+		await this.getUserRowByUsername(username).getByRole('button', { name: 'More actions' }).click();
+	}
 }
