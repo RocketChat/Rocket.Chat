@@ -275,52 +275,91 @@ const parseItalicMarkup = (
 
   if (char !== '_') return null;
 
-  const isItalic = nextChar === '_';
-  const delimiter = isItalic ? '__' : '_';
-  const delimiterLength = isItalic ? 2 : 1;
-
   // Check word boundaries for emphasis markers
-  // Opening delimiter should be at word boundary (start of string, whitespace, or punctuation)
+  // Opening delimiter should be at word boundary (start of string, whitespace, punctuation, or other markup chars)
+  // But don't treat _ as word boundary since it can be part of variable names, etc.
   const prevChar = i > 0 ? text[i - 1] : '';
-  const atStartWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
+  const atStartWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(prevChar);
   
   if (!atStartWordBoundary) {
     return null; // Not at a word boundary, don't treat as emphasis
   }
 
-  const endIndex = text.indexOf(delimiter, i + delimiterLength);
-  if (endIndex !== -1 && endIndex > i + delimiterLength) {
+  // For mismatched delimiters like __Hello_, we need special handling
+  // Try single underscore first, then double if that fails
+  
+  // Try single underscore parsing first
+  const singleEnd = text.indexOf('_', i + 1);
+  if (singleEnd !== -1 && singleEnd > i + 1) {
     // Check word boundary after closing delimiter
-    const nextCharAfterEnd = endIndex + delimiterLength < text.length ? text[endIndex + delimiterLength] : '';
-    const atEndWordBoundary = endIndex + delimiterLength >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(nextCharAfterEnd);
+    const nextCharAfterSingle = singleEnd + 1 < text.length ? text[singleEnd + 1] : '';
+    const atSingleEndWordBoundary = singleEnd + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(nextCharAfterSingle);
     
-    if (!atEndWordBoundary) {
-      return null; // Not at a word boundary, don't treat as emphasis
+    if (atSingleEndWordBoundary) {
+      const singleContent = text.slice(i + 1, singleEnd);
+      if (singleContent.trim().length > 0) { // Don't parse empty or whitespace-only content
+        const singleNestedContent = parseInlineContent(singleContent, options);
+        // Filter to only valid italic content types
+        const singleValidContent = singleNestedContent.filter(
+          (
+            token,
+          ): token is
+            | AST.MarkupExcluding<AST.Italic>
+            | AST.Link
+            | AST.Emoji
+            | AST.UserMention
+            | AST.ChannelMention
+            | AST.InlineCode =>
+            token.type !== 'ITALIC' &&
+            token.type !== 'TIMESTAMP' &&
+            token.type !== 'IMAGE' &&
+            token.type !== 'COLOR' &&
+            token.type !== 'INLINE_KATEX',
+        );
+        return {
+          tokens: [ast.italic(singleValidContent)],
+          nextIndex: singleEnd + 1,
+        };
+      }
     }
+  }
 
-    const content = text.slice(i + delimiterLength, endIndex);
-    const nestedContent = parseInlineContent(content, options);
-    // Filter to only valid italic content types
-    const validContent = nestedContent.filter(
-      (
-        token,
-      ): token is
-        | AST.MarkupExcluding<AST.Italic>
-        | AST.Link
-        | AST.Emoji
-        | AST.UserMention
-        | AST.ChannelMention
-        | AST.InlineCode =>
-        token.type !== 'ITALIC' &&
-        token.type !== 'TIMESTAMP' &&
-        token.type !== 'IMAGE' &&
-        token.type !== 'COLOR' &&
-        token.type !== 'INLINE_KATEX',
-    );
-    return {
-      tokens: [ast.italic(validContent)],
-      nextIndex: endIndex + delimiterLength,
-    };
+  // If single underscore didn't work and we have double underscore, try double
+  if (nextChar === '_') {
+    const doubleEnd = text.indexOf('__', i + 2);
+    if (doubleEnd !== -1 && doubleEnd > i + 2) {
+      // Check word boundary after closing delimiter
+      const nextCharAfterDouble = doubleEnd + 2 < text.length ? text[doubleEnd + 2] : '';
+      const atDoubleEndWordBoundary = doubleEnd + 2 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(nextCharAfterDouble);
+      
+      if (atDoubleEndWordBoundary) {
+        const doubleContent = text.slice(i + 2, doubleEnd);
+        if (doubleContent.trim().length > 0) { // Don't parse empty or whitespace-only content
+          const doubleNestedContent = parseInlineContent(doubleContent, options);
+          // Filter to only valid italic content types
+          const doubleValidContent = doubleNestedContent.filter(
+            (
+              token,
+            ): token is
+              | AST.MarkupExcluding<AST.Italic>
+              | AST.Link
+              | AST.Emoji
+              | AST.UserMention
+              | AST.ChannelMention
+              | AST.InlineCode =>
+              token.type !== 'ITALIC' &&
+              token.type !== 'TIMESTAMP' &&
+              token.type !== 'IMAGE' &&
+              token.type !== 'COLOR' &&
+              token.type !== 'INLINE_KATEX',
+          );
+          return {
+            tokens: [ast.italic(doubleValidContent)],
+            nextIndex: doubleEnd + 2,
+          };
+        }
+      }
+    }
   }
 
   return null;
