@@ -68,7 +68,7 @@ test.describe('User - Password change required', () => {
 		});
 
 		await test.step('verify user is properly logged in', async () => {
-			await expect(poSidenav.userProfileMenu).toBeVisible();
+			await expect(poSidenav.btnUserProfileMenu).toBeVisible();
 			await expect(poSidenav.sidebarChannelsList).toBeVisible();
 		});
 	});
@@ -159,7 +159,7 @@ test.describe('User - Password change not required', () => {
 
 		await test.step('verify user is properly logged in', async () => {
 			await page.waitForURL('/home');
-			await expect(poSidenav.userProfileMenu).toBeVisible();
+			await expect(poSidenav.btnUserProfileMenu).toBeVisible();
 			await expect(poSidenav.sidebarChannelsList).toBeVisible();
 		});
 	});
