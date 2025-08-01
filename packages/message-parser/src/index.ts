@@ -252,15 +252,8 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
     if (char === '\\' && i + 1 < text.length) {
       const nextChar = text[i + 1];
       
-      // Always escape backslash with backslash (\\  becomes \)
-      if (nextChar === '\\') {
-        tokens.push(ast.plain('\\'));
-        i += 2; // Skip both backslashes
-        continue;
-      }
-      
-      // Escape markdown special characters (even if we don't implement all features)
-      const markupChars = ['*', '_', '~', '`', '[', ']', '(', ')', '#', '.', '+', '-', '!', '|', '{', '}', '^', ':'];
+      // Escape markdown special characters (but not structural ones like [])
+      const markupChars = ['*', '_', '~', '`', '(', ')', '#', '.', '+', '-', '!', '|', '{', '}', '^', ':'];
       
       if (markupChars.includes(nextChar)) {
         // Escape the markup character by treating it as plain text
@@ -372,46 +365,49 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
       }
     }
 
-    // Markdown links [text](url)
+    // Markdown links [text](url) - only at word boundaries
     if (char === '[') {
-      const closeBracket = text.indexOf(']', i + 1);
-      if (
-        closeBracket !== -1 &&
-        closeBracket < text.length - 1 &&
-        text[closeBracket + 1] === '('
-      ) {
-        const closeParens = text.indexOf(')', closeBracket + 2);
-        if (closeParens !== -1) {
-          const labelText = text.slice(i + 1, closeBracket);
-          const url = text.slice(closeBracket + 2, closeParens);
+      // Check if this is at a word boundary (start of string or after whitespace/punctuation)
+      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(text[i - 1]);
+      
+      if (atWordBoundary) {
+        const closeBracket = text.indexOf(']', i + 1);
+        if (
+          closeBracket !== -1 &&
+          closeBracket < text.length - 1 &&
+          text[closeBracket + 1] === '('
+        ) {
+          const closeParens = text.indexOf(')', closeBracket + 2);
+          if (closeParens !== -1) {
+            const labelText = text.slice(i + 1, closeBracket);
+            const url = text.slice(closeBracket + 2, closeParens);
 
-          // Parse label content for nested markup, filter to valid types
-          const labelContent = labelText
-            ? parseInlineContent(labelText, options).filter(
-                (
-                  token,
-                ): token is
-                  | AST.Plain
-                  | AST.Bold
-                  | AST.Italic
-                  | AST.Strike
-                  | AST.ChannelMention =>
-                  token.type === 'PLAIN_TEXT' ||
-                  token.type === 'BOLD' ||
-                  token.type === 'ITALIC' ||
-                  token.type === 'STRIKE' ||
-                  token.type === 'MENTION_CHANNEL',
-              )
-            : [ast.plain(url)];
+            // Parse label content for nested markup, filter to valid types
+            const labelContent = labelText
+              ? parseInlineContent(labelText, options).filter(
+                  (
+                    token,
+                  ): token is
+                    | AST.Plain
+                    | AST.Bold
+                    | AST.Italic
+                    | AST.Strike
+                    | AST.ChannelMention =>
+                    token.type === 'PLAIN_TEXT' ||
+                    token.type === 'BOLD' ||
+                    token.type === 'ITALIC' ||
+                    token.type === 'STRIKE' ||
+                    token.type === 'MENTION_CHANNEL',
+                )
+              : [ast.plain(url)];
 
-          tokens.push(ast.link(url, labelContent));
-          i = closeParens + 1;
-          continue;
+            tokens.push(ast.link(url, labelContent));
+            i = closeParens + 1;
+            continue;
+          }
         }
       }
-    }
-
-    // Accumulate plain text until we hit markup or special characters
+    }    // Accumulate plain text until we hit markup or special characters
     let plainText = '';
     let tempI = i;
     
@@ -426,11 +422,17 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
         if (nextChar === '\\') {
           plainText += '\\';
           tempI += 2; // Skip both backslashes
+          
+          // After double backslash, the next character should be literal
+          if (tempI < text.length) {
+            plainText += text[tempI]; // Add the literal character
+            tempI++; // Skip the literal character
+          }
           continue;
         }
         
-        // Escape markdown special characters (even if we don't implement all features)
-        const markupChars = ['*', '_', '~', '`', '[', ']', '(', ')', '#', '.', '+', '-', '!', '|', '{', '}', '^', ':'];
+        // Escape markdown special characters (but not structural ones like [])
+        const markupChars = ['*', '_', '~', '`', '(', ')', '#', '.', '+', '-', '!', '|', '{', '}', '^', ':'];
         
         if (markupChars.includes(nextChar)) {
           // Escape the markup character by treating it as plain text
