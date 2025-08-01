@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "rootDir": ".",
-    "target": "es6",
+    "target": "es2020",
     "module": "ESNext",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "lib": ["es2019"],
+    "lib": ["es2020"],
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
