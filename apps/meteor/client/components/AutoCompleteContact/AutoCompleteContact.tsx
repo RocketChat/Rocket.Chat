@@ -1,13 +1,23 @@
 import type { Serialized } from '@rocket.chat/core-typings';
-import { Option, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement, SyntheticEvent } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useContactsList } from './useContactsList';
+
+type OptionProps = {
+	role: 'option';
+	title?: string;
+	index: number;
+	label: string;
+	value: string;
+	selected: boolean;
+	focus: boolean;
+	onMouseDown(event: SyntheticEvent): void;
+};
 
 type AutoCompleteContactProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
@@ -15,17 +25,10 @@ type AutoCompleteContactProps = Omit<
 > & {
 	value: string;
 	onChange: (value: string, contact: Serialized<ILivechatContactWithManagerData> | undefined) => void;
-	optionFormatter?(contact: Serialized<ILivechatContactWithManagerData>): { value: string; label: string };
+	renderItem?: (props: OptionProps, contact: Serialized<ILivechatContactWithManagerData>) => ReactElement;
 };
 
-const AutoCompleteContact = ({
-	value,
-	placeholder,
-	disabled,
-	optionFormatter,
-	onChange,
-	...props
-}: AutoCompleteContactProps): ReactElement => {
+const AutoCompleteContact = ({ value, placeholder, disabled, renderItem, onChange, ...props }: AutoCompleteContactProps): ReactElement => {
 	const { t } = useTranslation();
 	const [contactsFilter, setContactFilter] = useState<string>('');
 	const debouncedContactFilter = useDebouncedValue(contactsFilter, 500);
@@ -36,7 +39,6 @@ const AutoCompleteContact = ({
 		isPending,
 	} = useContactsList({
 		filter: debouncedContactFilter,
-		optionFormatter,
 	});
 
 	return (
@@ -53,9 +55,7 @@ const AutoCompleteContact = ({
 			options={contactsItems}
 			onChange={onChange}
 			endReached={() => fetchNextPage()}
-			renderItem={({ label, ...props }) => (
-				<Option {...props} label={label} avatar={<UserAvatar title={label} username={label} size='x20' />} />
-			)}
+			renderItem={renderItem ? (props: OptionProps) => renderItem(props, contactsItems[props.index]) : undefined}
 		/>
 	);
 };

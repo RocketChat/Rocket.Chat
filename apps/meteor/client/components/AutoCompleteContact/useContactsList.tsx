@@ -3,20 +3,19 @@ import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings'
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-type ContactOptions = {
-	filter: string;
-	limit?: number;
-	optionFormatter?(contact: Serialized<ILivechatContactWithManagerData>): { value: string; label: string };
-};
-
-export type ContactOption = {
+export type ContactOption = Serialized<ILivechatContactWithManagerData> & {
 	value: string;
 	label: string;
 };
 
+type ContactOptions = {
+	filter: string;
+	limit?: number;
+};
+
 const DEFAULT_QUERY_LIMIT = 25;
 
-const formatContactItem = (contact: Serialized<ILivechatContactWithManagerData>) => ({
+const formatContactItem = (contact: Serialized<ILivechatContactWithManagerData>): ContactOption => ({
 	...contact,
 	label: contact.name || contact._id,
 	value: contact._id,
@@ -24,7 +23,7 @@ const formatContactItem = (contact: Serialized<ILivechatContactWithManagerData>)
 
 export const useContactsList = (options: ContactOptions) => {
 	const getContacts = useEndpoint('GET', '/v1/omnichannel/contacts.search');
-	const { filter, limit = DEFAULT_QUERY_LIMIT, optionFormatter = formatContactItem } = options;
+	const { filter, limit = DEFAULT_QUERY_LIMIT } = options;
 
 	return useInfiniteQuery({
 		queryKey: ['/v1/omnichannel/contacts.search', { filter }],
@@ -38,7 +37,7 @@ export const useContactsList = (options: ContactOptions) => {
 
 			return {
 				...data,
-				contacts: contacts.map(optionFormatter),
+				contacts: contacts.map(formatContactItem),
 			};
 		},
 		select: (data) => data.pages.flatMap<ContactOption>((page) => page.contacts),

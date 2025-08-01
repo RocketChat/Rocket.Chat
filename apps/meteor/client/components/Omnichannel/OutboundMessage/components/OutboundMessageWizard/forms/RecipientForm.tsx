@@ -1,6 +1,18 @@
 import type { IOutboundProviderMetadata, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
-import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	Option,
+	OptionDescription,
+} from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -171,11 +183,13 @@ const RecipientForm = (props: RecipientFormProps) => {
 									value={field.value}
 									onChange={field.onChange}
 									error={errors.contactId?.message}
-									optionFormatter={({ name, _id, phones = [] }) => ({
-										label: name || _id,
-										value: _id,
-										description: phones.length ? `(${phones.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ')})` : '',
-									})}
+									renderItem={({ label, ...props }, { phones }) => (
+										<Option {...props} label={label} avatar={<UserAvatar title={label} username={label} size='x20' />}>
+											{phones?.length ? (
+												<OptionDescription>{`(${phones.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ')})`}</OptionDescription>
+											) : null}
+										</Option>
+									)}
 								/>
 							)}
 						/>
