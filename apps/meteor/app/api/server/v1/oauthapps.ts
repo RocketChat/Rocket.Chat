@@ -3,7 +3,6 @@ import { OAuthApps } from '@rocket.chat/models';
 import {
 	ajv,
 	isUpdateOAuthAppParams,
-	isOauthAppsGetParams,
 	isDeleteOAuthAppParams,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
@@ -63,30 +62,87 @@ const oauthAppsListEndpoints = API.v1.get(
 	},
 );
 
-API.v1.addRoute(
-	'oauth-apps.get',
-	{ authRequired: true, validateParams: isOauthAppsGetParams },
-	{
-		async get() {
-			const isOAuthAppsManager = await hasPermissionAsync(this.userId, 'manage-oauth-apps');
+type OauthAppsGetParams = { clientId: string } | { appId: string } | { _id: string };
 
-			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(
-				this.queryParams,
-				!isOAuthAppsManager ? { projection: { clientSecret: 0 } } : {},
-			);
-
-			if (!oauthApp) {
-				return API.v1.failure('OAuth app not found.');
-			}
-
-			if ('appId' in this.queryParams) {
-				apiDeprecationLogger.parameter(this.route, 'appId', '7.0.0', this.response);
-			}
-
-			return API.v1.success({
-				oauthApp,
-			});
+const oauthAppsGetParamsSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+				},
+			},
+			required: ['_id'],
+			additionalProperties: false,
 		},
+		{
+			type: 'object',
+			properties: {
+				clientId: {
+					type: 'string',
+				},
+			},
+			required: ['clientId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				appId: {
+					type: 'string',
+				},
+			},
+			required: ['appId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isOauthAppsGetParams = ajv.compile<OauthAppsGetParams>(oauthAppsGetParamsSchema);
+
+const oauthAppsGetEndpoints = API.v1.get(
+	'oauth-apps.get',
+	{
+		authRequired: true,
+		query: isOauthAppsGetParams,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<{ oauthApp: IOAuthApps }>({
+				type: 'object',
+				properties: {
+					oauthApp: { anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['oauthApp', 'success'],
+				additionalProperties: false,
+			}),
+		},
+	},
+
+	async function action() {
+		const isOAuthAppsManager = await hasPermissionAsync(this.userId, 'manage-oauth-apps');
+
+		const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(
+			this.queryParams,
+			!isOAuthAppsManager ? { projection: { clientSecret: 0 } } : {},
+		);
+
+		if (!oauthApp) {
+			return API.v1.failure('OAuth app not found.');
+		}
+
+		if ('appId' in this.queryParams) {
+			apiDeprecationLogger.parameter(this.route, 'appId', '7.0.0', this.response);
+		}
+
+		return API.v1.success({
+			oauthApp,
+		});
 	},
 );
 
@@ -187,11 +243,15 @@ type OauthAppsCreateEndpoints = ExtractRoutesFromAPI<typeof oauthAppsCreateEndpo
 
 type OauthAppsListEndpoints = ExtractRoutesFromAPI<typeof oauthAppsListEndpoints>;
 
-export type OAuthAppsEndpoints = OauthAppsCreateEndpoints | OauthAppsListEndpoints;
+type OauthAppsGetEndpoints = ExtractRoutesFromAPI<typeof oauthAppsGetEndpoints>;
+
+export type OAuthAppsEndpoints = OauthAppsCreateEndpoints | OauthAppsListEndpoints | OauthAppsGetEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsCreateEndpoints {}
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsListEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends OauthAppsGetEndpoints {}
 }

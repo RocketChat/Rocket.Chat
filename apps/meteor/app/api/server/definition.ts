@@ -302,6 +302,8 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
 
 	requestIp?: string;
+	route: string;
+	response: Response;
 };
 
 type PromiseOrValue<T> = T | Promise<T>;
