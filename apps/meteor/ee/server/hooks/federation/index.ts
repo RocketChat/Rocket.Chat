@@ -4,6 +4,20 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
+	'native-federation.onAddUsersToRoom',
+	async ({ invitees, inviter }, room) => FederationMatrix.inviteUsersToRoom(room, invitees, inviter),
+	callbacks.priority.MEDIUM,
+	'native-federation-on-add-users-to-room ',
+);
+
+callbacks.add(
+	'native-federation.onAfterAddUsersToRoom',
+	async ({ invitees, inviter }, room) => FederationMatrix.inviteUsersToRoom(room, invitees, inviter),
+	callbacks.priority.MEDIUM,
+	'native-federation-on-after-add-users-to-room ',
+);
+
+callbacks.add(
 	'afterSetReaction',
 	async (message: IMessage, params: { user: IUser; reaction: string }): Promise<void> => {
 		// Don't federate reactions that came from Matrix

@@ -2,6 +2,8 @@ import { Federation, FederationEE } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 import { ajv, isFederationVerifyMatrixIdProps } from '@rocket.chat/rest-typings';
 
+import { VerificationStatus } from '../../../../server/services/federation/infrastructure/matrix/helpers/MatrixIdVerificationTypes';
+import { getFederationVersion } from '../../../../server/services/federation/utils';
 import { API } from '../api';
 
 API.v1
@@ -34,6 +36,14 @@ API.v1
 		},
 		async function () {
 			const { matrixIds } = this.queryParams;
+
+			const federationVersion = getFederationVersion();
+			if (federationVersion === 'native') {
+				return API.v1.success({
+					results: Object.fromEntries(matrixIds.map((id) => [id, VerificationStatus.UNABLE_TO_VERIFY])),
+					success: true,
+				});
+			}
 
 			const federationService = License.hasValidLicense() ? FederationEE : Federation;
 
