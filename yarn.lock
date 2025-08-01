@@ -9385,8 +9385,8 @@ __metadata:
     typescript: "npm:~5.8.3"
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/tools": 0.2.3-rc.0
-    "@rocket.chat/ui-contexts": 21.0.0-rc.2
+    "@rocket.chat/tools": 0.2.3
+    "@rocket.chat/ui-contexts": 21.0.0
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"

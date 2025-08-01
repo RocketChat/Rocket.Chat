@@ -180,6 +180,12 @@ export const RoutingManager: Routing = {
 
 		const { servedBy } = room;
 
+		if (servedBy) {
+			await LivechatRooms.removeAgentByRoomId(rid);
+			await this.removeAllRoomSubscriptions(room);
+			await dispatchAgentDelegated(rid);
+		}
+
 		if (shouldQueue) {
 			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage);
 			if (queuedInquiry) {
@@ -190,12 +196,6 @@ export const RoutingManager: Routing = {
 					takenAt: undefined,
 				});
 			}
-		}
-
-		if (servedBy) {
-			await LivechatRooms.removeAgentByRoomId(rid);
-			await this.removeAllRoomSubscriptions(room);
-			await dispatchAgentDelegated(rid);
 		}
 
 		await dispatchInquiryQueued(inquiry);
