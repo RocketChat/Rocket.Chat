@@ -64,8 +64,8 @@ const detectURL = (
     }
   }
 
-  // More comprehensive URL pattern
-  const urlPattern = /^(https?:\/\/|ftp:\/\/|ssh:\/\/|[a-zA-Z]+:\/\/|www\.|[a-zA-Z0-9][a-zA-Z0-9-]*\.[a-zA-Z]{2,})/;
+  // More comprehensive URL pattern - allow numbers in TLDs for flexibility
+  const urlPattern = /^(https?:\/\/|ftp:\/\/|ssh:\/\/|[a-zA-Z]+:\/\/|www\.|[a-zA-Z0-9][a-zA-Z0-9-]*\.[a-zA-Z0-9]{2,})/;
   const remaining = text.slice(startIndex);
   
   // Check if it starts like a URL
@@ -73,16 +73,31 @@ const detectURL = (
     return null;
   }
 
-  // Find the end of the URL - stop at whitespace, punctuation, or sentence endings
+  // Find the end of the URL - stop at whitespace or angle brackets, but allow commas in query params
   let endIndex = startIndex;
   while (
     endIndex < text.length &&
-    !/[\s\n\r<>,!]/.test(text[endIndex])
+    !/[\s\n\r<>]/.test(text[endIndex])
   ) {
+    // Stop at certain punctuation only if it's at the end of the string or followed by whitespace
+    const char = text[endIndex];
+    if (/[!.]/.test(char)) {
+      const nextChar = text[endIndex + 1];
+      if (!nextChar || /[\s\n\r]/.test(nextChar)) {
+        // This punctuation is at end or followed by whitespace, so it's likely sentence punctuation
+        break;
+      }
+    }
     endIndex++;
   }
 
-  const url = text.slice(startIndex, endIndex);
+  let url = text.slice(startIndex, endIndex);
+  
+  // Remove trailing commas from URLs (they're usually sentence punctuation)
+  while (url.endsWith(',')) {
+    url = url.slice(0, -1);
+    endIndex--;
+  }
   
   // Basic validation for auto-linking
   // URLs with protocols must have double slashes
@@ -542,36 +557,16 @@ export const parse = (input: string, options?: Options): AST.Root => {
 
   // Split into lines and process them
   const lines = normalizedInput.split('\n');
-  let currentParagraphLines: string[] = [];
-
+  
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
     if (line.trim() === '') {
-      // Empty line found
-      if (currentParagraphLines.length > 0) {
-        // Add current paragraph with inline parsing
-        const paragraphText = currentParagraphLines.join('\n').trim();
-        if (paragraphText) {
-          const inlineContent = parseInlineContent(paragraphText, options);
-          result.push(ast.paragraph(inlineContent));
-        }
-        currentParagraphLines = [];
-      }
-
-      // Add line break
+      // Empty line creates a line break element
       result.push(ast.lineBreak);
     } else {
-      // Non-empty line
-      currentParagraphLines.push(line);
-    }
-  }
-
-  // Add remaining paragraph if any
-  if (currentParagraphLines.length > 0) {
-    const paragraphText = currentParagraphLines.join('\n').trim();
-    if (paragraphText) {
-      const inlineContent = parseInlineContent(paragraphText, options);
+      // Non-empty line creates a paragraph
+      const inlineContent = parseInlineContent(line, options);
       result.push(ast.paragraph(inlineContent));
     }
   }
