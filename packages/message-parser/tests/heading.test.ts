@@ -51,8 +51,8 @@ test.each([
   ['####Hello', [paragraph([plain('####Hello')])]],
   ['####Hello####', [paragraph([plain('####Hello####')])]],
   ['He####llo', [paragraph([plain('He####llo')])]],
-  ['# Hello\n', [heading([plain('Hello')], 1), lineBreak()]],
-  ['# # Hello\n', [heading([plain('# Hello')], 1), lineBreak()]],
+  ['# Hello\n', [heading([plain('Hello')], 1), lineBreak]],
+  ['# # Hello\n', [heading([plain('# Hello')], 1), lineBreak]],
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });

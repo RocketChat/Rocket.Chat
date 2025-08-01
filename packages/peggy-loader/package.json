@@ -47,7 +47,7 @@
     "@types/node": "~22.16.1",
     "eslint": "~8.45.0",
     "npm-run-all": "^4.1.5",
-    "peggy": "4.1.1",
+    "peggy": "5.0.5",
     "prettier": "~3.3.3",
     "rimraf": "^6.0.1",
     "typescript": "~5.8.3",

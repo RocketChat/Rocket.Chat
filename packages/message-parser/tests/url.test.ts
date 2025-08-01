@@ -146,7 +146,7 @@ test.each([
     'https://developer.rocket.chat?query=query\n\nline break',
     [
       paragraph([autoLink('https://developer.rocket.chat?query=query')]),
-      lineBreak(),
+      lineBreak,
       paragraph([plain('line break')]),
     ],
   ],

@@ -360,7 +360,7 @@ Second line`,
 Text after line break`,
     [
       paragraph([link('https://rocket.chat', [plain('Rocket.Chat')])]),
-      lineBreak(),
+      lineBreak,
       paragraph([plain('Text after line break')]),
     ],
   ],

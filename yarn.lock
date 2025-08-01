@@ -4913,12 +4913,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peggyjs/from-mem@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@peggyjs/from-mem@npm:1.3.4"
+"@peggyjs/from-mem@npm:2.0.1":
+  version: 2.0.1
+  resolution: "@peggyjs/from-mem@npm:2.0.1"
   dependencies:
-    semver: "npm:7.6.3"
-  checksum: 10/d32ce47af78eb6ccec3cb5b98f4c592bbdb634b05dd99a0fb107cfa48c17069ea0b5fb284705839de7be3a43638e05b0c9733fa83b30e3e2cf608790e42b5e31
+    semver: "npm:7.7.2"
+  checksum: 10/c8fd48386f82271fa6ff80bba9fefb8ad1b65ce37a13cef0cacc13c8bccfdf9e0b528e3d26e205a7f250ac335fffa5def327e0e43df59c55231e2c073bb6b41c
   languageName: node
   linkType: hard
 
@@ -7832,7 +7832,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     npm-run-all: "npm:^4.1.5"
-    peggy: "npm:4.1.1"
+    peggy: "npm:5.0.5"
     prettier: "npm:~3.3.3"
     prettier-plugin-pegjs: "npm:~0.5.4"
     rimraf: "npm:^6.0.1"
@@ -8554,7 +8554,7 @@ __metadata:
     "@types/node": "npm:~22.16.1"
     eslint: "npm:~8.45.0"
     npm-run-all: "npm:^4.1.5"
-    peggy: "npm:4.1.1"
+    peggy: "npm:5.0.5"
     prettier: "npm:~3.3.3"
     rimraf: "npm:^6.0.1"
     typescript: "npm:~5.8.3"
@@ -16371,6 +16371,13 @@ __metadata:
   version: 12.1.0
   resolution: "commander@npm:12.1.0"
   checksum: 10/cdaeb672d979816853a4eed7f1310a9319e8b976172485c2a6b437ed0db0a389a44cfb222bfbde772781efa9f215bdd1b936f80d6b249485b465c6cb906e1f93
+  languageName: node
+  linkType: hard
+
+"commander@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "commander@npm:14.0.0"
+  checksum: 10/c05418bfc35a3e8b5c67bd9f75f5b773f386f9b85f83e70e7c926047f270929cb06cf13cd68f387dd6e7e23c6157de8171b28ba606abd3e6256028f1f789becf
   languageName: node
   linkType: hard
 
@@ -28673,16 +28680,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"peggy@npm:4.1.1":
-  version: 4.1.1
-  resolution: "peggy@npm:4.1.1"
+"peggy@npm:5.0.5":
+  version: 5.0.5
+  resolution: "peggy@npm:5.0.5"
   dependencies:
-    "@peggyjs/from-mem": "npm:1.3.4"
-    commander: "npm:^12.1.0"
-    source-map-generator: "npm:0.8.0"
+    "@peggyjs/from-mem": "npm:2.0.1"
+    commander: "npm:^14.0.0"
+    source-map-generator: "npm:2.0.1"
   bin:
     peggy: bin/peggy.js
-  checksum: 10/a2531d6a2448addd7a38640c5f73ba1a762f5974caa33f44c8f0dff735d7a701c4befe630ad2b0ed8e46ffda1f3ea503c3844e477cb7e55b62759918a365585f
+  checksum: 10/12b8ecb523dadfd8362babdf13169b496b63b3dcecc25f8f4ab6e97e1165f846f1c300f1b33c0539c9a4c78c3607a19f06b9bc1746edb6d54f07f9644ea3bc87
   languageName: node
   linkType: hard
 
@@ -32122,12 +32129,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.6.3":
-  version: 7.6.3
-  resolution: "semver@npm:7.6.3"
+"semver@npm:7.7.2, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.2, semver@npm:^7.6.3, semver@npm:^7.7.2":
+  version: 7.7.2
+  resolution: "semver@npm:7.7.2"
   bin:
     semver: bin/semver.js
-  checksum: 10/36b1fbe1a2b6f873559cd57b238f1094a053dbfd997ceeb8757d79d1d2089c56d1321b9f1069ce263dc64cfa922fa1d2ad566b39426fe1ac6c723c1487589e10
+  checksum: 10/7a24cffcaa13f53c09ce55e05efe25cd41328730b2308678624f8b9f5fc3093fc4d189f47950f0b811ff8f3c3039c24a2c36717ba7961615c682045bf03e1dda
   languageName: node
   linkType: hard
 
@@ -32137,15 +32144,6 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 10/1ef3a85bd02a760c6ef76a45b8c1ce18226de40831e02a00bad78485390b98b6ccaa31046245fc63bba4a47a6a592b6c7eedc65cc47126e60489f9cc1ce3ed7e
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.5.4, semver@npm:^7.6.0, semver@npm:^7.6.2, semver@npm:^7.6.3, semver@npm:^7.7.2":
-  version: 7.7.2
-  resolution: "semver@npm:7.7.2"
-  bin:
-    semver: bin/semver.js
-  checksum: 10/7a24cffcaa13f53c09ce55e05efe25cd41328730b2308678624f8b9f5fc3093fc4d189f47950f0b811ff8f3c3039c24a2c36717ba7961615c682045bf03e1dda
   languageName: node
   linkType: hard
 
@@ -32729,10 +32727,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-generator@npm:0.8.0":
-  version: 0.8.0
-  resolution: "source-map-generator@npm:0.8.0"
-  checksum: 10/f57df2c1bf33d84fc8a74fa030d4d355b033548569977b63d6930f6b2bf37f575946c88fb89c73b42a54ff6a46bd24253f0ddfa2c2226341e25c22240d168ed1
+"source-map-generator@npm:2.0.1":
+  version: 2.0.1
+  resolution: "source-map-generator@npm:2.0.1"
+  checksum: 10/975c2e6a7d4525aaea60f09ee91504dabf0fa5c8b878726eeaa92680cebe9ff0f110dea2211c5ef325960bee5c5d702e1d79e695c9c3bac84439460006065969
   languageName: node
   linkType: hard
 

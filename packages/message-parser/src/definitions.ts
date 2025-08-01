@@ -131,7 +131,7 @@ export type Plain = {
 
 export type LineBreak = {
   type: 'LINE_BREAK';
-  value: undefined;
+  value?: undefined;
 };
 
 export type KaTeX = {

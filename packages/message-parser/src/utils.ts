@@ -204,20 +204,21 @@ export const reducePlainTexts = (
       const current = joinEmoji(item, values[index - 1], next);
       const previous: Inlines = result[result.length - 1];
 
-      if (previous) {
-        if (current.type === 'PLAIN_TEXT' && current.type === previous.type) {
-          previous.value += current.value;
-          return result;
-        }
+      if (
+        previous &&
+        current.type === 'PLAIN_TEXT' &&
+        current.type === previous.type
+      ) {
+        previous.value += current.value;
+        return result;
       }
       return [...result, current];
     },
     [] as Paragraph['value'],
   );
-export const lineBreak = (): LineBreak => ({
+export const lineBreak: LineBreak = {
   type: 'LINE_BREAK',
-  value: undefined,
-});
+};
 
 export const katex = (content: string): KaTeX => ({
   type: 'KATEX',
