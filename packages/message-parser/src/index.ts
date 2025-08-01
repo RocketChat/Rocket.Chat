@@ -285,6 +285,78 @@ const parseItalicMarkup = (
     return null; // Not at a word boundary, don't treat as emphasis
   }
 
+  // Handle triple underscore cases first: ___Hello___ and ___Hello__
+  const thirdChar = i + 2 < text.length ? text[i + 2] : '';
+  if (nextChar === '_' && thirdChar === '_') {
+    // We have at least ___ at the start
+    
+    // For ___Hello___, parse as _[italic]__Hello__[plain]_
+    // For ___Hello__, parse as _[italic]__Hello__[plain]
+    
+    // Look for double underscore closing (__) after the initial ___
+    const doubleEndStart = text.indexOf('__', i + 3);
+    if (doubleEndStart !== -1 && doubleEndStart > i + 3) {
+      // Check if there's content between ___ and __
+      const content = text.slice(i + 3, doubleEndStart);
+      if (content.trim().length > 0) {
+        // Check for word boundary after the double underscore
+        const charAfterDouble = doubleEndStart + 2 < text.length ? text[doubleEndStart + 2] : '';
+        
+        // Check if there's a third underscore after __ (making it ___)
+        let endIndex = doubleEndStart + 2;
+        let trailingUnderscore = '';
+        
+        if (charAfterDouble === '_') {
+          // ___Hello___ case
+          trailingUnderscore = '_';
+          endIndex = doubleEndStart + 3;
+        }
+        // else: ___Hello__ case (no trailing underscore)
+        
+        // Verify word boundary after final delimiter
+        const finalChar = endIndex < text.length ? text[endIndex] : '';
+        const atFinalWordBoundary = endIndex >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(finalChar);
+        
+        if (atFinalWordBoundary) {
+          const result = [];
+          
+          // Add leading underscore as plain text
+          result.push(ast.plain('_'));
+          
+          // Add the italic content (double underscore style)
+          const nestedContent = parseInlineContent(content, options);
+          const validContent = nestedContent.filter(
+            (
+              token,
+            ): token is
+              | AST.MarkupExcluding<AST.Italic>
+              | AST.Link
+              | AST.Emoji
+              | AST.UserMention
+              | AST.ChannelMention
+              | AST.InlineCode =>
+              token.type !== 'ITALIC' &&
+              token.type !== 'TIMESTAMP' &&
+              token.type !== 'IMAGE' &&
+              token.type !== 'COLOR' &&
+              token.type !== 'INLINE_KATEX',
+          );
+          result.push(ast.italic(validContent));
+          
+          // Add trailing underscore if this was ___Hello___ case
+          if (trailingUnderscore) {
+            result.push(ast.plain(trailingUnderscore));
+          }
+          
+          return {
+            tokens: result,
+            nextIndex: endIndex,
+          };
+        }
+      }
+    }
+  }
+
   // For mismatched delimiters like __Hello_, we need special handling
   // Try to find the best matching pattern
   
