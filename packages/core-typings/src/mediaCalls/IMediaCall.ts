@@ -28,7 +28,6 @@ export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
 	kind: 'direct';
 
-	rid?: string;
 	state: 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
 	createdBy: MediaCallActor;

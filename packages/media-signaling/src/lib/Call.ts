@@ -1,23 +1,17 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
+import type { IServiceProcessorFactoryList } from '../definition';
 import type { IWebRTCProcessor } from '../definition/IWebRTCProcessor';
-import type { MediaSignal, MediaSignalSDP, MediaSignalType } from '../definition/MediaSignal';
-import type {
-	IClientMediaCall,
-	IClientMediaCallData,
-	CallEvents,
-	CallContact,
-	CallRole,
-	CallState,
-	CallService,
-	CallHangupReason,
-} from '../definition/call';
+import type { MediaSignal, MediaSignalSDP } from '../definition/MediaSignal';
+import type { IClientMediaCall, CallEvents, CallContact, CallRole, CallState, CallService, CallHangupReason } from '../definition/call';
 import { signalTypeRequiresTargeting } from './utils/signalTypeRequiresTargeting';
+import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
 
 export interface IClientMediaCallConfig {
 	transporter: MediaSignalTransportWrapper;
-	webrtcProcessor: IWebRTCProcessor;
+	processorFactories: IServiceProcessorFactoryList;
+	mediaStreamFactory: MediaStreamFactory;
 }
 
 export class ClientMediaCall implements IClientMediaCall {
@@ -49,50 +43,93 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._contact;
 	}
 
-	private _service: CallService;
+	private _service: CallService | null;
 
-	public get service(): CallService {
+	public get service(): CallService | null {
 		return this._service;
 	}
 
-	private transporter: MediaSignalTransportWrapper;
-
-	private webrtcProcessor: IWebRTCProcessor;
-
-	private firstSignal: MediaSignal<'new'>;
+	protected webrtcProcessor: IWebRTCProcessor | null = null;
 
 	private acceptedLocally: boolean;
 
 	private endedLocally: boolean;
 
+	private hasRemoteData: boolean;
+
+	private acknowledged: boolean;
+
+	private earlySignals: Set<MediaSignal>;
+
 	// private timeoutHandler?: ReturnType<typeof setTimeout>;
 
 	constructor(
-		config: IClientMediaCallConfig,
-		signal: MediaSignal<'new'>,
-		{ ignored, contact }: Pick<IClientMediaCallData, 'ignored' | 'contact'> = {},
+		private readonly config: IClientMediaCallConfig,
+		callId: string,
 	) {
 		this.emitter = new Emitter<CallEvents>();
 
-		this.firstSignal = signal;
+		this.config.transporter = config.transporter;
 
-		this.transporter = config.transporter;
-		this.webrtcProcessor = config.webrtcProcessor;
-
-		this.callId = signal.callId;
-		this._role = signal.body.role;
-		this._service = signal.body.service;
+		this.callId = callId;
 
 		this.acceptedLocally = false;
 		this.endedLocally = false;
-		this._state = 'none';
-		this._ignored = ignored || false;
-		this._contact = contact || null;
+		this.hasRemoteData = false;
+		this.acknowledged = false;
 
-		this.initialize(this.firstSignal);
+		this.earlySignals = new Set();
+		this._role = 'callee';
+		this._state = 'none';
+		this._ignored = false;
+		this._contact = null;
+		this._service = null;
+	}
+
+	public async initializeOutboundCall(contact: CallContact): Promise<void> {
+		this._role = 'caller';
+		this.acceptedLocally = true;
+		this._contact = contact;
+	}
+
+	public async initializeRemoteCall(signal: MediaSignal<'new'>): Promise<void> {
+		if (this.hasRemoteData) {
+			return;
+		}
+
+		console.log('call.initializeRemoteCall', signal.callId);
+
+		this.hasRemoteData = true;
+		this._service = signal.body.service;
+		this._role = signal.body.role;
+
+		// If it's flagged as ignored even before the initialization, tell the server we're unavailable
+		if (this.ignored) {
+			return this.rejectAsUnavailable();
+		}
+
+		if (this._service === 'webrtc') {
+			try {
+				this.prepareWebRtcProcessor();
+			} catch (e) {
+				await this.rejectAsUnavailable();
+				throw e;
+			}
+		}
+
+		// Send an ACK so the server knows that this session exists and is reachable
+		this.acknowledge();
+
+		await this.processEarlySignals();
 	}
 
 	public getRemoteMediaStream(): MediaStream {
+		if (this.shouldIgnoreWebRTC()) {
+			throw new Error('getRemoteMediaStream is not available for this service');
+		}
+
+		this.prepareWebRtcProcessor();
+
 		return this.webrtcProcessor.getRemoteMediaStream();
 	}
 
@@ -108,8 +145,21 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.emitter.emit('contactUpdate');
 	}
 
-	public async processSignal<T extends MediaSignalType>(signal: MediaSignal<T>) {
+	public async processSignal(signal: MediaSignal) {
+		if (this.isOver()) {
+			return;
+		}
+
 		console.log('ClientMediaCall.processSignal', signal.type);
+
+		if (signal.type === 'new') {
+			return this.initializeRemoteCall(signal as MediaSignal<'new'>);
+		}
+
+		if (!this.hasRemoteData) {
+			this.earlySignals.add(signal);
+			return;
+		}
 
 		if (!signal.sessionId && signalTypeRequiresTargeting(signal.type)) {
 			console.error(`Received an untargeted ${signal.type} signal.`);
@@ -134,7 +184,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			throw new Error('call-not-pending-acceptance');
 		}
 		this.acceptedLocally = true;
-		this.transporter.answer(this.callId, 'accept');
+		this.config.transporter.answer(this.callId, 'accept');
 	}
 
 	public async reject(): Promise<void> {
@@ -142,38 +192,34 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (!this.isPendingAcceptance()) {
 			throw new Error('call-not-pending-acceptance');
 		}
-		this.transporter.answer(this.callId, 'reject');
+		this.config.transporter.answer(this.callId, 'reject');
+		this.changeState('hangup');
 	}
 
-	public async hangup(): Promise<void> {
+	public async hangup(reason: CallHangupReason = 'normal'): Promise<void> {
 		console.log('call.hangup');
 		if (this.endedLocally || this._state === 'hangup') {
 			return;
 		}
 
 		this.endedLocally = true;
-		await this.flagAsEnded('normal');
+		this.flagAsEnded(reason);
 	}
 
 	public isPendingAcceptance(): boolean {
+		if (this._role !== 'callee') {
+			return false;
+		}
+
+		if (this.acceptedLocally) {
+			return false;
+		}
+
 		return ['none', 'ringing'].includes(this._state);
 	}
 
-	private initialize(signal: MediaSignal<'new'>): void {
-		console.log('call.initialize');
-		// If it's flagged as ignored even before the initialization, tell the server we're unavailable
-		if (this.ignored) {
-			return this.transporter.answer(signal.callId, 'unavailable');
-		}
-
-		// If the call is targeted, assume we already accepted it:
-		if (signal.sessionId) {
-			this.acceptedLocally = true;
-		}
-		this._state = 'ringing';
-
-		// Send an ACK so the server knows that this session exists and is reachable
-		this.transporter.answer(signal.callId, 'ack');
+	public isOver(): boolean {
+		return this.ignored || this._state === 'hangup';
 	}
 
 	private changeState(newState: CallState): void {
@@ -197,47 +243,71 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	private async processOfferRequest(signal: MediaSignal<'request-offer'>) {
+	protected async processOfferRequest(signal: MediaSignal<'request-offer'>) {
 		console.log('call.processOfferRequest');
 		if (!signal.sessionId) {
 			console.error('Received an untargeted offer request.');
 			return;
 		}
 
+		if (this.shouldIgnoreWebRTC()) {
+			this.config.transporter.sendError(this.callId, 'invalid-service');
+			return;
+		}
+
+		this.requireWebRTC();
+
 		let offer: MediaSignalSDP | null = null;
 		try {
 			offer = await this.webrtcProcessor.createOffer(signal.body);
 		} catch (e) {
-			this.transporter.sendError(this.callId, 'failed-to-create-offer');
+			this.config.transporter.sendError(this.callId, 'failed-to-create-offer');
 			throw e;
 		}
 
 		if (!offer) {
-			this.transporter.sendError(this.callId, 'implementation-error');
+			this.config.transporter.sendError(this.callId, 'implementation-error');
 		}
 
 		await this.deliverSdp(offer);
 	}
 
-	private async processAnswerRequest(signal: MediaSignal<'sdp'>) {
+	protected shouldIgnoreWebRTC(): boolean {
+		// Without the remote data we don't know if the call is using webrtc or not
+		return this.hasRemoteData && this._service !== 'webrtc';
+	}
+
+	protected async processAnswerRequest(signal: MediaSignal<'sdp'>): Promise<void> {
 		console.log('Call.processAnswerRequest');
+		if (this.shouldIgnoreWebRTC()) {
+			return;
+		}
+
+		this.requireWebRTC();
+
 		let answer: MediaSignalSDP | null = null;
 		try {
 			answer = await this.webrtcProcessor.createAnswer(signal.body);
 		} catch (e) {
-			this.transporter.sendError(this.callId, 'failed-to-create-answer');
+			this.config.transporter.sendError(this.callId, 'failed-to-create-answer');
 			throw e;
 		}
 
 		if (!answer) {
-			this.transporter.sendError(this.callId, 'implementation-error');
+			this.config.transporter.sendError(this.callId, 'implementation-error');
 		}
 
 		await this.deliverSdp(answer);
 	}
 
-	private async processRemoteSDP(signal: MediaSignal<'sdp'>) {
+	protected async processRemoteSDP(signal: MediaSignal<'sdp'>): Promise<void> {
 		console.log('Call.processRemoteSDP');
+
+		if (this.shouldIgnoreWebRTC()) {
+			return;
+		}
+		this.requireWebRTC();
+
 		if (signal.body.sdp.type === 'offer') {
 			return this.processAnswerRequest(signal);
 		}
@@ -245,10 +315,50 @@ export class ClientMediaCall implements IClientMediaCall {
 		await this.webrtcProcessor.setRemoteDescription(signal.body);
 	}
 
-	private async deliverSdp(sdp: MediaSignalSDP) {
+	protected async deliverSdp(sdp: MediaSignalSDP) {
 		console.log('Call.deliverSdp');
 
-		return this.transporter.sendToServer(this.callId, 'sdp', sdp);
+		return this.config.transporter.sendToServer(this.callId, 'sdp', sdp);
+	}
+
+	protected async rejectAsUnavailable(): Promise<void> {
+		console.log('call.rejectAsUnavailable');
+
+		// If we have already told the server we accept this call, then we need to send a hangup to get out of it
+		if (this.acceptedLocally) {
+			return this.hangup('unavailable');
+		}
+
+		this.config.transporter.answer(this.callId, 'unavailable');
+		this.changeState('hangup');
+	}
+
+	protected async processEarlySignals(): Promise<void> {
+		console.log('call.processEarlySignals');
+		const earlySignals = this.earlySignals.values().toArray();
+		this.earlySignals.clear();
+
+		for await (const signal of earlySignals) {
+			try {
+				await this.processSignal(signal);
+			} catch (e) {
+				console.error('Error processing early signal', e);
+			}
+		}
+	}
+
+	protected acknowledge(): void {
+		console.log('call.acknowledge');
+		if (this.acknowledged) {
+			return;
+		}
+
+		if (this._state === 'none') {
+			this._state = 'ringing';
+		}
+
+		this.acknowledged = true;
+		this.config.transporter.answer(this.callId, 'ack');
 	}
 
 	private async processNotification(signal: MediaSignal<'notification'>) {
@@ -268,7 +378,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		console.log('flagAsAccepted');
 
 		if (!this.acceptedLocally) {
-			this.transporter.sendError(this.callId, 'not-accepted');
+			this.config.transporter.sendError(this.callId, 'not-accepted');
 			throw new Error('Trying to activate a call that was not yet accepted locally.');
 		}
 
@@ -276,15 +386,52 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.changeState('accepted');
 	}
 
-	private async flagAsEnded(reasonCode: CallHangupReason): Promise<void> {
+	private flagAsEnded(reasonCode: CallHangupReason): void {
 		console.log('flagAsEnded');
 
 		if (this._state === 'hangup') {
 			return;
 		}
 
-		this.transporter.hangup(this.callId, reasonCode);
+		this.config.transporter.hangup(this.callId, reasonCode);
 
 		this.changeState('hangup');
+	}
+
+	private prepareWebRtcProcessor(): asserts this is ClientMediaCallWebRTC {
+		if (this.webrtcProcessor) {
+			return;
+		}
+
+		console.log('session.createWebRtcProcessor');
+
+		const {
+			mediaStreamFactory,
+			processorFactories: { webrtc: webrtcFactory },
+		} = this.config;
+
+		if (!webrtcFactory) {
+			throw new Error('webrtc-not-implemented');
+		}
+
+		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory });
+	}
+
+	private requireWebRTC(): asserts this is ClientMediaCallWebRTC {
+		try {
+			this.prepareWebRtcProcessor();
+		} catch (e) {
+			this.config.transporter.sendError(this.callId, 'webrtc-not-implemented');
+			throw e;
+		}
+	}
+}
+
+export class ClientMediaCallWebRTC extends ClientMediaCall {
+	public webrtcProcessor: IWebRTCProcessor;
+
+	constructor(config: IClientMediaCallConfig, callId: string) {
+		super(config, callId);
+		throw new Error('ClientMediaCallWebRTC is not meant to be constructed.');
 	}
 }

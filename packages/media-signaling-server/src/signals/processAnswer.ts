@@ -2,6 +2,7 @@ import type { IMediaCall, ValidSignalChannel } from '@rocket.chat/core-typings';
 import type { MediaSignalAnswer } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
+import { processHangup } from './processHangup';
 import { acknowledgeCallee } from '../calls/acknowledgeCallee';
 import { acknowledgeCaller } from '../calls/acknowledgeCaller';
 import { processAcceptedCall } from '../calls/processAcceptedCall';
@@ -23,6 +24,25 @@ async function processAccept(call: IMediaCall, channel: ValidSignalChannel): Pro
 	return processAcceptedCall(call._id);
 }
 
+async function processReject(call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
+	if (channel.role !== 'callee') {
+		return;
+	}
+
+	if (!['none', 'ringing'].includes(call.state)) {
+		console.log('cant reject an ongoing call.');
+		return;
+	}
+
+	return processHangup(
+		{
+			reason: 'rejected',
+		},
+		call,
+		channel,
+	);
+}
+
 async function processACK(call: IMediaCall, channel: ValidSignalChannel): Promise<void> {
 	if (channel.role === 'callee') {
 		return acknowledgeCallee(call, channel);
@@ -39,8 +59,9 @@ export async function processAnswer(params: MediaSignalAnswer, call: IMediaCall,
 		case 'accept':
 			return processAccept(call, channel);
 		case 'unavailable':
+			// return processUnavailable(call, channel);
 			break;
 		case 'reject':
-			break;
+			return processReject(call, channel);
 	}
 }
