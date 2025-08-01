@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, IMessage, IOmnichannelRoomInfo } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IOmnichannelRoomInfo } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, Users } from '@rocket.chat/models';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -45,16 +45,20 @@ export const defineVisitor = async (visitor: RegisterGuestType) => {
 	return livechatVisitor;
 };
 
-// TODO contactWaId should not be optional
-const getRoom = async ({ token, departmentId, contactWaId }: { token: string; contactWaId?: string; departmentId?: string }) => {
+const getRoom = async ({ token, departmentId, matcher }: { token: string; matcher?: { contactWaId: string }; departmentId?: string }) => {
 	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+
+	// TODO need to define other matcher properties
+	if (matcher?.contactWaId == null) {
+		throw new Error('error-contactWaId-is-required');
+	}
 
 	const cursor = departmentId
 		? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, {}, extraQuery)
 		: LivechatRooms.findOpenByVisitorToken(token, {}, extraQuery);
 
 	for await (const room of cursor) {
-		if (room.customFields?.whatsAppMessage?.contactWaId === contactWaId) {
+		if (matcher.contactWaId && room.customFields?.whatsAppMessage?.contactWaId === matcher.contactWaId) {
 			return room;
 		}
 	}
@@ -74,13 +78,15 @@ export const defineRoom = async ({
 	agentId,
 	customFields,
 	roomInfo,
+	matcher,
 }: {
 	visitor: ILivechatVisitor & { contactWaId?: string };
 	agentId?: string;
 	customFields?: Record<string, unknown>;
 	roomInfo: IOmnichannelRoomInfo;
+	matcher?: { contactWaId: string };
 }) => {
-	const roomFound = await getRoom({ token: visitor.token, departmentId: visitor.department, contactWaId: visitor.contactWaId });
+	const roomFound = await getRoom({ token: visitor.token, departmentId: visitor.department, matcher });
 	if (roomFound) {
 		return roomFound;
 	}
@@ -100,11 +106,13 @@ export async function newIntegratorMessage({
 	message,
 	visitor,
 	source,
+	room: roomDetail,
 }: {
 	department?: string;
 	message: IMessage;
 	visitor: RegisterGuestType;
-	source: IOmnichannelRoomInfo['source'];
+	source: IOmnichannelRoom['source'];
+	room?: { matcher: { contactWaId: string } } & { customFields: Record<string, unknown> };
 }) {
 	const visitorFound = await defineVisitor(visitor);
 	if (!visitorFound) {
@@ -112,14 +120,17 @@ export async function newIntegratorMessage({
 	}
 	console.log('visitorFound ->', visitorFound);
 
-	if (!(await online(department))) {
+	if (department && !(await online(department))) {
 		throw new Error('error-department-not-online');
 	}
 
 	const room = await defineRoom({
 		visitor: visitorFound,
 		agentId: undefined,
-		customFields: { department },
+
+		...(roomDetail?.matcher && { matcher: roomDetail.matcher }),
+		...(roomDetail?.customFields && { customFields: roomDetail.customFields }),
+
 		roomInfo: {
 			source,
 		},
