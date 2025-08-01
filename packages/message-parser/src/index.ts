@@ -51,6 +51,49 @@ const getEmojiChar = (
   return { char: '', length: 0 };
 };
 
+// Helper function to detect URLs
+const detectURL = (
+  text: string,
+  startIndex: number,
+): { url: string; length: number } | null => {
+  // More comprehensive URL pattern
+  const urlPattern = /^(https?:\/\/|ftp:\/\/|ssh:\/\/|[a-zA-Z]+:\/\/|www\.|[a-zA-Z0-9][a-zA-Z0-9-]*\.[a-zA-Z]{2,})/;
+  const remaining = text.slice(startIndex);
+  
+  // Check if it starts like a URL
+  if (!urlPattern.test(remaining)) {
+    return null;
+  }
+
+  // Find the end of the URL - stop at whitespace, punctuation, or sentence endings
+  let endIndex = startIndex;
+  while (
+    endIndex < text.length &&
+    !/[\s\n\r<>,!]/.test(text[endIndex])
+  ) {
+    endIndex++;
+  }
+
+  const url = text.slice(startIndex, endIndex);
+  
+  // Basic validation for auto-linking
+  // URLs with protocols must have double slashes
+  if (/^https?:\/\//.test(url) || /^[a-zA-Z]+:\/\//.test(url)) {
+    // Reject URLs with single slash after protocol
+    if (/^https?:\/[^\/]/.test(url) || /^[a-zA-Z]+:\/[^\/]/.test(url)) {
+      return null;
+    }
+    return { url, length: endIndex - startIndex };
+  }
+  
+  // For URLs without protocol, require at least one dot for domain
+  if (url.includes('.') && url.length > 3) {
+    return { url, length: endIndex - startIndex };
+  }
+
+  return null;
+};
+
 // Helper function to parse bold markup
 const parseBoldMarkup = (
   text: string,
@@ -197,6 +240,14 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
   while (i < text.length) {
     const char = text[i];
 
+    // URL auto-detection (before other parsing to avoid conflicts)
+    const urlResult = detectURL(text, i);
+    if (urlResult) {
+      tokens.push(ast.autoLink(urlResult.url, options?.customDomains));
+      i += urlResult.length;
+      continue;
+    }
+
     // Try parsing markup
     const boldResult = parseBoldMarkup(text, i, options);
     if (boldResult) {
@@ -229,14 +280,21 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
 
     // Emoji with :shortcode:
     if (char === ':') {
-      const endIndex = text.indexOf(':', i + 1);
-      if (endIndex !== -1 && endIndex > i + 1) {
-        const shortCode = text.slice(i + 1, endIndex);
-        // Simple validation - no spaces or colons in shortcode
-        if (shortCode && !shortCode.includes(' ') && !shortCode.includes(':')) {
-          tokens.push(ast.emoji(shortCode));
-          i = endIndex + 1;
-          continue;
+      // Don't treat as emoji if it's part of a URL
+      const beforeColon = text.slice(Math.max(0, i - 8), i);
+      const afterColon = text.slice(i, i + 10);
+      if (/https?$/.test(beforeColon) || /^:\/\//.test(afterColon)) {
+        // This is likely part of a URL, skip emoji processing
+      } else {
+        const endIndex = text.indexOf(':', i + 1);
+        if (endIndex !== -1 && endIndex > i + 1) {
+          const shortCode = text.slice(i + 1, endIndex);
+          // Simple validation - no spaces or colons in shortcode
+          if (shortCode && !shortCode.includes(' ') && !shortCode.includes(':')) {
+            tokens.push(ast.emoji(shortCode));
+            i = endIndex + 1;
+            continue;
+          }
         }
       }
     }
