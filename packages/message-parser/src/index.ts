@@ -279,8 +279,25 @@ const parseItalicMarkup = (
   const delimiter = isItalic ? '__' : '_';
   const delimiterLength = isItalic ? 2 : 1;
 
+  // Check word boundaries for emphasis markers
+  // Opening delimiter should be at word boundary (start of string, whitespace, or punctuation)
+  const prevChar = i > 0 ? text[i - 1] : '';
+  const atStartWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
+  
+  if (!atStartWordBoundary) {
+    return null; // Not at a word boundary, don't treat as emphasis
+  }
+
   const endIndex = text.indexOf(delimiter, i + delimiterLength);
   if (endIndex !== -1 && endIndex > i + delimiterLength) {
+    // Check word boundary after closing delimiter
+    const nextCharAfterEnd = endIndex + delimiterLength < text.length ? text[endIndex + delimiterLength] : '';
+    const atEndWordBoundary = endIndex + delimiterLength >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(nextCharAfterEnd);
+    
+    if (!atEndWordBoundary) {
+      return null; // Not at a word boundary, don't treat as emphasis
+    }
+
     const content = text.slice(i + delimiterLength, endIndex);
     const nestedContent = parseInlineContent(content, options);
     // Filter to only valid italic content types
