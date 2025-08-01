@@ -7,7 +7,7 @@
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/react": "^8.6.14",
-		"i18next": "~23.4.9",
+		"i18next": "^23.10.1",
 		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
@@ -17,7 +17,7 @@
 		"@rocket.chat/ui-video-conf": "workspace:*",
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.0",
-		"@testing-library/jest-dom": "^6.6.3",
+		"@testing-library/jest-dom": "~6.6.3",
 		"@testing-library/react": "^16.2.0",
 		"@types/react": "~18.3.23",
 		"@types/react-dom": "~18.3.7",

@@ -41,6 +41,9 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Run Sherif
+        run: yarn sherif
+
       # - name: Free disk space
       #   run: |
       #     sudo apt clean

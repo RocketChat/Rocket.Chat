@@ -25,7 +25,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"moment-timezone": "^0.5.48"
+		"moment-timezone": "~0.6.0"
 	},
 	"volta": {
 		"extends": "../../package.json"
