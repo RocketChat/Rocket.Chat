@@ -195,10 +195,20 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 		const call = this.session.getMainCall();
 		if (!call) {
-			return null;
+			return {
+				id: 'none',
+				name: 'Nobody',
+				host: '',
+			};
 		}
 
-		return this.getCallContactInfo(call);
+		return (
+			this.getCallContactInfo(call) || {
+				id: 'unknown',
+				name: 'Unknown',
+				host: '',
+			}
+		);
 	}
 
 	public getReferredBy() {
@@ -291,9 +301,9 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 			return null;
 		}
 
-		if (call.state === 'error') {
-			return 'ERROR';
-		}
+		// if (call.state === 'error') {
+		// 	return 'ERROR';
+		// }
 		if (['active', 'accepted'].includes(call.state)) {
 			return 'ONGOING';
 		}
@@ -410,7 +420,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 			return this.error.contact;
 		}
 
-		const contactData = this.session.getStoredCallContact(call.callId);
+		const { contact: contactData } = call;
 		if (!contactData) {
 			return null;
 		}
@@ -437,7 +447,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 			console.log('startCall', call);
 			const { _id: callId, callee } = call;
-			this.session.setCallContact(callId, callee);
+			await this.session.registerOutboundCall(callId, callee);
 
 			this.emit('stateChanged');
 		} finally {
