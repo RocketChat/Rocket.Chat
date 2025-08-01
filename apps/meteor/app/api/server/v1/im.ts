@@ -228,6 +228,8 @@ API.v1.addRoute(
 		async get() {
 			const typeGroup = typeof this.queryParams.typeGroup === 'string' ? this.queryParams.typeGroup : undefined;
 			const name = typeof this.queryParams.name === 'string' ? decodeURIComponent(this.queryParams.name) : undefined;
+			const roomId = typeof this.queryParams.roomId === 'string' ? this.queryParams.roomId : undefined;
+			const username = typeof this.queryParams.username === 'string' ? this.queryParams.username : undefined;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
@@ -246,7 +248,7 @@ API.v1.addRoute(
 				...(typeGroup ? { typeGroup } : {}),
 			};
 
-			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(filter, {
+			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,

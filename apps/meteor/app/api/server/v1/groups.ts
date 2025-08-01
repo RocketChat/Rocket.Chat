@@ -418,7 +418,6 @@ API.v1.addRoute(
 			};
 
 			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
-			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
