@@ -27,10 +27,10 @@ test.each(testCases)('AppLogsItem should have no a11y violations', async (_story
 
 it('should not enable apply button when start Date and end Date are not selected', async () => {
 	render(<Default />, { wrapper: mockAppRoot().build() });
-	const startDate = screen.getByLabelText('Start Date');
-	const endDate = screen.getByLabelText('End Date');
-	const startTime = screen.getByLabelText('Start Time');
-	const endTime = screen.getByLabelText('End Time');
+	const startDate = screen.getByLabelText('Start_Date');
+	const endDate = screen.getByLabelText('End_Date');
+	const startTime = screen.getByLabelText('Start_Time');
+	const endTime = screen.getByLabelText('End_Time');
 
 	expect(startDate).toBeInTheDocument();
 	expect(endDate).toBeInTheDocument();
