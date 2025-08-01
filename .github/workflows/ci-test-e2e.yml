@@ -294,11 +294,11 @@ jobs:
           include-hidden-files: true
 
       - name: Show server logs if E2E test failed
-        if: true
+        if: failure() && inputs.release == 'ee'
         run: docker compose -f docker-compose-ci.yml logs
 
       - name: Show server logs if E2E test failed
-        if: true
+        if: failure() && inputs.release != 'ee'
         run: docker compose -f docker-compose-ci.yml logs rocketchat
 
       - name: Extract e2e:ee:coverage
