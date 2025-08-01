@@ -8,12 +8,13 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
-export type CallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup' | 'error';
+export type CallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
 export type CallHangupReason =
 	| 'normal' // User explicitly hanged up
 	| 'remote' // Server told the client to hang up
-	| 'unavailable' // The opposite actor is not available
+	| 'rejected' // The callee rejected the call
+	| 'unavailable' // The actor is not available
 	| 'signaling-error' // Hanging up because of an error during the signal processing
 	| 'service-error' // Hanging up because of an error setting up the service connection
 	| 'media-error' // Hanging up because of an error setting up the media connection
@@ -22,7 +23,7 @@ export type CallHangupReason =
 export interface IClientMediaCallData {
 	callId: string;
 	role: CallRole;
-	service: CallService;
+	service: CallService | null;
 
 	state?: CallState;
 	ignored?: boolean;
