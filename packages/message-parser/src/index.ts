@@ -796,8 +796,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
   // Normalize input
   const normalizedInput = input
     .replace(/\r\n/g, '\n') // Convert Windows line endings to Unix
-    .replace(/\r/g, '\n') // Convert old Mac line endings to Unix
-    .trim(); // Trim leading and trailing whitespace
+    .replace(/\r/g, '\n'); // Convert old Mac line endings to Unix
 
   if (!normalizedInput) {
     return [];
