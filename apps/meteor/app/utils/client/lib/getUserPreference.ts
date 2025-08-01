@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { Users } from '../../../models/client';
+import { Users } from '../../../../client/stores';
 import { settings } from '../../../settings/client';
 
 /**
