@@ -4273,7 +4273,6 @@
   "error-message-editing-blocked": "L'edició de missatges està bloquejada",
   "error-message-size-exceeded": "El missatge s'excedeix de Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Ha de proporcionar l'enllaç [unsubscribe].",
-  "error-no-agents-online-in-department": "No hi ha agents en línia en el departament",
   "error-no-message-for-unread": "No hi ha missatges per marcar com a no llegits",
   "error-no-owner-channel": "Només els propietaris poden afegir aquest canal a l'equip",
   "error-no-permission-team-channel": "No tens permís per afegir aquest canal a l'equip.",

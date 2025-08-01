@@ -23,12 +23,14 @@ import handleApp from './handlers/app/handler.ts';
 import handleScheduler from './handlers/scheduler-handler.ts';
 import registerErrorListeners from './error-handlers.ts';
 import { sendMetrics } from './lib/metricsCollector.ts';
+import outboundMessageHandler from './handlers/outboundcomms-handler.ts';
 
 type Handlers = {
 	app: typeof handleApp;
 	api: typeof apiHandler;
 	slashcommand: typeof slashcommandHandler;
 	videoconference: typeof videoConferenceHandler;
+	outboundCommunication: typeof outboundMessageHandler;
 	scheduler: typeof handleScheduler;
 	ping: (method: string, params: unknown) => 'pong';
 };
@@ -41,6 +43,7 @@ async function requestRouter({ type, payload }: Messenger.JsonRpcRequest): Promi
 		api: apiHandler,
 		slashcommand: slashcommandHandler,
 		videoconference: videoConferenceHandler,
+		outboundCommunication: outboundMessageHandler,
 		scheduler: handleScheduler,
 		ping: (_method, _params) => 'pong',
 	};

@@ -1,11 +1,21 @@
+import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
-import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isUpdateOAuthAppParams,
+	isOauthAppsGetParams,
+	isDeleteOAuthAppParams,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
 import { deleteOAuthApp } from '../../../oauth2-server-config/server/admin/methods/deleteOAuthApp';
 import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/methods/updateOAuthApp';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -83,18 +93,68 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+export type OauthAppsAddParams = {
+	name: string;
+	active: boolean;
+	redirectUri: string;
+};
+
+const OauthAppsAddParamsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		active: {
+			type: 'boolean',
+		},
+		redirectUri: {
+			type: 'string',
+		},
+	},
+	required: ['name', 'active', 'redirectUri'],
+	additionalProperties: false,
+};
+
+const isOauthAppsAddParams = ajv.compile<OauthAppsAddParams>(OauthAppsAddParamsSchema);
+
+const oauthAppsCreateEndpoints = API.v1.post(
 	'oauth-apps.create',
 	{
 		authRequired: true,
-		validateParams: isOauthAppsAddParams,
+		body: isOauthAppsAddParams,
 		permissionsRequired: ['manage-oauth-apps'],
-	},
-	{
-		async post() {
-			const application = await addOAuthApp(this.bodyParams, this.userId);
-
-			return API.v1.success({ application });
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			200: ajv.compile<{ application: IOAuthApps }>({
+				type: 'object',
+				properties: {
+					application: { $ref: '#/components/schemas/IOAuthApps' },
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['application', 'success'],
+				additionalProperties: false,
+			}),
 		},
 	},
+
+	async function action() {
+		const application = await addOAuthApp(this.bodyParams, this.userId);
+
+		return API.v1.success({ application });
+	},
 );
+
+type OauthAppsCreateEndpoints = ExtractRoutesFromAPI<typeof oauthAppsCreateEndpoints>;
+
+export type OAuthAppsEndpoints = OauthAppsCreateEndpoints;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends OauthAppsCreateEndpoints {}
+}

@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { memoize } from '@rocket.chat/memo';
 
 import { callWithErrorHandling } from './callWithErrorHandling';
@@ -13,7 +13,7 @@ export const goToRoomById = async (rid: IRoom['_id']): Promise<void> => {
 		return;
 	}
 
-	const subscription: ISubscription | undefined = Subscriptions.findOne({ rid });
+	const subscription = Subscriptions.state.find((record) => record.rid === rid);
 
 	if (subscription) {
 		roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());

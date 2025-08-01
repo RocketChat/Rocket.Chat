@@ -49,7 +49,6 @@ import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
-import type { WebdavEndpoints } from './v1/webdav';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
@@ -92,7 +91,6 @@ export interface Endpoints
 		AssetsEndpoints,
 		EmailInboxEndpoints,
 		MailerEndpoints,
-		WebdavEndpoints,
 		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
@@ -239,7 +237,6 @@ export * from './v1/omnichannel';
 export * from './v1/oauthapps';
 export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
 export * from './v1/oauthapps/OAuthAppsGetParamsGET';
-export * from './v1/oauthapps/OAuthAppsAddParamsPOST';
 export * from './v1/oauthapps/DeleteOAuthAppParamsDELETE';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
@@ -278,3 +275,6 @@ export * from './v1/auth';
 export * from './v1/cloud';
 export * from './v1/banners';
 export * from './default';
+
+// Export the ajv instance for use in other packages
+export * from './v1/Ajv';

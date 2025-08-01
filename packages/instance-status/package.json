@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/instance-status",
-	"version": "0.1.25",
+	"version": "0.1.33",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -25,5 +25,8 @@
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

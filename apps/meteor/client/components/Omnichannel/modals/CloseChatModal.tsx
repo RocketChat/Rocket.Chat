@@ -12,14 +12,21 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldError,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+	ModalClose,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalContent,
 } from '@rocket.chat/fuselage';
-import { usePermission, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { usePermission, useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { dispatchToastMessage } from '../../../lib/toast';
-import GenericModal from '../../GenericModal';
 import Tags from '../Tags';
 
 type CloseChatModalFormData = {
@@ -43,7 +50,8 @@ type CloseChatModalProps = {
 };
 
 const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: CloseChatModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
 		formState: { errors },
@@ -140,17 +148,17 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 			}
 			setValue('subject', subject || customSubject || t('Transcript_of_your_livechat_conversation'));
 		}
-	}, [transcriptEmail, setValue, visitorEmail, subject, t, customSubject]);
+	}, [transcriptEmail, setValue, visitorEmail, subject, t, customSubject, dispatchToastMessage]);
 
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
 			<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} data-qa-id='close-chat-modal' />}>
-				<Modal.Header>
-					<Modal.Icon name='baloon-close-top-right' />
-					<Modal.Title>{t('Wrap_up_conversation')}</Modal.Title>
-					<Modal.Close onClick={onCancel} />
-				</Modal.Header>
-				<Modal.Content fontScale='p2'>
+				<ModalHeader>
+					<ModalIcon name='baloon-close-top-right' />
+					<ModalTitle>{t('Wrap_up_conversation')}</ModalTitle>
+					<ModalClose onClick={onCancel} />
+				</ModalHeader>
+				<ModalContent fontScale='p2'>
 					<Box color='annotation'>{t('Close_room_description')}</Box>
 					<FieldGroup>
 						<Field>
@@ -225,15 +233,15 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 							</>
 						)}
 					</FieldGroup>
-				</Modal.Content>
-				<Modal.Footer>
-					<Modal.FooterControllers>
+				</ModalContent>
+				<ModalFooter>
+					<ModalFooterControllers>
 						<Button onClick={onCancel}>{t('Cancel')}</Button>
 						<Button type='submit' disabled={cannotSubmit} primary>
 							{t('Confirm')}
 						</Button>
-					</Modal.FooterControllers>
-				</Modal.Footer>
+					</ModalFooterControllers>
+				</ModalFooter>
 			</Modal>
 		);
 	}

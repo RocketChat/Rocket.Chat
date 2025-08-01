@@ -1,7 +1,7 @@
-import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import type { Filter } from 'mongodb';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { Subscriptions, Users, Rooms } from '../../../../app/models/client';
@@ -69,7 +69,7 @@ roomCoordinator.add(
 					return undefined;
 				}
 
-				return Subscriptions.findOne({ rid: roomData._id });
+				return Subscriptions.state.find((record) => record.rid === roomData._id);
 			})();
 
 			if (!subscription) {
@@ -120,10 +120,10 @@ roomCoordinator.add(
 				}) as string;
 			}
 
-			const sub = Subscriptions.findOne({ rid: room._id }, { fields: { name: 1 } });
-			if (sub?.name) {
-				const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } }) as IUser | undefined;
-				return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
+			const subscriptionName = Subscriptions.state.find((record) => record.rid === room._id)?.name;
+			if (subscriptionName) {
+				const { username, avatarETag } = Users.state.find((record) => record.username === subscriptionName) || {};
+				return getUserAvatarURL(username || subscriptionName, avatarETag);
 			}
 
 			return getUserAvatarURL(room.name || this.roomName(room) || '');
@@ -146,14 +146,11 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: Filter<ISubscription> = {
-				t: 'd',
-				$or: [{ name: identifier }, { rid: identifier }],
-			};
+			const predicate = (record: SubscriptionWithRoom) => record.t === 'd' && (record.name === identifier || record.rid === identifier);
 
-			const subscription = Subscriptions.findOne(query);
+			const subscription = Subscriptions.state.find(predicate);
 			if (subscription?.rid) {
-				return Rooms.findOne(subscription.rid);
+				return Rooms.state.get(subscription.rid);
 			}
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,
