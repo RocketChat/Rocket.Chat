@@ -1,9 +1,9 @@
 import { Accounts } from 'meteor/accounts-base';
 
-import { CachedCollectionManager } from '../lib/cachedCollections';
+import { CachedStoresManager } from '../lib/cachedStores';
 
 const { _unstoreLoginToken } = Accounts;
 Accounts._unstoreLoginToken = (...args) => {
 	_unstoreLoginToken.apply(Accounts, args);
-	CachedCollectionManager.clearAllCachesOnLogout();
+	CachedStoresManager.clearAllCachesOnLogout();
 };

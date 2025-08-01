@@ -11,12 +11,12 @@ import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { Messages, Subscriptions } from '../../../../client/stores';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
 import { hasPermission } from '../../../authorization/client';
-import { Subscriptions, Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
