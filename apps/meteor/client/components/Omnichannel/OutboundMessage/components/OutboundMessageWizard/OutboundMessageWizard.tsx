@@ -15,7 +15,10 @@ type OutboundMessageWizardProps = {
 
 const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
-	const [, setState] = useState<Partial<SubmitPayload>>(defaultValues);
+	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
+	const { contact, sender, provider } = state;
+
+	const templates = sender ? provider?.templates[sender] : [];
 
 	const wizardApi = useWizard({
 		steps: [
@@ -41,7 +44,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 					</WizardContent>
 
 					<WizardContent id='message'>
-						<MessageStep onSubmit={handleSubmit} />
+						<MessageStep defaultValues={state} contact={contact} templates={templates} onSubmit={handleSubmit} />
 					</WizardContent>
 
 					<WizardContent id='replies'>
