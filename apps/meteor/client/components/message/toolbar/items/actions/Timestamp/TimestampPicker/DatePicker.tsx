@@ -18,7 +18,7 @@ const DatePicker = ({ value, onChange }: DatePickerProps): ReactElement => {
 		onChange(newDate);
 	};
 
-	const dateValue = value ? format(value, 'yyyy-MM-dd') : '';
+	const dateValue = value && !isNaN(value.getTime()) ? format(value, 'yyyy-MM-dd') : '';
 
 	return (
 		<Box mb='x16'>

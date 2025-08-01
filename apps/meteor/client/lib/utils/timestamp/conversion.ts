@@ -1,6 +1,10 @@
 import { UTCOffsets, type TimestampFormat, type TimezoneKey } from './types';
 
 export const dateToISOString = (date: Date, timezone?: TimezoneKey): string => {
+	if (!date || isNaN(date.getTime())) {
+		return '';
+	}
+
 	if (timezone && timezone !== 'local') {
 		const offset = UTCOffsets[timezone];
 		if (offset) {

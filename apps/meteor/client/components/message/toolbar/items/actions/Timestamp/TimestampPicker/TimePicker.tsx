@@ -18,7 +18,7 @@ const TimePicker = ({ value, onChange }: TimePickerProps): ReactElement => {
 		onChange(newDate);
 	};
 
-	const timeValue = value ? format(value, 'HH:mm') : '';
+	const timeValue = value && !isNaN(value.getTime()) ? format(value, 'HH:mm') : '';
 
 	return (
 		<Box mb='x16'>

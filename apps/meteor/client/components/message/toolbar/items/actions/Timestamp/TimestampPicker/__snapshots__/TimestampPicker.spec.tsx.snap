@@ -1,0 +1,3534 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders ComponentShowcase without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 16px;"
+    >
+      <div>
+        <h3>
+          Date & Time Selection
+        </h3>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Date
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <label
+                class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+              >
+                <input
+                  class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                  size="1"
+                  type="date"
+                  value="2025-03-15"
+                />
+                <span
+                  class="rcx-box rcx-box--full rcx-input-box__addon"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
+                  >
+                    
+                  </i>
+                </span>
+              </label>
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Time
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <label
+                class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+              >
+                <input
+                  class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                  size="1"
+                  type="time"
+                  value="14:30"
+                />
+                <span
+                  class="rcx-box rcx-box--full rcx-input-box__addon"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                  >
+                    
+                  </i>
+                </span>
+              </label>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3>
+          Format & Timezone
+        </h3>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Format
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r7:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="t"
+                      >
+                        t
+                      </option>
+                      <option
+                        value="T"
+                      >
+                        T
+                      </option>
+                      <option
+                        value="d"
+                      >
+                        d
+                      </option>
+                      <option
+                        value="D"
+                      >
+                        D
+                      </option>
+                      <option
+                        value="f"
+                      >
+                        f
+                      </option>
+                      <option
+                        value="F"
+                      >
+                        F
+                      </option>
+                      <option
+                        value="R"
+                      >
+                        R
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:r7:"
+                >
+                  timestamps.fullDateTime (timestamps.fullDateTimeDescription)
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Timezone
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:rf:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="local"
+                      >
+                        local
+                      </option>
+                      <option
+                        value="UTC-12"
+                      >
+                        UTC-12
+                      </option>
+                      <option
+                        value="UTC-11"
+                      >
+                        UTC-11
+                      </option>
+                      <option
+                        value="UTC-10"
+                      >
+                        UTC-10
+                      </option>
+                      <option
+                        value="UTC-9"
+                      >
+                        UTC-9
+                      </option>
+                      <option
+                        value="UTC-8"
+                      >
+                        UTC-8
+                      </option>
+                      <option
+                        value="UTC-7"
+                      >
+                        UTC-7
+                      </option>
+                      <option
+                        value="UTC-6"
+                      >
+                        UTC-6
+                      </option>
+                      <option
+                        value="UTC-5"
+                      >
+                        UTC-5
+                      </option>
+                      <option
+                        value="UTC-4"
+                      >
+                        UTC-4
+                      </option>
+                      <option
+                        value="UTC-3"
+                      >
+                        UTC-3
+                      </option>
+                      <option
+                        value="UTC-2"
+                      >
+                        UTC-2
+                      </option>
+                      <option
+                        value="UTC-1"
+                      >
+                        UTC-1
+                      </option>
+                      <option
+                        value="UTC"
+                      >
+                        UTC
+                      </option>
+                      <option
+                        value="UTC+1"
+                      >
+                        UTC+1
+                      </option>
+                      <option
+                        value="UTC+2"
+                      >
+                        UTC+2
+                      </option>
+                      <option
+                        value="UTC+3"
+                      >
+                        UTC+3
+                      </option>
+                      <option
+                        value="UTC+4"
+                      >
+                        UTC+4
+                      </option>
+                      <option
+                        value="UTC+5"
+                      >
+                        UTC+5
+                      </option>
+                      <option
+                        value="UTC+6"
+                      >
+                        UTC+6
+                      </option>
+                      <option
+                        value="UTC+7"
+                      >
+                        UTC+7
+                      </option>
+                      <option
+                        value="UTC+8"
+                      >
+                        UTC+8
+                      </option>
+                      <option
+                        value="UTC+9"
+                      >
+                        UTC+9
+                      </option>
+                      <option
+                        value="UTC+10"
+                      >
+                        UTC+10
+                      </option>
+                      <option
+                        value="UTC+11"
+                      >
+                        UTC+11
+                      </option>
+                      <option
+                        value="UTC+12"
+                      >
+                        UTC+12
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:rf:"
+                >
+                  UTC+8
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders DatePickerDefault without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1bjg207"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-field"
+      >
+        <label
+          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        >
+          Date
+        </label>
+        <span
+          class="rcx-box rcx-box--full rcx-field__row"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+          >
+            <input
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+              size="1"
+              type="date"
+              value="2025-07-25"
+            />
+            <span
+              class="rcx-box rcx-box--full rcx-input-box__addon"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </span>
+          </label>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders DatePickerDifferentDates without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; gap: 16px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Date
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                size="1"
+                type="date"
+                value="2024-01-01"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Date
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                size="1"
+                type="date"
+                value="2025-12-31"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Date
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                size="1"
+                type="date"
+                value="2026-06-30"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <dialog
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-1e2ego0"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <h2
+              class="rcx-box rcx-box--full rcx-modal__title rcx-css-trljwa rcx-css-lma364"
+            >
+              Add_Date_And_Time
+            </h2>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-56vo9k"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-xwilyv"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1bjg207"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  >
+                    Date
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                        size="1"
+                        type="date"
+                        value="2025-08-01"
+                      />
+                      <span
+                        class="rcx-box rcx-box--full rcx-input-box__addon"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </span>
+                    </label>
+                  </span>
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1bjg207"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  >
+                    Time
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                        size="1"
+                        type="time"
+                        value="00:41"
+                      />
+                      <span
+                        class="rcx-box rcx-box--full rcx-input-box__addon"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </span>
+                    </label>
+                  </span>
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1bjg207"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  >
+                    Format
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-labelledby="react-aria-:rn:"
+                      class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                      type="button"
+                    >
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      >
+                        <label>
+                          <select
+                            tabindex="-1"
+                          >
+                            <option />
+                            <option
+                              value="t"
+                            >
+                              t
+                            </option>
+                            <option
+                              value="T"
+                            >
+                              T
+                            </option>
+                            <option
+                              value="d"
+                            >
+                              d
+                            </option>
+                            <option
+                              value="D"
+                            >
+                              D
+                            </option>
+                            <option
+                              value="f"
+                            >
+                              f
+                            </option>
+                            <option
+                              value="F"
+                            >
+                              F
+                            </option>
+                            <option
+                              value="R"
+                            >
+                              R
+                            </option>
+                          </select>
+                        </label>
+                      </div>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                        id="react-aria-:rn:"
+                      >
+                        timestamps.fullDateTime (timestamps.fullDateTimeDescription)
+                      </span>
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                      >
+                        
+                      </i>
+                    </button>
+                  </span>
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1bjg207"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  >
+                    Timezone
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-labelledby="react-aria-:rv:"
+                      class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                      type="button"
+                    >
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      >
+                        <label>
+                          <select
+                            tabindex="-1"
+                          >
+                            <option />
+                            <option
+                              value="local"
+                            >
+                              local
+                            </option>
+                            <option
+                              value="UTC-12"
+                            >
+                              UTC-12
+                            </option>
+                            <option
+                              value="UTC-11"
+                            >
+                              UTC-11
+                            </option>
+                            <option
+                              value="UTC-10"
+                            >
+                              UTC-10
+                            </option>
+                            <option
+                              value="UTC-9"
+                            >
+                              UTC-9
+                            </option>
+                            <option
+                              value="UTC-8"
+                            >
+                              UTC-8
+                            </option>
+                            <option
+                              value="UTC-7"
+                            >
+                              UTC-7
+                            </option>
+                            <option
+                              value="UTC-6"
+                            >
+                              UTC-6
+                            </option>
+                            <option
+                              value="UTC-5"
+                            >
+                              UTC-5
+                            </option>
+                            <option
+                              value="UTC-4"
+                            >
+                              UTC-4
+                            </option>
+                            <option
+                              value="UTC-3"
+                            >
+                              UTC-3
+                            </option>
+                            <option
+                              value="UTC-2"
+                            >
+                              UTC-2
+                            </option>
+                            <option
+                              value="UTC-1"
+                            >
+                              UTC-1
+                            </option>
+                            <option
+                              value="UTC"
+                            >
+                              UTC
+                            </option>
+                            <option
+                              value="UTC+1"
+                            >
+                              UTC+1
+                            </option>
+                            <option
+                              value="UTC+2"
+                            >
+                              UTC+2
+                            </option>
+                            <option
+                              value="UTC+3"
+                            >
+                              UTC+3
+                            </option>
+                            <option
+                              value="UTC+4"
+                            >
+                              UTC+4
+                            </option>
+                            <option
+                              value="UTC+5"
+                            >
+                              UTC+5
+                            </option>
+                            <option
+                              value="UTC+6"
+                            >
+                              UTC+6
+                            </option>
+                            <option
+                              value="UTC+7"
+                            >
+                              UTC+7
+                            </option>
+                            <option
+                              value="UTC+8"
+                            >
+                              UTC+8
+                            </option>
+                            <option
+                              value="UTC+9"
+                            >
+                              UTC+9
+                            </option>
+                            <option
+                              value="UTC+10"
+                            >
+                              UTC+10
+                            </option>
+                            <option
+                              value="UTC+11"
+                            >
+                              UTC+11
+                            </option>
+                            <option
+                              value="UTC+12"
+                            >
+                              UTC+12
+                            </option>
+                          </select>
+                        </label>
+                      </div>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                        id="react-aria-:rv:"
+                      >
+                        Local_Time
+                      </span>
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                      >
+                        
+                      </i>
+                    </button>
+                  </span>
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-1bjg207"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                  >
+                    Preview
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <div
+                      data-testid="mock-gazzodown-text"
+                    >
+                      Mocked GazzodownText
+                    </div>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1qcz93u"
+          >
+            <div
+              class="rcx-button-group rcx-button-group--align-end"
+              role="group"
+            >
+              <button
+                class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+                type="button"
+              >
+                <span
+                  class="rcx-button--content"
+                >
+                  Cancel
+                </span>
+              </button>
+              <button
+                class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+                disabled=""
+                type="button"
+              >
+                <span
+                  class="rcx-button--content"
+                >
+                  Add
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders FormatSelectorAllFormats without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; gap: 16px;"
+    >
+      <div
+        style="display: flex; flex-direction: column; gap: 16px;"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Format
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r17:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="t"
+                      >
+                        t
+                      </option>
+                      <option
+                        value="T"
+                      >
+                        T
+                      </option>
+                      <option
+                        value="d"
+                      >
+                        d
+                      </option>
+                      <option
+                        value="D"
+                      >
+                        D
+                      </option>
+                      <option
+                        value="f"
+                      >
+                        f
+                      </option>
+                      <option
+                        value="F"
+                      >
+                        F
+                      </option>
+                      <option
+                        value="R"
+                      >
+                        R
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:r17:"
+                >
+                  timestamps.shortTime (timestamps.shortTimeDescription)
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Format
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r1f:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="t"
+                      >
+                        t
+                      </option>
+                      <option
+                        value="T"
+                      >
+                        T
+                      </option>
+                      <option
+                        value="d"
+                      >
+                        d
+                      </option>
+                      <option
+                        value="D"
+                      >
+                        D
+                      </option>
+                      <option
+                        value="f"
+                      >
+                        f
+                      </option>
+                      <option
+                        value="F"
+                      >
+                        F
+                      </option>
+                      <option
+                        value="R"
+                      >
+                        R
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:r1f:"
+                >
+                  timestamps.longTime (timestamps.longTimeDescription)
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Format
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r1n:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="t"
+                      >
+                        t
+                      </option>
+                      <option
+                        value="T"
+                      >
+                        T
+                      </option>
+                      <option
+                        value="d"
+                      >
+                        d
+                      </option>
+                      <option
+                        value="D"
+                      >
+                        D
+                      </option>
+                      <option
+                        value="f"
+                      >
+                        f
+                      </option>
+                      <option
+                        value="F"
+                      >
+                        F
+                      </option>
+                      <option
+                        value="R"
+                      >
+                        R
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:r1n:"
+                >
+                  timestamps.shortDate (timestamps.shortDateDescription)
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Format
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r1v:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="t"
+                      >
+                        t
+                      </option>
+                      <option
+                        value="T"
+                      >
+                        T
+                      </option>
+                      <option
+                        value="d"
+                      >
+                        d
+                      </option>
+                      <option
+                        value="D"
+                      >
+                        D
+                      </option>
+                      <option
+                        value="f"
+                      >
+                        f
+                      </option>
+                      <option
+                        value="F"
+                      >
+                        F
+                      </option>
+                      <option
+                        value="R"
+                      >
+                        R
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:r1v:"
+                >
+                  timestamps.longDate (timestamps.longDateDescription)
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Format
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r27:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="t"
+                      >
+                        t
+                      </option>
+                      <option
+                        value="T"
+                      >
+                        T
+                      </option>
+                      <option
+                        value="d"
+                      >
+                        d
+                      </option>
+                      <option
+                        value="D"
+                      >
+                        D
+                      </option>
+                      <option
+                        value="f"
+                      >
+                        f
+                      </option>
+                      <option
+                        value="F"
+                      >
+                        F
+                      </option>
+                      <option
+                        value="R"
+                      >
+                        R
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:r27:"
+                >
+                  timestamps.fullDateTime (timestamps.fullDateTimeDescription)
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Format
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r2f:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="t"
+                      >
+                        t
+                      </option>
+                      <option
+                        value="T"
+                      >
+                        T
+                      </option>
+                      <option
+                        value="d"
+                      >
+                        d
+                      </option>
+                      <option
+                        value="D"
+                      >
+                        D
+                      </option>
+                      <option
+                        value="f"
+                      >
+                        f
+                      </option>
+                      <option
+                        value="F"
+                      >
+                        F
+                      </option>
+                      <option
+                        value="R"
+                      >
+                        R
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:r2f:"
+                >
+                  timestamps.fullDateTimeLong (timestamps.fullDateTimeLongDescription)
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Format
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r2n:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="t"
+                      >
+                        t
+                      </option>
+                      <option
+                        value="T"
+                      >
+                        T
+                      </option>
+                      <option
+                        value="d"
+                      >
+                        d
+                      </option>
+                      <option
+                        value="D"
+                      >
+                        D
+                      </option>
+                      <option
+                        value="f"
+                      >
+                        f
+                      </option>
+                      <option
+                        value="F"
+                      >
+                        F
+                      </option>
+                      <option
+                        value="R"
+                      >
+                        R
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:r2n:"
+                >
+                  timestamps.relativeTime (timestamps.relativeTimeDescription)
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders FormatSelectorDefault without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1bjg207"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-field"
+      >
+        <label
+          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        >
+          Format
+        </label>
+        <span
+          class="rcx-box rcx-box--full rcx-field__row"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-labelledby="react-aria-:r2v:"
+            class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+            type="button"
+          >
+            <div
+              aria-hidden="true"
+              data-a11y-ignore="aria-hidden-focus"
+              data-react-aria-prevent-focus="true"
+              data-testid="hidden-select-container"
+              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+            >
+              <label>
+                <select
+                  tabindex="-1"
+                >
+                  <option />
+                  <option
+                    value="t"
+                  >
+                    t
+                  </option>
+                  <option
+                    value="T"
+                  >
+                    T
+                  </option>
+                  <option
+                    value="d"
+                  >
+                    d
+                  </option>
+                  <option
+                    value="D"
+                  >
+                    D
+                  </option>
+                  <option
+                    value="f"
+                  >
+                    f
+                  </option>
+                  <option
+                    value="F"
+                  >
+                    F
+                  </option>
+                  <option
+                    value="R"
+                  >
+                    R
+                  </option>
+                </select>
+              </label>
+            </div>
+            <span
+              class="rcx-box rcx-box--full rcx-css-4w7o7u"
+              id="react-aria-:r2v:"
+            >
+              timestamps.fullDateTime (timestamps.fullDateTimeDescription)
+            </span>
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+            >
+              
+            </i>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders PreviewAllFormats without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; gap: 16px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders PreviewDefault without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1bjg207"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-field"
+      >
+        <label
+          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        >
+          Preview
+        </label>
+        <span
+          class="rcx-box rcx-box--full rcx-field__row"
+        >
+          <div
+            data-testid="mock-gazzodown-text"
+          >
+            Mocked GazzodownText
+          </div>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders PreviewWithTimezones without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Preview
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <div
+              data-testid="mock-gazzodown-text"
+            >
+              Mocked GazzodownText
+            </div>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders TimePickerDefault without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1bjg207"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-field"
+      >
+        <label
+          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        >
+          Time
+        </label>
+        <span
+          class="rcx-box rcx-box--full rcx-field__row"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+          >
+            <input
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+              size="1"
+              type="time"
+              value="09:30"
+            />
+            <span
+              class="rcx-box rcx-box--full rcx-input-box__addon"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </span>
+          </label>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders TimePickerDifferentTimes without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; gap: 16px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Time
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                size="1"
+                type="time"
+                value="07:30"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Time
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                size="1"
+                type="time"
+                value="14:30"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Time
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                size="1"
+                type="time"
+                value="00:00"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Time
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                size="1"
+                type="time"
+                value="12:00"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders TimezoneSelectorDefault without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1bjg207"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-field"
+      >
+        <label
+          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        >
+          Timezone
+        </label>
+        <span
+          class="rcx-box rcx-box--full rcx-field__row"
+        >
+          <button
+            aria-expanded="false"
+            aria-haspopup="listbox"
+            aria-labelledby="react-aria-:r37:"
+            class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+            type="button"
+          >
+            <div
+              aria-hidden="true"
+              data-a11y-ignore="aria-hidden-focus"
+              data-react-aria-prevent-focus="true"
+              data-testid="hidden-select-container"
+              style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+            >
+              <label>
+                <select
+                  tabindex="-1"
+                >
+                  <option />
+                  <option
+                    value="local"
+                  >
+                    local
+                  </option>
+                  <option
+                    value="UTC-12"
+                  >
+                    UTC-12
+                  </option>
+                  <option
+                    value="UTC-11"
+                  >
+                    UTC-11
+                  </option>
+                  <option
+                    value="UTC-10"
+                  >
+                    UTC-10
+                  </option>
+                  <option
+                    value="UTC-9"
+                  >
+                    UTC-9
+                  </option>
+                  <option
+                    value="UTC-8"
+                  >
+                    UTC-8
+                  </option>
+                  <option
+                    value="UTC-7"
+                  >
+                    UTC-7
+                  </option>
+                  <option
+                    value="UTC-6"
+                  >
+                    UTC-6
+                  </option>
+                  <option
+                    value="UTC-5"
+                  >
+                    UTC-5
+                  </option>
+                  <option
+                    value="UTC-4"
+                  >
+                    UTC-4
+                  </option>
+                  <option
+                    value="UTC-3"
+                  >
+                    UTC-3
+                  </option>
+                  <option
+                    value="UTC-2"
+                  >
+                    UTC-2
+                  </option>
+                  <option
+                    value="UTC-1"
+                  >
+                    UTC-1
+                  </option>
+                  <option
+                    value="UTC"
+                  >
+                    UTC
+                  </option>
+                  <option
+                    value="UTC+1"
+                  >
+                    UTC+1
+                  </option>
+                  <option
+                    value="UTC+2"
+                  >
+                    UTC+2
+                  </option>
+                  <option
+                    value="UTC+3"
+                  >
+                    UTC+3
+                  </option>
+                  <option
+                    value="UTC+4"
+                  >
+                    UTC+4
+                  </option>
+                  <option
+                    value="UTC+5"
+                  >
+                    UTC+5
+                  </option>
+                  <option
+                    value="UTC+6"
+                  >
+                    UTC+6
+                  </option>
+                  <option
+                    value="UTC+7"
+                  >
+                    UTC+7
+                  </option>
+                  <option
+                    value="UTC+8"
+                  >
+                    UTC+8
+                  </option>
+                  <option
+                    value="UTC+9"
+                  >
+                    UTC+9
+                  </option>
+                  <option
+                    value="UTC+10"
+                  >
+                    UTC+10
+                  </option>
+                  <option
+                    value="UTC+11"
+                  >
+                    UTC+11
+                  </option>
+                  <option
+                    value="UTC+12"
+                  >
+                    UTC+12
+                  </option>
+                </select>
+              </label>
+            </div>
+            <span
+              class="rcx-box rcx-box--full rcx-css-4w7o7u"
+              id="react-aria-:r37:"
+            >
+              Local_Time
+            </span>
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+            >
+              
+            </i>
+          </button>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders TimezoneSelectorVariations without crashing 1`] = `
+<body>
+  <div>
+    <div
+      style="display: flex; flex-direction: column; gap: 16px;"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Timezone
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-labelledby="react-aria-:r3f:"
+              class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+              type="button"
+            >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="local"
+                    >
+                      local
+                    </option>
+                    <option
+                      value="UTC-12"
+                    >
+                      UTC-12
+                    </option>
+                    <option
+                      value="UTC-11"
+                    >
+                      UTC-11
+                    </option>
+                    <option
+                      value="UTC-10"
+                    >
+                      UTC-10
+                    </option>
+                    <option
+                      value="UTC-9"
+                    >
+                      UTC-9
+                    </option>
+                    <option
+                      value="UTC-8"
+                    >
+                      UTC-8
+                    </option>
+                    <option
+                      value="UTC-7"
+                    >
+                      UTC-7
+                    </option>
+                    <option
+                      value="UTC-6"
+                    >
+                      UTC-6
+                    </option>
+                    <option
+                      value="UTC-5"
+                    >
+                      UTC-5
+                    </option>
+                    <option
+                      value="UTC-4"
+                    >
+                      UTC-4
+                    </option>
+                    <option
+                      value="UTC-3"
+                    >
+                      UTC-3
+                    </option>
+                    <option
+                      value="UTC-2"
+                    >
+                      UTC-2
+                    </option>
+                    <option
+                      value="UTC-1"
+                    >
+                      UTC-1
+                    </option>
+                    <option
+                      value="UTC"
+                    >
+                      UTC
+                    </option>
+                    <option
+                      value="UTC+1"
+                    >
+                      UTC+1
+                    </option>
+                    <option
+                      value="UTC+2"
+                    >
+                      UTC+2
+                    </option>
+                    <option
+                      value="UTC+3"
+                    >
+                      UTC+3
+                    </option>
+                    <option
+                      value="UTC+4"
+                    >
+                      UTC+4
+                    </option>
+                    <option
+                      value="UTC+5"
+                    >
+                      UTC+5
+                    </option>
+                    <option
+                      value="UTC+6"
+                    >
+                      UTC+6
+                    </option>
+                    <option
+                      value="UTC+7"
+                    >
+                      UTC+7
+                    </option>
+                    <option
+                      value="UTC+8"
+                    >
+                      UTC+8
+                    </option>
+                    <option
+                      value="UTC+9"
+                    >
+                      UTC+9
+                    </option>
+                    <option
+                      value="UTC+10"
+                    >
+                      UTC+10
+                    </option>
+                    <option
+                      value="UTC+11"
+                    >
+                      UTC+11
+                    </option>
+                    <option
+                      value="UTC+12"
+                    >
+                      UTC+12
+                    </option>
+                  </select>
+                </label>
+              </div>
+              <span
+                class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                id="react-aria-:r3f:"
+              >
+                Local_Time
+              </span>
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+              >
+                
+              </i>
+            </button>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Timezone
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-labelledby="react-aria-:r3n:"
+              class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+              type="button"
+            >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="local"
+                    >
+                      local
+                    </option>
+                    <option
+                      value="UTC-12"
+                    >
+                      UTC-12
+                    </option>
+                    <option
+                      value="UTC-11"
+                    >
+                      UTC-11
+                    </option>
+                    <option
+                      value="UTC-10"
+                    >
+                      UTC-10
+                    </option>
+                    <option
+                      value="UTC-9"
+                    >
+                      UTC-9
+                    </option>
+                    <option
+                      value="UTC-8"
+                    >
+                      UTC-8
+                    </option>
+                    <option
+                      value="UTC-7"
+                    >
+                      UTC-7
+                    </option>
+                    <option
+                      value="UTC-6"
+                    >
+                      UTC-6
+                    </option>
+                    <option
+                      value="UTC-5"
+                    >
+                      UTC-5
+                    </option>
+                    <option
+                      value="UTC-4"
+                    >
+                      UTC-4
+                    </option>
+                    <option
+                      value="UTC-3"
+                    >
+                      UTC-3
+                    </option>
+                    <option
+                      value="UTC-2"
+                    >
+                      UTC-2
+                    </option>
+                    <option
+                      value="UTC-1"
+                    >
+                      UTC-1
+                    </option>
+                    <option
+                      value="UTC"
+                    >
+                      UTC
+                    </option>
+                    <option
+                      value="UTC+1"
+                    >
+                      UTC+1
+                    </option>
+                    <option
+                      value="UTC+2"
+                    >
+                      UTC+2
+                    </option>
+                    <option
+                      value="UTC+3"
+                    >
+                      UTC+3
+                    </option>
+                    <option
+                      value="UTC+4"
+                    >
+                      UTC+4
+                    </option>
+                    <option
+                      value="UTC+5"
+                    >
+                      UTC+5
+                    </option>
+                    <option
+                      value="UTC+6"
+                    >
+                      UTC+6
+                    </option>
+                    <option
+                      value="UTC+7"
+                    >
+                      UTC+7
+                    </option>
+                    <option
+                      value="UTC+8"
+                    >
+                      UTC+8
+                    </option>
+                    <option
+                      value="UTC+9"
+                    >
+                      UTC+9
+                    </option>
+                    <option
+                      value="UTC+10"
+                    >
+                      UTC+10
+                    </option>
+                    <option
+                      value="UTC+11"
+                    >
+                      UTC+11
+                    </option>
+                    <option
+                      value="UTC+12"
+                    >
+                      UTC+12
+                    </option>
+                  </select>
+                </label>
+              </div>
+              <span
+                class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                id="react-aria-:r3n:"
+              >
+                UTC
+              </span>
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+              >
+                
+              </i>
+            </button>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Timezone
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-labelledby="react-aria-:r3v:"
+              class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+              type="button"
+            >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="local"
+                    >
+                      local
+                    </option>
+                    <option
+                      value="UTC-12"
+                    >
+                      UTC-12
+                    </option>
+                    <option
+                      value="UTC-11"
+                    >
+                      UTC-11
+                    </option>
+                    <option
+                      value="UTC-10"
+                    >
+                      UTC-10
+                    </option>
+                    <option
+                      value="UTC-9"
+                    >
+                      UTC-9
+                    </option>
+                    <option
+                      value="UTC-8"
+                    >
+                      UTC-8
+                    </option>
+                    <option
+                      value="UTC-7"
+                    >
+                      UTC-7
+                    </option>
+                    <option
+                      value="UTC-6"
+                    >
+                      UTC-6
+                    </option>
+                    <option
+                      value="UTC-5"
+                    >
+                      UTC-5
+                    </option>
+                    <option
+                      value="UTC-4"
+                    >
+                      UTC-4
+                    </option>
+                    <option
+                      value="UTC-3"
+                    >
+                      UTC-3
+                    </option>
+                    <option
+                      value="UTC-2"
+                    >
+                      UTC-2
+                    </option>
+                    <option
+                      value="UTC-1"
+                    >
+                      UTC-1
+                    </option>
+                    <option
+                      value="UTC"
+                    >
+                      UTC
+                    </option>
+                    <option
+                      value="UTC+1"
+                    >
+                      UTC+1
+                    </option>
+                    <option
+                      value="UTC+2"
+                    >
+                      UTC+2
+                    </option>
+                    <option
+                      value="UTC+3"
+                    >
+                      UTC+3
+                    </option>
+                    <option
+                      value="UTC+4"
+                    >
+                      UTC+4
+                    </option>
+                    <option
+                      value="UTC+5"
+                    >
+                      UTC+5
+                    </option>
+                    <option
+                      value="UTC+6"
+                    >
+                      UTC+6
+                    </option>
+                    <option
+                      value="UTC+7"
+                    >
+                      UTC+7
+                    </option>
+                    <option
+                      value="UTC+8"
+                    >
+                      UTC+8
+                    </option>
+                    <option
+                      value="UTC+9"
+                    >
+                      UTC+9
+                    </option>
+                    <option
+                      value="UTC+10"
+                    >
+                      UTC+10
+                    </option>
+                    <option
+                      value="UTC+11"
+                    >
+                      UTC+11
+                    </option>
+                    <option
+                      value="UTC+12"
+                    >
+                      UTC+12
+                    </option>
+                  </select>
+                </label>
+              </div>
+              <span
+                class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                id="react-aria-:r3v:"
+              >
+                UTC-12
+              </span>
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+              >
+                
+              </i>
+            </button>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Timezone
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-labelledby="react-aria-:r47:"
+              class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+              type="button"
+            >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="local"
+                    >
+                      local
+                    </option>
+                    <option
+                      value="UTC-12"
+                    >
+                      UTC-12
+                    </option>
+                    <option
+                      value="UTC-11"
+                    >
+                      UTC-11
+                    </option>
+                    <option
+                      value="UTC-10"
+                    >
+                      UTC-10
+                    </option>
+                    <option
+                      value="UTC-9"
+                    >
+                      UTC-9
+                    </option>
+                    <option
+                      value="UTC-8"
+                    >
+                      UTC-8
+                    </option>
+                    <option
+                      value="UTC-7"
+                    >
+                      UTC-7
+                    </option>
+                    <option
+                      value="UTC-6"
+                    >
+                      UTC-6
+                    </option>
+                    <option
+                      value="UTC-5"
+                    >
+                      UTC-5
+                    </option>
+                    <option
+                      value="UTC-4"
+                    >
+                      UTC-4
+                    </option>
+                    <option
+                      value="UTC-3"
+                    >
+                      UTC-3
+                    </option>
+                    <option
+                      value="UTC-2"
+                    >
+                      UTC-2
+                    </option>
+                    <option
+                      value="UTC-1"
+                    >
+                      UTC-1
+                    </option>
+                    <option
+                      value="UTC"
+                    >
+                      UTC
+                    </option>
+                    <option
+                      value="UTC+1"
+                    >
+                      UTC+1
+                    </option>
+                    <option
+                      value="UTC+2"
+                    >
+                      UTC+2
+                    </option>
+                    <option
+                      value="UTC+3"
+                    >
+                      UTC+3
+                    </option>
+                    <option
+                      value="UTC+4"
+                    >
+                      UTC+4
+                    </option>
+                    <option
+                      value="UTC+5"
+                    >
+                      UTC+5
+                    </option>
+                    <option
+                      value="UTC+6"
+                    >
+                      UTC+6
+                    </option>
+                    <option
+                      value="UTC+7"
+                    >
+                      UTC+7
+                    </option>
+                    <option
+                      value="UTC+8"
+                    >
+                      UTC+8
+                    </option>
+                    <option
+                      value="UTC+9"
+                    >
+                      UTC+9
+                    </option>
+                    <option
+                      value="UTC+10"
+                    >
+                      UTC+10
+                    </option>
+                    <option
+                      value="UTC+11"
+                    >
+                      UTC+11
+                    </option>
+                    <option
+                      value="UTC+12"
+                    >
+                      UTC+12
+                    </option>
+                  </select>
+                </label>
+              </div>
+              <span
+                class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                id="react-aria-:r47:"
+              >
+                UTC+12
+              </span>
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+              >
+                
+              </i>
+            </button>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Timezone
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-labelledby="react-aria-:r4f:"
+              class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+              type="button"
+            >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="local"
+                    >
+                      local
+                    </option>
+                    <option
+                      value="UTC-12"
+                    >
+                      UTC-12
+                    </option>
+                    <option
+                      value="UTC-11"
+                    >
+                      UTC-11
+                    </option>
+                    <option
+                      value="UTC-10"
+                    >
+                      UTC-10
+                    </option>
+                    <option
+                      value="UTC-9"
+                    >
+                      UTC-9
+                    </option>
+                    <option
+                      value="UTC-8"
+                    >
+                      UTC-8
+                    </option>
+                    <option
+                      value="UTC-7"
+                    >
+                      UTC-7
+                    </option>
+                    <option
+                      value="UTC-6"
+                    >
+                      UTC-6
+                    </option>
+                    <option
+                      value="UTC-5"
+                    >
+                      UTC-5
+                    </option>
+                    <option
+                      value="UTC-4"
+                    >
+                      UTC-4
+                    </option>
+                    <option
+                      value="UTC-3"
+                    >
+                      UTC-3
+                    </option>
+                    <option
+                      value="UTC-2"
+                    >
+                      UTC-2
+                    </option>
+                    <option
+                      value="UTC-1"
+                    >
+                      UTC-1
+                    </option>
+                    <option
+                      value="UTC"
+                    >
+                      UTC
+                    </option>
+                    <option
+                      value="UTC+1"
+                    >
+                      UTC+1
+                    </option>
+                    <option
+                      value="UTC+2"
+                    >
+                      UTC+2
+                    </option>
+                    <option
+                      value="UTC+3"
+                    >
+                      UTC+3
+                    </option>
+                    <option
+                      value="UTC+4"
+                    >
+                      UTC+4
+                    </option>
+                    <option
+                      value="UTC+5"
+                    >
+                      UTC+5
+                    </option>
+                    <option
+                      value="UTC+6"
+                    >
+                      UTC+6
+                    </option>
+                    <option
+                      value="UTC+7"
+                    >
+                      UTC+7
+                    </option>
+                    <option
+                      value="UTC+8"
+                    >
+                      UTC+8
+                    </option>
+                    <option
+                      value="UTC+9"
+                    >
+                      UTC+9
+                    </option>
+                    <option
+                      value="UTC+10"
+                    >
+                      UTC+10
+                    </option>
+                    <option
+                      value="UTC+11"
+                    >
+                      UTC+11
+                    </option>
+                    <option
+                      value="UTC+12"
+                    >
+                      UTC+12
+                    </option>
+                  </select>
+                </label>
+              </div>
+              <span
+                class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                id="react-aria-:r4f:"
+              >
+                UTC+8
+              </span>
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+              >
+                
+              </i>
+            </button>
+          </span>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1bjg207"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field"
+        >
+          <label
+            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          >
+            Timezone
+          </label>
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <button
+              aria-expanded="false"
+              aria-haspopup="listbox"
+              aria-labelledby="react-aria-:r4n:"
+              class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+              type="button"
+            >
+              <div
+                aria-hidden="true"
+                data-a11y-ignore="aria-hidden-focus"
+                data-react-aria-prevent-focus="true"
+                data-testid="hidden-select-container"
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <label>
+                  <select
+                    tabindex="-1"
+                  >
+                    <option />
+                    <option
+                      value="local"
+                    >
+                      local
+                    </option>
+                    <option
+                      value="UTC-12"
+                    >
+                      UTC-12
+                    </option>
+                    <option
+                      value="UTC-11"
+                    >
+                      UTC-11
+                    </option>
+                    <option
+                      value="UTC-10"
+                    >
+                      UTC-10
+                    </option>
+                    <option
+                      value="UTC-9"
+                    >
+                      UTC-9
+                    </option>
+                    <option
+                      value="UTC-8"
+                    >
+                      UTC-8
+                    </option>
+                    <option
+                      value="UTC-7"
+                    >
+                      UTC-7
+                    </option>
+                    <option
+                      value="UTC-6"
+                    >
+                      UTC-6
+                    </option>
+                    <option
+                      value="UTC-5"
+                    >
+                      UTC-5
+                    </option>
+                    <option
+                      value="UTC-4"
+                    >
+                      UTC-4
+                    </option>
+                    <option
+                      value="UTC-3"
+                    >
+                      UTC-3
+                    </option>
+                    <option
+                      value="UTC-2"
+                    >
+                      UTC-2
+                    </option>
+                    <option
+                      value="UTC-1"
+                    >
+                      UTC-1
+                    </option>
+                    <option
+                      value="UTC"
+                    >
+                      UTC
+                    </option>
+                    <option
+                      value="UTC+1"
+                    >
+                      UTC+1
+                    </option>
+                    <option
+                      value="UTC+2"
+                    >
+                      UTC+2
+                    </option>
+                    <option
+                      value="UTC+3"
+                    >
+                      UTC+3
+                    </option>
+                    <option
+                      value="UTC+4"
+                    >
+                      UTC+4
+                    </option>
+                    <option
+                      value="UTC+5"
+                    >
+                      UTC+5
+                    </option>
+                    <option
+                      value="UTC+6"
+                    >
+                      UTC+6
+                    </option>
+                    <option
+                      value="UTC+7"
+                    >
+                      UTC+7
+                    </option>
+                    <option
+                      value="UTC+8"
+                    >
+                      UTC+8
+                    </option>
+                    <option
+                      value="UTC+9"
+                    >
+                      UTC+9
+                    </option>
+                    <option
+                      value="UTC+10"
+                    >
+                      UTC+10
+                    </option>
+                    <option
+                      value="UTC+11"
+                    >
+                      UTC+11
+                    </option>
+                    <option
+                      value="UTC+12"
+                    >
+                      UTC+12
+                    </option>
+                  </select>
+                </label>
+              </div>
+              <span
+                class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                id="react-aria-:r4n:"
+              >
+                UTC-5
+              </span>
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+              >
+                
+              </i>
+            </button>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
