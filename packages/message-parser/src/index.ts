@@ -56,6 +56,14 @@ const detectURL = (
   text: string,
   startIndex: number,
 ): { url: string; length: number } | null => {
+  // Check for proper word boundary - URLs should be preceded by whitespace or start of string
+  if (startIndex > 0) {
+    const prevChar = text[startIndex - 1];
+    if (!/[\s\n\r\t]/.test(prevChar)) {
+      return null;
+    }
+  }
+
   // More comprehensive URL pattern
   const urlPattern = /^(https?:\/\/|ftp:\/\/|ssh:\/\/|[a-zA-Z]+:\/\/|www\.|[a-zA-Z0-9][a-zA-Z0-9-]*\.[a-zA-Z]{2,})/;
   const remaining = text.slice(startIndex);
@@ -240,6 +248,15 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
   while (i < text.length) {
     const char = text[i];
 
+    // Handle escape characters first
+    if (char === '\\' && i + 1 < text.length) {
+      const nextChar = text[i + 1];
+      // Escape the next character by treating it as plain text
+      tokens.push(ast.plain(nextChar));
+      i += 2; // Skip both the backslash and the escaped character
+      continue;
+    }
+
     // URL auto-detection (before other parsing to avoid conflicts)
     const urlResult = detectURL(text, i);
     if (urlResult) {
@@ -379,23 +396,63 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
       }
     }
 
-    // For now, treat everything else as plain text
-    // We'll implement other features later (links, etc.)
+    // Accumulate plain text until we hit markup or special characters
     let plainText = '';
-    while (
-      i < text.length &&
-      !['*', '_', '~', ':', '@', '#', '`', '['].includes(text[i]) &&
-      !getEmojiChar(text, i).char
-    ) {
-      plainText += text[i];
-      i++;
+    let tempI = i;
+    
+    while (tempI < text.length) {
+      const currentChar = text[tempI];
+      
+      // Stop if we hit markup characters
+      if (['*', '_', '~', '@', '#', '`', '['].includes(currentChar)) {
+        break;
+      }
+      
+      // Stop if we hit an emoji
+      if (getEmojiChar(text, tempI).char) {
+        break;
+      }
+      
+      // Special handling for colon - only treat as delimiter if it could be emoji shortcode
+      if (currentChar === ':') {
+        // Don't break on colon if it's clearly part of a URL
+        const beforeColon = text.slice(Math.max(0, tempI - 8), tempI);
+        const afterColon = text.slice(tempI, tempI + 10);
+        if (/https?$/.test(beforeColon) || /^:\/\//.test(afterColon)) {
+          // This is likely part of a URL, continue accumulating
+          plainText += currentChar;
+          tempI++;
+          continue;
+        }
+        
+        // Check if this could be the start of an emoji shortcode
+        const colonEnd = text.indexOf(':', tempI + 1);
+        if (colonEnd !== -1 && colonEnd > tempI + 1) {
+          const potentialShortCode = text.slice(tempI + 1, colonEnd);
+          if (potentialShortCode && !potentialShortCode.includes(' ') && !potentialShortCode.includes(':')) {
+            // This looks like an emoji shortcode, stop accumulating
+            break;
+          }
+        }
+      }
+      
+      // Check if we've hit the start of a URL
+      const urlCheck = detectURL(text, tempI);
+      if (urlCheck) {
+        // If we found a URL, stop accumulating plain text here
+        break;
+      }
+      
+      plainText += currentChar;
+      tempI++;
     }
 
     if (plainText) {
       tokens.push(ast.plain(plainText));
+      i = tempI;
     } else {
-      // Single character that didn't match any pattern
-      tokens.push(ast.plain(char));
+      // If we couldn't accumulate any text, skip this character
+      // This shouldn't happen with proper logic above
       i++;
     }
   }

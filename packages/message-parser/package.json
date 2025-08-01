@@ -25,8 +25,7 @@
       "default": "./messageParser.js"
     }
   },
-  "module": "dist/messageParser.mjs",
-  "unpkg": "dist/messageParser.umd.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "/dist",
