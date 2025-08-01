@@ -413,7 +413,7 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 				const url = new URL(c.req.url);
 				const verParams = url.searchParams.getAll('ver');
 
-				const response = await profile.makeJoin(roomId, userId, verParams.length > 0 ? verParams as RoomVersion[] : ['1']);
+				const response = await profile.makeJoin(roomId, userId, verParams.length > 0 ? (verParams as RoomVersion[]) : ['1']);
 
 				return {
 					body: {
