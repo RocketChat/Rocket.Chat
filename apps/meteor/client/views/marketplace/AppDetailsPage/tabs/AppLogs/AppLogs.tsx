@@ -17,7 +17,11 @@ import { useLogs } from '../../../hooks/useLogs';
 
 function expandedReducer(
 	expandedStates: { id: string; expanded: boolean }[],
-	action: { type: 'update'; id: string; expanded: boolean } | { type: 'expand-all' } | { type: 'reset'; logs: ILogItem[] },
+	action:
+		| { type: 'update'; id: string; expanded: boolean }
+		| { type: 'expand-all' }
+		| { type: 'reset-all' }
+		| { type: 'reset'; logs: ILogItem[] },
 ) {
 	switch (action.type) {
 		case 'update':
@@ -28,6 +32,9 @@ function expandedReducer(
 
 		case 'reset':
 			return action.logs.map((log) => ({ id: log._id, expanded: false }));
+
+		case 'reset-all':
+			return expandedStates.map((state) => ({ ...state, expanded: false }));
 
 		default:
 			return expandedStates;
@@ -58,6 +65,8 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 	const handleExpand = ({ id, expanded }: { id: string; expanded: boolean }) => dispatch({ id, expanded, type: 'update' });
 
 	const handleExpandAll = () => dispatch({ type: 'expand-all' });
+
+	const handleCollapseAll = () => dispatch({ type: 'reset-all' });
 
 	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({
 		appId: id,
@@ -95,6 +104,7 @@ const AppLogs = ({ id }: { id: string }): ReactElement => {
 					noResults={isFetching || !isSuccess || data?.logs?.length === 0}
 					isLoading={isFetching}
 					expandAll={() => handleExpandAll()}
+					collapseAll={() => handleCollapseAll()}
 					refetchLogs={() => refetch()}
 				/>
 			</Box>

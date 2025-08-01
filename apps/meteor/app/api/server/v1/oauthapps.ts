@@ -1,6 +1,14 @@
 import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
-import { ajv, isUpdateOAuthAppParams, isOauthAppsGetParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isUpdateOAuthAppParams,
+	isOauthAppsGetParams,
+	isDeleteOAuthAppParams,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -10,15 +18,48 @@ import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/metho
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
-API.v1.addRoute(
+const oauthAppsListEndpoints = API.v1.get(
 	'oauth-apps.list',
-	{ authRequired: true, permissionsRequired: ['manage-oauth-apps'] },
 	{
-		async get() {
-			return API.v1.success({
-				oauthApps: await OAuthApps.find().toArray(),
-			});
+		authRequired: true,
+		query: ajv.compile<{ uid?: string }>({
+			type: 'object',
+			properties: {
+				uid: {
+					type: 'string',
+				},
+			},
+			additionalProperties: false,
+		}),
+		permissionsRequired: ['manage-oauth-apps'],
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			200: ajv.compile<{ oauthApps: IOAuthApps[] }>({
+				type: 'object',
+				properties: {
+					oauthApps: {
+						type: 'array',
+						items: {
+							$ref: '#/components/schemas/IOAuthApps',
+						},
+					},
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['oauthApps', 'success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+
+	async function action() {
+		return API.v1.success({
+			oauthApps: await OAuthApps.find().toArray(),
+		});
 	},
 );
 
@@ -117,47 +158,9 @@ const oauthAppsCreateEndpoints = API.v1.post(
 		body: isOauthAppsAddParams,
 		permissionsRequired: ['manage-oauth-apps'],
 		response: {
-			400: ajv.compile<{
-				error?: string;
-				errorType?: string;
-				stack?: string;
-				details?: object;
-			}>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					stack: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-					details: { type: 'object' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			403: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			200: ajv.compile<{ application: IOAuthApps }>({
 				type: 'object',
 				properties: {
@@ -182,9 +185,13 @@ const oauthAppsCreateEndpoints = API.v1.post(
 
 type OauthAppsCreateEndpoints = ExtractRoutesFromAPI<typeof oauthAppsCreateEndpoints>;
 
-export type OAuthAppsEndpoints = OauthAppsCreateEndpoints;
+type OauthAppsListEndpoints = ExtractRoutesFromAPI<typeof oauthAppsListEndpoints>;
+
+export type OAuthAppsEndpoints = OauthAppsCreateEndpoints | OauthAppsListEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsCreateEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends OauthAppsListEndpoints {}
 }

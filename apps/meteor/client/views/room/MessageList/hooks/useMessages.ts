@@ -5,7 +5,7 @@ import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 
-import { Messages } from '../../../../../app/models/client';
+import { Messages } from '../../../../stores';
 import { useRoom } from '../../contexts/RoomContext';
 
 const mergeHideSysMessages = (

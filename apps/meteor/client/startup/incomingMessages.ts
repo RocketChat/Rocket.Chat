@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
+import { Messages } from '../stores';
 
 Meteor.startup(() => {
 	onLoggedIn(() => {
