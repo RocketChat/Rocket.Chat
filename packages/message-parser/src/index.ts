@@ -286,7 +286,13 @@ const parseItalicMarkup = (
   }
 
   // For mismatched delimiters like __Hello_, we need special handling
-  // Try single underscore first, then double if that fails
+  // Try to find the best matching pattern
+  
+  // Strategy: Look for the first valid emphasis pattern, even if delimiters don't match exactly
+  // This handles cases like __Hello_ (should be _[italic]Hello_) and _Hello__ (should be [italic]Hello__[plain]_)
+  
+  let bestMatch = null;
+  let bestScore = 0;
   
   // Try single underscore parsing first
   // Find the closing underscore, but skip over emoji shortcodes that contain underscores
@@ -339,68 +345,172 @@ const parseItalicMarkup = (
     if (atSingleEndWordBoundary) {
       const singleContent = text.slice(i + 1, singleEnd);
       if (singleContent.trim().length > 0) { // Don't parse empty or whitespace-only content
-        const singleNestedContent = parseInlineContent(singleContent, options);
-        // Filter to only valid italic content types
-        const singleValidContent = singleNestedContent.filter(
-          (
-            token,
-          ): token is
-            | AST.MarkupExcluding<AST.Italic>
-            | AST.Link
-            | AST.Emoji
-            | AST.UserMention
-            | AST.ChannelMention
-            | AST.InlineCode =>
-            token.type !== 'ITALIC' &&
-            token.type !== 'TIMESTAMP' &&
-            token.type !== 'IMAGE' &&
-            token.type !== 'COLOR' &&
-            token.type !== 'INLINE_KATEX',
-        );
-        return {
-          tokens: [ast.italic(singleValidContent)],
-          nextIndex: singleEnd + 1,
+        // Calculate score: prefer matches with proper delimiters, but accept mismatched ones
+        let score = singleContent.length; // Longer content gets higher priority
+        if (nextChar !== '_') {
+          score += 10; // Bonus for single underscore (not mismatched)
+        }
+        
+        bestMatch = {
+          content: singleContent,
+          startOffset: 0, // No leading plain text
+          endIndex: singleEnd + 1,
+          score: score
         };
       }
     }
   }
 
-  // If single underscore didn't work and we have double underscore, try double
+  // If we start with double underscore, also try finding single underscore match with leading plain text
   if (nextChar === '_') {
+    // For __Hello_, try to parse as _[italic]Hello_[plain] (skip first underscore)
+    const singleStartOffset = 1; // Skip the first underscore
+    searchPos = i + 2; // Start searching after __
+    
+    while (searchPos < text.length) {
+      const nextUnderscore = text.indexOf('_', searchPos);
+      if (nextUnderscore === -1) break;
+      
+      // Same emoji detection logic
+      let insideEmoji = false;
+      for (let j = nextUnderscore - 1; j >= searchPos; j--) {
+        if (text[j] === ':') {
+          const closingColon = text.indexOf(':', nextUnderscore + 1);
+          if (closingColon !== -1) {
+            const potentialShortcode = text.slice(j + 1, closingColon);
+            if (potentialShortcode && !potentialShortcode.includes(' ') && !potentialShortcode.includes(':')) {
+              insideEmoji = true;
+              break;
+            }
+          }
+          break;
+        }
+      }
+      
+      if (insideEmoji) {
+        const colonBefore = text.lastIndexOf(':', nextUnderscore);
+        const colonAfter = text.indexOf(':', nextUnderscore + 1);
+        searchPos = colonAfter !== -1 ? colonAfter + 1 : nextUnderscore + 1;
+        continue;
+      }
+      
+      // Check word boundary
+      const nextCharAfter = nextUnderscore + 1 < text.length ? text[nextUnderscore + 1] : '';
+      const atWordBoundary = nextUnderscore + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(nextCharAfter);
+      
+      if (atWordBoundary) {
+        const content = text.slice(i + 2, nextUnderscore); // Skip first underscore
+        if (content.trim().length > 0) {
+          const score = content.length + 5; // Lower score than perfect match but better than no match
+          
+          if (!bestMatch || score > bestMatch.score) {
+            bestMatch = {
+              content: content,
+              startOffset: 1, // Leading underscore becomes plain text
+              endIndex: nextUnderscore + 1,
+              score: score
+            };
+          }
+        }
+      }
+      break;
+    }
+    
+    // Also try double underscore match
     const doubleEnd = text.indexOf('__', i + 2);
     if (doubleEnd !== -1 && doubleEnd > i + 2) {
-      // Check word boundary after closing delimiter
       const nextCharAfterDouble = doubleEnd + 2 < text.length ? text[doubleEnd + 2] : '';
       const atDoubleEndWordBoundary = doubleEnd + 2 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(nextCharAfterDouble);
       
       if (atDoubleEndWordBoundary) {
         const doubleContent = text.slice(i + 2, doubleEnd);
-        if (doubleContent.trim().length > 0) { // Don't parse empty or whitespace-only content
-          const doubleNestedContent = parseInlineContent(doubleContent, options);
-          // Filter to only valid italic content types
-          const doubleValidContent = doubleNestedContent.filter(
-            (
-              token,
-            ): token is
-              | AST.MarkupExcluding<AST.Italic>
-              | AST.Link
-              | AST.Emoji
-              | AST.UserMention
-              | AST.ChannelMention
-              | AST.InlineCode =>
-              token.type !== 'ITALIC' &&
-              token.type !== 'TIMESTAMP' &&
-              token.type !== 'IMAGE' &&
-              token.type !== 'COLOR' &&
-              token.type !== 'INLINE_KATEX',
-          );
-          return {
-            tokens: [ast.italic(doubleValidContent)],
-            nextIndex: doubleEnd + 2,
-          };
+        if (doubleContent.trim().length > 0) {
+          const score = doubleContent.length + 15; // Highest score for perfect double match
+          
+          if (!bestMatch || score > bestMatch.score) {
+            bestMatch = {
+              content: doubleContent,
+              startOffset: 0, // No leading plain text
+              endIndex: doubleEnd + 2,
+              score: score
+            };
+          }
         }
       }
     }
+  }
+  
+  // Handle _Hello__ case (single opening, double closing) -> should be [italic]Hello__[plain]_
+  if (nextChar !== '_') {
+    // Look for __ pattern after single _
+    let pos = i + 1;
+    while (pos < text.length - 1) {
+      if (text[pos] === '_' && text[pos + 1] === '_') {
+        // Found __, check if this could be a valid closing
+        const content = text.slice(i + 1, pos);
+        if (content.trim().length > 0) {
+          // Check if there's proper word boundary before the __
+          const charBefore = pos > 0 ? text[pos - 1] : '';
+          const validContentEnd = !/[\s\n\r\t]/.test(charBefore); // Content should not end with whitespace
+          
+          if (validContentEnd) {
+            const score = content.length + 7; // Good score but lower than perfect matches
+            
+            if (!bestMatch || score > bestMatch.score) {
+              bestMatch = {
+                content: content,
+                startOffset: 0,
+                endIndex: pos + 2, // Consume both underscores but we'll only add one as trailing text
+                score: score,
+                trailingPlainText: '_' // Just one underscore as trailing text
+              };
+            }
+          }
+        }
+        break;
+      }
+      pos++;
+    }
+  }
+  
+  // If we found a valid match, use it
+  if (bestMatch) {
+    const result = [];
+    
+    // Add leading plain text if any
+    if (bestMatch.startOffset > 0) {
+      result.push(ast.plain(text.slice(i, i + bestMatch.startOffset)));
+    }
+    
+    // Add the italic content
+    const nestedContent = parseInlineContent(bestMatch.content, options);
+    const validContent = nestedContent.filter(
+      (
+        token,
+      ): token is
+        | AST.MarkupExcluding<AST.Italic>
+        | AST.Link
+        | AST.Emoji
+        | AST.UserMention
+        | AST.ChannelMention
+        | AST.InlineCode =>
+        token.type !== 'ITALIC' &&
+        token.type !== 'TIMESTAMP' &&
+        token.type !== 'IMAGE' &&
+        token.type !== 'COLOR' &&
+        token.type !== 'INLINE_KATEX',
+    );
+    result.push(ast.italic(validContent));
+    
+    // Add trailing plain text if this was a _Hello__ case
+    if (bestMatch.trailingPlainText) {
+      result.push(ast.plain(bestMatch.trailingPlainText));
+    }
+    
+    return {
+      tokens: result,
+      nextIndex: bestMatch.endIndex,
+    };
   }
 
   return null;
