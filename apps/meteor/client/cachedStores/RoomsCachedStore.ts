@@ -2,16 +2,15 @@ import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy } from '@rocket.
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { CachedChatSubscription } from './CachedChatSubscription';
-import { PrivateCachedStore } from '../../../../client/lib/cachedCollections/CachedCollection';
-import { createDocumentMapStore } from '../../../../client/lib/cachedCollections/DocumentMapStore';
+import { PrivateCachedStore } from '../lib/cachedStores';
+import { Rooms, Subscriptions } from '../stores';
 
-class CachedChatRoom extends PrivateCachedStore<IRoom> {
+class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 	constructor() {
 		super({
 			name: 'rooms',
 			eventType: 'notify-user',
-			store: createDocumentMapStore(),
+			store: Rooms.use,
 		});
 	}
 
@@ -67,7 +66,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 	}
 
 	protected override handleLoadedFromServer(rooms: IRoom[]): void {
-		const indexedSubscriptions = CachedChatSubscription.collection.state.indexBy('rid');
+		const indexedSubscriptions = Subscriptions.use.getState().indexBy('rid');
 
 		const subscriptionsWithRoom = rooms.flatMap((room) => {
 			const sub = indexedSubscriptions.get(room._id);
@@ -77,7 +76,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 			return this.merge(room, sub);
 		});
 
-		CachedChatSubscription.collection.state.storeMany(subscriptionsWithRoom);
+		Subscriptions.use.getState().storeMany(subscriptionsWithRoom);
 	}
 
 	protected override async handleRecordEvent(action: 'removed' | 'changed', room: IRoom) {
@@ -85,7 +84,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 
 		if (action === 'removed') return;
 
-		CachedChatSubscription.collection.state.update(
+		Subscriptions.use.getState().update(
 			(record) => record.rid === room._id,
 			(sub) => this.merge(room, sub),
 		);
@@ -94,7 +93,7 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 	protected override handleSyncEvent(action: 'removed' | 'changed', room: IRoom): void {
 		if (action === 'removed') return;
 
-		CachedChatSubscription.collection.state.update(
+		Subscriptions.use.getState().update(
 			(record) => record.rid === room._id,
 			(sub) => this.merge(room, sub),
 		);
@@ -111,9 +110,6 @@ class CachedChatRoom extends PrivateCachedStore<IRoom> {
 	}
 }
 
-const instance = new CachedChatRoom();
+const instance = new RoomsCachedStore();
 
-export {
-	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
-	instance as CachedChatRoom,
-};
+export { instance as RoomsCachedStore };
