@@ -73,23 +73,7 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 				</Box>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Button
-					secondary
-					w='full'
-					aria-label={t('Clear_filters')}
-					onClick={() =>
-						reset({
-							startDate: '',
-							endDate: '',
-							startTime: '',
-							endTime: '',
-							instance: '',
-							severity: 'all',
-							event: 'all',
-							timeFilter: '',
-						})
-					}
-				>
+				<Button secondary w='full' aria-label={t('Clear_filters')} onClick={() => reset()}>
 					{t('Clear_filters')}
 				</Button>
 			</ContextualbarFooter>
