@@ -5,15 +5,8 @@ export const toggleFavoriteRoom = (roomId: string, favorite: boolean, userId: st
 		return;
 	}
 
-	Subscriptions.update(
-		{
-			'rid': roomId,
-			'u._id': userId,
-		},
-		{
-			$set: {
-				f: favorite,
-			},
-		},
+	Subscriptions.state.update(
+		(record) => record.rid === roomId && record.u._id === userId,
+		(record) => ({ ...record, f: favorite }),
 	);
 };

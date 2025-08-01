@@ -1,7 +1,7 @@
 import { cloneElement, Component, createContext, toChildArray } from 'preact';
 
-import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../helpers/createClassName';
 
 const getPositioningStyle = (placement, { left, top, right, bottom }) => {
 	switch (placement) {
