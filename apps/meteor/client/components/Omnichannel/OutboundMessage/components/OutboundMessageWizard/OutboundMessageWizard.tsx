@@ -10,7 +10,7 @@ import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
 import GenericError from '../../../../GenericError';
 
 type OutboundMessageWizardProps = {
-	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId'>>;
+	defaultValues?: Partial<SubmitPayload>;
 };
 
 const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
@@ -48,7 +48,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 					</WizardContent>
 
 					<WizardContent id='replies'>
-						<RepliesStep onSubmit={handleSubmit} />
+						<RepliesStep defaultValues={state} onSubmit={handleSubmit} />
 					</WizardContent>
 
 					<WizardContent id='preview'>
