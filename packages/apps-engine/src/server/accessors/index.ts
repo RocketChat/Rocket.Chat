@@ -20,6 +20,7 @@ import { ModifyUpdater } from './ModifyUpdater';
 import { Notifier } from './Notifier';
 import { OAuthAppsModify } from './OAuthAppsModify';
 import { OAuthAppsReader } from './OAuthAppsReader';
+import { OutboundMessageProviderExtend } from './OutboundCommunicationProviderExtend';
 import { Persistence } from './Persistence';
 import { PersistenceRead } from './PersistenceRead';
 import { Reader } from './Reader';
@@ -92,4 +93,5 @@ export {
 	VideoConfProviderExtend,
 	OAuthAppsModify,
 	OAuthAppsReader,
+	OutboundMessageProviderExtend,
 };

@@ -17,6 +17,7 @@ import {
 	ContextualbarFooter,
 } from '../../../components/Contextualbar';
 import { UserInfoAvatar } from '../../../components/UserInfo';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { MaxChatsPerAgent } from '../additionalForms';
 
 type AgentEditFormData = {
@@ -92,8 +93,8 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 			dispatchToastMessage({ type: 'success', message: t('Success') });
 			router.navigate('/omnichannel/agents');
 
-			queryClient.invalidateQueries({ queryKey: ['livechat-agents'] });
-			queryClient.invalidateQueries({ queryKey: ['livechat-getAgentDepartments', agentData._id] });
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agents() });
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agentDepartments(agentData._id) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

@@ -1,5 +1,6 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel, Utils } from './page-objects';
+import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
 import { createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
@@ -21,39 +22,75 @@ test.describe.serial('export-messages', () => {
 		await page.goto('/home');
 	});
 
-	test('should all export methods be available in targetChannel', async () => {
+	test('should all export methods be available in targetChannel', async ({ page }) => {
+		const exportMessagesTab = new ExportMessagesTab(page);
+
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
-		await expect(poHomeChannel.tabs.exportMessages.sendEmailMethod).not.toBeDisabled();
 
-		await poHomeChannel.tabs.exportMessages.sendEmailMethod.click();
-		await expect(poHomeChannel.tabs.exportMessages.getMethodByName('Send email')).toBeVisible();
-		await expect(poHomeChannel.tabs.exportMessages.getMethodByName('Send file via email')).toBeVisible();
-		await expect(poHomeChannel.tabs.exportMessages.getMethodByName('Download file')).toBeVisible();
+		await exportMessagesTab.exposeMethods();
+		await expect(exportMessagesTab.getMethodOptionByName('Send email')).toBeVisible();
+		await expect(exportMessagesTab.getMethodOptionByName('Send file via email')).toBeVisible();
+		await expect(exportMessagesTab.getMethodOptionByName('Download file')).toBeVisible();
 	});
 
-	test('should display an error when trying to send email without filling to users or to additional emails', async () => {
+	test('should display export output format correctly depending on the selected method', async ({ page }) => {
+		const exportMessagesTab = new ExportMessagesTab(page);
+
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.btnExportMessages.click();
+
+		// TODO: Fix the base component to have a disabled statement and not only a class attribute
+		// Here we are checking for a button because the internal select element is not accessible
+		// and the higher component that is a button doesn't appear as disabled.
+		await expect(exportMessagesTab.outputFormat).toContainClass('disabled');
+
+		await exportMessagesTab.setMethod('Send file via email');
+
+		await exportMessagesTab.exposeOutputFormats();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('html')).toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('json')).toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('pdf')).not.toBeVisible();
+
+		await exportMessagesTab.setOutputFormat('html');
+
+		await exportMessagesTab.setMethod('Download file');
+
+		await exportMessagesTab.exposeOutputFormats();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('html')).not.toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('json')).toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('pdf')).toBeVisible();
+	});
+
+	test('should display an error when trying to send email without filling to users or to additional emails', async ({ page }) => {
+		const exportMessagesTab = new ExportMessagesTab(page);
+
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('hello world');
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
+		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
+
 		await poHomeChannel.content.getMessageByText('hello world').click();
-		await poHomeChannel.tabs.exportMessages.btnSend.click();
+		await exportMessagesTab.send();
 
 		await expect(
 			poUtils.getAlertByText('You must select one or more users or provide one or more email addresses, separated by commas'),
 		).toBeVisible();
 	});
 
-	test('should display an error when trying to send email without selecting any message', async () => {
+	test('should display an error when trying to send email without selecting any message', async ({ page }) => {
+		const exportMessagesTab = new ExportMessagesTab(page);
+
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
-		await poHomeChannel.tabs.exportMessages.textboxAdditionalEmails.fill('mail@mail.com');
-		await poHomeChannel.tabs.exportMessages.btnSend.click();
+		await exportMessagesTab.setAdditionalEmail('mail@mail.com');
+		await exportMessagesTab.send();
 
 		await expect(poUtils.getAlertByText(`You haven't selected any messages`)).toBeVisible();
 	});
