@@ -356,7 +356,7 @@ const parseStrikeMarkup = (
 };
 
 // Helper function to parse inline content with markup
-const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
+const parseInlineContent = (text: string, options?: Options, skipUrlDetection = false): AST.Inlines[] => {
   if (!text) return [];
 
   const tokens: AST.Inlines[] = [];
@@ -383,11 +383,14 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
     }
 
     // URL auto-detection (before other parsing to avoid conflicts)
-    const urlResult = detectURL(text, i);
-    if (urlResult) {
-      tokens.push(ast.autoLink(urlResult.url, options?.customDomains));
-      i += urlResult.length;
-      continue;
+    // Skip URL detection for link labels to avoid conflicts
+    if (!skipUrlDetection) {
+      const urlResult = detectURL(text, i);
+      if (urlResult) {
+        tokens.push(ast.autoLink(urlResult.url, options?.customDomains));
+        i += urlResult.length;
+        continue;
+      }
     }
 
     // Try parsing markup
@@ -517,8 +520,9 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
             const url = text.slice(closeBracket + 2, closeParens);
 
             // Parse label content for nested markup, filter to valid types
+            // Skip URL detection in labels to avoid conflicts with text like "Rocket.Chat"
             const labelContent = labelText
-              ? parseInlineContent(labelText, options).filter(
+              ? parseInlineContent(labelText, options, true).filter(
                   (
                     token,
                   ): token is
@@ -533,7 +537,7 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
                     token.type === 'STRIKE' ||
                     token.type === 'MENTION_CHANNEL',
                 )
-              : [ast.plain(url)];
+              : [];
 
             tokens.push(ast.link(url, labelContent));
             i = closeParens + 1;
