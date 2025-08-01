@@ -5,6 +5,7 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { UpdateFilter } from 'mongodb';
 
 import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { getUserInfo } from '../../app/api/server/helpers/getUserInfo';
@@ -38,6 +39,7 @@ async function saveUserProfile(
 	customFields: Record<string, unknown>,
 	..._: unknown[]
 ) {
+	const unset: UpdateFilter<IUser> = {};
 	if (!rcSettings.get<boolean>('Accounts_AllowUserProfileChange')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'saveUserProfile',
@@ -138,6 +140,12 @@ async function saveUserProfile(
 				logout: false,
 			});
 
+			if (user.requirePasswordChange) {
+				await Users.unsetRequirePasswordChange(user._id);
+				unset.requirePasswordChange = true;
+				unset.requirePasswordChangeReason = true;
+			}
+
 			await Users.addPasswordToHistory(
 				this.userId,
 				user.services?.password.bcrypt,
@@ -166,7 +174,12 @@ async function saveUserProfile(
 		throw new Error('Unexpected error after saving user profile: user not found');
 	}
 
-	void notifyOnUserChange({ clientAction: 'updated', id: updatedUser._id, diff: await getUserInfo(updatedUser) });
+	void notifyOnUserChange({
+		clientAction: 'updated',
+		id: updatedUser._id,
+		diff: await getUserInfo(updatedUser),
+		...(Object.keys(unset).length > 0 && { unset }),
+	});
 
 	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
