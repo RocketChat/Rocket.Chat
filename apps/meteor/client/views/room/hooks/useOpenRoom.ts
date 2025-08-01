@@ -76,7 +76,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			if (reference !== undefined && room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid
-				await LegacyRoomManager.close(type + reference);
+				LegacyRoomManager.close(type + reference);
 				directRoute.push({ rid: room._id }, (prev) => prev);
 				throw new OldUrlRoomError(undefined, { rid: room._id });
 			}

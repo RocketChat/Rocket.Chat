@@ -26,6 +26,14 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 		PermissionsCachedStore.listen();
 	}, []);
 
+	const isLoading = !PermissionsCachedStore.useReady();
+
+	if (isLoading) {
+		throw (async () => {
+			await PermissionsCachedStore.init();
+		})();
+	}
+
 	return <AuthorizationContext.Provider children={children} value={contextValue} />;
 };
 
