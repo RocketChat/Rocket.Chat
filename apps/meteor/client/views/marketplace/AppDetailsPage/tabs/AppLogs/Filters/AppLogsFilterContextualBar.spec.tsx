@@ -72,10 +72,10 @@ describe('Time range', () => {
 		it(`Should update time range when ${name} is selected`, async () => {
 			render(<Default />, { wrapper: mockAppRoot().build() });
 
-			const startDate = screen.getByLabelText('Start Date');
-			const endDate = screen.getByLabelText('End Date');
-			const startTime = screen.getByLabelText('Start Time');
-			const endTime = screen.getByLabelText('End Time');
+			const startDate = screen.getByLabelText('Start_Date');
+			const endDate = screen.getByLabelText('End_Date');
+			const startTime = screen.getByLabelText('Start_Time');
+			const endTime = screen.getByLabelText('End_Time');
 			const timeSelect = screen.getByLabelText('Time');
 
 			await userEvent.click(timeSelect);
@@ -94,10 +94,10 @@ describe('Time range', () => {
 		it(`Should manually set ${name}`, async () => {
 			render(<Default />, { wrapper: mockAppRoot().build() });
 
-			const startDate = screen.getByLabelText('Start Date');
-			const endDate = screen.getByLabelText('End Date');
-			const startTime = screen.getByLabelText('Start Time');
-			const endTime = screen.getByLabelText('End Time');
+			const startDate = screen.getByLabelText('Start_Date');
+			const endDate = screen.getByLabelText('End_Date');
+			const startTime = screen.getByLabelText('Start_Time');
+			const endTime = screen.getByLabelText('End_Time');
 
 			await userEvent.type(startDate, value[0]);
 			await userEvent.type(endDate, value[1]);
@@ -115,10 +115,10 @@ describe('Time range', () => {
 it('Should clear time range', async () => {
 	render(<Default />, { wrapper: mockAppRoot().build() });
 
-	const startDate = screen.getByLabelText('Start Date');
-	const endDate = screen.getByLabelText('End Date');
-	const startTime = screen.getByLabelText('Start Time');
-	const endTime = screen.getByLabelText('End Time');
+	const startDate = screen.getByLabelText('Start_Date');
+	const endDate = screen.getByLabelText('End_Date');
+	const startTime = screen.getByLabelText('Start_Time');
+	const endTime = screen.getByLabelText('End_Time');
 	const timeSelect = screen.getByLabelText('Time');
 
 	await userEvent.click(timeSelect);

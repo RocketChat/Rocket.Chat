@@ -169,7 +169,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-sdt442"
                     >
                       <input
-                        aria-label="Start Date"
+                        aria-label="Start_Date"
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
                         name="startDate"
                         size="1"
@@ -191,7 +191,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-nc7kyx"
                     >
                       <input
-                        aria-label="Start Time"
+                        aria-label="Start_Time"
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
                         name="startTime"
                         size="1"
@@ -227,7 +227,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-sdt442"
                     >
                       <input
-                        aria-label="End Date"
+                        aria-label="End_Date"
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
                         name="endDate"
                         size="1"
@@ -249,7 +249,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-nc7kyx"
                     >
                       <input
-                        aria-label="End Time"
+                        aria-label="End_Time"
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
                         name="endTime"
                         size="1"
