@@ -72,6 +72,8 @@ class RocketChatIntegrationHandler {
 	addIntegration(record: IOutgoingIntegration): void {
 		outgoingLogger.debug(`Adding the integration ${record.name} of the event ${record.event}!`);
 		let channels = [];
+		// Use optional chaining (?.) to prevent runtime errors when record.event exists
+		// but outgoingEvents[record.event] is undefined.
 		if (record.event && !outgoingEvents[record.event]?.use.channel) {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)
@@ -291,7 +293,7 @@ class RocketChatIntegrationHandler {
 					data.bot = Boolean(message.bot); // TODO: need to double check this, since it makes no sense
 				}
 
-				if (message.editedAt) {
+				if (message.editedAt && event === 'messageEdited') {
 					data.isEdited = true;
 				}
 
