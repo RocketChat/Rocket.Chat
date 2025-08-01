@@ -1,10 +1,10 @@
 import type { HomeserverEventSignatures } from '@hs/federation-sdk';
-import { Message } from '@rocket.chat/core-services';
+import { FederationMatrix, Message } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
-import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:message');
 
@@ -124,6 +124,38 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			logger.debug('Successfully processed Matrix message');
 		} catch (error) {
 			logger.error('Error processing Matrix message:', error);
+		}
+	});
+
+	emitter.on('homeserver.matrix.redaction', async (data) => {
+		try {
+			const redactedEventId = data.redacts;
+			if (!redactedEventId) {
+				logger.debug('No redacts field in redaction event');
+				return;
+			}
+
+			const messageEvent = await FederationMatrix.getEventById(redactedEventId);
+			if (!messageEvent || messageEvent.type !== 'm.room.message') {
+				logger.debug(`Event ${redactedEventId} is not a message event`);
+				return;
+			}
+
+			const rcMessage = await Messages.findOneByFederationId(data.redacts);
+			if (!rcMessage) {
+				logger.debug(`No RC message found for event ${data.redacts}`);
+				return;
+			}
+
+			const user = await Users.findOneByUsername(data.sender);
+			if (!user) {
+				logger.debug(`User not found: ${data.sender}`);
+				return;
+			}
+
+			await Message.deleteMessage(user, rcMessage);
+		} catch (error) {
+			logger.error('Failed to process Matrix removal redaction:', error);
 		}
 	});
 }

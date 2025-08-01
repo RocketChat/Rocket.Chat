@@ -259,7 +259,14 @@ export const isSystemMessage = (message: IMessage): message is ISystemMessage =>
 	message.t !== undefined && MessageTypes.includes(message.t);
 
 export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
-export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
+
+export interface IFederatedMessage extends IMessage {
+	federation: {
+		eventId: string;
+	};
+}
+
+export const isMessageFromMatrixFederation = (message: IMessage): message is IFederatedMessage =>
 	'federation' in message && Boolean(message.federation?.eventId);
 
 export interface ITranslatedMessage extends IMessage {
