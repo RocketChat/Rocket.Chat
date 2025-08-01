@@ -426,7 +426,7 @@ const validateLoginAttemptAsync = async function (login) {
 	if (login.user.roles.includes('admin') === false && login.type === 'password' && settings.get('Accounts_EmailVerification') === true) {
 		const validEmail = login.user.emails.filter((email) => email.verified === true);
 		if (validEmail.length === 0) {
-			throw new Meteor.Error('error-invalid-email', 'Invalid email __email__');
+			throw new Meteor.Error('error-invalid-email', 'Email not verified');
 		}
 	}
 
