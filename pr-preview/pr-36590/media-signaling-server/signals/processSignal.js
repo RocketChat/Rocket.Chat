@@ -39,6 +39,10 @@ async function processSignal(signal, uid) {
         if (channel.role !== role || !(0, compareParticipantAndActor_1.compareParticipantAndActor)(channel.participant, call[channel.role])) {
             throw new Error('invalid-channel-data');
         }
+        // The code will only reach this point if one of the three following conditions are true:
+        // 1. the signal came from the exact user session where the caller initiated the call
+        // 2. the signal came from the exact user session where the callee accepted the call
+        // 2. the call has not been accepted yet and the signal came from a valid sesison from the callee
         switch (signal.type) {
             case 'sdp':
                 await (0, processSDP_1.processSDP)(signal.body, call, channel);
