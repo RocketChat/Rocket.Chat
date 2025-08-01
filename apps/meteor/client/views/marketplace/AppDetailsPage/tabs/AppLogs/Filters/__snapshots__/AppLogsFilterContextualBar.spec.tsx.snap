@@ -345,9 +345,11 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       </label>
                     </div>
                     <span
-                      class="rcx-box rcx-box--full rcx-css-uyvtjh"
+                      class="rcx-box rcx-box--full rcx-css-4w7o7u"
                       id="react-aria-:rg:"
-                    />
+                    >
+                      All
+                    </span>
                     <i
                       aria-hidden="true"
                       class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
