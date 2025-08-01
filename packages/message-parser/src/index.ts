@@ -251,10 +251,25 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
     // Handle escape characters first
     if (char === '\\' && i + 1 < text.length) {
       const nextChar = text[i + 1];
-      // Escape the next character by treating it as plain text
-      tokens.push(ast.plain(nextChar));
-      i += 2; // Skip both the backslash and the escaped character
-      continue;
+      
+      // Always escape backslash with backslash (\\  becomes \)
+      if (nextChar === '\\') {
+        tokens.push(ast.plain('\\'));
+        i += 2; // Skip both backslashes
+        continue;
+      }
+      
+      // Only escape known markup characters that we actually implement
+      const markupChars = ['*', '_', '~', '`', '['];
+      
+      if (markupChars.includes(nextChar)) {
+        // Escape the markup character by treating it as plain text
+        tokens.push(ast.plain(nextChar));
+        i += 2; // Skip both the backslash and the escaped character
+        continue;
+      }
+      // If it's not a markup character, treat the backslash as literal
+      // Fall through to normal character processing
     }
 
     // URL auto-detection (before other parsing to avoid conflicts)
@@ -403,6 +418,30 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
     while (tempI < text.length) {
       const currentChar = text[tempI];
       
+      // Handle escape characters in plain text accumulation
+      if (currentChar === '\\' && tempI + 1 < text.length) {
+        const nextChar = text[tempI + 1];
+        
+        // Always escape backslash with backslash
+        if (nextChar === '\\') {
+          plainText += '\\';
+          tempI += 2; // Skip both backslashes
+          continue;
+        }
+        
+        // Only escape known markup characters that we actually implement
+        const markupChars = ['*', '_', '~', '`', '['];
+        
+        if (markupChars.includes(nextChar)) {
+          // Escape the markup character by treating it as plain text
+          plainText += nextChar;
+          tempI += 2; // Skip both the backslash and the escaped character
+          continue;
+        }
+        // If it's not a markup character, treat the backslash as literal
+        // Fall through to normal character processing
+      }
+      
       // Stop if we hit markup characters
       if (['*', '_', '~', '@', '#', '`', '['].includes(currentChar)) {
         break;
@@ -451,13 +490,40 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
       tokens.push(ast.plain(plainText));
       i = tempI;
     } else {
-      // If we couldn't accumulate any text, skip this character
-      // This shouldn't happen with proper logic above
+      // If we couldn't accumulate any text (because we immediately hit a special character),
+      // treat the current character as plain text and continue
+      tokens.push(ast.plain(char));
       i++;
     }
   }
 
-  return tokens;
+  return consolidatePlainText(tokens);
+};
+
+// Helper function to consolidate adjacent plain text nodes
+const consolidatePlainText = (tokens: AST.Inlines[]): AST.Inlines[] => {
+  const result: AST.Inlines[] = [];
+  let currentPlainText = '';
+
+  for (const token of tokens) {
+    if (token.type === 'PLAIN_TEXT') {
+      currentPlainText += token.value;
+    } else {
+      // Non-plain text token
+      if (currentPlainText) {
+        result.push(ast.plain(currentPlainText));
+        currentPlainText = '';
+      }
+      result.push(token);
+    }
+  }
+
+  // Add any remaining plain text
+  if (currentPlainText) {
+    result.push(ast.plain(currentPlainText));
+  }
+
+  return result;
 };
 export const parse = (input: string, options?: Options): AST.Root => {
   // Normalize input
