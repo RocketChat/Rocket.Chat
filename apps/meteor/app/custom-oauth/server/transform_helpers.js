@@ -102,6 +102,7 @@ export const normalizers = {
 };
 
 const IDENTITY_PROPNAME_FILTER = /(\.)/g;
+
 export const renameInvalidProperties = (input) => {
 	if (Array.isArray(input)) {
 		return input.map(renameInvalidProperties);

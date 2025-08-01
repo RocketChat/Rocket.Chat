@@ -72,6 +72,10 @@ export default async function injectInitialData() {
 				_id: 'Livechat_Require_Contact_Verification',
 				value: 'never',
 			},
+			{
+				_id: 'Deployment_FingerPrint_Verified',
+				value: true,
+			},
 		].map((setting) =>
 			connection
 				.db()
