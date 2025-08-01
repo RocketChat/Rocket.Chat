@@ -8,13 +8,19 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
-export type CallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
+export type CallState =
+	| 'none' // trying to call with no idea if it'll reach anyone
+	| 'ringing' // call has been acknoledged by the callee's agent, but no response about them accepting it or not
+	| 'accepted' // call has been accepted and the webrtc offer is being exchanged
+	| 'active' // webrtc connection has been established
+	| 'hangup'; // call is over
 
 export type CallHangupReason =
 	| 'normal' // User explicitly hanged up
 	| 'remote' // Server told the client to hang up
 	| 'rejected' // The callee rejected the call
 	| 'unavailable' // The actor is not available
+	| 'timeout' // The call state hasn't progressed for too long
 	| 'signaling-error' // Hanging up because of an error during the signal processing
 	| 'service-error' // Hanging up because of an error setting up the service connection
 	| 'media-error' // Hanging up because of an error setting up the media connection
@@ -39,8 +45,4 @@ export interface IClientMediaCall extends Required<IClientMediaCallData> {
 	accept(): Promise<void>;
 	reject(): Promise<void>;
 	hangup(): Promise<void>;
-}
-
-export function isCallRole(role: string): role is CallRole {
-	return ['caller', 'callee'].includes(role);
 }

@@ -36,10 +36,10 @@ import type {
 	IOTRMessage,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
+import type { MediaSignal } from '@rocket.chat/media-signaling';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import type { AutoUpdateRecord } from '../types/IMeteor';
-import { MediaSignal } from '@rocket.chat/media-signaling';
 
 type ClientAction = 'inserted' | 'updated' | 'removed' | 'changed';
 
