@@ -148,8 +148,12 @@ const detectEmail = (
     }
   }
 
+  // Check if this starts with mailto: prefix
+  const hasMailtoPrefix = text.slice(startIndex, startIndex + 7) === 'mailto:';
+  const emailStartIndex = hasMailtoPrefix ? startIndex + 7 : startIndex;
+
   // Look for email pattern: username@domain.tld
-  let endIndex = startIndex;
+  let endIndex = emailStartIndex;
   let atFound = false;
   let atIndex = -1;
   
@@ -180,32 +184,39 @@ const detectEmail = (
     endIndex++;
   }
 
-  if (!atFound || atIndex === startIndex || atIndex === endIndex - 1) {
+  if (!atFound || atIndex === emailStartIndex || atIndex === endIndex - 1) {
     return null; // No @ found, or @ at start/end
   }
 
-  const email = text.slice(startIndex, endIndex);
+  const fullString = text.slice(startIndex, endIndex);
+  const emailPart = text.slice(emailStartIndex, endIndex);
   
   // Email validation that supports international characters - more permissive but still structured
-  // Allow any non-whitespace, non-@ characters in username and domain
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(email)) {
+  // Allow any non-whitespace, non-@ characters in username and domain, including Unicode
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if (!emailRegex.test(emailPart)) {
     return null;
   }
 
   // Additional validation - domain should have at least one dot after @
-  const domain = email.split('@')[1];
+  const domain = emailPart.split('@')[1];
   if (!domain?.includes('.') || domain.endsWith('.') || domain.startsWith('.')) {
     return null;
   }
 
-  // Reject invalid patterns like "fake@gmail.comf" - domain should end with valid TLD
+  // Reject invalid patterns like "fake@gmail.comf" - but be more permissive for international TLDs
   const tld = domain.split('.').pop();
-  if (!tld || tld.length < 2 || tld.length > 4 || !/^[a-zA-Z]+$/.test(tld)) {
+  if (!tld || tld.length < 2 || tld.length > 6) {
+    return null;
+  }
+  
+  // Additional check: reject obvious invalid TLDs like "comf" - they should be real TLD patterns
+  // Real TLDs don't typically end with 'f' unless they're valid ones like 'pdf' but that's rare
+  if (tld.length >= 4 && /[a-z]f$/i.test(tld) && !['pdf', 'gif'].includes(tld.toLowerCase())) {
     return null;
   }
 
-  return { email, length: endIndex - startIndex };
+  return { email: fullString, length: endIndex - startIndex };
 };
 
 // Helper function to parse bold markup
@@ -430,47 +441,26 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
       }
     }
 
-    // Email detection (before user mentions to take precedence)
+    // User mentions with @username (but only if preceded by word boundary)
     if (char === '@') {
-      // Look backwards to find potential start of email
-      let emailStart = i;
-      while (emailStart > 0 && /[a-zA-Z0-9._'-]/.test(text[emailStart - 1])) {
-        emailStart--;
-      }
+      // Check if @ is preceded by a word boundary (whitespace, start of string, or punctuation)
+      const prevChar = i > 0 ? text[i - 1] : '';
+      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
       
-      // Only attempt email detection if we found some characters before @
-      if (emailStart < i) {
-        const emailResult = detectEmail(text, emailStart);
-        if (emailResult) {
-          const { email } = emailResult;
-          
-          // Check that this email actually includes our current @ position
-          if (emailStart + emailResult.length > i) {
-            // Handle mailto: prefix if present
-            const linkUrl = email.startsWith('mailto:') ? email : `mailto:${email}`;
-            const displayText = email.replace(/^mailto:/, '');
-            
-            tokens.push(ast.link(linkUrl, [ast.plain(displayText)]));
-            i = emailStart + emailResult.length;
-            continue;
-          }
+      if (atWordBoundary) {
+        // Look for username pattern - letters, numbers, dots, dashes, underscores
+        let j = i + 1;
+        while (j < text.length && /[a-zA-Z0-9._\-:@]/.test(text[j])) {
+          j++;
+        }
+        if (j > i + 1) {
+          const username = text.slice(i + 1, j);
+          tokens.push(ast.mentionUser(username));
+          i = j;
+          continue;
         }
       }
-    }
-
-    // User mentions with @username
-    if (char === '@') {
-      // Look for username pattern - letters, numbers, dots, dashes, underscores
-      let j = i + 1;
-      while (j < text.length && /[a-zA-Z0-9._\-:@]/.test(text[j])) {
-        j++;
-      }
-      if (j > i + 1) {
-        const username = text.slice(i + 1, j);
-        tokens.push(ast.mentionUser(username));
-        i = j;
-        continue;
-      }
+      // If not at word boundary, fall through to plain text processing
     }
 
     // Channel mentions with #channel
@@ -589,18 +579,34 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
         const beforeAt = text.slice(Math.max(0, tempI - 20), tempI);
         const afterAt = text.slice(tempI + 1, tempI + 50);
         
-        // Simple heuristic: if there are valid email characters before @ and domain-like pattern after @
-        const emailBefore = /[a-zA-Z0-9._'-]+$/.test(beforeAt);
-        const emailAfter = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(afterAt);
+        // Simple heuristic: if there are valid characters before @ and domain-like pattern after @
+        // Support Unicode characters by checking last character more permissively
+        const lastCharBefore = beforeAt.slice(-1);
+        const emailBefore = /[a-zA-Z0-9._'-]/.test(lastCharBefore) || 
+                           (lastCharBefore && lastCharBefore.charCodeAt(0) > 127 && 
+                            !/[\s\n\r\t\(\)\[\]{}.,;:!?@]/.test(lastCharBefore));
+        // Be more permissive with afterAt pattern to support Unicode domains
+        const emailAfter = /^[^\s@]+\.[^\s@]{2,}/.test(afterAt);
         
         if (emailBefore && emailAfter) {
-          // This looks like an email, don't break here - let the email detection handle it
+          // This looks like an email, continue accumulating - email detection will happen in post-processing
           plainText += currentChar;
           tempI++;
           continue;
         } else {
-          // This is just a standalone @, break for user mention processing
-          break;
+          // Check if this would be a valid mention (word boundary before @)
+          const prevChar = tempI > 0 ? text[tempI - 1] : '';
+          const atWordBoundary = tempI === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
+          
+          if (atWordBoundary) {
+            // This could be a mention, break for mention processing
+            break;
+          } else {
+            // Not at word boundary, just continue as plain text (e.g., "there@stuff")
+            plainText += currentChar;
+            tempI++;
+            continue;
+          }
         }
       }
       
@@ -688,8 +694,37 @@ const consolidatePlainText = (tokens: AST.Inlines[]): AST.Inlines[] => {
 
 // Helper function to detect emails in plain text and split into tokens
 const detectEmailsInText = (text: string): AST.Inlines[] => {
-  const tokens: AST.Inlines[] = [];
+  // First pass: check if there are any valid emails in the text
+  let hasValidEmail = false;
   let i = 0;
+  while (i < text.length) {
+    const atIndex = text.indexOf('@', i);
+    if (atIndex === -1) break;
+    
+    let emailStart = atIndex;
+    while (emailStart > 0 && /[a-zA-Z0-9._'-]/.test(text[emailStart - 1])) {
+      emailStart--;
+    }
+    
+    if (emailStart >= 7 && text.slice(emailStart - 7, emailStart) === 'mailto:') {
+      emailStart -= 7;
+    }
+    
+    if (detectEmail(text, emailStart)) {
+      hasValidEmail = true;
+      break;
+    }
+    i = atIndex + 1;
+  }
+  
+  // If no valid emails found, return the entire text as plain text
+  if (!hasValidEmail) {
+    return [ast.plain(text)];
+  }
+  
+  // If there are valid emails, process them
+  const tokens: AST.Inlines[] = [];
+  i = 0;
 
   while (i < text.length) {
     // Look for @ character
@@ -707,15 +742,20 @@ const detectEmailsInText = (text: string): AST.Inlines[] => {
     while (emailStart > 0 && /[a-zA-Z0-9._'-]/.test(text[emailStart - 1])) {
       emailStart--;
     }
-
-    // Add text before email as plain text if any
-    if (i < emailStart) {
-      tokens.push(ast.plain(text.slice(i, emailStart)));
+    
+    // Check for mailto: prefix
+    if (emailStart >= 7 && text.slice(emailStart - 7, emailStart) === 'mailto:') {
+      emailStart -= 7;
     }
 
     // Try to detect email starting from emailStart
     const emailResult = detectEmail(text, emailStart);
     if (emailResult) {
+      // Add text before email as plain text if any
+      if (i < emailStart) {
+        tokens.push(ast.plain(text.slice(i, emailStart)));
+      }
+      
       const { email } = emailResult;
       const linkUrl = email.startsWith('mailto:') ? email : `mailto:${email}`;
       const displayText = email.replace(/^mailto:/, '');
@@ -723,8 +763,7 @@ const detectEmailsInText = (text: string): AST.Inlines[] => {
       tokens.push(ast.link(linkUrl, [ast.plain(displayText)]));
       i = emailStart + emailResult.length;
     } else {
-      // Not a valid email, add the @ and continue
-      tokens.push(ast.plain(text.slice(emailStart, atIndex + 1)));
+      // Not a valid email, just move past this @ and continue searching
       i = atIndex + 1;
     }
   }
