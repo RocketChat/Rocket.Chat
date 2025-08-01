@@ -2,8 +2,8 @@ import 'reflect-metadata';
 
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
-import { isDeletedMessage, isMessageFromMatrixFederation, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { isDeletedMessage, isMessageFromMatrixFederation, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
@@ -219,17 +219,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			if (!matrixEventId) {
 				throw new Error(`No Matrix event ID mapping found for message ${message._id}`);
 			}
-			// TODO: Fix hardcoded server
-			const targetServer = 'hs1-defendi.tunnel.dev.rocket.chat';
-			const result = await this.homeserverServices.message.redactMessage(
-				matrixRoomId,
-				matrixEventId,
-				undefined,
-				matrixUserId,
-				targetServer,
-			);
+			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId, matrixUserId);
 
-			this.logger.debug('Message Redaction sent to Matrix successfully:', result.event_id);
+			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
 		} catch (error) {
 			this.logger.error('Failed to send redaction to Matrix:', error);
 			throw error;

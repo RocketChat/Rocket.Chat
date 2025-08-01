@@ -1,16 +1,27 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
 	'afterDeleteMessage',
-	async (message: IMessage) => FederationMatrix.deleteMessage(message),
+	async (message: IMessage) => {
+		if (!message.federation?.eventId) {
+			return;
+		}
+		const isEchoMessage = !(await Messages.findOneByFederationId(message.federation?.eventId));
+		if (isEchoMessage) {
+			return;
+		}
+		await FederationMatrix.deleteMessage(message);
+	},
 	callbacks.priority.MEDIUM,
 	'native-federation-after-delete-message',
 );
 
-callbacks.add('native-federation.onAddUsersToRoom',
+callbacks.add(
+	'native-federation.onAddUsersToRoom',
 	async ({ invitees, inviter }, room) => FederationMatrix.inviteUsersToRoom(room, invitees, inviter),
 	callbacks.priority.MEDIUM,
 	'native-federation-on-add-users-to-room ',
