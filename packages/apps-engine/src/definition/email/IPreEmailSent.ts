@@ -1,4 +1,4 @@
-import type { IEmailDescriptor, IPreEmailSentContext } from '.';
+import type { IEmailDescriptor, IPreEmailSentContext } from './index.ts';
 import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
 import { AppMethod } from '../metadata';
 
