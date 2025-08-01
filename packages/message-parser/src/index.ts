@@ -259,8 +259,8 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
         continue;
       }
       
-      // Only escape known markup characters that we actually implement
-      const markupChars = ['*', '_', '~', '`', '['];
+      // Escape markdown special characters (even if we don't implement all features)
+      const markupChars = ['*', '_', '~', '`', '[', ']', '(', ')', '#', '.', '+', '-', '!', '|', '{', '}', '^', ':'];
       
       if (markupChars.includes(nextChar)) {
         // Escape the markup character by treating it as plain text
@@ -429,8 +429,8 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
           continue;
         }
         
-        // Only escape known markup characters that we actually implement
-        const markupChars = ['*', '_', '~', '`', '['];
+        // Escape markdown special characters (even if we don't implement all features)
+        const markupChars = ['*', '_', '~', '`', '[', ']', '(', ')', '#', '.', '+', '-', '!', '|', '{', '}', '^', ':'];
         
         if (markupChars.includes(nextChar)) {
           // Escape the markup character by treating it as plain text
