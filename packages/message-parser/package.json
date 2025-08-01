@@ -39,9 +39,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "run-s .:build:clean .:build:bundle",
-    ".:build:clean": "rimraf dist",
-    ".:build:bundle": "webpack-cli",
+    "build": "tsc -p tsconfig-bundle.json",
     "lint": "eslint .",
     "test": "jest",
     "testunit": "jest",

@@ -271,12 +271,62 @@ const parseInlineContent = (text: string, options?: Options): AST.Inlines[] => {
       }
     }
 
+    // Inline code with `code`
+    if (char === '`') {
+      const endIndex = text.indexOf('`', i + 1);
+      if (endIndex !== -1 && endIndex > i + 1) {
+        const content = text.slice(i + 1, endIndex);
+        tokens.push(ast.inlineCode(ast.plain(content)));
+        i = endIndex + 1;
+        continue;
+      }
+    }
+
+    // Markdown links [text](url)
+    if (char === '[') {
+      const closeBracket = text.indexOf(']', i + 1);
+      if (
+        closeBracket !== -1 &&
+        closeBracket < text.length - 1 &&
+        text[closeBracket + 1] === '('
+      ) {
+        const closeParens = text.indexOf(')', closeBracket + 2);
+        if (closeParens !== -1) {
+          const labelText = text.slice(i + 1, closeBracket);
+          const url = text.slice(closeBracket + 2, closeParens);
+
+          // Parse label content for nested markup, filter to valid types
+          const labelContent = labelText
+            ? parseInlineContent(labelText, options).filter(
+                (
+                  token,
+                ): token is
+                  | AST.Plain
+                  | AST.Bold
+                  | AST.Italic
+                  | AST.Strike
+                  | AST.ChannelMention =>
+                  token.type === 'PLAIN_TEXT' ||
+                  token.type === 'BOLD' ||
+                  token.type === 'ITALIC' ||
+                  token.type === 'STRIKE' ||
+                  token.type === 'MENTION_CHANNEL',
+              )
+            : [ast.plain(url)];
+
+          tokens.push(ast.link(url, labelContent));
+          i = closeParens + 1;
+          continue;
+        }
+      }
+    }
+
     // For now, treat everything else as plain text
     // We'll implement other features later (links, etc.)
     let plainText = '';
     while (
       i < text.length &&
-      !['*', '_', '~', ':', '@', '#'].includes(text[i]) &&
+      !['*', '_', '~', ':', '@', '#', '`', '['].includes(text[i]) &&
       !getEmojiChar(text, i).char
     ) {
       plainText += text[i];
