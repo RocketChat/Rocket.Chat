@@ -508,7 +508,22 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(text[i - 1]);
       
       if (atWordBoundary) {
-        const closeBracket = text.indexOf(']', i + 1);
+        // Find matching closing bracket, handling nested brackets
+        let bracketCount = 1;
+        let closeBracket = -1;
+        
+        for (let j = i + 1; j < text.length; j++) {
+          if (text[j] === '[') {
+            bracketCount++;
+          } else if (text[j] === ']') {
+            bracketCount--;
+            if (bracketCount === 0) {
+              closeBracket = j;
+              break;
+            }
+          }
+        }
+        
         if (
           closeBracket !== -1 &&
           closeBracket < text.length - 1 &&
@@ -521,23 +536,29 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
 
             // Parse label content for nested markup, filter to valid types
             // Skip URL detection in labels to avoid conflicts with text like "Rocket.Chat"
-            const labelContent = labelText
-              ? parseInlineContent(labelText, options, true).filter(
-                  (
-                    token,
-                  ): token is
-                    | AST.Plain
-                    | AST.Bold
-                    | AST.Italic
-                    | AST.Strike
-                    | AST.ChannelMention =>
-                    token.type === 'PLAIN_TEXT' ||
-                    token.type === 'BOLD' ||
-                    token.type === 'ITALIC' ||
-                    token.type === 'STRIKE' ||
-                    token.type === 'MENTION_CHANNEL',
-                )
-              : [];
+            let labelContent: AST.Markup[] | undefined;
+            
+            if (labelText) {
+              // For link labels, only parse basic formatting to avoid conflicts
+              // Parse but be more conservative about what we accept
+              const parsedTokens = parseInlineContent(labelText, options, true);
+              const filteredTokens = parsedTokens.filter(
+                (token): token is AST.Plain | AST.Bold | AST.Italic | AST.Strike =>
+                  token.type === 'PLAIN_TEXT' ||
+                  token.type === 'BOLD' ||
+                  token.type === 'ITALIC' ||
+                  token.type === 'STRIKE',
+              );
+              
+              // If we have filtered tokens, use them. Otherwise, treat entire label as plain text
+              if (filteredTokens.length > 0 && filteredTokens.some(t => t.type !== 'PLAIN_TEXT')) {
+                // Only use parsed tokens if there's actual markup
+                labelContent = filteredTokens;
+              } else {
+                // Treat as plain text to avoid emphasis parsing issues
+                labelContent = [ast.plain(labelText)];
+              }
+            }
 
             tokens.push(ast.link(url, labelContent));
             i = closeParens + 1;
