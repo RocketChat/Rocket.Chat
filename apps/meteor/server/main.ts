@@ -25,6 +25,7 @@ import './lib/pushConfig';
 import './features/EmailInbox/index';
 
 await Promise.all([configureServer(settings), registerServices(), startup()]);
+console.log(process.env.OVERWRITE_SETTING_Log_Level);
 
 await startRocketChat();
 await startupApp();
