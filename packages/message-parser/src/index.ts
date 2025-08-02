@@ -237,6 +237,23 @@ const parseBoldMarkup = (
   const endIndex = text.indexOf(delimiter, i + delimiterLength);
   if (endIndex !== -1 && endIndex > i + delimiterLength) {
     const content = text.slice(i + delimiterLength, endIndex);
+    
+    // Validate that there are no unmatched delimiters inside the content
+    // Count strike delimiters (~~) to ensure they are balanced
+    let strikeCount = 0;
+    for (let j = 0; j < content.length - 1; j++) {
+      if (content[j] === '~' && content[j + 1] === '~') {
+        strikeCount++;
+        j++; // Skip next character since we found ~~
+      }
+    }
+    
+    // If there's an odd number of strike delimiters, they are unbalanced
+    // This means there's an unmatched ~~ that would interfere with this bold markup
+    if (strikeCount % 2 !== 0) {
+      return null;
+    }
+    
     const nestedContent = parseInlineContent(content, options);
     // Filter to only valid bold content types
     const validContent = nestedContent.filter(
