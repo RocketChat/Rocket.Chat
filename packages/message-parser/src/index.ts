@@ -1728,6 +1728,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
     if (line.match(/^\s*>/)) {
       const quoteLines: string[] = [];
       let quoteIndex = i;
+      let hasNonEmptyQuoteLine = false;
       
       // Collect consecutive quote lines
       while (quoteIndex < lines.length && lines[quoteIndex].match(/^\s*>/)) {
@@ -1735,24 +1736,33 @@ export const parse = (input: string, options?: Options): AST.Root => {
         // Remove the > and optional space after it
         const content = quoteLine.replace(/^\s*>\s?/, '');
         quoteLines.push(content);
+        if (content.trim() !== '') {
+          hasNonEmptyQuoteLine = true;
+        }
         quoteIndex++;
       }
       
-      // Parse each quote line as a paragraph
-      const quoteParagraphs: AST.Paragraph[] = [];
-      for (const quoteLine of quoteLines) {
-        if (quoteLine.trim() === '') {
-          // Empty quote line - still create a paragraph with empty content
-          quoteParagraphs.push(ast.paragraph([]));
-        } else {
-          const inlineContent = parseInlineContent(quoteLine, options);
-          quoteParagraphs.push(ast.paragraph(inlineContent));
+      // Only treat as quote if:
+      // 1. There are multiple quote lines, OR
+      // 2. There's at least one non-empty quote line
+      if (quoteLines.length > 1 || hasNonEmptyQuoteLine) {
+        // Parse each quote line as a paragraph
+        const quoteParagraphs: AST.Paragraph[] = [];
+        for (const quoteLine of quoteLines) {
+          if (quoteLine.trim() === '') {
+            // Empty quote line - still create a paragraph with empty content
+            quoteParagraphs.push(ast.paragraph([]));
+          } else {
+            const inlineContent = parseInlineContent(quoteLine, options);
+            quoteParagraphs.push(ast.paragraph(inlineContent));
+          }
         }
+        
+        result.push(ast.quote(quoteParagraphs));
+        i = quoteIndex; // Skip all the quote lines we just processed
+        continue;
       }
-      
-      result.push(ast.quote(quoteParagraphs));
-      i = quoteIndex; // Skip all the quote lines we just processed
-      continue;
+      // If it's just a single empty quote line, fall through to regular processing
     }
     
     // Regular line processing
