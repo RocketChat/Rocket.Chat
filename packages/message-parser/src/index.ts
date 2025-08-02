@@ -1125,23 +1125,29 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         
         if (parts.length >= 1) {
           const timestampValue = parts[0];
-          const format = parts[1] as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined;
+          const format = parts[1];
           
-          // Check if it's a valid timestamp (numbers or ISO date)
-          if (/^\d+$/.test(timestampValue)) {
-            // Unix timestamp
-            if (timestampValue.length >= 9) { // Reasonable timestamp length
-              tokens.push(ast.timestamp(timestampValue, format));
-              i = closeIndex + 1;
-              continue;
-            }
-          } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(timestampValue)) {
-            // ISO date format - convert to unix timestamp
-            const unixTimestamp = Math.floor(new Date(timestampValue).getTime() / 1000).toString();
-            if (!isNaN(parseInt(unixTimestamp))) {
-              tokens.push(ast.timestamp(unixTimestamp, format));
-              i = closeIndex + 1;
-              continue;
+          // Validate format if provided
+          const validFormats = ['t', 'T', 'd', 'D', 'f', 'F', 'R'];
+          if (format && !validFormats.includes(format)) {
+            // Invalid format, don't parse as timestamp
+          } else {
+            // Check if it's a valid timestamp (numbers or ISO date)
+            if (/^\d+$/.test(timestampValue)) {
+              // Unix timestamp
+              if (timestampValue.length >= 9) { // Reasonable timestamp length
+                tokens.push(ast.timestamp(timestampValue, format as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined));
+                i = closeIndex + 1;
+                continue;
+              }
+            } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(timestampValue)) {
+              // ISO date format - convert to unix timestamp
+              const unixTimestamp = Math.floor(new Date(timestampValue).getTime() / 1000).toString();
+              if (!isNaN(parseInt(unixTimestamp))) {
+                tokens.push(ast.timestamp(unixTimestamp, format as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined));
+                i = closeIndex + 1;
+                continue;
+              }
             }
           }
         }
