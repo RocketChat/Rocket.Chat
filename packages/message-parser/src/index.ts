@@ -750,24 +750,31 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       // If not at word boundary, fall through to plain text processing
     }
 
-    // Channel mentions with #channel
+    // Channel mentions with #channel (but only at word boundaries)
     if (char === '#') {
-      // Look for channel pattern - use permissive Unicode character detection like emails
-      let j = i + 1;
-      while (j < text.length) {
-        const char = text[j];
-        // Stop at clear separators (whitespace, punctuation, etc.) - allow Unicode characters
-        if (/[\s\n\r\t\(\)\[\]{},;:!?]/.test(char)) {
-          break;
+      // Check if # is preceded by a word boundary (whitespace, start of string, or punctuation)
+      const prevChar = i > 0 ? text[i - 1] : '';
+      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(prevChar);
+      
+      if (atWordBoundary) {
+        // Look for channel pattern - use permissive Unicode character detection like emails
+        let j = i + 1;
+        while (j < text.length) {
+          const char = text[j];
+          // Stop at clear separators (whitespace, punctuation, etc.) - allow Unicode characters
+          if (/[\s\n\r\t\(\)\[\]{},;:!?]/.test(char)) {
+            break;
+          }
+          j++;
         }
-        j++;
+        if (j > i + 1) {
+          const channel = text.slice(i + 1, j);
+          tokens.push(ast.mentionChannel(channel));
+          i = j;
+          continue;
+        }
       }
-      if (j > i + 1) {
-        const channel = text.slice(i + 1, j);
-        tokens.push(ast.mentionChannel(channel));
-        i = j;
-        continue;
-      }
+      // If not at word boundary, fall through to plain text processing
     }
 
     // Inline code with `code`
