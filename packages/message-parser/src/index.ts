@@ -923,28 +923,21 @@ const parseStrikeMarkup = (
 const parseInlineContent = (text: string, options?: Options, skipUrlDetection = false): AST.Inlines[] => {
   if (!text) return [];
 
-  console.log(`parseInlineContent called with text: "${text}", options:`, options);
-
   const tokens: AST.Inlines[] = [];
   let i = 0;
 
   while (i < text.length) {
     const char = text[i];
-    console.log(`At position ${i}, char: '${char}' (${char.charCodeAt(0)})`);
 
     // KaTeX parsing - inline only: \(...\) - check before escape processing
     if (options?.katex && char === '\\') {
-      console.log(`KaTeX check at position ${i}, char: '${char}' (${char.charCodeAt(0)}), next: '${text[i + 1]}' (${text[i + 1]?.charCodeAt(0)})`);
       const nextChar = text[i + 1];
       
       // Inline KaTeX: \(...\)
       if (options.katex.parenthesisSyntax && nextChar === '(') {
-        console.log('Found potential inline KaTeX start');
         const endPattern = text.indexOf('\\)', i + 2);
-        console.log(`Looking for end pattern, found at: ${endPattern}`);
         if (endPattern !== -1) {
           const content = text.slice(i + 2, endPattern);
-          console.log(`Parsed inline KaTeX content: "${content}"`);
           tokens.push(ast.inlineKatex(content));
           i = endPattern + 2;
           continue;
@@ -1234,11 +1227,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       
       // Check for KaTeX patterns FIRST, before any escape processing
       if (currentChar === '\\' && options?.katex?.parenthesisSyntax) {
-        console.log(`Plain text accumulation found backslash at ${tempI}, next char: '${text[tempI + 1]}'`);
         const nextChar = text[tempI + 1];
         if (nextChar === '(' || nextChar === '[') {
           // This might be KaTeX, stop accumulating and let the main loop handle it
-          console.log('Breaking from plain text accumulation for KaTeX');
           break;
         }
       }
@@ -1601,9 +1592,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
       result.push(ast.lineBreak);
     } else {
       // Non-empty line creates a paragraph
-      console.log(`Processing paragraph line: "${line}"`);
       const inlineContent = parseInlineContent(line, options);
-      console.log(`Parsed inline content:`, inlineContent);
       result.push(ast.paragraph(inlineContent));
     }
     i++;
