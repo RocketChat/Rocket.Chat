@@ -923,11 +923,14 @@ const parseStrikeMarkup = (
 const parseInlineContent = (text: string, options?: Options, skipUrlDetection = false): AST.Inlines[] => {
   if (!text) return [];
 
+  console.log(`parseInlineContent called with text: "${text}", options:`, options);
+
   const tokens: AST.Inlines[] = [];
   let i = 0;
 
   while (i < text.length) {
     const char = text[i];
+    console.log(`At position ${i}, char: '${char}' (${char.charCodeAt(0)})`);
 
     // KaTeX parsing - inline only: \(...\) - check before escape processing
     if (options?.katex && char === '\\') {
@@ -1229,6 +1232,17 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     while (tempI < text.length) {
       const currentChar = text[tempI];
       
+      // Check for KaTeX patterns FIRST, before any escape processing
+      if (currentChar === '\\' && options?.katex?.parenthesisSyntax) {
+        console.log(`Plain text accumulation found backslash at ${tempI}, next char: '${text[tempI + 1]}'`);
+        const nextChar = text[tempI + 1];
+        if (nextChar === '(' || nextChar === '[') {
+          // This might be KaTeX, stop accumulating and let the main loop handle it
+          console.log('Breaking from plain text accumulation for KaTeX');
+          break;
+        }
+      }
+      
       // Handle escape characters in plain text accumulation
       if (currentChar === '\\' && tempI + 1 < text.length) {
         const nextChar = text[tempI + 1];
@@ -1262,15 +1276,6 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       // Stop if we hit markup characters, but be careful with @ for emails
       if (['*', '_', '~', '#', '`', '[', '<'].includes(currentChar)) {
         break;
-      }
-      
-      // Stop if we hit a backslash that might be KaTeX
-      if (currentChar === '\\' && options?.katex?.parenthesisSyntax) {
-        const nextChar = text[tempI + 1];
-        if (nextChar === '(' || nextChar === '[') {
-          // This might be KaTeX, stop accumulating and let the main loop handle it
-          break;
-        }
       }
       
       // Special handling for @ - check if this could be part of an email
