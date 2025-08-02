@@ -7,7 +7,7 @@ import qs from 'qs';
 import { clone, extend, omit, pick } from './_helpers';
 import type { GroupOptions } from './group';
 import Group from './group';
-import type { Context, RouteOptions } from './route';
+import type { RouteOptions } from './route';
 import Route from './route';
 import type { Trigger } from './triggers';
 import Triggers from './triggers';
@@ -29,21 +29,19 @@ type NewParams = {
 };
 
 class Router {
-	pathRegExp = /(:[\w\(\)\\\+\*\.\?\[\]\-]+)+/g;
+	private readonly pathRegExp = /(:[\w\(\)\\\+\*\.\?\[\]\-]+)+/g;
 
-	queryRegExp = /\?([^\/\r\n].*)/;
+	private readonly queryRegExp = /\?([^\/\r\n].*)/;
 
-	globals = [];
+	private subscriptions: (this: Route, path: string) => void = () => undefined;
 
-	subscriptions = Function.prototype;
-
-	_tracker = this._buildTracker();
+	private readonly _tracker = this._buildTracker();
 
 	_current: Partial<{
 		path: string;
 		params: Record<string, string>;
 		route: Route;
-		context: Context;
+		context: PageJS.Context;
 		oldRoute: Route;
 		queryParams: NewParams;
 	}> = {};
@@ -197,7 +195,7 @@ class Router {
 		const route = new Route(this, pathDef, options, group);
 
 		// calls when the page route being activates
-		route._actionHandle = (context: Context) => {
+		route._actionHandle = (context: PageJS.Context) => {
 			// if (isNavigating) {
 			//   return;
 			// }
@@ -593,7 +591,7 @@ class Router {
 			// other reactive changes inside the .subscription method
 			// We tackle this with the `safeToRun` variable
 			this._globalRoute.clearSubscriptions();
-			this.subscriptions.call(this._globalRoute, path);
+			this.subscriptions.call(this._globalRoute, path!);
 			route!.callSubscriptions(currentContext);
 
 			// otherwise, computations inside action will trigger to re-run

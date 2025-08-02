@@ -9,6 +9,12 @@ import type Group from './group';
 import Router from './router';
 import type { Trigger } from './triggers';
 
+declare module 'meteor/reactive-dict' {
+	export interface ReactiveDict {
+		keyDeps: Record<string, Tracker.Dependency>;
+	}
+}
+
 type Param = {
 	[key: string]: string;
 };
@@ -37,8 +43,9 @@ export type RouteOptions = {
 	triggersEnter?: Array<Trigger>;
 	action?: action;
 	triggersExit?: Array<Trigger>;
-	conf?: { [key: string]: any; forceReRender?: boolean };
-	[key: string]: any;
+	conf?: { forceReRender?: boolean };
+	waitFor?: (() => void)[];
+	subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
 };
 
 export type Hook = (params: Param, qs: QueryParam) => void | Promise<void>;
@@ -87,8 +94,6 @@ const makeTriggers = (triggers: any) => {
 class Route {
 	options: RouteOptions;
 
-	globals: { [key: string]: any };
-
 	pathDef: string | undefined;
 
 	path: string | undefined;
@@ -126,7 +131,7 @@ class Route {
 
 	_triggersEnter: Trigger[];
 
-	_subscriptions: any;
+	_subscriptions: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
 
 	_waitOnResources: waitOnResources | null;
 
@@ -142,7 +147,6 @@ class Route {
 
 	constructor(router = new Router(), pathDef?: string, options: RouteOptions = {}, group?: Group) {
 		this.options = options;
-		this.globals = router.globals;
 		this.pathDef = pathDef;
 
 		// Route.path is deprecated and will be removed in 3.0
@@ -204,7 +208,7 @@ class Route {
 		let _isWaiting = false;
 		let _preloaded = 0;
 		let _resources: any = false;
-		let waitFor = [];
+		let waitFor: any[] = [];
 		let promises: any = [];
 		let subscriptions: any = [];
 		let timer: any;
@@ -296,23 +300,6 @@ class Route {
 		const done = (subscription: any) => {
 			processSubData(isFunction(subscription) ? subscription() : subscription);
 		};
-
-		if (current.route.globals.length) {
-			for (let i = 0; i < current.route.globals.length; i++) {
-				if (typeof current.route.globals[i] === 'object') {
-					if (current.route.globals[i].waitOnResources) {
-						if (!_resources) {
-							_resources = [];
-						}
-						_resources.push(current.route.globals[i].waitOnResources);
-					}
-
-					if (current.route.globals[i].waitOn && isFunction(current.route.globals[i].waitOn)) {
-						waitFor.unshift(current.route.globals[i].waitOn);
-					}
-				}
-			}
-		}
 
 		if (this._waitOnResources) {
 			if (!_resources) {
@@ -460,10 +447,7 @@ class Route {
 
 	callSubscriptions(current: any) {
 		this.clearSubscriptions();
-		if (this.group) {
-			this.group.callSubscriptions(current);
-		}
-
+		this.group?.callSubscriptions(current);
 		this._subscriptions(current.params, current.queryParams);
 	}
 
@@ -511,7 +495,7 @@ class Route {
 		}
 	}
 
-	_updateReactiveDict(dict: any, newValues: any) {
+	_updateReactiveDict(dict: ReactiveDict, newValues: any) {
 		const currentKeys = Object.keys(newValues);
 		const oldKeys = Object.keys(dict.keyDeps);
 
@@ -532,9 +516,9 @@ class Route {
 			});
 	}
 
-	declare _actionHandle: (context: Context) => void;
+	declare _actionHandle: PageJS.Callback;
 
-	declare _exitHandle: (context: Context, next: () => void) => void;
+	declare _exitHandle: PageJS.Callback;
 }
 
 export default Route;
