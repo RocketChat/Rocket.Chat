@@ -4,7 +4,7 @@ import { Promise } from 'meteor/promise';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 
-import { _helpers } from './_helpers';
+import { isArray, isFunction } from './_helpers';
 import type Group from './group';
 import Router from './router';
 import type { Trigger } from './triggers';
@@ -74,10 +74,10 @@ export type data = (
 export type action = (params: Param, qs: QueryParam, data: any) => void;
 
 const makeTriggers = (triggers: any) => {
-	if (_helpers.isFunction(triggers)) {
+	if (isFunction(triggers)) {
 		return [triggers];
 	}
-	if (!_helpers.isArray(triggers)) {
+	if (!isArray(triggers)) {
 		return [];
 	}
 
@@ -153,7 +153,7 @@ class Route {
 		this._router = router;
 		this._action = options.action || (() => undefined);
 		this._waitOn = options.waitOn || null;
-		this._waitFor = _helpers.isArray(options.waitFor) ? options.waitFor : [];
+		this._waitFor = isArray(options.waitFor) ? options.waitFor : [];
 		this._subsMap = {};
 		this._onNoData = options.onNoData || null;
 		this._endWaiting = options.endWaiting || null;
@@ -294,7 +294,7 @@ class Route {
 		};
 
 		const done = (subscription: any) => {
-			processSubData(_helpers.isFunction(subscription) ? subscription() : subscription);
+			processSubData(isFunction(subscription) ? subscription() : subscription);
 		};
 
 		if (current.route.globals.length) {
@@ -307,7 +307,7 @@ class Route {
 						_resources.push(current.route.globals[i].waitOnResources);
 					}
 
-					if (current.route.globals[i].waitOn && _helpers.isFunction(current.route.globals[i].waitOn)) {
+					if (current.route.globals[i].waitOn && isFunction(current.route.globals[i].waitOn)) {
 						waitFor.unshift(current.route.globals[i].waitOn);
 					}
 				}
@@ -408,7 +408,7 @@ class Route {
 			waitFor = waitFor.concat(this._waitFor);
 		}
 
-		if (_helpers.isFunction(this._waitOn)) {
+		if (isFunction(this._waitOn)) {
 			waitFor.push(this._waitOn);
 		}
 

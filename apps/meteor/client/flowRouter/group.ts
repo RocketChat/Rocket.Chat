@@ -1,4 +1,4 @@
-import { _helpers } from './_helpers';
+import { extend, isArray, isFunction, omit } from './_helpers';
 import type { RouteOptions } from './route';
 import type Route from './route';
 import type Router from './router';
@@ -6,10 +6,10 @@ import type Router from './router';
 export type GroupOptions = { name?: string; prefix?: string; [key: string]: any };
 
 const makeTrigger = (trigger: unknown) => {
-	if (_helpers.isFunction(trigger)) {
+	if (isFunction(trigger)) {
 		return [trigger];
 	}
-	if (!_helpers.isArray(trigger)) {
+	if (!isArray(trigger)) {
 		return [];
 	}
 
@@ -17,7 +17,7 @@ const makeTrigger = (trigger: unknown) => {
 };
 
 const makeWaitFor = (func: unknown) => {
-	if (_helpers.isFunction(func)) {
+	if (isFunction(func)) {
 		return [func];
 	}
 
@@ -88,8 +88,8 @@ class Group {
 		options.waitFor = this._waitFor.concat([]);
 		return this._router.route(
 			pathDef,
-			_helpers.extend(
-				_helpers.omit(this.options, [
+			extend(
+				omit(this.options, [
 					'triggersEnter',
 					'triggersExit',
 					'subscriptions',
