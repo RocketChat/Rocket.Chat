@@ -1927,6 +1927,16 @@ export const parse = (input: string, options?: Options): AST.Root => {
       continue;
     }
     
+    // Check for markdown headings (lines starting with # or ##)
+    const headingMatch = line.match(/^(#{1,4})\s+(.+)$/);
+    if (headingMatch) {
+      const level = headingMatch[1].length;
+      const content = headingMatch[2];
+      result.push(ast.heading([ast.plain(content)], level as 1 | 2 | 3 | 4));
+      i++;
+      continue;
+    }
+    
     // Check for quote blocks (lines starting with >)
     if (line.match(/^\s*>/)) {
       const quoteLines: string[] = [];
@@ -2059,15 +2069,16 @@ export const parse = (input: string, options?: Options): AST.Root => {
     
     // Regular line processing
     if (line.trim() === '') {
-      // Empty line creates a line break element, but only if there are more non-empty lines after it
-      let hasContentAfter = false;
-      for (let j = i + 1; j < lines.length; j++) {
+      // Empty line creates a line break element
+      // Skip it only if it's trailing empty lines with no preceding content
+      let hasContentBefore = false;
+      for (let j = i - 1; j >= 0; j--) {
         if (lines[j].trim() !== '') {
-          hasContentAfter = true;
+          hasContentBefore = true;
           break;
         }
       }
-      if (hasContentAfter) {
+      if (hasContentBefore) {
         result.push(ast.lineBreak);
       }
     } else {
