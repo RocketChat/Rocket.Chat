@@ -664,9 +664,82 @@ const parseStrikeMarkup = (
   const delimiter = isStrike ? '~~' : '~';
   const delimiterLength = isStrike ? 2 : 1;
 
+  // Handle triple tilde cases: ~~~Hello~~~ and ~~~Hello~~
+  const thirdChar = i + 2 < text.length ? text[i + 2] : '';
+  if (isStrike && thirdChar === '~') {
+    // We have at least ~~~ at the start
+    
+    // Look for double tilde closing (~~) after the initial ~~~
+    const doubleEndStart = text.indexOf('~~', i + 3);
+    if (doubleEndStart !== -1 && doubleEndStart > i + 3) {
+      const content = text.slice(i + 3, doubleEndStart);
+      if (content.trim().length > 0) {
+        // Check if there's a third tilde after ~~ (making it ~~~)
+        let endIndex = doubleEndStart + 2;
+        let trailingTilde = '';
+        
+        const charAfterDouble = doubleEndStart + 2 < text.length ? text[doubleEndStart + 2] : '';
+        if (charAfterDouble === '~') {
+          // ~~~Hello~~~ case
+          trailingTilde = '~';
+          endIndex = doubleEndStart + 3;
+        }
+        // else: ~~~Hello~~ case (no trailing tilde)
+        
+        // Verify word boundary after final delimiter
+        const finalChar = endIndex < text.length ? text[endIndex] : '';
+        const atFinalWordBoundary = endIndex >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*_`]/.test(finalChar);
+        
+        if (atFinalWordBoundary) {
+          const result = [];
+          
+          // Add leading tilde as plain text
+          result.push(ast.plain('~'));
+          
+          // Add the strike content (double tilde style)
+          const nestedContent = parseInlineContent(content, options);
+          const validContent = nestedContent.filter(
+            (
+              token,
+            ): token is
+              | AST.MarkupExcluding<AST.Strike>
+              | AST.Link
+              | AST.Emoji
+              | AST.UserMention
+              | AST.ChannelMention
+              | AST.InlineCode
+              | AST.Italic
+              | AST.Timestamp =>
+              token.type !== 'STRIKE' &&
+              token.type !== 'IMAGE' &&
+              token.type !== 'COLOR' &&
+              token.type !== 'INLINE_KATEX',
+          );
+          result.push(ast.strike(validContent));
+          
+          // Add trailing tilde if this was ~~~Hello~~~ case
+          if (trailingTilde) {
+            result.push(ast.plain(trailingTilde));
+          }
+          
+          return {
+            tokens: result,
+            nextIndex: endIndex,
+          };
+        }
+      }
+    }
+  }
+
   const endIndex = text.indexOf(delimiter, i + delimiterLength);
   if (endIndex !== -1 && endIndex > i + delimiterLength) {
     const content = text.slice(i + delimiterLength, endIndex);
+    
+    // Don't parse empty or whitespace-only content as strikethrough
+    if (content.trim().length === 0) {
+      return null;
+    }
+    
     const nestedContent = parseInlineContent(content, options);
     // Filter to only valid strike content types
     const validContent = nestedContent.filter(
@@ -774,8 +847,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         const endIndex = text.indexOf(':', i + 1);
         if (endIndex !== -1 && endIndex > i + 1) {
           const shortCode = text.slice(i + 1, endIndex);
-          // Simple validation - no spaces or colons in shortcode
-          if (shortCode && !shortCode.includes(' ') && !shortCode.includes(':')) {
+          // Simple validation - no spaces, colons, or tildes in shortcode
+          // Tildes are not valid in emoji shortcodes and interfere with strikethrough parsing
+          if (shortCode && !shortCode.includes(' ') && !shortCode.includes(':') && !shortCode.includes('~')) {
             tokens.push(ast.emoji(shortCode));
             i = endIndex + 1;
             continue;
