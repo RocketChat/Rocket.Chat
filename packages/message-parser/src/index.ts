@@ -2059,7 +2059,8 @@ export const parse = (input: string, options?: Options): AST.Root => {
     
     // Check for unordered list items (lines starting with - or *)
     // But exclude lines that look like emphasis (single character content)
-    if (line.match(/^\s*[-*]\s/) && !line.match(/^\s*[-*]\s*[*_~]?\s*$/)) {
+    // Also exclude lines that could be bold formatting (e.g., "* Hello*")
+    if (line.match(/^\s*[-*]\s/) && !line.match(/^\s*[-*]\s*[*_~]?\s*$/) && !line.match(/^\s*\*\s.*\*\s*$/)) {
       const listItems: AST.ListItem[] = [];
       let listIndex = i;
       
