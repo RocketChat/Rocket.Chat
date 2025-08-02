@@ -1269,6 +1269,38 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       }
     }
 
+    // Markdown images ![alt](url) - only at word boundaries
+    if (char === '!' && i + 1 < text.length && text[i + 1] === '[') {
+      // Check if this is at a word boundary (start of string or after whitespace/punctuation)
+      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(text[i - 1]);
+      
+      if (atWordBoundary) {
+        // Look for the ]( pattern after ![
+        const linkPattern = text.indexOf('](', i + 2);
+        
+        if (linkPattern !== -1) {
+          // Found ]( pattern, now find the closing )
+          const closeParens = text.indexOf(')', linkPattern + 2);
+          if (closeParens !== -1) {
+            const altText = text.slice(i + 2, linkPattern); // Skip ![
+            const url = text.slice(linkPattern + 2, closeParens);
+
+            // Create image with optional alt text
+            if (altText) {
+              // Parse alt text as plain text only (images don't support complex formatting in alt)
+              tokens.push(ast.image(url, ast.plain(altText)));
+            } else {
+              // No alt text
+              tokens.push(ast.image(url));
+            }
+            
+            i = closeParens + 1;
+            continue;
+          }
+        }
+      }
+    }
+
     // Markdown links [text](url) - only at word boundaries
     if (char === '[') {
       // Check if this is at a word boundary (start of string or after whitespace/punctuation)
