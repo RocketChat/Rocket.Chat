@@ -765,6 +765,92 @@ const parseStrikeMarkup = (
     };
   }
 
+  // Handle mismatched delimiters: ~~Hello~ and ~Hello~~
+  // For ~~Hello~, treat as ~[strike]Hello[/strike]
+  // For ~Hello~~, treat as [strike]Hello[/strike]~
+  
+  if (isStrike) {
+    // ~~Hello~ case - look for single tilde
+    const singleEnd = text.indexOf('~', i + 2);
+    if (singleEnd !== -1 && singleEnd > i + 2) {
+      // Check if this is not followed by another tilde (to avoid matching ~~Hello~~)
+      const charAfterSingle = singleEnd + 1 < text.length ? text[singleEnd + 1] : '';
+      if (charAfterSingle !== '~') {
+        const content = text.slice(i + 2, singleEnd);
+        if (content.trim().length > 0) {
+          const result = [];
+          
+          // Add leading tilde as plain text
+          result.push(ast.plain('~'));
+          
+          // Add the strike content
+          const nestedContent = parseInlineContent(content, options);
+          const validContent = nestedContent.filter(
+            (
+              token,
+            ): token is
+              | AST.MarkupExcluding<AST.Strike>
+              | AST.Link
+              | AST.Emoji
+              | AST.UserMention
+              | AST.ChannelMention
+              | AST.InlineCode
+              | AST.Italic
+              | AST.Timestamp =>
+              token.type !== 'STRIKE' &&
+              token.type !== 'IMAGE' &&
+              token.type !== 'COLOR' &&
+              token.type !== 'INLINE_KATEX',
+          );
+          result.push(ast.strike(validContent));
+          
+          return {
+            tokens: result,
+            nextIndex: singleEnd + 1,
+          };
+        }
+      }
+    }
+  } else {
+    // ~Hello~~ case - look for double tilde after single opening
+    const doubleStart = text.indexOf('~~', i + 1);
+    if (doubleStart !== -1 && doubleStart > i + 1) {
+      const content = text.slice(i + 1, doubleStart);
+      if (content.trim().length > 0) {
+        const result = [];
+        
+        // Add the strike content
+        const nestedContent = parseInlineContent(content, options);
+        const validContent = nestedContent.filter(
+          (
+            token,
+          ): token is
+            | AST.MarkupExcluding<AST.Strike>
+            | AST.Link
+            | AST.Emoji
+            | AST.UserMention
+            | AST.ChannelMention
+            | AST.InlineCode
+            | AST.Italic
+            | AST.Timestamp =>
+            token.type !== 'STRIKE' &&
+            token.type !== 'IMAGE' &&
+            token.type !== 'COLOR' &&
+            token.type !== 'INLINE_KATEX',
+        );
+        result.push(ast.strike(validContent));
+        
+        // Add trailing tilde as plain text
+        result.push(ast.plain('~'));
+        
+        return {
+          tokens: result,
+          nextIndex: doubleStart + 2,
+        };
+      }
+    }
+  }
+
   return null;
 };
 
