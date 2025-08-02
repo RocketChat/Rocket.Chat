@@ -610,4 +610,16 @@ export class HomeContent {
 		}
 		await this.sendMessage(quoteText);
 	}
+
+	get clearAllUnreadsModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Clear all unreads?' });
+	}
+
+	async markAllRoomsAsRead(): Promise<void> {
+		await this.page.keyboard.down('Shift');
+		await this.page.keyboard.press('Escape');
+		await this.page.keyboard.up('Shift');
+		await expect(this.clearAllUnreadsModal).toBeVisible();
+		await this.clearAllUnreadsModal.getByRole('button', { name: 'Yes, clear all!' }).click();
+	}
 }

@@ -18,6 +18,8 @@ type LayoutProviderProps = {
 const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const showTopNavbarEmbeddedLayout = useSetting('UI_Show_top_navbar_embedded_layout', false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [displaySidePanel, setDisplaySidePanel] = useState(true);
+	const [overlayed, setOverlayed] = useState(false);
 	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
@@ -31,6 +33,14 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const isTablet = !breakpoints.includes('lg');
 
 	const shouldToggle = enhancedNavigationEnabled ? isTablet || isMobile : isMobile;
+
+	const shouldDisplaySidePanel = useMemo(() => {
+		if (!isTablet) {
+			return true;
+		}
+
+		return displaySidePanel;
+	}, [displaySidePanel, isTablet]);
 
 	useEffect(() => {
 		setIsCollapsed(shouldToggle);
@@ -63,14 +73,21 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 						collapseSearch: isMobile ? () => setNavBarSearchExpanded(false) : undefined,
 					},
 					sidebar: {
+						overlayed,
+						setOverlayed,
 						isCollapsed,
 						toggle: shouldToggle ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
 						close: () => (isEmbedded ? setIsCollapsed(true) : router.navigate('/home')),
 					},
+					sidePanel: {
+						displaySidePanel: shouldDisplaySidePanel,
+						closeSidePanel: () => setDisplaySidePanel(false),
+						openSidePanel: () => setDisplaySidePanel(true),
+					},
 					size: {
-						sidebar: '240px',
+						sidebar: isTablet ? '280px' : '240px',
 						// eslint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
@@ -83,11 +100,13 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 				[
 					isMobile,
 					isTablet,
-					navBarSearchExpanded,
 					isEmbedded,
 					showTopNavbarEmbeddedLayout,
+					navBarSearchExpanded,
+					overlayed,
 					isCollapsed,
 					shouldToggle,
+					shouldDisplaySidePanel,
 					breakpoints,
 					hiddenActions,
 					router,
