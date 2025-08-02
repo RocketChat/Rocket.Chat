@@ -8007,7 +8007,7 @@ __metadata:
     "@types/nodemailer": "npm:^6.4.17"
     "@types/oauth2-server": "npm:^3.0.18"
     "@types/object-path": "npm:^0.11.4"
-    "@types/page": "npm:~1.11.9"
+    "@types/page": "npm:1.8.0"
     "@types/parseurl": "npm:^1.3.3"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/proxy-from-env": "npm:^1.0.4"
@@ -12002,10 +12002,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/page@npm:~1.11.9":
-  version: 1.11.9
-  resolution: "@types/page@npm:1.11.9"
-  checksum: 10/9e71e98e7c01c5cda1f9824ffb874b35ff8da905ff870a8d323178e42d555795a053d14c03fff38094221a1f1304db1b933888d97a6432461bf0c52b643cf1db
+"@types/page@npm:1.8.0":
+  version: 1.8.0
+  resolution: "@types/page@npm:1.8.0"
+  checksum: 10/c712696d75d3473b9cd8960db1c0cfa58a5a82321fa3b4b793c4eda7f1d2082b84817aee6fb9daba88237d17313633cf5413b26c38f826aa2180e7724dcc07d8
   languageName: node
   linkType: hard
 
