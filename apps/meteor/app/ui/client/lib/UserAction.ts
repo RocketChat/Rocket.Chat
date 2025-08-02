@@ -3,7 +3,7 @@ import { debounce } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
-import { Users } from '../../../models/client';
+import { Users } from '../../../../client/stores';
 import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
