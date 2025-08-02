@@ -4,7 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import page from 'page';
 import qs from 'qs';
 
-import { _helpers } from './_helpers';
+import { clone, extend, omit, pick } from './_helpers';
 import type { GroupOptions } from './group';
 import Group from './group';
 import type { Context, RouteOptions } from './route';
@@ -270,7 +270,7 @@ class Router {
 		let queryParams = _queryParams;
 
 		if (this._routesMap[pathDef]) {
-			pathDef = _helpers.clone(this._routesMap[pathDef].pathDef)!;
+			pathDef = clone(this._routesMap[pathDef].pathDef)!;
 		}
 
 		if (this.queryRegExp.test(pathDef)) {
@@ -381,7 +381,7 @@ class Router {
 			params[key] = existingParams![key];
 		}
 
-		params = _helpers.extend(params, newParams);
+		params = extend(params, newParams);
 		const { queryParams } = this._current;
 
 		this.go(pathDef!, params, queryParams);
@@ -393,7 +393,7 @@ class Router {
 			return false;
 		}
 
-		const queryParams = _helpers.extend(_helpers.clone(this._current.queryParams), newParams);
+		const queryParams = extend(clone(this._current.queryParams), newParams);
 
 		for (const k in queryParams) {
 			if (queryParams[k] === null || queryParams[k] === undefined) {
@@ -414,7 +414,7 @@ class Router {
 		// We can't trust outside, that's why we clone this
 		// Anyway, we can't clone the whole object since it has non-jsonable values
 		// That's why we clone what's really needed.
-		const current = _helpers.clone(this._current);
+		const current = clone(this._current);
 		current.queryParams = EJSON.clone(current.queryParams);
 		current.params = EJSON.clone(current.params);
 		return current;
@@ -764,8 +764,8 @@ class Router {
 		// these are the public APIs
 		const routePublicApi: Pick<Route, 'name' | 'path' | 'pathDef'> & {
 			options?: Omit<RouteOptions, 'triggersEnter' | 'triggersExit' | 'action' | 'subscriptions' | 'name'>;
-		} = _helpers.pick(currentRoute, ['name', 'pathDef', 'path']);
-		routePublicApi.options = _helpers.omit(currentRoute.options, ['triggersEnter', 'triggersExit', 'action', 'subscriptions', 'name']);
+		} = pick(currentRoute, ['name', 'pathDef', 'path']);
+		routePublicApi.options = omit(currentRoute.options, ['triggersEnter', 'triggersExit', 'action', 'subscriptions', 'name']);
 
 		this._onRouteCallbacks.forEach((cb) => {
 			cb(routePublicApi);
