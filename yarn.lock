@@ -8007,6 +8007,7 @@ __metadata:
     "@types/nodemailer": "npm:^6.4.17"
     "@types/oauth2-server": "npm:^3.0.18"
     "@types/object-path": "npm:^0.11.4"
+    "@types/page": "npm:~1.11.9"
     "@types/parseurl": "npm:^1.3.3"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/proxy-from-env": "npm:^1.0.4"
@@ -8162,6 +8163,7 @@ __metadata:
     outdent: "npm:~0.8.0"
     overlayscrollbars: "npm:^2.11.4"
     overlayscrollbars-react: "npm:^0.5.6"
+    page: "npm:1.9.0"
     path: "npm:^0.12.7"
     path-to-regexp: "npm:^6.3.0"
     pino: "npm:^8.21.0"
@@ -11997,6 +11999,13 @@ __metadata:
   version: 0.11.4
   resolution: "@types/object-path@npm:0.11.4"
   checksum: 10/7f1f5cb18b651d21e7861da176d8f87526c936ed949a8126a2692195cbe65734ed1a1a22c06a24a54afe1890483a3d6b074b402ebfca7a7567c1c287b588f563
+  languageName: node
+  linkType: hard
+
+"@types/page@npm:~1.11.9":
+  version: 1.11.9
+  resolution: "@types/page@npm:1.11.9"
+  checksum: 10/9e71e98e7c01c5cda1f9824ffb874b35ff8da905ff870a8d323178e42d555795a053d14c03fff38094221a1f1304db1b933888d97a6432461bf0c52b643cf1db
   languageName: node
   linkType: hard
 
@@ -28267,6 +28276,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"page@npm:1.9.0":
+  version: 1.9.0
+  resolution: "page@npm:1.9.0"
+  dependencies:
+    path-to-regexp: "npm:~1.2.1"
+  checksum: 10/a6882f3e9568e33423c427351b4f7762927a4b4f555a9f1ec16360d3f0e0a04d4cf4b4399b3dd9fab2be58191de95d3f19fff0d6e46e3340e807ae398b496206
+  languageName: node
+  linkType: hard
+
 "pako@npm:^0.2.5":
   version: 0.2.9
   resolution: "pako@npm:0.2.9"
@@ -28576,6 +28594,15 @@ __metadata:
   version: 8.2.0
   resolution: "path-to-regexp@npm:8.2.0"
   checksum: 10/23378276a172b8ba5f5fb824475d1818ca5ccee7bbdb4674701616470f23a14e536c1db11da9c9e6d82b82c556a817bbf4eee6e41b9ed20090ef9427cbb38e13
+  languageName: node
+  linkType: hard
+
+"path-to-regexp@npm:~1.2.1":
+  version: 1.2.1
+  resolution: "path-to-regexp@npm:1.2.1"
+  dependencies:
+    isarray: "npm:0.0.1"
+  checksum: 10/c0ae580075eda38e33ae7cf62110037d144cd1e2e8e25d97f8c301351d4d7bf44c1327ae82ff32671d69ad59df02e903fa0db12d7341a7ae385f3a4488d85cad
   languageName: node
   linkType: hard
 
