@@ -929,7 +929,27 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
   while (i < text.length) {
     const char = text[i];
 
-    // Handle escape characters first
+    // KaTeX parsing - inline only: \(...\) - check before escape processing
+    if (options?.katex && char === '\\') {
+      console.log(`KaTeX check at position ${i}, char: '${char}' (${char.charCodeAt(0)}), next: '${text[i + 1]}' (${text[i + 1]?.charCodeAt(0)})`);
+      const nextChar = text[i + 1];
+      
+      // Inline KaTeX: \(...\)
+      if (options.katex.parenthesisSyntax && nextChar === '(') {
+        console.log('Found potential inline KaTeX start');
+        const endPattern = text.indexOf('\\)', i + 2);
+        console.log(`Looking for end pattern, found at: ${endPattern}`);
+        if (endPattern !== -1) {
+          const content = text.slice(i + 2, endPattern);
+          console.log(`Parsed inline KaTeX content: "${content}"`);
+          tokens.push(ast.inlineKatex(content));
+          i = endPattern + 2;
+          continue;
+        }
+      }
+    }
+
+    // Handle escape characters (after KaTeX check)
     if (char === '\\' && i + 1 < text.length) {
       const nextChar = text[i + 1];
       
@@ -1027,22 +1047,6 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
             i = hexEnd;
             continue;
           }
-        }
-      }
-    }
-
-    // KaTeX parsing - inline only: \(...\)
-    if (options?.katex && char === '\\') {
-      const nextChar = text[i + 1];
-      
-      // Inline KaTeX: \(...\)
-      if (options.katex.parenthesisSyntax && nextChar === '(') {
-        const endPattern = text.indexOf('\\)', i + 2);
-        if (endPattern !== -1) {
-          const content = text.slice(i + 2, endPattern);
-          tokens.push(ast.inlineKatex(content));
-          i = endPattern + 2;
-          continue;
         }
       }
     }
@@ -1258,6 +1262,15 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       // Stop if we hit markup characters, but be careful with @ for emails
       if (['*', '_', '~', '#', '`', '[', '<'].includes(currentChar)) {
         break;
+      }
+      
+      // Stop if we hit a backslash that might be KaTeX
+      if (currentChar === '\\' && options?.katex?.parenthesisSyntax) {
+        const nextChar = text[tempI + 1];
+        if (nextChar === '(' || nextChar === '[') {
+          // This might be KaTeX, stop accumulating and let the main loop handle it
+          break;
+        }
       }
       
       // Special handling for @ - check if this could be part of an email
@@ -1516,27 +1529,32 @@ export const parse = (input: string, options?: Options): AST.Root => {
   while (i < lines.length) {
     const line = lines[i];
     
-    // Check for code fence start
+    // Check for code fence start (must be at beginning of line and have matching closing)
     if (line.startsWith('```')) {
-      const language = line.slice(3).trim() || 'none';
-      const codeLines: AST.CodeLine[] = [];
-      i++; // Move past the opening ```
-      
-      // Collect code lines until we find the closing ```
-      while (i < lines.length) {
-        const codeLine = lines[i];
-        if (codeLine === '```') {
-          // Found closing fence
-          result.push(ast.code(codeLines, language));
-          i++; // Move past the closing ```
+      // Look ahead to see if there's a closing fence
+      let closingIndex = -1;
+      for (let j = i + 1; j < lines.length; j++) {
+        if (lines[j] === '```') {
+          closingIndex = j;
           break;
-        } else {
-          // Add this line as code
-          codeLines.push(ast.codeLine(ast.plain(codeLine)));
-          i++;
         }
       }
-      continue;
+      
+      // Only process as code fence if we found a closing fence
+      if (closingIndex !== -1) {
+        const language = line.slice(3).trim() || 'none';
+        const codeLines: AST.CodeLine[] = [];
+        
+        // Collect code lines between opening and closing
+        for (let j = i + 1; j < closingIndex; j++) {
+          codeLines.push(ast.codeLine(ast.plain(lines[j])));
+        }
+        
+        result.push(ast.code(codeLines, language));
+        i = closingIndex + 1; // Move past the closing ```
+        continue;
+      }
+      // If no closing fence found, fall through to regular paragraph processing
     }
     
     // Check for block KaTeX: \[...\]
@@ -1578,7 +1596,9 @@ export const parse = (input: string, options?: Options): AST.Root => {
       result.push(ast.lineBreak);
     } else {
       // Non-empty line creates a paragraph
+      console.log(`Processing paragraph line: "${line}"`);
       const inlineContent = parseInlineContent(line, options);
+      console.log(`Parsed inline content:`, inlineContent);
       result.push(ast.paragraph(inlineContent));
     }
     i++;
