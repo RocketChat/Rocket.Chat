@@ -1295,12 +1295,12 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?_]/.test(prevChar);
       
       if (atWordBoundary) {
-        // Look for username pattern - stop at whitespace and punctuation
+        // Look for username pattern - stop at whitespace and punctuation (but allow colons for Matrix usernames)
         let j = i + 1;
         while (j < text.length) {
           const char = text[j];
-          // Stop at whitespace or punctuation (but allow underscores, dots in usernames)
-          if (/[\s\n\r\t\(\)\[\]{},;:!?]/.test(char)) {
+          // Stop at whitespace or punctuation (but allow underscores, dots, colons in usernames)
+          if (/[\s\n\r\t\(\)\[\]{},;!?]/.test(char)) {
             break;
           }
           j++;
