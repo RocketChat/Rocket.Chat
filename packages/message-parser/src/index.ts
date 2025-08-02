@@ -367,7 +367,7 @@ const parseItalicMarkup = (
   let bestScore = 0;
   
   // Try single underscore parsing first
-  // Find the closing underscore, but skip over emoji shortcodes that contain underscores
+  // Find the closing underscore, but skip over emoji shortcodes and certain mention patterns
   let singleEnd = -1;
   let searchPos = i + 1;
   
@@ -376,7 +376,6 @@ const parseItalicMarkup = (
     if (nextUnderscore === -1) break;
     
     // Check if this underscore is inside an emoji shortcode
-    // Look for the pattern :emoji_name: that would contain this underscore
     let insideEmoji = false;
     
     // Look backwards from this underscore to find a potential opening colon
@@ -404,7 +403,52 @@ const parseItalicMarkup = (
       continue;
     }
     
-    // This underscore is not inside an emoji shortcode
+    // Special case: if this might be a pattern like "_ @user_name_ _",
+    // check if there's a space after this underscore (suggesting it's a delimiter)
+    const charAfterUnderscore = nextUnderscore + 1 < text.length ? text[nextUnderscore + 1] : '';
+    const looksLikeDelimiter = charAfterUnderscore === ' ' || nextUnderscore + 1 >= text.length;
+    
+    // Check if this underscore might be inside a mention that should be skipped
+    let shouldSkipMention = false;
+    
+    if (!looksLikeDelimiter) {
+      // Only skip if it's clearly not a delimiter and looks like part of a username
+      // Look backwards to find a potential @ sign
+      for (let j = nextUnderscore - 1; j >= Math.max(0, searchPos - 30); j--) {
+        if (text[j] === '@') {
+          // Found @ before the underscore, check if this forms a valid mention
+          const beforeAt = j > 0 ? text[j - 1] : '';
+          const atWordBoundary = j === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?_]/.test(beforeAt);
+          
+          if (atWordBoundary) {
+            const potentialMention = text.slice(j + 1, nextUnderscore + 1);
+            // Check if there are only valid username characters between @ and this underscore
+            if (potentialMention && !/[\s\n\r\t]/.test(potentialMention)) {
+              // Continue consuming characters until we hit whitespace to find the end of username
+              let usernameEnd = nextUnderscore + 1;
+              while (usernameEnd < text.length && !/[\s\n\r\t]/.test(text[usernameEnd])) {
+                usernameEnd++;
+              }
+              // Only skip if this looks like a complete username (ends with space or end of string)
+              if (usernameEnd < text.length && /[\s\n\r\t]/.test(text[usernameEnd])) {
+                searchPos = usernameEnd;
+                shouldSkipMention = true;
+                break;
+              }
+            }
+          }
+        } else if (/[\s\n\r\t]/.test(text[j])) {
+          // Hit whitespace, stop looking backwards
+          break;
+        }
+      }
+    }
+    
+    if (shouldSkipMention) {
+      continue;
+    }
+    
+    // This underscore is not inside an emoji shortcode or mention
     singleEnd = nextUnderscore;
     break;
   }
@@ -727,7 +771,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     if (char === '@') {
       // Check if @ is preceded by a word boundary (whitespace, start of string, or punctuation)
       const prevChar = i > 0 ? text[i - 1] : '';
-      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(prevChar);
+      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?_]/.test(prevChar);
       
       if (atWordBoundary) {
         // Look for username pattern - use permissive Unicode character detection

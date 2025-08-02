@@ -15,6 +15,8 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "erasableSyntaxOnly": true,
-    "rewriteRelativeImportExtensions": true
+    "rewriteRelativeImportExtensions": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   }
 }
