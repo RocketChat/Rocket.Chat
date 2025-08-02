@@ -2059,8 +2059,17 @@ export const parse = (input: string, options?: Options): AST.Root => {
     
     // Regular line processing
     if (line.trim() === '') {
-      // Empty line creates a line break element
-      result.push(ast.lineBreak);
+      // Empty line creates a line break element, but only if there are more non-empty lines after it
+      let hasContentAfter = false;
+      for (let j = i + 1; j < lines.length; j++) {
+        if (lines[j].trim() !== '') {
+          hasContentAfter = true;
+          break;
+        }
+      }
+      if (hasContentAfter) {
+        result.push(ast.lineBreak);
+      }
     } else {
       // Non-empty line creates a paragraph
       const inlineContent = parseInlineContent(line, options);
