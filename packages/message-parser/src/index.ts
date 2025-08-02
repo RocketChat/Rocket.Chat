@@ -1077,26 +1077,24 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
       
       if (atWordBoundary) {
-        // Look for phone number pattern: digits, parentheses, and hyphens only (no spaces or dots)
+        // Look for phone number pattern: digits, parentheses, and hyphens only
         let j = i + 1;
         let phoneText = '+';
         let digitsOnly = '';
         
-        // First character after + must be a digit or opening parenthesis
-        if (j < text.length && /[0-9(]/.test(text[j])) {
-          while (j < text.length) {
-            const phoneChar = text[j];
-            // Allow digits, parentheses, and hyphens only (stricter than before)
-            if (/[0-9()\-]/.test(phoneChar)) {
-              phoneText += phoneChar;
-              if (/[0-9]/.test(phoneChar)) {
-                digitsOnly += phoneChar;
-              }
-              j++;
-            } else {
-              // Stop at any other character (including spaces, dots, commas)
-              break;
+        // Allow digits, parentheses, and hyphens immediately after +
+        while (j < text.length) {
+          const phoneChar = text[j];
+          // Allow digits, parentheses, and hyphens only
+          if (/[0-9()\-]/.test(phoneChar)) {
+            phoneText += phoneChar;
+            if (/[0-9]/.test(phoneChar)) {
+              digitsOnly += phoneChar;
             }
+            j++;
+          } else {
+            // Stop at any other character (including spaces, dots, commas)
+            break;
           }
         }
         
@@ -1397,6 +1395,36 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           if (closeParens !== -1) {
             const labelText = text.slice(i + 1, linkPattern);
             const url = text.slice(linkPattern + 2, closeParens);
+
+            // Check if the URL is a phone number pattern
+            if (url.startsWith('+') && /^[+0-9()\-]+$/.test(url)) {
+              const digitsOnly = url.replace(/[^0-9]/g, '');
+              if (digitsOnly.length >= 5) {
+                // This is a phone number in link syntax - use phoneChecker
+                let labelContent: AST.Markup[] | undefined;
+                
+                if (labelText) {
+                  const parsedTokens = parseInlineContent(labelText, options, true);
+                  const filteredTokens = parsedTokens.filter(
+                    (token): token is AST.Plain | AST.Bold | AST.Italic | AST.Strike =>
+                      token.type === 'PLAIN_TEXT' ||
+                      token.type === 'BOLD' ||
+                      token.type === 'ITALIC' ||
+                      token.type === 'STRIKE',
+                  );
+                  
+                  if (filteredTokens.length > 0 && filteredTokens.some(t => t.type !== 'PLAIN_TEXT')) {
+                    labelContent = filteredTokens;
+                  } else {
+                    labelContent = [ast.plain(labelText)];
+                  }
+                }
+                
+                tokens.push(ast.link(`tel:${digitsOnly}`, labelContent));
+                i = closeParens + 1;
+                continue;
+              }
+            }
 
             // Parse label content for nested markup, filter to valid types
             // Skip URL detection in labels to avoid conflicts with text like "Rocket.Chat"
