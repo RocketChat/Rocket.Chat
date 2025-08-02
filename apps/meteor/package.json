@@ -136,7 +136,7 @@
 		"@types/nodemailer": "^6.4.17",
 		"@types/oauth2-server": "^3.0.18",
 		"@types/object-path": "^0.11.4",
-		"@types/page": "~1.11.9",
+		"@types/page": "1.8.0",
 		"@types/parseurl": "^1.3.3",
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/proxy-from-env": "^1.0.4",
