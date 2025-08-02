@@ -1211,12 +1211,12 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?_]/.test(prevChar);
       
       if (atWordBoundary) {
-        // Look for username pattern - use permissive Unicode character detection
+        // Look for username pattern - stop at whitespace and punctuation
         let j = i + 1;
         while (j < text.length) {
           const char = text[j];
-          // Stop only at whitespace - allow all other characters including : and punctuation
-          if (/[\s\n\r\t]/.test(char)) {
+          // Stop at whitespace or punctuation (but allow underscores, dots in usernames)
+          if (/[\s\n\r\t\(\)\[\]{},;:!?]/.test(char)) {
             break;
           }
           j++;
@@ -1345,7 +1345,64 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           }
         }
       }
-    }    // Accumulate plain text until we hit markup or special characters
+    }
+    
+    // Emoticon parsing (text-based emoticons like :), D:, etc.)
+    let found = false;
+    if (options?.emoticons) {
+      // Define emoticon patterns - check longer patterns first to avoid conflicts
+      const emoticonMap: { [key: string]: string } = {
+        ':)': 'slight_smile',
+        ':-)': 'slight_smile',
+        ':(': 'frowning',
+        ':-(': 'frowning',
+        'D:': 'fearful',
+        ':D': 'grinning',
+        ':-D': 'grinning',
+        ':P': 'stuck_out_tongue',
+        ':-P': 'stuck_out_tongue',
+        ':p': 'stuck_out_tongue',
+        ':-p': 'stuck_out_tongue',
+        ';)': 'wink',
+        ';-)': 'wink',
+        ':o': 'open_mouth',
+        ':-o': 'open_mouth',
+        ':O': 'open_mouth',
+        ':-O': 'open_mouth',
+        ':|': 'neutral_face',
+        ':-|': 'neutral_face',
+        ':/': 'confused',
+        ':-/': 'confused',
+        ':\\': 'confused',
+        ':-\\': 'confused',
+      };
+      
+      // Sort emoticons by length (longest first) to avoid matching conflicts
+      const sortedEmoticons = Object.keys(emoticonMap).sort((a, b) => b.length - a.length);
+      
+      for (const emoticon of sortedEmoticons) {
+        if (text.slice(i, i + emoticon.length) === emoticon) {
+          // Check word boundaries - emoticons should be surrounded by whitespace or punctuation
+          const prevChar = i > 0 ? text[i - 1] : '';
+          const nextChar = i + emoticon.length < text.length ? text[i + emoticon.length] : '';
+          
+          const prevBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(prevChar);
+          const nextBoundary = i + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(nextChar);
+          
+          if (prevBoundary && nextBoundary) {
+            const shortCode = emoticonMap[emoticon];
+            tokens.push(ast.emoticon(emoticon, shortCode));
+            i += emoticon.length;
+            found = true;
+            break;
+          }
+        }
+      }
+    }
+    
+    if (found) continue;
+
+    // Accumulate plain text until we hit markup or special characters
     let plainText = '';
     let tempI = i;
     
@@ -1765,14 +1822,57 @@ export const parse = (input: string, options?: Options): AST.Root => {
       // If it's just a single empty quote line, fall through to regular processing
     }
     
+    // Check for task items (lines starting with - [ ] or - [x])
+    if (line.match(/^\s*-\s*\[[x ]\]\s/)) {
+      const taskItems: AST.Task[] = [];
+      let taskIndex = i;
+      
+      // Collect consecutive task items
+      while (taskIndex < lines.length && lines[taskIndex].match(/^\s*-\s*\[[x ]\]\s/)) {
+        const taskLine = lines[taskIndex];
+        
+        // Extract the checkbox status and content
+        const taskMatch = taskLine.match(/^\s*-\s*\[([x ])\]\s(.*)$/);
+        if (taskMatch) {
+          const status = taskMatch[1] === 'x'; // true for [x], false for [ ]
+          const content = taskMatch[2];
+          const inlineContent = parseInlineContent(content, options);
+          taskItems.push(ast.task(inlineContent, status));
+        }
+        taskIndex++;
+      }
+      
+      if (taskItems.length > 0) {
+        result.push(ast.tasks(taskItems));
+        i = taskIndex; // Skip all the task lines we just processed
+        continue;
+      }
+    }
+    
     // Check for unordered list items (lines starting with - or *)
-    if (line.match(/^\s*[-*]\s/)) {
+    // But exclude lines that look like emphasis (single character content)
+    if (line.match(/^\s*[-*]\s/) && !line.match(/^\s*[-*]\s*[*_~]?\s*$/)) {
       const listItems: AST.ListItem[] = [];
       let listIndex = i;
       
-      // Collect consecutive unordered list items
+      // Get the marker type from the first line (- or *)
+      const firstMarker = line.match(/^\s*([-*])\s/)?.[1];
+      
+      // Collect consecutive unordered list items with the same marker
       while (listIndex < lines.length && lines[listIndex].match(/^\s*[-*]\s/)) {
         const listLine = lines[listIndex];
+        const currentMarker = listLine.match(/^\s*([-*])\s/)?.[1];
+        
+        // Stop if the marker changes (different marker = different list)
+        if (currentMarker !== firstMarker) {
+          break;
+        }
+        
+        // Skip lines that look like emphasis patterns
+        if (listLine.match(/^\s*[-*]\s*[*_~]?\s*$/)) {
+          break;
+        }
+        
         // Remove the - or * and space after it
         const content = listLine.replace(/^\s*[-*]\s/, '');
         const inlineContent = parseInlineContent(content, options);
@@ -1780,9 +1880,11 @@ export const parse = (input: string, options?: Options): AST.Root => {
         listIndex++;
       }
       
-      result.push(ast.unorderedList(listItems));
-      i = listIndex; // Skip all the list lines we just processed
-      continue;
+      if (listItems.length > 0) {
+        result.push(ast.unorderedList(listItems));
+        i = listIndex; // Skip all the list lines we just processed
+        continue;
+      }
     }
     
     // Check for ordered list items (lines starting with numbers followed by .)
