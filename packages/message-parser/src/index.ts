@@ -1189,6 +1189,34 @@ export const parse = (input: string, options?: Options): AST.Root => {
   // Split into lines and process them
   const lines = normalizedInput.split('\n');
   
+  // Check if the entire input is a single line with only emoji (for BIG_EMOJI)
+  if (lines.length === 1 && lines[0].trim() !== '') {
+    const line = lines[0];
+    const inlineContent = parseInlineContent(line, options);
+    
+    // Check if the line contains only emoji (and optionally whitespace/plain text that's just spaces)
+    const isOnlyEmoji = inlineContent.length > 0 && inlineContent.every(token => {
+      return token.type === 'EMOJI' || 
+             (token.type === 'PLAIN_TEXT' && /^\s*$/.test(token.value));
+    });
+    
+    if (isOnlyEmoji) {
+      // Extract only the emoji tokens (filter out whitespace)
+      const emojiTokens = inlineContent.filter(token => token.type === 'EMOJI') as AST.Emoji[];
+      if (emojiTokens.length >= 1 && emojiTokens.length <= 3) {
+        // Create BIG_EMOJI for 1-3 emoji
+        if (emojiTokens.length === 1) {
+          return [ast.bigEmoji([emojiTokens[0]])];
+        } else if (emojiTokens.length === 2) {
+          return [ast.bigEmoji([emojiTokens[0], emojiTokens[1]])];
+        } else {
+          return [ast.bigEmoji([emojiTokens[0], emojiTokens[1], emojiTokens[2]])];
+        }
+      }
+    }
+  }
+  
+  // Regular multi-line processing or single line that's not big emoji
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
