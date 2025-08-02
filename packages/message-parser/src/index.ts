@@ -1070,6 +1070,86 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       // Fall through to normal character processing
     }
 
+    // Phone number detection - must be before URL detection
+    if (char === '+') {
+      // Check if + is at a word boundary (start of string or after whitespace/punctuation)
+      const prevChar = i > 0 ? text[i - 1] : '';
+      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
+      
+      if (atWordBoundary) {
+        // Look for phone number pattern: digits, parentheses, and hyphens only (no spaces or dots)
+        let j = i + 1;
+        let phoneText = '+';
+        let digitsOnly = '';
+        
+        // First character after + must be a digit or opening parenthesis
+        if (j < text.length && /[0-9(]/.test(text[j])) {
+          while (j < text.length) {
+            const phoneChar = text[j];
+            // Allow digits, parentheses, and hyphens only (stricter than before)
+            if (/[0-9()\-]/.test(phoneChar)) {
+              phoneText += phoneChar;
+              if (/[0-9]/.test(phoneChar)) {
+                digitsOnly += phoneChar;
+              }
+              j++;
+            } else {
+              // Stop at any other character (including spaces, dots, commas)
+              break;
+            }
+          }
+        }
+        
+        // Check if this looks like a phone number (at least 5 digits)
+        if (digitsOnly.length >= 5) {
+          // Additional validation - should not end with patterns that indicate it's not a phone number
+          const nextChar = j < text.length ? text[j] : '';
+          const isValidPhoneEnd = j >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(nextChar);
+          
+          if (isValidPhoneEnd) {
+            tokens.push(ast.phoneChecker(phoneText, digitsOnly));
+            i = j;
+            continue;
+          }
+        }
+      }
+    }
+
+    // Timestamp parsing: <t:timestamp> or <t:timestamp:format>
+    if (char === '<' && text.slice(i, i + 3) === '<t:') {
+      // Look for the closing >
+      const closeIndex = text.indexOf('>', i + 3);
+      if (closeIndex !== -1) {
+        const timestampContent = text.slice(i + 3, closeIndex);
+        
+        // Parse timestamp format: timestamp or timestamp:format
+        const parts = timestampContent.split(':');
+        
+        if (parts.length >= 1) {
+          const timestampValue = parts[0];
+          const format = parts[1] as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined;
+          
+          // Check if it's a valid timestamp (numbers or ISO date)
+          if (/^\d+$/.test(timestampValue)) {
+            // Unix timestamp
+            if (timestampValue.length >= 9) { // Reasonable timestamp length
+              tokens.push(ast.timestamp(timestampValue, format));
+              i = closeIndex + 1;
+              continue;
+            }
+          } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(timestampValue)) {
+            // ISO date format - convert to unix timestamp
+            const unixTimestamp = Math.floor(new Date(timestampValue).getTime() / 1000).toString();
+            if (!isNaN(parseInt(unixTimestamp))) {
+              tokens.push(ast.timestamp(unixTimestamp, format));
+              i = closeIndex + 1;
+              continue;
+            }
+          }
+        }
+      }
+    }
+
     // URL auto-detection (before other parsing to avoid conflicts)
     // Skip URL detection for link labels to avoid conflicts
     if (!skipUrlDetection) {
