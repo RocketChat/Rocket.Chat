@@ -838,31 +838,16 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(text[i - 1]);
       
       if (atWordBoundary) {
-        // Find matching closing bracket, handling nested brackets
-        let bracketCount = 1;
-        let closeBracket = -1;
+        // Look for the first ]( pattern instead of balancing all brackets
+        // This handles nested cases like [text [nested](url)](outer-url) correctly
+        const linkPattern = text.indexOf('](', i + 1);
         
-        for (let j = i + 1; j < text.length; j++) {
-          if (text[j] === '[') {
-            bracketCount++;
-          } else if (text[j] === ']') {
-            bracketCount--;
-            if (bracketCount === 0) {
-              closeBracket = j;
-              break;
-            }
-          }
-        }
-        
-        if (
-          closeBracket !== -1 &&
-          closeBracket < text.length - 1 &&
-          text[closeBracket + 1] === '('
-        ) {
-          const closeParens = text.indexOf(')', closeBracket + 2);
+        if (linkPattern !== -1) {
+          // Found ]( pattern, now find the closing )
+          const closeParens = text.indexOf(')', linkPattern + 2);
           if (closeParens !== -1) {
-            const labelText = text.slice(i + 1, closeBracket);
-            const url = text.slice(closeBracket + 2, closeParens);
+            const labelText = text.slice(i + 1, linkPattern);
+            const url = text.slice(linkPattern + 2, closeParens);
 
             // Parse label content for nested markup, filter to valid types
             // Skip URL detection in labels to avoid conflicts with text like "Rocket.Chat"
