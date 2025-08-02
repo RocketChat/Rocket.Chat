@@ -10,10 +10,10 @@ import type {
 	RouteObject,
 	LocationSearch,
 } from '@rocket.chat/ui-contexts';
-import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
 import { Tracker } from 'meteor/tracker';
 import type { ReactNode } from 'react';
 
+import { FlowRouter } from '../flowRouter';
 import { appLayout } from '../lib/appLayout';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
@@ -45,7 +45,7 @@ const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 	};
 };
 
-const getLocationPathname = () => FlowRouter.current().path.replace(/\?.*/, '') as LocationPathname;
+const getLocationPathname = () => FlowRouter.current().path!.replace(/\?.*/, '') as LocationPathname;
 
 const getLocationSearch = () => location.search as LocationSearch;
 
@@ -121,7 +121,7 @@ const routesSubscribers = new Set<() => void>();
 const updateFlowRouter = () => {
 	if (FlowRouter._initialized) {
 		FlowRouter._updateCallbacks();
-		FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter._current.path));
+		FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter._current.path!));
 		return;
 	}
 
@@ -134,20 +134,12 @@ const updateFlowRouter = () => {
 };
 
 const defineRoutes = (routes: RouteObject[]) => {
-	const flowRoutes = routes.map((route) => {
-		if (route.path === '*') {
-			FlowRouter.notFound = {
-				action: () => appLayout.render(<>{route.element}</>),
-			};
-
-			return FlowRouter.notFound;
-		}
-
-		return FlowRouter.route(route.path, {
+	const flowRoutes = routes.map((route) =>
+		FlowRouter.route(route.path, {
 			name: route.id,
 			action: () => appLayout.render(<>{route.element}</>),
-		});
-	});
+		}),
+	);
 
 	routes.push(...routes);
 	const index = routes.length - 1;
