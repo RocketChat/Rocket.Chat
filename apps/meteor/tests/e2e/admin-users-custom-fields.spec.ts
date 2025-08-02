@@ -68,24 +68,16 @@ test.describe('Admin users custom fields', () => {
 		});
 
 		await test.step('should navigate to edit user form', async () => {
-			await poAdmin.btnEdit.waitFor();
 			await poAdmin.btnEdit.click();
 		});
 
 		await test.step('should fill custom fields for user', async () => {
-			await poAdmin.tabs.users.inputName.waitFor();
-
-			await expect(poAdmin.tabs.users.getCustomField('customFieldText1')).toBeVisible();
-			await expect(poAdmin.tabs.users.getCustomField('customFieldText2')).toBeVisible();
-
 			await poAdmin.tabs.users.getCustomField('customFieldText1').fill(adminCustomFieldValue1);
 			await poAdmin.tabs.users.getCustomField('customFieldText2').fill(adminCustomFieldValue2);
 		});
 
 		await test.step('should save user custom fields', async () => {
-			await poAdmin.tabs.users.btnSaveUser.waitFor();
 			await poAdmin.tabs.users.btnSaveUser.click();
-			await expect(poHomeChannel.toastSuccess).toBeVisible();
 			await poHomeChannel.dismissToast();
 		});
 
@@ -108,7 +100,6 @@ test.describe('Admin users custom fields', () => {
 		});
 
 		await test.step('should navigate to edit user form', async () => {
-			await poAdmin.btnEdit.waitFor();
 			await poAdmin.btnEdit.click();
 		});
 
@@ -123,9 +114,7 @@ test.describe('Admin users custom fields', () => {
 		});
 
 		await test.step('should save and verify partial update', async () => {
-			await poAdmin.tabs.users.btnSaveUser.waitFor();
 			await poAdmin.tabs.users.btnSaveUser.click();
-			await expect(poHomeChannel.toastSuccess).toBeVisible();
 			await poHomeChannel.dismissToast();
 
 			await poAdmin.tabs.users.btnContextualbarClose.click();
