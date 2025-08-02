@@ -1765,6 +1765,50 @@ export const parse = (input: string, options?: Options): AST.Root => {
       // If it's just a single empty quote line, fall through to regular processing
     }
     
+    // Check for unordered list items (lines starting with - or *)
+    if (line.match(/^\s*[-*]\s/)) {
+      const listItems: AST.ListItem[] = [];
+      let listIndex = i;
+      
+      // Collect consecutive unordered list items
+      while (listIndex < lines.length && lines[listIndex].match(/^\s*[-*]\s/)) {
+        const listLine = lines[listIndex];
+        // Remove the - or * and space after it
+        const content = listLine.replace(/^\s*[-*]\s/, '');
+        const inlineContent = parseInlineContent(content, options);
+        listItems.push(ast.listItem(inlineContent));
+        listIndex++;
+      }
+      
+      result.push(ast.unorderedList(listItems));
+      i = listIndex; // Skip all the list lines we just processed
+      continue;
+    }
+    
+    // Check for ordered list items (lines starting with numbers followed by .)
+    if (line.match(/^\s*\d+\.\s/)) {
+      const listItems: AST.ListItem[] = [];
+      let listIndex = i;
+      
+      // Collect consecutive ordered list items
+      while (listIndex < lines.length && lines[listIndex].match(/^\s*\d+\.\s/)) {
+        const listLine = lines[listIndex];
+        // Extract the number and content
+        const match = listLine.match(/^\s*(\d+)\.\s(.*)$/);
+        if (match) {
+          const number = parseInt(match[1], 10);
+          const content = match[2];
+          const inlineContent = parseInlineContent(content, options);
+          listItems.push(ast.listItem(inlineContent, number));
+        }
+        listIndex++;
+      }
+      
+      result.push(ast.orderedList(listItems));
+      i = listIndex; // Skip all the list lines we just processed
+      continue;
+    }
+    
     // Regular line processing
     if (line.trim() === '') {
       // Empty line creates a line break element

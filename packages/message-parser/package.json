@@ -32,7 +32,7 @@
   "types": "dist/index.d.ts",
   "files": [
     "/dist",
-    "/messageParser.js"
+    "/bin.js"
   ],
   "directories": {
     "test": "test"
