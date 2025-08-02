@@ -1724,6 +1724,37 @@ export const parse = (input: string, options?: Options): AST.Root => {
       continue;
     }
     
+    // Check for quote blocks (lines starting with >)
+    if (line.match(/^\s*>/)) {
+      const quoteLines: string[] = [];
+      let quoteIndex = i;
+      
+      // Collect consecutive quote lines
+      while (quoteIndex < lines.length && lines[quoteIndex].match(/^\s*>/)) {
+        const quoteLine = lines[quoteIndex];
+        // Remove the > and optional space after it
+        const content = quoteLine.replace(/^\s*>\s?/, '');
+        quoteLines.push(content);
+        quoteIndex++;
+      }
+      
+      // Parse each quote line as a paragraph
+      const quoteParagraphs: AST.Paragraph[] = [];
+      for (const quoteLine of quoteLines) {
+        if (quoteLine.trim() === '') {
+          // Empty quote line - still create a paragraph with empty content
+          quoteParagraphs.push(ast.paragraph([]));
+        } else {
+          const inlineContent = parseInlineContent(quoteLine, options);
+          quoteParagraphs.push(ast.paragraph(inlineContent));
+        }
+      }
+      
+      result.push(ast.quote(quoteParagraphs));
+      i = quoteIndex; // Skip all the quote lines we just processed
+      continue;
+    }
+    
     // Regular line processing
     if (line.trim() === '') {
       // Empty line creates a line break element
