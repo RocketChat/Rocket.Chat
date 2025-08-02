@@ -3,6 +3,7 @@ import type { IRoom, RoomAdminFieldsType, Serialized } from '@rocket.chat/core-t
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +31,16 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ts, ...args } = room;
 	const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room as IRoom);
 	const roomName = getRoomDisplayName(room);
+
+	// const actions = useMemo();
+
+	// const menuOptions = Object.entries(actions).map(([_key, item]) => {
+	// 	return {
+	// 		...item,
+	// 		id: item.content || item.title || '',
+	// 		content: item.content || item.title,
+	// 	};
+	// });
 
 	const getRoomType = (
 		room: Pick<Serialized<IRoom>, RoomAdminFieldsType>,
@@ -87,6 +98,15 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 			{mediaQuery && <GenericTableCell withTruncatedText>{isDefault ? t('True') : t('False')}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{featured ? t('True') : t('False')}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{ts ? formatDate(ts) : ''}</GenericTableCell>}
+			<GenericTableCell
+				onClick={(e): void => {
+					e.stopPropagation();
+				}}
+			>
+				<Box display='flex' justifyContent='flex-end'>
+					<GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: [{ id: 'test' }] }]} placement='bottom-end' />
+				</Box>
+			</GenericTableCell>
 		</GenericTableRow>
 	);
 };
