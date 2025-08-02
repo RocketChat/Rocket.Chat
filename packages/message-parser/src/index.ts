@@ -979,6 +979,74 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       continue;
     }
 
+    // Color parsing - pattern: color:#hex (3, 4, 6, or 8 hex digits)
+    if (options?.colors && text.slice(i, i + 6) === 'color:') {
+      const colorStart = i + 6;
+      if (colorStart < text.length && text[colorStart] === '#') {
+        // Find the end of the hex color
+        let hexEnd = colorStart + 1;
+        while (hexEnd < text.length && /[0-9a-fA-F]/.test(text[hexEnd])) {
+          hexEnd++;
+        }
+        
+        const hexString = text.slice(colorStart + 1, hexEnd);
+        const hexLength = hexString.length;
+        
+        // Valid hex color lengths: 3, 4, 6, or 8
+        if (hexLength === 3 || hexLength === 4 || hexLength === 6 || hexLength === 8) {
+          // Parse hex color
+          let r, g, b, a = 255;
+          
+          if (hexLength === 3) {
+            // #rgb -> #rrggbb
+            r = parseInt(hexString[0] + hexString[0], 16);
+            g = parseInt(hexString[1] + hexString[1], 16);
+            b = parseInt(hexString[2] + hexString[2], 16);
+          } else if (hexLength === 4) {
+            // #rgba -> #rrggbbaa
+            r = parseInt(hexString[0] + hexString[0], 16);
+            g = parseInt(hexString[1] + hexString[1], 16);
+            b = parseInt(hexString[2] + hexString[2], 16);
+            a = parseInt(hexString[3] + hexString[3], 16);
+          } else if (hexLength === 6) {
+            // #rrggbb
+            r = parseInt(hexString.slice(0, 2), 16);
+            g = parseInt(hexString.slice(2, 4), 16);
+            b = parseInt(hexString.slice(4, 6), 16);
+          } else if (hexLength === 8) {
+            // #rrggbbaa
+            r = parseInt(hexString.slice(0, 2), 16);
+            g = parseInt(hexString.slice(2, 4), 16);
+            b = parseInt(hexString.slice(4, 6), 16);
+            a = parseInt(hexString.slice(6, 8), 16);
+          }
+          
+          // Validate parsed values
+          if (!isNaN(r!) && !isNaN(g!) && !isNaN(b!) && !isNaN(a)) {
+            tokens.push(ast.color(r!, g!, b!, a));
+            i = hexEnd;
+            continue;
+          }
+        }
+      }
+    }
+
+    // KaTeX parsing - inline only: \(...\)
+    if (options?.katex && char === '\\') {
+      const nextChar = text[i + 1];
+      
+      // Inline KaTeX: \(...\)
+      if (options.katex.parenthesisSyntax && nextChar === '(') {
+        const endPattern = text.indexOf('\\)', i + 2);
+        if (endPattern !== -1) {
+          const content = text.slice(i + 2, endPattern);
+          tokens.push(ast.inlineKatex(content));
+          i = endPattern + 2;
+          continue;
+        }
+      }
+    }
+
     // Unicode emoji
     const emojiResult = getEmojiChar(text, i);
     if (emojiResult.char) {
@@ -1443,10 +1511,68 @@ export const parse = (input: string, options?: Options): AST.Root => {
     }
   }
   
-  // Regular multi-line processing or single line that's not big emoji
-  for (let i = 0; i < lines.length; i++) {
+  // Check for code fences before regular processing
+  let i = 0;
+  while (i < lines.length) {
     const line = lines[i];
-
+    
+    // Check for code fence start
+    if (line.startsWith('```')) {
+      const language = line.slice(3).trim() || 'none';
+      const codeLines: AST.CodeLine[] = [];
+      i++; // Move past the opening ```
+      
+      // Collect code lines until we find the closing ```
+      while (i < lines.length) {
+        const codeLine = lines[i];
+        if (codeLine === '```') {
+          // Found closing fence
+          result.push(ast.code(codeLines, language));
+          i++; // Move past the closing ```
+          break;
+        } else {
+          // Add this line as code
+          codeLines.push(ast.codeLine(ast.plain(codeLine)));
+          i++;
+        }
+      }
+      continue;
+    }
+    
+    // Check for block KaTeX: \[...\]
+    if (options?.katex?.parenthesisSyntax && line.startsWith('\\[')) {
+      // Look for the closing \]
+      let katexContent = line.slice(2); // Remove opening \[
+      i++; // Move to next line
+      
+      // Check if this line also contains the closing \]
+      const endInFirstLine = katexContent.indexOf('\\]');
+      if (endInFirstLine !== -1) {
+        // Single line KaTeX
+        const content = katexContent.slice(0, endInFirstLine);
+        result.push(ast.katex(content));
+      } else {
+        // Multi-line KaTeX - collect until we find \]
+        while (i < lines.length) {
+          const nextLine = lines[i];
+          const endIndex = nextLine.indexOf('\\]');
+          if (endIndex !== -1) {
+            // Found closing \] on this line
+            katexContent += '\n' + nextLine.slice(0, endIndex);
+            result.push(ast.katex(katexContent));
+            i++; // Move past the closing line
+            break;
+          } else {
+            // Add this entire line to the KaTeX content
+            katexContent += '\n' + nextLine;
+            i++;
+          }
+        }
+      }
+      continue;
+    }
+    
+    // Regular line processing
     if (line.trim() === '') {
       // Empty line creates a line break element
       result.push(ast.lineBreak);
@@ -1455,6 +1581,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
       const inlineContent = parseInlineContent(line, options);
       result.push(ast.paragraph(inlineContent));
     }
+    i++;
   }
 
   return result;
