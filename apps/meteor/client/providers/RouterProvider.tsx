@@ -180,7 +180,7 @@ const subscribeToRoutesChange = (onRoutesChange: () => void): (() => void) => {
 	};
 };
 
-/** @deprecated */
+/** @deprecated consume it from the `RouterContext` instead */
 export const router: RouterContextValue = {
 	subscribeToRouteChange,
 	getLocationPathname,

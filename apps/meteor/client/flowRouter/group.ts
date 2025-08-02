@@ -2,8 +2,21 @@ import { extend, isArray, isFunction, omit } from './_helpers';
 import type { RouteOptions } from './route';
 import type Route from './route';
 import type Router from './router';
+import type { Trigger } from './triggers';
 
-export type GroupOptions = { name?: string; prefix?: string; [key: string]: any };
+export type GroupOptions = {
+	name?: string;
+	prefix?: string;
+	waitOn?: () => void;
+	triggersEnter?: Trigger[];
+	triggersExit?: Trigger[];
+	subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
+	title?: string;
+	titlePrefix?: string;
+	link?: string;
+	script?: string;
+	meta?: Record<string, string>;
+};
 
 const makeTrigger = (trigger: unknown) => {
 	if (isFunction(trigger)) {
@@ -16,7 +29,7 @@ const makeTrigger = (trigger: unknown) => {
 	return trigger;
 };
 
-const makeWaitFor = (func: unknown) => {
+const makeWaitFor = (func: (() => void) | undefined) => {
 	if (isFunction(func)) {
 		return [func];
 	}
@@ -24,7 +37,7 @@ const makeWaitFor = (func: unknown) => {
 	return [];
 };
 
-const makeTriggers = (_base: unknown, _triggers: unknown) => {
+const makeTriggers = (_base: Trigger[] | undefined, _triggers: Trigger[] | undefined) => {
 	if (!_base && !_triggers) {
 		return [];
 	}
@@ -32,7 +45,7 @@ const makeTriggers = (_base: unknown, _triggers: unknown) => {
 };
 
 class Group {
-	_waitFor: Function[];
+	_waitFor: (() => void)[];
 
 	_router: Router;
 
@@ -42,11 +55,11 @@ class Group {
 
 	options: GroupOptions;
 
-	_triggersEnter: Function[];
+	_triggersEnter: Trigger[];
 
-	_triggersExit: Function[];
+	_triggersExit: Trigger[];
 
-	_subscriptions: any;
+	_subscriptions: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
 
 	parent: Group | undefined;
 
@@ -64,7 +77,7 @@ class Group {
 		this._triggersEnter = makeTriggers(options.triggersEnter, this._triggersEnter);
 		this._triggersExit = makeTriggers(this._triggersExit, options.triggersExit);
 
-		this._subscriptions = options.subscriptions || Function.prototype;
+		this._subscriptions = options.subscriptions || (() => undefined);
 
 		this.parent = parent;
 		if (parent) {
@@ -113,10 +126,7 @@ class Group {
 	}
 
 	callSubscriptions(current: { route: Route; params: Record<string, string>; queryParams?: Record<string, string> }) {
-		if (this.parent) {
-			this.parent.callSubscriptions(current);
-		}
-
+		this.parent?.callSubscriptions(current);
 		this._subscriptions.call(current.route, current.params, current.queryParams);
 	}
 }
