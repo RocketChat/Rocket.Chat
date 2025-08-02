@@ -2,8 +2,8 @@ import type { ISubscription } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useShallow } from 'zustand/shallow';
 
-import { Subscriptions } from '../../../../../app/models/client';
-import { pipe } from '../../../../lib/cachedCollections';
+import { pipe } from '../../../../lib/cachedStores';
+import { Subscriptions } from '../../../../stores';
 
 const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => !unreadOnly || subscription.unread > 0;
 /**

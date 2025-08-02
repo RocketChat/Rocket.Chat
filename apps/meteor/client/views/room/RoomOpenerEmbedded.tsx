@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next';
 import NotSubscribedRoom from './NotSubscribedRoom';
 import RoomSkeleton from './RoomSkeleton';
 import { useOpenRoom } from './hooks/useOpenRoom';
-import { CachedChatSubscription } from '../../../app/models/client';
 import { LegacyRoomManager } from '../../../app/ui-utils/client';
+import { SubscriptionsCachedStore } from '../../cachedStores';
 import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
@@ -56,7 +56,7 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 			return;
 		}
 
-		CachedChatSubscription.upsertSubscription(mapSubscriptionFromApi(subscriptionData.subscription));
+		SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(subscriptionData.subscription));
 
 		// yes this must be done here, this is already called in useOpenRoom, but it skips subscription streams because of the subscriptions list is empty
 		// now that we inserted the subscription, we can open the room

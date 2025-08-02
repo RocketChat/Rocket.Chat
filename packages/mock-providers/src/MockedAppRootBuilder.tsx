@@ -393,13 +393,12 @@ export class MockedAppRootBuilder {
 		const outerFn = (
 			innerRole: string | ObjectId,
 			innerScope?: string | undefined,
-			innerIgnoreSubscriptions?: boolean | undefined,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
 			if (innerRole === role) {
 				return [() => () => undefined, () => true];
 			}
 
-			return innerFn(innerRole, innerScope, innerIgnoreSubscriptions);
+			return innerFn(innerRole, innerScope);
 		};
 
 		this.authorization.queryRole = outerFn;

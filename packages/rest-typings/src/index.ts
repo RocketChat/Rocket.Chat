@@ -277,4 +277,4 @@ export * from './v1/banners';
 export * from './default';
 
 // Export the ajv instance for use in other packages
-export { ajv } from './v1/Ajv';
+export * from './v1/Ajv';
