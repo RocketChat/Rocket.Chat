@@ -327,6 +327,56 @@ const detectEmail = (
   return { email: fullString, length: endIndex - startIndex };
 };
 
+// Helper function to check if there's an emoticon at a specific position
+const getEmoticonAt = (text: string, position: number): { emoticon: string; length: number } | null => {
+  const emoticonMap: { [key: string]: string } = {
+    ':)': 'slight_smile',
+    ':-)': 'slight_smile',
+    ':(': 'frowning',
+    ':-(': 'frowning',
+    'D:': 'fearful',
+    ':D': 'grinning',
+    ':-D': 'grinning',
+    ':P': 'stuck_out_tongue',
+    ':-P': 'stuck_out_tongue',
+    ':p': 'stuck_out_tongue',
+    ':-p': 'stuck_out_tongue',
+    ';)': 'wink',
+    ';-)': 'wink',
+    ':o': 'open_mouth',
+    ':-o': 'open_mouth',
+    ':O': 'open_mouth',
+    ':-O': 'open_mouth',
+    ':|': 'neutral_face',
+    ':-|': 'neutral_face',
+    ':/': 'confused',
+    ':-/': 'confused',
+    ':\\': 'confused',
+    ':-\\': 'confused',
+    ':*': 'kissing_heart',
+    '-_-': 'expressionless',
+  };
+  
+  // Sort emoticons by length (longest first) to avoid matching conflicts
+  const sortedEmoticons = Object.keys(emoticonMap).sort((a, b) => b.length - a.length);
+  
+  for (const emoticon of sortedEmoticons) {
+    if (text.slice(position, position + emoticon.length) === emoticon) {
+      // Check word boundaries - emoticons should be surrounded by whitespace or punctuation
+      const prevChar = position > 0 ? text[position - 1] : '';
+      const nextChar = position + emoticon.length < text.length ? text[position + emoticon.length] : '';
+      
+      const prevBoundary = position === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(prevChar);
+      const nextBoundary = position + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(nextChar);
+      
+      if (prevBoundary && nextBoundary) {
+        return { emoticon, length: emoticon.length };
+      }
+    }
+  }
+  return null;
+};
+
 // Helper function to parse bold markup
 const parseBoldMarkup = (
   text: string,
@@ -1521,6 +1571,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         ':-/': 'confused',
         ':\\': 'confused',
         ':-\\': 'confused',
+        ':*': 'kissing_heart',
+        '-_-': 'expressionless',
       };
       
       // Sort emoticons by length (longest first) to avoid matching conflicts
