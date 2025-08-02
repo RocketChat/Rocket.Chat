@@ -234,9 +234,74 @@ const parseBoldMarkup = (
   const delimiter = isBold ? '**' : '*';
   const delimiterLength = isBold ? 2 : 1;
 
+  // Handle triple asterisk cases: ***Hello*** and ***Hello**
+  const thirdChar = i + 2 < text.length ? text[i + 2] : '';
+  if (isBold && thirdChar === '*') {
+    // We have at least *** at the start
+    
+    // Look for double asterisk closing (**) after the initial ***
+    const doubleEndStart = text.indexOf('**', i + 3);
+    if (doubleEndStart !== -1 && doubleEndStart > i + 3) {
+      const content = text.slice(i + 3, doubleEndStart);
+      if (content.trim().length > 0) {
+        // Check if there's a third asterisk after ** (making it ***)
+        let endIndex = doubleEndStart + 2;
+        let trailingAsterisk = '';
+        
+        const charAfterDouble = doubleEndStart + 2 < text.length ? text[doubleEndStart + 2] : '';
+        if (charAfterDouble === '*') {
+          // ***Hello*** case
+          trailingAsterisk = '*';
+          endIndex = doubleEndStart + 3;
+        }
+        // else: ***Hello** case (no trailing asterisk)
+        
+        const result = [];
+        
+        // Add leading asterisk as plain text
+        result.push(ast.plain('*'));
+        
+        // Add the bold content (double asterisk style)
+        const nestedContent = parseInlineContent(content, options);
+        const validContent = nestedContent.filter(
+          (
+            token,
+          ): token is
+            | AST.MarkupExcluding<AST.Bold>
+            | AST.Link
+            | AST.Emoji
+            | AST.UserMention
+            | AST.ChannelMention
+            | AST.InlineCode =>
+            token.type !== 'BOLD' &&
+            token.type !== 'TIMESTAMP' &&
+            token.type !== 'IMAGE' &&
+            token.type !== 'COLOR' &&
+            token.type !== 'INLINE_KATEX',
+        );
+        result.push(ast.bold(validContent));
+        
+        // Add trailing asterisk if this was ***Hello*** case
+        if (trailingAsterisk) {
+          result.push(ast.plain(trailingAsterisk));
+        }
+        
+        return {
+          tokens: result,
+          nextIndex: endIndex,
+        };
+      }
+    }
+  }
+
   const endIndex = text.indexOf(delimiter, i + delimiterLength);
   if (endIndex !== -1 && endIndex > i + delimiterLength) {
     const content = text.slice(i + delimiterLength, endIndex);
+    
+    // Don't parse empty or whitespace-only content as bold
+    if (content.trim().length === 0) {
+      return null;
+    }
     
     // Validate that there are no unmatched delimiters inside the content
     // Count strike delimiters (~~) to ensure they are balanced
@@ -933,9 +998,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         const endIndex = text.indexOf(':', i + 1);
         if (endIndex !== -1 && endIndex > i + 1) {
           const shortCode = text.slice(i + 1, endIndex);
-          // Simple validation - no spaces, colons, or tildes in shortcode
-          // Tildes are not valid in emoji shortcodes and interfere with strikethrough parsing
-          if (shortCode && !shortCode.includes(' ') && !shortCode.includes(':') && !shortCode.includes('~')) {
+          // Simple validation - no spaces, colons, tildes, or asterisks in shortcode
+          // Tildes and asterisks are not valid in emoji shortcodes and interfere with markup parsing
+          if (shortCode && !shortCode.includes(' ') && !shortCode.includes(':') && !shortCode.includes('~') && !shortCode.includes('*')) {
             tokens.push(ast.emoji(shortCode));
             i = endIndex + 1;
             continue;
