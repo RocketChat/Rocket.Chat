@@ -22,18 +22,120 @@ const isEmoji = (char: string): boolean => {
   const codePoint = char.codePointAt(0);
   if (!codePoint) return false;
 
-  // Emoji ranges (simplified)
+  // Comprehensive emoji ranges
   return (
     (codePoint >= 0x1f600 && codePoint <= 0x1f64f) || // Emoticons
     (codePoint >= 0x1f300 && codePoint <= 0x1f5ff) || // Misc Symbols and Pictographs
     (codePoint >= 0x1f680 && codePoint <= 0x1f6ff) || // Transport and Map
-    (codePoint >= 0x2600 && codePoint <= 0x26ff) || // Misc symbols
-    (codePoint >= 0x2700 && codePoint <= 0x27bf) // Dingbats
+    (codePoint >= 0x1f1e6 && codePoint <= 0x1f1ff) || // Regional Indicator Symbols (flags)
+    (codePoint >= 0x2600 && codePoint <= 0x26ff) ||   // Misc symbols
+    (codePoint >= 0x2700 && codePoint <= 0x27bf) ||   // Dingbats
+    (codePoint >= 0x1f900 && codePoint <= 0x1f9ff) || // Supplemental Symbols and Pictographs (newer emojis)
+    (codePoint >= 0x1f780 && codePoint <= 0x1f7ff) || // Geometric Shapes Extended
+    (codePoint >= 0x1f800 && codePoint <= 0x1f8ff) || // Supplemental Arrows-C
+    (codePoint >= 0x2194 && codePoint <= 0x21aa) ||   // Arrows
+    (codePoint >= 0x2b05 && codePoint <= 0x2b07) ||   // Additional Arrows
+    (codePoint >= 0x2934 && codePoint <= 0x2935) ||   // Arrow symbols
+    (codePoint >= 0x3030 && codePoint <= 0x303d) ||   // CJK symbols
+    (codePoint >= 0x3297 && codePoint <= 0x3299) ||   // CJK unified ideographs
+    codePoint === 0x00a9 ||   // Copyright
+    codePoint === 0x00ae ||   // Registered
+    codePoint === 0x203c ||   // Double exclamation
+    codePoint === 0x2049 ||   // Exclamation question mark
+    codePoint === 0x2122 ||   // Trade mark
+    codePoint === 0x2139 ||   // Information
+    codePoint === 0x2328 ||   // Keyboard
+    codePoint === 0x23cf ||   // Eject button
+    codePoint === 0x24c2 ||   // Circled M
+    codePoint === 0x25aa ||   // Black small square
+    codePoint === 0x25ab ||   // White small square
+    codePoint === 0x25b6 ||   // Play button
+    codePoint === 0x25c0 ||   // Reverse button
+    codePoint === 0x25fb ||   // White medium square
+    codePoint === 0x25fc ||   // Black medium square
+    codePoint === 0x25fd ||   // White medium small square
+    codePoint === 0x25fe     // Black medium small square
   );
 };
 
-// Helper function to get full emoji character (including surrogate pairs)
+// Helper function to get full emoji character (including complex sequences)
 const getEmojiChar = (
+  text: string,
+  index: number,
+): { char: string; length: number } => {
+  const char = text[index];
+  
+  // First check if this character is even emoji-like
+  if (!char) {
+    return { char: '', length: 0 };
+  }
+  
+  let emojiString = '';
+  let currentIndex = index;
+  
+  // Handle surrogate pairs for the first character
+  const nextChar = text[index + 1];
+  if (nextChar && char.charCodeAt(0) >= 0xD800 && char.charCodeAt(0) <= 0xDBFF &&
+      nextChar.charCodeAt(0) >= 0xDC00 && nextChar.charCodeAt(0) <= 0xDFFF) {
+    // This is a surrogate pair
+    const combined = char + nextChar;
+    if (isEmoji(combined)) {
+      emojiString = combined;
+      currentIndex += 2;
+    } else {
+      return { char: '', length: 0 };
+    }
+  } else if (isEmoji(char)) {
+    emojiString = char;
+    currentIndex += 1;
+  } else {
+    return { char: '', length: 0 };
+  }
+  
+  // Now check for modifiers and combining characters
+  while (currentIndex < text.length) {
+    const currentChar = text[currentIndex];
+    const codePoint = currentChar.codePointAt(0);
+    
+    if (!codePoint) break;
+    
+    // Check for skin tone modifiers (🏻-🏿)
+    if (codePoint >= 0x1F3FB && codePoint <= 0x1F3FF) {
+      emojiString += currentChar;
+      currentIndex += 1;
+      continue;
+    }
+    
+    // Check for variation selectors (️ - U+FE0F)
+    if (codePoint === 0xFE0F) {
+      emojiString += currentChar;
+      currentIndex += 1;
+      continue;
+    }
+    
+    // Check for ZWJ (Zero Width Joiner - U+200D)
+    if (codePoint === 0x200D) {
+      // Peek ahead to see if there's another emoji after ZWJ
+      const nextEmojiResult = getSimpleEmoji(text, currentIndex + 1);
+      if (nextEmojiResult.char) {
+        emojiString += currentChar + nextEmojiResult.char;
+        currentIndex += 1 + nextEmojiResult.length;
+        continue;
+      } else {
+        // No valid emoji after ZWJ, stop here
+        break;
+      }
+    }
+    
+    // No more modifiers found
+    break;
+  }
+  
+  return { char: emojiString, length: currentIndex - index };
+};
+
+// Helper function to get a simple emoji (no modifiers)
+const getSimpleEmoji = (
   text: string,
   index: number,
 ): { char: string; length: number } => {
@@ -41,10 +143,16 @@ const getEmojiChar = (
   const nextChar = text[index + 1];
 
   // Check if this is a surrogate pair
-  if (char && nextChar && isEmoji(char + nextChar)) {
-    return { char: char + nextChar, length: 2 };
+  if (char && nextChar && 
+      char.charCodeAt(0) >= 0xD800 && char.charCodeAt(0) <= 0xDBFF &&
+      nextChar.charCodeAt(0) >= 0xDC00 && nextChar.charCodeAt(0) <= 0xDFFF) {
+    const combined = char + nextChar;
+    if (isEmoji(combined)) {
+      return { char: combined, length: 2 };
+    }
   }
-  if (isEmoji(char)) {
+  
+  if (char && isEmoji(char)) {
     return { char, length: 1 };
   }
 
@@ -1063,15 +1171,34 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       if (/https?$/.test(beforeColon) || /^:\/\//.test(afterColon)) {
         // This is likely part of a URL, skip emoji processing
       } else {
-        const endIndex = text.indexOf(':', i + 1);
-        if (endIndex !== -1 && endIndex > i + 1) {
-          const shortCode = text.slice(i + 1, endIndex);
-          // Simple validation - no spaces, colons, tildes, or asterisks in shortcode
-          // Tildes and asterisks are not valid in emoji shortcodes and interfere with markup parsing
-          if (shortCode && !shortCode.includes(' ') && !shortCode.includes(':') && !shortCode.includes('~') && !shortCode.includes('*')) {
-            tokens.push(ast.emoji(shortCode));
-            i = endIndex + 1;
-            continue;
+        // Check for word boundary before colon
+        const prevChar = i > 0 ? text[i - 1] : '';
+        const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
+        
+        // Don't parse emoji if it starts right after a quote
+        const afterQuote = prevChar === '"';
+        
+        if (atWordBoundary && !afterQuote) {
+          const endIndex = text.indexOf(':', i + 1);
+          if (endIndex !== -1 && endIndex > i + 1) {
+            const shortCode = text.slice(i + 1, endIndex);
+            // Strict validation for emoji shortcodes - only letters, numbers, underscores, plus, and hyphens
+            // Must be at least 2 characters and not be all numbers (to avoid parsing times like 10:20)
+            if (shortCode && 
+                /^[a-zA-Z0-9_+-]+$/.test(shortCode) && 
+                shortCode.length >= 2 && 
+                !/^\d+$/.test(shortCode)) {
+              
+              // Check for word boundary after closing colon
+              const nextChar = endIndex + 1 < text.length ? text[endIndex + 1] : '';
+              const afterWordBoundary = endIndex + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?"]/.test(nextChar);
+              
+              if (afterWordBoundary) {
+                tokens.push(ast.emoji(shortCode));
+                i = endIndex + 1;
+                continue;
+              }
+            }
           }
         }
       }
@@ -1493,30 +1620,41 @@ export const parse = (input: string, options?: Options): AST.Root => {
   // Split into lines and process them
   const lines = normalizedInput.split('\n');
   
-  // Check if the entire input is a single line with only emoji (for BIG_EMOJI)
-  if (lines.length === 1 && lines[0].trim() !== '') {
-    const line = lines[0];
-    const inlineContent = parseInlineContent(line, options);
+  // Check if the entire input contains only emoji content (for BIG_EMOJI)
+  // This can be single line or multiple lines, as long as all non-empty lines contain only emojis
+  const allEmojiTokens: AST.Emoji[] = [];
+  let allLinesAreEmojiOnly = true;
+  
+  for (const line of lines) {
+    if (line.trim() === '') {
+      // Empty lines are okay for BIG_EMOJI
+      continue;
+    }
     
-    // Check if the line contains only emoji (and optionally whitespace/plain text that's just spaces)
+    const inlineContent = parseInlineContent(line, options);
     const isOnlyEmoji = inlineContent.length > 0 && inlineContent.every(token => {
       return token.type === 'EMOJI' || 
              (token.type === 'PLAIN_TEXT' && /^\s*$/.test(token.value));
     });
     
-    if (isOnlyEmoji) {
-      // Extract only the emoji tokens (filter out whitespace)
-      const emojiTokens = inlineContent.filter(token => token.type === 'EMOJI') as AST.Emoji[];
-      if (emojiTokens.length >= 1 && emojiTokens.length <= 3) {
-        // Create BIG_EMOJI for 1-3 emoji
-        if (emojiTokens.length === 1) {
-          return [ast.bigEmoji([emojiTokens[0]])];
-        } else if (emojiTokens.length === 2) {
-          return [ast.bigEmoji([emojiTokens[0], emojiTokens[1]])];
-        } else {
-          return [ast.bigEmoji([emojiTokens[0], emojiTokens[1], emojiTokens[2]])];
-        }
-      }
+    if (!isOnlyEmoji) {
+      allLinesAreEmojiOnly = false;
+      break;
+    }
+    
+    // Collect emoji tokens from this line
+    const emojiTokens = inlineContent.filter(token => token.type === 'EMOJI') as AST.Emoji[];
+    allEmojiTokens.push(...emojiTokens);
+  }
+  
+  // If all non-empty lines contain only emojis and we have 1-3 total emojis, create BIG_EMOJI
+  if (allLinesAreEmojiOnly && allEmojiTokens.length >= 1 && allEmojiTokens.length <= 3) {
+    if (allEmojiTokens.length === 1) {
+      return [ast.bigEmoji([allEmojiTokens[0]])];
+    } else if (allEmojiTokens.length === 2) {
+      return [ast.bigEmoji([allEmojiTokens[0], allEmojiTokens[1]])];
+    } else {
+      return [ast.bigEmoji([allEmojiTokens[0], allEmojiTokens[1], allEmojiTokens[2]])];
     }
   }
   
