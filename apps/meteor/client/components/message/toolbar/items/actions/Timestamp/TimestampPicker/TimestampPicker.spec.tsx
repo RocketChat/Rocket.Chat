@@ -2,6 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 
 import * as stories from './TimestampPicker.stories';
 import { TimestampPicker } from './index';
@@ -17,9 +18,40 @@ const wrapper = mockAppRoot().withUserPreference('useEmojis', true).withSetting(
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const view = render(<Story />, { wrapper: wrapper.build() });
-	expect(view.baseElement).toMatchSnapshot();
+describe('Story Tests', () => {
+	beforeAll(() => {
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date('2025-01-01T12:00:00.000Z'));
+	});
+
+	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+		const view = render(<Story />, { wrapper: wrapper.build() });
+		expect(view.baseElement).toMatchSnapshot();
+	});
+
+	test.each(testCases)(
+		`%s should be accessible`,
+		async (_storyname, Story) => {
+			jest.useRealTimers();
+
+			const { container } = render(<Story />, { wrapper: wrapper.build() });
+			/**
+			 ** Disable 'nested-interactive' rule because our `Select` component is still not a11y compliant
+			 **/
+			const results = await axe(container, {
+				rules: { 'nested-interactive': { enabled: false } },
+			});
+			expect(results).toHaveNoViolations();
+
+			jest.useFakeTimers();
+			jest.setSystemTime(new Date('2025-01-01T12:00:00.000Z'));
+		},
+		30000,
+	);
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
 });
 
 describe('TimestampPicker', () => {
@@ -32,7 +64,6 @@ describe('TimestampPicker', () => {
 
 	it('should complete timestamp creation workflow', async () => {
 		render(<TimestampPicker onClose={mockOnClose} composer={mockComposer as any} />, {
-			legacyRoot: true,
 			wrapper: wrapper.build(),
 		});
 
@@ -77,7 +108,7 @@ describe('TimestampPicker', () => {
 
 	// Cancel Operation Test
 	it('should call onClose when cancel is clicked', async () => {
-		render(<TimestampPicker onClose={mockOnClose} />, { legacyRoot: true, wrapper: wrapper.build() });
+		render(<TimestampPicker onClose={mockOnClose} />, { wrapper: wrapper.build() });
 
 		const cancelButton = screen.getByRole('button', { name: /cancel/i });
 		await userEvent.click(cancelButton);

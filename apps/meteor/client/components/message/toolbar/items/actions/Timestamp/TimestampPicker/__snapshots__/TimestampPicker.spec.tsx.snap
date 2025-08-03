@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`renders ComponentShowcase without crashing 1`] = `
+exports[`Story Tests renders ComponentShowcase without crashing 1`] = `
 <body>
   <div>
     <div
@@ -18,6 +18,7 @@ exports[`renders ComponentShowcase without crashing 1`] = `
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              for=":r0:"
             >
               Date
             </label>
@@ -29,6 +30,7 @@ exports[`renders ComponentShowcase without crashing 1`] = `
               >
                 <input
                   class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                  id=":r0:"
                   size="1"
                   type="date"
                   value="2025-03-15"
@@ -55,6 +57,7 @@ exports[`renders ComponentShowcase without crashing 1`] = `
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              for=":r1:"
             >
               Time
             </label>
@@ -66,6 +69,7 @@ exports[`renders ComponentShowcase without crashing 1`] = `
               >
                 <input
                   class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                  id=":r1:"
                   size="1"
                   type="time"
                   value="14:30"
@@ -106,7 +110,7 @@ exports[`renders ComponentShowcase without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
-                aria-labelledby="react-aria-:r7:"
+                aria-labelledby="react-aria-:r9:"
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
@@ -162,7 +166,7 @@ exports[`renders ComponentShowcase without crashing 1`] = `
                 </div>
                 <span
                   class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                  id="react-aria-:r7:"
+                  id="react-aria-:r9:"
                 >
                   timestamps.fullDateTime (timestamps.fullDateTimeDescription)
                 </span>
@@ -193,7 +197,7 @@ exports[`renders ComponentShowcase without crashing 1`] = `
               <button
                 aria-expanded="false"
                 aria-haspopup="listbox"
-                aria-labelledby="react-aria-:rf:"
+                aria-labelledby="react-aria-:rh:"
                 class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                 type="button"
               >
@@ -344,7 +348,7 @@ exports[`renders ComponentShowcase without crashing 1`] = `
                 </div>
                 <span
                   class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                  id="react-aria-:rf:"
+                  id="react-aria-:rh:"
                 >
                   UTC+8
                 </span>
@@ -364,7 +368,7 @@ exports[`renders ComponentShowcase without crashing 1`] = `
 </body>
 `;
 
-exports[`renders DatePickerDefault without crashing 1`] = `
+exports[`Story Tests renders DatePickerDefault without crashing 1`] = `
 <body>
   <div>
     <div
@@ -375,6 +379,7 @@ exports[`renders DatePickerDefault without crashing 1`] = `
       >
         <label
           class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          for=":ri:"
         >
           Date
         </label>
@@ -386,6 +391,7 @@ exports[`renders DatePickerDefault without crashing 1`] = `
           >
             <input
               class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+              id=":ri:"
               size="1"
               type="date"
               value="2025-07-25"
@@ -408,7 +414,7 @@ exports[`renders DatePickerDefault without crashing 1`] = `
 </body>
 `;
 
-exports[`renders DatePickerDifferentDates without crashing 1`] = `
+exports[`Story Tests renders DatePickerDifferentDates without crashing 1`] = `
 <body>
   <div>
     <div
@@ -422,6 +428,7 @@ exports[`renders DatePickerDifferentDates without crashing 1`] = `
         >
           <label
             class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            for=":rj:"
           >
             Date
           </label>
@@ -433,6 +440,7 @@ exports[`renders DatePickerDifferentDates without crashing 1`] = `
             >
               <input
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                id=":rj:"
                 size="1"
                 type="date"
                 value="2024-01-01"
@@ -459,6 +467,7 @@ exports[`renders DatePickerDifferentDates without crashing 1`] = `
         >
           <label
             class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            for=":rk:"
           >
             Date
           </label>
@@ -470,6 +479,7 @@ exports[`renders DatePickerDifferentDates without crashing 1`] = `
             >
               <input
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                id=":rk:"
                 size="1"
                 type="date"
                 value="2025-12-31"
@@ -496,6 +506,7 @@ exports[`renders DatePickerDifferentDates without crashing 1`] = `
         >
           <label
             class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            for=":rl:"
           >
             Date
           </label>
@@ -507,6 +518,7 @@ exports[`renders DatePickerDifferentDates without crashing 1`] = `
             >
               <input
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                id=":rl:"
                 size="1"
                 type="date"
                 value="2026-06-30"
@@ -530,7 +542,7 @@ exports[`renders DatePickerDifferentDates without crashing 1`] = `
 </body>
 `;
 
-exports[`renders Default without crashing 1`] = `
+exports[`Story Tests renders Default without crashing 1`] = `
 <body>
   <div>
     <dialog
@@ -583,6 +595,7 @@ exports[`renders Default without crashing 1`] = `
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                    for=":rm:"
                   >
                     Date
                   </label>
@@ -594,9 +607,10 @@ exports[`renders Default without crashing 1`] = `
                     >
                       <input
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                        id=":rm:"
                         size="1"
                         type="date"
-                        value="2025-08-01"
+                        value="2025-01-01"
                       />
                       <span
                         class="rcx-box rcx-box--full rcx-input-box__addon"
@@ -620,6 +634,7 @@ exports[`renders Default without crashing 1`] = `
                 >
                   <label
                     class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                    for=":rn:"
                   >
                     Time
                   </label>
@@ -631,9 +646,10 @@ exports[`renders Default without crashing 1`] = `
                     >
                       <input
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                        id=":rn:"
                         size="1"
                         type="time"
-                        value="14:15"
+                        value="00:41"
                       />
                       <span
                         class="rcx-box rcx-box--full rcx-input-box__addon"
@@ -666,7 +682,7 @@ exports[`renders Default without crashing 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="listbox"
-                      aria-labelledby="react-aria-:rn:"
+                      aria-labelledby="react-aria-:rv:"
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                       type="button"
                     >
@@ -722,7 +738,7 @@ exports[`renders Default without crashing 1`] = `
                       </div>
                       <span
                         class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                        id="react-aria-:rn:"
+                        id="react-aria-:rv:"
                       >
                         timestamps.fullDateTime (timestamps.fullDateTimeDescription)
                       </span>
@@ -753,7 +769,7 @@ exports[`renders Default without crashing 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="listbox"
-                      aria-labelledby="react-aria-:rv:"
+                      aria-labelledby="react-aria-:r17:"
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
                       type="button"
                     >
@@ -904,7 +920,7 @@ exports[`renders Default without crashing 1`] = `
                       </div>
                       <span
                         class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                        id="react-aria-:rv:"
+                        id="react-aria-:r17:"
                       >
                         Local_Time
                       </span>
@@ -983,7 +999,7 @@ exports[`renders Default without crashing 1`] = `
 </body>
 `;
 
-exports[`renders FormatSelectorAllFormats without crashing 1`] = `
+exports[`Story Tests renders FormatSelectorAllFormats without crashing 1`] = `
 <body>
   <div>
     <div
@@ -992,93 +1008,6 @@ exports[`renders FormatSelectorAllFormats without crashing 1`] = `
       <div
         style="display: flex; flex-direction: column; gap: 16px;"
       >
-        <div
-          class="rcx-box rcx-box--full rcx-css-1bjg207"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-field"
-          >
-            <label
-              class="rcx-box rcx-box--full rcx-field__label rcx-label"
-            >
-              Format
-            </label>
-            <span
-              class="rcx-box rcx-box--full rcx-field__row"
-            >
-              <button
-                aria-expanded="false"
-                aria-haspopup="listbox"
-                aria-labelledby="react-aria-:r17:"
-                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                type="button"
-              >
-                <div
-                  aria-hidden="true"
-                  data-a11y-ignore="aria-hidden-focus"
-                  data-react-aria-prevent-focus="true"
-                  data-testid="hidden-select-container"
-                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
-                >
-                  <label>
-                    <select
-                      tabindex="-1"
-                    >
-                      <option />
-                      <option
-                        value="t"
-                      >
-                        t
-                      </option>
-                      <option
-                        value="T"
-                      >
-                        T
-                      </option>
-                      <option
-                        value="d"
-                      >
-                        d
-                      </option>
-                      <option
-                        value="D"
-                      >
-                        D
-                      </option>
-                      <option
-                        value="f"
-                      >
-                        f
-                      </option>
-                      <option
-                        value="F"
-                      >
-                        F
-                      </option>
-                      <option
-                        value="R"
-                      >
-                        R
-                      </option>
-                    </select>
-                  </label>
-                </div>
-                <span
-                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                  id="react-aria-:r17:"
-                >
-                  timestamps.shortTime (timestamps.shortTimeDescription)
-                </span>
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
-                >
-                  
-                </i>
-              </button>
-            </span>
-          </div>
-        </div>
         <div
           class="rcx-box rcx-box--full rcx-css-1bjg207"
         >
@@ -1154,7 +1083,7 @@ exports[`renders FormatSelectorAllFormats without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-4w7o7u"
                   id="react-aria-:r1f:"
                 >
-                  timestamps.longTime (timestamps.longTimeDescription)
+                  timestamps.shortTime (timestamps.shortTimeDescription)
                 </span>
                 <i
                   aria-hidden="true"
@@ -1241,7 +1170,7 @@ exports[`renders FormatSelectorAllFormats without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-4w7o7u"
                   id="react-aria-:r1n:"
                 >
-                  timestamps.shortDate (timestamps.shortDateDescription)
+                  timestamps.longTime (timestamps.longTimeDescription)
                 </span>
                 <i
                   aria-hidden="true"
@@ -1328,7 +1257,7 @@ exports[`renders FormatSelectorAllFormats without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-4w7o7u"
                   id="react-aria-:r1v:"
                 >
-                  timestamps.longDate (timestamps.longDateDescription)
+                  timestamps.shortDate (timestamps.shortDateDescription)
                 </span>
                 <i
                   aria-hidden="true"
@@ -1415,7 +1344,7 @@ exports[`renders FormatSelectorAllFormats without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-4w7o7u"
                   id="react-aria-:r27:"
                 >
-                  timestamps.fullDateTime (timestamps.fullDateTimeDescription)
+                  timestamps.longDate (timestamps.longDateDescription)
                 </span>
                 <i
                   aria-hidden="true"
@@ -1502,7 +1431,7 @@ exports[`renders FormatSelectorAllFormats without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-4w7o7u"
                   id="react-aria-:r2f:"
                 >
-                  timestamps.fullDateTimeLong (timestamps.fullDateTimeLongDescription)
+                  timestamps.fullDateTime (timestamps.fullDateTimeDescription)
                 </span>
                 <i
                   aria-hidden="true"
@@ -1589,6 +1518,93 @@ exports[`renders FormatSelectorAllFormats without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-4w7o7u"
                   id="react-aria-:r2n:"
                 >
+                  timestamps.fullDateTimeLong (timestamps.fullDateTimeLongDescription)
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1bjg207"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            >
+              Format
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-labelledby="react-aria-:r2v:"
+                class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="t"
+                      >
+                        t
+                      </option>
+                      <option
+                        value="T"
+                      >
+                        T
+                      </option>
+                      <option
+                        value="d"
+                      >
+                        d
+                      </option>
+                      <option
+                        value="D"
+                      >
+                        D
+                      </option>
+                      <option
+                        value="f"
+                      >
+                        f
+                      </option>
+                      <option
+                        value="F"
+                      >
+                        F
+                      </option>
+                      <option
+                        value="R"
+                      >
+                        R
+                      </option>
+                    </select>
+                  </label>
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                  id="react-aria-:r2v:"
+                >
                   timestamps.relativeTime (timestamps.relativeTimeDescription)
                 </span>
                 <i
@@ -1607,7 +1623,7 @@ exports[`renders FormatSelectorAllFormats without crashing 1`] = `
 </body>
 `;
 
-exports[`renders FormatSelectorDefault without crashing 1`] = `
+exports[`Story Tests renders FormatSelectorDefault without crashing 1`] = `
 <body>
   <div>
     <div
@@ -1627,7 +1643,7 @@ exports[`renders FormatSelectorDefault without crashing 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="listbox"
-            aria-labelledby="react-aria-:r2v:"
+            aria-labelledby="react-aria-:r37:"
             class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
             type="button"
           >
@@ -1683,7 +1699,7 @@ exports[`renders FormatSelectorDefault without crashing 1`] = `
             </div>
             <span
               class="rcx-box rcx-box--full rcx-css-4w7o7u"
-              id="react-aria-:r2v:"
+              id="react-aria-:r37:"
             >
               timestamps.fullDateTime (timestamps.fullDateTimeDescription)
             </span>
@@ -1701,7 +1717,7 @@ exports[`renders FormatSelectorDefault without crashing 1`] = `
 </body>
 `;
 
-exports[`renders PreviewAllFormats without crashing 1`] = `
+exports[`Story Tests renders PreviewAllFormats without crashing 1`] = `
 <body>
   <div>
     <div
@@ -1866,7 +1882,7 @@ exports[`renders PreviewAllFormats without crashing 1`] = `
 </body>
 `;
 
-exports[`renders PreviewDefault without crashing 1`] = `
+exports[`Story Tests renders PreviewDefault without crashing 1`] = `
 <body>
   <div>
     <div
@@ -1895,7 +1911,7 @@ exports[`renders PreviewDefault without crashing 1`] = `
 </body>
 `;
 
-exports[`renders PreviewWithTimezones without crashing 1`] = `
+exports[`Story Tests renders PreviewWithTimezones without crashing 1`] = `
 <body>
   <div>
     <div
@@ -2038,7 +2054,7 @@ exports[`renders PreviewWithTimezones without crashing 1`] = `
 </body>
 `;
 
-exports[`renders TimePickerDefault without crashing 1`] = `
+exports[`Story Tests renders TimePickerDefault without crashing 1`] = `
 <body>
   <div>
     <div
@@ -2049,6 +2065,7 @@ exports[`renders TimePickerDefault without crashing 1`] = `
       >
         <label
           class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          for=":r38:"
         >
           Time
         </label>
@@ -2060,6 +2077,7 @@ exports[`renders TimePickerDefault without crashing 1`] = `
           >
             <input
               class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+              id=":r38:"
               size="1"
               type="time"
               value="09:30"
@@ -2082,7 +2100,7 @@ exports[`renders TimePickerDefault without crashing 1`] = `
 </body>
 `;
 
-exports[`renders TimePickerDifferentTimes without crashing 1`] = `
+exports[`Story Tests renders TimePickerDifferentTimes without crashing 1`] = `
 <body>
   <div>
     <div
@@ -2096,6 +2114,7 @@ exports[`renders TimePickerDifferentTimes without crashing 1`] = `
         >
           <label
             class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            for=":r39:"
           >
             Time
           </label>
@@ -2107,6 +2126,7 @@ exports[`renders TimePickerDifferentTimes without crashing 1`] = `
             >
               <input
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                id=":r39:"
                 size="1"
                 type="time"
                 value="07:30"
@@ -2133,6 +2153,7 @@ exports[`renders TimePickerDifferentTimes without crashing 1`] = `
         >
           <label
             class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            for=":r3a:"
           >
             Time
           </label>
@@ -2144,6 +2165,7 @@ exports[`renders TimePickerDifferentTimes without crashing 1`] = `
             >
               <input
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                id=":r3a:"
                 size="1"
                 type="time"
                 value="14:30"
@@ -2170,6 +2192,7 @@ exports[`renders TimePickerDifferentTimes without crashing 1`] = `
         >
           <label
             class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            for=":r3b:"
           >
             Time
           </label>
@@ -2181,6 +2204,7 @@ exports[`renders TimePickerDifferentTimes without crashing 1`] = `
             >
               <input
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                id=":r3b:"
                 size="1"
                 type="time"
                 value="00:00"
@@ -2207,6 +2231,7 @@ exports[`renders TimePickerDifferentTimes without crashing 1`] = `
         >
           <label
             class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            for=":r3c:"
           >
             Time
           </label>
@@ -2218,6 +2243,7 @@ exports[`renders TimePickerDifferentTimes without crashing 1`] = `
             >
               <input
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                id=":r3c:"
                 size="1"
                 type="time"
                 value="12:00"
@@ -2241,7 +2267,7 @@ exports[`renders TimePickerDifferentTimes without crashing 1`] = `
 </body>
 `;
 
-exports[`renders TimezoneSelectorDefault without crashing 1`] = `
+exports[`Story Tests renders TimezoneSelectorDefault without crashing 1`] = `
 <body>
   <div>
     <div
@@ -2261,7 +2287,7 @@ exports[`renders TimezoneSelectorDefault without crashing 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="listbox"
-            aria-labelledby="react-aria-:r37:"
+            aria-labelledby="react-aria-:r3k:"
             class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
             type="button"
           >
@@ -2412,7 +2438,7 @@ exports[`renders TimezoneSelectorDefault without crashing 1`] = `
             </div>
             <span
               class="rcx-box rcx-box--full rcx-css-4w7o7u"
-              id="react-aria-:r37:"
+              id="react-aria-:r3k:"
             >
               Local_Time
             </span>
@@ -2430,7 +2456,7 @@ exports[`renders TimezoneSelectorDefault without crashing 1`] = `
 </body>
 `;
 
-exports[`renders TimezoneSelectorVariations without crashing 1`] = `
+exports[`Story Tests renders TimezoneSelectorVariations without crashing 1`] = `
 <body>
   <div>
     <div
@@ -2453,7 +2479,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
             <button
               aria-expanded="false"
               aria-haspopup="listbox"
-              aria-labelledby="react-aria-:r3f:"
+              aria-labelledby="react-aria-:r3s:"
               class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
               type="button"
             >
@@ -2604,7 +2630,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
               </div>
               <span
                 class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                id="react-aria-:r3f:"
+                id="react-aria-:r3s:"
               >
                 Local_Time
               </span>
@@ -2635,7 +2661,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
             <button
               aria-expanded="false"
               aria-haspopup="listbox"
-              aria-labelledby="react-aria-:r3n:"
+              aria-labelledby="react-aria-:r44:"
               class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
               type="button"
             >
@@ -2786,7 +2812,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
               </div>
               <span
                 class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                id="react-aria-:r3n:"
+                id="react-aria-:r44:"
               >
                 UTC
               </span>
@@ -2817,7 +2843,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
             <button
               aria-expanded="false"
               aria-haspopup="listbox"
-              aria-labelledby="react-aria-:r3v:"
+              aria-labelledby="react-aria-:r4c:"
               class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
               type="button"
             >
@@ -2968,7 +2994,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
               </div>
               <span
                 class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                id="react-aria-:r3v:"
+                id="react-aria-:r4c:"
               >
                 UTC-12
               </span>
@@ -2999,7 +3025,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
             <button
               aria-expanded="false"
               aria-haspopup="listbox"
-              aria-labelledby="react-aria-:r47:"
+              aria-labelledby="react-aria-:r4k:"
               class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
               type="button"
             >
@@ -3150,7 +3176,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
               </div>
               <span
                 class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                id="react-aria-:r47:"
+                id="react-aria-:r4k:"
               >
                 UTC+12
               </span>
@@ -3181,7 +3207,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
             <button
               aria-expanded="false"
               aria-haspopup="listbox"
-              aria-labelledby="react-aria-:r4f:"
+              aria-labelledby="react-aria-:r4s:"
               class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
               type="button"
             >
@@ -3332,7 +3358,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
               </div>
               <span
                 class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                id="react-aria-:r4f:"
+                id="react-aria-:r4s:"
               >
                 UTC+8
               </span>
@@ -3363,7 +3389,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
             <button
               aria-expanded="false"
               aria-haspopup="listbox"
-              aria-labelledby="react-aria-:r4n:"
+              aria-labelledby="react-aria-:r54:"
               class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
               type="button"
             >
@@ -3514,7 +3540,7 @@ exports[`renders TimezoneSelectorVariations without crashing 1`] = `
               </div>
               <span
                 class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                id="react-aria-:r4n:"
+                id="react-aria-:r54:"
               >
                 UTC-5
               </span>
