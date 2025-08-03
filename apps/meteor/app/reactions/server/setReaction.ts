@@ -40,7 +40,7 @@ export async function setReaction(
 	reaction: string,
 	userAlreadyReacted?: boolean,
 ) {
-	await Message.beforeReacted(message, room);
+	// await Message.beforeReacted(message, room);
 
 	if (Array.isArray(room.muted) && room.muted.includes(user.username as string)) {
 		throw new Meteor.Error('error-not-allowed', i18n.t('You_have_been_muted', { lng: user.language }), {

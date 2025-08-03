@@ -13,6 +13,7 @@ import './configuration/index';
 import './local-services/ldap/service';
 import './methods/getReadReceipts';
 import './patches';
+import './hooks/federation';
 import { License } from '@rocket.chat/license';
 
 export * from './apps/startup';

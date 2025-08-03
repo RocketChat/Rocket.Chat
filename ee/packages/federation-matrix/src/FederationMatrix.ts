@@ -7,7 +7,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users, Subscriptions, Messages } from '@rocket.chat/models';
+import { MatrixBridgedUser, MatrixBridgedRoom, Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
@@ -344,6 +344,94 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return await this.homeserverServices.event.getEventById(eventId);
 		} catch (error) {
 			this.logger.error('Failed to get event by ID:', error);
+			throw error;
+		}
+	}
+
+	async leaveRoom(roomId: string, user: IUser): Promise<void> {
+		try {
+			const room = await Rooms.findOneById(roomId);
+			if (!room?.federated) {
+				this.logger.debug(`Room ${roomId} is not federated, skipping leave operation`);
+				return;
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+			if (!matrixRoomId) {
+				this.logger.warn(`No Matrix room mapping found for federated room ${roomId}, skipping leave`);
+				return;
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${user.username}:${matrixDomain}`;
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
+
+			if (!existingMatrixUserId) {
+				// User might not have been bridged yet if they never sent a message
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
+			}
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping room leave');
+				return;
+			}
+
+			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
+
+			await this.homeserverServices.room.leaveRoom(matrixRoomId, actualMatrixUserId);
+
+			this.logger.info(`User ${user.username} left Matrix room ${matrixRoomId} successfully`);
+		} catch (error) {
+			this.logger.error('Failed to leave room in Matrix:', error);
+			throw error;
+		}
+	}
+
+	async kickUser(roomId: string, removedUser: IUser, userWhoRemoved: IUser): Promise<void> {
+		try {
+			const room = await Rooms.findOneById(roomId);
+			if (!room?.federated) {
+				this.logger.debug(`Room ${roomId} is not federated, skipping kick operation`);
+				return;
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+			if (!matrixRoomId) {
+				this.logger.warn(`No Matrix room mapping found for federated room ${roomId}, skipping kick`);
+				return;
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+
+			const kickedMatrixUserId = `@${removedUser.username}:${matrixDomain}`;
+			const existingKickedMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(removedUser._id);
+			if (!existingKickedMatrixUserId) {
+				await MatrixBridgedUser.createOrUpdateByLocalId(removedUser._id, kickedMatrixUserId, true, matrixDomain);
+			}
+			const actualKickedMatrixUserId = existingKickedMatrixUserId || kickedMatrixUserId;
+
+			const senderMatrixUserId = `@${userWhoRemoved.username}:${matrixDomain}`;
+			const existingSenderMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userWhoRemoved._id);
+			if (!existingSenderMatrixUserId) {
+				await MatrixBridgedUser.createOrUpdateByLocalId(userWhoRemoved._id, senderMatrixUserId, true, matrixDomain);
+			}
+			const actualSenderMatrixUserId = existingSenderMatrixUserId || senderMatrixUserId;
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping user kick');
+				return;
+			}
+
+			await this.homeserverServices.room.kickUser(
+				matrixRoomId,
+				actualKickedMatrixUserId,
+				actualSenderMatrixUserId,
+				`Kicked by ${userWhoRemoved.username}`,
+			);
+
+			this.logger.info(`User ${removedUser.username} was kicked from Matrix room ${matrixRoomId} by ${userWhoRemoved.username}`);
+		} catch (error) {
+			this.logger.error('Failed to kick user from Matrix room:', error);
 			throw error;
 		}
 	}
