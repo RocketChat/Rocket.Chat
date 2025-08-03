@@ -36,6 +36,7 @@ import {
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from '../list/MessageListContext';
+import { Users } from '../../../stores/Users';
 
 type SystemMessageProps = {
 	message: IMessage;
@@ -75,7 +76,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			{...props}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && showUserAvatar && (() => {
+					const user = Users.state.find((u) => u.username === message.u.username);
+					const etag = user?.avatarETag;
+					return <UserAvatar username={message.u.username} etag={etag} size='x18' />;
+				})()}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
