@@ -14,7 +14,7 @@ import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
-import { FederationMatrixInvalidConfigurationError } from '../federation/utils';
+import { FederationMatrixInvalidConfigurationError, getFederationVersion } from '../federation/utils';
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
@@ -265,6 +265,14 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	// }
 
 	async beforeReacted(message: IMessage, room: AtLeast<IRoom, 'federated'>) {
+		const federationVersion = getFederationVersion();
+
+		// If we are running in native mode (FederationMatrix service), we should skip this check
+		// because reactions will be handled using callbacks
+		if (federationVersion === 'native') {
+			return;
+		}
+
 		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to react to message');
 		}

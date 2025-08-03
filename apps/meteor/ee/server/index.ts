@@ -14,6 +14,11 @@ import './local-services/ldap/service';
 import './methods/getReadReceipts';
 import './patches';
 import './hooks/federation';
+import { License } from '@rocket.chat/license';
 
 export * from './apps/startup';
 export { registerEEBroker } from './startup';
+
+await License.onLicense('federation', async () => {
+	await import('./hooks/federation');
+});

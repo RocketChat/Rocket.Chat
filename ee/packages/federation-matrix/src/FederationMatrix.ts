@@ -2,12 +2,12 @@ import 'reflect-metadata';
 
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
-import { type IFederationMatrixService, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users, Messages, Rooms } from '@rocket.chat/models';
+import { MatrixBridgedUser, MatrixBridgedRoom, Users, Subscriptions, Messages } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
@@ -40,14 +40,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
-
+		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
 		const config = new ConfigService({
-			serverName: process.env.SERVER_NAME || 'rc1',
-			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
-			version: process.env.SERVER_VERSION || '1.0',
-			matrixDomain: process.env.MATRIX_DOMAIN || 'rc1',
+			serverName: process.env.MATRIX_SERVER_NAME || 'rc1',
 			keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
-			timeout: 30000,
+			matrixDomain: process.env.MATRIX_DOMAIN || 'rc1',
+			version: process.env.SERVER_VERSION || '1.0',
+			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
+			signingKey: settingsSigningKey,
 			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
 			database: {
 				uri: process.env.MONGODB_URI || 'mongodb://localhost:3001/meteor',
@@ -143,7 +143,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					// TODO: Check if it is external user - split domain etc
 					const localUserId = await Users.findOneByUsername(member);
 					if (localUserId) {
-						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, true, matrixDomain);
+						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, false, matrixDomain);
 						// continue;
 					}
 				} catch (error) {
@@ -191,6 +191,52 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			this.logger.debug('Message sent to Matrix successfully:', result.eventId);
 		} catch (error) {
 			this.logger.error('Failed to send message to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async inviteUsersToRoom(room: IRoom, usersUserName: string[], inviter: IUser): Promise<void> {
+		try {
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(room._id);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${room._id}`);
+			}
+
+			const matrixDomain = await this.getMatrixDomain();
+			const inviterUserId = `@${inviter.username}:${matrixDomain}`;
+
+			await Promise.all(
+				usersUserName.map(async (username) => {
+					const alreadyMember = await Subscriptions.findOneByRoomIdAndUsername(room._id, username, { projection: { _id: 1 } });
+					if (alreadyMember) {
+						return;
+					}
+
+					const isExternalUser = username.includes(':');
+					if (isExternalUser) {
+						let externalUsernameToInvite = username;
+						const alreadyCreatedLocally = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+						if (alreadyCreatedLocally) {
+							externalUsernameToInvite = `@${username}`;
+						}
+						await this.homeserverServices.invite.inviteUserToRoom(externalUsernameToInvite, matrixRoomId, inviterUserId);
+						return;
+					}
+
+					const localUser = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+					if (localUser) {
+						await Room.addUserToRoom(room._id, localUser, { _id: inviter._id, username: inviter.username });
+						let externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
+						if (!externalUserId) {
+							externalUserId = `@${username}:${matrixDomain}`;
+							await MatrixBridgedUser.createOrUpdateByLocalId(localUser._id, externalUserId, false, matrixDomain);
+						}
+						await this.homeserverServices.invite.inviteUserToRoom(externalUserId, matrixRoomId, inviterUserId);
+					}
+				}),
+			);
+		} catch (error) {
+			this.logger.error('Failed to invite an user to Matrix:', error);
 			throw error;
 		}
 	}
