@@ -251,6 +251,8 @@
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/favicon": "workspace:^",
+		"@rocket.chat/federation-matrix": "workspace:^",
+		"@rocket.chat/federation-service": "workspace:^",
 		"@rocket.chat/freeswitch": "workspace:^",
 		"@rocket.chat/fuselage": "^0.66.0",
 		"@rocket.chat/fuselage-forms": "^0.1.0",

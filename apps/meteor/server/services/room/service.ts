@@ -12,6 +12,7 @@ import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { createDirectMessage } from '../../methods/createDirectMessage';
+import { getFederationVersion } from '../federation/utils';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -128,11 +129,23 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async beforeLeave(room: IRoom): Promise<void> {
-		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+		const federationVersion = getFederationVersion();
+
+		// If its from the deprecated federation, we need to block if the service is not ready
+		// If its from the new federation, do nothing at this point cause removals will be handled by callbacks
+		if (federationVersion === 'matrix' && room.federated === true) {
+			FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+		}
 	}
 
 	async beforeUserRemoved(room: IRoom): Promise<void> {
-		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+		const federationVersion = getFederationVersion();
+
+		// If its from the deprecated federation, we need to block if the service is not ready
+		// If its from the new federation, do nothing at this point cause removals will be handled by callbacks
+		if (federationVersion === 'matrix' && room.federated === true) {
+			FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+		}
 	}
 
 	async beforeNameChange(room: IRoom): Promise<void> {

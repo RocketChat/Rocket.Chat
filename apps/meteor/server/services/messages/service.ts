@@ -14,7 +14,7 @@ import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
-import { FederationMatrixInvalidConfigurationError } from '../federation/utils';
+import { FederationMatrixInvalidConfigurationError, getFederationVersion } from '../federation/utils';
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
@@ -83,6 +83,20 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	async sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage> {
 		return executeSendMessage(fromId, { rid, msg });
+	}
+
+	async saveMessageFromFederation({
+		fromId,
+		rid,
+		msg,
+		federation_event_id,
+	}: {
+		fromId: string;
+		rid: string;
+		msg: string;
+		federation_event_id: string;
+	}): Promise<IMessage> {
+		return executeSendMessage(fromId, { rid, msg, federation: { eventId: federation_event_id } });
 	}
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
@@ -175,9 +189,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
-		if (!FederationActions.shouldPerformAction(message, room)) {
-			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
-		}
+		// TODO: Adjust this to check for new federation service too
+		// if (!FederationActions.shouldPerformAction(message, room)) {
+		// 	throw new FederationMatrixInvalidConfigurationError('Unable to send message');
+		// }
 
 		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
@@ -250,6 +265,14 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	// }
 
 	async beforeReacted(message: IMessage, room: AtLeast<IRoom, 'federated'>) {
+		const federationVersion = getFederationVersion();
+
+		// If we are running in native mode (FederationMatrix service), we should skip this check
+		// because reactions will be handled using callbacks
+		if (federationVersion === 'native') {
+			return;
+		}
+
 		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to react to message');
 		}
