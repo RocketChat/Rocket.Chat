@@ -27,7 +27,7 @@ export interface IOutboundProviderTemplate {
 	partnerId: string;
 	externalId: string;
 	updatedExternal: string; // ISO 8601 timestamp
-	rejectedReason: string | null;
+	rejectedReason: string | undefined;
 }
 
 type Component = IHeaderComponent | IBodyComponent | IFooterComponent;
@@ -73,12 +73,12 @@ export interface IOutboundMessage {
 	};
 }
 
-type TemplateComponent = {
+export type TemplateComponent = {
 	type: 'header' | 'body' | 'footer' | 'button';
 	parameters: TemplateParameter[];
 };
 
-type TemplateParameter =
+export type TemplateParameter =
 	| {
 			type: 'text';
 			text: string;
