@@ -7,7 +7,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixBridgedUser, MatrixBridgedRoom, Users, Subscriptions, Messages } from '@rocket.chat/models';
+import { MatrixBridgedUser, MatrixBridgedRoom, Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { getWellKnownRoutes } from './api/.well-known/server';
