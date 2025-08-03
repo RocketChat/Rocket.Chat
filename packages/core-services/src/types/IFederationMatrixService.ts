@@ -20,4 +20,6 @@ export interface IFederationMatrixService {
 	sendReaction(messageId: string, reaction: string, user: IUser): Promise<void>;
 	removeReaction(messageId: string, reaction: string, user: IUser, oldMessage: IMessage): Promise<void>;
 	getEventById(eventId: string): Promise<any | null>;
+	leaveRoom(roomId: string, user: IUser): Promise<void>;
+	kickUser(roomId: string, removedUser: IUser, userWhoRemoved: IUser): Promise<void>;
 }
