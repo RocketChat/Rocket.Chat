@@ -30,7 +30,7 @@ export const useMessageBoxAutoFocus = (enabled: boolean): Ref<HTMLElement> => {
 			}
 
 			// This prevents focus from being stolen between the two RichText Composers
-			if ((target as HTMLElement).tagName === 'DIV' && (target as HTMLElement).isContentEditable) {
+			if ((target as HTMLElement).tagName === 'SPAN' && (target as HTMLElement).isContentEditable) {
 				return;
 			}
 
