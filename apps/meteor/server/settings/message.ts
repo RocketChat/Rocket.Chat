@@ -115,6 +115,68 @@ export const createMessageSettings = () =>
 			type: 'string',
 			public: true,
 		});
+		await this.add('AI_Content_Verification_Enabled', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'AI_Content_Verification_Enabled',
+			i18nDescription: 'AI_Content_Verification_EnabledDescription',
+		});
+		await this.add('AI_Content_Verification_API_URL', '', {
+			type: 'string',
+			public: false,
+			enableQuery: [{ _id: 'AI_Content_Verification_Enabled', value: true }],
+			i18nLabel: 'AI_Content_Verification_API_URL',
+			i18nDescription: 'AI_Content_Verification_API_URLDescription',
+		});
+		await this.add('AI_Content_Verification_API_Key', '', {
+			type: 'password',
+			public: false,
+			enableQuery: [{ _id: 'AI_Content_Verification_Enabled', value: true }],
+			i18nLabel: 'AI_Content_Verification_API_Key',
+			i18nDescription: 'AI_Content_Verification_API_KeyDescription',
+		});
+		await this.add('AI_Content_Verification_Timeout', 5000, {
+			type: 'int',
+			public: false,
+			enableQuery: [{ _id: 'AI_Content_Verification_Enabled', value: true }],
+			i18nLabel: 'AI_Content_Verification_Timeout',
+			i18nDescription: 'AI_Content_Verification_TimeoutDescription',
+		});
+		await this.add('AI_Content_Verification_Threshold', 0.8, {
+			type: 'int',
+			public: false,
+			enableQuery: [{ _id: 'AI_Content_Verification_Enabled', value: true }],
+			i18nLabel: 'AI_Content_Verification_Threshold',
+			i18nDescription: 'AI_Content_Verification_ThresholdDescription',
+		});
+		await this.add('AI_Content_Verification_Block_Mode', 'block', {
+			type: 'select',
+			public: false,
+			enableQuery: [{ _id: 'AI_Content_Verification_Enabled', value: true }],
+			i18nLabel: 'AI_Content_Verification_Block_Mode',
+			i18nDescription: 'AI_Content_Verification_Block_ModeDescription',
+			values: [
+				{
+					key: 'block',
+					i18nLabel: 'AI_Content_Verification_Block_Mode_Block',
+				},
+				{
+					key: 'modify',
+					i18nLabel: 'AI_Content_Verification_Block_Mode_Modify',
+				},
+				{
+					key: 'flag',
+					i18nLabel: 'AI_Content_Verification_Block_Mode_Flag',
+				},
+			],
+		});
+		await this.add('AI_Content_Verification_Whitelist_Roles', 'admin,moderator', {
+			type: 'string',
+			public: false,
+			enableQuery: [{ _id: 'AI_Content_Verification_Enabled', value: true }],
+			i18nLabel: 'AI_Content_Verification_Whitelist_Roles',
+			i18nDescription: 'AI_Content_Verification_Whitelist_RolesDescription',
+		});
 		await this.add('Message_KeepHistory', false, {
 			type: 'boolean',
 			public: true,
