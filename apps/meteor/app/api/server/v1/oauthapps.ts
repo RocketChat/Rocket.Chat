@@ -4,7 +4,6 @@ import {
 	ajv,
 	isUpdateOAuthAppParams,
 	isOauthAppsGetParams,
-	isDeleteOAuthAppParams,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -108,21 +107,43 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+type DeleteOAuthAppParams = {
+	appId: string;
+};
+
+const DeleteOAuthAppParamsSchema = {
+	type: 'object',
+	properties: {
+		appId: {
+			type: 'string',
+		},
+	},
+	required: ['appId'],
+	additionalProperties: false,
+};
+
+const isDeleteOAuthAppParams = ajv.compile<DeleteOAuthAppParams>(DeleteOAuthAppParamsSchema);
+
+const oauthAppsDeleteEndpoints = API.v1.post(
 	'oauth-apps.delete',
 	{
 		authRequired: true,
-		validateParams: isDeleteOAuthAppParams,
+		body: isDeleteOAuthAppParams,
 		permissionsRequired: ['manage-oauth-apps'],
-	},
-	{
-		async post() {
-			const { appId } = this.bodyParams;
-
-			const result = await deleteOAuthApp(this.userId, appId);
-
-			return API.v1.success(result);
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			200: ajv.compile<boolean>({ type: 'boolean' }),
 		},
+	},
+
+	async function action() {
+		const { appId } = this.bodyParams;
+
+		const result = await deleteOAuthApp(this.userId, appId);
+
+		return API.v1.success(result);
 	},
 );
 
@@ -187,11 +208,15 @@ type OauthAppsCreateEndpoints = ExtractRoutesFromAPI<typeof oauthAppsCreateEndpo
 
 type OauthAppsListEndpoints = ExtractRoutesFromAPI<typeof oauthAppsListEndpoints>;
 
-export type OAuthAppsEndpoints = OauthAppsCreateEndpoints | OauthAppsListEndpoints;
+type OauthAppsDeleteEndpoints = ExtractRoutesFromAPI<typeof oauthAppsDeleteEndpoints>;
+
+export type OAuthAppsEndpoints = OauthAppsCreateEndpoints | OauthAppsListEndpoints | OauthAppsDeleteEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsCreateEndpoints {}
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsListEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends OauthAppsDeleteEndpoints {}
 }
