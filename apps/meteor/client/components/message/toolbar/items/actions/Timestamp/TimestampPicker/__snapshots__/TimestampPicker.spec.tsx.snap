@@ -649,7 +649,7 @@ exports[`Story Tests renders Default without crashing 1`] = `
                         id=":rn:"
                         size="1"
                         type="time"
-                        value="00:41"
+                        value="12:00"
                       />
                       <span
                         class="rcx-box rcx-box--full rcx-input-box__addon"
