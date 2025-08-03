@@ -5,7 +5,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
 import { beforeAddUserToRoom } from '../../../../lib/callbacks/beforeAddUserToRoom';
-import { beforeChangeRoomRole } from '../../../../lib/callbacks/beforeChangeRoomRole';
 import { getFederationVersion } from '../../../../server/services/federation/utils';
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
@@ -85,4 +84,28 @@ callbacks.add(
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-unset-reaction',
+);
+
+afterLeaveRoomCallback.add(
+	async (user: IUser, room: IRoom): Promise<void> => {
+		if (!room.federated) {
+			return;
+		}
+
+		await FederationMatrix.leaveRoom(room._id, user);
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-leave-room',
+);
+
+afterRemoveFromRoomCallback.add(
+	async (data: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom): Promise<void> => {
+		if (!room.federated) {
+			return;
+		}
+
+		await FederationMatrix.kickUser(room._id, data.removedUser, data.userWhoRemoved);
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-remove-from-room',
 );
