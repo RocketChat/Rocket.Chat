@@ -1,5 +1,13 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import { UserStatus, type ILivechatAgent, type ILivechatDepartment, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import {
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	UserStatus,
+	type ILivechatAgent,
+	type ILivechatDepartment,
+	type IRoom,
+	type IUser,
+} from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -478,6 +486,15 @@ describe('LIVECHAT - Agents', () => {
 	});
 
 	describe('livechat/agent.info/:rid/:token', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+		before(async () => {
+			visitor = await createVisitor();
+			room = await createLivechatRoom(visitor.token);
+		});
+		after(async () => {
+			await closeOmnichannelRoom(room._id);
+		});
 		it('should fail when token in url params is not valid', async () => {
 			await request.get(api(`livechat/agent.info/soemthing/invalid-token`)).expect(400);
 		});
@@ -492,8 +509,6 @@ describe('LIVECHAT - Agents', () => {
 			await request.get(api(`livechat/agent.info/${room._id}/${visitor.token}`)).expect(400);
 		}); */
 		it('should return a valid agent when the room is being served and the room belongs to visitor', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
 			const inq = await fetchInquiry(room._id);
 			await takeInquiry(inq._id, agent2.credentials);
 
@@ -501,8 +516,6 @@ describe('LIVECHAT - Agents', () => {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('agent');
 			expect(body.agent).to.have.property('_id', agent2.user._id);
-
-			await closeOmnichannelRoom(room._id);
 		});
 	});
 
