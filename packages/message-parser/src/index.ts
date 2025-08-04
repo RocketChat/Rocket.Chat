@@ -455,7 +455,39 @@ const parseBoldMarkup = (
     }
   }
 
-  const endIndex = text.indexOf(delimiter, i + delimiterLength);
+  // Find the closing delimiter, checking if it's part of an emoticon
+  let endIndex = -1;
+  let searchPos = i + delimiterLength;
+  
+  while (searchPos < text.length) {
+    const nextPos = text.indexOf(delimiter, searchPos);
+    if (nextPos === -1) break;
+    
+    // For bold (*), check if this is part of :* emoticon
+    let isEmoticon = false;
+    if (options?.emoticons && delimiter === '*' && nextPos > 0 && text[nextPos - 1] === ':') {
+      // Check if :* forms a valid emoticon
+      const emoticonStart = nextPos - 1;
+      const prevChar = emoticonStart > 0 ? text[emoticonStart - 1] : '';
+      const nextChar = nextPos + 1 < text.length ? text[nextPos + 1] : '';
+      
+      const prevBoundary = emoticonStart === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?*_~`]/.test(prevChar);
+      const nextBoundary = nextPos + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!?*_~`]/.test(nextChar);
+      
+      if (prevBoundary && nextBoundary) {
+        isEmoticon = true;
+      }
+    }
+    
+    if (!isEmoticon) {
+      endIndex = nextPos;
+      break;
+    }
+    
+    // Skip this position and continue searching
+    searchPos = nextPos + 1;
+  }
+  
   if (endIndex !== -1 && endIndex > i + delimiterLength) {
     const content = text.slice(i + delimiterLength, endIndex);
     
@@ -618,31 +650,61 @@ const parseItalicMarkup = (
     const nextUnderscore = text.indexOf('_', searchPos);
     if (nextUnderscore === -1) break;
     
-    // Check if this underscore is inside an emoji shortcode
-    let insideEmoji = false;
+    // Check if this underscore is part of an emoticon (like -_-)
+    let isPartOfEmoticon = false;
     
-    // Look backwards from this underscore to find a potential opening colon
-    for (let j = nextUnderscore - 1; j >= searchPos; j--) {
-      if (text[j] === ':') {
-        // Found a colon before the underscore, now look for closing colon after underscore
-        const closingColon = text.indexOf(':', nextUnderscore + 1);
-        if (closingColon !== -1) {
-          // Check if the content between colons is a valid emoji shortcode pattern
-          const potentialShortcode = text.slice(j + 1, closingColon);
-          if (potentialShortcode && !potentialShortcode.includes(' ') && !potentialShortcode.includes(':')) {
-            insideEmoji = true;
-            break;
-          }
+    if (options?.emoticons && nextUnderscore > 0) {
+      // Check for -_- emoticon pattern
+      const charBefore = text[nextUnderscore - 1];
+      const charAfter = nextUnderscore + 1 < text.length ? text[nextUnderscore + 1] : '';
+      
+      if (charBefore === '-' && charAfter === '-') {
+        // This is the middle underscore in -_-
+        // Check boundaries for the emoticon
+        const emoticonStart = nextUnderscore - 1;
+        const emoticonEnd = nextUnderscore + 2;
+        const prevChar = emoticonStart > 0 ? text[emoticonStart - 1] : '';
+        const nextChar = emoticonEnd < text.length ? text[emoticonEnd] : '';
+        
+        const prevBoundary = emoticonStart === 0 || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(prevChar);
+        const nextBoundary = emoticonEnd >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(nextChar);
+        
+        if (prevBoundary && nextBoundary) {
+          isPartOfEmoticon = true;
         }
-        break; // Stop at the first colon we find
       }
     }
     
-    if (insideEmoji) {
-      // Skip this underscore and continue searching after the emoji
-      const colonBefore = text.lastIndexOf(':', nextUnderscore);
-      const colonAfter = text.indexOf(':', nextUnderscore + 1);
-      searchPos = colonAfter !== -1 ? colonAfter + 1 : nextUnderscore + 1;
+    if (!isPartOfEmoticon) {
+      // Check if this underscore is inside an emoji shortcode
+      let insideEmoji = false;
+      
+      // Look backwards from this underscore to find a potential opening colon
+      for (let j = nextUnderscore - 1; j >= searchPos; j--) {
+        if (text[j] === ':') {
+          // Found a colon before the underscore, now look for closing colon after underscore
+          const closingColon = text.indexOf(':', nextUnderscore + 1);
+          if (closingColon !== -1) {
+            // Check if the content between colons is a valid emoji shortcode pattern
+            const potentialShortcode = text.slice(j + 1, closingColon);
+            if (potentialShortcode && !potentialShortcode.includes(' ') && !potentialShortcode.includes(':')) {
+              insideEmoji = true;
+              break;
+            }
+          }
+          break; // Stop at the first colon we find
+        }
+      }
+      
+      if (insideEmoji) {
+        // Skip this underscore and continue searching after the emoji
+        const colonAfter = text.indexOf(':', nextUnderscore + 1);
+        searchPos = colonAfter !== -1 ? colonAfter + 1 : nextUnderscore + 1;
+        continue;
+      }
+    } else {
+      // Skip past the emoticon
+      searchPos = nextUnderscore + 2; // Skip past -_-
       continue;
     }
     
@@ -730,26 +792,54 @@ const parseItalicMarkup = (
       const nextUnderscore = text.indexOf('_', searchPos);
       if (nextUnderscore === -1) break;
       
-      // Same emoji detection logic
-      let insideEmoji = false;
-      for (let j = nextUnderscore - 1; j >= searchPos; j--) {
-        if (text[j] === ':') {
-          const closingColon = text.indexOf(':', nextUnderscore + 1);
-          if (closingColon !== -1) {
-            const potentialShortcode = text.slice(j + 1, closingColon);
-            if (potentialShortcode && !potentialShortcode.includes(' ') && !potentialShortcode.includes(':')) {
-              insideEmoji = true;
-              break;
-            }
+      // Check if this underscore is part of an emoticon
+      let isPartOfEmoticon = false;
+      
+      if (options?.emoticons && nextUnderscore > 0) {
+        const charBefore = text[nextUnderscore - 1];
+        const charAfter = nextUnderscore + 1 < text.length ? text[nextUnderscore + 1] : '';
+        
+        if (charBefore === '-' && charAfter === '-') {
+          // This is the middle underscore in -_-
+          const emoticonStart = nextUnderscore - 1;
+          const emoticonEnd = nextUnderscore + 2;
+          const prevChar = emoticonStart > 0 ? text[emoticonStart - 1] : '';
+          const nextChar = emoticonEnd < text.length ? text[emoticonEnd] : '';
+          
+          const prevBoundary = emoticonStart === 0 || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(prevChar);
+          const nextBoundary = emoticonEnd >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(nextChar);
+          
+          if (prevBoundary && nextBoundary) {
+            isPartOfEmoticon = true;
           }
-          break;
         }
       }
       
-      if (insideEmoji) {
-        const colonBefore = text.lastIndexOf(':', nextUnderscore);
-        const colonAfter = text.indexOf(':', nextUnderscore + 1);
-        searchPos = colonAfter !== -1 ? colonAfter + 1 : nextUnderscore + 1;
+      if (!isPartOfEmoticon) {
+        // Same emoji detection logic
+        let insideEmoji = false;
+        for (let j = nextUnderscore - 1; j >= searchPos; j--) {
+          if (text[j] === ':') {
+            const closingColon = text.indexOf(':', nextUnderscore + 1);
+            if (closingColon !== -1) {
+              const potentialShortcode = text.slice(j + 1, closingColon);
+              if (potentialShortcode && !potentialShortcode.includes(' ') && !potentialShortcode.includes(':')) {
+                insideEmoji = true;
+                break;
+              }
+            }
+            break;
+          }
+        }
+        
+        if (insideEmoji) {
+          const colonAfter = text.indexOf(':', nextUnderscore + 1);
+          searchPos = colonAfter !== -1 ? colonAfter + 1 : nextUnderscore + 1;
+          continue;
+        }
+      } else {
+        // Skip past the emoticon
+        searchPos = nextUnderscore + 2;
         continue;
       }
       
@@ -1797,6 +1887,15 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
               break;
             }
           }
+        }
+      }
+      
+      // Check if we've hit an emoticon pattern
+      if (options?.emoticons) {
+        const emoticonResult = getEmoticonAt(text, tempI);
+        if (emoticonResult) {
+          // We've hit an emoticon, stop accumulating plain text
+          break;
         }
       }
       
