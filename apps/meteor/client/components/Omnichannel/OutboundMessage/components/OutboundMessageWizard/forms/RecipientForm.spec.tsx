@@ -7,6 +7,8 @@ import RecipientForm from './RecipientForm';
 import { createFakeContactChannel, createFakeContactWithManagerData } from '../../../../../../../tests/mocks/data';
 import { createFakeOutboundTemplate, createFakeProviderMetadata } from '../../../../../../../tests/mocks/data/outbound-message';
 
+// NOTE: Mocking tinykeys to avoid conflicts with esm/cjs imports in Jest
+// Can be safely removed once cause is found and fixed
 jest.mock('tinykeys', () => ({
 	__esModule: true,
 	default: jest.fn().mockReturnValue(() => () => undefined),
