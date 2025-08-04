@@ -368,8 +368,9 @@ const getEmoticonAt = (text: string, position: number): { emoticon: string; leng
       const prevChar = position > 0 ? text[position - 1] : '';
       const nextChar = position + emoticon.length < text.length ? text[position + emoticon.length] : '';
       
-      const prevBoundary = position === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(prevChar);
-      const nextBoundary = position + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(nextChar);
+      // Check if we're at a word boundary - simplify the condition to fix edge cases
+      const prevBoundary = position === 0 || /\s/.test(prevChar) || /[^\w]/.test(prevChar);
+      const nextBoundary = position + emoticon.length >= text.length || /\s/.test(nextChar) || /[^\w]/.test(nextChar);
       
       if (prevBoundary && nextBoundary) {
         return { emoticon, length: emoticon.length };
@@ -1613,8 +1614,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           const prevChar = i > 0 ? text[i - 1] : '';
           const nextChar = i + emoticon.length < text.length ? text[i + emoticon.length] : '';
           
-          const prevBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(prevChar);
-          const nextBoundary = i + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!?]/.test(nextChar);
+          // Check if we're at a word boundary - simplify the condition to fix edge cases
+          const prevBoundary = i === 0 || /\s/.test(prevChar) || /[^\w]/.test(prevChar);
+          const nextBoundary = i + emoticon.length >= text.length || /\s/.test(nextChar) || /[^\w]/.test(nextChar);
           
           if (prevBoundary && nextBoundary) {
             const shortCode = emoticonMap[emoticon];
