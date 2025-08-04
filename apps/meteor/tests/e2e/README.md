@@ -92,6 +92,10 @@ page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 page.getByRole('dialog', name: 'Modal name example').getByRole('button', { name: 'Confirm', exact: true });
 ```
 
+### 3. By position:
+Using `nth-child` or similar selectors is not recommended as it can easily change.
+It's a fragile locator and it's hard to maintain.
+
 ## Use our page-objects:
 > apps/meteor/tests/e2e/page-objects
 - page-objects are a great way to reuse locators across tests using `getters` and `methods`.
@@ -100,7 +104,8 @@ page.getByRole('dialog', name: 'Modal name example').getByRole('button', { name:
 
 If you are writing a new test, make sure to look at the existing page-objects to see if there is a suitable one for your use case.
 
-If not, create the ones you need in the respective context.
+If not, evaluate if creating a reusable getter/method is worth it and create the ones you need in the respective context.
+
 
 E.g.:
 Writing a new test for a sidebar behavior.
