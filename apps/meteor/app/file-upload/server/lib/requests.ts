@@ -14,7 +14,8 @@ const hasInfoParam = (req: IncomingMessage) => {
 		return false;
 	}
 	const searchParams = new URLSearchParams(params);
-	return searchParams.has('info');
+	const infoParam = searchParams.get('info');
+	return infoParam === 'true' || infoParam === '1';
 };
 
 WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
