@@ -187,38 +187,38 @@ const oauthAppsEndpoints = API.v1
 			return API.v1.success({ application });
 		},
 	)
-.post(
-	'oauth-apps.update',
-	{
-		authRequired: true,
-		body: isUpdateOAuthAppParams,
-		permissionsRequired: ['manage-oauth-apps'],
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
-			200: ajv.compile<IOAuthApps | null>({
-				allOf: [
-					{ anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
-					{
-						type: 'object',
-						properties: {
-							success: { type: 'boolean', enum: [true] },
+	.post(
+		'oauth-apps.update',
+		{
+			authRequired: true,
+			body: isUpdateOAuthAppParams,
+			permissionsRequired: ['manage-oauth-apps'],
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				200: ajv.compile<IOAuthApps | null>({
+					allOf: [
+						{ anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
+						{
+							type: 'object',
+							properties: {
+								success: { type: 'boolean', enum: [true] },
+							},
+							required: ['success'],
 						},
-						required: ['success'],
-					},
-				],
-			}),
+					],
+				}),
+			},
 		},
-	},
-	async function action() {
-		const { appId } = this.bodyParams;
+		async function action() {
+			const { appId } = this.bodyParams;
 
-		const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
+			const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
 
-		return API.v1.success(result);
-	},
-);
+			return API.v1.success(result);
+		},
+	);
 
 API.v1.addRoute(
 	'oauth-apps.get',
@@ -252,5 +252,4 @@ export type OauthAppsEndpoints = ExtractRoutesFromAPI<typeof oauthAppsEndpoints>
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsEndpoints {}
-
 }
