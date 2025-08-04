@@ -1,16 +1,11 @@
-import { EJSON } from 'meteor/ejson';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import page from 'page';
 import qs from 'qs';
 
-import { clone, omit, pick } from './_helpers';
+import { pick } from './_helpers';
 import type { RouteOptions } from './route';
 import Route from './route';
-import type { Trigger } from './triggers';
-import Triggers from './triggers';
-
-// let isNavigating = false;
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -24,39 +19,39 @@ declare global {
 	}
 }
 
-export type Current = Partial<{
-	path: string;
-	params: Record<string, string>;
-	route: Route;
-	context: PageJS.Context;
-	oldRoute: Route;
-	queryParams: Record<string, string>;
-}>;
+export type Current =
+	| Readonly<{
+			path: string;
+			params: Record<string, string>;
+			route: Route;
+			context: PageJS.Context;
+			oldRoute: Route;
+			queryParams: Record<string, string>;
+	  }>
+	| Record<string, never>;
 
 class Router {
 	private readonly pathRegExp = /(:[\w\(\)\\\+\*\.\?\[\]\-]+)+/g;
 
 	private readonly queryRegExp = /\?([^\/\r\n].*)/;
 
-	private subscriptions: (this: Route, path: string) => void = () => undefined;
-
 	private readonly _tracker = this._buildTracker();
 
-	private _current: Current = {};
+	private _current: Current = Object.freeze({});
 
 	private readonly _specialChars = ['/', '%', '+'];
 
 	private _encodeParam(param: string) {
 		const paramArr = param.split('');
 		let _param = '';
-		for (let i = 0; i < paramArr.length; i++) {
-			if (this._specialChars.includes(paramArr[i])) {
-				_param += encodeURIComponent(encodeURIComponent(paramArr[i]));
+		for (const p of paramArr) {
+			if (this._specialChars.includes(p)) {
+				_param += encodeURIComponent(encodeURIComponent(p));
 			} else {
 				try {
-					_param += encodeURIComponent(paramArr[i]);
+					_param += encodeURIComponent(p);
 				} catch (e) {
-					_param += paramArr[i];
+					_param += p;
 				}
 			}
 		}
@@ -66,22 +61,10 @@ class Router {
 	// tracks the current path change
 	private readonly _onEveryPath = new Tracker.Dependency();
 
-	private _globalRoute = new Route();
-
 	// holds onRoute callbacks
-	private readonly _onRouteCallbacks: Array<
-		(
-			route: Pick<Route, 'name' | 'pathDef'> & {
-				options?: Omit<RouteOptions, 'triggersEnter' | 'triggersExit' | 'action' | 'subscriptions' | 'name'>;
-			},
-		) => void
-	> = [];
+	private readonly _onRouteCallbacks: Array<(route: Pick<Route, 'name' | 'pathDef'>) => void> = [];
 
 	_initialized = false;
-
-	private _triggersEnter: Trigger[] = [];
-
-	private _triggersExit: Trigger[] = [];
 
 	_routes: Route[] = [];
 
@@ -105,25 +88,8 @@ class Router {
 	private _oldRouteChain: Route[] = [];
 
 	private readonly env = {
-		replaceState: new Meteor.EnvironmentVariable(),
 		reload: new Meteor.EnvironmentVariable(),
-		trailingSlash: new Meteor.EnvironmentVariable(),
 	};
-
-	// redirect function used inside triggers
-	private _redirectFn(pathDef: string, fields: Record<string, string | null>, queryParams: Record<string, string | null>) {
-		if (/^http(s)?:\/\//.test(pathDef)) {
-			throw new Error(
-				"Redirects to URLs outside of the app are not supported in this version of Flow Router. Use 'window.location = yourUrl' instead",
-			);
-		}
-
-		this.withReplaceState(() => {
-			this._page.redirect(this.path(pathDef, fields, queryParams));
-		});
-	}
-
-	private decodeQueryParamsOnce: boolean;
 
 	constructor() {
 		this.route('*', {});
@@ -146,7 +112,7 @@ class Router {
 			typeof import('page');
 	}
 
-	route(pathDef: string, options: RouteOptions = {}): Route {
+	route(pathDef: string, options: RouteOptions) {
 		if (!/^\//.test(pathDef) && pathDef !== '*') {
 			throw new Error("route's path must start with '/'");
 		}
@@ -155,11 +121,7 @@ class Router {
 
 		// calls when the page route being activates
 		route._actionHandle = (context: PageJS.Context) => {
-			// if (isNavigating) {
-			//   return;
-			// }
-			// isNavigating = true;
-			const oldRoute = this._current.route!;
+			const oldRoute = this._current.route;
 			this._oldRouteChain.push(oldRoute);
 
 			// _qs.parse() gives us a object without prototypes,
@@ -177,34 +139,17 @@ class Router {
 			// still-encoded path instead of the prematurely decoded
 			// querystring.
 			// See: https://github.com/veliovgroup/flow-router/issues/78
-			const queryParams = qs.parse(
-				this.decodeQueryParamsOnce ? new URL(context.path, 'http://example.com').searchParams.toString() : context.querystring,
-			) as Record<string, string>;
-			this._current = {
+			const queryParams = qs.parse(context.querystring) as Record<string, string>;
+			this._current = Object.freeze({
 				path: context.path,
 				params: context.params,
 				route,
 				context,
 				oldRoute,
 				queryParams,
-			};
-
-			// we need to invalidate if all the triggers have been completed
-			// if not that means, we've been redirected to another path
-			// then we don't need to invalidate
-			const afterAllTriggersRan = () => {
-				// isNavigating = false;
-				this._invalidateTracker();
-			};
-
-			route.waitOn(this._current, (_, data) => {
-				Triggers.runTriggers(this._triggersEnter.concat(route._triggersEnter), this._current, this._redirectFn, afterAllTriggersRan, data);
 			});
-		};
 
-		// calls when you exit from the page js route
-		route._exitHandle = (_context, next) => {
-			Triggers.runTriggers(this._triggersExit.concat(route._triggersExit), this._current, this._redirectFn, next);
+			this._invalidateTracker();
 		};
 
 		this._routes.push(route);
@@ -218,12 +163,9 @@ class Router {
 		return route;
 	}
 
-	path(_pathDef: string, fields: Record<string, string | null> = {}, _queryParams: Record<string, string | null> = {}): string {
-		let pathDef = _pathDef || '';
-		let queryParams = _queryParams;
-
+	path(pathDef: string, fields: Record<string, string | null> = {}, queryParams: Record<string, string | null> = {}): string {
 		if (this._routesMap[pathDef]) {
-			pathDef = clone(this._routesMap[pathDef].pathDef)!;
+			pathDef = this._routesMap[pathDef].pathDef ?? pathDef;
 		}
 
 		if (this.queryRegExp.test(pathDef)) {
@@ -266,11 +208,6 @@ class Router {
 		// but keep the root slash if it's the only one
 		path = path.match(/^\/{1}$/) ? path : path.replace(/\/$/, '');
 
-		// explicitly asked to add a trailing slash
-		if (this.env.trailingSlash.get() && path[path.length - 1] !== '/') {
-			path += '/';
-		}
-
 		const strQueryParams = qs.stringify(queryParams || {});
 		if (strQueryParams) {
 			path += `?${strQueryParams}`;
@@ -280,53 +217,21 @@ class Router {
 		return path;
 	}
 
-	private go(pathDef: string, fields: Record<string, string | null> = {}, queryParams: Record<string, string | null> = {}): void {
-		// if (isNavigating) {
-		//   return;
-		// }
-		const path = this.path(pathDef, fields, queryParams);
+	private go(pathDef: string): void {
+		const path = this.path(pathDef);
 		if (!this.env.reload.get() && path === this._current.path) {
 			return;
 		}
 
-		// THIS DESCISION ISN'T CLEAR
-		// WE SHOULD AVOID .go() METHOD
-		// IF WE ARE CURRETLY NAVIGATING
-		// BUT AT THE SAME TIME IT MAY BREAK
-		// REDIRECTS AND MORE COMPLEX LOGIC
-		// SO WE WILL LEAVE IT COMMENTED AND
-		// AS IT IS FOR NOW TO AVOID COMPATIBILITY ISSUES
-		// SEARCH FOR `isNavigating` VARIABLE ACROSS THIS
-		// FILE TO LEARN MORE.
-		// OH... CLIENT-SIDE NAVIGATION AIN'T SIMPLE THING
-		// isNavigating = true;
-
 		try {
-			if (this.env.replaceState.get()) {
-				this._page.replace(path);
-			} else {
-				this._page(path);
-			}
+			this._page(path);
 		} catch (e) {
 			Meteor._debug('Malformed URI!', path, e);
 		}
 	}
 
-	// .current is not reactive
-	// This is by design. use .getParam() instead
-	// If you really need to watch the path change, use .watchPathChange()
-	current() {
-		// We can't trust outside, that's why we clone this
-		// Anyway, we can't clone the whole object since it has non-jsonable values
-		// That's why we clone what's really needed.
-		const current = clone(this._current);
-		current.queryParams = EJSON.clone(current.queryParams);
-		current.params = EJSON.clone(current.params);
-		return current;
-	}
-
-	private withReplaceState(fn: () => unknown) {
-		return this.env.replaceState.withValue(true, fn);
+	get current() {
+		return this._current;
 	}
 
 	initialize(
@@ -402,19 +307,10 @@ class Router {
 			// see the definition of `this._processingContexts`
 			const currentContext = this._current;
 			const { route } = currentContext;
-			const { path } = currentContext;
 
 			if (this.safeToRun === 0) {
 				throw new Error("You can't use reactive data sources like Session inside the `.subscriptions` method!");
 			}
-
-			// We need to run subscriptions inside a Tracker
-			// to stop subs when switching between routes
-			// But we don't need to run this tracker with
-			// other reactive changes inside the .subscription method
-			// We tackle this with the `safeToRun` variable
-			this.subscriptions.call(this._globalRoute, path!);
-			route!.callSubscriptions(currentContext);
 
 			// otherwise, computations inside action will trigger to re-run
 			// this computation. which we do not need.
@@ -432,8 +328,8 @@ class Router {
 				const oldestRoute = this._oldRouteChain[0];
 				this._oldRouteChain = [];
 
-				currentContext.route!.registerRouteChange(currentContext, isRouteChange);
-				route!.callAction(currentContext);
+				currentContext.route.registerRouteChange(currentContext, isRouteChange);
+				route.callAction(currentContext);
 
 				Tracker.afterFlush(() => {
 					this._onEveryPath.changed();
@@ -519,8 +415,8 @@ class Router {
 			if (route.pathDef === '*') {
 				catchAll = route;
 			} else {
-				this._page(route.pathDef!, route._actionHandle);
-				this._page.exit(route.pathDef!, route._exitHandle);
+				this._page(route.pathDef, route._actionHandle);
+				this._page.exit(route.pathDef, route._exitHandle);
 			}
 		}
 
@@ -528,7 +424,7 @@ class Router {
 		// We recommend to avoid enter and exit triggers on catch all (`*`) routes.
 		// Use FlowRouter.triggers.exit([func]) and FlowRouter.triggers.enter([func]) instead
 		if (catchAll) {
-			this._page(catchAll.pathDef!, catchAll._actionHandle);
+			this._page(catchAll.pathDef, catchAll._actionHandle);
 			// this._page.exit(catchAll.pathDef, catchAll._exitHandle);
 		}
 	}
@@ -538,10 +434,7 @@ class Router {
 		// object.
 		// This is not to hide what's inside the route object, but to show
 		// these are the public APIs
-		const routePublicApi: Pick<Route, 'name' | 'pathDef'> & {
-			options?: Omit<RouteOptions, 'triggersEnter' | 'triggersExit' | 'action' | 'subscriptions' | 'name'>;
-		} = pick(currentRoute, ['name', 'pathDef']);
-		routePublicApi.options = omit(currentRoute.options, ['triggersEnter', 'triggersExit', 'action', 'subscriptions', 'name']);
+		const routePublicApi = pick(currentRoute, ['name', 'pathDef']);
 
 		this._onRouteCallbacks.forEach((cb) => {
 			cb(routePublicApi);
