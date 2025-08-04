@@ -416,7 +416,6 @@ class Router {
 				catchAll = route;
 			} else {
 				this._page(route.pathDef, route._actionHandle);
-				this._page.exit(route.pathDef, route._exitHandle);
 			}
 		}
 

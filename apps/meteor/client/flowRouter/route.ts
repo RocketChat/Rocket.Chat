@@ -53,8 +53,6 @@ class Route {
 	}
 
 	_actionHandle: PageJS.Callback;
-
-	_exitHandle: PageJS.Callback;
 }
 
 export default Route;
