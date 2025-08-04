@@ -3,6 +3,8 @@ import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings'
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
+import { omnichannelQueryKeys } from '../../lib/queryKeys';
+
 export type ContactOption = Serialized<ILivechatContactWithManagerData> & {
 	value: string;
 	label: string;
@@ -26,7 +28,7 @@ export const useContactsList = (options: ContactOptions) => {
 	const { filter, limit = DEFAULT_QUERY_LIMIT } = options;
 
 	return useInfiniteQuery({
-		queryKey: ['/v1/omnichannel/contacts.search', { filter }],
+		queryKey: omnichannelQueryKeys.contactSearch({ filter, limit }),
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { contacts, ...data } = await getContacts({
 				searchText: filter,
