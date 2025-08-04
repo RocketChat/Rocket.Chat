@@ -13,6 +13,9 @@ import {
 	isIntegrationsGetProps,
 	isIntegrationsUpdateProps,
 	isIntegrationsListProps,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -240,134 +243,19 @@ const integrationsCreateSchema = {
 
 const isIntegrationsCreateProps = ajv.compile<IntegrationsCreateProps>(integrationsCreateSchema);
 
-const integrationsCreateEndpoints = API.v1.post(
+const integrationsEndpoints = API.v1.post(
 	'integrations.create',
 	{
 		authRequired: true,
 		body: isIntegrationsCreateProps,
 		response: {
-			400: ajv.compile<{
-				error?: string;
-				errorType?: string;
-				stack?: string;
-				details?: object;
-			}>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					stack: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-					details: { type: 'object' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			403: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			200: ajv.compile<{ integration: IIntegration }>({
 				type: 'object',
 				properties: {
-					integration: {
-						type: 'object',
-						properties: {
-							type: {
-								type: 'string',
-							},
-							username: {
-								type: 'string',
-							},
-							channel: {
-								type: 'array',
-								items: {
-									type: 'string',
-								},
-							},
-							scriptEnabled: {
-								type: 'boolean',
-							},
-							name: {
-								type: 'string',
-							},
-							enabled: {
-								type: 'boolean',
-							},
-							scriptEngine: {
-								type: 'string',
-							},
-							overrideDestinationChannelEnabled: {
-								type: 'boolean',
-							},
-							token: {
-								type: 'string',
-							},
-							userId: {
-								type: 'string',
-							},
-							_createdAt: {
-								type: 'string',
-							},
-							_createdBy: {
-								type: 'object',
-								properties: {
-									_id: {
-										type: 'string',
-									},
-									username: {
-										type: 'string',
-									},
-								},
-								required: ['_id', 'username'],
-							},
-							_id: {
-								type: 'string',
-							},
-							event: {
-								type: 'string',
-							},
-							urls: {
-								type: 'array',
-								items: {
-									type: 'string',
-								},
-							},
-						},
-						required: [
-							'type',
-							'username',
-							'channel',
-							'scriptEnabled',
-							'name',
-							'enabled',
-							'scriptEngine',
-							'userId',
-							'_createdAt',
-							'_createdBy',
-							'_id',
-						],
-					},
+					integration: { $ref: '#/components/schemas/IIntegration' },
 					success: {
 						type: 'boolean',
 					},
@@ -618,11 +506,9 @@ API.v1.addRoute(
 	},
 );
 
-type IntegrationsCreateEndpoints = ExtractRoutesFromAPI<typeof integrationsCreateEndpoints>;
-
-export type IntegrationsEndpoints = IntegrationsCreateEndpoints;
+export type IntegrationsEndpoints = ExtractRoutesFromAPI<typeof integrationsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends IntegrationsCreateEndpoints {}
+	interface Endpoints extends IntegrationsEndpoints {}
 }
