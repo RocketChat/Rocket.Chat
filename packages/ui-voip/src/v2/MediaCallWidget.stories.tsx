@@ -1,6 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 
 import { useMediaCallContext } from './MediaCallContext';
 import MediaCallWidget from './MediaCallWidget';
@@ -17,20 +17,26 @@ const mockedContexts = mockAppRoot()
 	})
 	.buildStoryDecorator();
 
-export default {
+const meta = {
 	title: 'V2/MediaCallWidget',
 	component: MediaCallWidget,
+	args: {
+		state: 'closed',
+	},
 	decorators: [
 		mockedContexts,
-		(Story) => (
-			<MediaCallProviderMock>
+		(Story, options) => (
+			<MediaCallProviderMock {...options.args}>
 				<Story />
 			</MediaCallProviderMock>
 		),
 	],
 } satisfies Meta<typeof MediaCallWidget>;
+export default meta;
 
-export const MediaCallWidgetStory: StoryFn<typeof MediaCallWidget> = () => {
+type Story = StoryObj<typeof meta>;
+
+export const MediaCallWidgetManualTesting: StoryFn<typeof MediaCallWidget> = () => {
 	const { onToggleWidget, onCall, state } = useMediaCallContext();
 	return (
 		<>
@@ -43,4 +49,28 @@ export const MediaCallWidgetStory: StoryFn<typeof MediaCallWidget> = () => {
 			<MediaCallWidget />
 		</>
 	);
+};
+
+export const NewCall: Story = {
+	args: {
+		state: 'new',
+	},
+};
+
+export const IncomingCall: Story = {
+	args: {
+		state: 'ringing',
+	},
+};
+
+export const Calling: Story = {
+	args: {
+		state: 'calling',
+	},
+};
+
+export const OngoingCall: Story = {
+	args: {
+		state: 'ongoing',
+	},
 };
