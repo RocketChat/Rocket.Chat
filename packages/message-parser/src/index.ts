@@ -368,9 +368,9 @@ const getEmoticonAt = (text: string, position: number): { emoticon: string; leng
       const prevChar = position > 0 ? text[position - 1] : '';
       const nextChar = position + emoticon.length < text.length ? text[position + emoticon.length] : '';
       
-      // Boundary check with explicit space support
-      const prevBoundary = position === 0 || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(prevChar);
-      const nextBoundary = position + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(nextChar);
+      // Boundary check with explicit space support - include * and _ as valid boundaries for emphasis markers
+      const prevBoundary = position === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?*_ ]/.test(prevChar);
+      const nextBoundary = position + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!?*_ ]/.test(nextChar);
       
       if (prevBoundary && nextBoundary) {
         return { emoticon, length: emoticon.length };
@@ -1721,9 +1721,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           const prevChar = i > 0 ? text[i - 1] : '';
           const nextChar = i + emoticon.length < text.length ? text[i + emoticon.length] : '';
           
-          // Boundary check with explicit space support
-          const prevBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(prevChar);
-          const nextBoundary = i + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(nextChar);
+          // Boundary check with explicit space support - include * and _ as valid boundaries for emphasis markers
+          const prevBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?*_ ]/.test(prevChar);
+          const nextBoundary = i + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!?*_ ]/.test(nextChar);
           
           if (prevBoundary && nextBoundary) {
             const shortCode = emoticonMap[emoticon];
