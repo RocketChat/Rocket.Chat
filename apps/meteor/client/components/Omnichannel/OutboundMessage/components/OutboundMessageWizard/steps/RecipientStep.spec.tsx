@@ -9,6 +9,7 @@ import type { ComponentProps } from 'react';
 
 import RecipientStep from './RecipientStep';
 import * as stories from './RecipientStep.stories';
+import { createFakeOutboundTemplate } from '../../../../../../../tests/mocks/data/outbound-message';
 import type { MessageFormSubmitPayload } from '../forms/MessageForm';
 import type RecipientForm from '../forms/RecipientForm';
 
@@ -86,7 +87,11 @@ describe('RecipientStep', () => {
 	});
 
 	it('should call onSubmit with form values when form submits successfully', async () => {
-		const expectedPayload = { phone: '1234567890' };
+		const expectedPayload = {
+			templateId: 'template-id',
+			template: createFakeOutboundTemplate(),
+			templateParameters: { BODY: ['param1', 'param2'] },
+		};
 
 		const onSubmit = jest.fn();
 
