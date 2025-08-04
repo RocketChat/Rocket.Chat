@@ -1,8 +1,8 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import {
+import { UserStatus } from '@rocket.chat/core-typings';
+import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
-	UserStatus,
 	type ILivechatAgent,
 	type ILivechatDepartment,
 	type IRoom,
