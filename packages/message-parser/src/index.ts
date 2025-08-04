@@ -368,9 +368,9 @@ const getEmoticonAt = (text: string, position: number): { emoticon: string; leng
       const prevChar = position > 0 ? text[position - 1] : '';
       const nextChar = position + emoticon.length < text.length ? text[position + emoticon.length] : '';
       
-      // Check if we're at a word boundary - simplify the condition to fix edge cases
-      const prevBoundary = position === 0 || /\s/.test(prevChar) || /[^\w]/.test(prevChar);
-      const nextBoundary = position + emoticon.length >= text.length || /\s/.test(nextChar) || /[^\w]/.test(nextChar);
+      // Boundary check with explicit space support
+      const prevBoundary = position === 0 || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(prevChar);
+      const nextBoundary = position + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(nextChar);
       
       if (prevBoundary && nextBoundary) {
         return { emoticon, length: emoticon.length };
@@ -1477,7 +1477,24 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         
         if (linkPattern !== -1) {
           // Found ]( pattern, now find the closing )
-          const closeParens = text.indexOf(')', linkPattern + 2);
+          // For phone numbers with parentheses like +(075)63546725, we need to find the correct closing parenthesis
+          let closeParens = -1;
+          let parenCount = 0;
+          let j = linkPattern + 2;
+          
+          while (j < text.length) {
+            if (text[j] === '(') {
+              parenCount++;
+            } else if (text[j] === ')') {
+              if (parenCount === 0) {
+                closeParens = j;
+                break;
+              }
+              parenCount--;
+            }
+            j++;
+          }
+          
           if (closeParens !== -1) {
             const labelText = text.slice(i + 1, linkPattern);
             const url = text.slice(linkPattern + 2, closeParens);
@@ -1614,9 +1631,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           const prevChar = i > 0 ? text[i - 1] : '';
           const nextChar = i + emoticon.length < text.length ? text[i + emoticon.length] : '';
           
-          // Check if we're at a word boundary - simplify the condition to fix edge cases
-          const prevBoundary = i === 0 || /\s/.test(prevChar) || /[^\w]/.test(prevChar);
-          const nextBoundary = i + emoticon.length >= text.length || /\s/.test(nextChar) || /[^\w]/.test(nextChar);
+          // Boundary check with explicit space support
+          const prevBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(prevChar);
+          const nextBoundary = i + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(nextChar);
           
           if (prevBoundary && nextBoundary) {
             const shortCode = emoticonMap[emoticon];
@@ -1828,9 +1845,7 @@ const consolidatePlainText = (tokens: AST.Inlines[]): AST.Inlines[] => {
   }
 
   return result;
-};
-
-// Helper function to detect emails in plain text and split into tokens
+};// Helper function to detect emails in plain text and split into tokens
 const detectEmailsInText = (text: string): AST.Inlines[] => {
   // First pass: check if there are any valid emails in the text
   let hasValidEmail = false;
