@@ -368,4 +368,8 @@ export class Store {
 			await this.onValidate(file, options);
 		}
 	}
+
+	async getUrlExpiryTimeSpan(): Promise<number | null> {
+		return null;
+	}
 }
