@@ -58,6 +58,14 @@ await page.getByRole('button', { name: 'Save', exact: true });
 - Use this when locating by role is not possible or not sufficient.
 - Be sure to restrict the scope of the locator to the element you are looking for.
 
+### 3. Locator with `has`:
+Our input elements hide the native input and render a custom component.
+
+To target the input and trigger changes, you should locate the label that wraps the input and use the `has` locator.
+```ts
+page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
+```
+
 ## Locator types to avoid (at all costs):
 If you are not able to find the element by role, label or text, it's a sign that the element is not accessible to the user.
 The component should be refactored to allow a more accessible locator.
@@ -84,13 +92,6 @@ page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 page.getByRole('dialog', name: 'Modal name example').getByRole('button', { name: 'Confirm', exact: true });
 ```
 
-### 3. By label with `has`:
-Our input elements hide the native input and render a custom component.
-
-To target the input and trigger changes, you should locate the label that wraps the input and use the `has` locator.
-```ts
-page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
-```
 ## Use our page-objects:
 > apps/meteor/tests/e2e/page-objects
 - page-objects are a great way to reuse locators across tests using `getters` and `methods`.
