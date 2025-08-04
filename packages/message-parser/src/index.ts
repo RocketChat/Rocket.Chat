@@ -666,8 +666,8 @@ const parseItalicMarkup = (
         const prevChar = emoticonStart > 0 ? text[emoticonStart - 1] : '';
         const nextChar = emoticonEnd < text.length ? text[emoticonEnd] : '';
         
-        const prevBoundary = emoticonStart === 0 || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(prevChar);
-        const nextBoundary = emoticonEnd >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!? ]/.test(nextChar);
+        const prevBoundary = emoticonStart === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?*_ ]/.test(prevChar);
+        const nextBoundary = emoticonEnd >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!?*_ ]/.test(nextChar);
         
         if (prevBoundary && nextBoundary) {
           isPartOfEmoticon = true;
@@ -761,7 +761,7 @@ const parseItalicMarkup = (
   if (singleEnd !== -1 && singleEnd > i + 1) {
     // Check word boundary after closing delimiter
     const nextCharAfterSingle = singleEnd + 1 < text.length ? text[singleEnd + 1] : '';
-    const atSingleEndWordBoundary = singleEnd + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(nextCharAfterSingle);
+    const atSingleEndWordBoundary = singleEnd + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`\-]/.test(nextCharAfterSingle);
     
     if (atSingleEndWordBoundary) {
       const singleContent = text.slice(i + 1, singleEnd);
