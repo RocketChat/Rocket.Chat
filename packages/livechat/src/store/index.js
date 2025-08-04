@@ -1,7 +1,7 @@
 import { Component, createContext } from 'preact';
 
 import { createToken } from '../lib/random';
-import Store from './Store';
+import Store, { extractWidgetId } from './Store';
 
 export const initialState = () => ({
 	token: createToken(),
@@ -39,7 +39,8 @@ export const initialState = () => ({
 });
 
 const dontPersist = ['messages', 'typing', 'loading', 'alerts', 'unread', 'noMoreMessages', 'modal', 'incomingCallAlert', 'ongoingCall'];
-export const store = new Store(initialState(), { dontPersist });
+
+export const store = new Store(initialState(), { localStorageKey: `livechat-widget-${extractWidgetId()}`,dontPersist });
 
 if (process.env.NODE_ENV === 'development') {
 	store.on('change', ([, , partialState]) => {
@@ -56,7 +57,7 @@ export class Provider extends Component {
 	state = { ...store.state, dispatch: store.setState.bind(store) };
 
 	handleStoreChange = () => {
-		this.setState({ ...store.state });
+		 this.setState({ ...store.state });
 	};
 
 	componentDidMount() {

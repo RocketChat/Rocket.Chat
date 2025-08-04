@@ -101,8 +101,11 @@ export default class Store {
 
 	// Get widget ID from URL parameters
 	setWidgetId() {
-		const params = new URLSearchParams(window.location.search);
-		const id = params.get('id');
-		this.setState({ widgetId: id });
+		this.setState({ widgetId: extractWidgetId() });
 	}
+}
+
+export const extractWidgetId = () => {
+		const params = new URLSearchParams(window.location.search);
+		return params.get('id');
 }
