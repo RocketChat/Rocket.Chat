@@ -28,6 +28,7 @@ export default class Store {
 
 		window.addEventListener('storage', (e) => {
 			// Cross-tab communication
+			console.log('Storage event:', e.key );
 			if (e.key !== this.localStorageKey) {
 				return;
 			}
