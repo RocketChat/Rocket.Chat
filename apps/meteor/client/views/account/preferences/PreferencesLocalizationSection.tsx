@@ -1,7 +1,8 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { AccordionItem } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage-forms';
 import { useLanguages } from '@rocket.chat/ui-contexts';
-import { useId, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -13,22 +14,16 @@ const PreferencesLocalizationSection = () => {
 
 	const languageOptions = useMemo(() => languages.map(({ key, name }): SelectOption => [key, name]), [languages]);
 
-	const languageId = useId();
-
 	return (
 		<AccordionItem title={t('Localization')} defaultExpanded>
 			<FieldGroup>
 				<Field>
-					<FieldLabel is='span' id={languageId}>
-						{t('Language')}
-					</FieldLabel>
+					<FieldLabel>{t('Language')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							control={control}
 							name='language'
-							render={({ field: { value, onChange } }) => (
-								<Select aria-labelledby={languageId} value={value} onChange={onChange} options={languageOptions} />
-							)}
+							render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={languageOptions} />}
 						/>
 					</FieldRow>
 				</Field>
