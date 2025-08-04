@@ -1723,6 +1723,35 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         break;
       }
       
+      // Check if we've hit the start of a phone number
+      if (text[tempI] === '+') {
+        const prevChar = tempI > 0 ? text[tempI - 1] : '';
+        const atWordBoundary = tempI === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
+        
+        if (atWordBoundary) {
+          // Look ahead to see if this looks like a phone number
+          let j = tempI + 1;
+          let digitsOnly = '';
+          
+          while (j < text.length && /[0-9()\-]/.test(text[j])) {
+            if (/[0-9]/.test(text[j])) {
+              digitsOnly += text[j];
+            }
+            j++;
+          }
+          
+          // If it has enough digits to be a phone number, stop accumulating plain text
+          if (digitsOnly.length >= 5) {
+            const nextChar = j < text.length ? text[j] : '';
+            const isValidPhoneEnd = j >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(nextChar);
+            
+            if (isValidPhoneEnd) {
+              break;
+            }
+          }
+        }
+      }
+      
       plainText += currentChar;
       tempI++;
     }
