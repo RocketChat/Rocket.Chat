@@ -28,6 +28,7 @@ export default class Store {
 
 		window.addEventListener('storage', (e) => {
 			// Cross-tab communication
+			console.log('Storage event:', e.key );
 			if (e.key !== this.localStorageKey) {
 				return;
 			}
@@ -101,8 +102,11 @@ export default class Store {
 
 	// Get widget ID from URL parameters
 	setWidgetId() {
-		const params = new URLSearchParams(window.location.search);
-		const id = params.get('id');
-		this.setState({ widgetId: id });
+		this.setState({ widgetId: extractWidgetId() });
 	}
+}
+
+export const extractWidgetId = () => {
+		const params = new URLSearchParams(window.location.search);
+		return params.get('id');
 }
