@@ -1171,33 +1171,59 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         const timestampContent = text.slice(i + 3, closeIndex);
         
         // Parse timestamp format: timestamp or timestamp:format
-        const parts = timestampContent.split(':');
+        // Split on the LAST colon to handle ISO dates with colons in them
+        const lastColonIndex = timestampContent.lastIndexOf(':');
+        let timestampValue: string;
+        let format: string | undefined;
         
-        if (parts.length >= 1) {
-          const timestampValue = parts[0];
-          const format = parts[1];
-          
-          // Validate format if provided
+        if (lastColonIndex !== -1 && lastColonIndex < timestampContent.length - 1) {
+          // Check if the part after the last colon looks like a format
+          const potentialFormat = timestampContent.slice(lastColonIndex + 1);
           const validFormats = ['t', 'T', 'd', 'D', 'f', 'F', 'R'];
-          if (format && !validFormats.includes(format)) {
-            // Invalid format, don't parse as timestamp
+          
+          if (validFormats.includes(potentialFormat)) {
+            timestampValue = timestampContent.slice(0, lastColonIndex);
+            format = potentialFormat;
           } else {
-            // Check if it's a valid timestamp (numbers or ISO date)
-            if (/^\d+$/.test(timestampValue)) {
-              // Unix timestamp
-              if (timestampValue.length >= 9) { // Reasonable timestamp length
-                tokens.push(ast.timestamp(timestampValue, format as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined));
-                i = closeIndex + 1;
-                continue;
-              }
-            } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(timestampValue)) {
-              // ISO date format - convert to unix timestamp
-              const unixTimestamp = Math.floor(new Date(timestampValue).getTime() / 1000).toString();
-              if (!isNaN(parseInt(unixTimestamp))) {
-                tokens.push(ast.timestamp(unixTimestamp, format as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined));
-                i = closeIndex + 1;
-                continue;
-              }
+            // No valid format found, treat entire content as timestamp
+            timestampValue = timestampContent;
+            format = undefined;
+          }
+        } else {
+          // No colon or colon at end, treat entire content as timestamp
+          timestampValue = timestampContent;
+          format = undefined;
+        }
+        
+        // Check if it's a valid timestamp (numbers or ISO date)
+        if (/^\d+$/.test(timestampValue)) {
+          // Unix timestamp
+          if (timestampValue.length >= 9) { // Reasonable timestamp length
+            tokens.push(ast.timestamp(timestampValue, format as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined));
+            i = closeIndex + 1;
+            continue;
+          }
+        } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?([+-]\d{2}:\d{2}|Z)?$/.test(timestampValue)) {
+          // ISO date format with optional milliseconds and timezone - convert to unix timestamp
+          const unixTimestamp = Math.floor(new Date(timestampValue).getTime() / 1000).toString();
+          if (!isNaN(parseInt(unixTimestamp))) {
+            tokens.push(ast.timestamp(unixTimestamp, format as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined));
+            i = closeIndex + 1;
+            continue;
+          }
+        } else if (/^\d{1,2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2})?$/.test(timestampValue)) {
+          // Time-only format like "10:00:00+00:00" - need to handle via timestampFromHours
+          const timeMatch = timestampValue.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?([+-]\d{2}:\d{2})?$/);
+          if (timeMatch) {
+            const [, hours, minutes, seconds = '00', timezone = '+00:00'] = timeMatch;
+            // This would need timestampFromHours utility - let's implement basic logic
+            const today = new Date();
+            const timeString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T${hours.padStart(2, '0')}:${minutes}:${seconds}${timezone}`;
+            const unixTimestamp = Math.floor(new Date(timeString).getTime() / 1000).toString();
+            if (!isNaN(parseInt(unixTimestamp))) {
+              tokens.push(ast.timestamp(unixTimestamp, format as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined));
+              i = closeIndex + 1;
+              continue;
             }
           }
         }
