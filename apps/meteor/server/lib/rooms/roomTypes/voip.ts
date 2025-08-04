@@ -3,7 +3,6 @@ import { Users } from '@rocket.chat/models';
 
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { getVoipRoomType } from '../../../../lib/rooms/roomTypes/voip';
-import { buildNotificationDetails } from '../buildNotificationDetails';
 import { roomCoordinator } from '../roomCoordinator';
 
 const VoipRoomType = getVoipRoomType(roomCoordinator);
@@ -13,15 +12,11 @@ roomCoordinator.add(VoipRoomType, {
 		return room.name || room.fname || (room as any).label;
 	},
 
-	async getNotificationDetails(room, sender, notificationMessage, userId, language) {
-		return buildNotificationDetails({
-			expectedNotificationMessage: notificationMessage,
-			room,
-			sender,
-			expectedTitle: `[Omnichannel] ${await this.roomName(room, userId)}`,
-			language,
-			senderNameExpectedInMessage: false,
-		});
+	async getNotificationDetails(room, _sender, notificationMessage, userId) {
+		const title = `[Omnichannel] ${this.roomName(room, userId)}`;
+		const text = notificationMessage;
+
+		return { title, text, name: room.name };
 	},
 
 	async getMsgSender(message) {

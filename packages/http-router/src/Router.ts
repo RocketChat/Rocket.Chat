@@ -218,7 +218,7 @@ export class Router<
 					return c.json(
 						{
 							success: false,
-							errorType: 'error-invalid-params',
+							errorType: 'invalid-params',
 							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
 						},
 						400,

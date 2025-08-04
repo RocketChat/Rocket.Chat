@@ -4353,7 +4353,6 @@
   "error-message-editing-blocked": "メッセージの編集がブロックされています",
   "error-message-size-exceeded": "メッセージサイズがMessage_MaxAllowedSizeを超えています",
   "error-missing-unsubscribe-link": "[unsubscribe]リンクを入力してください。",
-  "error-no-agents-online-in-department": "部署にオンラインのエージェントがいません",
   "error-no-message-for-unread": "未読にするメッセージがありません",
   "error-no-owner-channel": "所有者のみがこのチャネルをチームに追加できます",
   "error-no-permission-team-channel": "このチャネルをチームに追加する権限がありません。",

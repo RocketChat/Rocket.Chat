@@ -19,7 +19,18 @@ export default {
 			}))
 			.buildStoryDecorator(),
 		(fn) => {
-			const methods = useForm({});
+			const methods = useForm({
+				defaultValues: {
+					instanceId: 'instance-1',
+					method: 'method-1',
+					severity: 'all',
+					event: 'all',
+					startDate: '',
+					endDate: '',
+					startTime: '',
+					endTime: '',
+				},
+			});
 
 			return (
 				<FormProvider {...methods}>
