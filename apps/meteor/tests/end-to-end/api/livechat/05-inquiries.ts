@@ -115,6 +115,8 @@ describe('LIVECHAT - inquiries', () => {
 					expect(res.body.inquiry).to.have.property('v').and.be.an('object');
 					expect(res.body.inquiry.v).to.have.property('_id', visitor._id);
 				});
+
+			await closeOmnichannelRoom(room._id);
 		});
 	});
 
@@ -175,6 +177,8 @@ describe('LIVECHAT - inquiries', () => {
 			const inquiry2 = (await fetchInquiry(room._id)) as ILivechatInquiryRecord;
 			expect(inquiry2.source?.type).to.equal('api');
 			expect(inquiry2.status).to.equal('taken');
+
+			await closeOmnichannelRoom(room._id);
 		});
 		it('should mark a taken room as servedBy me', async () => {
 			const agent = await createAgent();
@@ -200,6 +204,8 @@ describe('LIVECHAT - inquiries', () => {
 
 			expect(roomInfo).to.have.property('servedBy').that.is.an('object');
 			expect(roomInfo.servedBy).to.have.property('_id', 'rocketchat.internal.admin.test');
+
+			await closeOmnichannelRoom(room._id);
 		});
 	});
 
@@ -418,13 +424,16 @@ describe('LIVECHAT - inquiries', () => {
 
 			const response = parseMethodResponse(body);
 			expect(response.result).to.be.false;
+
+			await closeOmnichannelRoom(room._id);
 		});
 
 		let inquiry: ILivechatInquiryRecord;
+		let room: IOmnichannelRoom;
 		(IS_EE ? it : it.skip)('should move a room back to queue', async () => {
 			const dep = await createDepartment([{ agentId: testUser.user._id }]);
 			const visitor = await createVisitor(dep._id);
-			const room = await createLivechatRoom(visitor.token);
+			room = await createLivechatRoom(visitor.token);
 			const inq = await fetchInquiry(room._id);
 			inquiry = inq;
 			await takeInquiry(inq._id, testUser.credentials);
@@ -457,6 +466,8 @@ describe('LIVECHAT - inquiries', () => {
 			const depInq = body.inquiries.filter((inq: { _id: string }) => inq._id === inquiry._id);
 
 			expect(depInq.length).to.be.equal(1);
+
+			await closeOmnichannelRoom(room._id);
 		});
 	});
 

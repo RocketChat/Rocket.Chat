@@ -501,6 +501,8 @@ describe('LIVECHAT - Agents', () => {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('agent');
 			expect(body.agent).to.have.property('_id', agent2.user._id);
+
+			await closeOmnichannelRoom(room._id);
 		});
 	});
 
