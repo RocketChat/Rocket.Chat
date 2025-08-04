@@ -80,7 +80,7 @@ export const isFirstPeerAutocompleteOption = (value: string) => {
 const getFirstOption = (filter: string): PeerAutocompleteOptions => {
 	return { value: `${PREFIX_FIRST_OPTION}${filter}`, label: filter, avatarUrl: '' };
 };
-// TODO: implement this properly
+
 export const usePeerAutocomplete = () => {
 	const { getAutocompleteOptions, getPeerInfo } = useMediaCallContext();
 	const [selected, setSelected] = useState<string | undefined>();
