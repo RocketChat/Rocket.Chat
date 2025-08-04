@@ -38,6 +38,8 @@ const isEmoji = (char: string): boolean => {
     (codePoint >= 0x2934 && codePoint <= 0x2935) ||   // Arrow symbols
     (codePoint >= 0x3030 && codePoint <= 0x303d) ||   // CJK symbols
     (codePoint >= 0x3297 && codePoint <= 0x3299) ||   // CJK unified ideographs
+    (codePoint >= 0x2300 && codePoint <= 0x23ff) ||   // Miscellaneous Technical (includes ⌚)
+    (codePoint >= 0x2000 && codePoint <= 0x206f) ||   // General Punctuation (includes some emoji-like chars)
     codePoint === 0x00a9 ||   // Copyright
     codePoint === 0x00ae ||   // Registered
     codePoint === 0x203c ||   // Double exclamation
@@ -1403,7 +1405,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         while (j < text.length) {
           const char = text[j];
           // Stop at clear separators (whitespace, punctuation, etc.) - allow Unicode characters
-          if (/[\s\n\r\t\(\)\[\]{},;:!?]/.test(char)) {
+          // Also stop at # to prevent ##Hello from being parsed as #Hello
+          if (/[\s\n\r\t\(\)\[\]{},;:!?#]/.test(char)) {
             break;
           }
           j++;
