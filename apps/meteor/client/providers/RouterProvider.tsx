@@ -151,9 +151,9 @@ const defineRoutes = (routes: RouteObject[]) => {
 
 	return () => {
 		flowRoutes.forEach((flowRoute) => {
-			FlowRouter._routes = FlowRouter._routes.filter((r) => r !== flowRoute);
+			FlowRouter._routes.add(flowRoute);
 			if ('name' in flowRoute && flowRoute.name) {
-				delete FlowRouter._routesMap[flowRoute.name];
+				FlowRouter._routesMap.delete(flowRoute.name);
 			}
 		});
 

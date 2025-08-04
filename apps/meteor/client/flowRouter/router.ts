@@ -59,9 +59,9 @@ class Router {
 
 	_initialized = false;
 
-	_routes: Route[] = [];
+	_routes = new Set<Route>();
 
-	_routesMap: Record<string, Route> = {};
+	_routesMap = new Map<string, Route>();
 
 	// indicate it's okay (or not okay) to run the tracker
 	// when doing subscriptions
@@ -145,9 +145,9 @@ class Router {
 			this._invalidateTracker();
 		};
 
-		this._routes.push(route);
+		this._routes.add(route);
 		if (options.name) {
-			this._routesMap[options.name] = route;
+			this._routesMap.set(options.name, route);
 		}
 
 		this._updateCallbacks();
@@ -155,9 +155,9 @@ class Router {
 		return route;
 	}
 
-	path(pathDef: string, fields: Record<string, string | null> = {}, queryParams: Record<string, string | null> = {}): string {
-		if (this._routesMap[pathDef]) {
-			pathDef = this._routesMap[pathDef].pathDef ?? pathDef;
+	path(pathDef: string, params: Record<string, string | null> = {}, queryParams: Record<string, string | null> = {}): string {
+		if (this._routesMap.has(pathDef)) {
+			pathDef = this._routesMap.get(pathDef)?.pathDef ?? pathDef;
 		}
 
 		if (this.queryRegExp.test(pathDef)) {
@@ -186,8 +186,8 @@ class Router {
 			// we need to encode 2 times otherwise "/" char does not work properly
 			// So, in that case, when I includes "/" it will think it's a part of the
 			// route. encoding 2times fixes it
-			if (fields[key]) {
-				return this._encodeParam(`${fields[key]}`);
+			if (params[key]) {
+				return this._encodeParam(`${params[key]}`);
 			}
 
 			return '';
@@ -211,11 +211,9 @@ class Router {
 		return path;
 	}
 
-	private go(pathDef: string): void {
+	private go(pathDef: string, { reload = false }: { reload?: boolean } = {}): void {
 		const path = this.path(pathDef);
-		if (!this.env.reload.get() && path === this._current?.path) {
-			return;
-		}
+		if (!reload && path === this._current?.path) return;
 
 		try {
 			this._page(path);
@@ -249,25 +247,23 @@ class Router {
 		//
 		// we need override both show, replace to make this work
 		// since we use redirect when we are talking about withReplaceState
-		this._page.show = ((self, original) =>
-			function (path) {
-				if (!path || (!self.env.reload.get() && self._current?.path === path)) {
-					return;
-				}
-				const pathParts = path.split('?');
-				pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
-				original.call(self, pathParts.join('?'));
-			})(this, this._page.show);
+		this._page.show = ((original) => (path) => {
+			if (!path || (!this.env.reload.get() && this._current?.path === path)) {
+				return;
+			}
+			const pathParts = path.split('?');
+			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
+			original.call(this, pathParts.join('?'));
+		})(this._page.show);
 
-		this._page.replace = ((self, original) =>
-			function (path, state?, dispatch?, push?) {
-				if (!path || (!self.env.reload.get() && self._current?.path === path)) {
-					return undefined as unknown as PageJS.Context;
-				}
-				const pathParts = path.split('?');
-				pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
-				return original.call(self, pathParts.join('?'), state, dispatch, push);
-			})(this, this._page.replace);
+		this._page.replace = ((original) => (path, state?, dispatch?, push?) => {
+			if (!path || (!this.env.reload.get() && this._current?.path === path)) {
+				return undefined as unknown as PageJS.Context;
+			}
+			const pathParts = path.split('?');
+			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
+			return original.call(this, pathParts.join('?'), state, dispatch, push);
+		})(this._page.replace);
 
 		// this is very ugly part of pagejs and it does decoding few times
 		// in unpredicatable manner. See #168
@@ -387,13 +383,11 @@ class Router {
 				// self._nextPath = self._current.path;
 				Meteor.defer(() => {
 					const path = this._nextPath;
-					if (!path) {
-						return;
-					}
+					if (!path) return;
 
 					delete this._nextPath;
 					this.env.reload.withValue(true, () => {
-						this.go(path);
+						this.go(path, { reload: true });
 					});
 				});
 			}
