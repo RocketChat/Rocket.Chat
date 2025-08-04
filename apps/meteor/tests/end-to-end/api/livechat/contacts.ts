@@ -1073,6 +1073,51 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
+	describe.only('[DELETE] omnichannel/contacts/:id', () => {
+		let contactId: string;
+
+		const email = faker.internet.email().toLowerCase();
+		const phone = faker.phone.number();
+
+		const contact = {
+			name: faker.person.fullName(),
+			emails: [email],
+			phones: [phone],
+			contactManager: agentUser?._id,
+		};
+
+		before(async () => {
+			await updatePermission('update-livechat-contact', ['admin']);
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({ ...contact });
+			contactId = body.contactId;
+
+			const visitor = await createVisitor(undefined, contact.name, email, phone);
+
+			await createLivechatRoom(visitor.token);
+		});
+
+		after(async () => {
+			await restorePermissionToRoles('update-livechat-contact');
+		});
+
+		it('should be able to disable a contact by its id', async () => {
+			const response = await request.delete(api(`omnichannel/contacts/${contactId}`)).set(credentials);
+
+			expect(response.status).to.be.equal(200);
+			expect(response.body).to.have.property('success', true);
+		});
+
+		it('should return 404 if contact does not exist using contactId', async () => {
+			const response = await request.delete(api(`omnichannel/contacts/invalidId`)).set(credentials);
+
+			expect(response.status).to.be.equal(404);
+			expect(response.body).to.have.property('success', false);
+		});
+	});
+
 	describe('[GET] omnichannel/contacts.checkExistence', () => {
 		let contactId: string;
 		let roomId: string;
