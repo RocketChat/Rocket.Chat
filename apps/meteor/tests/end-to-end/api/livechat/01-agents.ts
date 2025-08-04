@@ -1,13 +1,6 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type {
-	ILivechatVisitor,
-	IOmnichannelRoom,
-	type ILivechatAgent,
-	type ILivechatDepartment,
-	type IRoom,
-	type IUser,
-} from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom, ILivechatAgent, ILivechatDepartment, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
