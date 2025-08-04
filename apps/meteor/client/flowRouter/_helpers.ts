@@ -11,7 +11,7 @@ export function omit<T, TKey extends keyof T>(obj: T, keys: TKey[]): Omit<T, TKe
 		return obj;
 	}
 
-	if (!isArray(keys)) {
+	if (!Array.isArray(keys)) {
 		Meteor._debug('[ostrio:flow-router-extra] [_helpers.omit] Second argument must be an Array');
 		return obj;
 	}
@@ -30,7 +30,7 @@ export function pick<T, TKey extends keyof T>(obj: T, keys: TKey[]): Pick<T, TKe
 		return obj;
 	}
 
-	if (!isArray(keys)) {
+	if (!Array.isArray(keys)) {
 		Meteor._debug('[ostrio:flow-router-extra] [_helpers.omit] Second argument must be an Array');
 		return obj;
 	}
@@ -43,10 +43,6 @@ export function pick<T, TKey extends keyof T>(obj: T, keys: TKey[]): Pick<T, TKe
 	return picked as Pick<T, TKey>;
 }
 
-export function isArray(obj: unknown): obj is any[] {
-	return Array.isArray(obj);
-}
-
 export function extend<U>(source: U): U;
 export function extend<U, V>(source1: U, source2: V): U & V;
 export function extend<U, V, W>(source1: U, source2: V, source3: W): U & V & W;
@@ -57,9 +53,5 @@ export function extend(...sources: any[]): any {
 
 export function clone<T>(obj: T): T {
 	if (!isObject(obj)) return obj;
-	return isArray(obj) ? (obj.slice() as T) : extend(obj);
-}
-
-export function isFunction(obj: unknown): obj is Function {
-	return Object.prototype.toString.call(obj) === '[object Function]';
+	return Array.isArray(obj) ? (obj.slice() as T) : extend(obj);
 }

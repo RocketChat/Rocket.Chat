@@ -1,13 +1,14 @@
-import { extend, isArray, isFunction, omit } from './_helpers';
-import type { RouteOptions } from './route';
+import { extend, omit } from './_helpers';
+import type { RouteOptions, waitOn } from './route';
 import type Route from './route';
 import type Router from './router';
+import type { Current } from './router';
 import type { Trigger } from './triggers';
 
 export type GroupOptions = {
 	name?: string;
 	prefix?: string;
-	waitOn?: () => void;
+	waitOn?: waitOn;
 	triggersEnter?: Trigger[];
 	triggersExit?: Trigger[];
 	subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
@@ -19,18 +20,18 @@ export type GroupOptions = {
 };
 
 const makeTrigger = (trigger: unknown) => {
-	if (isFunction(trigger)) {
+	if (typeof trigger === 'function') {
 		return [trigger];
 	}
-	if (!isArray(trigger)) {
+	if (!Array.isArray(trigger)) {
 		return [];
 	}
 
 	return trigger;
 };
 
-const makeWaitFor = (func: (() => void) | undefined) => {
-	if (isFunction(func)) {
+const makeWaitFor = (func: waitOn | undefined) => {
+	if (typeof func === 'function') {
 		return [func];
 	}
 
@@ -45,7 +46,7 @@ const makeTriggers = (_base: Trigger[] | undefined, _triggers: Trigger[] | undef
 };
 
 class Group {
-	_waitFor: (() => void)[];
+	_waitFor: waitOn[];
 
 	_router: Router;
 
@@ -125,9 +126,9 @@ class Group {
 		return new Group(this._router, options, this);
 	}
 
-	callSubscriptions(current: { route: Route; params: Record<string, string>; queryParams?: Record<string, string> }) {
+	callSubscriptions(current: Current) {
 		this.parent?.callSubscriptions(current);
-		this._subscriptions.call(current.route, current.params, current.queryParams);
+		this._subscriptions.call(current.route!, current.params, current.queryParams);
 	}
 }
 

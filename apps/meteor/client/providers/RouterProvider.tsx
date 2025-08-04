@@ -119,9 +119,9 @@ const routes: RouteObject[] = [];
 const routesSubscribers = new Set<() => void>();
 
 const updateFlowRouter = () => {
-	if (FlowRouter._initialized) {
+	if (FlowRouter.initialized) {
 		FlowRouter._updateCallbacks();
-		FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter._current.path!));
+		FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter.current().path!));
 		return;
 	}
 
@@ -152,10 +152,6 @@ const defineRoutes = (routes: RouteObject[]) => {
 			FlowRouter._routes = FlowRouter._routes.filter((r) => r !== flowRoute);
 			if ('name' in flowRoute && flowRoute.name) {
 				delete FlowRouter._routesMap[flowRoute.name];
-			} else {
-				FlowRouter.notFound = {
-					action: () => appLayout.render(<></>),
-				};
 			}
 		});
 

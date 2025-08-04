@@ -20,13 +20,22 @@ declare global {
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		interface Static {
 			dispatch(ctx: Context): void;
+			callbacks: [];
+			exits: [];
 		}
 	}
 }
 
-type NewParams = {
-	[key: string]: string | null;
-};
+type NewParams = Record<string, string | null>;
+
+export type Current = Partial<{
+	path: string;
+	params: Record<string, string>;
+	route: Route;
+	context: PageJS.Context;
+	oldRoute: Route;
+	queryParams: Record<string, string>;
+}>;
 
 class Router {
 	private readonly pathRegExp = /(:[\w\(\)\\\+\*\.\?\[\]\-]+)+/g;
@@ -37,18 +46,11 @@ class Router {
 
 	private readonly _tracker = this._buildTracker();
 
-	_current: Partial<{
-		path: string;
-		params: Record<string, string>;
-		route: Route;
-		context: PageJS.Context;
-		oldRoute: Route;
-		queryParams: NewParams;
-	}> = {};
+	private _current: Current = {};
 
-	_specialChars = ['/', '%', '+'];
+	private readonly _specialChars = ['/', '%', '+'];
 
-	_encodeParam = (param: string) => {
+	private _encodeParam(param: string) {
 		const paramArr = param.split('');
 		let _param = '';
 		for (let i = 0; i < paramArr.length; i++) {
@@ -63,61 +65,57 @@ class Router {
 			}
 		}
 		return _param;
-	};
+	}
 
 	// tracks the current path change
-	_onEveryPath = new Tracker.Dependency();
+	private readonly _onEveryPath = new Tracker.Dependency();
 
-	_globalRoute = new Route(this);
+	private _globalRoute = new Route();
 
 	// holds onRoute callbacks
-	_onRouteCallbacks: Array<
+	private readonly _onRouteCallbacks: Array<
 		(
-			route: Pick<Route, 'name' | 'path' | 'pathDef'> & {
+			route: Pick<Route, 'name' | 'pathDef'> & {
 				options?: Omit<RouteOptions, 'triggersEnter' | 'triggersExit' | 'action' | 'subscriptions' | 'name'>;
 			},
 		) => void
 	> = [];
 
-	_initialized = false;
+	private _initialized = false;
 
-	_triggersEnter: Trigger[] = [];
+	private _triggersEnter: Trigger[] = [];
 
-	_triggersExit: Trigger[] = [];
+	private _triggersExit: Trigger[] = [];
 
 	_routes: Route[] = [];
 
 	_routesMap: Record<string, Route> = {};
-
-	_notFound: Route = this.route('*', {});
-
-	notfound = this.notFound;
 
 	// indicate it's okay (or not okay) to run the tracker
 	// when doing subscriptions
 	// using a number and increment it help us to support FlowRouter.go()
 	// and legitimate reruns inside tracker on the same event loop.
 	// this is a solution for #145
-	safeToRun = 0;
+	private safeToRun = 0;
 
 	// Meteor exposes to the client the path prefix that was defined using the
 	// ROOT_URL environement variable on the server using the global runtime
 	// configuration. See #315.
-	_basePath = window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+	private readonly _basePath = window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 
 	// this is a chain contains a list of old routes
 	// most of the time, there is only one old route
 	// but when it's the time for a trigger redirect we've a chain
-	_oldRouteChain: Route[] = [];
+	private _oldRouteChain: Route[] = [];
 
-	env = {
+	private readonly env = {
 		replaceState: new Meteor.EnvironmentVariable(),
 		reload: new Meteor.EnvironmentVariable(),
 		trailingSlash: new Meteor.EnvironmentVariable(),
 	};
 
 	// redirect function used inside triggers
-	_redirectFn = (pathDef: string, fields: any, queryParams: any) => {
+	private _redirectFn(pathDef: string, fields: NewParams, queryParams: NewParams) {
 		if (/^http(s)?:\/\//.test(pathDef)) {
 			throw new Error(
 				"Redirects to URLs outside of the app are not supported in this version of Flow Router. Use 'window.location = yourUrl' instead",
@@ -127,72 +125,82 @@ class Router {
 		this.withReplaceState(() => {
 			this._page.redirect(this.path(pathDef, fields, queryParams));
 		});
-	};
+	}
 
-	decodeQueryParamsOnce: boolean;
+	private decodeQueryParamsOnce: boolean;
 
 	constructor() {
+		this.route('*', {});
 		this._updateCallbacks();
-
-		// Implementing Reactive APIs
-		const reactiveApis = ['getParam', 'getQueryParam', 'getRouteName', 'watchPathChange'] as const;
-
-		for (const api of reactiveApis) {
-			this[api] = function (arg1?: unknown): any {
-				// when this is calling, there may not be any route initiated
-				// so we need to handle it
-				const currentRoute: any = this._current.route;
-				if (!currentRoute) {
-					this._onEveryPath.depend();
-					return void 0;
-				}
-
-				// currently, there is only one argument. If we've more let's add more args
-				// this is not clean code, but better in performance
-				return currentRoute[api].call(currentRoute, arg1);
-			};
-		}
-
 		this._initTriggersAPI();
 	}
 
-	declare getParam: (param: string) => string;
+	getParam(param: string): string | undefined {
+		const currentRoute = this._current.route;
+		if (!currentRoute) {
+			this._onEveryPath.depend();
+			return undefined;
+		}
 
-	declare getQueryParam: (param: string) => string;
-
-	declare getRouteName: () => string;
-
-	declare watchPathChange: (callback?: (path: string) => void) => void;
-
-	set notFound(opts: Omit<RouteOptions, 'name'> & Partial<Pick<RouteOptions, 'name'>>) {
-		Meteor._debug("FlowRouter.notFound is deprecated, use FlowRouter.route('*', { /*...*/ }) instead!");
-		opts.name = opts.name || '__notFound';
-		this._notFound = this.route('*', opts);
+		return currentRoute.getParam(param);
 	}
 
-	get notFound() {
-		return this._notFound as any;
+	getQueryParam(param: string): string | undefined {
+		const currentRoute = this._current.route;
+		if (!currentRoute) {
+			this._onEveryPath.depend();
+			return undefined;
+		}
+
+		return currentRoute.getQueryParam(param);
+	}
+
+	getRouteName(): string | undefined {
+		const currentRoute = this._current.route;
+		if (!currentRoute) {
+			this._onEveryPath.depend();
+			return undefined;
+		}
+
+		// currently, there is only one argument. If we've more let's add more args
+		// this is not clean code, but better in performance
+		return currentRoute.getRouteName();
+	}
+
+	watchPathChange(): void {
+		// when this is calling, there may not be any route initiated
+		// so we need to handle it
+		const currentRoute = this._current.route;
+		if (!currentRoute) {
+			this._onEveryPath.depend();
+			return undefined;
+		}
+
+		// currently, there is only one argument. If we've more let's add more args
+		// this is not clean code, but better in performance
+		return currentRoute.watchPathChange.call(currentRoute);
+	}
+
+	get initialized() {
+		return this._initialized;
 	}
 
 	get _page() {
 		return page as typeof page &
 			// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-			typeof import('page') & {
-				callbacks: [];
-				exits: [];
-			};
+			typeof import('page');
 	}
 
 	get _qs() {
 		return qs;
 	}
 
-	route(pathDef: string, options: RouteOptions = {}, group?: any) {
+	route(pathDef: string, options: RouteOptions = {}, group?: Group): Route {
 		if (!/^\//.test(pathDef) && pathDef !== '*') {
 			throw new Error("route's path must start with '/'");
 		}
 
-		const route = new Route(this, pathDef, options, group);
+		const route = new Route(pathDef, options, group);
 
 		// calls when the page route being activates
 		route._actionHandle = (context: PageJS.Context) => {
@@ -220,7 +228,7 @@ class Router {
 			// See: https://github.com/veliovgroup/flow-router/issues/78
 			const queryParams = this._qs.parse(
 				this.decodeQueryParamsOnce ? new URL(context.path, 'http://example.com').searchParams.toString() : context.querystring,
-			) as NewParams;
+			) as Record<string, string>;
 			this._current = {
 				path: context.path,
 				params: context.params,
@@ -238,7 +246,7 @@ class Router {
 				this._invalidateTracker();
 			};
 
-			route.waitOn(this._current, (_current: unknown, data: any) => {
+			route.waitOn(this._current, (_, data) => {
 				Triggers.runTriggers(this._triggersEnter.concat(route._triggersEnter), this._current, this._redirectFn, afterAllTriggersRan, data);
 			});
 		};
@@ -418,9 +426,9 @@ class Router {
 		return current;
 	}
 
-	track(reactiveMapper: any) {
-		return (props: any, onData: any, env: any) => {
-			let trackerCleanup: any = null;
+	track(reactiveMapper: (props: unknown, onData: unknown, env: unknown) => (() => void) | void) {
+		return (props: unknown, onData: unknown, env: unknown) => {
+			let trackerCleanup: (() => void) | void | null = null;
 			const handler = Tracker.nonreactive(() => {
 				return Tracker.autorun(() => {
 					trackerCleanup = reactiveMapper(props, onData, env);
@@ -436,7 +444,7 @@ class Router {
 		};
 	}
 
-	mapper(props: any, onData: any, env: any) {
+	mapper(props: unknown, onData: unknown, env: unknown) {
 		if (typeof onData === 'function') {
 			onData(null, { route: this.current(), props, env });
 		}
@@ -446,11 +454,11 @@ class Router {
 		return this.track(this.mapper);
 	}
 
-	subsReady(...args: any[]) {
-		let callback = null;
+	subsReady(...args: [...string[], () => void]): boolean {
+		let callback: (() => void) | null = null;
 
 		if (typeof args[args.length - 1] === 'function') {
-			callback = args.pop();
+			callback = args.pop() as () => void;
 		}
 
 		const currentRoute = this.current().route;
@@ -469,14 +477,14 @@ class Router {
 			subscriptions = Object.values(globalRoute.getAllSubscriptions());
 			subscriptions = subscriptions.concat(Object.values(currentRoute.getAllSubscriptions()));
 		} else {
-			subscriptions = args.map((subName) => {
+			subscriptions = (args as string[]).map((subName) => {
 				return globalRoute.getSubscription(subName) || currentRoute.getSubscription(subName);
 			});
 		}
 
 		const isReady = () => {
 			const ready = subscriptions.every((sub) => {
-				return sub && sub.ready();
+				return sub?.ready();
 			});
 
 			return ready;
@@ -565,9 +573,9 @@ class Router {
 		this._initialized = true;
 	}
 
-	declare show: (path: string, state: any, dispatch: boolean | undefined, push: boolean | undefined) => void;
+	declare show: (path: string, state: Record<string, string>, dispatch: boolean | undefined, push: boolean | undefined) => void;
 
-	declare replace: (path: string, state: any, dispatch: boolean | undefined, push: boolean | undefined) => void;
+	declare replace: (path: string, state: Record<string, string>, dispatch: boolean | undefined, push: boolean | undefined) => void;
 
 	_buildTracker() {
 		// main autorun function
@@ -747,7 +755,7 @@ class Router {
 
 	onRouteRegister(
 		cb: (
-			route: Pick<Route, 'name' | 'path' | 'pathDef'> & {
+			route: Pick<Route, 'name' | 'pathDef'> & {
 				options?: Omit<RouteOptions, 'triggersEnter' | 'triggersExit' | 'action' | 'subscriptions' | 'name'>;
 			},
 		) => void,
@@ -760,9 +768,9 @@ class Router {
 		// object.
 		// This is not to hide what's inside the route object, but to show
 		// these are the public APIs
-		const routePublicApi: Pick<Route, 'name' | 'path' | 'pathDef'> & {
+		const routePublicApi: Pick<Route, 'name' | 'pathDef'> & {
 			options?: Omit<RouteOptions, 'triggersEnter' | 'triggersExit' | 'action' | 'subscriptions' | 'name'>;
-		} = pick(currentRoute, ['name', 'pathDef', 'path']);
+		} = pick(currentRoute, ['name', 'pathDef']);
 		routePublicApi.options = omit(currentRoute.options, ['triggersEnter', 'triggersExit', 'action', 'subscriptions', 'name']);
 
 		this._onRouteCallbacks.forEach((cb) => {

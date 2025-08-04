@@ -4,9 +4,8 @@ import { Promise } from 'meteor/promise';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 
-import { isArray, isFunction } from './_helpers';
 import type Group from './group';
-import Router from './router';
+import type { Current } from './router';
 import type { Trigger } from './triggers';
 
 declare module 'meteor/reactive-dict' {
@@ -15,11 +14,9 @@ declare module 'meteor/reactive-dict' {
 	}
 }
 
-type Param = {
-	[key: string]: string;
-};
+type Param = Record<string, string>;
 
-type QueryParam = Param;
+type QueryParam = Record<string, string | string[]>;
 
 export type Context = {
 	canonicalPath: string;
@@ -28,7 +25,7 @@ export type Context = {
 	path: string;
 	pathname: string;
 	querystring: string;
-	state: { [key: string]: string };
+	state: Record<string, string>;
 	title: string;
 };
 
@@ -44,8 +41,8 @@ export type RouteOptions = {
 	action?: action;
 	triggersExit?: Array<Trigger>;
 	conf?: { forceReRender?: boolean };
-	waitFor?: (() => void)[];
-	subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
+	waitFor?: waitOn[];
+	subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
 };
 
 export type Hook = (params: Param, qs: QueryParam) => void | Promise<void>;
@@ -68,6 +65,7 @@ export type waitOn = (
 export type waitOnResources = (
 	params: Param,
 	qs: QueryParam,
+	data?: unknown,
 ) => {
 	images: string[];
 	other: string[];
@@ -78,13 +76,13 @@ export type data = (
 	qs: QueryParam,
 ) => Mongo.CursorStatic | object | object[] | false | null | void | Promise<Mongo.CursorStatic | object | object[] | false | null | void>;
 
-export type action = (params: Param, qs: QueryParam, data: any) => void;
+export type action = (params: Param, qs: QueryParam, data: unknown) => void | Promise<void>;
 
-const makeTriggers = (triggers: any) => {
-	if (isFunction(triggers)) {
+const makeTriggers = (triggers: Trigger | Trigger[]) => {
+	if (typeof triggers === 'function') {
 		return [triggers];
 	}
-	if (!isArray(triggers)) {
+	if (!Array.isArray(triggers)) {
 		return [];
 	}
 
@@ -92,72 +90,57 @@ const makeTriggers = (triggers: any) => {
 };
 
 class Route {
-	options: RouteOptions;
+	readonly options: RouteOptions;
 
-	pathDef: string | undefined;
+	readonly pathDef: string | undefined;
 
-	path: string | undefined;
+	private readonly group: Group | undefined;
 
-	conf:
-		| {
-				[key: string]: any;
-				forceReRender?: boolean;
-		  }
-		| undefined;
+	private readonly _data: data | null;
 
-	group: Group | undefined;
+	private readonly _action: action;
 
-	_data: data | null;
+	private readonly _waitOn: waitOn | null;
 
-	_router: Router;
+	private readonly _waitFor: waitOn[];
 
-	_action: action;
+	private _subsMap: Record<string, Meteor.SubscriptionHandle>;
 
-	_waitOn: waitOn | null;
+	private _onNoData: Hook | null;
 
-	_waitFor: Function[];
+	private _endWaiting: (() => void) | null;
 
-	_subsMap: Record<string, Meteor.SubscriptionHandle>;
-
-	_onNoData: Hook | null;
-
-	_endWaiting: (() => void) | null;
-
-	_currentData: any;
+	private _currentData: unknown;
 
 	_triggersExit: Trigger[];
 
-	_whileWaiting: Hook | null;
+	private _whileWaiting: Hook | null;
 
 	_triggersEnter: Trigger[];
 
-	_subscriptions: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string | string[]>) => void;
+	private _subscriptions: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
 
-	_waitOnResources: waitOnResources | null;
+	private _waitOnResources: waitOnResources | null;
 
-	_params: ReactiveDict;
+	private _params: ReactiveDict<Record<string, string>>;
 
-	_queryParams: ReactiveDict;
+	private _queryParams: ReactiveDict<Record<string, string>>;
 
-	_routeCloseDep: Tracker.Dependency;
+	private _routeCloseDep: Tracker.Dependency;
 
-	_pathChangeDep: Tracker.Dependency;
+	private _pathChangeDep: Tracker.Dependency;
 
 	name: string | undefined;
 
-	constructor(router = new Router(), pathDef?: string, options: RouteOptions = {}, group?: Group) {
+	constructor(pathDef?: string, options: RouteOptions = {}, group?: Group) {
 		this.options = options;
 		this.pathDef = pathDef;
 
-		// Route.path is deprecated and will be removed in 3.0
-		this.path = pathDef;
-		this.conf = options.conf || {};
 		this.group = group;
 		this._data = options.data || null;
-		this._router = router;
 		this._action = options.action || (() => undefined);
 		this._waitOn = options.waitOn || null;
-		this._waitFor = isArray(options.waitFor) ? options.waitFor : [];
+		this._waitFor = Array.isArray(options.waitFor) ? options.waitFor : [];
 		this._subsMap = {};
 		this._onNoData = options.onNoData || null;
 		this._endWaiting = options.endWaiting || null;
@@ -182,11 +165,11 @@ class Route {
 		this._subsMap = {};
 	}
 
-	register(name: any, sub: any) {
+	register(name: string, sub: Meteor.SubscriptionHandle) {
 		this._subsMap[name] = sub;
 	}
 
-	getSubscription(name: any) {
+	getSubscription(name: string) {
 		return this._subsMap[name];
 	}
 
@@ -194,47 +177,44 @@ class Route {
 		return this._subsMap;
 	}
 
-	checkSubscriptions(subscriptions: any) {
+	checkSubscriptions(subscriptions: Meteor.SubscriptionHandle[]) {
 		const results = [];
 		for (let i = 0; i < subscriptions.length; i++) {
-			results.push(subscriptions[i] && subscriptions[i].ready ? subscriptions[i].ready() : false);
+			results.push(subscriptions[i]?.ready?.() ?? false);
 		}
 
 		return !results.includes(false);
 	}
 
-	async waitOn(current: any = {}, next: any) {
-		let _data: any = null;
+	async waitOn(current: Current = {}, next: (current: Current, data?: unknown) => void) {
+		let _data: unknown = null;
 		let _isWaiting = false;
 		let _preloaded = 0;
-		let _resources: any = false;
-		let waitFor: any[] = [];
-		let promises: any = [];
-		let subscriptions: any = [];
-		let timer: any;
-		let trackers: any = [];
+		let _resources: waitOnResources[] | false = false;
+		let waitFor: waitOn[] = [];
+		let promises: PromiseLike<unknown>[] = [];
+		let subscriptions: Meteor.SubscriptionHandle[] = [];
+		let timer: number;
+		let trackers: Tracker.Computation[] = [];
 
-		const placeIn = (d: any) => {
-			if (
-				Object.prototype.toString.call(d) === '[object Promise]' ||
-				(d.then && Object.prototype.toString.call(d.then) === '[object Function]')
-			) {
-				promises.push(d);
-			} else if (d.flush) {
-				trackers.push(d);
-			} else if (d.ready) {
-				subscriptions.push(d);
+		const placeIn = (d: Promise<unknown> | PromiseLike<unknown> | Tracker.Computation | Meteor.SubscriptionHandle) => {
+			if (d instanceof Promise || typeof (d as { then?: unknown }).then === 'function') {
+				promises.push(d as PromiseLike<unknown>);
+			} else if ((d as { flush?: unknown }).flush) {
+				trackers.push(d as Tracker.Computation);
+			} else if ((d as Meteor.SubscriptionHandle).ready) {
+				subscriptions.push(d as Meteor.SubscriptionHandle);
 			}
 		};
 
 		const whileWaitingAction = () => {
 			if (!_isWaiting) {
-				this._whileWaiting?.(current.params, current.queryParams);
+				this._whileWaiting?.(current.params!, current.queryParams!);
 				_isWaiting = true;
 			}
 		};
 
-		const subWait = (delay: any) => {
+		const subWait = (delay: number) => {
 			timer = Meteor.setTimeout(async () => {
 				if (this.checkSubscriptions(subscriptions)) {
 					Meteor.clearTimeout(timer);
@@ -252,7 +232,7 @@ class Route {
 		};
 
 		let waitFails = 0;
-		const wait = (delay: any) => {
+		const wait = (delay: number) => {
 			if (promises.length) {
 				Promise.all(promises)
 					.then(() => {
@@ -275,7 +255,7 @@ class Route {
 			}
 		};
 
-		const processSubData = (subData: any) => {
+		const processSubData = (subData: ReturnType<waitOn>) => {
 			if (subData instanceof Array) {
 				for (let i = subData.length - 1; i >= 0; i--) {
 					if (subData[i] !== null && typeof subData[i] === 'object') {
@@ -289,16 +269,14 @@ class Route {
 
 		const stopSubs = () => {
 			for (let i = subscriptions.length - 1; i >= 0; i--) {
-				if (subscriptions[i].stop) {
-					subscriptions[i].stop();
-				}
+				subscriptions[i].stop?.();
 				delete subscriptions[i];
 			}
 			subscriptions = [];
 		};
 
-		const done = (subscription: any) => {
-			processSubData(isFunction(subscription) ? subscription() : subscription);
+		const done = (subscription: () => ReturnType<waitOn>) => {
+			processSubData(typeof subscription === 'function' ? subscription() : subscription);
 		};
 
 		if (this._waitOnResources) {
@@ -308,7 +286,7 @@ class Route {
 			_resources.push(this._waitOnResources);
 		}
 
-		const preload = (len: any, __data: any) => {
+		const preload = (len: number, __data: unknown) => {
 			_preloaded++;
 			if (_preloaded >= len) {
 				next(current, __data);
@@ -319,7 +297,7 @@ class Route {
 			if (this._data) {
 				if (!_data) {
 					// eslint-disable-next-line no-multi-assign
-					_data = this._currentData = await this._data(current.params, current.queryParams);
+					_data = this._currentData = await this._data(current.params!, current.queryParams!);
 				} else {
 					_data = this._currentData;
 				}
@@ -331,27 +309,27 @@ class Route {
 			_data = await getData();
 			let len = 0;
 			let items;
-			let images: any = [];
-			let other: any = [];
-			for (let i = _resources.length - 1; i >= 0; i--) {
-				items = _resources[i].call(this, current.params, current.queryParams, _data);
+			let images: string[] = [];
+			let other: string[] = [];
+			for (let i = (_resources as waitOnResources[]).length - 1; i >= 0; i--) {
+				items = (_resources as waitOnResources[])[i].call(this, current.params!, current.queryParams!, _data);
 				if (items) {
-					if (items.images && items.images.length) {
+					if (items.images?.length) {
 						images = images.concat(items.images);
 					}
-					if (items.other && items.other.length) {
+					if (items.other?.length) {
 						other = other.concat(items.other);
 					}
 				}
 			}
 
-			if ((other && other.length) || (images && images.length)) {
-				if (other && other.length && typeof XMLHttpRequest !== 'undefined') {
-					other = other.filter((elem: any, index: any, self: any) => {
+			if (other?.length || images?.length) {
+				if (other?.length && typeof XMLHttpRequest !== 'undefined') {
+					other = other.filter((elem, index, self) => {
 						return index === self.indexOf(elem);
 					});
 					len += other.length;
-					const prefetch: any = {};
+					const prefetch: Record<number, XMLHttpRequest> = {};
 					for (let k = other.length - 1; k >= 0; k--) {
 						prefetch[k] = new XMLHttpRequest();
 						// eslint-disable-next-line no-loop-func
@@ -368,11 +346,11 @@ class Route {
 				}
 
 				if (images?.length) {
-					images = images.filter((elem: any, index: any, self: any) => {
+					images = images.filter((elem, index, self) => {
 						return index === self.indexOf(elem);
 					});
 					len += images.length;
-					const imgs: any = {};
+					const imgs: Record<number, HTMLImageElement> = {};
 					for (let j = images.length - 1; j >= 0; j--) {
 						imgs[j] = new Image();
 						// eslint-disable-next-line no-loop-func
@@ -395,21 +373,19 @@ class Route {
 			waitFor = waitFor.concat(this._waitFor);
 		}
 
-		if (isFunction(this._waitOn)) {
+		if (typeof this._waitOn === 'function') {
 			waitFor.push(this._waitOn);
 		}
 
 		if (waitFor.length) {
 			waitFor.forEach((wo) => {
-				processSubData(wo.call(this, current.params, current.queryParams, done));
+				processSubData(wo.call(this, current.params!, current.queryParams!, done));
 			});
 
 			const triggerExitIndex = this._triggersExit.push(() => {
 				stopSubs();
 				for (let i = trackers.length - 1; i >= 0; i--) {
-					if (trackers[i].stop) {
-						trackers[i].stop();
-					}
+					trackers[i].stop?.();
 					delete trackers[i];
 				}
 				trackers = [];
@@ -432,23 +408,23 @@ class Route {
 		}
 	}
 
-	async callAction(current: any) {
+	async callAction(current: Current) {
 		this._endWaiting?.();
 		if (this._data) {
 			if (this._onNoData && !this._currentData) {
-				await this._onNoData(current.params, current.queryParams);
+				await this._onNoData(current.params!, current.queryParams!);
 			} else {
-				await this._action(current.params, current.queryParams, this._currentData);
+				await this._action(current.params!, current.queryParams!, this._currentData);
 			}
 		} else {
-			await this._action(current.params, current.queryParams, this._currentData);
+			await this._action(current.params!, current.queryParams!, this._currentData);
 		}
 	}
 
-	callSubscriptions(current: any) {
+	callSubscriptions(current: Current) {
 		this.clearSubscriptions();
 		this.group?.callSubscriptions(current);
-		this._subscriptions(current.params, current.queryParams);
+		this._subscriptions(current.params!, current.queryParams!);
 	}
 
 	getRouteName() {
@@ -456,12 +432,12 @@ class Route {
 		return this.name;
 	}
 
-	getParam(key: any) {
+	getParam(key: string) {
 		this._routeCloseDep.depend();
 		return this._params.get(key);
 	}
 
-	getQueryParam(key: any) {
+	getQueryParam(key: string) {
 		this._routeCloseDep.depend();
 		return this._queryParams.get(key);
 	}
@@ -477,12 +453,12 @@ class Route {
 		this._pathChangeDep.changed();
 	}
 
-	registerRouteChange(currentContext: any, routeChanging: any) {
+	registerRouteChange(currentContext: Current, routeChanging: boolean) {
 		// register params
-		this._updateReactiveDict(this._params, currentContext.params);
+		this._updateReactiveDict(this._params, currentContext.params!);
 
 		// register query params
-		this._updateReactiveDict(this._queryParams, currentContext.queryParams);
+		this._updateReactiveDict(this._queryParams, currentContext.queryParams!);
 
 		// if the route is changing, we need to defer triggering path changing
 		// if we did this, old route's path watchers will detect this
@@ -495,7 +471,7 @@ class Route {
 		}
 	}
 
-	_updateReactiveDict(dict: ReactiveDict, newValues: any) {
+	_updateReactiveDict(dict: ReactiveDict<Record<string, string>>, newValues: Record<string, string>) {
 		const currentKeys = Object.keys(newValues);
 		const oldKeys = Object.keys(dict.keyDeps);
 

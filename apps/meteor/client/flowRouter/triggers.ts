@@ -2,7 +2,7 @@
 
 import type Router from './router';
 
-export type Trigger = (context: ReturnType<Router['current']>, redirect: Router['go'], stop?: () => void, data?: any) => void;
+export type Trigger = (context: ReturnType<Router['current']>, redirect: Router['go'], stop?: () => void, data?: unknown) => void;
 
 const Triggers = {
 	// Apply filters for a set of triggers
@@ -72,12 +72,18 @@ const Triggers = {
 	//  @context - context we need to pass (it must have the route)
 	//  @redirectFn - function which used to redirect
 	//  @after - called after if only all the triggers runs
-	runTriggers: (triggers: Trigger[], context: ReturnType<Router['current']>, redirectFn: Router['go'], after: () => void, data?: any) => {
+	runTriggers: (
+		triggers: Trigger[],
+		context: ReturnType<Router['current']>,
+		redirectFn: Router['go'],
+		after: () => void,
+		data?: unknown,
+	) => {
 		let abort = false;
 		let inCurrentLoop = true;
 		let alreadyRedirected = false;
 
-		const doRedirect = (url: string, params?: Record<string, any>, queryParams?: Record<string, any>) => {
+		const doRedirect = (url: string, params?: Record<string, string>, queryParams?: Record<string, string>) => {
 			if (alreadyRedirected) {
 				throw new Error('already redirected');
 			}
