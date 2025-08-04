@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type VoipTimerProps = { startAt?: Date };
 
@@ -29,20 +29,20 @@ const VoipTimer = ({ startAt }: VoipTimerProps) => {
 		return () => clearInterval(interval);
 	}, [start]);
 
-	const [hours, minutes, seconds] = useMemo(() => {
-		const totalSeconds = Math.floor(ellapsedTime / 1000);
+	const totalSeconds = Math.floor(ellapsedTime / 1000);
 
-		const hours = Math.floor(totalSeconds / 3600);
-		const minutes = Math.floor((totalSeconds % 3600) / 60);
-		const seconds = Math.floor(totalSeconds % 60);
+	const hours = Math.floor(totalSeconds / 3600);
+	const minutes = Math.floor((totalSeconds % 3600) / 60);
+	const seconds = Math.floor(totalSeconds % 60);
 
-		return [hours.toString().padStart(2, '0'), minutes.toString().padStart(2, '0'), seconds.toString().padStart(2, '0')];
-	}, [ellapsedTime]);
+	const hoursStr = hours.toString().padStart(2, '0');
+	const minutesStr = minutes.toString().padStart(2, '0');
+	const secondsStr = seconds.toString().padStart(2, '0');
 
 	return (
-		<time aria-hidden>
-			{hours !== '00' ? `${hours}:` : ''}
-			{minutes}:{seconds}
+		<time dateTime={`PT${hours}H${minutes}M${seconds}S`}>
+			{hoursStr !== '00' ? `${hours}:` : ''}
+			{minutesStr}:{secondsStr}
 		</time>
 	);
 };
