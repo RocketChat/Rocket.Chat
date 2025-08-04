@@ -17,6 +17,7 @@ export interface IFederationMatrixService {
 	};
 	createRoom(room: IRoom, owner: IUser, members: string[]): Promise<void>;
 	sendMessage(message: IMessage, room: IRoom, user: IUser): Promise<void>;
+	deleteMessage(message: IMessage): Promise<void>;
 	sendReaction(messageId: string, reaction: string, user: IUser): Promise<void>;
 	removeReaction(messageId: string, reaction: string, user: IUser, oldMessage: IMessage): Promise<void>;
 	getEventById(eventId: string): Promise<any | null>;
