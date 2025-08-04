@@ -1469,7 +1469,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         while (j < text.length) {
           const char = text[j];
           // Stop at whitespace or punctuation (but allow underscores, dots, colons in usernames)
-          if (/[\s\n\r\t\(\)\[\]{},;!?]/.test(char)) {
+          if (/[\s\n\r\t\(\)\[\]{},;!?#]/.test(char)) {
             break;
           }
           j++;
