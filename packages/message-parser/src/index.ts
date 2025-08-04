@@ -1933,6 +1933,24 @@ export const parse = (input: string, options?: Options): AST.Root => {
   // Split into lines and process them
   const lines = normalizedInput.split('\n');
   
+  // Check if original input ended with newline (which creates trailing empty string)
+  const originalEndsWithNewline = normalizedInput.endsWith('\n');
+  const hasTrailingEmptyLine = lines.length > 0 && lines[lines.length - 1] === '';
+  
+  // If input ended with newline and created trailing empty, remove it unless it's the only empty line
+  if (originalEndsWithNewline && hasTrailingEmptyLine) {
+    // Count how many empty lines we have at the end
+    let trailingEmptyCount = 0;
+    for (let i = lines.length - 1; i >= 0 && lines[i] === ''; i--) {
+      trailingEmptyCount++;
+    }
+    
+    // Only remove the last empty line if there are other empty lines or multiple trailing empties
+    if (trailingEmptyCount > 1 || lines.length > 2) {
+      lines.pop();
+    }
+  }
+  
   // Check if the entire input contains only emoji content (for BIG_EMOJI)
   // This can be single line or multiple lines, as long as all non-empty lines contain only emojis
   const allEmojiTokens: AST.Emoji[] = [];
