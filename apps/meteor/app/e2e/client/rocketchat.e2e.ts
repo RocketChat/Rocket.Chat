@@ -32,12 +32,12 @@ import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
+import { Messages, Rooms, Subscriptions } from '../../../client/stores';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { isTruthy } from '../../../lib/isTruthy';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { settings } from '../../settings/client';
 import { limitQuoteChain } from '../../ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../utils/client';
@@ -73,14 +73,11 @@ class E2E extends Emitter {
 
 	private state: E2EEState;
 
-	private observable: Meteor.LiveQueryHandle | undefined;
-
 	constructor() {
 		super();
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
-		this.observable = undefined;
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			this.log(`${prevState} -> ${nextState}`);
@@ -95,15 +92,15 @@ class E2E extends Emitter {
 		});
 
 		this.on(E2EEState.DISABLED, () => {
-			this.observable?.stop();
+			this.unsubscribeFromSubscriptions?.();
 		});
 
 		this.on(E2EEState.NOT_STARTED, () => {
-			this.observable?.stop();
+			this.unsubscribeFromSubscriptions?.();
 		});
 
 		this.on(E2EEState.ERROR, () => {
-			this.observable?.stop();
+			this.unsubscribeFromSubscriptions?.();
 		});
 
 		this.setState(E2EEState.NOT_STARTED);
@@ -187,26 +184,26 @@ class E2E extends Emitter {
 		await e2eRoom.decryptSubscription();
 	}
 
-	observeSubscriptions() {
-		this.observable?.stop();
+	private unsubscribeFromSubscriptions: (() => void) | undefined;
 
-		this.observable = Subscriptions.find().observe({
-			changed: (sub: ISubscription) => {
-				setTimeout(() => this.onSubscriptionChanged(sub), 0);
-			},
-			added: (sub: ISubscription) => {
-				setTimeout(async () => {
-					this.log('Subscription added', sub);
-					if (!sub.encrypted && !sub.E2EKey) {
-						return;
-					}
-					return this.getInstanceByRoomId(sub.rid);
-				}, 0);
-			},
-			removed: (sub: ISubscription) => {
-				this.log('Subscription removed', sub);
-				this.removeInstanceByRoomId(sub.rid);
-			},
+	observeSubscriptions() {
+		this.unsubscribeFromSubscriptions?.();
+
+		this.unsubscribeFromSubscriptions = Subscriptions.use.subscribe((state) => {
+			const subscriptions = Array.from(state.records.values()).filter((sub) => sub.encrypted || sub.E2EKey);
+
+			const subscribed = new Set(subscriptions.map((sub) => sub.rid));
+			const instatiated = new Set(Object.keys(this.instancesByRoomId));
+			const excess = instatiated.difference(subscribed);
+
+			if (excess.size) {
+				this.log('Unsubscribing from excess instances', excess);
+				excess.forEach((rid) => this.removeInstanceByRoomId(rid));
+			}
+
+			for (const sub of subscriptions) {
+				void this.onSubscriptionChanged(sub);
+			}
 		});
 	}
 
@@ -228,7 +225,7 @@ class E2E extends Emitter {
 	}
 
 	async handleAsyncE2EESuggestedKey() {
-		const subs = Subscriptions.find({ E2ESuggestedKey: { $exists: true } }).fetch();
+		const subs = Subscriptions.state.filter((sub) => typeof sub.E2ESuggestedKey !== 'undefined');
 		await Promise.all(
 			subs
 				.filter((sub) => sub.E2ESuggestedKey && !sub.E2EKey)
@@ -745,9 +742,9 @@ class E2E extends Emitter {
 	}
 
 	async decryptSubscriptions(): Promise<void> {
-		Subscriptions.find({
-			encrypted: true,
-		}).forEach((subscription) => this.decryptSubscription(subscription._id));
+		Subscriptions.state
+			.filter((subscription) => Boolean(subscription.encrypted))
+			.forEach((subscription) => this.decryptSubscription(subscription._id));
 	}
 
 	openAlert(config: Omit<LegacyBannerPayload, 'id'>): void {
