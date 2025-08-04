@@ -4,7 +4,6 @@ import { Promise } from 'meteor/promise';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { Tracker } from 'meteor/tracker';
 
-import type Group from './group';
 import type { Current } from './router';
 import type { Trigger } from './triggers';
 
@@ -14,14 +13,10 @@ declare module 'meteor/reactive-dict' {
 	}
 }
 
-type Param = Record<string, string>;
-
-type QueryParam = Record<string, string | string[]>;
-
 export type Context = {
 	canonicalPath: string;
 	hash: string;
-	params: Param;
+	params: Record<string, string>;
 	path: string;
 	pathname: string;
 	querystring: string;
@@ -45,13 +40,13 @@ export type RouteOptions = {
 	subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
 };
 
-export type Hook = (params: Param, qs: QueryParam) => void | Promise<void>;
+export type Hook = (params: Record<string, string>, qs: Record<string, string>) => void | Promise<void>;
 
 type DynamicImport = Promise<string>;
 
 export type waitOn = (
-	params: Param,
-	qs: QueryParam,
+	params: Record<string, string>,
+	qs: Record<string, string>,
 	ready: (func: () => ReturnType<waitOn>) => void,
 ) =>
 	| Promise<any>
@@ -63,8 +58,8 @@ export type waitOn = (
 	| Array<DynamicImport | Meteor.SubscriptionHandle>;
 
 export type waitOnResources = (
-	params: Param,
-	qs: QueryParam,
+	params: Record<string, string>,
+	qs: Record<string, string>,
 	data?: unknown,
 ) => {
 	images: string[];
@@ -72,11 +67,11 @@ export type waitOnResources = (
 };
 
 export type data = (
-	params: Param,
-	qs: QueryParam,
+	params: Record<string, string>,
+	qs: Record<string, string>,
 ) => Mongo.CursorStatic | object | object[] | false | null | void | Promise<Mongo.CursorStatic | object | object[] | false | null | void>;
 
-export type action = (params: Param, qs: QueryParam, data: unknown) => void | Promise<void>;
+export type action = (params: Record<string, string>, qs: Record<string, string>, data: unknown) => void | Promise<void>;
 
 const makeTriggers = (triggers: Trigger | Trigger[]) => {
 	if (typeof triggers === 'function') {
@@ -94,8 +89,6 @@ class Route {
 
 	readonly pathDef: string | undefined;
 
-	private readonly group: Group | undefined;
-
 	private readonly _data: data | null;
 
 	private readonly _action: action;
@@ -103,8 +96,6 @@ class Route {
 	private readonly _waitOn: waitOn | null;
 
 	private readonly _waitFor: waitOn[];
-
-	private _subsMap: Record<string, Meteor.SubscriptionHandle>;
 
 	private _onNoData: Hook | null;
 
@@ -132,16 +123,14 @@ class Route {
 
 	name: string | undefined;
 
-	constructor(pathDef?: string, options: RouteOptions = {}, group?: Group) {
+	constructor(pathDef?: string, options: RouteOptions = {}) {
 		this.options = options;
 		this.pathDef = pathDef;
 
-		this.group = group;
 		this._data = options.data || null;
 		this._action = options.action || (() => undefined);
 		this._waitOn = options.waitOn || null;
 		this._waitFor = Array.isArray(options.waitFor) ? options.waitFor : [];
-		this._subsMap = {};
 		this._onNoData = options.onNoData || null;
 		this._endWaiting = options.endWaiting || null;
 		this._currentData = null;
@@ -161,23 +150,7 @@ class Route {
 		}
 	}
 
-	clearSubscriptions() {
-		this._subsMap = {};
-	}
-
-	register(name: string, sub: Meteor.SubscriptionHandle) {
-		this._subsMap[name] = sub;
-	}
-
-	getSubscription(name: string) {
-		return this._subsMap[name];
-	}
-
-	getAllSubscriptions() {
-		return this._subsMap;
-	}
-
-	checkSubscriptions(subscriptions: Meteor.SubscriptionHandle[]) {
+	private checkSubscriptions(subscriptions: Meteor.SubscriptionHandle[]) {
 		const results = [];
 		for (let i = 0; i < subscriptions.length; i++) {
 			results.push(subscriptions[i]?.ready?.() ?? false);
@@ -422,24 +395,7 @@ class Route {
 	}
 
 	callSubscriptions(current: Current) {
-		this.clearSubscriptions();
-		this.group?.callSubscriptions(current);
 		this._subscriptions(current.params!, current.queryParams!);
-	}
-
-	getRouteName() {
-		this._routeCloseDep.depend();
-		return this.name;
-	}
-
-	getParam(key: string) {
-		this._routeCloseDep.depend();
-		return this._params.get(key);
-	}
-
-	getQueryParam(key: string) {
-		this._routeCloseDep.depend();
-		return this._queryParams.get(key);
 	}
 
 	watchPathChange() {
@@ -471,7 +427,7 @@ class Route {
 		}
 	}
 
-	_updateReactiveDict(dict: ReactiveDict<Record<string, string>>, newValues: Record<string, string>) {
+	private _updateReactiveDict(dict: ReactiveDict<Record<string, string>>, newValues: Record<string, string>) {
 		const currentKeys = Object.keys(newValues);
 		const oldKeys = Object.keys(dict.keyDeps);
 
@@ -492,9 +448,9 @@ class Route {
 			});
 	}
 
-	declare _actionHandle: PageJS.Callback;
+	_actionHandle: PageJS.Callback;
 
-	declare _exitHandle: PageJS.Callback;
+	_exitHandle: PageJS.Callback;
 }
 
 export default Route;

@@ -119,7 +119,7 @@ const routes: RouteObject[] = [];
 const routesSubscribers = new Set<() => void>();
 
 const updateFlowRouter = () => {
-	if (FlowRouter.initialized) {
+	if (FlowRouter._initialized) {
 		FlowRouter._updateCallbacks();
 		FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter.current().path!));
 		return;
