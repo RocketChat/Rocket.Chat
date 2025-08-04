@@ -135,14 +135,15 @@ describe('LIVECHAT - inquiries', () => {
 			visitor = await createVisitor();
 			const visitor2 = await createVisitor();
 
-			takenRoom = await createLivechatRoom(visitor._id);
-			servedByRoom = await createLivechatRoom(visitor2._id);
+			takenRoom = await createLivechatRoom(visitor.token);
+			servedByRoom = await createLivechatRoom(visitor2.token);
 		});
 
 		after(async () => {
 			await closeOmnichannelRoom(takenRoom._id);
 			await closeOmnichannelRoom(servedByRoom._id);
 		});
+
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
 			await request
