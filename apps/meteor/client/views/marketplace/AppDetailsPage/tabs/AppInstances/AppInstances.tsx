@@ -37,11 +37,12 @@ const AppInstances = ({ id }: AppInstanceProps): ReactElement => {
 
 	const router = useRouter();
 
-	const handleSelectLogs = () => {
+	const handleSelectLogs = (instanceId: string) => {
 		router.navigate(
 			{
 				name: 'marketplace',
 				params: { ...router.getRouteParameters(), tab: 'logs' },
+				search: { instanceId },
 			},
 			{ replace: true },
 		);
@@ -80,7 +81,7 @@ const AppInstances = ({ id }: AppInstanceProps): ReactElement => {
 											items={[
 												{
 													content: t('View_Logs'),
-													onClick: handleSelectLogs,
+													onClick: () => handleSelectLogs(instance.instanceId),
 													id: 'view-logs',
 													icon: 'desktop-text',
 												},
