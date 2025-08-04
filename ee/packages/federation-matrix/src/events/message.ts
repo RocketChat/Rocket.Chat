@@ -4,7 +4,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
-import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:message');
 
@@ -113,6 +113,33 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				roomId: internalRoomId,
 				eventId: data.event_id,
 			});
+
+			const isEditedMessage = data.content['m.relates_to']?.rel_type === 'm.replace';
+			if (isEditedMessage && data.content['m.relates_to']?.event_id && data.content['m.new_content']) {
+				logger.debug('Received edited message from Matrix, updating existing message');
+				const originalMessage = await Messages.findOneByFederationId(data.content['m.relates_to'].event_id);
+				if (!originalMessage) {
+					logger.error('Original message not found for edit:', data.content['m.relates_to'].event_id);
+					return;
+				}
+				if (originalMessage.federation?.eventId !== data.content['m.relates_to'].event_id) {
+					return;
+				}
+				if (originalMessage.msg === data.content['m.new_content']?.body) {
+					logger.debug('No changes in message content, skipping update');
+					return;
+				}
+
+				await Message.updateMessage(
+					{
+						...originalMessage,
+						msg: data.content['m.new_content']?.body,
+					},
+					user,
+					originalMessage,
+				);
+				return;
+			}
 
 			await Message.saveMessageFromFederation({
 				fromId: user._id,
