@@ -96,6 +96,9 @@ page.getByRole('dialog', name: 'Modal name example').getByRole('button', { name:
 Using `nth-child` or similar selectors is not recommended as it can easily change.
 It's a fragile locator and it's hard to maintain.
 
+### 4. Parent/Child relationships: 
+A change in the DOM structure can break the test.
+
 ## Use our page-objects:
 > apps/meteor/tests/e2e/page-objects
 - page-objects are a great way to reuse locators across tests using `getters` and `methods`.
