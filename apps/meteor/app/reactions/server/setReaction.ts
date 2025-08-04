@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { api, Message } from '@rocket.chat/core-services';
+import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
