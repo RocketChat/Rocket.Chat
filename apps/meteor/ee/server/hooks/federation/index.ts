@@ -1,8 +1,10 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
+import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
 
 callbacks.add(
 	'afterDeleteMessage',
@@ -58,4 +60,28 @@ callbacks.add(
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-unset-reaction',
+);
+
+afterLeaveRoomCallback.add(
+	async (user: IUser, room: IRoom): Promise<void> => {
+		if (!room.federated) {
+			return;
+		}
+
+		await FederationMatrix.leaveRoom(room._id, user);
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-leave-room',
+);
+
+afterRemoveFromRoomCallback.add(
+	async (data: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom): Promise<void> => {
+		if (!room.federated) {
+			return;
+		}
+
+		await FederationMatrix.kickUser(room._id, data.removedUser, data.userWhoRemoved);
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-remove-from-room',
 );
