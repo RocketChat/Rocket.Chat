@@ -45,15 +45,17 @@ const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 	};
 };
 
-const getLocationPathname = () => FlowRouter.current.path.replace(/\?.*/, '') as LocationPathname;
+const getLocationPathname = () => FlowRouter.current?.path.replace(/\?.*/, '') as LocationPathname;
 
 const getLocationSearch = () => location.search as LocationSearch;
 
-const getRouteParameters = () => (FlowRouter.current.params ?? {}) as RouteParameters;
+const getRouteParameters = () =>
+	FlowRouter.current?.params ? (Object.fromEntries(FlowRouter.current.params.entries()) as RouteParameters) : {};
 
-const getSearchParameters = () => (FlowRouter.current.queryParams ?? {}) as SearchParameters;
+const getSearchParameters = () =>
+	FlowRouter.current?.queryParams ? (Object.fromEntries(FlowRouter.current.queryParams.entries()) as SearchParameters) : {};
 
-const getRouteName = () => FlowRouter.current.route?.name as RouteName | undefined;
+const getRouteName = () => FlowRouter.current?.route?.name as RouteName | undefined;
 
 const encodeSearchParameters = (searchParameters: SearchParameters) => {
 	const search = new URLSearchParams();
@@ -121,7 +123,7 @@ const routesSubscribers = new Set<() => void>();
 const updateFlowRouter = () => {
 	if (FlowRouter._initialized) {
 		FlowRouter._updateCallbacks();
-		FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter.current.path));
+		if (FlowRouter.current) FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter.current.path));
 		return;
 	}
 

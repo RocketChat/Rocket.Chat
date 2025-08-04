@@ -4,17 +4,15 @@ import type { Current } from './router';
 
 export type RouteOptions = {
 	name?: string;
-	action?: action;
+	action?: () => void;
 };
-
-type action = (params: Record<string, string>, qs: Record<string, string>, data: unknown) => void | Promise<void>;
 
 class Route {
 	readonly options: RouteOptions;
 
 	readonly pathDef: string;
 
-	private readonly _action: action;
+	private readonly _action: () => void | Promise<void>;
 
 	private _pathChangeDep: Tracker.Dependency;
 
@@ -28,8 +26,8 @@ class Route {
 		this.name = options.name;
 	}
 
-	async callAction(current: Current) {
-		await this._action(current.params, current.queryParams, null);
+	async callAction() {
+		await this._action();
 	}
 
 	watchPathChange() {

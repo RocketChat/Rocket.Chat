@@ -1,9 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import page from 'page';
-import qs from 'qs';
 
-import { pick } from './_helpers';
 import type { RouteOptions } from './route';
 import Route from './route';
 
@@ -19,16 +17,14 @@ declare global {
 	}
 }
 
-export type Current =
-	| Readonly<{
-			path: string;
-			params: Record<string, string>;
-			route: Route;
-			context: PageJS.Context;
-			oldRoute: Route;
-			queryParams: Record<string, string>;
-	  }>
-	| Record<string, never>;
+export type Current = Readonly<{
+	path: string;
+	params: Map<string, string>;
+	route: Route;
+	context: PageJS.Context;
+	oldRoute: Route | undefined;
+	queryParams: URLSearchParams;
+}>;
 
 class Router {
 	private readonly pathRegExp = /(:[\w\(\)\\\+\*\.\?\[\]\-]+)+/g;
@@ -37,7 +33,7 @@ class Router {
 
 	private readonly _tracker = this._buildTracker();
 
-	private _current: Current = Object.freeze({});
+	private _current: Current | undefined = undefined;
 
 	private readonly _specialChars = ['/', '%', '+'];
 
@@ -61,9 +57,6 @@ class Router {
 	// tracks the current path change
 	private readonly _onEveryPath = new Tracker.Dependency();
 
-	// holds onRoute callbacks
-	private readonly _onRouteCallbacks: Array<(route: Pick<Route, 'name' | 'pathDef'>) => void> = [];
-
 	_initialized = false;
 
 	_routes: Route[] = [];
@@ -85,7 +78,7 @@ class Router {
 	// this is a chain contains a list of old routes
 	// most of the time, there is only one old route
 	// but when it's the time for a trigger redirect we've a chain
-	private _oldRouteChain: Route[] = [];
+	private _oldRouteChain: (Route | undefined)[] = [];
 
 	private readonly env = {
 		reload: new Meteor.EnvironmentVariable(),
@@ -97,7 +90,7 @@ class Router {
 	}
 
 	watchPathChange(): void {
-		const currentRoute = this._current.route;
+		const currentRoute = this._current?.route;
 		if (!currentRoute) {
 			this._onEveryPath.depend();
 			return undefined;
@@ -121,7 +114,7 @@ class Router {
 
 		// calls when the page route being activates
 		route._actionHandle = (context: PageJS.Context) => {
-			const oldRoute = this._current.route;
+			const oldRoute = this._current?.route;
 			this._oldRouteChain.push(oldRoute);
 
 			// _qs.parse() gives us a object without prototypes,
@@ -139,10 +132,10 @@ class Router {
 			// still-encoded path instead of the prematurely decoded
 			// querystring.
 			// See: https://github.com/veliovgroup/flow-router/issues/78
-			const queryParams = qs.parse(context.querystring) as Record<string, string>;
+			const queryParams = new URLSearchParams(context.querystring);
 			this._current = Object.freeze({
 				path: context.path,
-				params: context.params,
+				params: new Map(Object.entries<string>(context.params)),
 				route,
 				context,
 				oldRoute,
@@ -158,7 +151,6 @@ class Router {
 		}
 
 		this._updateCallbacks();
-		this._triggerRouteRegister(route);
 
 		return route;
 	}
@@ -169,10 +161,10 @@ class Router {
 		}
 
 		if (this.queryRegExp.test(pathDef)) {
-			const pathDefParts = pathDef.split(this.queryRegExp);
-			pathDef = pathDefParts[0];
-			if (pathDefParts[1]) {
-				queryParams = Object.assign(qs.parse(pathDefParts[1]), queryParams);
+			const [pathDefPart, searchPart] = pathDef.split(this.queryRegExp);
+			pathDef = pathDefPart;
+			if (searchPart) {
+				queryParams = Object.assign(Object.fromEntries(new URLSearchParams(searchPart).entries()), queryParams);
 			}
 		}
 
@@ -208,7 +200,9 @@ class Router {
 		// but keep the root slash if it's the only one
 		path = path.match(/^\/{1}$/) ? path : path.replace(/\/$/, '');
 
-		const strQueryParams = qs.stringify(queryParams || {});
+		const strQueryParams = new URLSearchParams(
+			Object.entries(queryParams).filter((pair): pair is [string, string] => pair[1] !== null && pair[1] !== undefined),
+		).toString();
 		if (strQueryParams) {
 			path += `?${strQueryParams}`;
 		}
@@ -219,7 +213,7 @@ class Router {
 
 	private go(pathDef: string): void {
 		const path = this.path(pathDef);
-		if (!this.env.reload.get() && path === this._current.path) {
+		if (!this.env.reload.get() && path === this._current?.path) {
 			return;
 		}
 
@@ -257,7 +251,7 @@ class Router {
 		// since we use redirect when we are talking about withReplaceState
 		this._page.show = ((self, original) =>
 			function (path) {
-				if (!path || (!self.env.reload.get() && self._current.path === path)) {
+				if (!path || (!self.env.reload.get() && self._current?.path === path)) {
 					return;
 				}
 				const pathParts = path.split('?');
@@ -267,7 +261,7 @@ class Router {
 
 		this._page.replace = ((self, original) =>
 			function (path, state?, dispatch?, push?) {
-				if (!path || (!self.env.reload.get() && self._current.path === path)) {
+				if (!path || (!self.env.reload.get() && self._current?.path === path)) {
 					return undefined as unknown as PageJS.Context;
 				}
 				const pathParts = path.split('?');
@@ -329,7 +323,7 @@ class Router {
 				this._oldRouteChain = [];
 
 				currentContext.route.registerRouteChange(currentContext, isRouteChange);
-				route.callAction(currentContext);
+				route.callAction();
 
 				Tracker.afterFlush(() => {
 					this._onEveryPath.changed();
@@ -419,25 +413,9 @@ class Router {
 			}
 		}
 
-		// Setting exit triggers on catch all routes leads to weird behavior.
-		// We recommend to avoid enter and exit triggers on catch all (`*`) routes.
-		// Use FlowRouter.triggers.exit([func]) and FlowRouter.triggers.enter([func]) instead
 		if (catchAll) {
 			this._page(catchAll.pathDef, catchAll._actionHandle);
-			// this._page.exit(catchAll.pathDef, catchAll._exitHandle);
 		}
-	}
-
-	private _triggerRouteRegister(currentRoute: Route) {
-		// We should only need to send a safe set of fields on the route
-		// object.
-		// This is not to hide what's inside the route object, but to show
-		// these are the public APIs
-		const routePublicApi = pick(currentRoute, ['name', 'pathDef']);
-
-		this._onRouteCallbacks.forEach((cb) => {
-			cb(routePublicApi);
-		});
 	}
 }
 
