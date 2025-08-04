@@ -184,7 +184,39 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
 
-			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+			let result;
+
+			if (!message.tmid) {
+				result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+			}
+
+			if (message.tmid) {
+				const threadRootMessage = await Messages.findOneById(message.tmid);
+				const threadRootEventId = threadRootMessage?.federation?.eventId;
+
+				if (threadRootEventId) {
+					const latestThreadMessage = await Messages.findOne(
+						{
+							'tmid': message.tmid,
+							'federation.eventId': { $exists: true },
+							'_id': { $ne: message._id }, // Exclude the current message
+						},
+						{ sort: { ts: -1 } },
+					);
+					const latestThreadEventId = latestThreadMessage?.federation?.eventId;
+
+					result = await this.homeserverServices.message.sendThreadMessage(
+						matrixRoomId,
+						message.msg,
+						actualMatrixUserId,
+						threadRootEventId,
+						latestThreadEventId,
+					);
+				} else {
+					this.logger.warn('Thread root event ID not found, sending as regular message');
+					result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+				}
+			}
 
 			await Messages.setFederationEventIdById(message._id, result.eventId);
 

@@ -11,17 +11,16 @@ const logger = new Logger('federation-matrix:message');
 export function message(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
-			logger.info('Received Matrix message event:', {
-				event_id: data.event_id,
-				room_id: data.room_id,
-				sender: data.sender,
-			});
-
 			const message = data.content?.body?.toString();
 			if (!message) {
 				logger.debug('No message found in event content');
 				return;
 			}
+
+			const content = data.content as any;
+			const threadRelation = content?.['m.relates_to'];
+			const isThreadMessage = threadRelation?.rel_type === 'm.thread';
+			const threadRootEventId = isThreadMessage ? threadRelation.event_id : undefined;
 
 			const [userPart, domain] = data.sender.split(':');
 			if (!userPart || !domain) {
@@ -108,20 +107,24 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				}
 			}
 
-			logger.info('Saving federated message:', {
-				fromId: user._id,
-				roomId: internalRoomId,
-				eventId: data.event_id,
-			});
+			let tmid: string | undefined;
+			if (isThreadMessage && threadRootEventId) {
+				const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
+				if (threadRootMessage) {
+					tmid = threadRootMessage._id;
+					logger.debug('Found thread root message:', { tmid, threadRootEventId });
+				} else {
+					logger.warn('Thread root message not found for event:', threadRootEventId);
+				}
+			}
 
 			await Message.saveMessageFromFederation({
 				fromId: user._id,
 				rid: internalRoomId,
 				msg: message,
 				federation_event_id: data.event_id,
+				tmid,
 			});
-
-			logger.debug('Successfully processed Matrix message');
 		} catch (error) {
 			logger.error('Error processing Matrix message:', error);
 		}
