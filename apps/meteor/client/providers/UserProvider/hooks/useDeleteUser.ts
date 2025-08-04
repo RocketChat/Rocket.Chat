@@ -1,7 +1,7 @@
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { Messages } from '../../../../app/models/client';
+import { Messages } from '../../../stores';
 
 export const useDeleteUser = () => {
 	const notify = useStream('notify-logged');
