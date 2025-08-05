@@ -21,7 +21,7 @@ import {
 import { useLocalStorage, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useId } from 'react';
 
 import UserStatusMenu from '../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../lib/constants';
@@ -39,6 +39,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	const initialStatusText = customStatus || userStatusText;
 
 	const t = useTranslation();
+	const modalId = useId();
 	const [statusText, setStatusText] = useState(initialStatusText);
 	const [statusType, setStatusType] = useState(userStatus);
 	const [statusTextError, setStatusTextError] = useState<string | undefined>();
@@ -71,6 +72,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 
 	return (
 		<Modal
+			aria-labelledby={`${modalId}-title`}
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
 				<Box
 					is='form'
@@ -84,15 +86,17 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		>
 			<ModalHeader>
 				<ModalIcon name='info' />
-				<ModalTitle>{t('Edit_Status')}</ModalTitle>
+				<ModalTitle id={`${modalId}-title`}>{t('Edit_Status')}</ModalTitle>
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent fontScale='p2'>
 				<FieldGroup>
 					<Field>
-						<FieldLabel>{t('StatusMessage')}</FieldLabel>
+						<FieldLabel htmlFor={`${modalId}-status-message`}>{t('StatusMessage')}</FieldLabel>
 						<FieldRow>
 							<TextInput
+								id={`${modalId}-status-message`}
+								aria-label={t('StatusMessage')}
 								error={statusTextError}
 								disabled={!allowUserStatusMessageChange}
 								flexGrow={1}
