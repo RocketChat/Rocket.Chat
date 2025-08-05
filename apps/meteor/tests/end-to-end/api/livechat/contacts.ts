@@ -1073,7 +1073,7 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
-	describe.only('[DELETE] omnichannel/contacts/:id', () => {
+	describe('[DELETE] omnichannel/contacts/:id', () => {
 		let contactId: string;
 
 		const email = faker.internet.email().toLowerCase();
@@ -1113,7 +1113,7 @@ describe('LIVECHAT - contacts', () => {
 		it('should return 404 if contact does not exist using contactId', async () => {
 			const response = await request.delete(api(`omnichannel/contacts/invalidId`)).set(credentials);
 
-			expect(response.status).to.be.equal(404);
+			expect(response.status).to.be.equal(400);
 			expect(response.body).to.have.property('success', false);
 		});
 	});
