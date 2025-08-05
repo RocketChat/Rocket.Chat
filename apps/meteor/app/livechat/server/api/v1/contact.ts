@@ -134,7 +134,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'omnichannel/contacts/:id',
-	{ authRequired: true, permissionsRequired: ['update-livechat-contact'] },
+	{ authRequired: true, permissionsRequired: ['delete-livechat-contact'] },
 	{
 		async delete() {
 			check(this.urlParams, {
@@ -142,9 +142,23 @@ API.v1.addRoute(
 			});
 			const { id } = this.urlParams;
 
-			await disableContactById(id);
+			try {
+				await disableContactById(id);
+				return API.v1.success();
+			} catch (error: unknown) {
+				if (!(error instanceof Error)) {
+					return API.v1.failure(error);
+				}
 
-			return API.v1.success();
+				switch (error.message) {
+					case 'error-contact-not-found':
+						return API.v1.notFound();
+					case 'error-contact-disabled':
+						return API.v1.unauthorized();
+					default:
+						return API.v1.failure(error);
+				}
+			}
 		},
 	},
 );
