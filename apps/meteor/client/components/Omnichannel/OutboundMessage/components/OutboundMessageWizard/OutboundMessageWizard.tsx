@@ -13,6 +13,8 @@ import GenericError from '../../../../GenericError';
 import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
 import { useOutboundMessageUpsellModal } from '../../modals';
 import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
+import { useEndpointMutation } from '../../../../../hooks/useEndpointMutation';
+import { formatOutboundMessage } from '../../utils/template';
 
 type OutboundMessageWizardProps = {
 	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId' | 'recipient' | 'sender'>>;
@@ -27,6 +29,10 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	const upsellModal = useOutboundMessageUpsellModal();
 	const hasModule = useHasLicenseModule('outbound-messaging');
 	const isLoadingModule = hasModule === 'loading';
+
+	const sendOutboundMessage = useEndpointMutation('POST', '/v1/omnichannel/outbound/providers/:id/message', {
+		keys: { id: provider?.providerId || '' },
+	});
 
 	const {
 		data: hasProviders = false,
@@ -62,7 +68,35 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	});
 
 	const handleSend = useEffectEvent(async () => {
-		console.log('Message sent with values:', state);
+		if (!provider) {
+			throw new Error(t('Provider_not_found'));
+		}
+
+		if (!template) {
+			throw new Error(t('Template_not_found'));
+		}
+
+		if (!templateParameters) {
+			throw new Error(t('Template_parameters_not_found'));
+		}
+
+		if (!sender) {
+			throw new Error(t('Sender_not_found'));
+		}
+
+		if (!recipient) {
+			throw new Error(t('Recipient_not_found'));
+		}
+
+		const payload = formatOutboundMessage({
+			type: 'template',
+			template,
+			sender,
+			recipient,
+			parameters: templateParameters,
+		});
+
+		sendOutboundMessage.mutate(payload);
 	});
 
 	const handleDirtyStep = useEffectEvent(() => {
