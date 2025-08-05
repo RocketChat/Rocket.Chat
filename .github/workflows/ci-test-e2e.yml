@@ -184,7 +184,7 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          docker compose -f docker-compose-ci.yml up -d rocketchat
+          docker compose -f docker-compose-ci.yml up -d rocketchat varnish
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -221,7 +221,9 @@ jobs:
           done;
 
       - name: Remove unused Docker images
-        run: docker system prune -af
+        run: |
+          docker compose -f docker-compose-ci.yml logs varnish
+          docker system prune -af
 
       - name: E2E Test API
         if: inputs.type == 'api'
@@ -295,7 +297,7 @@ jobs:
 
       - name: Show server logs if E2E test failed
         if: failure() && inputs.release != 'ee'
-        run: docker compose -f docker-compose-ci.yml logs rocketchat
+        run: docker compose -f docker-compose-ci.yml logs
 
       - name: Extract e2e:ee:coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'
