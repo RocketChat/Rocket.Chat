@@ -1,25 +1,26 @@
-import type { IOutboundProviderTemplate } from '@rocket.chat/core-typings';
+import type {
+	IOutboundProviderTemplate,
+	TemplateParameter as CoreTemplateParameter,
+	TemplateComponent,
+	IOutboundMessage,
+} from '@rocket.chat/core-typings';
 
-import type { TemplateParameters } from '../definitions/template';
+import type { ComponentFormat, ComponentType, TemplateParameter, TemplateParameters } from '../definitions/template';
 
 const placeholderPattern = new RegExp('{{(.*?)}}', 'g'); // e.g {{1}} or {{text}}
 
-export const processTemplatePlaceholders = (template: IOutboundProviderTemplate | undefined) => {
-	if (!template) {
+export const processComponentPlaceholders = (components: IOutboundProviderTemplate['components']) => {
+	if (!components.length) {
 		return [];
 	}
 
-	return template.components.flatMap((component) => {
-		const format = component.type === 'HEADER' ? component.format : 'TEXT';
-		return processPlaceholderText(component.text, component.type, format);
+	return components.flatMap((component) => {
+		const format = component.type === 'header' ? component.format : 'TEXT';
+		return processPlaceholderText(component.type, component.text, format);
 	});
 };
 
-export const processPlaceholderText = (
-	text: string | undefined,
-	componentType: IOutboundProviderTemplate['components'][0]['type'],
-	format: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT' = 'TEXT',
-) => {
+export const processPlaceholderText = (componentType: ComponentType, text: string | undefined, format: ComponentFormat = 'TEXT') => {
 	if (!text) {
 		return [];
 	}
@@ -41,12 +42,10 @@ export const replacePlaceholders = (text = '', replacer: (substring: string, ind
 };
 
 export const processComponent = (
-	type: 'HEADER' | 'BODY' | 'FOOTER',
-	template: IOutboundProviderTemplate,
-	parameters?: TemplateParameters,
+	type: ComponentType,
+	components: IOutboundProviderTemplate['components'],
+	parameters?: TemplateParameter[],
 ) => {
-	const { components } = template;
-
 	if (!components.length) {
 		return;
 	}
@@ -57,16 +56,69 @@ export const processComponent = (
 		return;
 	}
 
-	const componentParams = parameters?.[type];
-
-	if (!componentParams?.length) {
+	if (!parameters?.length) {
 		return component;
 	}
 
 	return {
 		...component,
 		text: replacePlaceholders(component.text, (placeholder, index) => {
-			return componentParams[index - 1] || placeholder;
+			const parameter = parameters[index - 1];
+			return parameter ? parameter.value : placeholder;
 		}),
+	};
+};
+
+export const formatParameter = (format: ComponentFormat, value: string): TemplateParameter => {
+	switch (format) {
+		case 'IMAGE':
+		case 'VIDEO':
+		case 'DOCUMENT':
+			return { type: 'media', value };
+		default:
+			return { type: 'text', value };
+	}
+};
+
+export const formatParameterForOutboundMessage = (parameter: TemplateParameter): CoreTemplateParameter => {
+	switch (parameter.type) {
+		case 'media':
+			return { type: 'media', link: parameter.value };
+		default:
+			return { type: 'text', text: parameter.value };
+	}
+};
+
+export const formatParametersToOutboundMessageComponents = (parameters: TemplateParameters): TemplateComponent[] => {
+	return Object.entries(parameters).map(([componentType, parameters]) => ({
+		type: componentType as ComponentType,
+		parameters: parameters.map(formatParameterForOutboundMessage),
+	}));
+};
+
+export const formatOutboundMessage = ({
+	recipient,
+	sender,
+	template,
+	type = 'template',
+	parameters,
+}: {
+	recipient: string;
+	sender: string;
+	template: IOutboundProviderTemplate;
+	type: IOutboundMessage['type'];
+	parameters: TemplateParameters;
+}): IOutboundMessage => {
+	return {
+		to: recipient,
+		type,
+		templateProviderPhoneNumber: sender,
+		template: {
+			name: template.name,
+			language: {
+				code: template.language,
+			},
+			components: formatParametersToOutboundMessageComponents(parameters),
+		},
 	};
 };

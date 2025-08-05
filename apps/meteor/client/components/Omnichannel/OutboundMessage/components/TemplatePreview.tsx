@@ -16,9 +16,10 @@ const TemplatePreview = ({ template, parameters }: TemplatePreviewProps) => {
 	const { t } = useTranslation();
 	const previewId = useId();
 	const [header, body, footer] = useMemo(() => {
-		const header = processComponent('HEADER', template, parameters);
-		const body = processComponent('BODY', template, parameters);
-		const footer = processComponent('FOOTER', template, parameters);
+		const components = template.components || [];
+		const header = processComponent('header', components, parameters?.header || []);
+		const body = processComponent('body', components, parameters?.body || []);
+		const footer = processComponent('footer', components, parameters?.footer || []);
 
 		return [header, body, footer];
 	}, [parameters, template]);
