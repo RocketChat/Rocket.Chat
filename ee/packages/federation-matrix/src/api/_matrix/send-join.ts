@@ -221,10 +221,10 @@ export const getMatrixSendJoinRoutes = (services: HomeserverServices) => {
 	return new Router('/federation').put(
 		'/v2/send_join/:roomId/:stateKey',
 		{
-			params: isSendJoinParamsProps,
-			body: isSendJoinEventProps,
+			params: ajv.compile({type: 'object'}),
+			body: ajv.compile({type: 'object'}),
 			response: {
-				200: isSendJoinResponseProps,
+				200: ajv.compile({type: 'object'}),
 			},
 			tags: ['Federation'],
 			license: ['federation'],

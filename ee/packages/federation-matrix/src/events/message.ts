@@ -1,5 +1,5 @@
 import type { HomeserverEventSignatures } from '@hs/federation-sdk';
-import { Message } from '@rocket.chat/core-services';
+import { Message, Room } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
@@ -9,6 +9,13 @@ import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions } fro
 const logger = new Logger('federation-matrix:message');
 
 export function message(emitter: Emitter<HomeserverEventSignatures>) {
+	// @ts-ignore
+	emitter.on('homeserver.matrix.room.name', async (data) => {
+		const { name,  sender, room_id } = data as unknown as { name: string, sender: string, room_id: string };
+		
+		await Room.saveRoomName(room_id, name, sender);
+		
+	});
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
 			logger.info('Received Matrix message event:', {

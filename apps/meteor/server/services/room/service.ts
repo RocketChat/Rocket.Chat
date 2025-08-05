@@ -1,7 +1,7 @@
 import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
 import { type AtLeast, type IRoom, type IUser, isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import { MatrixBridgedRoom, MatrixBridgedUser, Rooms, Users } from '@rocket.chat/models';
 
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
@@ -12,12 +12,17 @@ import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { createDirectMessage } from '../../methods/createDirectMessage';
+import { saveRoomName } from '../../../app/channel-settings/server';
 import { getFederationVersion } from '../federation/utils';
+import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
+import { addRoomOwner } from '../../methods/addRoomOwner';
+import { addRoomLeader } from '../../methods/addRoomLeader';
+import { addRoomModerator } from '../../methods/addRoomModerator';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
-	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
+	async create(uid: string, params: ICreateRoomParams, donotrecreateforfederation?: boolean): Promise<IRoom> {
 		const { type, name, members = [], readOnly, extraData, options, sidepanel } = params;
 
 		const hasPermission = await Authorization.hasPermission(uid, `create-${type}`);
@@ -31,7 +36,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user, members, false, readOnly, extraData, options, sidepanel) as unknown as IRoom;
+		return createRoom(type, name, user, members, false, readOnly, extraData, options, sidepanel, donotrecreateforfederation) as unknown as IRoom;
 	}
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
@@ -149,10 +154,59 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async beforeNameChange(room: IRoom): Promise<void> {
-		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+		// FederationActions.blockIfRoomFederatedButServiceNotReady(room);
 	}
 
 	async beforeTopicChange(room: IRoom): Promise<void> {
 		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+	}
+	
+	async saveRoomName(roomId: string /* matrixRoomId */, displayName: string, senderId: string /* matrix userId */): Promise<void> {
+		const localUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(senderId);
+		if (!localUserId) {
+			throw new Error('local user mapping for external user not found');
+		}
+		
+		const user = await Users.findOneById(localUserId);
+		if (!user) {
+			throw new Error('local user object not found');
+		}
+		
+		// do the same for roomId
+		const localRoomId = await MatrixBridgedRoom.getLocalRoomId(roomId)
+		if (!localRoomId) {
+			throw new Error('local room mapping for external room not found');
+		}
+		
+		await saveRoomName(localRoomId, displayName, user);
+	}
+	
+	async saveRoomType(roomId: string /* matrixRoomId */, roomType: IRoom['t'], senderId: string /* matrix userId */): Promise<void> {
+		const localRoomId = await MatrixBridgedRoom.getLocalRoomId(roomId);
+		if (!localRoomId) {
+			throw new Error('local room mapping for external room not found');
+		}
+		
+		const localUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(senderId);
+		if (!localUserId) {
+			throw new Error('local user mapping for external user not found');
+		}
+		
+		const user = await Users.findOneById(localUserId);
+		if (!user) {
+			throw new Error('local user object not found');
+		}
+		
+		await saveRoomType(localRoomId, roomType, user);
+	}
+	
+	async addRoomModerator(senderId: string, userId: IUser['_id'], rid: IRoom['_id'], type: 'moderator' | 'owner' | 'leader'): Promise<void> {
+		if (type === 'owner') {
+			await addRoomOwner(senderId, rid, userId);
+		} else if (type === 'leader') {
+			await addRoomLeader(senderId, rid, userId);
+		} else {
+			await addRoomModerator(senderId, rid, userId);
+		}
 	}
 }

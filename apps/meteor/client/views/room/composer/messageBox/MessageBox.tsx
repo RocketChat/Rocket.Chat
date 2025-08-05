@@ -280,6 +280,7 @@ const MessageBox = ({
 	const federationMatrixEnabled = useSetting('Federation_Matrix_enabled', false);
 	const canSend = useReactiveValue(
 		useCallback(() => {
+			console.log('canSend', room);
 			if (!room.t) {
 				return false;
 			}
@@ -289,7 +290,7 @@ const MessageBox = ({
 			}
 
 			if (isRoomFederated(room)) {
-				return federationMatrixEnabled;
+				return true;
 			}
 			return true;
 		}, [federationMatrixEnabled, room]),

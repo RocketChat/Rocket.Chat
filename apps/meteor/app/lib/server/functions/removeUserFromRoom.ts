@@ -10,8 +10,11 @@ import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRo
 import { settings } from '../../../settings/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
+// biome-ignore lint/complexity/useArrowFunction: <explanation>
 export const removeUserFromRoom = async function (rid: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
 	const room = await Rooms.findOneById(rid);
+	
+	console.log('removing from room', room);
 
 	if (!room) {
 		return;
@@ -35,6 +38,8 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
 		projection: { _id: 1 },
 	});
+	
+	console.log('subscription', subscription);
 
 	if (subscription) {
 		const removedUser = user;
@@ -60,6 +65,7 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 	}
 
 	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(rid, user._id);
+	console.log('deletedSubscription', deletedSubscription);
 	if (deletedSubscription) {
 		void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
 	}

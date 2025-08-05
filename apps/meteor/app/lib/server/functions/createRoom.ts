@@ -129,6 +129,7 @@ export const createRoom = async <T extends RoomType>(
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
 	sidepanel?: ICreateRoomParams['sidepanel'],
+	donotrecreateforfederation?: boolean,
 ): Promise<
 	ICreatedRoom & {
 		rid: string;
@@ -275,7 +276,7 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
 	}
 
-	if (shouldBeHandledByFederation && federationVersion === 'native') {
+	if (shouldBeHandledByFederation && federationVersion === 'native' && !donotrecreateforfederation) {
 		await FederationMatrix.createRoom(room, owner, members);
 	}
 

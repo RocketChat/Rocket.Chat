@@ -28,7 +28,7 @@ export interface ICreateRoomParams {
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
-	create(uid: string, params: ICreateRoomParams): Promise<IRoom>;
+	create(uid: string, params: ICreateRoomParams, donotrecreateforfederation?: boolean): Promise<IRoom>;
 	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
 	createDirectMessageWithMultipleUsers(members: string[], creatorId: string): Promise<{ rid: string }>;
 	addUserToRoom(
@@ -58,4 +58,7 @@ export interface IRoomService {
 	beforeUserRemoved(room: IRoom): Promise<void>;
 	beforeNameChange(room: IRoom): Promise<void>;
 	beforeTopicChange(room: IRoom): Promise<void>;
+	saveRoomName(roomId: string, displayName: string, senderId: string): Promise<void>;
+	saveRoomType(roomId: string /* matrixRoomId */, roomType: IRoom['t'], senderId: string /* matrix userId */): Promise<void>;
+	addRoomModerator(sender: string, fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<void>;
 }

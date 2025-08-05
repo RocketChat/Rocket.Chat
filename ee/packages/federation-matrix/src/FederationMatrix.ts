@@ -162,6 +162,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw error;
 		}
 	}
+	
+	// check docs before calling this method
+	async inviteUser(externalUserIdToInvite: string, externalRoomId: string, externalInviterUser: string) {
+		await this.homeserverServices.invite.inviteUserToRoom(externalUserIdToInvite, externalRoomId, externalInviterUser);
+	}
 
 	async sendMessage(message: IMessage, room: IRoom, user: IUser): Promise<void> {
 		try {
@@ -217,7 +222,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						let externalUsernameToInvite = username;
 						const alreadyCreatedLocally = await Users.findOneByUsername(username, { projection: { _id: 1 } });
 						if (alreadyCreatedLocally) {
-							externalUsernameToInvite = `@${username}`;
+							externalUsernameToInvite = username.startsWith('@') ? username : `@${username}`;
 						}
 						await this.homeserverServices.invite.inviteUserToRoom(externalUsernameToInvite, matrixRoomId, inviterUserId);
 						return;
@@ -333,6 +338,25 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw error;
 		}
 	}
+	
+	async updateRoomName(rid: string, displayName: string, senderId: string): Promise<void> {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping room name update');
+			return;
+		}
+
+		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
+		if (!matrixRoomId) {
+			throw new Error(`No Matrix room mapping found for room ${rid}`);
+		}
+		
+		const userId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
+		if (!userId) {
+			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
+			}
+
+		await this.homeserverServices.room.updateRoomName(matrixRoomId, displayName, userId);
+	}
 
 	async getEventById(eventId: string): Promise<any | null> {
 		if (!this.homeserverServices) {
@@ -433,6 +457,31 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		} catch (error) {
 			this.logger.error('Failed to kick user from Matrix room:', error);
 			throw error;
+		}
+	}
+	
+	async setRoomPrivacy(roomId: string, privacy: IRoom['t'], senderId: string): Promise<void> {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping room privacy update');
+			return;
+		}
+		
+		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+		if (!matrixRoomId) {
+			throw new Error(`No local room mapping found for room ${roomId}`);
+		}
+		
+		const matrixSender = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
+		if (!matrixSender) {
+			throw new Error(`No local user mapping found for user ${senderId}`);
+		}
+		
+		if (privacy === 'c') {
+			await this.homeserverServices.room.setRoomPublic(matrixRoomId, matrixSender);
+		} else if (privacy === 'p') {
+			await this.homeserverServices.room.setRoomInviteOnly(matrixRoomId, matrixSender);
+		} else {
+			throw new Error(`Invalid privacy value: ${privacy}`);
 		}
 	}
 }

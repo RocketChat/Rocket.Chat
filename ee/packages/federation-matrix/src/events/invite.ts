@@ -14,7 +14,7 @@ export function invite(emitter: Emitter<HomeserverEventSignatures>) {
 			return;
 		}
 
-		const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+		const internalUsername = data.sender;
 		const localUser = await Users.findOneByUsername(internalUsername);
 		if (localUser) {
 			await Room.addUserToRoom(room.rid, localUser);

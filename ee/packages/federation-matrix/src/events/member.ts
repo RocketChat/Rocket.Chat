@@ -1,4 +1,5 @@
 import type { HomeserverEventSignatures } from '@hs/federation-sdk';
+import { PduJoinRuleEventContent } from '@hs/room';
 import { Room } from '@rocket.chat/core-services';
 import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
@@ -8,6 +9,7 @@ const logger = new Logger('federation-matrix:member');
 
 export function member(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.membership', async (data) => {
+		console.log('membership event', data);
 		try {
 			// Only handle leave events (including kicks)
 			if (data.content.membership !== 'leave') {
@@ -37,6 +39,7 @@ export function member(emitter: Emitter<HomeserverEventSignatures>) {
 			// Check if this is a kick (sender != state_key) or voluntary leave (sender == state_key)
 			if (data.sender === data.state_key) {
 				// Voluntary leave
+				console.log('voluntary leave', room.rid, affectedUser);
 				await Room.removeUserFromRoom(room.rid, affectedUser);
 				logger.info(`User ${affectedUser.username} left room ${room.rid} via Matrix federation`);
 			} else {
@@ -58,4 +61,43 @@ export function member(emitter: Emitter<HomeserverEventSignatures>) {
 			logger.error('Failed to process Matrix membership event:', error);
 		}
 	});
+	
+	// @ts-ignore
+	emitter.on('homeserver.matrix.room.privacy', async (data) => {
+		console.log('room privacy event', data);
+		const { room_id: roomId, privacy, sender } = data as unknown as { room_id: string; privacy: PduJoinRuleEventContent['join_rule']; sender: string };
+
+		await Room.saveRoomType(roomId, privacy === 'public' ? 'c' : 'p', sender)
+	});
+
+	emitter.on('homeserver.matrix.room.power', async (data) => {
+		console.log('room power event', data);
+		const { room_id: roomId, power, sender, user } = data;
+		
+		const localRoomId = await MatrixBridgedRoom.getLocalRoomId(roomId);
+		if (!localRoomId) {
+			logger.warn(`No local room mapping found for room ${roomId}`);
+			return;
+		}
+		
+		const localUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(user);
+		if (!localUserId) {
+			logger.warn(`No local user mapping found for user ${user}`);
+			return;
+		}
+		
+		const localSender = await MatrixBridgedUser.getLocalUserIdByExternalId(sender);	
+		if (!localSender) {
+			logger.warn(`No local user mapping found for sender ${sender}`);
+			return;
+		}
+		
+		if (power === 100) {
+			await Room.addRoomModerator(localSender, localUserId, localRoomId, 'owner');
+		} else if (power === 50) {
+			await Room.addRoomModerator(localSender, localUserId, localRoomId, 'moderator');
+		} else if (power === 0) {
+			// TODO:
+		}
+	})
 }

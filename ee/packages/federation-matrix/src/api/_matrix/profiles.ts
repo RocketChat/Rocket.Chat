@@ -400,10 +400,10 @@ export const getMatrixProfilesRoutes = (services: HomeserverServices) => {
 		.get(
 			'/v1/make_join/:roomId/:userId',
 			{
-				params: isMakeJoinParamsProps,
-				query: isMakeJoinQueryProps,
+				params: ajv.compile({type: 'object'}),
+				query: ajv.compile({type: 'object'}),
 				response: {
-					200: isMakeJoinResponseProps,
+					200: ajv.compile({type: 'object'}),
 				},
 				tags: ['Federation'],
 				license: ['federation'],

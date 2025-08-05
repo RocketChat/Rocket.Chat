@@ -7,6 +7,7 @@ import { afterRemoveFromRoomCallback } from '../../../../../../lib/callbacks/aft
 import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
 import { isFederationEnabled, throwIfFederationNotEnabledOrNotReady, throwIfFederationNotReady } from '../../../utils';
 
+// biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
 export class FederationHooks {
 	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
 		afterLeaveRoomCallback.add(

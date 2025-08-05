@@ -17,4 +17,7 @@ export class UserService extends ServiceClassInternal implements IUserService {
 		const oldestDate = tokens.reverse()[getMaxLoginTokens() - 1];
 		await Users.removeOlderResumeTokensByUserId(uid, oldestDate.when);
 	}
+	
+	async createUser(username: string) {
+	}
 }

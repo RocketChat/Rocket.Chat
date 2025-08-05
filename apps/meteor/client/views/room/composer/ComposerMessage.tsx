@@ -8,6 +8,7 @@ import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import MessageBox from './messageBox/MessageBox';
+import { ConsoleLogger } from '@vector-im/matrix-bot-sdk';
 
 export type ComposerMessageProps = {
 	tmid?: IMessage['_id'];
@@ -26,17 +27,21 @@ export type ComposerMessageProps = {
 
 const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): ReactElement => {
 	const chat = useChat();
+	console.log(chat);
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const composerProps = useMemo(
 		() => ({
 			onJoin: async (): Promise<void> => {
+				console.log('onjoin is being called');
 				try {
+					console.log(chat);
+					console.log(chat?.data);
 					await chat?.data?.joinRoom();
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
-					throw error;
+					// throw error;
 				}
 			},
 

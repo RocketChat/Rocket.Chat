@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { FederationMatrix, Message } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -11,6 +11,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { notifyOnSubscriptionChangedByRoomId } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
+// biome-ignore lint/complexity/useArrowFunction: <explanation>
 export const saveRoomType = async function (
 	rid: string,
 	roomType: IRoom['t'],
@@ -40,6 +41,11 @@ export const saveRoomType = async function (
 		throw new Meteor.Error('error-direct-room', "Can't change type of direct rooms", {
 			function: 'RocketChat.saveRoomType',
 		});
+	}
+
+	// before updating try federation matrix service
+	if (room.federated) {
+		await FederationMatrix.setRoomPrivacy(rid, roomType, user._id);
 	}
 
 	const result = await Promise.all([Rooms.setTypeById(rid, roomType), Subscriptions.updateTypeByRoomId(rid, roomType)]);

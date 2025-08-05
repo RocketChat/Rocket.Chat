@@ -17,7 +17,7 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib
  * This function adds user to the given room.
  * Caution - It does not validates if the user has permission to join room
  */
-export const addUserToRoom = async function (
+export const addUserToRoom = async (
 	rid: string,
 	user: Pick<IUser, '_id'> | string,
 	inviter?: Pick<IUser, '_id' | 'username'>,
@@ -30,7 +30,7 @@ export const addUserToRoom = async function (
 		skipAlertSound?: boolean;
 		createAsHidden?: boolean;
 	} = {},
-): Promise<boolean | undefined> {
+): Promise<boolean | undefined> => {
 	const now = new Date();
 	const room = await Rooms.findOneById(rid);
 

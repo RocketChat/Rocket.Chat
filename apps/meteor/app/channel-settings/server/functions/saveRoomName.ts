@@ -1,4 +1,4 @@
-import { Message, Room } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, Room } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Integrations, Rooms, Subscriptions } from '@rocket.chat/models';
@@ -78,6 +78,7 @@ export async function saveRoomName(
 	let update;
 
 	if (isDiscussion || isRoomFederated(room)) {
+		await FederationMatrix.updateRoomName(rid, displayName, user._id);
 		update = await updateFName(rid, displayName);
 	} else {
 		update = await updateRoomName(rid, displayName, slugifiedRoomName);
