@@ -14,7 +14,7 @@ import { useOutboundMessageUpsellModal } from '../../modals';
 import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
 
 type OutboundMessageWizardProps = {
-	defaultValues?: Partial<SubmitPayload>;
+	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId' | 'recipient' | 'sender'>>;
 };
 
 const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
@@ -59,6 +59,10 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 		console.log('Message sent with values:', state);
 	});
 
+	const handleDirtyStep = useEffectEvent(() => {
+		wizardApi.resetNextSteps();
+	});
+
 	if (isLoadingModule || isLoadingProviders) {
 		return <OutboubdMessageWizardSkeleton />;
 	}
@@ -70,7 +74,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 
 				<Box mbs={16}>
 					<WizardContent id='recipient'>
-						<RecipientStep onSubmit={handleSubmit} />
+						<RecipientStep defaultValues={state} onDirty={handleDirtyStep} onSubmit={handleSubmit} />
 					</WizardContent>
 
 					<WizardContent id='message'>
