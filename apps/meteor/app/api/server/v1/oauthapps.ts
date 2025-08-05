@@ -15,8 +15,6 @@ import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/metho
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
-
-
 type DeleteOAuthAppParams = {
 	appId: string;
 };
@@ -258,49 +256,51 @@ const oauthAppsEndpoints = API.v1
 
 			return API.v1.success(result);
 		},
-	).get(
-	'oauth-apps.get',
-	{
-		authRequired: true,
-		query: isOauthAppsGetParams,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{ oauthApp: IOAuthApps }>({
-				type: 'object',
-				properties: {
-					oauthApp: { anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
-					success: {
-						type: 'boolean',
-						enum: [true],
+	)
+	.get(
+		'oauth-apps.get',
+		{
+			authRequired: true,
+			query: isOauthAppsGetParams,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ oauthApp: IOAuthApps }>({
+					type: 'object',
+					properties: {
+						oauthApp: { anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
 					},
-				},
-				required: ['oauthApp', 'success'],
-				additionalProperties: false,
-			}),
+					required: ['oauthApp', 'success'],
+					additionalProperties: false,
+				}),
+			},
 		},
-	},
 
-	async function action() {
-		const isOAuthAppsManager = await hasPermissionAsync(this.userId, 'manage-oauth-apps');
+		async function action() {
+			const isOAuthAppsManager = await hasPermissionAsync(this.userId, 'manage-oauth-apps');
 
-		const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(
-			this.queryParams,
-			!isOAuthAppsManager ? { projection: { clientSecret: 0 } } : {},
-		);
+			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(
+				this.queryParams,
+				!isOAuthAppsManager ? { projection: { clientSecret: 0 } } : {},
+			);
 
-		if (!oauthApp) {
-			return API.v1.failure('OAuth app not found.');
-		}
+			if (!oauthApp) {
+				return API.v1.failure('OAuth app not found.');
+			}
 
-		if ('appId' in this.queryParams) {
-			apiDeprecationLogger.parameter(this.route, 'appId', '7.0.0', this.response);
-		}
+			if ('appId' in this.queryParams) {
+				apiDeprecationLogger.parameter(this.route, 'appId', '7.0.0', this.response);
+			}
 
-		return API.v1.success({
-			oauthApp,
-		});
-
+			return API.v1.success({
+				oauthApp,
+			});
+		},
+	);
 
 export type OauthAppsEndpoints = ExtractRoutesFromAPI<typeof oauthAppsEndpoints>;
 
