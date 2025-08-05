@@ -20,5 +20,6 @@ export * from './apps/startup';
 export { registerEEBroker } from './startup';
 
 await License.onLicense('federation', async () => {
-	await import('./hooks/federation');
+	const { setupInternalEDUEventListeners } = await import('./hooks/federation');
+	await setupInternalEDUEventListeners();
 });

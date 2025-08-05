@@ -2056,4 +2056,41 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 		return this.updateOne(query, update);
 	}
+
+	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }> {
+		return this.col.aggregate<{ _id: IRoom['_id']; externalRoomId: string }>([
+			{
+				$match: {
+					'u._id': userId,
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'rid',
+					foreignField: '_id',
+					as: 'room',
+				},
+			},
+			{
+				$match: {
+					'room.federated': true,
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_matrix_bridged_rooms',
+					localField: 'rid',
+					foreignField: 'rid',
+					as: 'matrixRoom',
+				},
+			},
+			{
+				$project: {
+					_id: '$rid',
+					externalRoomId: { $arrayElemAt: ['$matrixRoom.mri', 0] },
+				},
+			},
+		]);
+	}
 }
