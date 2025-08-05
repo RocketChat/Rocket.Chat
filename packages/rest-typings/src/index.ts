@@ -235,7 +235,6 @@ export * from './v1/integrations';
 export * from './v1/licenses';
 export * from './v1/omnichannel';
 export * from './v1/oauthapps';
-export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
 export * from './v1/oauthapps/OAuthAppsGetParamsGET';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
