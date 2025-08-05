@@ -1,5 +1,45 @@
 # @rocket.chat/meteor
 
+## 7.8.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36582](https://github.com/RocketChat/Rocket.Chat/pull/36582) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where rooms transferred to a department's queue could get stuck—marked as taken but with no agent assigned.
+
+- ([#36613](https://github.com/RocketChat/Rocket.Chat/pull/36613) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a bug where the `/api/v1/users.update` API call was replacing the entire `customFields` object instead of merging only the specified properties. The fix ensures that when updating custom fields, existing values are preserved while only specified fields are updated or added.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.4
+  - @rocket.chat/rest-typings@7.8.4
+  - @rocket.chat/license@1.0.24
+  - @rocket.chat/omnichannel-services@0.3.30
+  - @rocket.chat/pdf-worker@0.3.12
+  - @rocket.chat/presence@0.2.33
+  - @rocket.chat/api-client@0.2.33
+  - @rocket.chat/apps@0.5.12
+  - @rocket.chat/core-services@0.9.12
+  - @rocket.chat/cron@0.1.33
+  - @rocket.chat/freeswitch@1.2.20
+  - @rocket.chat/fuselage-ui-kit@20.0.4
+  - @rocket.chat/gazzodown@20.0.4
+  - @rocket.chat/http-router@7.8.4
+  - @rocket.chat/model-typings@1.6.12
+  - @rocket.chat/ui-contexts@20.0.4
+  - @rocket.chat/models@1.5.12
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.12
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@16.0.4
+  - @rocket.chat/ui-client@20.0.4
+  - @rocket.chat/ui-video-conf@20.0.4
+  - @rocket.chat/ui-voip@10.0.4
+  - @rocket.chat/web-ui-registration@20.0.4
+  - @rocket.chat/instance-status@0.1.33
+  </details>
+
 ## 7.8.3
 
 ### Patch Changes

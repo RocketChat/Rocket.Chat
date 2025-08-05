@@ -1,5 +1,20 @@
 # @rocket.chat/ddp-streamer
 
+## 0.3.33
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.4
+  - @rocket.chat/rest-typings@7.8.4
+  - @rocket.chat/core-services@0.9.12
+  - @rocket.chat/model-typings@1.6.12
+  - @rocket.chat/models@1.5.12
+  - @rocket.chat/network-broker@0.2.12
+  - @rocket.chat/instance-status@0.1.33
+  </details>
+
 ## 0.3.32
 
 ### Patch Changes
