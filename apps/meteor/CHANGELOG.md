@@ -1,5 +1,42 @@
 # @rocket.chat/meteor
 
+## 7.5.4
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36618](https://github.com/RocketChat/Rocket.Chat/pull/36618) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a bug where the `/api/v1/users.update` API call was replacing the entire `customFields` object instead of merging only the specified properties. The fix ensures that when updating custom fields, existing values are preserved while only specified fields are updated or added.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.4
+  - @rocket.chat/rest-typings@7.5.4
+  - @rocket.chat/license@1.0.14
+  - @rocket.chat/omnichannel-services@0.3.20
+  - @rocket.chat/pdf-worker@0.2.20
+  - @rocket.chat/presence@0.2.23
+  - @rocket.chat/api-client@0.2.23
+  - @rocket.chat/apps@0.4.4
+  - @rocket.chat/core-services@0.8.4
+  - @rocket.chat/cron@0.1.23
+  - @rocket.chat/freeswitch@1.2.10
+  - @rocket.chat/fuselage-ui-kit@17.0.4
+  - @rocket.chat/gazzodown@17.0.4
+  - @rocket.chat/model-typings@1.5.4
+  - @rocket.chat/ui-contexts@17.0.4
+  - @rocket.chat/models@1.4.4
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.1.15
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-avatar@13.0.4
+  - @rocket.chat/ui-client@17.0.4
+  - @rocket.chat/ui-video-conf@17.0.4
+  - @rocket.chat/ui-voip@7.0.4
+  - @rocket.chat/web-ui-registration@17.0.4
+  - @rocket.chat/instance-status@0.1.23
+  </details>
+
 ## 7.5.3
 
 ### Patch Changes

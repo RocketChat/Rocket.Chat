@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-voip",
-	"version": "7.0.3",
+	"version": "7.0.4",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -67,9 +67,9 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-avatar": "13.0.3",
-		"@rocket.chat/ui-client": "17.0.3",
-		"@rocket.chat/ui-contexts": "17.0.3",
+		"@rocket.chat/ui-avatar": "13.0.4",
+		"@rocket.chat/ui-client": "17.0.4",
+		"@rocket.chat/ui-contexts": "17.0.4",
 		"react": "~17.0.2",
 		"react-aria": "~3.23.1",
 		"react-dom": "^17.0.2"

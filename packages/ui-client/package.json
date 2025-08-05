@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "17.0.3",
+	"version": "17.0.4",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -61,8 +61,8 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-avatar": "13.0.3",
-		"@rocket.chat/ui-contexts": "17.0.3",
+		"@rocket.chat/ui-avatar": "13.0.4",
+		"@rocket.chat/ui-contexts": "17.0.4",
 		"react": "*",
 		"react-i18next": "*"
 	},
