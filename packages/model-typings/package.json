@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/model-typings",
-	"version": "1.6.4",
+	"version": "1.6.5",
 	"private": true,
 	"devDependencies": {
 		"@types/node-rsa": "^1.1.4",
