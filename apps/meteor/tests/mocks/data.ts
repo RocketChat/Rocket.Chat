@@ -334,6 +334,20 @@ export function createFakeContactChannel(overrides?: Partial<Serialized<ILivecha
 	};
 }
 
+export function createFakeContact(overrides?: Partial<Serialized<ILivechatContact>>): Serialized<ILivechatContact> {
+	return {
+		_id: faker.string.uuid(),
+		_updatedAt: new Date().toISOString(),
+		name: pullNextVisitorName(),
+		phones: [{ phoneNumber: faker.phone.number() }],
+		emails: [{ address: faker.internet.email() }],
+		unknown: true,
+		channels: [createFakeContactChannel()],
+		createdAt: new Date().toISOString(),
+		...overrides,
+	};
+}
+
 export function createFakeContactWithManagerData(
 	overrides?: Partial<Serialized<ILivechatContactWithManagerData>>,
 ): Serialized<ILivechatContactWithManagerData> {
@@ -347,20 +361,6 @@ export function createFakeContactWithManagerData(
 			username: faker.internet.userName(),
 			...contactManagerOverwrites,
 		},
-	};
-}
-
-export function createFakeContact(overrides?: Partial<Serialized<ILivechatContact>>): Serialized<ILivechatContact> {
-	return {
-		_id: faker.string.uuid(),
-		_updatedAt: new Date().toISOString(),
-		name: pullNextVisitorName(),
-		phones: [{ phoneNumber: faker.phone.number() }],
-		emails: [{ address: faker.internet.email() }],
-		unknown: true,
-		channels: [createFakeContactChannel()],
-		createdAt: new Date().toISOString(),
-		...overrides,
 	};
 }
 
