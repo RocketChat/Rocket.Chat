@@ -131,11 +131,11 @@ export class AdminFlextabUsers {
 	getUserRowByUsername(username: string): Locator {
 		return this.page.getByRole('link', { name: username });
 	}
-
+	
 	async openUserActionMenu(username: string): Promise<void> {
 		await this.getUserRowByUsername(username).getByRole('button', { name: 'More actions' }).click();
-  }
-  
+	}
+
 	getCustomField(fieldName: string): Locator {
 		return this.page.getByRole('textbox', { name: fieldName });
 	}
