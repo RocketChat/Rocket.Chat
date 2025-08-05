@@ -2,9 +2,9 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 
-import { Subscriptions } from '../../../../../app/models/client';
 import { useSortQueryOptions } from '../../../../hooks/useSortQueryOptions';
-import { applyQueryOptions } from '../../../../lib/cachedCollections';
+import { applyQueryOptions } from '../../../../lib/cachedStores';
+import { Subscriptions } from '../../../../stores';
 
 export const useTeamsListChildrenUpdate = (
 	parentRid: string,

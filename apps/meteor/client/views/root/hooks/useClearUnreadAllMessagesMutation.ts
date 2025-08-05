@@ -2,7 +2,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseMutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { Subscriptions } from '../../../../app/models/client';
+import { Subscriptions } from '../../../stores';
 
 export const useClearUnreadAllMessagesMutation = (options?: Omit<UseMutationOptions<void, unknown, void, unknown>, 'mutationFn'>) => {
 	const readSubscription = useEndpoint('POST', '/v1/subscriptions.read');
