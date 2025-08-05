@@ -1,27 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import page from 'page';
 
+import type { Options } from './page';
+import page, { Context } from './page';
 import type { RouteOptions } from './route';
 import Route from './route';
-
-declare global {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace PageJS {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		interface Static {
-			dispatch(ctx: Context): void;
-			callbacks: [];
-			exits: [];
-		}
-	}
-}
 
 export type Current = Readonly<{
 	path: string;
 	params: Map<string, string>;
 	route: Route;
-	context: PageJS.Context;
+	context: Context;
 	oldRoute: Route | undefined;
 	queryParams: URLSearchParams;
 }>;
@@ -100,9 +89,7 @@ class Router {
 	}
 
 	get _page() {
-		return page as typeof page &
-			// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-			typeof import('page');
+		return Object.assign(page, { Context });
 	}
 
 	route(pathDef: string, options: RouteOptions) {
@@ -113,7 +100,7 @@ class Router {
 		const route = new Route(pathDef, options);
 
 		// calls when the page route being activates
-		route._actionHandle = (context: PageJS.Context) => {
+		route._actionHandle = (context: Context) => {
 			const oldRoute = this._current?.route;
 			this._oldRouteChain.push(oldRoute);
 
@@ -249,16 +236,16 @@ class Router {
 		// since we use redirect when we are talking about withReplaceState
 		this._page.show = ((original) => (path) => {
 			if (!path || (!this.env.reload.get() && this._current?.path === path)) {
-				return;
+				return undefined as unknown as Context;
 			}
 			const pathParts = path.split('?');
 			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
-			original.call(this, pathParts.join('?'));
+			return original.call(this, pathParts.join('?'));
 		})(this._page.show);
 
 		this._page.replace = ((original) => (path, state?, dispatch?, push?) => {
 			if (!path || (!this.env.reload.get() && this._current?.path === path)) {
-				return undefined as unknown as PageJS.Context;
+				return undefined as unknown as Context;
 			}
 			const pathParts = path.split('?');
 			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
@@ -271,7 +258,7 @@ class Router {
 		// we are doing a hack. see .path()
 		this._page.base(this._basePath);
 
-		const pageOptions: Partial<PageJS.Options> = Object.assign(
+		const pageOptions: Partial<Options> = Object.assign(
 			{
 				click: true,
 				popstate: true,

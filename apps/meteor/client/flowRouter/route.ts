@@ -1,5 +1,6 @@
 import { Tracker } from 'meteor/tracker';
 
+import type { Callback } from './page';
 import type { Current } from './router';
 
 export type RouteOptions = {
@@ -50,7 +51,7 @@ class Route {
 		}
 	}
 
-	_actionHandle: PageJS.Callback;
+	_actionHandle: Callback;
 }
 
 export default Route;
