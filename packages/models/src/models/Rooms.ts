@@ -97,6 +97,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 			{ key: { t: 1, ts: 1 } },
 			{
+				key: { federated: 1 },
+				sparse: true,
+			},
+			{
 				key: {
 					'usersWaitingForE2EKeys.userId': 1,
 				},
