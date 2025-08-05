@@ -183,3 +183,31 @@ test.describe.serial('feature example', ({ api}) => {
     });
 })
 ```
+
+## General recommendations
+
+### Use `test.describe` for grouping tests
+It can be used to group related tests into a test suite. It provides a way to organize tests logically and improve the readability and maintainability of your test code.
+```ts
+test.describe('Feature Test', () => {
+  test('should show feature test', async ({ api}) => {
+    // do some tests
+  });
+});
+```
+
+### Use `test.step` for grouping steps
+Enhances test readability and provides more detailed information in test reports
+```ts
+test.describe('Feature Test', () => {
+  test.step('should show feature test', async ({ api}) => {
+    // do some tests
+  });
+});
+```
+
+### Big test files should not be `.serial`:
+- Ok for tests with very few steps, when steps have dependencies on each other, you can simulate the user flow sequentially.
+- Avoid chaining big tests with `test.serial` - dependant steps make it harder to debug and/or make small changes
+> If you are changing something on the 34th step, you would have to run the whole test suite multiple times during development, instead of olny running the test step in question.
+
