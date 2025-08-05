@@ -152,9 +152,9 @@ API.v1.addRoute(
 
 				switch (error.message) {
 					case 'error-contact-not-found':
-						return API.v1.notFound();
-					case 'error-contact-disabled':
-						return API.v1.unauthorized();
+						return API.v1.notFound(error.message);
+					case 'error-contact-removal-disabled':
+						return API.v1.unauthorized(error.message);
 					default:
 						return API.v1.failure(error);
 				}

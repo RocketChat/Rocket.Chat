@@ -1087,7 +1087,8 @@ describe('LIVECHAT - contacts', () => {
 		};
 
 		before(async () => {
-			await updatePermission('update-livechat-contact', ['admin']);
+			await updateSetting('Omnichannel_enable_contact_removal', true);
+			await updatePermission('delete-livechat-contact', ['admin']);
 			const { body } = await request
 				.post(api('omnichannel/contacts'))
 				.set(credentials)
@@ -1100,7 +1101,7 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		after(async () => {
-			await restorePermissionToRoles('update-livechat-contact');
+			await restorePermissionToRoles('delete-livechat-contact');
 		});
 
 		it('should be able to disable a contact by its id', async () => {
@@ -1110,10 +1111,28 @@ describe('LIVECHAT - contacts', () => {
 			expect(response.body).to.have.property('success', true);
 		});
 
-		it('should return 404 if contact does not exist using contactId', async () => {
+		it('should return 404 if contact is not found', async () => {
 			const response = await request.delete(api(`omnichannel/contacts/invalidId`)).set(credentials);
 
-			expect(response.status).to.be.equal(400);
+			expect(response.status).to.be.equal(404);
+			expect(response.body).to.have.property('success', false);
+		});
+
+		it("should return an error if user doesn't have 'delete-livechat-contact' permission", async () => {
+			await removePermissionFromAllRoles('delete-livechat-contact');
+
+			const response = await request.delete(api(`omnichannel/contacts/invalidId`)).set(credentials);
+
+			expect(response.status).to.be.equal(403);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+		});
+
+		it('should return an error if contact removal setting is disabled', async () => {
+			await updateSetting('Omnichannel_enable_contact_removal', false);
+			const response = await request.delete(api(`omnichannel/contacts/invalidId`)).set(credentials);
+
+			expect(response.status).to.be.equal(403);
 			expect(response.body).to.have.property('success', false);
 		});
 	});
