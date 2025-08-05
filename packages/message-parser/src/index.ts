@@ -552,9 +552,11 @@ const parseItalicMarkup = (
 
   // Check word boundaries for emphasis markers
   // Opening delimiter should be at word boundary (start of string, whitespace, punctuation, or other markup chars)
-  // But don't treat _ as word boundary since it can be part of variable names, etc.
+  // Special case: allow consecutive italics like "_text__next_" where double underscore can follow single underscore
   const prevChar = i > 0 ? text[i - 1] : '';
-  const atStartWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(prevChar);
+  const followingChar = i + 1 < text.length ? text[i + 1] : '';
+  const atStartWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(prevChar) || 
+    (prevChar === '_' && followingChar === '_');
   
   if (!atStartWordBoundary) {
     return null; // Not at a word boundary, don't treat as emphasis
