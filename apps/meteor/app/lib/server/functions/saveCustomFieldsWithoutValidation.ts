@@ -29,8 +29,6 @@ export const saveCustomFieldsWithoutValidation = async function (userId: string,
 
 	const updater = Users.getUpdater();
 
-	updater.set('customFields', customFields);
-
 	// add modified records to updater
 	Object.keys(customFields).forEach((fieldName) => {
 		// @ts-expect-error TODO `Updater.set` does not support `customFields.${fieldName}` syntax
