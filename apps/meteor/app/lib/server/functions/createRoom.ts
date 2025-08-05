@@ -7,6 +7,7 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
+import { setupTypingEventListenerForRoom } from '../../../../ee/server/hooks/federation';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
@@ -274,7 +275,9 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	if (shouldBeHandledByFederation && federationVersion === 'native') {
+		// TODO: move this to the hooks folder
 		await FederationMatrix.createRoom(room, owner, members);
+		setupTypingEventListenerForRoom(room._id);
 	}
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
