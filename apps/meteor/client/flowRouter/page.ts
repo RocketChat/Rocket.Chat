@@ -27,6 +27,100 @@ let running: boolean;
  */
 let prevContext: Context | undefined;
 
+/**
+ * Routes are passed Context objects, these may be used to share state, for example ctx.user =, as well as the history "state" ctx.state that the pushState API provides.
+ */
+class Context {
+	/**
+	 *  Pathname including the "base" (if any) and query string "/admin/login?foo=bar".
+	 */
+	canonicalPath: string;
+
+	/**
+	 *  Pathname and query string "/login?foo=bar".
+	 */
+	path: string;
+
+	/**
+	 *  Query string void of leading ? such as "foo=bar", defaults to "".
+	 */
+	querystring: string;
+
+	/**
+	 *  The pathname void of query string "/login".
+	 */
+	pathname: string;
+
+	/**
+	 *  The pushState state object.
+	 */
+	state: State;
+
+	/**
+	 * The pushState title.
+	 */
+	title: string;
+
+	/**
+	 * The parameters from the url, e.g. /user/:id => Context.params.id
+	 */
+	params: Record<string, string>;
+
+	init: boolean | undefined;
+
+	hash: string;
+
+	/**
+	 * Initialize a new "request" `Context`
+	 * with the given `path` and optional initial `state`.
+	 *
+	 * @constructor
+	 * @api public
+	 */
+	constructor(path: string, state?: State) {
+		const pageBase = getBase();
+		if (path[0] === '/' && path.indexOf(pageBase) !== 0) path = `${pageBase}${path}`;
+		const i = path.indexOf('?');
+
+		this.canonicalPath = path;
+		this.path = path.replace(pageBase, '') || '/';
+
+		this.title = document.title;
+		this.state = Object.assign(state || {}, { path });
+		this.querystring = ~i ? decodeURLEncodedURIComponent(path.slice(i + 1)) : '';
+		this.pathname = decodeURLEncodedURIComponent(~i ? path.slice(0, i) : path);
+		this.params = {};
+
+		// fragment
+		this.hash = '';
+		if (!~this.path.indexOf('#')) return;
+		const parts = this.path.split('#');
+		this.path = this.pathname = parts[0];
+		this.hash = decodeURLEncodedURIComponent(parts[1]) || '';
+		this.querystring = this.querystring.split('#')[0];
+	}
+
+	/**
+	 * Push state.
+	 *
+	 * @api private
+	 */
+	pushState() {
+		history.pushState(this.state, this.title, this.canonicalPath);
+	}
+
+	/**
+	 * Save the context state.
+	 *
+	 * @api public
+	 */
+	save() {
+		if (location.protocol !== 'file:') {
+			history.replaceState(this.state, this.title, this.canonicalPath);
+		}
+	}
+}
+
 class Page {
 	/**
 	 * Callback functions.
@@ -184,100 +278,6 @@ function decodeURLEncodedURIComponent(val: string): string {
 		return val;
 	}
 	return decodeURIComponent(val.replace(/\+/g, ' '));
-}
-
-/**
- * Routes are passed Context objects, these may be used to share state, for example ctx.user =, as well as the history "state" ctx.state that the pushState API provides.
- */
-class Context {
-	/**
-	 *  Pathname including the "base" (if any) and query string "/admin/login?foo=bar".
-	 */
-	canonicalPath: string;
-
-	/**
-	 *  Pathname and query string "/login?foo=bar".
-	 */
-	path: string;
-
-	/**
-	 *  Query string void of leading ? such as "foo=bar", defaults to "".
-	 */
-	querystring: string;
-
-	/**
-	 *  The pathname void of query string "/login".
-	 */
-	pathname: string;
-
-	/**
-	 *  The pushState state object.
-	 */
-	state: State;
-
-	/**
-	 * The pushState title.
-	 */
-	title: string;
-
-	/**
-	 * The parameters from the url, e.g. /user/:id => Context.params.id
-	 */
-	params: Record<string, string>;
-
-	init: boolean | undefined;
-
-	hash: string;
-
-	/**
-	 * Initialize a new "request" `Context`
-	 * with the given `path` and optional initial `state`.
-	 *
-	 * @constructor
-	 * @api public
-	 */
-	constructor(path: string, state?: State) {
-		const pageBase = getBase();
-		if (path[0] === '/' && path.indexOf(pageBase) !== 0) path = `${pageBase}${path}`;
-		const i = path.indexOf('?');
-
-		this.canonicalPath = path;
-		this.path = path.replace(pageBase, '') || '/';
-
-		this.title = document.title;
-		this.state = Object.assign(state || {}, { path });
-		this.querystring = ~i ? decodeURLEncodedURIComponent(path.slice(i + 1)) : '';
-		this.pathname = decodeURLEncodedURIComponent(~i ? path.slice(0, i) : path);
-		this.params = {};
-
-		// fragment
-		this.hash = '';
-		if (!~this.path.indexOf('#')) return;
-		const parts = this.path.split('#');
-		this.path = this.pathname = parts[0];
-		this.hash = decodeURLEncodedURIComponent(parts[1]) || '';
-		this.querystring = this.querystring.split('#')[0];
-	}
-
-	/**
-	 * Push state.
-	 *
-	 * @api private
-	 */
-	pushState() {
-		history.pushState(this.state, this.title, this.canonicalPath);
-	}
-
-	/**
-	 * Save the context state.
-	 *
-	 * @api public
-	 */
-	save() {
-		if (location.protocol !== 'file:') {
-			history.replaceState(this.state, this.title, this.canonicalPath);
-		}
-	}
 }
 
 class Route {
