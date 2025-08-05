@@ -476,7 +476,7 @@ test.describe('SAML', () => {
 		await page2.close();
 	});
 
-	test('Login - User without username can modify it when username changes are enabled', async ({ page, api }) => {
+	test('Login - User without username can set initial username during first login', async ({ page, api }) => {
 		await test.step('expect successful login to show username selection screen', async () => {
 			await poRegistration.btnLoginWithSaml.click();
 			await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
@@ -486,7 +486,7 @@ test.describe('SAML', () => {
 			await page.locator('role=button[name="Login"]').click();
 		});
 
-		await test.step('expect to be able to modify the suggested username and submit', async () => {
+		await test.step('expect to be able to set the initial username and submit', async () => {
 			await expect(poRegistration.username).toBeVisible();
 
 			await poRegistration.username.fill('custom_saml_username2');
@@ -508,43 +508,45 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test.fail('Login - User without username chooses custom one when username changes are disabled', async ({ page, api }) => {
-		await test.step('configure settings for username selection test', async () => {
+	test.describe('Login - Username selection when username allow change is disabled', () => {
+		test.beforeAll(async ({ api }) => {
 			await expect((await setSettingValueById(api, 'Accounts_AllowUsernameChange', false)).status()).toBe(200);
 		});
 
-		await test.step('expect successful login without username to show username selection screen', async () => {
-			await poRegistration.btnLoginWithSaml.click();
-			await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
-
-			await page.getByLabel('Username').fill('samlusernoname');
-			await page.getByLabel('Password').fill('password');
-			await page.locator('role=button[name="Login"]').click();
-		});
-
-		await test.step('expect to be able to modify the suggested username and submit', async () => {
-			await expect(poRegistration.username).toBeVisible();
-
-			await poRegistration.username.fill('custom_saml_username');
-
-			await poRegistration.btnRegisterConfirmUsername.click();
-
-			await expect(page).toHaveURL('/home');
-			await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
-		});
-
-		await test.step('expect user data to have been created with the custom username', async () => {
-			const user = await getUserInfo(api, 'custom_saml_username');
-
-			expect(user).toBeDefined();
-			expect(user?.username).toBe('custom_saml_username');
-			expect(user?.name).toBe('Saml User No Username');
-			expect(user?.emails).toBeDefined();
-			expect(user?.emails?.[0].address).toBe('samlusernoname@example.com');
-		});
-
-		await test.step('restore default setting', async () => {
+		test.afterAll(async ({ api }) => {
 			await expect((await setSettingValueById(api, 'Accounts_AllowUsernameChange', true)).status()).toBe(200);
+		});
+
+		test.fail('Login - User without username can set initial username when username changes are disabled', async ({ page, api }) => {
+			await test.step('expect successful login without username to show username selection screen', async () => {
+				await poRegistration.btnLoginWithSaml.click();
+				await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+				await page.getByLabel('Username').fill('samlusernoname');
+				await page.getByLabel('Password').fill('password');
+				await page.locator('role=button[name="Login"]').click();
+			});
+
+			await test.step('expect to be able to set the initial username and submit', async () => {
+				await expect(poRegistration.username).toBeVisible();
+
+				await poRegistration.username.fill('custom_saml_username');
+
+				await poRegistration.btnRegisterConfirmUsername.click();
+
+				await expect(page).toHaveURL('/home');
+				await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
+			});
+
+			await test.step('expect user data to have been created with the custom username', async () => {
+				const user = await getUserInfo(api, 'custom_saml_username');
+
+				expect(user).toBeDefined();
+				expect(user?.username).toBe('custom_saml_username');
+				expect(user?.name).toBe('Saml User No Username');
+				expect(user?.emails).toBeDefined();
+				expect(user?.emails?.[0].address).toBe('samlusernoname@example.com');
+			});
 		});
 	});
 
