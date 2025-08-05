@@ -188,9 +188,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			if (!message.tmid) {
 				result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
-			}
-
-			if (message.tmid) {
+			} else {
 				const threadRootMessage = await Messages.findOneById(message.tmid);
 				const threadRootEventId = threadRootMessage?.federation?.eventId;
 
@@ -216,6 +214,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					this.logger.warn('Thread root event ID not found, sending as regular message');
 					result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
 				}
+			}
+
+			if (!result) {
+				throw new Error('Failed to send message to Matrix - no result returned');
 			}
 
 			await Messages.setFederationEventIdById(message._id, result.eventId);
