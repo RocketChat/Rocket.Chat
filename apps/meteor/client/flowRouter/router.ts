@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import type { Options } from './page';
-import page, { Context } from './page';
+import type { Context } from './page';
+import page from './page';
 import type { RouteOptions } from './route';
 import Route from './route';
 
@@ -88,9 +88,7 @@ class Router {
 		return currentRoute.watchPathChange.call(currentRoute);
 	}
 
-	get _page() {
-		return Object.assign(page, { Context });
-	}
+	readonly _page = page;
 
 	route(pathDef: string, options: RouteOptions) {
 		if (!/^\//.test(pathDef) && pathDef !== '*') {
@@ -203,7 +201,7 @@ class Router {
 		if (!reload && path === this._current?.path) return;
 
 		try {
-			this._page(path);
+			page.show(path);
 		} catch (e) {
 			Meteor._debug('Malformed URI!', path, e);
 		}
@@ -213,12 +211,7 @@ class Router {
 		return this._current;
 	}
 
-	initialize(
-		options: {
-			hashbang?: boolean;
-			page?: { click: boolean };
-		} = {},
-	) {
+	initialize() {
 		if (this._initialized) {
 			throw new Error('FlowRouter is already initialized');
 		}
@@ -234,43 +227,31 @@ class Router {
 		//
 		// we need override both show, replace to make this work
 		// since we use redirect when we are talking about withReplaceState
-		this._page.show = ((original) => (path) => {
+		page.show = ((original) => (path) => {
 			if (!path || (!this.env.reload.get() && this._current?.path === path)) {
 				return undefined as unknown as Context;
 			}
 			const pathParts = path.split('?');
 			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
 			return original.call(this, pathParts.join('?'));
-		})(this._page.show);
+		})(page.show);
 
-		this._page.replace = ((original) => (path, state?, dispatch?, push?) => {
+		page.replace = ((original) => (path, state?, dispatch?, push?) => {
 			if (!path || (!this.env.reload.get() && this._current?.path === path)) {
 				return undefined as unknown as Context;
 			}
 			const pathParts = path.split('?');
 			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
 			return original.call(this, pathParts.join('?'), state, dispatch, push);
-		})(this._page.replace);
+		})(page.replace);
 
 		// this is very ugly part of pagejs and it does decoding few times
 		// in unpredicatable manner. See #168
 		// this is the default behaviour and we need keep it like that
 		// we are doing a hack. see .path()
-		this._page.base(this._basePath);
+		page.setBase(this._basePath);
 
-		const pageOptions: Partial<Options> = Object.assign(
-			{
-				click: true,
-				popstate: true,
-				// dispatch: false, // not supported by FlowRouter
-				hashbang: !!options.hashbang,
-				decodeURLComponents: true,
-				window,
-			},
-			options.page || {},
-		);
-
-		this._page(pageOptions);
+		page.start();
 		this._initialized = true;
 	}
 
@@ -382,20 +363,20 @@ class Router {
 	}
 
 	_updateCallbacks() {
-		this._page.callbacks = [];
-		this._page.exits = [];
+		page.callbacks = [];
+		page.exits = [];
 		let catchAll: Route | null = null;
 
 		for (const route of this._routes) {
 			if (route.pathDef === '*') {
 				catchAll = route;
 			} else {
-				this._page(route.pathDef, route._actionHandle);
+				page.registerRoute(route.pathDef, route._actionHandle);
 			}
 		}
 
 		if (catchAll) {
-			this._page(catchAll.pathDef, catchAll._actionHandle);
+			page.registerRoute(catchAll.pathDef, catchAll._actionHandle);
 		}
 	}
 }

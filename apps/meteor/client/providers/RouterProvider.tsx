@@ -127,12 +127,7 @@ const updateFlowRouter = () => {
 		return;
 	}
 
-	FlowRouter.initialize({
-		hashbang: false,
-		page: {
-			click: true,
-		},
-	});
+	FlowRouter.initialize();
 };
 
 const defineRoutes = (routes: RouteObject[]) => {

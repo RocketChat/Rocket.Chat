@@ -9,21 +9,17 @@ export type RouteOptions = {
 };
 
 class Route {
-	readonly options: RouteOptions;
-
-	readonly pathDef: string;
+	private _pathChangeDep = new Tracker.Dependency();
 
 	private readonly _action: () => void | Promise<void>;
 
-	private _pathChangeDep: Tracker.Dependency;
-
 	readonly name: string | undefined;
 
-	constructor(pathDef: string, options: RouteOptions = {}) {
-		this.options = options;
-		this.pathDef = pathDef;
+	constructor(
+		public readonly pathDef: string,
+		public readonly options: RouteOptions = {},
+	) {
 		this._action = options.action ?? (() => undefined);
-		this._pathChangeDep = new Tracker.Dependency();
 		this.name = options.name;
 	}
 
