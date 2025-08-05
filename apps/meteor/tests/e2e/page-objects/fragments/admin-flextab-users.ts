@@ -15,6 +15,10 @@ export class AdminFlextabUsers {
 		return this.page.locator('role=button[name="Add user"]');
 	}
 
+	get btnSaveUser(): Locator {
+		return this.page.locator('role=button[name="Save user"]');
+	}
+
 	get btnMoreActions(): Locator {
 		return this.page.locator('role=button[name="More"]');
 	}
@@ -130,5 +134,9 @@ export class AdminFlextabUsers {
 
 	async openUserActionMenu(username: string): Promise<void> {
 		await this.getUserRowByUsername(username).getByRole('button', { name: 'More actions' }).click();
+  }
+  
+	getCustomField(fieldName: string): Locator {
+		return this.page.getByRole('textbox', { name: fieldName });
 	}
 }

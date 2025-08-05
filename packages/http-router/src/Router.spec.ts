@@ -207,12 +207,12 @@ describe('Router', () => {
 			const invalidResponse = await request(app).post('/api/validate-body').send({ name: 'John' });
 
 			expect(invalidResponse.status).toBe(400);
-			expect(invalidResponse.body).toHaveProperty('errorType', 'error-invalid-params');
+			expect(invalidResponse.body).toHaveProperty('errorType', 'invalid-params');
 
 			const invalidTypeResponse = await request(app).post('/api/validate-body').send({ name: 'John', age: 'thirty' });
 
 			expect(invalidTypeResponse.status).toBe(400);
-			expect(invalidTypeResponse.body).toHaveProperty('errorType', 'error-invalid-params');
+			expect(invalidTypeResponse.body).toHaveProperty('errorType', 'invalid-params');
 		});
 
 		it('should validate response body in test mode', async () => {
@@ -584,7 +584,7 @@ describe('Router', () => {
 		expect(response.body).toHaveProperty('error', "must have required property 'customProperty'");
 	});
 
-	it('should fail if the body response is not valid', async () => {
+	it('should fail if the body response has additional properties', async () => {
 		process.env.NODE_ENV = 'test';
 		process.env.TEST_MODE = 'true';
 		const ajv = new Ajv();
@@ -616,9 +616,10 @@ describe('Router', () => {
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toHaveProperty(
 			'error',
-			'Invalid response for endpoint GET - http://localhost/api/test. Error: must NOT have additional properties',
+			'Invalid response for endpoint GET - http://localhost/api/test. Error: must NOT have additional properties (additionalProperty: asda)',
 		);
 	});
+
 	it('middleware should be applied only on the right path', async () => {
 		const ajv = new Ajv();
 		const app = express();
