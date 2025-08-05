@@ -425,22 +425,29 @@ const parseBoldMarkup = (
         
         // Add the bold content (double asterisk style)
         const nestedContent = parseInlineContent(content, options);
-        const validContent = nestedContent.filter(
-          (
-            token,
-          ): token is
-            | AST.MarkupExcluding<AST.Bold>
-            | AST.Link
-            | AST.Emoji
-            | AST.UserMention
-            | AST.ChannelMention
-            | AST.InlineCode =>
-            token.type !== 'BOLD' &&
-            token.type !== 'TIMESTAMP' &&
-            token.type !== 'IMAGE' &&
-            token.type !== 'COLOR' &&
-            token.type !== 'INLINE_KATEX',
-        );
+        const validContent: (AST.MarkupExcluding<AST.Bold> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] = [];
+        
+        for (const token of nestedContent) {
+          if (token.type === 'BOLD' || 
+              token.type === 'TIMESTAMP' || 
+              token.type === 'IMAGE' || 
+              token.type === 'COLOR' || 
+              token.type === 'INLINE_KATEX') {
+            // Convert filtered tokens to plain text
+            if (token.type === 'TIMESTAMP') {
+              // Convert timestamp back to its original text format
+              // Only include format if it's not the default 't'
+              const format = token.value.format && token.value.format !== 't' ? `:${token.value.format}` : '';
+              validContent.push(ast.plain(`<t:${token.value.timestamp}${format}>`));
+            } else {
+              // For other filtered tokens, convert to plain text representation
+              // This is a fallback - ideally we'd have the original text
+              validContent.push(ast.plain('[unsupported content]'));
+            }
+          } else {
+            validContent.push(token);
+          }
+        }
         result.push(ast.bold(validContent));
         
         // Add trailing asterisk if this was ***Hello*** case
@@ -514,23 +521,29 @@ const parseBoldMarkup = (
     }
     
     const nestedContent = parseInlineContent(content, options);
-    // Filter to only valid bold content types
-    const validContent = nestedContent.filter(
-      (
-        token,
-      ): token is
-        | AST.MarkupExcluding<AST.Bold>
-        | AST.Link
-        | AST.Emoji
-        | AST.UserMention
-        | AST.ChannelMention
-        | AST.InlineCode =>
-        token.type !== 'BOLD' &&
-        token.type !== 'TIMESTAMP' &&
-        token.type !== 'IMAGE' &&
-        token.type !== 'COLOR' &&
-        token.type !== 'INLINE_KATEX',
-    );
+    // Filter to only valid bold content types, converting filtered tokens to plain text
+    const validContent: (AST.MarkupExcluding<AST.Bold> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] = [];
+    
+    for (const token of nestedContent) {
+      if (token.type === 'BOLD' || 
+          token.type === 'TIMESTAMP' || 
+          token.type === 'IMAGE' || 
+          token.type === 'COLOR' || 
+          token.type === 'INLINE_KATEX') {
+        // Convert filtered tokens to plain text
+        if (token.type === 'TIMESTAMP') {
+          // Convert timestamp back to its original text format
+          // Only include format if it's not the default 't'
+          const format = token.value.format && token.value.format !== 't' ? `:${token.value.format}` : '';
+          validContent.push(ast.plain(`<t:${token.value.timestamp}${format}>`));
+        } else {
+          // For other filtered tokens, convert to plain text representation
+          validContent.push(ast.plain('[unsupported content]'));
+        }
+      } else {
+        validContent.push(token);
+      }
+    }
     return {
       tokens: [ast.bold(validContent)],
       nextIndex: endIndex + delimiterLength,
