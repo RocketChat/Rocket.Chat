@@ -6,6 +6,10 @@ addMigration({
 	version: 319,
 	name: 'Remove "pdfTranscriptRequested" index from LivechatRooms collection',
 	async up() {
-		await LivechatRooms.col.dropIndex('pdfTranscriptRequested_1');
+		try {
+			await LivechatRooms.col.dropIndex('pdfTranscriptRequested_1');
+		} catch {
+			console.error('Error dropping index');
+		}
 	},
 });
