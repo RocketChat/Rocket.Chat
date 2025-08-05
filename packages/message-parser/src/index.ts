@@ -364,14 +364,13 @@ const getEmoticonAt = (text: string, position: number): { emoticon: string; leng
   
   for (const emoticon of sortedEmoticons) {
     if (text.slice(position, position + emoticon.length) === emoticon) {
-      // Check word boundaries - emoticons should be surrounded by whitespace or punctuation
+      // Check word boundaries - emoticons should be separated by whitespace
       const prevChar = position > 0 ? text[position - 1] : '';
       const nextChar = position + emoticon.length < text.length ? text[position + emoticon.length] : '';
       
-      // Boundary check with explicit space support - include * and _ as valid boundaries for emphasis markers
-      // Also allow emoticons to follow other emoticons by including ) as a valid boundary
-      const prevBoundary = position === 0 || /[\s\n\r\t\(\)\[\]{}.,;!?*_ ]/.test(prevChar);
-      const nextBoundary = position + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;!?*_: ]/.test(nextChar);
+      // Boundary check: emoticons should be separated by whitespace from other content
+      const prevBoundary = position === 0 || /\s/.test(prevChar);
+      const nextBoundary = position + emoticon.length >= text.length || /\s/.test(nextChar);
       
       if (prevBoundary && nextBoundary) {
         return { emoticon, length: emoticon.length };
@@ -1440,9 +1439,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       if (/https?$/.test(beforeColon) || /^:\/\//.test(afterColon)) {
         // This is likely part of a URL, skip emoji processing
       } else {
-        // Check for word boundary before colon
+        // Check for word boundary before colon - emojis should be separated by whitespace
         const prevChar = i > 0 ? text[i - 1] : '';
-        const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
+        const atWordBoundary = i === 0 || /\s/.test(prevChar);
         
         // Don't parse emoji if it starts right after a quote
         const afterQuote = prevChar === '"';
@@ -1458,9 +1457,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
                 shortCode.length >= 2 && 
                 !/^\d+$/.test(shortCode)) {
               
-              // Check for word boundary after closing colon
+              // Check for word boundary after closing colon - emojis should be separated by whitespace
               const nextChar = endIndex + 1 < text.length ? text[endIndex + 1] : '';
-              const afterWordBoundary = endIndex + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?"]/.test(nextChar);
+              const afterWordBoundary = endIndex + 1 >= text.length || /\s/.test(nextChar);
               
               if (afterWordBoundary) {
                 tokens.push(ast.emoji(shortCode));
