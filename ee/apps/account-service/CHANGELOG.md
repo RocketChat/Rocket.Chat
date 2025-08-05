@@ -1,5 +1,19 @@
 # @rocket.chat/account-service
 
+## 0.4.34
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.1
+  - @rocket.chat/rest-typings@7.9.1
+  - @rocket.chat/core-services@0.9.13
+  - @rocket.chat/model-typings@1.6.13
+  - @rocket.chat/models@1.5.13
+  - @rocket.chat/network-broker@0.2.13
+  </details>
+
 ## 0.4.33
 
 ### Patch Changes
