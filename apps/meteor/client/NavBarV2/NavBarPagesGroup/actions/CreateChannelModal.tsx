@@ -22,14 +22,7 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useSetting,
-	useTranslation,
-	useEndpoint,
-	usePermission,
-	useToastMessageDispatch,
-	usePermissionWithScopedRoles,
-} from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useEndpoint, useToastMessageDispatch, usePermissionWithScopedRoles } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -38,6 +31,7 @@ import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import { useCanOnlyCreateOneType } from '../hooks/useCanOnlyCreateOneType';
 
 type CreateChannelModalProps = {
 	teamId?: string;
@@ -75,8 +69,6 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const federationEnabled = useSetting('Federation_Matrix_enabled', false);
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
-	const canCreateChannel = usePermission('create-c');
-	const canCreatePrivateChannel = usePermission('create-p');
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
@@ -89,15 +81,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const canOnlyCreateOneType = useMemo(() => {
-		if (!canCreateChannel && canCreatePrivateChannel) {
-			return 'p';
-		}
-		if (canCreateChannel && !canCreatePrivateChannel) {
-			return 'c';
-		}
-		return false;
-	}, [canCreateChannel, canCreatePrivateChannel]);
+	const canOnlyCreateOneType = useCanOnlyCreateOneType();
 
 	const {
 		register,

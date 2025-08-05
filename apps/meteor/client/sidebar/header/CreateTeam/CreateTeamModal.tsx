@@ -33,6 +33,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { useCanOnlyCreateOneType } from '../../../NavBarV2/NavBarPagesGroup/hooks/useCanOnlyCreateOneType';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
@@ -68,18 +69,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		return new RegExp(`^${namesValidation}$`);
 	}, [allowSpecialNames, namesValidation]);
 
-	const canCreateChannel = usePermission('create-c');
-	const canCreateGroup = usePermission('create-p');
-
-	const canOnlyCreateOneType = useMemo(() => {
-		if (!canCreateChannel && canCreateGroup) {
-			return 'p';
-		}
-		if (canCreateChannel && !canCreateGroup) {
-			return 'c';
-		}
-		return false;
-	}, [canCreateChannel, canCreateGroup]);
+	const canOnlyCreateOneType = useCanOnlyCreateOneType();
 
 	const validateTeamName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
