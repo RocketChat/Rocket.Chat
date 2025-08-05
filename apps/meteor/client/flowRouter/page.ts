@@ -189,7 +189,7 @@ class Page {
 	 *
 	 * Identical to page(path).
 	 */
-	show(path: string, state?: State, dispatch = true, push = true) {
+	show(this: this, path: string, state?: State, dispatch = true, push = true) {
 		const ctx = new Context(path, state);
 		const prev = prevContext;
 		prevContext = ctx;
@@ -203,7 +203,7 @@ class Page {
 	 * Replace `path` with optional `state` object.
 	 *
 	 */
-	replace(path: string, state?: State, init?: boolean, dispatch = true): Context {
+	replace(this: this, path: string, state?: State, init?: boolean, dispatch = true): Context {
 		const ctx = new Context(path, state);
 		const prev = prevContext;
 		prevContext = ctx;

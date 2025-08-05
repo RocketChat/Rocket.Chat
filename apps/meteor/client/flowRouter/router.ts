@@ -233,7 +233,7 @@ class Router {
 			}
 			const pathParts = path.split('?');
 			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
-			return original.call(this, pathParts.join('?'));
+			return original.call(page, pathParts.join('?'));
 		})(page.show);
 
 		page.replace = ((original) => (path, state?, dispatch?, push?) => {
@@ -242,7 +242,7 @@ class Router {
 			}
 			const pathParts = path.split('?');
 			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
-			return original.call(this, pathParts.join('?'), state, dispatch, push);
+			return original.call(page, pathParts.join('?'), state, dispatch, push);
 		})(page.replace);
 
 		// this is very ugly part of pagejs and it does decoding few times
