@@ -98,7 +98,6 @@ API.v1.addRoute(
 
 			const canChangeStatus = await allowAgentChangeServiceStatus(newStatus, agentId);
 
-			console.log(agentId, this.userId, await hasPermissionAsync(this.userId, 'manage-livechat-agents'));
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
 					return API.v1.forbidden();

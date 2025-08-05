@@ -126,6 +126,7 @@ describe('LIVECHAT - custom fields', () => {
 		let visitorRoom: IOmnichannelRoom;
 
 		before(async () => {
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
 			await createCustomField({
 				searchable: true,
 				field: customFieldName,
@@ -173,6 +174,7 @@ describe('LIVECHAT - custom fields', () => {
 				deleteCustomField(customFieldName3),
 				deleteCustomField(roomCustomField),
 				closeOmnichannelRoom(visitorRoom._id),
+				updateSetting('Livechat_accept_chats_with_no_agents', false),
 			]);
 		});
 		it('should fail when token is not on body params', async () => {
