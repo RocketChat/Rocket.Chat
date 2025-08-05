@@ -4,13 +4,15 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useRouter } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { ContextualbarDialog, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import RoomMembersWithData from '../../room/contextualBar/RoomMembers/RoomMembersWithData';
 
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -26,33 +28,12 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
+	const setModal = useSetModal();
 	const formatDate = useFormatDate();
 
 	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ts, ...args } = room;
 	const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room as IRoom);
 	const roomName = getRoomDisplayName(room);
-
-	// const actions = useMemo();
-
-	// const menuOptions = Object.entries(actions).map(([_key, item]) => {
-	// 	return {
-	// 		...item,
-	// 		id: item.content || item.title || '',
-	// 		content: item.content || item.title,
-	// 	};
-	// });
-
-	const getRoomType = (
-		room: Pick<Serialized<IRoom>, RoomAdminFieldsType>,
-	): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' | 'Discussion' => {
-		if (room.teamMain) {
-			return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
-		}
-		if (isDiscussion(room as IRoom)) {
-			return 'Discussion';
-		}
-		return roomTypeI18nMap[(room as IRoom).t as keyof typeof roomTypeI18nMap];
-	};
 
 	const onClick = useCallback(
 		(rid: string) => (): void =>
@@ -65,6 +46,48 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 			}),
 		[router],
 	);
+
+	const actions = useMemo(
+		() => ({
+			manageMembers: {
+				icon: 'members' as const,
+				content: t('Manage_Members'),
+				onClick: () => {
+					// 直接显示 members sidebar
+					setModal(
+						<ContextualbarDialog onClose={() => setModal(null)}>
+							<ContextualbarHeader>
+								<ContextualbarTitle>{t('Members')}</ContextualbarTitle>
+								<ContextualbarClose onClick={() => setModal(null)} />
+							</ContextualbarHeader>
+							<RoomMembersWithData rid={_id} />
+						</ContextualbarDialog>,
+					);
+				},
+			},
+		}),
+		[t, setModal, _id],
+	);
+
+	const menuOptions = Object.entries(actions).map(([_key, item]) => {
+		return {
+			...item,
+			id: item.content || '',
+			content: item.content,
+		};
+	});
+
+	const getRoomType = (
+		room: Pick<Serialized<IRoom>, RoomAdminFieldsType>,
+	): (typeof roomTypeI18nMap)[keyof typeof roomTypeI18nMap] | 'Teams_Public_Team' | 'Teams_Private_Team' | 'Discussion' => {
+		if (room.teamMain) {
+			return room.t === 'c' ? 'Teams_Public_Team' : 'Teams_Private_Team';
+		}
+		if (isDiscussion(room as IRoom)) {
+			return 'Discussion';
+		}
+		return roomTypeI18nMap[(room as IRoom).t as keyof typeof roomTypeI18nMap];
+	};
 
 	return (
 		<GenericTableRow action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' qa-room-id={_id}>
@@ -104,7 +127,7 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 				}}
 			>
 				<Box display='flex' justifyContent='flex-end'>
-					<GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: [{ id: 'test' }] }]} placement='bottom-end' />
+					<GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: menuOptions }]} placement='bottom-end' />
 				</Box>
 			</GenericTableCell>
 		</GenericTableRow>
