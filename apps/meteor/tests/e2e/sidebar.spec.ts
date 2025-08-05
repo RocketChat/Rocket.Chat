@@ -23,7 +23,7 @@ test.describe.serial('sidebar', () => {
 	});
 
 	test('should navigate on sidebar toolbar using arrow keys', async ({ page }) => {
-		await poHomeChannel.sidenav.userProfileMenu.focus();
+		await poHomeChannel.sidenav.btnUserProfileMenu.focus();
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('ArrowRight');
 
