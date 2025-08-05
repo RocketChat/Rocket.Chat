@@ -1,6 +1,7 @@
 import parseISO from 'date-fns/parseISO';
 import mem from 'mem';
 import { Component } from 'preact';
+import { extractWidgetId } from '../store/Store';
 
 import { Livechat, useSsl } from '../api';
 import store from '../store';
@@ -270,7 +271,7 @@ export const memo = (component) =>
 	};
 
 export const isActiveSession = () => {
-	const sessionId = sessionStorage.getItem('sessionId');
+	const sessionId = sessionStorage.getItem(`livechat-widget-${extractWidgetId()}-sessionId`);
 	const { openSessionIds: [firstSessionId] = [] } = store.state;
 
 	return sessionId === firstSessionId;

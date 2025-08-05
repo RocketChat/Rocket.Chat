@@ -44,7 +44,7 @@ export default class Store {
 
 		window.addEventListener('load', () => {
 			const sessionId = createToken();
-			sessionStorage.setItem('sessionId', sessionId);
+			sessionStorage.setItem(`${localStorageKey}-sessionId`, sessionId);
 			const { openSessionIds = [] } = this._state;
 			this.setState({ openSessionIds: [sessionId, ...openSessionIds] });
 		});
@@ -55,7 +55,7 @@ export default class Store {
 		});
 
 		window.addEventListener('beforeunload', () => {
-			const sessionId = sessionStorage.getItem('sessionId');
+			const sessionId = sessionStorage.getItem(`${localStorageKey}-sessionId`);
 			const { openSessionIds = [] } = this._state;
 			this.setState({ openSessionIds: openSessionIds.filter((session) => session !== sessionId) });
 		});
