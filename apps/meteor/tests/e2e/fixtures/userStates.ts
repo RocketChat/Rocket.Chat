@@ -125,7 +125,7 @@ export const Users = {
 	samluser1: generateContext('samluser1'),
 	samluser2: generateContext('samluser2'),
 	samluser4: generateContext('samluser4'),
-	samlusernoname: generateContext('custom-saml-username'),
+	samlusernoname: generateContext('custom_saml_username'),
 	samlusernoname2: generateContext('custom_saml_username2'),
 	userForSamlMerge: generateContext('user_for_saml_merge'),
 	userForSamlMerge2: generateContext('user_for_saml_merge2'),
