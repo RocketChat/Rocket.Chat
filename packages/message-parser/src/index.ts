@@ -655,6 +655,18 @@ const parseBoldMarkup = (
   return null;
 };
 
+// Helper function to filter out invalid italic content
+const filterItalicContent = (tokens: AST.Inlines[]): (AST.MarkupExcluding<AST.Italic> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] => {
+  return tokens.filter(
+    (token): token is AST.MarkupExcluding<AST.Italic> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode =>
+      token.type !== 'ITALIC' &&
+      token.type !== 'TIMESTAMP' &&
+      token.type !== 'IMAGE' &&
+      token.type !== 'COLOR' &&
+      token.type !== 'INLINE_KATEX'
+  );
+};
+
 // Helper function to parse italic markup
 const parseItalicMarkup = (
   text: string,
@@ -678,6 +690,46 @@ const parseItalicMarkup = (
     return null; // Not at a word boundary, don't treat as emphasis
   }
 
+  // Look for consecutive italics pattern: _text__more_
+  const singlePattern = text.slice(i, i + 1);
+  const afterSingleChars = text.slice(i + 1, i + 3);
+  
+  if (singlePattern === '_' && afterSingleChars.startsWith('_') && !afterSingleChars.endsWith('_')) {
+    // Check for pattern _text__more_
+    const contentBeforeDouble = text.slice(i + 1, i + text.slice(i + 1).indexOf('_') + 1);
+    
+    if (contentBeforeDouble && contentBeforeDouble.trim().length > 0) {
+      const doublePos = i + 1 + contentBeforeDouble.length;
+      
+      // Check if we have a double underscore here
+      if (text.slice(doublePos, doublePos + 2) === '__') {
+        // Find the next single underscore after the double
+        const afterDoubleText = text.slice(doublePos + 2);
+        const nextSinglePos = afterDoubleText.indexOf('_');
+        
+        if (nextSinglePos !== -1 && nextSinglePos > 0) {
+          const secondContent = afterDoubleText.slice(0, nextSinglePos);
+          
+          if (secondContent && secondContent.trim().length > 0) {
+            // This is indeed _text__more_ pattern
+            // Process first italic
+            const firstInlineContent = parseInlineContent(contentBeforeDouble, options);
+            // Process second italic  
+            const secondInlineContent = parseInlineContent(secondContent, options);
+            
+            return {
+              tokens: [
+                ast.italic(filterItalicContent(firstInlineContent)),
+                ast.italic(filterItalicContent(secondInlineContent))
+              ],
+              nextIndex: doublePos + 2 + nextSinglePos + 1
+            };
+          }
+        }
+      }
+    }
+  }
+  
   // Handle triple underscore cases first: ___Hello___ and ___Hello__
   const thirdChar = i + 2 < text.length ? text[i + 2] : '';
   if (nextChar === '_' && thirdChar === '_') {
@@ -1839,20 +1891,18 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           const prevChar = i > 0 ? text[i - 1] : '';
           const nextChar = i + emoticon.length < text.length ? text[i + emoticon.length] : '';
           
-          // Boundary check for emoticons - should be separated by whitespace
-          const prevBoundary = i === 0 || /\s/.test(prevChar);
-          const nextBoundary = i + emoticon.length >= text.length || /\s/.test(nextChar);
+          // Boundary check for emoticons
+          const prevBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;*_]/.test(prevChar);
+          const nextBoundary = i + emoticon.length >= text.length || /[\s\n\r\t\(\)\[\]{}.,;*_]/.test(nextChar);
           
-          if (prevBoundary && nextBoundary) {
-            // Standalone emoticons without spaces in between should still be treated as emoticons
-            // when they are the only content (like ":):):)"), but not when they're part of text
-            const prevBoundaryIsText = prevBoundary && i > 0 && !(/\s/.test(prevChar));
-            const nextBoundaryIsText = nextBoundary && i + emoticon.length < text.length && !(/\s/.test(nextChar));
-            
+          // Special handling for :* emoticon when it appears after emphasis markers
+          const isKissingEmoticon = emoticon === ':*';
+          const afterEmphasis = prevChar === '*' || prevChar === '_';
+          
+          if ((prevBoundary && nextBoundary) || (isKissingEmoticon && afterEmphasis)) {
             // Check if this is part of a consecutive emoticon sequence that should be treated as plain text
-            // We only skip if adjacent to text (not in a standalone sequence)
-            const adjacentToText = prevBoundaryIsText || nextBoundaryIsText;
-            if (adjacentToText && shouldSkipConsecutiveEmoticons(text, i)) {
+            const adjacentToText = !(/\s/.test(prevChar)) || !(/\s/.test(nextChar));
+            if (adjacentToText && shouldSkipConsecutiveEmoticons(text, i) && !isKissingEmoticon) {
               // Skip to the next character, will be handled as plain text
               break;
             }
