@@ -5,8 +5,8 @@ import { Meteor } from 'meteor/meteor';
 import { emojiParser } from '../../app/emoji/client/emojiParser';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
 import { MentionsParser } from '../../app/mentions/lib/MentionsParser';
-import { Users } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
+import { Users } from '../stores';
 
 export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 	if (message.msg) {

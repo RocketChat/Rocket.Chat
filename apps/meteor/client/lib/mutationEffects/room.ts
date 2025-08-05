@@ -1,4 +1,4 @@
-import { Subscriptions } from '../../../app/models/client';
+import { Subscriptions } from '../../stores';
 
 export const toggleFavoriteRoom = (roomId: string, favorite: boolean, userId: string | null) => {
 	if (!userId) {

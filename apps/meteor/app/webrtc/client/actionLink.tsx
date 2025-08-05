@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import { actionLinks } from '../../../client/lib/actionLinks';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { Rooms } from '../../models/client';
+import { Rooms } from '../../../client/stores';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 
