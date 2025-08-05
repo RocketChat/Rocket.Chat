@@ -57,36 +57,37 @@ test.each([
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });
-
-// Tests for unicode emojis
-test.each([
-  ['😀', [bigEmoji([emojiUnicode('😀')])]],
-  ['😃', [bigEmoji([emojiUnicode('😃')])]],
-  ['🥵', [bigEmoji([emojiUnicode('🥵')])]],
-  ['🧿', [bigEmoji([emojiUnicode('🧿')])]],
-  ['🐶', [bigEmoji([emojiUnicode('🐶')])]],
-  ['🍏', [bigEmoji([emojiUnicode('🍏')])]],
-  ['⚽', [bigEmoji([emojiUnicode('⚽')])]],
-  ['⚽️', [bigEmoji([emojiUnicode('⚽️')])]],
-  ['👨‍👩‍👧‍👦', [bigEmoji([emojiUnicode('👨‍👩‍👧‍👦')])]],
-  ['🚗', [bigEmoji([emojiUnicode('🚗')])]],
-  ['⌚️', [bigEmoji([emojiUnicode('⌚️')])]],
-  ['❤️', [bigEmoji([emojiUnicode('❤️')])]],
-  ['🏳️', [bigEmoji([emojiUnicode('🏳️')])]],
-  ['🧑🏾‍💻', [bigEmoji([emojiUnicode('🧑🏾‍💻')])]],
-  ['🧑🏾‍💻🧑🏾‍💻', [bigEmoji([emojiUnicode('🧑🏾‍💻'), emojiUnicode('🧑🏾‍💻')])]],
-  [
-    '🧑🏾‍💻🧑🏾‍💻🧑🏾‍💻',
-    [bigEmoji([emojiUnicode('🧑🏾‍💻'), emojiUnicode('🧑🏾‍💻'), emojiUnicode('🧑🏾‍💻')])],
-  ],
-  ['👆🏽', [bigEmoji([emojiUnicode('👆🏽')])]],
-  ['👆🏽👆🏽', [bigEmoji([emojiUnicode('👆🏽'), emojiUnicode('👆🏽')])]],
-  [
-    '👆🏽👆🏽👆🏽',
-    [bigEmoji([emojiUnicode('👆🏽'), emojiUnicode('👆🏽'), emojiUnicode('👆🏽')])],
-  ],
-  ['👆🏺', [bigEmoji([emojiUnicode('👆'), emojiUnicode('🏺')])]],
-  ['Hi 👍', [paragraph([plain('Hi '), emojiUnicode('👍')])]],
-])('parses %p', (input, output) => {
-  expect(parse(input)).toMatchObject(output);
+describe('Emoji parsing', () => {
+  // Tests for unicode emojis
+  test.each([
+    ['😀', [bigEmoji([emojiUnicode('😀')])]],
+    ['😃', [bigEmoji([emojiUnicode('😃')])]],
+    ['🥵', [bigEmoji([emojiUnicode('🥵')])]],
+    ['🧿', [bigEmoji([emojiUnicode('🧿')])]],
+    ['🐶', [bigEmoji([emojiUnicode('🐶')])]],
+    ['🍏', [bigEmoji([emojiUnicode('🍏')])]],
+    ['⚽', [bigEmoji([emojiUnicode('⚽')])]],
+    ['⚽️', [bigEmoji([emojiUnicode('⚽️')])]],
+    ['👨‍👩‍👧‍👦', [bigEmoji([emojiUnicode('👨‍👩‍👧‍👦')])]],
+    ['🚗', [bigEmoji([emojiUnicode('🚗')])]],
+    ['⌚️', [bigEmoji([emojiUnicode('⌚️')])]],
+    ['❤️', [bigEmoji([emojiUnicode('❤️')])]],
+    ['🏳️', [bigEmoji([emojiUnicode('🏳️')])]],
+    ['🧑🏾‍💻', [bigEmoji([emojiUnicode('🧑🏾‍💻')])]],
+    ['🧑🏾‍💻🧑🏾‍💻', [bigEmoji([emojiUnicode('🧑🏾‍💻'), emojiUnicode('🧑🏾‍💻')])]],
+    [
+      '🧑🏾‍💻🧑🏾‍💻🧑🏾‍💻',
+      [bigEmoji([emojiUnicode('🧑🏾‍💻'), emojiUnicode('🧑🏾‍💻'), emojiUnicode('🧑🏾‍💻')])],
+    ],
+    ['👆🏽', [bigEmoji([emojiUnicode('👆🏽')])]],
+    ['👆🏽👆🏽', [bigEmoji([emojiUnicode('👆🏽'), emojiUnicode('👆🏽')])]],
+    [
+      '👆🏽👆🏽👆🏽',
+      [bigEmoji([emojiUnicode('👆🏽'), emojiUnicode('👆🏽'), emojiUnicode('👆🏽')])],
+    ],
+    ['👆🏺', [bigEmoji([emojiUnicode('👆'), emojiUnicode('🏺')])]],
+    ['Hi 👍', [paragraph([plain('Hi '), emojiUnicode('👍')])]],
+  ])('parses %p', (input, output) => {
+    expect(parse(input)).toMatchObject(output);
+  });
 });
