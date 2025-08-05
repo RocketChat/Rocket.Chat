@@ -4,7 +4,6 @@ import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics'
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
-import type { IControl } from './migrations/IControl.ts';
 import type { MACStats } from './omnichannel';
 
 export interface IVoIPPeriodStats {
@@ -75,7 +74,7 @@ export interface IStats {
 	federatedServers: number;
 	federatedUsers: number;
 	lastLogin: string;
-	lastMessageSentAt?: Date | string;
+	lastMessageSentAt?: Date;
 	lastSeenSubscription: string;
 	os: {
 		type: string;
@@ -100,7 +99,14 @@ export interface IStats {
 	enterpriseReady: boolean;
 	uploadsTotal: number;
 	uploadsTotalSize: number;
-	migration: IControl;
+	migration: {
+		_id: string;
+		version: number;
+		locked: boolean;
+		hash?: string;
+		buildAt?: string;
+		lockedAt?: string;
+	};
 	instanceCount: number;
 	oplogEnabled: boolean;
 	msEnabled: boolean;
@@ -187,7 +193,7 @@ export interface IStats {
 			lastDay?: IVoIPPeriodStats;
 		};
 	};
-	createdAt: Date | string;
+	createdAt: Date;
 	totalOTR: number;
 	totalOTRRooms: number;
 	slashCommandsJitsi: number;
