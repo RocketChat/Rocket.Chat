@@ -90,13 +90,21 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		rid,
 		msg,
 		federation_event_id,
+		tmid,
 	}: {
 		fromId: string;
 		rid: string;
 		msg: string;
 		federation_event_id: string;
+		tmid?: string;
 	}): Promise<IMessage> {
-		return executeSendMessage(fromId, { rid, msg, federation: { eventId: federation_event_id } });
+		const threadParams = tmid ? { tmid, tshow: true } : {};
+		return executeSendMessage(fromId, {
+			rid,
+			msg,
+			...threadParams,
+			federation: { eventId: federation_event_id },
+		});
 	}
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
