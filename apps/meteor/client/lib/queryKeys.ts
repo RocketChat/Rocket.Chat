@@ -73,6 +73,7 @@ export const omnichannelQueryKeys = {
 		productivityTotals: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
 			[...omnichannelQueryKeys.analytics.all(departmentId), 'productivity-totals', dateRange] as const,
 	},
+	contactSearch: (query?: { filter: string; limit?: number }) => [...omnichannelQueryKeys.all, 'contact', query] as const,
 };
 
 export const deviceManagementQueryKeys = {
