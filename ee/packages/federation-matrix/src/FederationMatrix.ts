@@ -1,9 +1,10 @@
 import 'reflect-metadata';
 
+import type { PresenceState } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { UserStatus, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
@@ -63,6 +64,58 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
 		instance.buildMatrixHTTPRoutes();
+		instance.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
+			if (!roomId || !username) {
+				return;
+			}
+			const externalRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+			if (!externalRoomId) {
+				return;
+			}
+			const localUser = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+			if (!localUser) {
+				return;
+			}
+			const externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
+			if (!externalUserId) {
+				return;
+			}
+			void instance.homeserverServices.edu.sendTypingNotification(externalRoomId, externalUserId, isTyping);
+		});
+		instance.onEvent(
+			'presence.status',
+			async ({ user }: { user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'> }): Promise<void> => {
+				if (!user.username || !user.status) {
+					return;
+				}
+				const localUser = await Users.findOneByUsername(user.username, { projection: { _id: 1 } });
+				if (!localUser) {
+					return;
+				}
+				const externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
+				if (!externalUserId) {
+					return;
+				}
+
+				const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
+				const statusMap: Record<UserStatus, PresenceState> = {
+					[UserStatus.ONLINE]: 'online',
+					[UserStatus.OFFLINE]: 'offline',
+					[UserStatus.AWAY]: 'unavailable',
+					[UserStatus.BUSY]: 'unavailable',
+					[UserStatus.DISABLED]: 'offline',
+				};
+				void instance.homeserverServices.edu.sendPresenceUpdateToRooms(
+					[
+						{
+							user_id: externalUserId,
+							presence: statusMap[user.status] || 'offline',
+						},
+					],
+					roomsUserIsMemberOf.map(({ externalRoomId }) => externalRoomId),
+				);
+			},
+		);
 
 		return instance;
 	}

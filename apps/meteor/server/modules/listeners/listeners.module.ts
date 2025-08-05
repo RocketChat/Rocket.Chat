@@ -151,34 +151,19 @@ export class ListenersModule {
 			notifications.notifyRoom(rid, 'videoconf', callId);
 		});
 
-		service.onEvent('presence.status', ({ user }) => {
-			const { _id, username, name, status, statusText, roles } = user;
-			if (!status || !username) {
-				return;
-			}
-
-			notifications.notifyUserInThisInstance(_id, 'userData', {
-				type: 'updated',
-				id: _id,
-				diff: {
-					status,
-					...(statusText && { statusText }),
-				},
-				unset: {},
-			});
-
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
-
-			if (_id) {
-				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
-			}
-		});
+		service.onEvent('presence.status', ({ user }) => this.handlePresence({ user }, notifications));
 
 		service.onEvent('user.updateCustomStatus', (userStatus) => {
 			notifications.notifyLoggedInThisInstance('updateCustomUserStatus', {
 				userStatusData: userStatus,
 			});
 		});
+
+		service.onEvent('federation-matrix.user.typing', ({ isTyping, roomId, username }) => {
+			notifications.notifyRoom(roomId, 'user-activity', username, isTyping ? ['user-typing'] : []);
+		});
+
+		service.onEvent('federation-matrix.user.presence.status', ({ user }) => this.handlePresence({ user }, notifications));
 
 		service.onEvent('watch.messages', async ({ message }) => {
 			if (!message.rid) {
@@ -505,5 +490,31 @@ export class ListenersModule {
 		service.onEvent('otrAckUpdate', ({ roomId, acknowledgeMessage }: { roomId: string; acknowledgeMessage: IOTRMessage }) => {
 			notifications.streamRoomMessage.emit(roomId, acknowledgeMessage);
 		});
+	}
+
+	private handlePresence(
+		{ user }: { user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'> },
+		notifications: NotificationsModule,
+	): void {
+		const { _id, username, name, status, statusText, roles } = user;
+		if (!status || !username) {
+			return;
+		}
+
+		notifications.notifyUserInThisInstance(_id, 'userData', {
+			type: 'updated',
+			id: _id,
+			diff: {
+				status,
+				...(statusText && { statusText }),
+			},
+			unset: {},
+		});
+
+		notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
+
+		if (_id) {
+			notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
+		}
 	}
 }
