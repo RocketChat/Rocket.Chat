@@ -28,7 +28,7 @@ const NewCall = () => {
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={t('New_Call')}>
-				<ActionButton small secondary={false} label='close' icon='cross' onClick={onToggleWidget} />
+				<ActionButton tiny secondary={false} label='close' icon='cross' onClick={onToggleWidget} />
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerAutocomplete {...autocomplete} />

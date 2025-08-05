@@ -43,9 +43,9 @@ const OngoingCall = () => {
 				{keypad?.element}
 				<ButtonGroup large>
 					<ActionButton label='dialpad' icon='dialpad' onClick={keypad.toggleOpen} />
-					<ActionButton label='forward' icon='arrow-forward' onClick={onForward} />
-					<ToggleButton label='hold' icons={['pause-shape-unfilled', 'pause-shape-filled']} pressed={held} onToggle={onHold} />
 					<ToggleButton label='mute' icons={['mic', 'mic-off']} pressed={muted} onToggle={onMute} />
+					<ToggleButton label='hold' icons={['pause-shape-unfilled', 'pause-shape-unfilled']} pressed={held} onToggle={onHold} />
+					<ActionButton label='forward' icon='arrow-forward' onClick={onForward} />
 					<ActionButton label='phone' icon='phone' danger onClick={onEndCall} />
 				</ButtonGroup>
 			</WidgetFooter>

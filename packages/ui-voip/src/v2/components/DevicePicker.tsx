@@ -71,7 +71,7 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 			sections={[micSection, speakerSection]}
 			disabled={disabled}
 			selectionMode='multiple'
-			button={<DevicePickerButton secondary={secondary} />}
+			button={<DevicePickerButton secondary={secondary} tiny={!secondary} />}
 		/>
 	);
 };
