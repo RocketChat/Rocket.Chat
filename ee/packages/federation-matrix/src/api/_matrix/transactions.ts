@@ -172,19 +172,15 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 		async (c) => {
 			const body = await c.req.json();
 
-			const { pdus = [] } = body;
+			const { pdus = [], edus = [] } = body;
 
-			if (pdus.length === 0) {
-				return {
-					body: {
-						pdus: {},
-						edus: {},
-					},
-					statusCode: 200,
-				};
+			if (pdus.length > 0) {
+				await event.processIncomingPDUs(pdus);
 			}
 
-			await event.processIncomingPDUs(pdus);
+			if (edus.length > 0) {
+				await event.processIncomingEDUs(edus);
+			}
 
 			return {
 				body: {
