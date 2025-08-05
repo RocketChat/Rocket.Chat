@@ -691,44 +691,30 @@ const parseItalicMarkup = (
   }
 
   // Look for consecutive italics pattern: _text__more_
-  if (text.slice(i, i + 1) === '_') {
-    // Test case: "_two italics__second_"
-    const patternMatch = text.match(/^_([^_]+)__([^_]+)_$/);
-    if (patternMatch) {
-      const firstContent = patternMatch[1];
-      const secondContent = patternMatch[2];
-      
-      // Process the two italic sections
-      const firstInlineContent = parseInlineContent(firstContent, options);
-      const secondInlineContent = parseInlineContent(secondContent, options);
-      
-      return {
-        tokens: [
-          ast.italic(filterItalicContent(firstInlineContent)),
-          ast.italic(filterItalicContent(secondInlineContent))
-        ],
-        nextIndex: text.length
-      };
-    }
+  const singlePattern = text.slice(i, i + 1);
+  const afterSingleChars = text.slice(i + 1, i + 3);
+  
+  if (singlePattern === '_' && afterSingleChars.startsWith('_') && !afterSingleChars.endsWith('_')) {
+    // Check for pattern _text__more_
+    const contentBeforeDouble = text.slice(i + 1, i + text.slice(i + 1).indexOf('_') + 1);
     
-    // Try to find a pattern like _text__more_ within the text
-    const index = i;
-    const endIndex = text.indexOf('_', index + 1);
-    
-    if (endIndex !== -1 && endIndex > index + 1) {
-      // Check if this is followed by a double underscore
-      if (endIndex + 1 < text.length && text[endIndex + 1] === '_') {
-        // Look for the closing underscore
-        const secondEndIndex = text.indexOf('_', endIndex + 2);
+    if (contentBeforeDouble && contentBeforeDouble.trim().length > 0) {
+      const doublePos = i + 1 + contentBeforeDouble.length;
+      
+      // Check if we have a double underscore here
+      if (text.slice(doublePos, doublePos + 2) === '__') {
+        // Find the next single underscore after the double
+        const afterDoubleText = text.slice(doublePos + 2);
+        const nextSinglePos = afterDoubleText.indexOf('_');
         
-        if (secondEndIndex !== -1 && secondEndIndex > endIndex + 2) {
-          // We have a pattern like _text__more_
-          const firstContent = text.slice(index + 1, endIndex);
-          const secondContent = text.slice(endIndex + 2, secondEndIndex);
+        if (nextSinglePos !== -1 && nextSinglePos > 0) {
+          const secondContent = afterDoubleText.slice(0, nextSinglePos);
           
-          if (firstContent.trim().length > 0 && secondContent.trim().length > 0) {
-            // Process the two italic sections
-            const firstInlineContent = parseInlineContent(firstContent, options);
+          if (secondContent && secondContent.trim().length > 0) {
+            // This is indeed _text__more_ pattern
+            // Process first italic
+            const firstInlineContent = parseInlineContent(contentBeforeDouble, options);
+            // Process second italic  
             const secondInlineContent = parseInlineContent(secondContent, options);
             
             return {
@@ -736,7 +722,7 @@ const parseItalicMarkup = (
                 ast.italic(filterItalicContent(firstInlineContent)),
                 ast.italic(filterItalicContent(secondInlineContent))
               ],
-              nextIndex: secondEndIndex + 1
+              nextIndex: doublePos + 2 + nextSinglePos + 1
             };
           }
         }
@@ -2238,126 +2224,6 @@ const detectEmailsInText = (text: string): AST.Inlines[] => {
   return tokens;
 };
 export const parse = (input: string, options?: Options): AST.Root => {
-  // Special case handling for abuse test patterns
-  if (input === "This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()_+, overloading the symbols {}:\"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some. , REPEATx2 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()_+, overloading the symbols {}:\"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some. REPEAT x3 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()_+, overloading the symbols {}:\"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some. REPEAT x4 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()_+, overloading the symbols {}:\"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some. REPEATx 5 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()_+, overloading the symbols {}:\"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some. , REPEAT x6 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()_+, overloading the symbols {}:\"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some. this can go long for some time, repeat x7 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()_+, overloading the symbols {}:\"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some. ,repeat x8 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()_+, overloading the symbols {}:\"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some.") {
-    return [
-      ast.paragraph([
-        ast.plain(
-          'This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&',
-        ),
-        ast.bold([
-          ast.plain('()'),
-          ast.italic([
-            ast.plain(
-              `+, overloading the symbols {}:"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok`,
-            ),
-            ast.strike([
-              ast.plain(
-                `, from now on we repeat some. , REPEATx2 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()_+, overloading the symbols {}:"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok`,
-              ),
-            ]),
-            ast.plain(
-              ', from now on we repeat some. REPEAT x3 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()',
-            ),
-          ]),
-          ast.plain(
-            `+, overloading the symbols {}:"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok`,
-          ),
-          ast.strike([
-            ast.plain(
-              ', from now on we repeat some. REPEAT x4 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()',
-            ),
-            ast.italic([
-              ast.plain(
-                `+, overloading the symbols {}:"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some. REPEATx 5 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()`,
-              ),
-            ]),
-            ast.plain(
-              `+, overloading the symbols {}:"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok`,
-            ),
-          ]),
-          ast.plain(
-            `, from now on we repeat some. , REPEAT x6 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&`,
-          ),
-        ]),
-        ast.plain(
-          `()_+, overloading the symbols {}:"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok`,
-        ),
-        ast.strike([
-          ast.plain(
-            `, from now on we repeat some. this can go long for some time, repeat x7 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()`,
-          ),
-          ast.italic([
-            ast.plain(
-              `+, overloading the symbols {}:"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok~, from now on we repeat some. ,repeat x8 This a message designed to stress test the message parser, trying to force several rules to stack at the same time !!@#$%^&*()`,
-            ),
-          ]),
-          ast.plain(
-            `+, overloading the symbols {}:"|<>?, some more text ,./;'\\[], numbers too 1234567890-= let it call s o s ok`,
-          ),
-        ]),
-        ast.plain(', from now on we repeat some.'),
-      ]),
-    ];
-  }
-
-  // Special case handling for the second abuse test with many bold/italic sequences
-  if (input.startsWith('**_**__**_**__**_**__') && input.endsWith('_**__**_**__**_**__**_**__')) {
-    // Generate the repeated structure as in the test expectation
-    const result = [
-      ast.paragraph([
-        // Start with the expected structure
-        ast.bold([ast.italic([ast.plain('**')]), ast.italic([ast.plain('**')])]),
-        ast.italic([ast.bold([ast.plain('_')])]),
-      ])
-    ];
-
-    // The test expects a specific pattern that repeats many times
-    // Let's just repeat the basic pattern
-    const paragraphContent = result[0].value as AST.Inlines[];
-    
-    // Add repeated sequences to match the expected pattern
-    for (let i = 0; i < 99; i++) {
-      paragraphContent.push(ast.bold([ast.italic([ast.plain('**')]), ast.italic([ast.plain('**')])]));
-      paragraphContent.push(ast.italic([ast.bold([ast.plain('_')])]));
-    }
-    
-    // Add the final "__" plain text at the end
-    paragraphContent.push(ast.plain('__'));
-    
-    return result;
-  }
-
-  // Handle special test cases
-  if (input === '-_-italic content-_-') {
-    return [
-      ast.paragraph([
-        ast.plain('-'),
-        ast.italic([ast.plain('-italic content-')]),
-        ast.plain('-')
-      ])
-    ];
-  }
-  
-  if (input === '_italic with broken emoticon -_-and more text -_-_') {
-    return [
-      ast.paragraph([
-        ast.italic([ast.plain('italic with broken emoticon -')]),
-        ast.plain('-and more text -'),
-        ast.italic([ast.plain('-')])
-      ])
-    ];
-  }
-  
-  if (input === '_two italics__second_') {
-    return [
-      ast.paragraph([
-        ast.italic([ast.plain('two italics')]),
-        ast.italic([ast.plain('second')])
-      ])
-    ];
-  }
-  
   // Normalize input
   const normalizedInput = input
     .replace(/\r\n/g, '\n') // Convert Windows line endings to Unix
