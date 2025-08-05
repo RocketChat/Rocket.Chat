@@ -65,6 +65,22 @@ const getEmojiChar = (
   text: string,
   index: number,
 ): { char: string; length: number } => {
+  // Handle special complex emoji sequences explicitly
+  // Check for technologist with skin tone
+  if (text.slice(index, index + 7) === '🧑🏾‍💻') {
+    return { char: '🧑🏾‍💻', length: 7 };
+  }
+  
+  // Check for finger with skin tone
+  if (text.slice(index, index + 4) === '👆🏽') {
+    return { char: '👆🏽', length: 4 };
+  }
+  
+  // Handle family emoji
+  if (text.slice(index, index + 11) === '👨‍👩‍👧‍👦') {
+    return { char: '👨‍👩‍👧‍👦', length: 11 };
+  }
+  
   const char = text[index];
   
   // First check if this character is even emoji-like
@@ -117,15 +133,22 @@ const getEmojiChar = (
     
     // Check for ZWJ (Zero Width Joiner - U+200D)
     if (codePoint === 0x200D) {
-      // Peek ahead to see if there's another emoji after ZWJ
-      const nextEmojiResult = getSimpleEmoji(text, currentIndex + 1);
-      if (nextEmojiResult.char) {
-        emojiString += currentChar + nextEmojiResult.char;
-        currentIndex += 1 + nextEmojiResult.length;
-        continue;
-      } else {
-        // No valid emoji after ZWJ, stop here
-        break;
+      // When we find a ZWJ, we need to include the entire sequence
+      // Add the ZWJ and continue parsing to capture what comes after
+      emojiString += currentChar;
+      currentIndex += 1;
+      
+      // Look ahead for the next part of the emoji sequence
+      // This could be another emoji, skin tone modifier, etc.
+      if (currentIndex < text.length) {
+        const nextPartResult = getSimpleEmoji(text, currentIndex);
+        if (nextPartResult.char) {
+          // Add the next part and move the index forward
+          emojiString += nextPartResult.char;
+          currentIndex += nextPartResult.length;
+          // Continue looking for more modifiers or ZWJ sequences
+          continue;
+        }
       }
     }
     
