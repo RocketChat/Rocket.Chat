@@ -2,7 +2,6 @@ import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
 import {
 	ajv,
-	isUpdateOAuthAppParams,
 	isOauthAppsGetParams,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
@@ -58,6 +57,37 @@ const OauthAppsAddParamsSchema = {
 };
 
 const isOauthAppsAddParams = ajv.compile<OauthAppsAddParams>(OauthAppsAddParamsSchema);
+
+type UpdateOAuthAppParams = {
+	appId: string;
+	name: string;
+	active: boolean;
+	clientId?: string | undefined;
+	clientSecret?: string | undefined;
+	redirectUri: string;
+};
+
+const UpdateOAuthAppParamsSchema = {
+	type: 'object',
+	properties: {
+		appId: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		active: {
+			type: 'boolean',
+		},
+		redirectUri: {
+			type: 'string',
+		},
+	},
+	required: ['appId', 'name', 'active', 'redirectUri'],
+	additionalProperties: false,
+};
+
+const isUpdateOAuthAppParams = ajv.compile<UpdateOAuthAppParams>(UpdateOAuthAppParamsSchema);
 
 const oauthAppsEndpoints = API.v1
 	.get(
@@ -156,6 +186,38 @@ const oauthAppsEndpoints = API.v1
 
 			return API.v1.success({ application });
 		},
+	)
+	.post(
+		'oauth-apps.update',
+		{
+			authRequired: true,
+			body: isUpdateOAuthAppParams,
+			permissionsRequired: ['manage-oauth-apps'],
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				200: ajv.compile<IOAuthApps | null>({
+					allOf: [
+						{ anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
+						{
+							type: 'object',
+							properties: {
+								success: { type: 'boolean', enum: [true] },
+							},
+							required: ['success'],
+						},
+					],
+				}),
+			},
+		},
+		async function action() {
+			const { appId } = this.bodyParams;
+
+			const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
+
+			return API.v1.success(result);
+		},
 	);
 
 API.v1.addRoute(
@@ -181,24 +243,6 @@ API.v1.addRoute(
 			return API.v1.success({
 				oauthApp,
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'oauth-apps.update',
-	{
-		authRequired: true,
-		validateParams: isUpdateOAuthAppParams,
-		permissionsRequired: ['manage-oauth-apps'],
-	},
-	{
-		async post() {
-			const { appId } = this.bodyParams;
-
-			const result = await updateOAuthApp(this.userId, appId, this.bodyParams);
-
-			return API.v1.success(result);
 		},
 	},
 );
