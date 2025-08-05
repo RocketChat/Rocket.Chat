@@ -29,7 +29,7 @@ exports[`renders Calling without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
@@ -139,7 +139,7 @@ exports[`renders IncomingCall without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
@@ -293,7 +293,7 @@ exports[`renders NewCall without crashing 1`] = `
         >
           <button
             aria-label="close"
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             label="close"
             title="close"
             type="button"
@@ -444,7 +444,7 @@ exports[`renders OngoingCall without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
@@ -516,17 +516,17 @@ exports[`renders OngoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="forward"
+            aria-label="mute"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
-            label="forward"
-            title="forward"
+            label="mute"
+            title="mute"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-xb06ut"
+              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
             >
-              
+              
             </i>
           </button>
           <button
@@ -544,17 +544,17 @@ exports[`renders OngoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="mute"
+            aria-label="forward"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
-            label="mute"
-            title="mute"
+            label="forward"
+            title="forward"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
+              class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-xb06ut"
             >
-              
+              
             </i>
           </button>
           <button
