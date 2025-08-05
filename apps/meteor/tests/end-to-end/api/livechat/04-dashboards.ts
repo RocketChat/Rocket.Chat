@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
@@ -34,6 +34,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	let department: ILivechatDepartment;
+	let roomList: IOmnichannelRoom[];
 	const agents: {
 		credentials: Credentials;
 		user: IUser & { username: string };
@@ -109,9 +110,9 @@ describe('LIVECHAT - dashboards', function () {
 			return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
 		});
 
-		const results = await Promise.all(promises);
+		const chatInfo = await Promise.all(promises);
 
-		const chatInfo = results.map((result) => ({ room: result.room, visitor: result.visitor }));
+		roomList = chatInfo.map((info) => info.room);
 
 		// simulate messages being exchanged between agents and visitors
 		await simulateRealtimeConversation(chatInfo);
@@ -129,6 +130,10 @@ describe('LIVECHAT - dashboards', function () {
 		const room6ChatDuration = moment().diff(roomCreationStart, 'seconds');
 
 		avgClosedRoomChatDuration = (room5ChatDuration + room6ChatDuration) / 2;
+	});
+
+	after(async () => {
+		await Promise.allSettled(roomList.map((room) => closeOmnichannelRoom(room._id)));
 	});
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
