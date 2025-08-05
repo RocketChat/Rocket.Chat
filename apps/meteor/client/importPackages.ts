@@ -27,7 +27,6 @@ import '../app/wordpress/client';
 import '../app/e2e/client';
 import '../app/utils/client';
 import '../app/settings/client';
-import '../app/models/client';
 import '../app/ui-utils/client';
 import '../app/reactions/client';
 import '../app/livechat/client';

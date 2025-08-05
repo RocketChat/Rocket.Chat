@@ -191,7 +191,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	): Promise<FindCursor<P extends IUser ? IUser : P>>;
 
 	/** @deprecated function getUsersInRole should be used instead */
-	async findUsersInRole<P>(
+	async findUsersInRole<P extends Document>(
 		roleId: IRole['_id'],
 		scope: IRoom['_id'] | undefined,
 		options?: any | undefined,
@@ -211,7 +211,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				return Subscriptions.findUsersInRoles([role._id], scope, options);
 			case 'Users':
 			default:
-				return Users.findUsersInRoles([role._id], null, options);
+				return Users.findUsersInRoles<IUser | P>([role._id], null, options);
 		}
 	}
 

@@ -45,7 +45,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 	if (
 		isEditingField(user.username, userData.username) &&
 		!settings.get('Accounts_AllowUsernameChange') &&
-		(!canEditOtherUserInfo || editingMyself)
+		(!canEditOtherUserInfo || (editingMyself && user.username))
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',

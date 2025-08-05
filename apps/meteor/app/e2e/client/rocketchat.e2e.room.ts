@@ -28,8 +28,8 @@ import { log, logError } from './logger';
 import { e2e } from './rocketchat.e2e';
 import { RoomManager } from '../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { Messages, Rooms, Subscriptions } from '../../../client/stores';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 
@@ -222,7 +222,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSubscription() {
-		const subscription = Subscriptions.findOne({ rid: this.roomId });
+		const subscription = Subscriptions.state.find((record) => record.rid === this.roomId);
 
 		if (subscription?.lastMessage?.t !== 'e2e') {
 			this.log('decryptSubscriptions nothing to do');
@@ -231,21 +231,19 @@ export class E2ERoom extends Emitter {
 
 		const message = await this.decryptMessage(subscription.lastMessage);
 
-		Subscriptions.update(
-			{
-				_id: subscription._id,
-			},
-			{
-				$set: {
-					lastMessage: message,
-				},
-			},
-		);
+		if (message !== subscription.lastMessage) {
+			this.log('decryptSubscriptions updating lastMessage');
+			Subscriptions.state.store({
+				...subscription,
+				lastMessage: message,
+			});
+		}
+
 		this.log('decryptSubscriptions Done');
 	}
 
 	async decryptOldRoomKeys() {
-		const sub = Subscriptions.findOne({ rid: this.roomId });
+		const sub = Subscriptions.state.find((record) => record.rid === this.roomId);
 
 		if (!sub?.oldRoomKeys || sub?.oldRoomKeys.length === 0) {
 			this.log('decryptOldRoomKeys nothing to do');
@@ -322,7 +320,7 @@ export class E2ERoom extends Emitter {
 		this.setState(E2ERoomState.ESTABLISHING);
 
 		try {
-			const groupKey = Subscriptions.findOne({ rid: this.roomId })?.E2EKey;
+			const groupKey = Subscriptions.state.find((record) => record.rid === this.roomId)?.E2EKey;
 			if (groupKey) {
 				await this.importGroupKey(groupKey);
 				this.setState(E2ERoomState.READY);
@@ -335,9 +333,8 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const room = Rooms.findOne({ _id: this.roomId })!;
-			if (!room.e2eKeyId) {
+			const room = Rooms.state.get(this.roomId);
+			if (!room?.e2eKeyId) {
 				this.setState(E2ERoomState.CREATING_KEYS);
 				await this.createGroupKey();
 				this.setState(E2ERoomState.READY);
@@ -476,7 +473,7 @@ export class E2ERoom extends Emitter {
 	async encryptKeyForOtherParticipants() {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
-			const mySub = Subscriptions.findOne({ rid: this.roomId });
+			const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 			const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
 			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
 
@@ -770,7 +767,7 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		const mySub = Subscriptions.findOne({ rid: this.roomId });
+		const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 		const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
 		const usersWithKeys = await Promise.all(
 			users.map(async (user) => {

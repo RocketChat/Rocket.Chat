@@ -2,8 +2,8 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { screenDecorator } from '../../../.storybook/helpers';
 import TriggerMessage from './component';
+import { screenDecorator } from '../../../.storybook/helpers';
 
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
 
