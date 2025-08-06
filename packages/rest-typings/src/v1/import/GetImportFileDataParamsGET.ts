@@ -1,10 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
-
+import { ajv } from './../Ajv';
 export type GetImportFileDataParamsGET = Record<string, unknown>;
 
 const GetImportFileDataParamsGETSchema = {

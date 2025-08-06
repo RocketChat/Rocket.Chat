@@ -3,13 +3,11 @@ import type { IUser, ISession, DeviceManagementSession, DeviceManagementPopulate
 import { License } from '@rocket.chat/license';
 import { Users, Sessions } from '@rocket.chat/models';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import Ajv from 'ajv';
 
 import { API } from '../../../app/api/server/api';
 import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
-
-const ajv = new Ajv({ coerceTypes: true, allowUnionTypes: true });
 
 type SessionsProps = {
 	sessionId: string;

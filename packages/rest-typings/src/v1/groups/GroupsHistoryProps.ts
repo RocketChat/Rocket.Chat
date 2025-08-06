@@ -1,13 +1,8 @@
-import Ajv from 'ajv';
-
 import type { GroupsBaseProps } from './BaseProps';
 import { withGroupBaseProperties } from './BaseProps';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import { ajv } from './../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 export type GroupsHistoryProps = PaginatedRequest<
 	GroupsBaseProps & { latest?: string; oldest?: string; inclusive?: boolean; unreads?: boolean; showThreadMessages?: string }

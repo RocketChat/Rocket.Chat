@@ -1,7 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
-
-const ajv = new Ajv({ allowUnionTypes: true });
+import { ajv } from './../Ajv';
 
 export type ChannelsConvertToTeamProps =
 	| { channelId: IRoom['_id']; channelName?: never }

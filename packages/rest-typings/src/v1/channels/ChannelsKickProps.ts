@@ -1,7 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({ allowUnionTypes: true });
-
+import { ajv } from './../Ajv';
 export type ChannelsKickProps = { roomId: string; userId: string } | { roomName: string; userId: string };
 
 const channelsKickPropsSchema = {

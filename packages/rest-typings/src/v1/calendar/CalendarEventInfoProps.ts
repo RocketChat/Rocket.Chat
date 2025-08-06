@@ -1,10 +1,6 @@
-import Ajv from 'ajv';
 import type { JSONSchemaType } from 'ajv';
+import { ajv } from './../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 export type CalendarEventInfoProps = { id: string };
 

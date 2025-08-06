@@ -1,7 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({ allowUnionTypes: true });
-
+import { ajv } from './../Ajv';
 export type TeamsLeaveProps = ({ teamId: string } | { teamName: string }) & { rooms?: string[] };
 
 const teamsLeavePropsSchema = {

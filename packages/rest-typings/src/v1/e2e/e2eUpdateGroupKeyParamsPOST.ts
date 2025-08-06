@@ -1,10 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
-
+import { ajv } from './../Ajv';
 export type e2eUpdateGroupKeyParamsPOST = {
 	uid: string;
 	rid: string;

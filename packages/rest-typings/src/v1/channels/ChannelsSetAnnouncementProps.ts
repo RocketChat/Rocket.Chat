@@ -1,7 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({ allowUnionTypes: true });
-
+import { ajv } from './../Ajv';
 export type ChannelsSetAnnouncementProps = { roomId: string; announcement: string } | { roomName: string; announcement: string };
 
 const channelsSetAnnouncementPropsSchema = {

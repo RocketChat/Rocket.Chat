@@ -1,13 +1,8 @@
 import type { IRoom, IUser, ITeam } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv } from './Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 type DirectoryProps = PaginatedRequest<{ text?: string; type?: string; workspace?: string; query?: string }>;
 

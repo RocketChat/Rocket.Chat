@@ -1,12 +1,7 @@
-import Ajv from 'ajv';
-
 import type { GroupsBaseProps } from './BaseProps';
 import { withGroupBaseProperties } from './BaseProps';
+import { ajv } from './../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 export type GroupsAddAllProps = GroupsBaseProps & {
 	activeUsersOnly?: 'true' | 'false' | 1 | 0;

@@ -1,12 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import { ajv } from './../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 export type ChannelsMessagesProps = PaginatedRequest<
 	{

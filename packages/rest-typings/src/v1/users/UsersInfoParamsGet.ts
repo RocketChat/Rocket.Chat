@@ -1,10 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
-
+import { ajv } from './../Ajv';
 export type UsersInfoParamsGet = ({ userId: string } | { username: string } | { importId: string }) & {
 	fields?: string;
 	includeUserRooms?: string;

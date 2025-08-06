@@ -1,8 +1,6 @@
-import Ajv from 'ajv';
-
 import type { FederationPaginatedRequest } from '.';
+import { ajv } from './../Ajv';
 
-const ajv = new Ajv({ allowUnionTypes: true });
 
 export type FederationSearchPublicRoomsProps = FederationPaginatedRequest<{
 	serverName?: string;

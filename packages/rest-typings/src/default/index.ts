@@ -1,10 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
-
+import { ajv } from './../v1/Ajv';
 type OpenAPIJSONEndpoint = { withUndocumented?: boolean };
 
 const OpenAPIJSONEndpointSchema = {

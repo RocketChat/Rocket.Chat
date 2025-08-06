@@ -1,5 +1,4 @@
-import Ajv from 'ajv';
-
+import { ajv } from './Ajv';
 type Password = string | { hashed: string };
 
 type EmailLogin = { email: string };
@@ -22,8 +21,6 @@ export type AuthEndpoints = {
 		GET: () => LogoutResponse;
 	};
 };
-
-const ajv = new Ajv({ allowUnionTypes: true });
 
 const loginPropsSchema = {
 	type: 'object',

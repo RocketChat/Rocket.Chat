@@ -1,10 +1,5 @@
 import type { IPermission } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
+import { ajv } from './Ajv';
 
 type PermissionsListAllProps = {
 	updatedSince?: string;

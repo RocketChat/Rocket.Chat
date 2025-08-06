@@ -1,8 +1,6 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import { ajv } from './../Ajv';
 
-const ajv = new Ajv({ allowUnionTypes: true });
 
 export type IntegrationsListProps = PaginatedRequest<{ name?: string; type?: string; query?: string }>;
 

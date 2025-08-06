@@ -1,13 +1,8 @@
 import type { ICustomEmojiDescriptor, IEmojiCustom } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv } from './Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 type emojiCustomDeleteProps = {
 	emojiId: ICustomEmojiDescriptor['_id'];

@@ -1,7 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({ allowUnionTypes: true });
-
+import { ajv } from './../Ajv';
 export type ChannelsModeratorsProps =
 	| { roomId: string; userId?: string; username?: string; user?: string }
 	| { roomName: string; userId?: string; username?: string; user?: string };

@@ -1,12 +1,7 @@
 import type { IOutboundMessage, IOutboundProvider, IOutboundProviderMetadata, ValidOutboundProvider } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import type { OutboundCommsEndpoints } from '../api/outbound';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

@@ -1,13 +1,8 @@
 import type { ICustomUserStatus, IUserStatus } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv } from './Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 type CustomUserStatusListProps = PaginatedRequest<{ name?: string; _id?: string; query?: string }>;
 

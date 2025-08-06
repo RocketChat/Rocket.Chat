@@ -1,10 +1,5 @@
 import type { LicenseInfo, Cloud } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
+import { ajv } from './Ajv';
 
 type licensesAddProps = {
 	license: string;

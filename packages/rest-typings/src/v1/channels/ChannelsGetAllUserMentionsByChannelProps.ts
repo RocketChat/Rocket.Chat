@@ -1,11 +1,6 @@
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import { ajv } from './../Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 export type ChannelsGetAllUserMentionsByChannelProps = PaginatedRequest<{ roomId: string }>;
 

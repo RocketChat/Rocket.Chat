@@ -12,15 +12,10 @@ import type {
 } from '@rocket.chat/core-typings';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
-import Ajv from 'ajv';
-
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ajv } from './Ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	allowUnionTypes: true,
-});
 
 type ConnectorExtensionGetRegistrationInfoByUserId = { id: string };
 
