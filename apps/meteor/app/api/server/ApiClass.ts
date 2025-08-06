@@ -804,6 +804,11 @@ export class APIClass<
 				}
 				// Add a try/catch for each endpoint
 				const originalAction = (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action;
+
+				if (options.deprecation && shouldBreakInVersion(options.deprecation.version)) {
+					throw new Meteor.Error('error-deprecated', `The endpoint ${route} should be removed`);
+				}
+
 				// eslint-disable-next-line @typescript-eslint/no-this-alias
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
