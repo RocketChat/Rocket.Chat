@@ -434,16 +434,18 @@ describe('LIVECHAT - rooms', () => {
 
 		describe('Manual selection', () => {
 			let visitor: ILivechatVisitor;
-			let room: IOmnichannelRoom;
+			let manualRoom: IOmnichannelRoom;
 			before(async () => {
 				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 				visitor = await createVisitor();
-				room = await createLivechatRoom(visitor.token);
+				manualRoom = await createLivechatRoom(visitor.token);
+				console.log(manualRoom);
 			});
 
 			after(async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-				await closeOmnichannelRoom(room._id);
+				console.log(manualRoom);
+				await closeOmnichannelRoom(manualRoom._id);
 			});
 
 			it('should return queued rooms when `queued` param is passed', async () => {
@@ -451,14 +453,14 @@ describe('LIVECHAT - rooms', () => {
 
 				expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
 				expect(body.rooms.every((room: IOmnichannelRoom) => !room.servedBy)).to.be.true;
-				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.not.undefined;
+				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === manualRoom._id)).to.be.not.undefined;
 			});
 			it('should return queued rooms when `queued` and `open` params are passed', async () => {
 				const { body } = await request.get(api('livechat/rooms')).query({ queued: true, open: true }).set(credentials).expect(200);
 
 				expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
 				expect(body.rooms.every((room: IOmnichannelRoom) => !room.servedBy)).to.be.true;
-				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.not.undefined;
+				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === manualRoom._id)).to.be.not.undefined;
 			});
 			it('should return open rooms when `open` is param is passed. Open rooms should not include queued conversations', async () => {
 				const { room: room2 } = await startANewLivechatRoomAndTakeIt();
@@ -467,7 +469,7 @@ describe('LIVECHAT - rooms', () => {
 
 				expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
 				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room2._id)).to.be.not.undefined;
-				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.undefined;
+				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === manualRoom._id)).to.be.undefined;
 			});
 		});
 
