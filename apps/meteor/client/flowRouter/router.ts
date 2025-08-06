@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import type { Context } from './page';
@@ -68,10 +67,6 @@ class Router {
 	// most of the time, there is only one old route
 	// but when it's the time for a trigger redirect we've a chain
 	private _oldRouteChain: (Route | undefined)[] = [];
-
-	private readonly env = {
-		reload: new Meteor.EnvironmentVariable(),
-	};
 
 	constructor() {
 		this.route('*', {});
@@ -197,14 +192,7 @@ class Router {
 	}
 
 	private go(pathDef: string, { reload = false }: { reload?: boolean } = {}): void {
-		const path = this.path(pathDef);
-		if (!reload && path === this._current?.path) return;
-
-		try {
-			page.show(path);
-		} catch (e) {
-			Meteor._debug('Malformed URI!', path, e);
-		}
+		page.show(this.path(pathDef), { reload });
 	}
 
 	get current() {
@@ -217,33 +205,6 @@ class Router {
 		}
 
 		this._updateCallbacks();
-
-		// Implementing idempotent routing
-		// by overriding page.js`s "show" method.
-		// Why?
-		// It is impossible to bypass exit triggers,
-		// because they execute before the handler and
-		// can not know what the next path is, inside exit trigger.
-		//
-		// we need override both show, replace to make this work
-		// since we use redirect when we are talking about withReplaceState
-		page.show = ((original) => (path) => {
-			if (!path || (!this.env.reload.get() && this._current?.path === path)) {
-				return undefined as unknown as Context;
-			}
-			const pathParts = path.split('?');
-			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
-			return original.call(page, pathParts.join('?'));
-		})(page.show);
-
-		page.replace = ((original) => (path, state?, dispatch?, push?) => {
-			if (!path || (!this.env.reload.get() && this._current?.path === path)) {
-				return undefined as unknown as Context;
-			}
-			const pathParts = path.split('?');
-			pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
-			return original.call(page, pathParts.join('?'), state, dispatch, push);
-		})(page.replace);
 
 		// this is very ugly part of pagejs and it does decoding few times
 		// in unpredicatable manner. See #168
@@ -337,26 +298,12 @@ class Router {
 					return;
 				}
 
-				// XXX: fix this with a proper solution by removing subscription mgt.
-				// from the router. Then we don't need to run invalidate using a tracker
-
-				// this happens when we are trying to invoke a route change
-				// with inside a route change. (eg:- Template.onCreated)
-				// Since we use page.js and tracker, we don't have much control
-				// over this process.
-				// only solution is to defer route execution.
-
-				// It's possible to have more than one path want to defer
-				// But, we only need to pick the last one.
-				// self._nextPath = self._current.path;
-				Meteor.defer(() => {
+				queueMicrotask(() => {
 					const path = this._nextPath;
 					if (!path) return;
 
 					delete this._nextPath;
-					this.env.reload.withValue(true, () => {
-						this.go(path, { reload: true });
-					});
+					this.go(path, { reload: true });
 				});
 			}
 		}
@@ -364,7 +311,7 @@ class Router {
 
 	_updateCallbacks() {
 		page.callbacks = [];
-		page.exits = [];
+
 		let catchAll: Route | null = null;
 
 		for (const route of this._routes) {

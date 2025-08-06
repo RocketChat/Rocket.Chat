@@ -7,27 +7,6 @@ import { pathToRegexp } from 'path-to-regexp';
 type State = { path: string };
 
 /**
- * Detect click event
- */
-const clickEvent = document.ontouchstart ? 'touchstart' : 'click';
-
-/**
- * Base path.
- */
-let base = '';
-
-/**
- * Running flag.
- */
-let running: boolean;
-
-/**
- * Previous context, for capturing
- * page exit events.
- */
-let prevContext: Context | undefined;
-
-/**
  * Routes are passed Context objects, these may be used to share state, for example ctx.user =, as well as the history "state" ctx.state that the pushState API provides.
  */
 class Context {
@@ -66,10 +45,6 @@ class Context {
 	 */
 	params: Record<string, string>;
 
-	init: boolean | undefined;
-
-	hash: string;
-
 	/**
 	 * Initialize a new "request" `Context`
 	 * with the given `path` and optional initial `state`.
@@ -78,7 +53,7 @@ class Context {
 	 * @api public
 	 */
 	constructor(path: string, state?: State) {
-		const pageBase = getBase();
+		const pageBase = page.getBase();
 		if (path[0] === '/' && path.indexOf(pageBase) !== 0) path = `${pageBase}${path}`;
 		const i = path.indexOf('?');
 
@@ -86,17 +61,15 @@ class Context {
 		this.path = path.replace(pageBase, '') || '/';
 
 		this.title = document.title;
-		this.state = Object.assign(state || {}, { path });
+		this.state = { ...state, path };
 		this.querystring = ~i ? decodeURLEncodedURIComponent(path.slice(i + 1)) : '';
 		this.pathname = decodeURLEncodedURIComponent(~i ? path.slice(0, i) : path);
 		this.params = {};
 
 		// fragment
-		this.hash = '';
 		if (!~this.path.indexOf('#')) return;
 		const parts = this.path.split('#');
 		this.path = this.pathname = parts[0];
-		this.hash = decodeURLEncodedURIComponent(parts[1]) || '';
 		this.querystring = this.querystring.split('#')[0];
 	}
 
@@ -127,12 +100,15 @@ class Page {
 	 */
 	callbacks: Callback[] = [];
 
-	exits: Callback[] = [];
-
 	/**
 	 * Current path being processed
 	 */
 	current = '';
+
+	/**
+	 * Running flag.
+	 */
+	private running: boolean;
 
 	registerRoute(path: string, callback: Callback): void {
 		const route = new Route(path);
@@ -150,33 +126,136 @@ class Page {
 	 * If you wish to load serve initial content from the server you likely will want to set dispatch to false.
 	 */
 	start() {
-		if (running) return;
-		running = true;
+		if (this.running) return;
+		this.running = true;
 
-		window.addEventListener('popstate', onpopstate, false);
-		document.addEventListener(clickEvent, onclick, false);
+		window.addEventListener('popstate', this.onpopstate, false);
+		document.addEventListener('click', this.onclick, false);
 
 		const url = location.pathname + location.search + location.hash;
 
-		this.replace(url, undefined, true);
+		this.replace(url, { state: undefined, dispatch: undefined });
 	}
 
 	/**
 	 * Unbind both the popstate and click handlers.
 	 */
 	stop() {
-		if (!running) return;
+		if (!this.running) return;
 		this.current = '';
-		running = false;
-		document.removeEventListener(clickEvent, onclick, false);
-		window.removeEventListener('popstate', onpopstate, false);
+		this.running = false;
+		document.removeEventListener('click', this.onclick, false);
+		window.removeEventListener('popstate', this.onpopstate, false);
 	}
 
 	/**
-	 * Set the base path. For example if page.js is operating within /blog/* set the base path to "/blog".
+	 * Handle "click" events.
 	 */
-	setBase(path: string) {
-		base = path;
+	private readonly onclick = (e: MouseEvent | TouchEvent) => {
+		if (this.which(e) !== 1) return;
+
+		if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+		if (e.defaultPrevented) return;
+
+		// ensure link
+		// use shadow dom when available if not, fall back to composedPath() for browsers that only have shady
+		let el = e.target as Node | null;
+		const eventPath = e.composedPath() as EventTarget[];
+
+		if (eventPath) {
+			for (let i = 0; i < eventPath.length; i++) {
+				if (!(eventPath[i] as Node).nodeName) continue;
+				if ((eventPath[i] as Node).nodeName.toUpperCase() !== 'A') continue;
+				if (!(eventPath[i] as HTMLAnchorElement).href) continue;
+
+				el = eventPath[i] as Node;
+				break;
+			}
+		}
+		// continue ensure link
+		// el.nodeName for svg links are 'a' instead of 'A'
+		while (el && el.nodeName.toUpperCase() !== 'A') el = el.parentNode;
+		if (!el || el.nodeName.toUpperCase() !== 'A') return;
+
+		// check if link is inside an svg
+		// in this case, both href and target are always inside an object
+		const svg =
+			typeof (el as HTMLAnchorElement).href === 'object' && (el as HTMLAnchorElement).href.constructor.name === 'SVGAnimatedString';
+
+		// Ignore if tag has
+		// 1. "download" attribute
+		// 2. rel="external" attribute
+		if ((el as HTMLAnchorElement).hasAttribute('download') || (el as HTMLAnchorElement).getAttribute('rel') === 'external') return;
+
+		// ensure non-hash for the same path
+		const link = (el as HTMLAnchorElement).getAttribute('href');
+		if (this.samePath(el as HTMLAnchorElement) && ((el as HTMLAnchorElement).hash || link === '#')) return;
+
+		// Check for mailto: in the href
+		if (link && link.indexOf('mailto:') > -1) return;
+
+		// check target
+		// svg target is an object and its desired value is in .baseVal property
+		if (svg ? (el as SVGAElement).target.baseVal : (el as HTMLAnchorElement).target) return;
+
+		// x-origin
+		// note: svg links that are not relative don't call click events (and skip page.js)
+		// consequently, all svg links tested inside page.js are relative and in the same origin
+		if (!svg && !this.sameOrigin((el as HTMLAnchorElement).href)) return;
+
+		// rebuild path
+		// There aren't .pathname and .search properties in svg links, so we use href
+		// Also, svg href is an object and its desired value is in .baseVal property
+		let path = svg
+			? (el as SVGAElement).href.baseVal
+			: (el as HTMLAnchorElement).pathname + (el as HTMLAnchorElement).search + ((el as HTMLAnchorElement).hash || '');
+
+		path = path[0] !== '/' ? `/${path}` : path;
+
+		// same page
+		const orig = path;
+		const pageBase = this.getBase();
+
+		if (path.indexOf(pageBase) === 0) {
+			path = path.slice(this.getBase().length);
+		}
+
+		if (pageBase && orig === path) return;
+
+		e.preventDefault();
+		page.show(orig);
+	};
+
+	/**
+	 * Check if `href` is the same origin.
+	 */
+	private sameOrigin(href: string) {
+		if (!href) return false;
+		const url = new URL(href, location.toString());
+
+		return location.protocol === url.protocol && location.hostname === url.hostname && location.port === url.port;
+	}
+
+	private samePath(url: URL | HTMLAnchorElement) {
+		return url.pathname === location.pathname && url.search === location.search;
+	}
+
+	/**
+	 * Handle "populate" events.
+	 */
+	private readonly onpopstate = (e: PopStateEvent) => {
+		if (e.state) {
+			page.replace(e.state.path, { state: e.state });
+		} else {
+			page.show(location.pathname + location.hash, { push: false });
+		}
+	};
+
+	/**
+	 * Event button.
+	 */
+	private which(e: MouseEvent | TouchEvent) {
+		return e.which == null ? (e as MouseEvent).button : e.which;
 	}
 
 	/**
@@ -189,29 +268,38 @@ class Page {
 	 *
 	 * Identical to page(path).
 	 */
-	show(this: this, path: string, state?: State, dispatch = true, push = true) {
+	show(
+		this: this,
+		path: string,
+		{ state, dispatch = true, push = true, reload = false }: { state?: State; dispatch?: boolean; push?: boolean; reload?: boolean } = {},
+	) {
+		if (!path || (!reload && this.current === path)) return;
+
+		const pathParts = path.split('?');
+		pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
+		path = pathParts.join('?');
+
 		const ctx = new Context(path, state);
-		const prev = prevContext;
-		prevContext = ctx;
 		this.current = ctx.path;
-		if (dispatch) this.dispatch(ctx, prev);
+		if (dispatch) this.dispatch(ctx);
 		if (push) ctx.pushState();
-		return ctx;
 	}
 
 	/**
 	 * Replace `path` with optional `state` object.
 	 *
 	 */
-	replace(this: this, path: string, state?: State, init?: boolean, dispatch = true): Context {
+	replace(this: this, path: string, { state, dispatch = true }: { state?: State; dispatch?: boolean } = {}) {
+		if (!path || this.current === path) return;
+
+		const pathParts = path.split('?');
+		pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
+		path = pathParts.join('?');
+
 		const ctx = new Context(path, state);
-		const prev = prevContext;
-		prevContext = ctx;
 		this.current = ctx.path;
-		ctx.init = init;
 		ctx.save(); // save before dispatching, which may redirect
-		if (dispatch) this.dispatch(ctx, prev);
-		return ctx;
+		if (dispatch) this.dispatch(ctx);
 	}
 
 	/**
@@ -219,15 +307,8 @@ class Page {
 	 *
 	 * @api private
 	 */
-	dispatch(ctx: Context, prev?: Context) {
+	dispatch(ctx: Context) {
 		let i = 0;
-		let j = 0;
-
-		const nextExit = () => {
-			const fn = this.exits[j++];
-			if (!fn) return nextEnter();
-			fn(prev!, nextExit);
-		};
 
 		const nextEnter = () => {
 			const fn = this.callbacks[i++];
@@ -239,11 +320,7 @@ class Page {
 			fn(ctx, nextEnter);
 		};
 
-		if (prev) {
-			nextExit();
-		} else {
-			nextEnter();
-		}
+		nextEnter();
 	}
 
 	/**
@@ -259,6 +336,22 @@ class Page {
 		if (current === ctx.canonicalPath) return;
 		stop();
 		location.href = ctx.canonicalPath;
+	}
+
+	private base = '';
+
+	/**
+	 * Gets the `base`, which depends on whether we are using History or hashbang routing.
+	 */
+	getBase() {
+		return this.base;
+	}
+
+	/**
+	 * Set the base path. For example if page.js is operating within /blog/* set the base path to "/blog".
+	 */
+	setBase(path: string) {
+		this.base = path;
 	}
 
 	readonly Context = Context;
@@ -328,146 +421,6 @@ class Route {
 
 		return true;
 	}
-}
-
-/**
- * Handle "populate" events.
- */
-const onpopstate = (function () {
-	let loaded = false;
-
-	if (document.readyState === 'complete') {
-		loaded = true;
-	} else {
-		window.addEventListener('load', () => {
-			setTimeout(() => {
-				loaded = true;
-			}, 0);
-		});
-	}
-	return function onpopstate(e: PopStateEvent) {
-		if (!loaded) return;
-		if (e.state) {
-			const { path } = e.state;
-			page.replace(path, e.state);
-		} else {
-			page.show(location.pathname + location.hash, undefined, undefined, false);
-		}
-	};
-})();
-
-/**
- * Handle "click" events.
- */
-function onclick(e: MouseEvent | TouchEvent) {
-	if (which(e) !== 1) return;
-
-	if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-	if (e.defaultPrevented) return;
-
-	// ensure link
-	// use shadow dom when available if not, fall back to composedPath() for browsers that only have shady
-	let el = e.target as Node | null;
-	const eventPath = e.composedPath() as EventTarget[];
-
-	if (eventPath) {
-		for (let i = 0; i < eventPath.length; i++) {
-			if (!(eventPath[i] as Node).nodeName) continue;
-			if ((eventPath[i] as Node).nodeName.toUpperCase() !== 'A') continue;
-			if (!(eventPath[i] as HTMLAnchorElement).href) continue;
-
-			el = eventPath[i] as Node;
-			break;
-		}
-	}
-	// continue ensure link
-	// el.nodeName for svg links are 'a' instead of 'A'
-	while (el && el.nodeName.toUpperCase() !== 'A') el = el.parentNode;
-	if (!el || el.nodeName.toUpperCase() !== 'A') return;
-
-	// check if link is inside an svg
-	// in this case, both href and target are always inside an object
-	const svg = typeof (el as HTMLAnchorElement).href === 'object' && (el as HTMLAnchorElement).href.constructor.name === 'SVGAnimatedString';
-
-	// Ignore if tag has
-	// 1. "download" attribute
-	// 2. rel="external" attribute
-	if ((el as HTMLAnchorElement).hasAttribute('download') || (el as HTMLAnchorElement).getAttribute('rel') === 'external') return;
-
-	// ensure non-hash for the same path
-	const link = (el as HTMLAnchorElement).getAttribute('href');
-	if (samePath(el as HTMLAnchorElement) && ((el as HTMLAnchorElement).hash || link === '#')) return;
-
-	// Check for mailto: in the href
-	if (link && link.indexOf('mailto:') > -1) return;
-
-	// check target
-	// svg target is an object and its desired value is in .baseVal property
-	if (svg ? (el as SVGAElement).target.baseVal : (el as HTMLAnchorElement).target) return;
-
-	// x-origin
-	// note: svg links that are not relative don't call click events (and skip page.js)
-	// consequently, all svg links tested inside page.js are relative and in the same origin
-	if (!svg && !sameOrigin((el as HTMLAnchorElement).href)) return;
-
-	// rebuild path
-	// There aren't .pathname and .search properties in svg links, so we use href
-	// Also, svg href is an object and its desired value is in .baseVal property
-	let path = svg
-		? (el as SVGAElement).href.baseVal
-		: (el as HTMLAnchorElement).pathname + (el as HTMLAnchorElement).search + ((el as HTMLAnchorElement).hash || '');
-
-	path = path[0] !== '/' ? `/${path}` : path;
-
-	// same page
-	const orig = path;
-	const pageBase = getBase();
-
-	if (path.indexOf(pageBase) === 0) {
-		path = path.substr(base.length);
-	}
-
-	if (pageBase && orig === path) return;
-
-	e.preventDefault();
-	page.show(orig);
-}
-
-/**
- * Event button.
- */
-function which(e: MouseEvent | TouchEvent) {
-	e = e || window.event;
-	return e.which == null ? (e as MouseEvent).button : e.which;
-}
-
-/**
- * Convert to a URL object
- */
-function toURL(href: string) {
-	return new URL(href, location.toString());
-}
-
-/**
- * Check if `href` is the same origin.
- */
-function sameOrigin(href: string) {
-	if (!href) return false;
-	const url = toURL(href);
-
-	return location.protocol === url.protocol && location.hostname === url.hostname && location.port === url.port;
-}
-
-function samePath(url: URL | HTMLAnchorElement) {
-	return url.pathname === location.pathname && url.search === location.search;
-}
-
-/**
- * Gets the `base`, which depends on whether we are using History or
- * hashbang routing.
- */
-function getBase() {
-	return base;
 }
 
 interface Callback {
