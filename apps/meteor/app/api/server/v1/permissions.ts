@@ -1,6 +1,11 @@
 import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { permissionsGetMethod } from '../../../authorization/server/streamer/permissions';
@@ -10,6 +15,10 @@ import { API } from '../api';
 
 type PermissionsListAllProps = {
 	updatedSince?: string;
+};
+
+type PermissionsUpdateProps = {
+	permissions: { _id: string; roles: string[] }[];
 };
 
 const permissionListAllSchema = {
@@ -22,155 +31,6 @@ const permissionListAllSchema = {
 	},
 	required: [],
 	additionalProperties: false,
-};
-
-export const isPermissionsListAll = ajv.compile<PermissionsListAllProps>(permissionListAllSchema);
-
-const permissionsListAllEndpoints = API.v1.get(
-	'permissions.listAll',
-	{
-		authRequired: true,
-		query: isPermissionsListAll,
-		response: {
-			200: ajv.compile<{
-				update: IPermission[];
-				remove: IPermission[];
-			}>({
-				type: 'object',
-				properties: {
-					update: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								_id: { type: 'string' },
-								_updatedAt: { type: 'object' },
-								roles: {
-									type: 'array',
-									items: { type: 'string' },
-								},
-								group: { type: 'string', nullable: true },
-								groupPermissionId: { type: 'string', nullable: true },
-								level: { type: 'string', enum: ['settings'], nullable: true },
-								section: { type: 'string', nullable: true },
-								sectionPermissionId: { type: 'string', nullable: true },
-								settingId: { type: 'string', nullable: true },
-								sorter: { type: 'integer', nullable: true },
-							},
-							required: ['_id', '_updatedAt', 'roles'],
-							additionalProperties: false,
-						},
-					},
-					remove: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								_id: { type: 'string' },
-								_updatedAt: { type: 'object' },
-								roles: {
-									type: 'array',
-									items: { type: 'string' },
-								},
-								group: { type: 'string', nullable: true },
-								groupPermissionId: { type: 'string', nullable: true },
-								level: { type: 'string', enum: ['settings'], nullable: true },
-								section: { type: 'string', nullable: true },
-								sectionPermissionId: { type: 'string', nullable: true },
-								settingId: { type: 'string', nullable: true },
-								sorter: { type: 'integer', nullable: true },
-							},
-							required: ['_id', '_updatedAt', 'roles'],
-							additionalProperties: false,
-						},
-					},
-					success: {
-						type: 'boolean',
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['update', 'remove', 'success'],
-				additionalProperties: false,
-			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: {
-					error: {
-						type: 'string',
-						description: 'The error message.',
-					},
-					errorType: {
-						type: 'string',
-						description: 'The type of the error.',
-					},
-					details: {
-						type: 'object',
-						nullable: true,
-						properties: {
-							rid: {
-								type: 'string',
-								description: 'The room ID.',
-							},
-							method: {
-								type: 'string',
-								description: 'The method that caused the error.',
-							},
-						},
-					},
-					success: {
-						type: 'boolean',
-						enum: [false],
-					},
-				},
-				required: ['success', 'error'],
-			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					success: {
-						type: 'boolean',
-						enum: [false],
-					},
-					status: {
-						type: 'string',
-					},
-					message: {
-						type: 'string',
-					},
-				},
-				required: ['success'],
-			}),
-		},
-	},
-	async function action() {
-		const { updatedSince } = this.queryParams;
-
-		let updatedSinceDate: Date | undefined;
-		if (updatedSince) {
-			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-			}
-			updatedSinceDate = new Date(updatedSince);
-		}
-
-		const result = (await permissionsGetMethod(updatedSinceDate)) as {
-			update: IPermission[];
-			remove: IPermission[];
-		};
-
-		if (Array.isArray(result)) {
-			return API.v1.success({
-				update: result,
-				remove: [],
-			});
-		}
-
-		return API.v1.success(result);
-	},
-);
-
-type PermissionsUpdateProps = {
-	permissions: { _id: string; roles: string[] }[];
 };
 
 const permissionUpdatePropsSchema = {
@@ -197,141 +57,138 @@ const permissionUpdatePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(permissionUpdatePropsSchema);
+const isPermissionsListAll = ajv.compile<PermissionsListAllProps>(permissionListAllSchema);
 
-const permissionsUpdateEndpoints = API.v1.post(
-	'permissions.update',
-	{
-		authRequired: true,
-		permissionsRequired: ['access-permissions'],
-		body: isBodyParamsValidPermissionUpdate,
-		response: {
-			200: ajv.compile<{
-				permissions: IPermission[];
-			}>({
-				type: 'object',
-				properties: {
-					permissions: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								_id: { type: 'string' },
-								_updatedAt: { type: 'object' },
-								roles: {
-									type: 'array',
-									items: { type: 'string' },
-								},
-								group: { type: 'string', nullable: true },
-								groupPermissionId: { type: 'string', nullable: true },
-								level: { type: 'string', enum: ['settings'], nullable: true },
-								section: { type: 'string', nullable: true },
-								sectionPermissionId: { type: 'string', nullable: true },
-								settingId: { type: 'string', nullable: true },
-								sorter: { type: 'integer', nullable: true },
-							},
-							required: ['_id', '_updatedAt', 'roles'],
-							additionalProperties: false,
+const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(permissionUpdatePropsSchema);
+
+const permissionsEndpoints = API.v1
+	.get(
+		'permissions.listAll',
+		{
+			authRequired: true,
+			query: isPermissionsListAll,
+			response: {
+				200: ajv.compile<{
+					update: IPermission[];
+					remove: IPermission[];
+				}>({
+					type: 'object',
+					properties: {
+						update: {
+							type: 'array',
+							items: { $ref: '#/components/schemas/IPermission' },
+						},
+						remove: {
+							type: 'array',
+							items: { $ref: '#/components/schemas/IPermission' },
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+							description: 'Indicates if the request was successful.',
 						},
 					},
-					success: {
-						type: 'boolean',
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['permissions', 'success'],
-				additionalProperties: false,
-			}),
-			400: ajv.compile<{
-				error?: string;
-				errorType?: string;
-				stack?: string;
-			}>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					stack: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					success: {
-						type: 'boolean',
-						enum: [false],
-					},
-					status: { type: 'string' },
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			403: ajv.compile({
-				type: 'object',
-				properties: {
-					success: {
-						type: 'boolean',
-						enum: [false],
-					},
-					message: { type: 'string' },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+					required: ['update', 'remove', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-	},
-	async function action() {
-		const { bodyParams } = this;
+		async function action() {
+			const { updatedSince } = this.queryParams;
 
-		if (!isBodyParamsValidPermissionUpdate(bodyParams)) {
-			return API.v1.failure('Invalid body params', 'error-invalid-body-params');
-		}
+			let updatedSinceDate: Date | undefined;
+			if (updatedSince) {
+				if (isNaN(Date.parse(updatedSince))) {
+					throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+				}
+				updatedSinceDate = new Date(updatedSince);
+			}
 
-		const permissionKeys = bodyParams.permissions.map(({ _id }) => _id);
-		const permissions = await Permissions.find({ _id: { $in: permissionKeys } }).toArray();
+			const result = (await permissionsGetMethod(updatedSinceDate)) as {
+				update: IPermission[];
+				remove: IPermission[];
+			};
 
-		if (permissions.length !== bodyParams.permissions.length) {
-			return API.v1.failure('Invalid permission', 'error-invalid-permission');
-		}
+			if (Array.isArray(result)) {
+				return API.v1.success({
+					update: result,
+					remove: [],
+				});
+			}
 
-		const roleKeys = [...new Set(bodyParams.permissions.flatMap((p) => p.roles))];
+			return API.v1.success(result);
+		},
+	)
+	.post(
+		'permissions.update',
+		{
+			authRequired: true,
+			permissionsRequired: ['access-permissions'],
+			body: isBodyParamsValidPermissionUpdate,
+			response: {
+				200: ajv.compile<{
+					permissions: IPermission[];
+				}>({
+					type: 'object',
+					properties: {
+						permissions: {
+							type: 'array',
+							items: { $ref: '#/components/schemas/IPermission' },
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['permissions', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const { bodyParams } = this;
 
-		const roles = await Roles.find({ _id: { $in: roleKeys } }).toArray();
+			if (!isBodyParamsValidPermissionUpdate(bodyParams)) {
+				return API.v1.failure('Invalid body params', 'error-invalid-body-params');
+			}
 
-		if (roles.length !== roleKeys.length) {
-			return API.v1.failure('Invalid role', 'error-invalid-role');
-		}
+			const permissionKeys = bodyParams.permissions.map(({ _id }) => _id);
+			const permissions = await Permissions.find({ _id: { $in: permissionKeys } }).toArray();
 
-		for await (const permission of bodyParams.permissions) {
-			await Permissions.setRoles(permission._id, permission.roles);
-			void notifyOnPermissionChangedById(permission._id);
-		}
+			if (permissions.length !== bodyParams.permissions.length) {
+				return API.v1.failure('Invalid permission', 'error-invalid-permission');
+			}
 
-		const result = (await permissionsGetMethod()) as IPermission[];
+			const roleKeys = [...new Set(bodyParams.permissions.flatMap((p) => p.roles))];
 
-		return API.v1.success({
-			permissions: result,
-		});
-	},
-);
+			const roles = await Roles.find({ _id: { $in: roleKeys } }).toArray();
 
-type PermissionsListAllEndpoints = ExtractRoutesFromAPI<typeof permissionsListAllEndpoints>;
+			if (roles.length !== roleKeys.length) {
+				return API.v1.failure('Invalid role', 'error-invalid-role');
+			}
 
-type PermissionsUpdateEndpoints = ExtractRoutesFromAPI<typeof permissionsUpdateEndpoints>;
+			for await (const permission of bodyParams.permissions) {
+				await Permissions.setRoles(permission._id, permission.roles);
+				void notifyOnPermissionChangedById(permission._id);
+			}
 
-export type PermissionsEndpoints = PermissionsListAllEndpoints | PermissionsUpdateEndpoints;
+			const result = (await permissionsGetMethod()) as IPermission[];
+
+			return API.v1.success({
+				permissions: result,
+			});
+		},
+	);
+
+export type PermissionsEndpoints = ExtractRoutesFromAPI<typeof permissionsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends PermissionsListAllEndpoints {}
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends PermissionsUpdateEndpoints {}
+	interface Endpoints extends PermissionsEndpoints {}
 }
