@@ -3,12 +3,12 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type MediaCallsStartProps = { sessionId: string; identifier: string; identifierKind: 'room' | 'user' | 'extension' };
+export type MediaCallsStartProps = { contractId: string; identifier: string; identifierKind: 'user' | 'extension' };
 
 const mediaCallsStartPropsSchema: JSONSchemaType<MediaCallsStartProps> = {
 	type: 'object',
 	properties: {
-		sessionId: {
+		contractId: {
 			type: 'string',
 			nullable: false,
 		},
@@ -21,8 +21,8 @@ const mediaCallsStartPropsSchema: JSONSchemaType<MediaCallsStartProps> = {
 			nullable: false,
 		},
 	},
-	required: ['sessionId', 'identifier', 'identifierKind'],
-	additionalProperties: true,
+	required: ['contractId', 'identifier', 'identifierKind'],
+	additionalProperties: false,
 };
 
 export const isMediaCallsStartProps = ajv.compile(mediaCallsStartPropsSchema);

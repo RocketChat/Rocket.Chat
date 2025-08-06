@@ -9,7 +9,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isMediaCallsStartProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 60000 } },
 	{
 		async post() {
-			const { sessionId, identifier, identifierKind } = this.bodyParams;
+			const { contractId, identifier, identifierKind } = this.bodyParams;
 			const { userId } = this;
 
 			if (!userId) {
@@ -22,10 +22,9 @@ API.v1.addRoute(
 			// 	return API.v1.forbidden();
 			// }
 
-			const caller = { uid: userId, sessionId };
+			const caller = { uid: userId, contractId };
 
 			const functions: Record<string, () => Promise<IMediaCall>> = {
-				room: () => MediaCall.callRoom(caller, identifier),
 				user: () => MediaCall.callUser(caller, identifier),
 				extension: () => MediaCall.callExtension(caller, identifier),
 			};

@@ -6,6 +6,8 @@ export type CallEvents = {
 	// contactUpdate may be triggered even if nothing actually changed
 	contactUpdate: void;
 
+	initialized: void;
+
 	accepting: void;
 	accepted: void;
 

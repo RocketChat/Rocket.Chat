@@ -1,6 +1,6 @@
 import { LocalStream } from './LocalStream';
 import { RemoteStream } from './RemoteStream';
-import type { IWebRTCProcessor, MediaSignalRequestOffer, MediaSignalSDP, WebRTCProcessorConfig } from '../../../definition';
+import type { IWebRTCProcessor, WebRTCProcessorConfig } from '../../../definition';
 
 type IceGatheringData = {
 	promise: Promise<void>;
@@ -42,7 +42,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.remoteMediaStream;
 	}
 
-	public async createOffer({ iceRestart }: MediaSignalRequestOffer): Promise<MediaSignalSDP> {
+	public async createOffer({ iceRestart }: { iceRestart?: boolean }): Promise<{ sdp: RTCSessionDescriptionInit }> {
 		console.log('processor.createOffer');
 		await this.initializeLocalMediaStream();
 
@@ -61,7 +61,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.getLocalDescription();
 	}
 
-	public async createAnswer({ sdp }: MediaSignalSDP): Promise<MediaSignalSDP> {
+	public async createAnswer({ sdp }: { sdp: RTCSessionDescriptionInit }): Promise<{ sdp: RTCSessionDescriptionInit }> {
 		if (sdp.type !== 'offer') {
 			throw new Error('invalid-webrtc-offer');
 		}
@@ -79,7 +79,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.getLocalDescription();
 	}
 
-	public async setRemoteDescription({ sdp }: MediaSignalSDP): Promise<void> {
+	public async setRemoteDescription({ sdp }: { sdp: RTCSessionDescriptionInit }): Promise<void> {
 		console.log('setRemoteDescription');
 		await this.initializeLocalMediaStream();
 
@@ -94,7 +94,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.config.mediaStreamFactory(constraints);
 	}
 
-	private async getLocalDescription(): Promise<MediaSignalSDP> {
+	private async getLocalDescription(): Promise<{ sdp: RTCSessionDescriptionInit }> {
 		console.log('getLocalDescription');
 		await this.waitForIceGathering();
 		console.log('waited');

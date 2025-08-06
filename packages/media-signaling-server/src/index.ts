@@ -1,4 +1,4 @@
-export { createCall } from './calls/createCall';
-export { processSignal } from './signals/processSignal';
-export { setSignalHandler } from './signals/signalHandler';
-export { logger } from './utils/logger';
+export { createCall } from './createCall';
+export { processSignal } from './processSignal';
+export { setSignalHandler } from './signalHandler';
+export { logger } from './logger';

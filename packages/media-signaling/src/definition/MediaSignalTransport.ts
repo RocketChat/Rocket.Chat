@@ -1,3 +1,5 @@
-import type { MediaSignal } from './MediaSignal';
+import type { AgentMediaSignal, ServerMediaSignal } from './MediaSignal';
 
-export type MediaSignalTransport = (signal: MediaSignal) => void;
+export type MediaSignalAgentTransport = (signal: AgentMediaSignal) => void;
+
+export type MediaSignalServerTransport = (signal: ServerMediaSignal) => void;

@@ -1,31 +1,30 @@
 import type {
 	MediaSignal,
 	MediaSignalAnswer,
-	MediaSignalBody,
-	MediaSignalBodyAndType,
 	MediaSignalHangup,
-	MediaSignalNotification,
-	MediaSignalType,
+	AgentMediaSignalType,
+	MediaSignalBody,
+	AgentMediaSignal,
 } from '../definition/MediaSignal';
-import type { MediaSignalTransport } from '../definition/MediaSignalTransport';
+import type { MediaSignalAgentTransport } from '../definition/MediaSignalTransport';
 
 export class MediaSignalTransportWrapper {
 	constructor(
-		public readonly sessionId: string,
-		private sendSignalFn: MediaSignalTransport,
+		public readonly contractId: string,
+		private sendSignalFn: MediaSignalAgentTransport,
 	) {}
 
-	public sendToServer<T extends MediaSignalType>(callId: string, type: T, body: MediaSignalBody<T>) {
-		return this.sendSignalToServer(callId, {
+	public sendToServer<T extends AgentMediaSignalType>(callId: string, type: T, signal: MediaSignalBody<T>) {
+		return this.sendSignal({
+			callId,
+			contractId: this.contractId,
 			type,
-			body,
-		});
+			...signal,
+		} as MediaSignal<T>);
 	}
 
 	public sendError(callId: string, errorCode: string) {
-		this.sendToServer(callId, 'error', {
-			errorCode,
-		});
+		this.sendToServer(callId, 'error', { errorCode });
 	}
 
 	public answer(callId: string, answer: MediaSignalAnswer['answer']) {
@@ -36,19 +35,7 @@ export class MediaSignalTransportWrapper {
 		return this.sendToServer(callId, 'hangup', { reason });
 	}
 
-	public notify(callId: string, notification: MediaSignalNotification['notification']) {
-		return this.sendToServer(callId, 'notification', { notification });
-	}
-
-	public sendSignalToServer<T extends MediaSignalType>(callId: string, signal: MediaSignalBodyAndType<T>) {
-		return this.sendSignal({
-			...signal,
-			callId,
-			sessionId: this.sessionId,
-		});
-	}
-
-	public sendSignal(signal: MediaSignal): void {
+	public sendSignal(signal: AgentMediaSignal): void {
 		console.log('MediaSignalTransport.sendSignal', signal);
 		this.sendSignalFn(signal);
 	}
