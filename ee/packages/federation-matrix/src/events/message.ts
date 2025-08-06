@@ -18,6 +18,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			}
 
 			const content = data.content as any;
+			console.log(content);
 			const threadRelation = content?.['m.relates_to'];
 			const isThreadMessage = threadRelation?.rel_type === 'm.thread';
 			const threadRootEventId = isThreadMessage ? threadRelation.event_id : undefined;

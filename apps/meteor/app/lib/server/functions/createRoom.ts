@@ -282,6 +282,10 @@ export const createRoom = async <T extends RoomType>(
 		setupTypingEventListenerForRoom(room._id);
 	}
 
+	if (shouldBeHandledByFederation && federationVersion === 'native') {
+		setupTypingEventListenerForRoom(room._id);
+	}
+
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
 	return {
 		rid: room._id, // backwards compatible
