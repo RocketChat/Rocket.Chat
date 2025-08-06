@@ -34,7 +34,7 @@ type Component = IHeaderComponent | IBodyComponent | IFooterComponent;
 
 // If we happen to have a different structure for this (since this could be a link or idk) we are gonna update this component type
 interface IHeaderComponent {
-	type: 'HEADER';
+	type: 'header';
 	// For UI: if the format is other than TEXT, it should include a media link
 	format?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
 	text?: string;
@@ -44,7 +44,7 @@ interface IHeaderComponent {
 }
 
 interface IBodyComponent {
-	type: 'BODY';
+	type: 'body';
 	text: string;
 	example?: {
 		bodyText: string[][];
@@ -52,7 +52,7 @@ interface IBodyComponent {
 }
 
 interface IFooterComponent {
-	type: 'FOOTER';
+	type: 'footer';
 	text: string;
 }
 
