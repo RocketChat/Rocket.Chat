@@ -1,5 +1,6 @@
 // @deno-types="../../acorn.d.ts"
 import { AnyNode, AssignmentExpression, AwaitExpression, Expression, Function, Identifier, MethodDefinition, Property } from 'acorn';
+
 // @deno-types="../../acorn-walk.d.ts"
 import { FullAncestorWalkerCallback } from 'acorn-walk';
 

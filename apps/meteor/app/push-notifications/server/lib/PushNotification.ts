@@ -1,5 +1,6 @@
 import type { IMessage, IPushNotificationConfig, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';

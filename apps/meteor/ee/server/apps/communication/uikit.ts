@@ -1,6 +1,7 @@
 import type { UiKitCoreAppPayload } from '@rocket.chat/core-services';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
 import type { OperationParams, UrlParams } from '@rocket.chat/rest-typings';
+
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import type { Request, Response } from 'express';

@@ -4,6 +4,7 @@ import type { _TypingScope } from '@rocket.chat/apps-engine/definition/accessors
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+
 import { MessageBuilder } from './builders/MessageBuilder.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import * as Messenger from '../messenger.ts';

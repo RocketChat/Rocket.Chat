@@ -1,4 +1,5 @@
 import type {
+
 	ILivechatContact,
 	ILivechatVisitor,
 	ILivechatContactChannel,
@@ -8,6 +9,7 @@ import type {
 	IOmnichannelSource,
 } from '@rocket.chat/core-typings';
 import { LivechatContacts } from '@rocket.chat/models';
+
 import type { ClientSession, UpdateFilter } from 'mongodb';
 
 import { getContactManagerIdByUsername } from './getContactManagerIdByUsername';

@@ -1,4 +1,5 @@
 import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/shallow';
 

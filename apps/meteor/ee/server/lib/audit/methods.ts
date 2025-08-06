@@ -2,6 +2,7 @@ import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLo
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';

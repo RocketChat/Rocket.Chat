@@ -1,4 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useQuery } from '@tanstack/react-query';
 
 import { getPeriodRange } from '../../../../components/dashboards/periods';

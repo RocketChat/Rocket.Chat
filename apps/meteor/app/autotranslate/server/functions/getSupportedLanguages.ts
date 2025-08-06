@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { TranslationProviderRegistry } from '..';
+
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 

@@ -1,6 +1,7 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+
 import { Meteor } from 'meteor/meteor';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';

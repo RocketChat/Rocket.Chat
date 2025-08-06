@@ -2,6 +2,7 @@ import stream from 'stream';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+
 import S3 from 'aws-sdk/clients/s3';
 import { check } from 'meteor/check';
 import type { OptionalId } from 'mongodb';

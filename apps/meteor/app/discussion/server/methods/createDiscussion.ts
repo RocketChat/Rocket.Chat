@@ -3,6 +3,7 @@ import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.c
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

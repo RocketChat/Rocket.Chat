@@ -1,12 +1,11 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type TeamsConvertToChannelProps = {
 	roomsToRemove?: string[];
 } & ({ teamId: string } | { teamName: string });
 
 const teamsConvertToTeamsPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

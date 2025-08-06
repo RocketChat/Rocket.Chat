@@ -1,4 +1,5 @@
 import type { Keys } from '@rocket.chat/icons';
+
 import { useTranslation } from 'react-i18next';
 
 import { useVoipOutboundStates } from '../../../contexts/CallContext';

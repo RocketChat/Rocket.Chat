@@ -2,6 +2,7 @@ import { VideoConf } from '@rocket.chat/core-services';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { ILivechatAgent, ILivechatVisitor, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
+
 import type { Filter } from 'mongodb';
 
 import { RoutingManager } from './RoutingManager';

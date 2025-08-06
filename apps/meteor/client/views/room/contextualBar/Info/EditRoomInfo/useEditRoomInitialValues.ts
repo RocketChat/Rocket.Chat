@@ -1,5 +1,6 @@
 import type { IRoomWithRetentionPolicy, RoomType, MessageTypesValues } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
+
 import { useMemo } from 'react';
 
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';

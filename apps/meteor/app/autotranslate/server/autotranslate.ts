@@ -1,4 +1,5 @@
 import type {
+
 	IMessage,
 	IRoom,
 	MessageAttachment,
@@ -10,6 +11,7 @@ import type {
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 

@@ -1,6 +1,7 @@
 import { LivechatVoip } from '@rocket.chat/core-services';
 import { VoipClientEvents } from '@rocket.chat/core-typings';
 import { VoipRoom } from '@rocket.chat/models';
+
 import { Match, check } from 'meteor/check';
 
 import { canAccessRoomAsync } from '../../../../authorization/server';

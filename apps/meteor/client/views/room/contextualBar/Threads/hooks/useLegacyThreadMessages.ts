@@ -1,6 +1,7 @@
 import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
+
 import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
 

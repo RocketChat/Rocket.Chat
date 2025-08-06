@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 

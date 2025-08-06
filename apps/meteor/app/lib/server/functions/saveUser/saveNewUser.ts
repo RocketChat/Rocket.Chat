@@ -1,4 +1,5 @@
 import { Users } from '@rocket.chat/models';
+
 import Gravatar from 'gravatar';
 
 import { getNewUserRoles } from '../../../../../server/services/user/lib/getNewUserRoles';

@@ -1,5 +1,7 @@
 import { Messages, LivechatRooms } from '@rocket.chat/models';
+
 import {
+
 	isLivechatVisitorsInfoProps,
 	isGETLivechatVisitorsPagesVisitedRoomIdParams,
 	isGETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams,
@@ -14,7 +16,9 @@ import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
+
 import {
+
 	findVisitorInfo,
 	findVisitedPages,
 	findChatHistory,

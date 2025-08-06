@@ -1,6 +1,8 @@
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatDepartment, Users } from '@rocket.chat/models';
+
 import {
+
 	isGETLivechatInquiriesListParams,
 	isPOSTLivechatInquiriesTakeParams,
 	isGETLivechatInquiriesQueuedForUserParams,

@@ -1,5 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+
 import type { DragEvent, ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 

@@ -2,6 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 import type { Filter, FindCursor } from 'mongodb';
 

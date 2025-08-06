@@ -2,6 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Roles, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';

@@ -1,6 +1,7 @@
 import { Team } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 

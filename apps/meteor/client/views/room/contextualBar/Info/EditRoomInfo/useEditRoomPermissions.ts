@@ -1,5 +1,6 @@
 import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { usePermission, useAtLeastOnePermission, useRole } from '@rocket.chat/ui-contexts';
+
 import { useMemo } from 'react';
 
 import { E2EEState } from '../../../../../../app/e2e/client/E2EEState';

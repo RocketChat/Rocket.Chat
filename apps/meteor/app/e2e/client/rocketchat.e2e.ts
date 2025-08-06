@@ -5,6 +5,7 @@ import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUs
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
+
 import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
@@ -12,7 +13,9 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { E2EEState } from './E2EEState';
+
 import {
+
 	toString,
 	toArrayBuffer,
 	joinVectorAndEcryptedData,

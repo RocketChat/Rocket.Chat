@@ -1,4 +1,5 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useCallback, useState, useRef } from 'react';

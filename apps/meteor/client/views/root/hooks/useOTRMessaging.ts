@@ -1,6 +1,7 @@
 import type { AtLeast, IMessage } from '@rocket.chat/core-typings';
 import { isOTRMessage } from '@rocket.chat/core-typings';
 import { useMethod, useStream } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import OTR from '../../../../app/otr/client/OTR';

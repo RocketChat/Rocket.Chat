@@ -1,4 +1,5 @@
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
+
 import { v4 as uuid } from 'uuid';
 
 import type { IBlock } from '../../definition/uikit';

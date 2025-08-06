@@ -13,7 +13,9 @@ import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcom
 import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
 import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi.ts';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider.ts';
+
 import type {
+
 	IOutboundPhoneMessageProvider,
 	IOutboundEmailMessageProvider,
 } from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider.ts';

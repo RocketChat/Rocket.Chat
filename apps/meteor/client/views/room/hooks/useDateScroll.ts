@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+
 import type { CSSProperties, MutableRefObject } from 'react';
 import { useCallback, useRef, useState } from 'react';
 

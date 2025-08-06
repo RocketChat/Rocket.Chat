@@ -1,4 +1,5 @@
 import { Users } from '@rocket.chat/models';
+
 import { MongoInternals } from 'meteor/mongo';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';

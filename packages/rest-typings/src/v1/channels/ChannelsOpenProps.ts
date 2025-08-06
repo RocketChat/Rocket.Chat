@@ -1,6 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type ChannelsOpenProps =
 	| {
@@ -15,6 +13,7 @@ export type ChannelsOpenProps =
 	  };
 
 const channelsOpenPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

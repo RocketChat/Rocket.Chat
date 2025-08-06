@@ -1,4 +1,5 @@
 import type {
+
 	OEmbedUrlContentResult,
 	OEmbedUrlWithMetadata,
 	IMessage,
@@ -10,6 +11,7 @@ import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, OEmbedCache } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import { camelCase } from 'change-case';
 import he from 'he';
 import iconv from 'iconv-lite';

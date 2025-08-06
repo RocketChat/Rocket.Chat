@@ -1,6 +1,7 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message, Team } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { roomCoordinator } from './rooms/roomCoordinator';

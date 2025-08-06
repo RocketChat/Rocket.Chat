@@ -1,5 +1,6 @@
 import { type IMessage, type ISubscription, type IRoom, isE2EEMessage } from '@rocket.chat/core-typings';
 import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
+
 import { useCallback, useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 

@@ -2,6 +2,7 @@ import { Agenda } from '@rocket.chat/agenda';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import type { Db } from 'mongodb';

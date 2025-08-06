@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { RestClient } from '@rocket.chat/api-client';
+
 import { Accounts } from 'meteor/accounts-base';
 
 import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';

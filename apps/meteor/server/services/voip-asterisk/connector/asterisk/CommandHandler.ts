@@ -15,6 +15,7 @@
  */
 import type { IVoipConnectorResult, IManagementServerConnectionStatus, IManagementConfigData } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+
 import type { Db } from 'mongodb';
 
 import type { Command } from './Command';

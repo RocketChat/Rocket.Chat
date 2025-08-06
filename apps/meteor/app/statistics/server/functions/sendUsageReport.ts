@@ -3,9 +3,11 @@ import type { Logger } from '@rocket.chat/logger';
 import { Statistics } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { tracerSpan } from '@rocket.chat/tracing';
+
 import { Meteor } from 'meteor/meteor';
 
 import { statistics } from '..';
+
 import { getWorkspaceAccessToken } from '../../../cloud/server';
 
 async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string | undefined> {

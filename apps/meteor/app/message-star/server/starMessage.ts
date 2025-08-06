@@ -2,6 +2,7 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';

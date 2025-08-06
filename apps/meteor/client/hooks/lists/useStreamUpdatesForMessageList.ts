@@ -1,6 +1,7 @@
 import type { IMessage, IRoom, IUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { useStream } from '@rocket.chat/ui-contexts';
+
 import type { Condition, Filter } from 'mongodb';
 import { useEffect } from 'react';
 

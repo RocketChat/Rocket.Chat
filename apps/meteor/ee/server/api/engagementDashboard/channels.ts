@@ -1,4 +1,5 @@
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
+
 import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../app/api/server';

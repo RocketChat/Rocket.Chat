@@ -1,5 +1,6 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
+
 import { useTranslation } from 'react-i18next';
 
 import type { RoomToolboxContextValue } from '../../../contexts/RoomToolboxContext';

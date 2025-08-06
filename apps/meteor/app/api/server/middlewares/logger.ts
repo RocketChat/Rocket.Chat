@@ -1,4 +1,5 @@
 import type { Logger } from '@rocket.chat/logger';
+
 import type { MiddlewareHandler } from 'hono';
 
 import { getRestPayload } from '../../../../server/lib/logger/logPayloads';

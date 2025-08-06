@@ -1,6 +1,7 @@
 /* eslint-disable new-cap */
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+
 import moment from 'moment-timezone';
 import type { Filter } from 'mongodb';
 

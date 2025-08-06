@@ -1,6 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { Filter } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';

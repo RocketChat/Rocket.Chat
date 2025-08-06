@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
+
 import type { ClientSession } from 'mongodb';
 
 import { saveCustomFieldsWithoutValidation } from './saveCustomFieldsWithoutValidation';

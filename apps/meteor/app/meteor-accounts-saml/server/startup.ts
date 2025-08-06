@@ -1,4 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
+
 import debounce from 'lodash.debounce';
 import { Meteor } from 'meteor/meteor';
 

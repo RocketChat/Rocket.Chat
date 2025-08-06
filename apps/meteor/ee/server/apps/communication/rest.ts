@@ -8,6 +8,7 @@ import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import { Meteor } from 'meteor/meteor';
 import { ZodError } from 'zod';
 

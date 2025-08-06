@@ -1,5 +1,7 @@
 import { Apps } from '@rocket.chat/apps';
+
 import type {
+
 	IOutboundProvider,
 	ValidOutboundProvider,
 	IOutboundMessageProviderService,

@@ -1,4 +1,5 @@
 import { Settings, Users, Rooms } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { throttledCounter } from '../../../../lib/utils/throttledCounter';

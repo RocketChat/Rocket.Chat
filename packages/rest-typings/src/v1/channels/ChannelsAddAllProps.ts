@@ -1,11 +1,10 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type ChannelsAddAllProps = ({ roomId: string } | { roomName: string }) & {
 	activeUsersOnly?: 'true' | 'false' | 1 | 0;
 };
 const channelsAddAllPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

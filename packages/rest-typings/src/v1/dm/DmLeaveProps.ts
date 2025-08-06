@@ -1,8 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
 
 export type DmLeaveProps =
 	| {
@@ -11,6 +7,7 @@ export type DmLeaveProps =
 	| { roomName: string };
 
 const DmLeavePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

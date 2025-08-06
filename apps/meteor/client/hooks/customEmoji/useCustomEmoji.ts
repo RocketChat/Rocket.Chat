@@ -1,4 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 

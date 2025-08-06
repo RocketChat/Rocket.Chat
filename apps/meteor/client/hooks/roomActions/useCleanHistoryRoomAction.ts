@@ -1,5 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
+
 import { lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

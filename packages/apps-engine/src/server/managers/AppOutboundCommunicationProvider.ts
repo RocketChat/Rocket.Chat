@@ -1,4 +1,5 @@
 import type { AppAccessorManager } from '.';
+
 import { AppMethod } from '../../definition/metadata';
 import type { IOutboundMessage, IOutboundMessageProviders, ProviderMetadata } from '../../definition/outboundComunication';
 import type { ProxiedApp } from '../ProxiedApp';

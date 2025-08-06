@@ -1,4 +1,5 @@
 import type {
+
 	IConfigurationExtend,
 	IConfigurationModify,
 	IEnvironmentRead,
@@ -10,7 +11,9 @@ import type {
 	IRead,
 } from '../../definition/accessors';
 import type { AppManager } from '../AppManager';
+
 import {
+
 	ApiExtend,
 	ConfigurationExtend,
 	ConfigurationModify,

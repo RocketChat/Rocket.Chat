@@ -1,5 +1,6 @@
 import { User } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 

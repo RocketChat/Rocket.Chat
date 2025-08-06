@@ -2,6 +2,7 @@ import { log } from 'console';
 
 import type { IStats, IVoIPPeriodStats } from '@rocket.chat/core-typings';
 import { FreeSwitchChannel } from '@rocket.chat/models';
+
 import { MongoInternals } from 'meteor/mongo';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';

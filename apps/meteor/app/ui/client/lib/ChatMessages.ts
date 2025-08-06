@@ -15,7 +15,9 @@ import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
 import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
+
 import {
+
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';

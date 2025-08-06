@@ -1,5 +1,6 @@
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
+
 import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';

@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { getConfig } from './utils/getConfig';

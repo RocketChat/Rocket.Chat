@@ -2,6 +2,7 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';

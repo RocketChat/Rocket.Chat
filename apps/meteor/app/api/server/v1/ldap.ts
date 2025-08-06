@@ -1,4 +1,5 @@
 import { LDAP } from '@rocket.chat/core-services';
+
 import { Match, check } from 'meteor/check';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';

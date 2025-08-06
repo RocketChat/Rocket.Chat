@@ -1,6 +1,7 @@
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
+
 import { Babel } from 'meteor/babel-compiler';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';

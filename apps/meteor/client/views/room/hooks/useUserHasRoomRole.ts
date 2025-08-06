@@ -1,4 +1,5 @@
 import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+
 import { useCallback } from 'react';
 
 import type { RoomRoles } from '../../../hooks/useRoomRolesQuery';

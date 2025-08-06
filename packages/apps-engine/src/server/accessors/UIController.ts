@@ -1,7 +1,9 @@
 import type { IUIController } from '../../definition/accessors';
 import type { IUIKitErrorInteractionParam, IUIKitInteractionParam, IUIKitSurfaceViewParam } from '../../definition/accessors/IUIController';
 import { UIKitInteractionType, UIKitSurfaceType } from '../../definition/uikit';
+
 import {
+
 	formatContextualBarInteraction,
 	formatErrorInteraction,
 	formatModalInteraction,

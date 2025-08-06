@@ -1,12 +1,11 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type TeamsDeleteProps = ({ teamId: string } | { teamName: string }) & {
 	roomsToRemove?: string[];
 };
 
 const teamsDeletePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

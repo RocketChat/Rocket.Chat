@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 

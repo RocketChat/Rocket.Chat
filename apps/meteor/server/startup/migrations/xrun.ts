@@ -1,4 +1,5 @@
 import { Settings } from '@rocket.chat/models';
+
 import type { UpdateResult } from 'mongodb';
 
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';

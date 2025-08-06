@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+
 import { Accounts } from 'meteor/accounts-base';
 
 import { limitQuoteChain } from './limitQuoteChain';

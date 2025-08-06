@@ -2,6 +2,7 @@ import http from 'http';
 
 import { Statistics } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
+
 import connect from 'connect';
 import { Facts } from 'meteor/facts-base';
 import { Meteor } from 'meteor/meteor';

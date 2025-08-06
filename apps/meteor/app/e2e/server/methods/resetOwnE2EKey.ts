@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+
 import { Meteor } from 'meteor/meteor';
 
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';

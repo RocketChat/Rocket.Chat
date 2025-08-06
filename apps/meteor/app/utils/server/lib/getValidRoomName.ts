@@ -1,5 +1,6 @@
 import { Rooms } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 

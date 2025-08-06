@@ -2,6 +2,7 @@ import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { LivechatDepartmentDTO, ILivechatDepartment, ILivechatDepartmentAgents, ILivechatAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
+
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -9,11 +10,14 @@ import { updateDepartmentAgents } from './Helper';
 import { afterDepartmentArchived, afterDepartmentUnarchived } from './hooks';
 import { livechatLogger } from './logger';
 import { callbacks } from '../../../../lib/callbacks';
+
 import {
+
 	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnLivechatDepartmentAgentChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
+
 /**
  * @param {string|null} _id - The department id
  * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData

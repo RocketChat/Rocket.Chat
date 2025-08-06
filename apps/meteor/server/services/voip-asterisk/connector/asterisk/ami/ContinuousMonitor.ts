@@ -13,7 +13,9 @@
  *
  */
 import { api } from '@rocket.chat/core-services';
+
 import type {
+
 	IPbxEvent,
 	IQueueDetails,
 	IAgentCalledEvent,
@@ -31,6 +33,7 @@ import type {
 	IDialingEvent,
 } from '@rocket.chat/core-typings';
 import {
+
 	isIDialingEvent,
 	isIAgentCalledEvent,
 	isIAgentConnectEvent,
@@ -45,6 +48,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Users, PbxEvents } from '@rocket.chat/models';
+
 import type { Db } from 'mongodb';
 
 import { notifyOnPbxEventChangedById } from '../../../../../../app/lib/server/lib/notifyListener';

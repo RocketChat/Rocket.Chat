@@ -1,8 +1,6 @@
+import { ajv } from '../Ajv';
+
 // TO-DO: import Ajv instance instead of creating a new one
-import Ajv from 'ajv';
-
-const ajv = new Ajv({ coerceTypes: true });
-
 export type UsersCheckUsernameAvailabilityParamsGET = {
 	username: string;
 };

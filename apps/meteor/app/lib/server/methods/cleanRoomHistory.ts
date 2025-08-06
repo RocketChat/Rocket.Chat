@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

@@ -1,4 +1,5 @@
 import type {
+
 	IApiExtend,
 	IConfigurationExtend,
 	IExternalComponentsExtend,

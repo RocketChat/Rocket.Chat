@@ -2,6 +2,7 @@ import type { IUser, UserPresence } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
+
 import { Meteor } from 'meteor/meteor';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';

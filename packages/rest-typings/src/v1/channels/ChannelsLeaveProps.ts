@@ -1,10 +1,9 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type ChannelsLeaveProps = { roomId: string } | { roomName: string };
 
 const channelsLeavePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

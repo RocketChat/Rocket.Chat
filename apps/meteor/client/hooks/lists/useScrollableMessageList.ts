@@ -1,4 +1,5 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
+
 import { useCallback } from 'react';
 
 import { useScrollableRecordList } from './useScrollableRecordList';

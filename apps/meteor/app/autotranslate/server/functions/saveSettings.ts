@@ -1,4 +1,5 @@
 import { Subscriptions, Rooms } from '@rocket.chat/models';
+
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

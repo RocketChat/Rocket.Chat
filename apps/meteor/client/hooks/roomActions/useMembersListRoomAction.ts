@@ -1,4 +1,5 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
+
 import { useMemo } from 'react';
 
 import { MemberListRouter } from '../../views/room';

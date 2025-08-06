@@ -1,6 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useMethod, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 

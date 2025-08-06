@@ -1,5 +1,6 @@
 import type { IRoom, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+
 import type { FindOptions, Sort } from 'mongodb';
 
 import { adminFields } from '../../../../lib/rooms/adminFields';

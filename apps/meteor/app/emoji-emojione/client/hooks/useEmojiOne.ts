@@ -1,4 +1,5 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
+
 import { useEffect, useLayoutEffect } from 'react';
 
 import { emoji } from '../../../emoji/client';

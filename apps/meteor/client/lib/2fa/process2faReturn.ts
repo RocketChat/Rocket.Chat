@@ -1,5 +1,6 @@
 import { SHA256 } from '@rocket.chat/sha256';
 import { imperativeModal } from '@rocket.chat/ui-client';
+
 import { Meteor } from 'meteor/meteor';
 import { lazy } from 'react';
 

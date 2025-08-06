@@ -2,6 +2,7 @@ import type { IIncomingIntegration, IIntegration, IOutgoingIntegration, IUser, R
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isIntegrationsHooksAddSchema, isIntegrationsHooksRemoveSchema } from '@rocket.chat/rest-typings';
+
 import type express from 'express';
 import type { Context, Next } from 'hono';
 import { Meteor } from 'meteor/meteor';

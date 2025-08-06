@@ -1,12 +1,11 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type ChannelsInviteProps =
 	| { roomId: string; userId?: string; username?: string; user?: string }
 	| { roomName: string; userId?: string; username?: string; user?: string };
 
 const channelsInvitePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

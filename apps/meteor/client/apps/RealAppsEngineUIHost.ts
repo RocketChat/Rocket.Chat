@@ -1,5 +1,6 @@
 import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
+
 import { Meteor } from 'meteor/meteor';
 
 import { getUserAvatarURL } from '../../app/utils/client/getUserAvatarURL';

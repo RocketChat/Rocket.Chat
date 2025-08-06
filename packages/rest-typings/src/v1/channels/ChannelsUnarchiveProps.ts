@@ -1,9 +1,8 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type ChannelsUnarchiveProps = { roomId: string } | { roomName: string };
 const channelsUnarchivePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

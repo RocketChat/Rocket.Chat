@@ -1,6 +1,7 @@
 import { CustomUserStatus } from '@rocket.chat/models';
 import { isCustomUserStatusListProps } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

@@ -1,9 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
+
 import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../app/api/server';
 import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
+
 import {
+
 	findWeeklyUsersRegisteredData,
 	findActiveUsersMonthlyData,
 	findBusiestsChatsInADayByHours,

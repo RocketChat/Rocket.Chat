@@ -1,5 +1,6 @@
 import { Users } from '@rocket.chat/models';
 import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
+
 import { check } from 'meteor/check';
 
 import { API } from '../../../../api/server';

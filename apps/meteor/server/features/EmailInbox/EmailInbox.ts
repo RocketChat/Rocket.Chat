@@ -1,5 +1,6 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox, EmailMessageHistory } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 import nodemailer from 'nodemailer';
 import type Mail from 'nodemailer/lib/mailer';

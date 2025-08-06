@@ -1,5 +1,7 @@
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+
 import type {
+
 	AtLeast,
 	ILivechatDepartment,
 	IOmnichannelRoom,

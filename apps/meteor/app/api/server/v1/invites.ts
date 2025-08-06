@@ -1,5 +1,7 @@
 import type { IInvite } from '@rocket.chat/core-typings';
+
 import {
+
 	ajv,
 	isFindOrCreateInviteParams,
 	isUseInviteTokenProps,

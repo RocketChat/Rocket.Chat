@@ -1,5 +1,6 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+
 import { Meteor } from 'meteor/meteor';
 
 import { LegacyRoomManager } from '../../../app/ui-utils/client/lib/LegacyRoomManager';

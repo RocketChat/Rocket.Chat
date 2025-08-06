@@ -345,6 +345,7 @@ type ChatReact =
 	| { reaction: string; messageId: IMessage['_id']; shouldReact?: boolean };
 
 const ChatReactSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

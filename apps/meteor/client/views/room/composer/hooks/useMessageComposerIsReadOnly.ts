@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useUser } from '@rocket.chat/ui-contexts';
+
 import { useCallback } from 'react';
 
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';

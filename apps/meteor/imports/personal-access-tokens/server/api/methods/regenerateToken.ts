@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { isPersonalAccessToken } from '@rocket.chat/core-typings';

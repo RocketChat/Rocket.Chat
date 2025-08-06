@@ -2,6 +2,7 @@ import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
+
 import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 

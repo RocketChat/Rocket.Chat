@@ -4,7 +4,9 @@ import { EssentialAppDisabledException } from '../../definition/exceptions';
 import type { IExternalComponent } from '../../definition/externalComponent';
 import type { ILivechatEventContext, ILivechatRoom, ILivechatTransferEventContext, IVisitor } from '../../definition/livechat';
 import type { ILivechatDepartmentEventContext } from '../../definition/livechat/ILivechatEventContext';
+
 import type {
+
 	IMessage,
 	IMessageDeleteContext,
 	IMessageFollowContext,
@@ -20,7 +22,9 @@ import { UIActionButtonContext } from '../../definition/ui';
 import type { IUIKitResponse, IUIKitSurface, UIKitIncomingInteraction } from '../../definition/uikit';
 import { UIKitIncomingInteractionType } from '../../definition/uikit';
 import { isUIKitIncomingInteractionActionButtonMessageBox } from '../../definition/uikit/IUIKitIncomingInteractionActionButton';
+
 import type {
+
 	IUIKitIncomingInteractionMessageContainer,
 	IUIKitIncomingInteractionModalContainer,
 } from '../../definition/uikit/UIKitIncomingInteractionContainer';

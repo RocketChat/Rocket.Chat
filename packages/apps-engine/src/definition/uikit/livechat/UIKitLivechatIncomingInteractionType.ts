@@ -1,7 +1,9 @@
 import type { IVisitor } from '../../livechat';
 import type { IMessage } from '../../messages';
 import type { IRoom } from '../../rooms';
+
 import type {
+
 	IUIKitIncomingInteractionMessageContainer,
 	IUIKitIncomingInteractionModalContainer,
 } from '../UIKitIncomingInteractionContainer';

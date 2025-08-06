@@ -3,6 +3,7 @@ import type { ServerResponse } from 'http';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IIncomingMessage, IUpload } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+
 import type { NextFunction } from 'connect';
 import { Cookies } from 'meteor/ostrio:cookies';
 import sanitizeHtml from 'sanitize-html';

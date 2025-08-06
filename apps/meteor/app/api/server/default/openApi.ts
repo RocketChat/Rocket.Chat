@@ -1,6 +1,7 @@
 import { schemas } from '@rocket.chat/core-typings';
 import type { Route } from '@rocket.chat/http-router';
 import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
+
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
 import swaggerUi from 'swagger-ui-express';

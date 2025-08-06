@@ -1,10 +1,9 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type TeamsLeaveProps = ({ teamId: string } | { teamName: string }) & { rooms?: string[] };
 
 const teamsLeavePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

@@ -2,6 +2,7 @@ import { AppEvents, Apps } from '@rocket.chat/apps';
 import { api, Message } from '@rocket.chat/core-services';
 import { isThreadMessage, type AtLeast, type IMessage, type IRoom, type IThreadMessage, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Uploads, Users, ReadReceipts, Subscriptions } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';

@@ -1,4 +1,5 @@
 import type {
+
 	FileAttachmentProps,
 	ImageAttachmentProps,
 	AudioAttachmentProps,
@@ -8,6 +9,7 @@ import type {
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

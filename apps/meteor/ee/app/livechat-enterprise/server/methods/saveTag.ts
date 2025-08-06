@@ -1,5 +1,6 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

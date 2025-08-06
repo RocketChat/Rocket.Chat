@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useCategoryFlatList } from './useCategoryFlatList';
 import { useCategoryToggle } from './useCategoryToggle';
 import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
+
 import type {
+
 	CategoryDropDownGroups,
 	CategoryDropdownItem,
 	CategoryDropDownListProps,

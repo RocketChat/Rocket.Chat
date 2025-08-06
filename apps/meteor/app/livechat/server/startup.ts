@@ -2,6 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms } from '@rocket.chat/models';
+
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 

@@ -1,4 +1,5 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
+
 import { lazy, useMemo } from 'react';
 
 import { useRoom } from '../../views/room/contexts/RoomContext';

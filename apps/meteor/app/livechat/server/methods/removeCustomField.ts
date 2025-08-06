@@ -1,5 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatCustomField } from '@rocket.chat/models';
+
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { DeleteResult } from 'mongodb';

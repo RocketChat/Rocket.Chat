@@ -5,7 +5,9 @@ import type { IFederationBridgeEE } from '../../../domain/IFederationBridge';
 import type { RocketChatRoomAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from '../../../infrastructure/rocket-chat/adapters/User';
 import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
+
 import type {
+
 	FederationBeforeDirectMessageRoomCreationDto,
 	FederationCreateDirectMessageDto,
 	FederationOnDirectMessageRoomCreationDto,

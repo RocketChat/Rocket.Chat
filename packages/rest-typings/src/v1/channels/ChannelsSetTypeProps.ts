@@ -1,10 +1,9 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type ChannelsSetTypeProps = { roomId: string; type: string } | { roomName: string; type: string };
 
 const channelsSetTypePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

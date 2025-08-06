@@ -1,4 +1,5 @@
 import { EmailInbox, Users } from '@rocket.chat/models';
+
 import { check, Match } from 'meteor/check';
 
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';

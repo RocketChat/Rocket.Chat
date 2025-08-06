@@ -2,6 +2,7 @@ import type { IRoom, IMessage, IUser, UserPresence } from '@rocket.chat/core-typ
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
+
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -17,7 +18,9 @@ import { t } from '../../utils/lib/i18n';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
 import { OtrRoomState } from '../lib/OtrRoomState';
 import { otrSystemMessages } from '../lib/constants';
+
 import {
+
 	decryptAES,
 	deriveBits,
 	digest,

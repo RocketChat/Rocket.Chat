@@ -2,6 +2,7 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { api } from '@rocket.chat/core-services';
+
 import type { IStreamer } from 'meteor/rocketchat:streamer';
 
 import notifications from '../../../../app/notifications/server/lib/Notifications';

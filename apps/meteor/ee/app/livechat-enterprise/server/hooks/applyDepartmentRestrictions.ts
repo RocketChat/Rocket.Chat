@@ -1,4 +1,5 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+
 import type { FilterOperators } from 'mongodb';
 
 import { hasRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';

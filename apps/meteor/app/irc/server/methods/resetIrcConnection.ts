@@ -1,5 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';

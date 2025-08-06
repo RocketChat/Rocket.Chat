@@ -1,12 +1,16 @@
 import { api } from '@rocket.chat/core-services';
+
 import type {
+
 	ILivechatDepartment,
 	IOmnichannelRoom,
 	IOmnichannelServiceLevelAgreements,
 	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
+
 import {
+
 	Rooms as RoomRaw,
 	LivechatRooms,
 	LivechatDepartment as LivechatDepartmentRaw,

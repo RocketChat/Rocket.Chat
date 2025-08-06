@@ -1,4 +1,5 @@
 import { useStream } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import type { CandidateData, DescriptionData, JoinData } from '../../../../app/webrtc/client/WebRTCClass';

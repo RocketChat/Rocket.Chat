@@ -1,6 +1,7 @@
 import type { OAuthConfiguration, OauthConfig } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { capitalize } from '@rocket.chat/string-helpers';
+
 import { Accounts } from 'meteor/accounts-base';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';

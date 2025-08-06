@@ -2,7 +2,9 @@ import type { IAuthorizeRequestVariables } from '../../definition/IAuthorizeRequ
 import type { ISAMLRequest } from '../../definition/ISAMLRequest';
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import { SAMLUtils } from '../Utils';
+
 import {
+
 	defaultIdentifierFormat,
 	defaultAuthnContext,
 	defaultAuthRequestTemplate,

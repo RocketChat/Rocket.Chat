@@ -2,6 +2,7 @@ import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { parseUrlsInMessage } from './parseUrlsInMessage';

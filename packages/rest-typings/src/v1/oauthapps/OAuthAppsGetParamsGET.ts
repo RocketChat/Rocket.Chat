@@ -3,6 +3,7 @@ import { ajv } from '../Ajv';
 export type OauthAppsGetParams = { clientId: string } | { appId: string } | { _id: string };
 
 const oauthAppsGetParamsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

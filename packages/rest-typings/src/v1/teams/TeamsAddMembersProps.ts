@@ -1,13 +1,11 @@
-import Ajv from 'ajv';
-
 import type { ITeamMemberParams } from './ITeamMemberParams';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type TeamsAddMembersProps = ({ teamId: string } | { teamName: string }) & {
 	members: ITeamMemberParams[];
 };
 const teamsAddMembersPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

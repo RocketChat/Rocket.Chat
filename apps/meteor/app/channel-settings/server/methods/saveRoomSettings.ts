@@ -3,6 +3,7 @@ import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from 
 import { TEAM_TYPE, isValidSidepanel } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
+
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

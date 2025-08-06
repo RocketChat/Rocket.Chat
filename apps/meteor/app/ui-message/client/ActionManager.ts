@@ -4,6 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import type { RouterContext, IActionManager } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
+
 import { t } from 'i18next';
 import type { ContextType } from 'react';
 import { lazy } from 'react';

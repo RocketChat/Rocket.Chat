@@ -1,5 +1,6 @@
 import type { ILivechatAgent, ILivechatDepartment, SelectedAgent } from '@rocket.chat/core-typings';
 import { Users, LivechatDepartmentAgents, LivechatDepartment } from '@rocket.chat/models';
+
 import type { FindCursor } from 'mongodb';
 
 import { checkOnlineForDepartment, getOnlineForDepartment } from './departmentsLib';

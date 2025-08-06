@@ -6,6 +6,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { ISubscription, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../lib/isTruthy';

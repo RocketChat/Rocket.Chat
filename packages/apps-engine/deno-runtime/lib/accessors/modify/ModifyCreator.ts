@@ -17,6 +17,7 @@ import type { ILivechatMessageBuilder } from '@rocket.chat/apps-engine/definitio
 import type { UIHelper as _UIHelper } from '@rocket.chat/apps-engine/server/misc/UIHelper.ts';
 
 import * as Messenger from '../../messenger.ts';
+
 import { randomBytes } from 'node:crypto';
 
 import { BlockBuilder } from '../builders/BlockBuilder.ts';

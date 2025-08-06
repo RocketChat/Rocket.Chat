@@ -3,6 +3,7 @@ import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CustomUserStatus } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { trim } from '../../../../lib/utils/stringUtils';

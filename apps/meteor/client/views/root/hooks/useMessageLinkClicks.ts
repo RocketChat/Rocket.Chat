@@ -1,4 +1,5 @@
 import { useAbsoluteUrl, useLayout } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { fireGlobalEvent } from '../../../lib/utils/fireGlobalEvent';

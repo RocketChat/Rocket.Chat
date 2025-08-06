@@ -1,4 +1,5 @@
 import { useRouter, useSetting, useUserId } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { callbacks } from '../../lib/callbacks';

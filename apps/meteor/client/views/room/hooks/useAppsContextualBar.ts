@@ -1,4 +1,5 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
+
 import { useCallback, useSyncExternalStore } from 'react';
 
 import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';

@@ -1,6 +1,7 @@
 import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
+
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../app/settings/client';

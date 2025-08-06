@@ -1,4 +1,5 @@
 import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
+
 import { debounce } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';

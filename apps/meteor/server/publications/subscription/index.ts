@@ -1,6 +1,7 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { subscriptionFields } from '../../../lib/publishFields';

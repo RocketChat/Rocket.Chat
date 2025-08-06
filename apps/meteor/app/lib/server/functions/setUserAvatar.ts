@@ -4,6 +4,7 @@ import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 

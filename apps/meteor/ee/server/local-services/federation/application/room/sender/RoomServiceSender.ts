@@ -13,7 +13,9 @@ import type { RocketChatRoomAdapterEE } from '../../../infrastructure/rocket-cha
 import type { RocketChatUserAdapterEE } from '../../../infrastructure/rocket-chat/adapters/User';
 import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
 import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
+
 import type {
+
 	FederationBeforeAddUserToARoomDto,
 	FederationOnRoomCreationDto,
 	FederationOnUsersAddedToARoomDto,

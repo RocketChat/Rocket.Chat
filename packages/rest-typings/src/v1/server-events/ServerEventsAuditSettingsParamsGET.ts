@@ -1,11 +1,7 @@
 import type { IAuditServerActor } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
 
 export type ServerEventsAuditSettingsParamsGET = PaginatedRequest<{
 	start?: string;

@@ -2,7 +2,9 @@ import crypto from 'crypto';
 
 import type { IUser } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
+
 import {
+
 	isShieldSvgProps,
 	isSpotlightProps,
 	isDirectoryProps,
@@ -12,6 +14,7 @@ import {
 	isMeteorCall,
 } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';

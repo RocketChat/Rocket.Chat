@@ -1,6 +1,7 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+
 import type { FindOptions } from 'mongodb';
 
 import { projectionAllowsAttribute } from './projectionAllowsAttribute';

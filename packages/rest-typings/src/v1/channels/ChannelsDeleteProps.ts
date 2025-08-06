@@ -1,10 +1,9 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv();
+import { ajv } from '../Ajv';
 
 export type ChannelsDeleteProps = { roomId: string } | { roomName: string };
 
 const channelsDeletePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

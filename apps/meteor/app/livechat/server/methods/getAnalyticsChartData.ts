@@ -2,6 +2,7 @@ import type { ChartDataResult } from '@rocket.chat/core-services';
 import { OmnichannelAnalytics } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

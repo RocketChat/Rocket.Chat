@@ -1,5 +1,6 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { useInstance } from './useInstance';

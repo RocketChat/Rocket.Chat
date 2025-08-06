@@ -2,6 +2,7 @@ import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import { isEmojiCustomList } from '@rocket.chat/rest-typings';
+
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';

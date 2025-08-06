@@ -13,7 +13,9 @@ import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-c
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';
 import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
+
 import type {
+
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,

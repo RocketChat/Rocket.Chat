@@ -1,4 +1,5 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+
 import { useTranslation } from 'react-i18next';
 
 import { getSubscriptionUnreadData } from '../../../lib/getSubscriptionUnreadData';

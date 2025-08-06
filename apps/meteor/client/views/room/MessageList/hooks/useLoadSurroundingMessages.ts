@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
+
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 

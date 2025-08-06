@@ -1,4 +1,5 @@
 import { LDAP } from '@rocket.chat/core-services';
+
 import { Accounts } from 'meteor/accounts-base';
 
 import type { ICachedSettings } from '../../app/settings/server/CachedSettings';

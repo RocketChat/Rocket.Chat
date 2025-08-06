@@ -1,6 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 import {
+
 	FederationRoomChangeJoinRulesDto,
 	FederationRoomChangeMembershipDto,
 	FederationRoomChangeNameDto,
@@ -26,7 +27,9 @@ import type { MatrixEventRoomMembershipChanged } from '../../definitions/events/
 import { RoomMembershipChangedEventType } from '../../definitions/events/RoomMembershipChanged';
 import type { MatrixEventRoomMessageSent } from '../../definitions/events/RoomMessageSent';
 import type { MatrixEventRoomNameChanged } from '../../definitions/events/RoomNameChanged';
+
 import type {
+
 	IMatrixEventContentRoomPowerLevelsChanged,
 	MatrixEventRoomRoomPowerLevelsChanged,
 } from '../../definitions/events/RoomPowerLevelsChanged';

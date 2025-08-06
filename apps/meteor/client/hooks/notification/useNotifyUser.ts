@@ -1,6 +1,7 @@
 import type { AtLeast, INotificationDesktop, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound, useRouter, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { useEmbeddedLayout } from '../useEmbeddedLayout';

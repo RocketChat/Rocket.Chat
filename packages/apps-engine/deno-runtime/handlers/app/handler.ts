@@ -1,4 +1,5 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import handleConstructApp from './construct.ts';

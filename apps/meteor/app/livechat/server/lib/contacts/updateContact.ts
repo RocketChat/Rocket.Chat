@@ -4,7 +4,9 @@ import { LivechatContacts, LivechatInquiry, LivechatRooms, Settings, Subscriptio
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateContactManager } from './validateContactManager';
 import { validateCustomFields } from './validateCustomFields';
+
 import {
+
 	notifyOnSubscriptionChangedByVisitorIds,
 	notifyOnRoomChangedByContactId,
 	notifyOnLivechatInquiryChangedByVisitorIds,

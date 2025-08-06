@@ -2,6 +2,7 @@ import fs from 'fs';
 
 import type { IImport, IImportUser } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
+
 import { parse } from 'csv-parse/lib/sync';
 
 import { RocketChatFile } from '../../file/server';

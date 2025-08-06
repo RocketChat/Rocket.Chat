@@ -1,4 +1,5 @@
 import { useMethod, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { useRoom } from '../../../contexts/RoomContext';

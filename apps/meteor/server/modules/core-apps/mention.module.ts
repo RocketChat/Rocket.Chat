@@ -2,6 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import type { IUiKitCoreApp } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Messages } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { processWebhookMessage } from '../../../app/lib/server/functions/processWebhookMessage';

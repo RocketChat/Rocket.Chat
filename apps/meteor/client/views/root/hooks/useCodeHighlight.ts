@@ -1,4 +1,5 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { register } from '../../../../app/markdown/lib/hljs';

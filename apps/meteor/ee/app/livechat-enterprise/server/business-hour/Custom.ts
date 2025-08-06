@@ -5,7 +5,9 @@ import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.cha
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 import type { IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
+
 import {
+
 	filterBusinessHoursThatMustBeOpened,
 	makeAgentsUnavailableBasedOnBusinessHour,
 } from '../../../../../app/livechat/server/business-hour/Helper';

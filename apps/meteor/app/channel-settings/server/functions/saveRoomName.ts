@@ -2,6 +2,7 @@ import { Message, Room } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Integrations, Rooms, Subscriptions } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 import type { Document, UpdateResult } from 'mongodb';
 

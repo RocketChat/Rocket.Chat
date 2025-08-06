@@ -1,5 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+
 import { Meteor } from 'meteor/meteor';
 
 import { CROWD } from './crowd';

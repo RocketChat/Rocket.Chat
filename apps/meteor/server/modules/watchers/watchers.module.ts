@@ -1,5 +1,7 @@
 import type { EventSignatures } from '@rocket.chat/core-services';
+
 import type {
+
 	ISubscription,
 	IUser,
 	ILoginServiceConfiguration,
@@ -18,6 +20,7 @@ import type {
 	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import {
+
 	dbWatchersDisabled,
 	Subscriptions,
 	Messages,

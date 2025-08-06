@@ -1,5 +1,6 @@
 import type { IMessage, IUser, RequiredField, MessageAttachment, IRoom } from '@rocket.chat/core-typings';
 import { removeEmpty } from '@rocket.chat/tools';
+
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 

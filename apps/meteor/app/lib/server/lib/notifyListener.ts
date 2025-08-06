@@ -1,5 +1,7 @@
 import { api } from '@rocket.chat/core-services';
+
 import type {
+
 	IRocketChatRecord,
 	IRoom,
 	ILoginServiceConfiguration,
@@ -24,6 +26,7 @@ import type {
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import {
+
 	dbWatchersDisabled,
 	Rooms,
 	LivechatRooms,

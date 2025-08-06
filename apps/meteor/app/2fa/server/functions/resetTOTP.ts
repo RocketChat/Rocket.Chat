@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../../server/lib/i18n';

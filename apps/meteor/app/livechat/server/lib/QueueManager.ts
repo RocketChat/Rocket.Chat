@@ -1,7 +1,9 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException';
 import { Message, Omnichannel } from '@rocket.chat/core-services';
+
 import type {
+
 	ILivechatDepartment,
 	IOmnichannelRoomInfo,
 	IOmnichannelRoomExtraData,
@@ -16,6 +18,7 @@ import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { LivechatContacts, LivechatDepartment, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

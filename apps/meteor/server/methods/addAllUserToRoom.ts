@@ -2,6 +2,7 @@ import { Message } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
+
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

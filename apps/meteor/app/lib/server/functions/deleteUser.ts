@@ -1,7 +1,9 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { api, Federation, FederationEE, License } from '@rocket.chat/core-services';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
+
 import {
+
 	Integrations,
 	FederationServers,
 	LivechatVisitors,
@@ -26,7 +28,9 @@ import { i18n } from '../../../../server/lib/i18n';
 import { VerificationStatus } from '../../../../server/services/federation/infrastructure/matrix/helpers/MatrixIdVerificationTypes';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
+
 import {
+
 	notifyOnRoomChangedById,
 	notifyOnIntegrationChangedByUserId,
 	notifyOnLivechatDepartmentAgentChanged,

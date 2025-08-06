@@ -1,4 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../stores';

@@ -3,6 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

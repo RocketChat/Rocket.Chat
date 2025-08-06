@@ -1,6 +1,7 @@
 import type { ILivechatContact, ILivechatContactChannel, ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatContacts, LivechatRooms, Settings } from '@rocket.chat/models';
+
 import type { ClientSession } from 'mongodb';
 
 import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';

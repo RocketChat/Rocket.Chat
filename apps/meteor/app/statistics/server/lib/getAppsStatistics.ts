@@ -1,6 +1,7 @@
 import { Apps } from '@rocket.chat/apps';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppInstallationSource } from '@rocket.chat/apps-engine/server/storage';
+
 import mem from 'mem';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';

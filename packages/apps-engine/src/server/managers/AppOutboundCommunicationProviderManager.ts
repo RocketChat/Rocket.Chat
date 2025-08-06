@@ -1,5 +1,6 @@
 import type { AppAccessorManager } from '.';
 import type {
+
 	IOutboundMessageProviders,
 	IOutboundEmailMessageProvider,
 	IOutboundPhoneMessageProvider,

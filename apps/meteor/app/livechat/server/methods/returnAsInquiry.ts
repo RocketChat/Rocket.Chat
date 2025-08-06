@@ -2,6 +2,7 @@ import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatDepartment, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatRooms } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

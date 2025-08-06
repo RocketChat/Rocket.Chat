@@ -2,6 +2,7 @@ import { api, Message } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import { Avatars, Rooms } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { RocketChatFile } from '../../../file/server';

@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { dbWatchersDisabled, DatabaseWatcher } from '@rocket.chat/models';
+
 import { MongoInternals } from 'meteor/mongo';
 
 import { metrics } from '../../app/metrics/server/lib/metrics';

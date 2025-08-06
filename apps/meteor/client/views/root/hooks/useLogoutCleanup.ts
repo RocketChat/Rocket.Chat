@@ -1,4 +1,5 @@
 import { useOnLogout, useSetting } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { closeAllRooms } from './closeAllRooms';
