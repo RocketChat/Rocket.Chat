@@ -1,9 +1,29 @@
-import { FederationMatrix } from '@rocket.chat/core-services';
+import { api, FederationMatrix } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
+import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../lib/callbacks/afterRemoveFromRoomCallback';
+
+callbacks.add(
+	'afterDeleteMessage',
+	async (message: IMessage) => {
+		if (!message.federation?.eventId) {
+			return;
+		}
+
+		const isFromExternalUser = message.u?.username?.includes(':');
+		if (isFromExternalUser) {
+			return;
+		}
+
+		await FederationMatrix.deleteMessage(message);
+	},
+	callbacks.priority.MEDIUM,
+	'native-federation-after-delete-message',
+);
 
 callbacks.add(
 	'native-federation.onAddUsersToRoom',
@@ -68,3 +88,22 @@ afterRemoveFromRoomCallback.add(
 	callbacks.priority.HIGH,
 	'federation-matrix-after-remove-from-room',
 );
+
+export const setupTypingEventListenerForRoom = (roomId: string): void => {
+	notifications.streamRoom.on(`${roomId}/user-activity`, (username, activity) => {
+		if (Array.isArray(activity) && (!activity.length || activity.includes('user-typing'))) {
+			void api.broadcast('user.typing', {
+				user: { username },
+				isTyping: activity.includes('user-typing'),
+				roomId,
+			});
+		}
+	});
+};
+
+export const setupInternalEDUEventListeners = async () => {
+	const federatedRooms = await Rooms.findFederatedRooms({ projection: { _id: 1 } }).toArray();
+	for (const room of federatedRooms) {
+		setupTypingEventListenerForRoom(room._id);
+	}
+};

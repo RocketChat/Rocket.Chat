@@ -61,7 +61,7 @@ export function member(emitter: Emitter<HomeserverEventSignatures>) {
 			logger.error('Failed to process Matrix membership event:', error);
 		}
 	});
-	
+
 	// @ts-ignore
 	emitter.on('homeserver.matrix.room.privacy', async (data) => {
 		console.log('room privacy event', data);

@@ -161,7 +161,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async beforeTopicChange(room: IRoom): Promise<void> {
 		// FederationActions.blockIfRoomFederatedButServiceNotReady(room);
 	}
-	
+
 	async saveRoomName(roomId: string, displayName: string, senderId: string): Promise<void> {
 		const sender = await Users.findOneById(senderId);
 		if (!sender) {
@@ -169,26 +169,26 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 		await saveRoomName(roomId, displayName, sender, true, { skipMatrix: true });
 	}
-	
+
 	async saveRoomType(roomId: string /* matrixRoomId */, roomType: IRoom['t'], senderId: string /* matrix userId */): Promise<void> {
 		const localRoomId = await MatrixBridgedRoom.getLocalRoomId(roomId);
 		if (!localRoomId) {
 			throw new Error('local room mapping for external room not found');
 		}
-		
+
 		const localUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(senderId);
 		if (!localUserId) {
 			throw new Error('local user mapping for external user not found');
 		}
-		
+
 		const user = await Users.findOneById(localUserId);
 		if (!user) {
 			throw new Error('local user object not found');
 		}
-		
+
 		await saveRoomType(localRoomId, roomType, user);
 	}
-	
+
 	async addRoomModerator(fromUserId: string, userId: IUser['_id'], rid: IRoom['_id'], type: 'moderator' | 'owner' | 'user'): Promise<void> {
 		if (type === 'owner') {
 			await addRoomOwner(fromUserId, rid, userId, { skipMatrix: true });
