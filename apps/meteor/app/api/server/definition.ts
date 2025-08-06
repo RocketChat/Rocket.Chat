@@ -138,7 +138,7 @@ export type SharedOptions<TMethod extends string> = (
 	authOrAnonRequired?: true;
 	deprecation?: {
 		version: DeprecationLoggerNextPlannedVersion;
-		alternatives?: string[];
+		alternatives?: PathPattern[];
 	};
 };
 

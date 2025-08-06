@@ -1,4 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
+import type { PathPattern } from '@rocket.chat/rest-typings';
 import semver from 'semver';
 
 import { metrics } from '../../../metrics/server/lib/metrics';
@@ -88,8 +89,13 @@ export const apiDeprecationLogger = ((logger) => {
 
 export const methodDeprecationLogger = ((logger) => {
 	return {
-		method: (method: string, version: DeprecationLoggerNextPlannedVersion, info = '') => {
-			const message = `The method "${method}" is deprecated and will be removed on version ${version}${info ? ` (${info})` : ''}`;
+		method: <T extends string | PathPattern>(
+			method: string,
+			version: DeprecationLoggerNextPlannedVersion,
+			info: T extends `/${string}` ? (T extends PathPattern ? T : never) : string,
+		) => {
+			const replacement = typeof info === 'string' ? info : `Use the ${info} endpoint instead`;
+			const message = `The method "${method}" is deprecated and will be removed on version ${version}${replacement ? ` (${replacement})` : ''}`;
 			compareVersions(version, message);
 			metrics.deprecations.inc({ type: 'deprecation', name: method, kind: 'method' });
 			logger.warn(message);
