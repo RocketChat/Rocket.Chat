@@ -34,7 +34,6 @@ import type { MeEndpoints } from './v1/me';
 import type { MiscEndpoints } from './v1/misc';
 import type { ModerationEndpoints } from './v1/moderation';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
-import type { PermissionsEndpoints } from './v1/permissions';
 import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
@@ -78,7 +77,6 @@ export interface Endpoints
 		StatisticsEndpoints,
 		LicensesEndpoints,
 		MiscEndpoints,
-		PermissionsEndpoints,
 		PresenceEndpoints,
 		InstancesEndpoints,
 		IntegrationsEndpoints,
@@ -212,7 +210,6 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
 export * from './apps';
-export * from './v1/permissions';
 export * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';
