@@ -1,5 +1,5 @@
 import type { GroupsBaseProps } from './BaseProps';
-import type { PaginatedRequest } from '.../helpers/PaginatedRequest';
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajv } from '../Ajv';
 
 export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps> & {
