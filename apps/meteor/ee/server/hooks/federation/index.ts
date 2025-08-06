@@ -1,6 +1,7 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
-import { isRoomNativeFederated, type IMessage, type IUser } from '@rocket.chat/core-typings';
-import { Messages, Rooms } from '@rocket.chat/models';
+import { isRoomNativeFederated, type IMessage, type IUser, type IRoom } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { callbacks } from '../../../../lib/callbacks';
@@ -49,10 +50,12 @@ callbacks.add(
 		if (!message.federation?.eventId) {
 			return;
 		}
-		const isEchoMessage = !(await Messages.findOneByFederationId(message.federation?.eventId));
-		if (isEchoMessage) {
+
+		const isFromExternalUser = message.u?.username?.includes(':');
+		if (isFromExternalUser) {
 			return;
 		}
+
 		await FederationMatrix.deleteMessage(message);
 	},
 	callbacks.priority.MEDIUM,
