@@ -1,4 +1,4 @@
-import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallParticipantIdentification } from '@rocket.chat/core-typings';
+import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallActor } from '@rocket.chat/core-typings';
 import type { IMediaCallChannelsModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
 
@@ -12,22 +12,18 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 	protected modelIndexes(): IndexDescription[] {
 		return [
 			{
-				key: { 'callId': 1, 'participant.type': 1, 'participant.id': 1, 'participant.sessionId': 1 },
+				key: { callId: 1, actorType: 1, actorId: 1, contractId: 1 },
 				unique: true,
-				sparse: true,
 			},
 		];
 	}
 
-	public async findOneByCallIdAndParticipant(
-		callId: string,
-		participant: MediaCallParticipantIdentification,
-	): Promise<IMediaCallChannel | null> {
+	public async findOneByCallIdAndActor(callId: string, actor: Required<MediaCallActor>): Promise<IMediaCallChannel | null> {
 		return this.findOne({
 			callId,
-			'participant.type': participant.type,
-			'participant.id': participant.id,
-			...(participant.type === 'user' && { 'participant.sessionId': participant.sessionId }),
+			actorType: actor.type,
+			actorId: actor.id,
+			contractId: actor.contractId,
 		});
 	}
 
@@ -50,10 +46,10 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 
 		return this.findOneAndUpdate(
 			{
-				'callId': channel.callId,
-				'participant.type': channel.participant.type,
-				'participant.id': channel.participant.id,
-				...(channel.participant.type === 'user' && { 'participant.sessionId': channel.participant.sessionId }),
+				callId: channel.callId,
+				actorType: channel.actorType,
+				actorId: channel.actorId,
+				contractId: channel.contractId,
 			},
 			{
 				$setOnInsert: {

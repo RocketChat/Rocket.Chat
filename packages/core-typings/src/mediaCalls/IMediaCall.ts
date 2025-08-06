@@ -1,28 +1,34 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IUser } from '../IUser';
+import type { RequiredField } from '../utils';
 
-export type MediaCallActor =
-	| {
-			type: 'user';
-			id: IUser['_id'];
-			sessionId?: string;
-	  }
-	| {
-			type: 'sip';
-			id: string;
-	  }
-	| {
-			type: 'server';
-			id: 'server';
-	  };
+export type MediaCallActorType = 'user' | 'sip';
+
+export type MediaCallActor<T extends MediaCallActorType = MediaCallActorType> = {
+	type: T;
+	id: string;
+	contractId?: string;
+};
+
+export type MediaCallSignedActor<T extends MediaCallActor = MediaCallActor> = RequiredField<T, 'contractId'>;
+
+export type ServerActor = {
+	type: 'server';
+	id: 'server';
+	contractId: never;
+};
 
 export type MediaCallContactInformation = {
 	displayName?: string;
 	username?: string;
 	sipExtension?: string;
+
+	// avatarUrl?: string;
+	// host?: string;
 };
 
-export type MediaCallContact = MediaCallActor & MediaCallContactInformation;
+export type MediaCallContact<T extends MediaCallActor = MediaCallActor> = T & MediaCallContactInformation;
+
+export type MediaCallSignedContact = MediaCallContact<MediaCallSignedActor>;
 
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
@@ -33,10 +39,10 @@ export interface IMediaCall extends IRocketChatRecord {
 	createdBy: MediaCallActor;
 	createdAt: Date;
 
-	caller: MediaCallContact;
+	caller: MediaCallSignedContact;
 	callee: MediaCallContact;
 
-	endedBy?: MediaCallActor;
+	endedBy?: MediaCallActor | ServerActor;
 	endedAt?: Date;
 	hangupReason?: string;
 }

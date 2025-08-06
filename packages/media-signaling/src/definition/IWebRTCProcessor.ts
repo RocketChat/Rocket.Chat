@@ -1,10 +1,9 @@
-import type { MediaSignalRequestOffer, MediaSignalSDP } from './MediaSignal';
 import type { MediaStreamFactory } from './MediaStreamFactory';
 
 export interface IWebRTCProcessor {
-	createOffer(params: MediaSignalRequestOffer): Promise<MediaSignalSDP>;
-	createAnswer(params: MediaSignalSDP): Promise<MediaSignalSDP>;
-	setRemoteDescription(params: MediaSignalSDP): Promise<void>;
+	createOffer(params: { iceRestart?: boolean }): Promise<{ sdp: RTCSessionDescriptionInit }>;
+	createAnswer(params: { sdp: RTCSessionDescriptionInit }): Promise<{ sdp: RTCSessionDescriptionInit }>;
+	setRemoteDescription(params: { sdp: RTCSessionDescriptionInit }): Promise<void>;
 
 	getRemoteMediaStream(): MediaStream;
 }

@@ -1,10 +1,9 @@
-import type { IMediaCall, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
 import type { MediaSignal } from '@rocket.chat/media-signaling';
 
 export interface IMediaCallService {
 	processSignal(signal: MediaSignal, fromUid: IUser['_id']): Promise<void>;
-	createInternalCall(caller: { uid: IUser['_id']; sessionId: string }, callee: { uid: IUser['_id'] }): Promise<IMediaCall>;
-	callRoom(caller: { uid: IUser['_id']; sessionId: string }, roomId: IRoom['_id']): Promise<IMediaCall>;
-	callExtension(caller: { uid: IUser['_id']; sessionId: string }, extension: string): Promise<IMediaCall>;
-	callUser(caller: { uid: IUser['_id']; sessionId: string }, userId: IUser['_id']): Promise<IMediaCall>;
+	createInternalCall(caller: { uid: IUser['_id']; contractId: string }, callee: { uid: IUser['_id'] }): Promise<IMediaCall>;
+	callExtension(caller: { uid: IUser['_id']; contractId: string }, extension: string): Promise<IMediaCall>;
+	callUser(caller: { uid: IUser['_id']; contractId: string }, userId: IUser['_id']): Promise<IMediaCall>;
 }

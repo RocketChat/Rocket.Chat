@@ -1,38 +1,16 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { IUser } from '../IUser';
-
-export type MediaCallParticipantIdentification = {
-	type: 'user' | 'sip';
-	id: string;
-	sessionId?: string;
-};
-
-export type MediaCallChannelUserRC = MediaCallParticipantIdentification & {
-	type: 'user';
-	id: IUser['_id'];
-	username: string;
-	displayName?: string;
-
-	sessionId: string;
-};
-
-export type MediaCallChannelUserSIP = MediaCallParticipantIdentification & {
-	type: 'sip';
-	id: string;
-	sessionId?: never;
-
-	displayName?: string;
-	// The SIP username usually matches the extension number
-	username: string;
-	host: string;
-};
-
-export type MediaCallParticipant = MediaCallChannelUserRC | MediaCallChannelUserSIP;
+import type { MediaCallActorType, MediaCallContact } from './IMediaCall';
 
 export interface IMediaCallChannel extends IRocketChatRecord {
 	callId: string;
 
-	participant: MediaCallParticipant;
+	contractId: string;
+
+	actorType: MediaCallActorType;
+
+	actorId: string;
+
+	contact: Partial<MediaCallContact>;
 
 	role: 'caller' | 'callee';
 
@@ -49,8 +27,3 @@ export interface IMediaCallChannel extends IRocketChatRecord {
 
 	acknowledged: boolean;
 }
-
-export type ValidSignalChannel = IMediaCallChannel & {
-	// role: 'caller' | 'callee';
-	participant: MediaCallChannelUserRC;
-};

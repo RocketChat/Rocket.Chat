@@ -1,10 +1,10 @@
-import { type MediaSignal } from '@rocket.chat/media-signaling';
+import { type AgentMediaSignal } from '@rocket.chat/media-signaling';
 import type { JSONSchemaType } from 'ajv';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({ discriminator: true });
 
-export type MediaCallsSignalProps = { signal: MediaSignal };
+export type MediaCallsSignalProps = { signal: AgentMediaSignal };
 
 export type SDP = RTCSessionDescriptionInit;
 
@@ -25,17 +25,6 @@ export const sdpSchema: JSONSchemaType<RTCSessionDescriptionInit> = {
 	required: ['type'],
 };
 
-const signalHeader = {
-	callId: {
-		type: 'string',
-		nullable: false,
-	},
-	sessionId: {
-		type: 'string',
-		nullable: true,
-	},
-};
-
 const mediaCallsSignalPropsSchema: JSONSchemaType<MediaCallsSignalProps> = {
 	type: 'object',
 	properties: {
@@ -48,161 +37,93 @@ const mediaCallsSignalPropsSchema: JSONSchemaType<MediaCallsSignalProps> = {
 				{
 					type: 'object',
 					properties: {
-						...signalHeader,
-						type: {
-							const: 'new',
+						callId: {
+							type: 'string',
+							nullable: false,
 						},
-						body: {
-							type: 'object',
-							properties: {
-								service: {
-									type: 'string',
-									nullable: false,
-								},
-								kind: {
-									type: 'string',
-									nullable: false,
-								},
-								role: {
-									type: 'string',
-									nullable: false,
-								},
-							},
-							additionalProperties: true,
-							required: ['service', 'kind', 'role'],
+						contractId: {
+							type: 'string',
+							nullable: true,
 						},
-					},
-					additionalProperties: false,
-					required: [...Object.keys(signalHeader), 'type', 'body'],
-				},
-				{
-					type: 'object',
-					properties: {
-						...signalHeader,
 						type: {
 							const: 'sdp',
 						},
-						body: {
-							type: 'object',
-							properties: {
-								sdp: sdpSchema,
-							},
-							required: ['sdp'],
-						},
+						sdp: sdpSchema,
 					},
 					additionalProperties: false,
-					required: [...Object.keys(signalHeader), 'type', 'body'],
+					required: ['callId', 'contractId', 'type', 'sdp'],
 				},
 				{
 					type: 'object',
 					properties: {
-						...signalHeader,
-						type: {
-							const: 'request-offer',
+						callId: {
+							type: 'string',
+							nullable: false,
 						},
-						body: {
-							type: 'object',
-							properties: {
-								iceRestart: {
-									type: 'boolean',
-									nullable: true,
-								},
-							},
-							required: [],
+						contractId: {
+							type: 'string',
+							nullable: true,
 						},
-					},
-					additionalProperties: false,
-					required: [...Object.keys(signalHeader), 'type', 'body'],
-				},
-				{
-					type: 'object',
-					properties: {
-						...signalHeader,
 						type: {
 							const: 'error',
 						},
-						body: {
-							type: 'object',
-							properties: {
-								errorCode: {
-									type: 'string',
-									nullable: false,
-								},
-							},
-							required: ['errorCode'],
+						errorCode: {
+							type: 'string',
+							nullable: false,
 						},
 					},
 					additionalProperties: false,
-					required: [...Object.keys(signalHeader), 'type', 'body'],
+					required: ['callId', 'contractId', 'type', 'errorCode'],
 				},
 				{
 					type: 'object',
 					properties: {
-						...signalHeader,
+						callId: {
+							type: 'string',
+							nullable: false,
+						},
+						contractId: {
+							type: 'string',
+							nullable: true,
+						},
 						type: {
 							const: 'answer',
 						},
-						body: {
-							type: 'object',
-							properties: {
-								answer: {
-									type: 'string',
-									nullable: false,
-								},
-							},
-							required: ['answer'],
+						answer: {
+							type: 'string',
+							nullable: false,
 						},
 					},
 					additionalProperties: false,
-					required: [...Object.keys(signalHeader), 'type', 'body'],
+					required: ['callId', 'contractId', 'type', 'answer'],
 				},
 				{
 					type: 'object',
 					properties: {
-						...signalHeader,
+						callId: {
+							type: 'string',
+							nullable: false,
+						},
+						contractId: {
+							type: 'string',
+							nullable: true,
+						},
 						type: {
 							const: 'hangup',
 						},
-						body: {
-							type: 'object',
-							properties: {
-								reason: {
-									type: 'string',
-									nullable: false,
-								},
-							},
-							required: ['reason'],
+						reason: {
+							type: 'string',
+							nullable: false,
 						},
 					},
 					additionalProperties: false,
-					required: [...Object.keys(signalHeader), 'type', 'body'],
-				},
-				{
-					type: 'object',
-					properties: {
-						...signalHeader,
-						type: {
-							const: 'notification',
-						},
-						body: {
-							type: 'object',
-							properties: {
-								notification: {
-									type: 'string',
-									nullable: false,
-								},
-							},
-							required: ['notification'],
-						},
-					},
-					additionalProperties: false,
-					required: [...Object.keys(signalHeader), 'type', 'body'],
+					required: ['callId', 'contractId', 'type', 'reason'],
 				},
 			],
 		},
 	},
 	required: ['signal'],
-	additionalProperties: true,
+	additionalProperties: false,
 };
 
 export const isMediaCallsSignalProps = ajv.compile(mediaCallsSignalPropsSchema);

@@ -2,7 +2,15 @@ import type { Emitter } from '@rocket.chat/emitter';
 
 import type { CallEvents } from './CallEvents';
 
-export type CallContact = Record<string, string> | null;
+export type CallContact = {
+	type?: 'user' | 'sip';
+	id?: string;
+	displayName?: string;
+	username?: string;
+	sipExtension?: string;
+	avatarUrl?: string;
+	host?: string;
+};
 
 export type CallRole = 'caller' | 'callee';
 
@@ -25,6 +33,10 @@ export type CallHangupReason =
 	| 'service-error' // Hanging up because of an error setting up the service connection
 	| 'media-error' // Hanging up because of an error setting up the media connection
 	| 'error'; // Hanging up because of an unidentified error
+
+export type CallNotification =
+	| 'accepted' // notify that the call has been accepted by both actors
+	| 'hangup'; // notify that the call is over;
 
 export interface IClientMediaCallData {
 	callId: string;

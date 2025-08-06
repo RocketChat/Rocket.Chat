@@ -5,19 +5,12 @@ import { MediaSignalTransportWrapper } from './TransportWrapper';
 import { createRandomToken } from './utils/createRandomToken';
 import type { IServiceProcessorFactoryList } from '../definition/IServiceProcessorFactoryList';
 import type { MediaSignal } from '../definition/MediaSignal';
-import type { MediaSignalTransport } from '../definition/MediaSignalTransport';
+import type { MediaSignalAgentTransport } from '../definition/MediaSignalTransport';
 import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
 import type { IClientMediaCall, CallState } from '../definition/call';
 
-const stateWeights: Record<CallState, number> = {
-	none: 0,
-	ringing: 1,
-	accepted: 2,
-	active: 3,
-	hangup: -1,
-} as const;
-
 export type MediaSignalingEvents = {
+	callContactUpdate: { call: IClientMediaCall };
 	callStateChange: { call: IClientMediaCall; oldState: CallState };
 	newCall: { call: IClientMediaCall };
 	acceptedCall: { call: IClientMediaCall };
@@ -28,7 +21,7 @@ export type MediaSignalingSessionConfig = {
 	userId: string;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
-	transport: MediaSignalTransport;
+	transport: MediaSignalAgentTransport;
 };
 
 export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
@@ -61,48 +54,36 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public isBusy(): boolean {
-		return this.hasAnyCallState(['ringing', 'accepted', 'active']);
+		const call = this.getMainCall();
+		if (!call) {
+			return false;
+		}
+
+		return ['accepted', 'active'].includes(call.state);
 	}
 
 	public getCallData(callId: string): IClientMediaCall | null {
 		return this.knownCalls.get(callId) || null;
 	}
 
-	public getAllCallStates(): CallState[] {
-		return this.knownCalls
-			.values()
-			.map(({ state }) => state)
-			.toArray();
-	}
+	public getMainCall(): IClientMediaCall | null {
+		let ringingCall: IClientMediaCall | null = null;
+		let pendingCall: IClientMediaCall | null = null;
 
-	public hasAnyCallState(states: CallState[]): boolean {
-		const knownStates = this.getAllCallStates();
-		for (const state of knownStates) {
-			if (states.includes(state)) {
-				return true;
+		for (const call of this.knownCalls.values()) {
+			if (['accepted', 'active'].includes(call.state)) {
+				return call;
+			}
+			if (call.state === 'ringing' && !ringingCall) {
+				ringingCall = call;
+				continue;
+			}
+			if (call.state === 'none') {
+				pendingCall = call;
+				continue;
 			}
 		}
-		return false;
-	}
-
-	public getSortedCalls(): IClientMediaCall[] {
-		return this.knownCalls
-			.values()
-			.toArray()
-			.sort((call1, call2) => {
-				const call1Weight = stateWeights[call1.state] || 0;
-				const call2Weight = stateWeights[call2.state] || 0;
-
-				return call2Weight - call1Weight;
-			});
-	}
-
-	public getMainCall(): IClientMediaCall | null {
-		const call = this.getSortedCalls().pop();
-		if (call) {
-			return this.getCallData(call.callId);
-		}
-		return null;
+		return ringingCall || pendingCall;
 	}
 
 	public async processSignal(signal: MediaSignal): Promise<void> {
@@ -122,15 +103,23 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private isSignalTargetingAnotherSession(signal: MediaSignal): boolean {
-		if (!signal.sessionId) {
-			return false;
+		if ('sessionId' in signal && signal.sessionId && signal.sessionId !== this._sessionId) {
+			return true;
 		}
 
-		return signal.sessionId !== this._sessionId;
+		return false;
 	}
 
 	private isCallIgnored(callId: string): boolean {
 		return this.ignoredCalls.has(callId);
+	}
+
+	private ignoreCall(callId: string) {
+		this.ignoredCalls.add(callId);
+
+		if (this.knownCalls.has(callId)) {
+			this.knownCalls.delete(callId);
+		}
 	}
 
 	private async getOrCreateCall(callId: string): Promise<ClientMediaCall> {
@@ -148,14 +137,14 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		const call = new ClientMediaCall(config, callId);
 		this.knownCalls.set(callId, call);
 
+		call.emitter.on('contactUpdate', () => this.emit('callContactUpdate', { call }));
 		call.emitter.on('stateChange', (oldState) => this.emit('callStateChange', { call, oldState }));
+		call.emitter.on('initialized', () => this.emit('newCall', { call }));
 		call.emitter.on('accepted', () => this.emit('acceptedCall', { call }));
 		call.emitter.on('ended', () => {
-			this.ignoredCalls.add(call.callId);
+			this.ignoreCall(call.callId);
 			this.emit('endedCall', { call });
 		});
-
-		this.emit('newCall', { call });
 
 		return call;
 	}
