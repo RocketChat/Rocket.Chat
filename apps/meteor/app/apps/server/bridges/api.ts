@@ -3,6 +3,7 @@ import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessor
 import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/definition/api';
 import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges/ApiBridge';
 import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
+
 import type { Response, Request, IRouter, RequestHandler } from 'express';
 import express from 'express';
 import { Meteor } from 'meteor/meteor';

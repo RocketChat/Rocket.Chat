@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type UsersInfoParamsGet = ({ userId: string } | { username: string } | { importId: string }) & {
 	fields?: string;
 	includeUserRooms?: string;

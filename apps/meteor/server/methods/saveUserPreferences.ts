@@ -2,10 +2,12 @@ import type { ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import {
+
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
 	notifyOnSubscriptionChangedByUserId,
 	notifyOnSubscriptionChangedByUserPreferences,

@@ -1,5 +1,6 @@
 import type { ThemePreference } from '@rocket.chat/core-typings';
-import { ajv } from './../Ajv';
+
+import { ajv } from '../Ajv';
 
 export type FontSize = '100%' | '14px' | '18px' | '20px' | '24px';
 

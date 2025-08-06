@@ -1,5 +1,6 @@
 import type { AppCategory } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import { z } from 'zod';
 
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';

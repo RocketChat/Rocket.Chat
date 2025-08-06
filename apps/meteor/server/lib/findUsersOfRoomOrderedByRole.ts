@@ -1,6 +1,7 @@
 import { type IUser, type IRole, ROOM_ROLE_PRIORITY_MAP } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { Document, FilterOperators } from 'mongodb';
 
 import { settings } from '../../app/settings/server';

@@ -1,4 +1,5 @@
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
+
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';

@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 
 import type { IIncomingMessage, IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Avatars, Rooms } from '@rocket.chat/models';
+
 import type { NextFunction } from 'connect';
 import { Cookies } from 'meteor/ostrio:cookies';
 

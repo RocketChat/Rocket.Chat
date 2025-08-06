@@ -1,6 +1,5 @@
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajv } from './../Ajv';
-
+import type { PaginatedRequest } from '.../helpers/PaginatedRequest';
+import { ajv } from '../Ajv';
 
 export type IntegrationsListProps = PaginatedRequest<{ name?: string; type?: string; query?: string }>;
 

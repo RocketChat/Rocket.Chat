@@ -3,6 +3,7 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import {
+
 	makeAgentsUnavailableBasedOnBusinessHour,
 	makeOnlineAgentsAvailable,
 } from '../../../../../app/livechat/server/business-hour/Helper';

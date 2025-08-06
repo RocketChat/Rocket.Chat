@@ -2,6 +2,7 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { executeSendMessage } from '../../lib/server/methods/sendMessage';
 import { slashCommands } from '../../utils/server/slashCommand';
+
 /*
  * Gimme is a named function that will replace /gimme commands
  * @param {Object} message - The message object

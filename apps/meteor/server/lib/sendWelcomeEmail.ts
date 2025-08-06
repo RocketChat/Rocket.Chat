@@ -1,4 +1,5 @@
 import { Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import * as Mailer from '../../app/mailer/server/api';

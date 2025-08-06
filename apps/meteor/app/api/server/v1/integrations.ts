@@ -1,6 +1,8 @@
 import type { IIntegration, INewIncomingIntegration, INewOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+
 import {
+
 	isIntegrationsCreateProps,
 	isIntegrationsHistoryProps,
 	isIntegrationsRemoveProps,
@@ -9,10 +11,12 @@ import {
 	isIntegrationsListProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
 import {
+
 	mountIntegrationHistoryQueryBasedOnPermissions,
 	mountIntegrationQueryBasedOnPermissions,
 } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';

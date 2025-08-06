@@ -4,6 +4,7 @@ import url from 'url';
 
 import { Logger } from '@rocket.chat/logger';
 import { OAuthApps } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';

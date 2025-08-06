@@ -1,9 +1,12 @@
 import type { SAMLConfiguration } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { SAMLUtils } from './Utils';
+
 import {
+
 	defaultAuthnContextTemplate,
 	defaultAuthRequestTemplate,
 	defaultLogoutResponseTemplate,
@@ -15,7 +18,9 @@ import {
 	defaultMetadataCertificateTemplate,
 } from './constants';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+
 import {
+
 	notifyOnLoginServiceConfigurationChanged,
 	notifyOnLoginServiceConfigurationChangedByService,
 } from '../../../lib/server/lib/notifyListener';

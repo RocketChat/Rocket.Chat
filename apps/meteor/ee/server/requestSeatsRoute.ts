@@ -1,4 +1,5 @@
 import { Analytics } from '@rocket.chat/core-services';
+
 import express, { type Request } from 'express';
 import { WebApp } from 'meteor/webapp';
 

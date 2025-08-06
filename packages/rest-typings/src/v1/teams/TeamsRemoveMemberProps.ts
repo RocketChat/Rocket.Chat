@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type TeamsRemoveMemberProps = ({ teamId: string } | { teamName: string }) & {
 	userId: string;
 	rooms?: Array<string>;

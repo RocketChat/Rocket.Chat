@@ -1,4 +1,5 @@
 import { useUser } from '@rocket.chat/ui-contexts';
+
 import { lazy, useMemo } from 'react';
 
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';

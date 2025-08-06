@@ -1,5 +1,6 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
+
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 

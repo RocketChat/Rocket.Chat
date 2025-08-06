@@ -1,5 +1,6 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useState, useEffect, useContext } from 'react';
 
 import type { ISettings } from '../../../apps/@types/IOrchestrator';

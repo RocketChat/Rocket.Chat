@@ -1,6 +1,7 @@
 import type { IAppsTokens } from '@rocket.chat/core-typings';
 import { Messages, AppsTokens, Users, Rooms, Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

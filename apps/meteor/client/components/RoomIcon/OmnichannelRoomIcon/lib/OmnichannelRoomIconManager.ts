@@ -1,4 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
+
 import DOMPurify from 'dompurify';
 
 import { sdk } from '../../../../../app/utils/client/lib/SDKClient';

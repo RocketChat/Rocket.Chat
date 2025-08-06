@@ -1,4 +1,5 @@
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+
 import { useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';

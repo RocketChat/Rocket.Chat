@@ -1,4 +1,5 @@
 import type { ISetting, LicenseModule } from '@rocket.chat/core-typings';
+
 import { useMemo } from 'react';
 
 import { useLicenseBase } from '../../../../hooks/useLicense';

@@ -2,6 +2,7 @@ import { Federation, FederationEE, License } from '@rocket.chat/core-services';
 import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions, MatrixBridgedUser } from '@rocket.chat/models';
+
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -13,7 +14,9 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { callbacks } from '../../../../lib/callbacks';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+
 import {
+
 	notifyOnRoomChangedById,
 	notifyOnRoomChangedByUserDM,
 	notifyOnSubscriptionChangedByNameAndRoomType,

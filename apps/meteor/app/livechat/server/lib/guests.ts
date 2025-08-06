@@ -1,6 +1,8 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { ILivechatVisitor, IOmnichannelRoom, IUser, UserStatus } from '@rocket.chat/core-typings';
+
 import {
+
 	LivechatVisitors,
 	LivechatCustomField,
 	LivechatInquiry,
@@ -12,6 +14,7 @@ import {
 	Users,
 } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
+
 import UAParser from 'ua-parser-js';
 
 import { parseAgentCustomFields, validateEmail } from './Helper';
@@ -24,7 +27,9 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
+
 import {
+
 	notifyOnSubscriptionChanged,
 	notifyOnLivechatInquiryChanged,
 	notifyOnLivechatInquiryChangedByToken,

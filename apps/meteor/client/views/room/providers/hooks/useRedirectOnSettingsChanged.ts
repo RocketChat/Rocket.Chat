@@ -1,5 +1,6 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { LegacyRoomManager } from '../../../../../app/ui-utils/client';

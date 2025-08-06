@@ -1,5 +1,6 @@
 import type { ILivechatDepartment, AvailableAgentsAggregation } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
+
 import type { Filter } from 'mongodb';
 
 import { settings } from '../../../../../app/settings/server';

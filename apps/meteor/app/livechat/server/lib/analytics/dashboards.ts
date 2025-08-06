@@ -1,13 +1,16 @@
 import { OmnichannelAnalytics } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
+
 import mem from 'mem';
 import moment from 'moment';
 
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { settings } from '../../../../settings/server';
 import { getAnalyticsOverviewDataCachedForRealtime } from '../AnalyticsTyped';
+
 import {
+
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,
 	findAllAverageWaitingTimeAsync,

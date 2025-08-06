@@ -1,4 +1,5 @@
 import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+
 import { useCallback } from 'react';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';

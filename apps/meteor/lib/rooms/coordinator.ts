@@ -2,6 +2,7 @@ import type { RoomType } from '@rocket.chat/core-typings';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 
 import type {
+
 	IRoomTypeConfig,
 	IRoomTypeClientDirectives,
 	IRoomTypeServerDirectives,

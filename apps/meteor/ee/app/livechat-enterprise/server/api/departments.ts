@@ -1,4 +1,5 @@
 import {
+
 	isLivechatAnalyticsDepartmentsAmountOfChatsProps,
 	isLivechatAnalyticsDepartmentsAverageServiceTimeProps,
 	isLivechatAnalyticsDepartmentsAverageChatDurationTimeProps,
@@ -11,7 +12,9 @@ import {
 
 import { API } from '../../../../../app/api/server';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
+
 import {
+
 	findAllRoomsAsync,
 	findAllAverageServiceTimeAsync,
 	findAllServiceTimeAsync,

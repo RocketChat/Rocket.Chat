@@ -2,6 +2,7 @@ import { Omnichannel } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors, LivechatRooms, Subscriptions, Users } from '@rocket.chat/models';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

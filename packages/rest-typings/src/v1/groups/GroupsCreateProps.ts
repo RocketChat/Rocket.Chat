@@ -1,5 +1,4 @@
-import { ajv } from './../Ajv';
-
+import { ajv } from '../Ajv';
 
 export type GroupsCreateProps = {
 	name: string;

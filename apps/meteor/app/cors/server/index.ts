@@ -1,4 +1,5 @@
 import './cors';
+
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';

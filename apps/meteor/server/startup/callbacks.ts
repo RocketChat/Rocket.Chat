@@ -1,4 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
+
 import { performance } from 'universal-perf-hooks';
 
 import { metrics, StatsTracker } from '../../app/metrics/server';

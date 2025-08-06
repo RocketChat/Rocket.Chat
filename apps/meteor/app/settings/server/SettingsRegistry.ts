@@ -2,6 +2,7 @@ import type { ISetting, ISettingGroup, Optional, SettingValue } from '@rocket.ch
 import { isSettingEnterprise } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
+
 import { isEqual } from 'underscore';
 
 import type { ICachedSettings } from './CachedSettings';

@@ -1,4 +1,5 @@
 import type { OauthConfig } from '@rocket.chat/core-typings';
+
 import { Meteor } from 'meteor/meteor';
 
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';

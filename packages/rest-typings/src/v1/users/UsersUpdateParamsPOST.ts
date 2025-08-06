@@ -1,5 +1,6 @@
 import type { IUserSettings } from '@rocket.chat/core-typings';
-import { ajv } from './../Ajv';
+
+import { ajv } from '../Ajv';
 
 export type UsersUpdateParamsPOST = {
 	userId: string;

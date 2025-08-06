@@ -1,11 +1,14 @@
 import { type IVoipFreeSwitchService, ServiceClassInternal, ServiceStarter } from '@rocket.chat/core-services';
+
 import type {
+
 	FreeSwitchExtension,
 	IFreeSwitchChannelEvent,
 	IFreeSwitchChannel,
 	IFreeSwitchChannelEventDelta,
 } from '@rocket.chat/core-typings';
 import {
+
 	getDomain,
 	getUserPassword,
 	getExtensionList,
@@ -20,6 +23,7 @@ import {
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { FreeSwitchChannel, FreeSwitchChannelEvent, FreeSwitchChannelEventDelta } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
+
 import type { InsertOneResult, WithoutId } from 'mongodb';
 import { MongoError } from 'mongodb';
 

@@ -1,6 +1,7 @@
 import type { IBanner } from '@rocket.chat/core-typings';
 import { BannerPlatform } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+
 import moment from 'moment';
 
 import { settings } from '../../../app/settings/server';

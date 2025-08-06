@@ -1,4 +1,5 @@
 import type {
+
 	ILivechatPriority,
 	IOmnichannelRoom,
 	IOmnichannelServiceLevelAgreements,
@@ -11,6 +12,7 @@ import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typi
 import type { Updater } from '@rocket.chat/models';
 import { LivechatRoomsRaw } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection, Filter, AggregationCursor, UpdateOptions } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';

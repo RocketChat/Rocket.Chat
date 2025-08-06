@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type ChannelsKickProps = { roomId: string; userId: string } | { roomName: string; userId: string };
 
 const channelsKickPropsSchema = {

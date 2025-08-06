@@ -1,6 +1,6 @@
 import type { FederationPaginatedRequest } from '.';
-import { ajv } from './../Ajv';
 
+import { ajv } from '../Ajv';
 
 export type FederationSearchPublicRoomsProps = FederationPaginatedRequest<{
 	serverName?: string;

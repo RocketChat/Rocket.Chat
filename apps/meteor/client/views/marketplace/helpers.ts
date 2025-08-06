@@ -1,5 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App } from '@rocket.chat/core-typings';
+
 import semver from 'semver';
 
 // import { t } from '../../../app/utils/client';

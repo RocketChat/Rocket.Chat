@@ -1,4 +1,5 @@
 import type {
+
 	IFederationServiceEE,
 	IFederationJoinExternalPublicRoomInput,
 	FederationConfigurationStatus,

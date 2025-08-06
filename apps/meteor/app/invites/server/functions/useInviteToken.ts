@@ -1,4 +1,5 @@
 import { Invites, Subscriptions, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { validateInviteToken } from './validateInviteToken';

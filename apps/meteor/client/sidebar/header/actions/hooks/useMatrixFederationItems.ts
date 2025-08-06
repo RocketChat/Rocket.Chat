@@ -1,4 +1,5 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+
 import { useTranslation } from 'react-i18next';
 
 import MatrixFederationSearch from '../../MatrixFederationSearch';

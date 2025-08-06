@@ -1,4 +1,5 @@
 import { Random } from '@rocket.chat/random';
+
 import { Meteor } from 'meteor/meteor';
 
 import { callLoginMethod } from '../../lib/2fa/overrideLoginMethod';

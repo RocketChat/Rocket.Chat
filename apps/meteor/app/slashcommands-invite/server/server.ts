@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';

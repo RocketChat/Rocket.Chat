@@ -1,5 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Permissions } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';

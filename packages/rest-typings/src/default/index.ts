@@ -1,4 +1,5 @@
-import { ajv } from './../v1/Ajv';
+import { ajv } from '../v1/Ajv';
+
 type OpenAPIJSONEndpoint = { withUndocumented?: boolean };
 
 const OpenAPIJSONEndpointSchema = {

@@ -1,6 +1,5 @@
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajv } from './../Ajv';
-
+import type { PaginatedRequest } from '.../helpers/PaginatedRequest';
+import { ajv } from '../Ajv';
 
 export type ChannelsFilesListProps = PaginatedRequest<
 	({ roomId: string; roomName?: string } | { roomId?: string; roomName: string }) & {

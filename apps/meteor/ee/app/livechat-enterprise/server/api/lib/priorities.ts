@@ -3,6 +3,7 @@ import type { ILivechatPriority, IOmnichannelRoom, IUser } from '@rocket.chat/co
 import { LivechatInquiry, LivechatPriority, LivechatRooms } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { FindOptions } from 'mongodb';
 
 import { notifyOnLivechatInquiryChangedByRoom, notifyOnRoomChanged } from '../../../../../../app/lib/server/lib/notifyListener';

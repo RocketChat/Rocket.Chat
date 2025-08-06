@@ -1,6 +1,8 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+
 import {
+
 	isFileImageAttachment,
 	isFileAttachment,
 	isFileAudioAttachment,
@@ -8,6 +10,7 @@ import {
 	isQuoteAttachment,
 } from '@rocket.chat/core-typings';
 import type { Options } from '@rocket.chat/message-parser';
+
 import { useMemo } from 'react';
 
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';

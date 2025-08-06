@@ -1,4 +1,5 @@
 import type {
+
 	ILDAPConnectionOptions,
 	LDAPEncryptionType,
 	LDAPSearchScope,
@@ -7,6 +8,7 @@ import type {
 	ILDAPPageCallback,
 } from '@rocket.chat/core-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
+
 import ldapjs from 'ldapjs';
 
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';

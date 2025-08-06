@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type GroupsOnlineProps = { _id?: string; query?: Record<string, any> };
 
 const groupsOnlinePropsSchema = {

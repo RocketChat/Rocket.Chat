@@ -1,6 +1,7 @@
 import { v1 as uuid } from 'uuid';
 
 import type {
+
 	IActionsBlock,
 	IBlock,
 	IConditionalBlock,
@@ -11,7 +12,9 @@ import type {
 	ISectionBlock,
 } from './Blocks';
 import { BlockType } from './Blocks';
+
 import type {
+
 	IBlockElement,
 	IButtonElement,
 	IImageElement,

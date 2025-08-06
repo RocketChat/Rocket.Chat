@@ -3,6 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocket.chat/models';
 
 import {
+
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
 } from '../../lib/server/lib/notifyListener';

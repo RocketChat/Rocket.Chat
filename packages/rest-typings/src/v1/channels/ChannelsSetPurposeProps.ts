@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type ChannelsSetPurposeProps = { roomId: string; purpose: string } | { roomName: string; purpose: string };
 
 const channelsSetPurposePropsSchema = {

@@ -1,6 +1,7 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { RoomsImagesProps } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useCallback, useEffect, useState } from 'react';
 
 import { e2e } from '../../../../../app/e2e/client/rocketchat.e2e';

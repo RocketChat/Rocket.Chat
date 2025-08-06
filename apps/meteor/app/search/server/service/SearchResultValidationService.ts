@@ -1,5 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
+
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 

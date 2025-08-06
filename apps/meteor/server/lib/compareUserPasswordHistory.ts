@@ -1,4 +1,5 @@
 import type { IUser, IPassword } from '@rocket.chat/core-typings';
+
 import { Accounts } from 'meteor/accounts-base';
 
 import { settings } from '../../app/settings/server';

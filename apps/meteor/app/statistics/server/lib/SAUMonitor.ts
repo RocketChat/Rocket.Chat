@@ -2,6 +2,7 @@ import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@
 import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users, aggregates } from '@rocket.chat/models';
+
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import UAParser from 'ua-parser-js';

@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useCallback, useState } from 'react';
 
 import { VideoConfRecordList } from './VideoConfRecordList';

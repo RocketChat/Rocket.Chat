@@ -1,6 +1,8 @@
 import type { ICalendarEvent } from '@rocket.chat/core-typings';
+
 import type { JSONSchemaType } from 'ajv';
-import { ajv } from './../Ajv';
+
+import { ajv } from '../Ajv';
 
 export type CalendarEventDeleteProps = {
 	eventId: ICalendarEvent['_id'];

@@ -3,6 +3,7 @@ import type { LicenseLimitKind } from '@rocket.chat/core-typings';
 import { applyLicense, applyLicenseOrRemove, License } from '@rocket.chat/license';
 import { Subscriptions, Users, Settings, LivechatContacts } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
+
 import moment from 'moment';
 
 import { getAppCount } from './lib/getAppCount';

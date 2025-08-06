@@ -1,6 +1,7 @@
 import type { IImport } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+
 import { parse } from 'csv-parse/lib/sync';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server';

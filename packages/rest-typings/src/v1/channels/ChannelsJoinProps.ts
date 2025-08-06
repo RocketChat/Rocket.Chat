@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type ChannelsJoinProps = { roomId: string; joinCode?: string } | { roomName: string; joinCode?: string };
 
 const channelsJoinPropsSchema = {

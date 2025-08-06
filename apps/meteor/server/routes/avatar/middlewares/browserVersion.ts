@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
 import type { IIncomingMessage } from '@rocket.chat/core-typings';
+
 import type { NextFunction } from 'connect';
 import { Cookies } from 'meteor/ostrio:cookies';
 import parser from 'ua-parser-js';

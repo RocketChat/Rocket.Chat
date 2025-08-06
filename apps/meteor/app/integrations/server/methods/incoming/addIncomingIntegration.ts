@@ -2,6 +2,7 @@ import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+
 import { Babel } from 'meteor/babel-compiler';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';

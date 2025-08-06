@@ -1,4 +1,5 @@
 import type {
+
 	IRoom,
 	ISubscription,
 	ISupportedLanguage,
@@ -7,12 +8,15 @@ import type {
 	MessageAttachmentDefault,
 } from '@rocket.chat/core-typings';
 import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
+
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { Messages, Subscriptions } from '../../../../client/stores';
+
 import {
+
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';

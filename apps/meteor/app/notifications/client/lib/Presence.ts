@@ -1,4 +1,5 @@
 import { UserStatus } from '@rocket.chat/core-typings';
+
 import { Meteor } from 'meteor/meteor';
 
 import { Presence } from '../../../../client/lib/presence';

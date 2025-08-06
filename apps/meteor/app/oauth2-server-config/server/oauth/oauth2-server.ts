@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { OAuthAccessTokens, Users } from '@rocket.chat/models';
+
 import type { Request, Response } from 'express';
 import type express from 'express';
 import { Meteor } from 'meteor/meteor';

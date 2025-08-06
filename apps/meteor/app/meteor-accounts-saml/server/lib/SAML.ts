@@ -4,6 +4,7 @@ import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 

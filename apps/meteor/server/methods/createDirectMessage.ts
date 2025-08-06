@@ -2,6 +2,7 @@ import type { ICreateRoomParams } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
+
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

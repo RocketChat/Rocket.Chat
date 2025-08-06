@@ -1,4 +1,5 @@
 import type {
+
 	FacebookOAuthConfiguration,
 	ILoginServiceConfiguration,
 	LinkedinOAuthConfiguration,
@@ -9,7 +10,9 @@ import { LoginServiceConfiguration } from '@rocket.chat/models';
 
 import { logger } from './logger';
 import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
+
 import {
+
 	notifyOnLoginServiceConfigurationChanged,
 	notifyOnLoginServiceConfigurationChangedByService,
 } from '../../../app/lib/server/lib/notifyListener';

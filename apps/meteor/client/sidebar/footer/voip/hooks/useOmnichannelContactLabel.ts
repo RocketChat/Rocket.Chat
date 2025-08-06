@@ -1,5 +1,6 @@
 import type { ICallerInfo } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useQuery } from '@tanstack/react-query';
 
 import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';

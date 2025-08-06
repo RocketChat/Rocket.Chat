@@ -2,6 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
+
 import { useCallback, useRef } from 'react';
 
 import { useMessageListJumpToMessageParam, useMessageListRef } from '../../../../components/message/list/MessageListContext';

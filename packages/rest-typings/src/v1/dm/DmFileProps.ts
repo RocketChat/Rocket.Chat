@@ -1,6 +1,5 @@
-import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajv } from './../Ajv';
-
+import type { PaginatedRequest } from '.../helpers/PaginatedRequest';
+import { ajv } from '../Ajv';
 
 export type DmFileProps = PaginatedRequest<
 	({ roomId: string; username?: string } | { roomId?: string; username: string }) & { name?: string; typeGroup?: string; query?: string }

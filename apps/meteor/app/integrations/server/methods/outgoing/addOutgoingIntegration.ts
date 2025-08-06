@@ -1,6 +1,7 @@
 import type { INewOutgoingIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations } from '@rocket.chat/models';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

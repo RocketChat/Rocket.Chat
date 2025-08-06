@@ -2,6 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 

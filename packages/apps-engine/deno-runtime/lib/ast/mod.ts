@@ -1,6 +1,8 @@
 import { generate } from 'astring';
+
 // @deno-types="../../acorn.d.ts"
 import { parse, Program } from 'acorn';
+
 // @deno-types="../../acorn-walk.d.ts"
 import { fullAncestor } from 'acorn-walk';
 

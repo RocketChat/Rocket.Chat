@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
+
 import { Accounts } from 'meteor/accounts-base';
 
 import { logger } from './logger';

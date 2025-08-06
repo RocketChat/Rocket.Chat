@@ -7,6 +7,7 @@ import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
+
 import type { FindOptions, Sort } from 'mongodb';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';

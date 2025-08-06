@@ -15,7 +15,9 @@ import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
 import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
+
 import type {
+
 	FederationRoomCreateInputDto,
 	FederationRoomChangeMembershipDto,
 	FederationRoomReceiveExternalMessageDto,

@@ -1,6 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ISubscription, IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useUser } from '@rocket.chat/ui-contexts';
+
 import { useQuery } from '@tanstack/react-query';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';

@@ -1,5 +1,6 @@
 import type { IMessage, RequiredField, SlashCommandPreviewItem } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+
 import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../../utils/server/slashCommand';

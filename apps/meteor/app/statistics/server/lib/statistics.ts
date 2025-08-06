@@ -4,7 +4,9 @@ import os from 'os';
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
 import type { IRoom, IStats, ISetting } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+
 import {
+
 	NotificationQueue,
 	Rooms,
 	Statistics,

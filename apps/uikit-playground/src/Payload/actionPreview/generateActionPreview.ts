@@ -1,5 +1,7 @@
 import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
+
 import type {
+
   ILayoutBlock,
   actionPreviewType,
   initialStateType,

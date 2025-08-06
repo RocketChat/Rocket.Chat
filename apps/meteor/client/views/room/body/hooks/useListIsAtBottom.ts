@@ -1,5 +1,6 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
+
 import type { MutableRefObject } from 'react';
 import { useCallback, useRef } from 'react';
 

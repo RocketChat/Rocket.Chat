@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 // TO-DO: import Ajv instance instead of creating a new one
 export type UsersSendConfirmationEmailParamsPOST = {
 	email: string;

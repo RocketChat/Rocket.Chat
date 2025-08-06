@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatRooms } from '@rocket.chat/models';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

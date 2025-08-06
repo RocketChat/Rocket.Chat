@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type ChannelsRolesProps = { roomId: string } | { roomName: string };
 const channelsRolesPropsSchema = {
 	type: 'object',

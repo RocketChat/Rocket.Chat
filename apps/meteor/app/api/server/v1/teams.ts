@@ -2,7 +2,9 @@ import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { TEAM_TYPE, isValidSidepanel } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
+
 import {
+
 	isTeamsConvertToChannelProps,
 	isTeamsRemoveRoomProps,
 	isTeamsUpdateMemberProps,
@@ -14,6 +16,7 @@ import {
 	isTeamsListChildrenProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import { Match, check } from 'meteor/check';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';

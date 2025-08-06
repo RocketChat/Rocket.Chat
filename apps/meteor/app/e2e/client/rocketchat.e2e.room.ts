@@ -1,11 +1,14 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, AtLeast } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+
 import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
 
 import { E2ERoomState } from './E2ERoomState';
+
 import {
+
 	toString,
 	toArrayBuffer,
 	joinVectorAndEcryptedData,

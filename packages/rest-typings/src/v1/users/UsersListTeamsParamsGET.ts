@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { ajv } from './../Ajv';
+
+import { ajv } from '../Ajv';
 
 export type UsersListTeamsParamsGET = { userId: IUser['_id'] };
 

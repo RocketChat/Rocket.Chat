@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type UploadImportFileParamsPOST = {
 	binaryContent: string;
 	contentType: string;

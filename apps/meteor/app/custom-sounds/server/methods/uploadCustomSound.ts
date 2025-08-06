@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { RequiredField } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+
 import { Meteor } from 'meteor/meteor';
 
 import type { ICustomSoundData } from './insertOrUpdateSound';

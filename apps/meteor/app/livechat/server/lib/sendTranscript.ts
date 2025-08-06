@@ -1,5 +1,7 @@
 import { Message, Omnichannel } from '@rocket.chat/core-services';
+
 import {
+
 	type IUser,
 	type MessageTypesValues,
 	type IOmnichannelSystemMessage,
@@ -12,6 +14,7 @@ import {
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
+
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
 import moment from 'moment-timezone';

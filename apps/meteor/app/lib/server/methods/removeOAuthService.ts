@@ -1,6 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/string-helpers';
+
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

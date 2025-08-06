@@ -1,6 +1,7 @@
 import type { IOmnichannelBusinessUnit, ILivechatUnitMonitor } from '@rocket.chat/core-typings';
 import { LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { FindOptions } from 'mongodb';
 
 import { getUnitsFromUser } from '../../methods/getUnitsFromUserRoles';

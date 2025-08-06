@@ -1,4 +1,5 @@
 import type {
+
 	FacebookOAuthConfiguration,
 	ISetting,
 	ISettingColor,
@@ -7,7 +8,9 @@ import type {
 } from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
+
 import {
+
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,

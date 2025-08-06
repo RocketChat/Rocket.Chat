@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type ChannelsDeleteProps = { roomId: string } | { roomName: string };
 
 const channelsDeletePropsSchema = {

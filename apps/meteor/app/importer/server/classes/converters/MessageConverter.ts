@@ -1,5 +1,6 @@
 import type { IImportMessageRecord, IMessage as IDBMessage, IImportMessage, IImportMessageReaction } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
+
 import limax from 'limax';
 
 import type { UserIdentification, MentionedChannel } from './ConverterCache';

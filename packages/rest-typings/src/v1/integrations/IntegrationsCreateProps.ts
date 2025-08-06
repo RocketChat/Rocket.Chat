@@ -1,5 +1,6 @@
 import type { OutgoingIntegrationEvent, IntegrationScriptEngine } from '@rocket.chat/core-typings';
-import { ajv } from './../Ajv';
+
+import { ajv } from '../Ajv';
 
 export type IntegrationsCreateProps =
 	| {

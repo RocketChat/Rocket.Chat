@@ -2,6 +2,7 @@ import { Authorization } from '@rocket.chat/core-services';
 import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms } from '@rocket.chat/models';
+
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

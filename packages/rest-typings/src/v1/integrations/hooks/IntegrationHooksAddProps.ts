@@ -1,4 +1,5 @@
-import { ajv } from './../../Ajv';
+import { ajv } from '../../Ajv';
+
 export type IntegrationsHooksAddProps = {
 	event: string;
 	name: string;

@@ -1,4 +1,5 @@
 import type {
+
 	IIntegrationHistory,
 	IMessage,
 	IOutgoingIntegration,
@@ -11,6 +12,7 @@ import type {
 import { Integrations, Users, Rooms, Messages } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { wrapExceptions } from '@rocket.chat/tools';
+
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 

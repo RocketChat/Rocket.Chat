@@ -3,6 +3,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Message, Team, Room } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

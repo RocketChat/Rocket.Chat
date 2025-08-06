@@ -1,4 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useCallback, useEffect, useState } from 'react';
 
 import { useScrollableRecordList } from '../../hooks/lists/useScrollableRecordList';

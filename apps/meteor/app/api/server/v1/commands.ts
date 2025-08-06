@@ -1,5 +1,6 @@
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+
 import objectPath from 'object-path';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';

@@ -1,5 +1,7 @@
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
+
 import type {
+
 	ILivechatVisitor,
 	IUpload,
 	MessageAttachment,
@@ -12,6 +14,7 @@ import { Logger } from '@rocket.chat/logger';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import { Meteor } from 'meteor/meteor';
 
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';

@@ -1,4 +1,5 @@
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 

@@ -1,4 +1,5 @@
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { UpdateResult } from 'mongodb';

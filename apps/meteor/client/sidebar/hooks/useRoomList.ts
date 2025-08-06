@@ -2,6 +2,7 @@ import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
+
 import { useEffect } from 'react';
 
 import { useQueryOptions } from './useQueryOptions';

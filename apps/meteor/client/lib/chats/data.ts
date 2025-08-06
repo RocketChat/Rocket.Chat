@@ -1,4 +1,5 @@
 import {
+
 	isOTRAckMessage,
 	isOTRMessage,
 	type IEditedMessage,
@@ -7,6 +8,7 @@ import {
 	type ISubscription,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+
 import moment from 'moment';
 
 import type { DataAPI } from './ChatAPI';

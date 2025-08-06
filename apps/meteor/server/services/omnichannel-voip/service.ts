@@ -1,6 +1,8 @@
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, VoipAsterisk } from '@rocket.chat/core-services';
+
 import type {
+
 	IVoipExtensionBase,
 	IVoipExtensionWithAgentInfo,
 	IAgentExtensionMap,
@@ -15,6 +17,7 @@ import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents
 import { Logger } from '@rocket.chat/logger';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+
 import type { FindOptions, SortDirection } from 'mongodb';
 import _ from 'underscore';
 

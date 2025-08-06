@@ -1,5 +1,7 @@
 import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
+
 import {
+
 	isPOSTOmnichannelContactsProps,
 	isPOSTUpdateOmnichannelContactsProps,
 	isGETOmnichannelContactsProps,
@@ -11,6 +13,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { removeEmpty } from '@rocket.chat/tools';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

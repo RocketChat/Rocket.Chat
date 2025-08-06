@@ -6,7 +6,9 @@ import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings';
+
 import { wrapExceptions } from '@rocket.chat/tools';
+
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
@@ -18,7 +20,9 @@ import _ from 'underscore';
 
 import type { PermissionsPayload } from './api.helpers';
 import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
+
 import type {
+
 	FailureResult,
 	ForbiddenResult,
 	InnerAction,

@@ -6,6 +6,7 @@ import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
 import {
+
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnLivechatInquiryChangedById,
 	notifyOnRoomChangedById,

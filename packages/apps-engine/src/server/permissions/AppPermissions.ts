@@ -1,4 +1,5 @@
 import type {
+
 	INetworkingPermission,
 	IPermission,
 	IReadSettingPermission,

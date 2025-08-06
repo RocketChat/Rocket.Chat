@@ -1,6 +1,8 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
+
 import type {
+
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
 	IOmnichannelRoom,
@@ -15,10 +17,12 @@ import type {
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import {
+
 	createLivechatSubscription,
 	dispatchAgentDelegated,
 	dispatchInquiryQueued,

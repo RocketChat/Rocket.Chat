@@ -1,4 +1,5 @@
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
+
 import { useCallback, useRef } from 'react';
 
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';

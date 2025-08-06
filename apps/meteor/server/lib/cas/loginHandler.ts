@@ -1,5 +1,6 @@
 import { CredentialTokens, Users } from '@rocket.chat/models';
 import { getObjectKeys, wrapExceptions } from '@rocket.chat/tools';
+
 import { Accounts } from 'meteor/accounts-base';
 
 import { createNewUser } from './createNewUser';

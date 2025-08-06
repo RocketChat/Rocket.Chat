@@ -1,4 +1,5 @@
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
+
 import { Meteor } from 'meteor/meteor';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {

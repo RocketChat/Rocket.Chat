@@ -1,5 +1,7 @@
 import { Room, Authorization, Message, ServiceClassInternal } from '@rocket.chat/core-services';
+
 import type {
+
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
 	ITeamCreateParams,
@@ -10,7 +12,9 @@ import type {
 	ITeamUpdateData,
 } from '@rocket.chat/core-services';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
+
 import type {
+
 	IRoom,
 	IUser,
 	ISubscription,
@@ -25,6 +29,7 @@ import type {
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { Document, FindOptions, Filter } from 'mongodb';
 
 import { saveRoomName } from '../../../app/channel-settings/server';

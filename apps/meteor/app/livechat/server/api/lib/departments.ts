@@ -2,6 +2,7 @@ import type { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.cha
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+
 import type { Document, Filter, FindOptions } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';

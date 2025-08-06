@@ -1,6 +1,7 @@
 import type { ILivechatAgent, ISocketConnection } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 

@@ -1,6 +1,7 @@
 import type { IUser, IMessage, ReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import { BaseRaw } from '@rocket.chat/models';
+
 import type { Collection, FindCursor, Db, IndexDescription, DeleteResult, Filter, UpdateResult, Document } from 'mongodb';
 
 import { otrSystemMessages } from '../../../../app/otr/lib/constants';

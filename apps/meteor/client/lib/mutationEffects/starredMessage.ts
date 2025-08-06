@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+
 import { Meteor } from 'meteor/meteor';
 
 import { Messages } from '../../stores';

@@ -1,5 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';

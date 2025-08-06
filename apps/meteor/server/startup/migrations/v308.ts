@@ -1,5 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
+
 import { isValidCron } from 'cron-validator';
 
 import { addMigration } from '../../lib/migrations';

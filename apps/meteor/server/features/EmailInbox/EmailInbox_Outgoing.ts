@@ -1,6 +1,7 @@
 import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
+
 import { Match } from 'meteor/check';
 import type Mail from 'nodemailer/lib/mailer';
 

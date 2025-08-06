@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useCallback, useMemo, useState } from 'react';
 
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';

@@ -1,5 +1,6 @@
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo } from 'react';

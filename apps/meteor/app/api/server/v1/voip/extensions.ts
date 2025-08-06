@@ -1,6 +1,7 @@
 import { VoipAsterisk } from '@rocket.chat/core-services';
 import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+
 import { Match, check } from 'meteor/check';
 
 import { logger } from './logger';

@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type UsersAutocompleteParamsGET = { selector: string };
 
 const UsersAutocompleteParamsGetSchema = {

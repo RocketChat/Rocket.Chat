@@ -1,9 +1,12 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+
 import {
+
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChanged,
 	notifyOnRoomChangedById,

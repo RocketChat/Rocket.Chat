@@ -1,6 +1,7 @@
 import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
 import { isBodyParamsValidPermissionUpdate } from '@rocket.chat/rest-typings';
+
 import { Meteor } from 'meteor/meteor';
 
 import { permissionsGetMethod } from '../../../authorization/server/streamer/permissions';

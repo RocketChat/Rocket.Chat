@@ -2,6 +2,7 @@ import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration 
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Users } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
+
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';

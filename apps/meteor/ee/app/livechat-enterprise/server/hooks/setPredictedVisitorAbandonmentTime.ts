@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isMessageFromVisitor } from '@rocket.chat/core-typings';
+
 import moment from 'moment';
 
 import { markRoomResponded } from '../../../../../app/livechat/server/hooks/markRoomResponded';

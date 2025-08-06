@@ -1,7 +1,6 @@
 import type { GroupsBaseProps } from './BaseProps';
 import { withGroupBaseProperties } from './BaseProps';
-import { ajv } from './../Ajv';
-
+import { ajv } from '../Ajv';
 
 export type GroupsSetDescriptionProps = GroupsBaseProps & { description: string };
 const groupsSetDescriptionPropsSchema = withGroupBaseProperties(

@@ -1,4 +1,5 @@
 import { useUserId } from '@rocket.chat/ui-contexts';
+
 import { useMemo, useCallback } from 'react';
 
 import { useReactiveValue } from './useReactiveValue';

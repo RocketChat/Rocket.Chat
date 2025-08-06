@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type ChannelsModeratorsProps =
 	| { roomId: string; userId?: string; username?: string; user?: string }
 	| { roomName: string; userId?: string; username?: string; user?: string };

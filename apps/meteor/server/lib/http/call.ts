@@ -1,4 +1,5 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import { HTTP } from 'meteor/http';
 import { URL, URLSearchParams } from 'meteor/url';
 

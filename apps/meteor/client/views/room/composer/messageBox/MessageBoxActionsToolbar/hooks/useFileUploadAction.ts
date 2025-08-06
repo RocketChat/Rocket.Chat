@@ -1,5 +1,6 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { useFileInput } from '../../../../../../hooks/useFileInput';

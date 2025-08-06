@@ -3,6 +3,7 @@ import type * as https from 'https';
 import type * as net from 'net';
 
 import { ForbiddenNativeModuleAccess } from '.';
+
 import { PermissionDeniedError } from '../../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../../managers/AppPermissionManager';
 import { AppPermissions } from '../../permissions/AppPermissions';

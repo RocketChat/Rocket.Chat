@@ -1,6 +1,7 @@
 import type { IMessage, IThreadMainMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { useStream } from '@rocket.chat/ui-contexts';
+
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import type { Condition, Filter } from 'mongodb';

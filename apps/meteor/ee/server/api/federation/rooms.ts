@@ -1,5 +1,7 @@
 import { FederationEE } from '@rocket.chat/core-services';
+
 import {
+
 	isFederationAddServerProps,
 	isFederationRemoveServerProps,
 	isFederationSearchPublicRoomsProps,

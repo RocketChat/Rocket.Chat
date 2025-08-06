@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type ChannelsGetIntegrationsProps =
 	| { roomId: string; includeAllPublicChannels?: string }
 	| { roomName: string; includeAllPublicChannels?: string };

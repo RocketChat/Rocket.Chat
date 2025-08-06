@@ -1,5 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatUnit, LivechatDepartmentAgents } from '@rocket.chat/models';
+
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 

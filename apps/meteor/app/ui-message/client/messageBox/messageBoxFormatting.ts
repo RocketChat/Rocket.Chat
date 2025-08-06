@@ -1,6 +1,7 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+
 import { flushSync } from 'react-dom';
 
 import AddLinkComposerActionModal from './AddLinkComposerActionModal';

@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
+
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 

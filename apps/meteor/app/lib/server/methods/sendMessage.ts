@@ -3,6 +3,7 @@ import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { Messages, Users } from '@rocket.chat/models';
+
 import type { TOptions } from 'i18next';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';

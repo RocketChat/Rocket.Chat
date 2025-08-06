@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+
 import type { ClientSession } from 'mongodb';
 
 import { _setRealName } from './setRealName';
@@ -10,7 +11,9 @@ import { validateName } from './validateName';
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { FileUpload } from '../../../file-upload/server';
+
 import {
+
 	notifyOnRoomChangedByUsernamesOrUids,
 	notifyOnSubscriptionChangedByUserId,
 	notifyOnSubscriptionChangedByNameAndRoomType,

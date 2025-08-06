@@ -2,7 +2,9 @@ import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
 import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
+
 import {
+
 	isLivechatDepartmentDepartmentIdAgentsGETProps,
 	isLivechatDepartmentDepartmentIdAgentsPOSTProps,
 } from '@rocket.chat/rest-typings/src/v1/omnichannel';
@@ -12,7 +14,9 @@ import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../../settings/server';
+
 import {
+
 	findDepartments,
 	findDepartmentById,
 	findDepartmentsToAutocomplete,
@@ -21,6 +25,7 @@ import {
 	findArchivedDepartments,
 } from '../../../server/api/lib/departments';
 import {
+
 	saveDepartment,
 	archiveDepartment,
 	unarchiveDepartment,

@@ -1,4 +1,5 @@
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+
 import type { ContextType } from 'react';
 import { useMemo } from 'react';
 

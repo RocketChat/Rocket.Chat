@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import { Readable } from 'stream';
 
 import { EmailInbox } from '@rocket.chat/models';
+
 import type { ImapMessage, ImapMessageBodyInfo } from 'imap';
 import IMAP from 'imap';
 import type { ParsedMail } from 'mailparser';

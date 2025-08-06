@@ -1,7 +1,9 @@
 import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+
 import {
+
 	getCachedSupportedVersionsToken,
 	wrapPromise,
 } from '../../../cloud/server/functions/supportedVersionsToken/supportedVersionsToken';

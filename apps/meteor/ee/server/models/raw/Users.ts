@@ -1,5 +1,6 @@
 import type { RocketChatRecordDeleted, IUser, AvailableAgentsAggregation } from '@rocket.chat/core-typings';
 import { UsersRaw } from '@rocket.chat/models';
+
 import type { Db, Collection, Filter } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';

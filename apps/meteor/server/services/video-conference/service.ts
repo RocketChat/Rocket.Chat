@@ -3,7 +3,9 @@ import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-eng
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';
+
 import type {
+
 	IDirectVideoConference,
 	ILivechatVideoConference,
 	IRoom,
@@ -25,6 +27,7 @@ import type {
 	IVoIPVideoConference,
 } from '@rocket.chat/core-typings';
 import {
+
 	VideoConferenceStatus,
 	isDirectVideoConference,
 	isGroupVideoConference,
@@ -37,6 +40,7 @@ import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
+
 import { MongoInternals } from 'meteor/mongo';
 
 import { RocketChatAssets } from '../../../app/assets/server';

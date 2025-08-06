@@ -1,4 +1,5 @@
 import type { DeepWritable } from '@rocket.chat/core-typings';
+
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 

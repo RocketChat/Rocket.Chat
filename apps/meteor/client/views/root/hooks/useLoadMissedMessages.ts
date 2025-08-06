@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useConnectionStatus } from '@rocket.chat/ui-contexts';
+
 import { useEffect, useRef } from 'react';
 
 import { LegacyRoomManager, upsertMessage } from '../../../../app/ui-utils/client';

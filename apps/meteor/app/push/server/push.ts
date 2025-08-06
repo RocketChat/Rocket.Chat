@@ -2,6 +2,7 @@ import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } fr
 import { AppsTokens } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick } from '@rocket.chat/tools';
+
 import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -11,8 +12,8 @@ import type { PushOptions, PendingPushNotification } from './definition';
 import { sendFCM } from './fcm';
 import { logger } from './logger';
 import { settings } from '../../settings/server';
-import { ajv } from '@rocket.chat/rest-typings';
 
+import { ajv } from '@rocket.chat/rest-typings';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 

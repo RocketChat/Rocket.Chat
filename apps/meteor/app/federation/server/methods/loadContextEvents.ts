@@ -1,6 +1,7 @@
 import type { IFederationEvent } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { FederationRoomEvents } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

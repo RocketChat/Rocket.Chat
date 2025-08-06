@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 

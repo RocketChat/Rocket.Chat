@@ -3,6 +3,7 @@ import { Message } from '@rocket.chat/core-services';
 import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelRoom, IOmnichannelRoomClosingInfo } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, Users } from '@rocket.chat/models';
+
 import type { ClientSession } from 'mongodb';
 
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
@@ -10,7 +11,9 @@ import { livechatLogger as logger } from './logger';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
 import { callbacks } from '../../../../lib/callbacks';
 import { client, shouldRetryTransaction } from '../../../../server/database/utils';
+
 import {
+
 	notifyOnLivechatInquiryChanged,
 	notifyOnRoomChanged,
 	notifyOnRoomChangedById,

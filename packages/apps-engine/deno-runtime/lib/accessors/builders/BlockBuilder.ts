@@ -1,6 +1,7 @@
 import { v1 as uuid } from 'uuid';
 
 import type {
+
 	BlockType as _BlockType,
 	IActionsBlock,
 	IBlock,
@@ -12,6 +13,7 @@ import type {
 	ISectionBlock,
 } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks.ts';
 import type {
+
 	BlockElementType as _BlockElementType,
 	IBlockElement,
 	IButtonElement,

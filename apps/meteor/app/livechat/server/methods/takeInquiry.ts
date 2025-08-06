@@ -1,6 +1,7 @@
 import { Omnichannel } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

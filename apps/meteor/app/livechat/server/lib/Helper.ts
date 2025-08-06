@@ -1,7 +1,9 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { api, Message, Omnichannel } from '@rocket.chat/core-services';
+
 import type {
+
 	ILivechatVisitor,
 	IOmnichannelRoom,
 	SelectedAgent,
@@ -22,7 +24,9 @@ import { LivechatInquiryStatus, OmnichannelSourceType, DEFAULT_SLA_CONFIG, UserS
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
+
 import {
+
 	LivechatDepartmentAgents,
 	LivechatInquiry,
 	LivechatRooms,
@@ -32,6 +36,7 @@ import {
 	LivechatContacts,
 } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
+
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
@@ -49,7 +54,9 @@ import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
+
 import {
+
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId,
 	notifyOnSubscriptionChangedById,

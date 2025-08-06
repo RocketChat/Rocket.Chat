@@ -3,6 +3,7 @@
  */
 
 import type {
+
 	IMessage,
 	IDeepLTranslation,
 	MessageAttachment,
@@ -11,6 +12,7 @@ import type {
 	ISupportedLanguage,
 } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import _ from 'underscore';
 
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';

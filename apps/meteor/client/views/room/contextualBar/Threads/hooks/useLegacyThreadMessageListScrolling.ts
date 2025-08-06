@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { callbacks } from '../../../../../../lib/callbacks';

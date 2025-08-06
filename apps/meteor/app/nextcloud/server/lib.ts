@@ -1,4 +1,5 @@
 import type { OauthConfig } from '@rocket.chat/core-typings';
+
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 

@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 
 import type { IImport } from '@rocket.chat/core-typings';
+
 import { parse } from 'csv-parse/lib/sync';
 
 import { addParsedContacts } from './addParsedContacts';

@@ -1,5 +1,7 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
+
 import type {
+
 	ILivechatVisitor,
 	IMessage,
 	IOmnichannelRoomInfo,
@@ -9,6 +11,7 @@ import type {
 	TransferData,
 } from '@rocket.chat/core-typings';
 import {
+
 	LivechatRooms,
 	LivechatContacts,
 	Messages,
@@ -31,7 +34,9 @@ import { saveTransferHistory } from './transfer';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+
 import {
+
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnRoomChangedById,

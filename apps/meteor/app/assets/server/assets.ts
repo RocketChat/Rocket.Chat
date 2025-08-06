@@ -3,6 +3,7 @@ import type { ServerResponse, IncomingMessage } from 'http';
 
 import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
+
 import type { NextHandleFunction } from 'connect';
 import sizeOf from 'image-size';
 import { Meteor } from 'meteor/meteor';

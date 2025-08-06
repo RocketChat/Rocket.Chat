@@ -2,6 +2,7 @@ import type { ReadReceipt as ReadReceiptType, IMessage } from '@rocket.chat/core
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { License } from '@rocket.chat/license';
 import { Messages } from '@rocket.chat/models';
+
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 

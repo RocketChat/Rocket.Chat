@@ -1,6 +1,8 @@
 import { VoipFreeSwitch } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
+
 import {
+
 	isVoipFreeSwitchExtensionAssignProps,
 	isVoipFreeSwitchExtensionGetDetailsProps,
 	isVoipFreeSwitchExtensionGetInfoProps,

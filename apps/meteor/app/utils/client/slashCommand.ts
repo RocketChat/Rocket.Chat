@@ -1,4 +1,5 @@
 import type {
+
 	IMessage,
 	SlashCommand,
 	SlashCommandOptions,

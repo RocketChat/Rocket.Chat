@@ -1,12 +1,15 @@
 /* eslint-disable new-cap */
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+
 import type {
+
 	AgentOverviewDataOptions,
 	AnalyticsOverviewDataOptions,
 	ChartDataOptions,
 	IOmnichannelAnalyticsService,
 } from '@rocket.chat/core-services';
 import { LivechatRooms } from '@rocket.chat/models';
+
 import moment from 'moment-timezone';
 
 import { AgentOverviewData } from './AgentData';

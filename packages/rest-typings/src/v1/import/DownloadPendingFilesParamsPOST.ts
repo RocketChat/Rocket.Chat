@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type DownloadPendingFilesParamsPOST = Record<string, unknown>;
 
 const DownloadPendingFilesParamsPOSTSchema = {

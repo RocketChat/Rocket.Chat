@@ -4,6 +4,7 @@ import { License } from '@rocket.chat/license';
 import { Users, Sessions } from '@rocket.chat/models';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings';
+
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../../../app/api/server/api';

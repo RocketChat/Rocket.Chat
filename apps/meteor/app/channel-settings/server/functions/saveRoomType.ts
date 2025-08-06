@@ -1,6 +1,7 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { UpdateResult, Document } from 'mongodb';

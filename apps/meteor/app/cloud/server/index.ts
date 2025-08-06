@@ -1,4 +1,5 @@
 import { cronJobs } from '@rocket.chat/cron';
+
 import { Meteor } from 'meteor/meteor';
 
 import { connectWorkspace } from './functions/connectWorkspace';

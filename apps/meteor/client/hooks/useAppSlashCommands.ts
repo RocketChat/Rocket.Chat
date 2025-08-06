@@ -1,6 +1,7 @@
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
+
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 

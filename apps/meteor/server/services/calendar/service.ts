@@ -6,6 +6,7 @@ import { cronJobs } from '@rocket.chat/cron';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent, Users } from '@rocket.chat/models';
+
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
 import { applyStatusChange } from './statusEvents/applyStatusChange';

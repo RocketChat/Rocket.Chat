@@ -1,6 +1,7 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import { z } from 'zod';
 
 import { callbacks } from '../../../../lib/callbacks';

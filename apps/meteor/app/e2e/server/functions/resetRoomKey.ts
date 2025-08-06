@@ -1,5 +1,6 @@
 import type { ISubscription, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+
 import type { AnyBulkWriteOperation } from 'mongodb';
 
 import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../../lib/server/lib/notifyListener';

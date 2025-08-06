@@ -1,5 +1,7 @@
 import type { IBlock } from '../../definition/uikit';
+
 import type {
+
 	IVideoConferenceOptions,
 	IVideoConfProvider,
 	VideoConfData,

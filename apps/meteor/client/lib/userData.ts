@@ -1,5 +1,6 @@
 import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typings';
 import { createTransformFromUpdateFilter } from '@rocket.chat/mongo-adapter';
+
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';

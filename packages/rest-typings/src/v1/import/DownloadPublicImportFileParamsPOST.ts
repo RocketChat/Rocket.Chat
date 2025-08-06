@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type DownloadPublicImportFileParamsPOST = {
 	fileUrl: string;
 	importerKey: string;

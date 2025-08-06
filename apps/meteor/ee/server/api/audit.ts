@@ -3,6 +3,7 @@ import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
 import { isServerEventsAuditSettingsProps } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings';
+
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
 import { API } from '../../../app/api/server/api';

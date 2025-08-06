@@ -1,5 +1,7 @@
 import { BaseBridge } from './BaseBridge';
+
 import type {
+
 	IOutboundEmailMessageProvider,
 	IOutboundMessageProviders,
 	IOutboundPhoneMessageProvider,

@@ -1,5 +1,6 @@
 import { Base64 } from '@rocket.chat/base64';
 import { useUserRoom, useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';

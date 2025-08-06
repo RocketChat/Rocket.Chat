@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type GroupsBaseProps = { roomId: string; roomName?: string } | { roomId?: string; roomName: string };
 
 export const withGroupBaseProperties = (properties: Record<string, any> = {}, required: string[] = []) => ({

@@ -1,4 +1,5 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect } from 'react';
 

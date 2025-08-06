@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+
 import { useCallback } from 'react';
 
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';

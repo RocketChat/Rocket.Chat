@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type ChannelsSetDescriptionProps = { roomId: string; description: string } | { roomName: string; description: string };
 
 const channelsSetDescriptionPropsSchema = {

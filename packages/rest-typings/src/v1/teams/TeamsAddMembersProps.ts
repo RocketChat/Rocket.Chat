@@ -1,6 +1,5 @@
 import type { ITeamMemberParams } from './ITeamMemberParams';
-import { ajv } from './../Ajv';
-
+import { ajv } from '../Ajv';
 
 export type TeamsAddMembersProps = ({ teamId: string } | { teamName: string }) & {
 	members: ITeamMemberParams[];

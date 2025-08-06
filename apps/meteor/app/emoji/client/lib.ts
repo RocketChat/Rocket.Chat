@@ -1,4 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
+
 import emojione from 'emojione';
 
 import { queueMicrotask } from '../../../client/lib/utils/queueMicrotask';

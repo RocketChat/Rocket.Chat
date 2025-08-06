@@ -1,4 +1,5 @@
-import { ajv } from './../Ajv';
+import { ajv } from '../Ajv';
+
 export type ChannelsRenameProps = { roomId: string; name: string } | { roomName: string; name: string };
 
 const channelsRenamePropsSchema = {

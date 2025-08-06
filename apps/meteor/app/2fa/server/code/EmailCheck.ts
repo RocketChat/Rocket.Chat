@@ -1,6 +1,7 @@
 import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+
 import bcrypt from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 

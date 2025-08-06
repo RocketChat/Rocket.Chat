@@ -1,5 +1,6 @@
 import type { IOmnichannelRoomInfo, IOmnichannelRoomExtraData, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { beforeNewRoom } from '../../../../../app/livechat/server/lib/hooks';

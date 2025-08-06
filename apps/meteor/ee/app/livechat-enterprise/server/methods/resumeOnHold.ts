@@ -3,6 +3,7 @@ import type { ILivechatVisitor, IOmnichannelSystemMessage } from '@rocket.chat/c
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';

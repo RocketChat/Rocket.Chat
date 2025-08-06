@@ -1,4 +1,5 @@
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
+
 import { useEffect } from 'react';
 
 import { useChat } from '../../contexts/ChatContext';
