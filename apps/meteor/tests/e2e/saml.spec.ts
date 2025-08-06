@@ -1,12 +1,9 @@
-import child_process from 'child_process';
-import path from 'path';
-
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
-import { v2 as compose } from 'docker-compose';
 import { MongoClient } from 'mongodb';
 
 import * as constants from './config/constants';
+import { provideContainerFor } from './containers/provideContainer';
 import { createUserFixture } from './fixtures/collections/users';
 import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
@@ -20,7 +17,7 @@ import { test, expect } from './utils/test';
 
 const KEY = 'fuselage-sessionStorage-saml_invite_token';
 
-const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupOnly?: boolean } = {}) => {
+const resetTestData = async ({ cleanupOnly = false }: { cleanupOnly?: boolean } = {}) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
 	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
@@ -47,26 +44,6 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 			connection.db().collection('users').updateOne({ username: user.username }, { $set: user }, { upsert: true }),
 		),
 	);
-
-	const settings = [
-		{ _id: 'Accounts_AllowAnonymousRead', value: false },
-		{ _id: 'SAML_Custom_Default_logout_behaviour', value: 'SAML' },
-		{ _id: 'SAML_Custom_Default_immutable_property', value: 'EMail' },
-		{ _id: 'SAML_Custom_Default_mail_overwrite', value: false },
-		{ _id: 'SAML_Custom_Default_name_overwrite', value: false },
-		{ _id: 'SAML_Custom_Default', value: false },
-		{ _id: 'SAML_Custom_Default_role_attribute_sync', value: true },
-		{ _id: 'SAML_Custom_Default_role_attribute_name', value: 'role' },
-		{ _id: 'SAML_Custom_Default_user_data_fieldmap', value: '{"username":"username", "email":"email", "name": "cn"}' },
-		{ _id: 'SAML_Custom_Default_provider', value: 'test-sp' },
-		{ _id: 'SAML_Custom_Default_issuer', value: 'http://localhost:3000/_saml/metadata/test-sp' },
-		{ _id: 'SAML_Custom_Default_entry_point', value: 'http://localhost:8080/simplesaml/saml2/idp/SSOService.php' },
-		{ _id: 'SAML_Custom_Default_idp_slo_redirect_url', value: 'http://localhost:8080/simplesaml/saml2/idp/SingleLogoutService.php' },
-		{ _id: 'SAML_Custom_Default_button_label_text', value: 'SAML test login button' },
-		{ _id: 'SAML_Custom_Default_button_color', value: '#185925' },
-	];
-
-	await Promise.all(settings.map(({ _id, value }) => setSettingValueById(api, _id, value)));
 };
 
 const setupCustomRole = async (api: BaseTest['api']) => {
@@ -84,12 +61,12 @@ test.describe('SAML', () => {
 	let targetInviteGroupName: string;
 	let inviteId: string;
 
-	const containerPath = path.join(__dirname, 'containers', 'saml');
+	const container = provideContainerFor('SAML');
 
 	test.beforeAll(async ({ api }) => {
-		await resetTestData({ api });
+		await resetTestData();
 
-		// Only one setting updated through the API to avoid refreshing the service configurations several times
+		// The params for the SAML integration have been injected by the initial script, we only enable it by API
 		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
 
 		// Create a new custom role
@@ -97,13 +74,7 @@ test.describe('SAML', () => {
 			samlRoleId = await setupCustomRole(api);
 		}
 
-		await compose.buildOne('testsamlidp_idp', {
-			cwd: containerPath,
-		});
-
-		await compose.upOne('testsamlidp_idp', {
-			cwd: containerPath,
-		});
+		await container.startUp();
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -120,21 +91,12 @@ test.describe('SAML', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await compose.down({
-			cwd: containerPath,
-		});
-
-		// the compose CLI doesn't have any way to remove images, so try to remove it with a direct call to the docker cli, but ignore errors if it fails.
-		try {
-			child_process.spawn('docker', ['rmi', 'saml-testsamlidp_idp'], {
-				cwd: containerPath,
-			});
-		} catch {
-			// ignore errors here
-		}
+		await container.cleanUp();
 
 		// Remove saml test users so they don't interfere with other tests
 		await resetTestData({ cleanupOnly: true });
+
+		await expect((await setSettingValueById(api, 'SAML_Custom_Default', false)).status()).toBe(200);
 
 		// Remove created custom role
 		if (constants.IS_EE) {
@@ -158,6 +120,7 @@ test.describe('SAML', () => {
 		});
 
 		await test.step('expect to have SAML login button to have the required background color', async () => {
+			// This color is configured in the inject-initial-data.ts script
 			await expect(poRegistration.btnLoginWithSaml).toHaveCSS('background-color', convertHexToRGB('#185925'));
 		});
 
