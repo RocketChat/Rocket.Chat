@@ -133,6 +133,9 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	after(async () => {
+		if (!IS_EE) {
+			return;
+		}
 		await Promise.allSettled(roomList.map((room) => closeOmnichannelRoom(room._id)));
 	});
 
