@@ -4148,7 +4148,6 @@
   "error-message-editing-blocked": "訊息編輯已停用",
   "error-message-size-exceeded": "訊息大小超過 Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "您必須提供 [unsubscribe] 的網址。",
-  "error-no-agents-online-in-department": "部門內沒有客服在線上",
   "error-no-message-for-unread": "這裡沒有訊息是標示未讀取",
   "error-no-owner-channel": "只有擁有者才能將此頻道增加到團隊",
   "error-no-permission-team-channel": "您沒有權限將此頻道增加到團隊",

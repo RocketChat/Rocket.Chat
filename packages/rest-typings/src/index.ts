@@ -232,10 +232,7 @@ export * from './v1/integrations';
 export * from './v1/licenses';
 export * from './v1/omnichannel';
 export * from './v1/oauthapps';
-export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
 export * from './v1/oauthapps/OAuthAppsGetParamsGET';
-export * from './v1/oauthapps/OAuthAppsAddParamsPOST';
-export * from './v1/oauthapps/DeleteOAuthAppParamsDELETE';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
@@ -275,4 +272,4 @@ export * from './v1/banners';
 export * from './default';
 
 // Export the ajv instance for use in other packages
-export { ajv } from './v1/Ajv';
+export * from './v1/Ajv';
