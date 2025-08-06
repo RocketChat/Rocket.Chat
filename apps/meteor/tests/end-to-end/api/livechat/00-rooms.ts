@@ -442,7 +442,6 @@ describe('LIVECHAT - rooms', () => {
 
 			after(async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-				console.log(manualRoom);
 				await closeOmnichannelRoom(manualRoom._id);
 			});
 
