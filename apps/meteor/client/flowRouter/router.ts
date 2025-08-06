@@ -42,7 +42,6 @@ class Router {
 		return _param;
 	}
 
-	// tracks the current path change
 	private readonly _onEveryPath = new Tracker.Dependency();
 
 	_initialized = false;
@@ -51,21 +50,10 @@ class Router {
 
 	_routesMap = new Map<string, Route>();
 
-	// indicate it's okay (or not okay) to run the tracker
-	// when doing subscriptions
-	// using a number and increment it help us to support FlowRouter.go()
-	// and legitimate reruns inside tracker on the same event loop.
-	// this is a solution for #145
 	private safeToRun = 0;
 
-	// Meteor exposes to the client the path prefix that was defined using the
-	// ROOT_URL environement variable on the server using the global runtime
-	// configuration. See #315.
 	private readonly _basePath = window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 
-	// this is a chain contains a list of old routes
-	// most of the time, there is only one old route
-	// but when it's the time for a trigger redirect we've a chain
 	private _oldRouteChain: (Route | undefined)[] = [];
 
 	constructor() {
@@ -92,26 +80,10 @@ class Router {
 
 		const route = new Route(pathDef, options);
 
-		// calls when the page route being activates
 		route._actionHandle = (context: Context) => {
 			const oldRoute = this._current?.route;
 			this._oldRouteChain.push(oldRoute);
 
-			// _qs.parse() gives us a object without prototypes,
-			// created with Object.create(null)
-			// Meteor's check doesn't play nice with it.
-			// So, we need to fix it by cloning it.
-			// see more: https://github.com/meteorhacks/flow-router/issues/164
-
-			// In addition to the above, query params also inappropriately
-			// get decoded twice. The ternary below fixes this bug if the
-			// "decodeQueryParamsOnce" option is set to true, so that we
-			// don't break legacy applications. The "example.com" domain
-			// below is insignificant but only used to create a URL object
-			// from which we can parse out query params reliably from the
-			// still-encoded path instead of the prematurely decoded
-			// querystring.
-			// See: https://github.com/veliovgroup/flow-router/issues/78
 			const queryParams = new URLSearchParams(context.querystring);
 			this._current = Object.freeze({
 				path: context.path,
@@ -150,22 +122,15 @@ class Router {
 
 		let path = '';
 
-		// Prefix the path with the router global prefix
 		if (this._basePath) {
 			path += `/${this._basePath}/`;
 		}
 
 		path += pathDef.replace(this.pathRegExp, (_key) => {
 			const firstRegexpChar = _key.indexOf('(');
-			// get the content behind : and (\\d+/)
 			let key = _key.substring(1, firstRegexpChar > 0 ? firstRegexpChar : undefined);
-			// remove +?*
 			key = key.replace(/[\+\*\?]+/g, '');
 
-			// this is to allow page js to keep the custom characters as it is
-			// we need to encode 2 times otherwise "/" char does not work properly
-			// So, in that case, when I includes "/" it will think it's a part of the
-			// route. encoding 2times fixes it
 			if (params[key]) {
 				return this._encodeParam(`${params[key]}`);
 			}
@@ -173,11 +138,8 @@ class Router {
 			return '';
 		});
 
-		// Replace multiple slashes with single slash
 		path = path.replace(/\/\/+/g, '/');
 
-		// remove trailing slash
-		// but keep the root slash if it's the only one
 		path = path.match(/^\/{1}$/) ? path : path.replace(/\/$/, '');
 
 		const strQueryParams = new URLSearchParams(
@@ -206,10 +168,6 @@ class Router {
 
 		this._updateCallbacks();
 
-		// this is very ugly part of pagejs and it does decoding few times
-		// in unpredicatable manner. See #168
-		// this is the default behaviour and we need keep it like that
-		// we are doing a hack. see .path()
 		page.setBase(this._basePath);
 
 		page.start();
@@ -217,13 +175,11 @@ class Router {
 	}
 
 	private _buildTracker() {
-		// main autorun function
 		const tracker = Tracker.autorun(() => {
 			if (!this._current?.route) {
 				return;
 			}
 
-			// see the definition of `this._processingContexts`
 			const currentContext = this._current;
 			const { route } = currentContext;
 
@@ -231,35 +187,21 @@ class Router {
 				throw new Error("You can't use reactive data sources like Session inside the `.subscriptions` method!");
 			}
 
-			// otherwise, computations inside action will trigger to re-run
-			// this computation. which we do not need.
 			Tracker.nonreactive(() => {
 				let isRouteChange = currentContext.oldRoute !== currentContext.route;
-				// first route is not a route change
 				if (!currentContext.oldRoute) {
 					isRouteChange = false;
 				}
 
-				// Clear oldRouteChain just before calling the action
-				// We still need to get a copy of the oldestRoute first
-				// It's very important to get the oldest route and registerRouteClose() it
-				// See: https://github.com/kadirahq/flow-router/issues/314
 				const oldestRoute = this._oldRouteChain[0];
 				this._oldRouteChain = [];
 
-				currentContext.route.registerRouteChange(currentContext, isRouteChange);
+				currentContext.route.registerRouteChange(isRouteChange);
 				route.callAction();
 
 				Tracker.afterFlush(() => {
 					this._onEveryPath.changed();
 					if (isRouteChange) {
-						// We need to trigger that route (definition itself) has changed.
-						// So, we need to re-run all the register callbacks to current route
-						// This is pretty important, otherwise tracker
-						// can't identify new route's items
-
-						// We also need to afterFlush, otherwise this will re-run
-						// helpers on templates which are marked for destroying
 						if (oldestRoute?.registerRouteClose) {
 							oldestRoute.registerRouteClose();
 						}
@@ -278,22 +220,11 @@ class Router {
 	private _invalidateTracker() {
 		this.safeToRun++;
 		this._tracker.invalidate();
-		// After the invalidation we need to flush to make changes immediately
-		// otherwise, we have face some issues context mix-matches and so on.
-		// But there are some cases we can't flush. So we need to ready for that.
 
-		// we clearly know, we can't flush inside an autorun
-		// this may leads some issues on flow-routing
-		// we may need to do some warning
 		if (!Tracker.currentComputation) {
-			// Still there are some cases where we can't flush
-			//  eg:- when there is a flush currently
-			// But we've no public API or hacks to get that state
-			// So, this is the only solution
 			try {
 				Tracker.flush();
 			} catch (ex) {
-				// only handling "while flushing" errors
 				if (!/Tracker\.flush while flushing/.test((ex as Error).message)) {
 					return;
 				}
