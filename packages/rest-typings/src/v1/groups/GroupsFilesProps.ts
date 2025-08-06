@@ -5,6 +5,7 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps> & {

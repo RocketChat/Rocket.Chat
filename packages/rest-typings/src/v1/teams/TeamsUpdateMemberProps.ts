@@ -2,13 +2,14 @@ import Ajv from 'ajv';
 
 import type { ITeamMemberParams } from './ITeamMemberParams';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type TeamsUpdateMemberProps = ({ teamId: string } | { teamName: string }) & {
 	member: ITeamMemberParams;
 };
 
 const teamsUpdateMemberPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

@@ -6,6 +6,7 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 type CustomUserStatusListProps = PaginatedRequest<{ name?: string; _id?: string; query?: string }>;

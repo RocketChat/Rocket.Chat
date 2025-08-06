@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 export type ChannelsGetIntegrationsProps =
@@ -9,6 +10,7 @@ export type ChannelsGetIntegrationsProps =
 	| { roomName: string; includeAllPublicChannels?: string };
 
 const channelsGetIntegrationsPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

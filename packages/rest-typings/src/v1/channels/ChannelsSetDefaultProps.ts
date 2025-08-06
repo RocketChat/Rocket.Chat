@@ -1,10 +1,11 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type ChannelsSetDefaultProps = { roomId: string; default: boolean } | { roomName: string; default: boolean };
 
 const channelsSetDefaultPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

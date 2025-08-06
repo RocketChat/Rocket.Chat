@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type IntegrationsHooksRemoveProps = {
 	target_url: string;

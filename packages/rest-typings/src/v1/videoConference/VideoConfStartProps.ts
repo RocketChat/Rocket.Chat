@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type VideoConfStartProps = { roomId: string; title?: string; allowRinging?: boolean };
 

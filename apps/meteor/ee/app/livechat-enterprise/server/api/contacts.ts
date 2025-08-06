@@ -8,6 +8,7 @@ import { changeContactBlockStatus, closeBlockedRoom, ensureSingleContactLicense 
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 type blockContactProps = {

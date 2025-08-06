@@ -3,6 +3,7 @@ import type { JSONSchemaType } from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 export type CalendarEventListProps = { date: string };

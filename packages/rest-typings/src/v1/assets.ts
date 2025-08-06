@@ -16,7 +16,7 @@ export type AssetsEndpoints = {
 	};
 };
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 const assetsUnsetAssetPropsSchema: JSONSchemaType<AssetsUnsetAssetProps> = {
 	type: 'object',

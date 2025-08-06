@@ -11,6 +11,7 @@ type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 const SubscriptionsGetSchema = {

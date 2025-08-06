@@ -11,6 +11,7 @@ import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 type AuditRoomMembersParams = PaginatedRequest<{

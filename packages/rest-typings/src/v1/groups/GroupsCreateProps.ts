@@ -2,6 +2,7 @@ import Ajv from 'ajv/dist/2019';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 export type GroupsCreateProps = {

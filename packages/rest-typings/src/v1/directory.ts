@@ -6,6 +6,7 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 type DirectoryProps = PaginatedRequest<{ text?: string; type?: string; workspace?: string; query?: string }>;

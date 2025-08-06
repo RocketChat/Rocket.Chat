@@ -1,6 +1,6 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type TeamsRemoveMemberProps = ({ teamId: string } | { teamName: string }) & {
 	userId: string;
@@ -8,6 +8,7 @@ export type TeamsRemoveMemberProps = ({ teamId: string } | { teamName: string })
 };
 
 const teamsRemoveMemberPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

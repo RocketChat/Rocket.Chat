@@ -1,13 +1,14 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type ChannelsConvertToTeamProps =
 	| { channelId: IRoom['_id']; channelName?: never }
 	| { channelName: Exclude<IRoom['name'], undefined>; channelId?: never };
 
 const channelsConvertToTeamPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

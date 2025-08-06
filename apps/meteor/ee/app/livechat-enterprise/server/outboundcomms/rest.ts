@@ -5,6 +5,7 @@ import type { OutboundCommsEndpoints } from '../api/outbound';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 declare module '@rocket.chat/rest-typings' {

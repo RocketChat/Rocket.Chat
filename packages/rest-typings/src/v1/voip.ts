@@ -19,6 +19,7 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 type ConnectorExtensionGetRegistrationInfoByUserId = { id: string };

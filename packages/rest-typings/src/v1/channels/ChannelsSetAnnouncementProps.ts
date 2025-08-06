@@ -1,10 +1,11 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type ChannelsSetAnnouncementProps = { roomId: string; announcement: string } | { roomName: string; announcement: string };
 
 const channelsSetAnnouncementPropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

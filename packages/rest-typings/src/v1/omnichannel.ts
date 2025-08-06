@@ -1504,6 +1504,7 @@ type GETOmnichannelContactsCheckExistenceProps = {
 };
 
 const GETOmnichannelContactsCheckExistenceSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

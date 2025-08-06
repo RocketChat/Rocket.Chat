@@ -20,6 +20,7 @@ import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };

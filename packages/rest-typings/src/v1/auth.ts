@@ -23,7 +23,7 @@ export type AuthEndpoints = {
 	};
 };
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 const loginPropsSchema = {
 	type: 'object',

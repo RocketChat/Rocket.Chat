@@ -1,12 +1,13 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type IntegrationsRemoveProps =
 	| { type: 'webhook-incoming'; integrationId: string }
 	| { type: 'webhook-outgoing'; integrationId?: string; target_url?: string };
 
 const integrationsRemoveSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

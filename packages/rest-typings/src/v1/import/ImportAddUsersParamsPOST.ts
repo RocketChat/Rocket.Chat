@@ -3,6 +3,7 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 export type ImportAddUsersParamsPOST = {

@@ -9,7 +9,7 @@ import Ajv from 'ajv';
 import { API } from '../../../app/api/server/api';
 import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
 
-const ajv = new Ajv({ coerceTypes: true });
+const ajv = new Ajv({ coerceTypes: true, allowUnionTypes: true });
 
 type SessionsProps = {
 	sessionId: string;

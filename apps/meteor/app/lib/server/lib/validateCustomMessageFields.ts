@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 import mem from 'mem';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 const customFieldsValidate = mem(
 	(customFieldsSetting: string) => {

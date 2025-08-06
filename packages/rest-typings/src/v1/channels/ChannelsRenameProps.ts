@@ -1,10 +1,11 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type ChannelsRenameProps = { roomId: string; name: string } | { roomName: string; name: string };
 
 const channelsRenamePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

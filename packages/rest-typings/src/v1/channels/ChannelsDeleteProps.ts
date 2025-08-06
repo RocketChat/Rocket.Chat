@@ -1,10 +1,11 @@
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type ChannelsDeleteProps = { roomId: string } | { roomName: string };
 
 const channelsDeletePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

@@ -24,6 +24,7 @@ type TelemetryPayload = {
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 type StatisticsProps = { refresh?: 'true' | 'false' };

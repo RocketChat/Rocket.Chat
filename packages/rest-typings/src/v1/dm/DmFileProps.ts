@@ -2,7 +2,10 @@ import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
-const ajv = new Ajv({ coerceTypes: true });
+const ajv = new Ajv({
+	coerceTypes: true,
+	allowUnionTypes: true,
+});
 
 export type DmFileProps = PaginatedRequest<
 	({ roomId: string; username?: string } | { roomId?: string; username: string }) & { name?: string; typeGroup?: string; query?: string }

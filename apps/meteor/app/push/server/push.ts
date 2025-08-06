@@ -17,6 +17,7 @@ export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 type FCMCredentials = {

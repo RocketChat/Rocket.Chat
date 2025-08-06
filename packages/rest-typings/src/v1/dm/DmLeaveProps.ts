@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 export type DmLeaveProps =
@@ -11,6 +12,7 @@ export type DmLeaveProps =
 	| { roomName: string };
 
 const DmLeavePropsSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

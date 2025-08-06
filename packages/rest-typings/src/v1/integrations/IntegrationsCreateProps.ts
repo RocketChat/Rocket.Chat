@@ -1,7 +1,7 @@
 import type { OutgoingIntegrationEvent, IntegrationScriptEngine } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ allowUnionTypes: true });
 
 export type IntegrationsCreateProps =
 	| {
@@ -49,6 +49,7 @@ export type IntegrationsCreateProps =
 	  };
 
 const integrationsCreateSchema = {
+	type: 'object',
 	oneOf: [
 		{
 			type: 'object',

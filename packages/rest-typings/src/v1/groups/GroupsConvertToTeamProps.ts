@@ -5,6 +5,7 @@ import { withGroupBaseProperties } from './BaseProps';
 
 const ajv = new Ajv({
 	coerceTypes: true,
+	allowUnionTypes: true,
 });
 
 export type GroupsConvertToTeamProps = GroupsBaseProps;
