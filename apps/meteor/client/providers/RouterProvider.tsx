@@ -117,9 +117,6 @@ const navigate = (
 	dispatchEvent(new PopStateEvent('popstate', { state }));
 };
 
-const routes: RouteObject[] = [];
-const routesSubscribers = new Set<() => void>();
-
 const updateFlowRouter = () => {
 	if (FlowRouter._initialized) {
 		FlowRouter._updateCallbacks();
@@ -130,7 +127,7 @@ const updateFlowRouter = () => {
 	FlowRouter.initialize();
 };
 
-const defineRoutes = (routes: RouteObject[]) => {
+const defineRoutes = (routes: readonly RouteObject[]) => {
 	const flowRoutes = routes.map((route) =>
 		FlowRouter.route(route.path, {
 			name: route.id,
@@ -138,11 +135,7 @@ const defineRoutes = (routes: RouteObject[]) => {
 		}),
 	);
 
-	routes.push(...routes);
-	const index = routes.length - 1;
-
 	updateFlowRouter();
-	routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
 
 	return () => {
 		flowRoutes.forEach((flowRoute) => {
@@ -152,24 +145,7 @@ const defineRoutes = (routes: RouteObject[]) => {
 			}
 		});
 
-		if (index !== -1) {
-			routes.splice(index, 1);
-		}
-
 		updateFlowRouter();
-		routesSubscribers.forEach((onRoutesChange) => onRoutesChange());
-	};
-};
-
-const getRoutes = () => routes;
-
-const subscribeToRoutesChange = (onRoutesChange: () => void): (() => void) => {
-	routesSubscribers.add(onRoutesChange);
-
-	onRoutesChange();
-
-	return () => {
-		routesSubscribers.delete(onRoutesChange);
 	};
 };
 
@@ -184,8 +160,6 @@ export const router: RouterContextValue = {
 	buildRoutePath,
 	navigate,
 	defineRoutes,
-	getRoutes,
-	subscribeToRoutesChange,
 	getRoomRoute(roomType: RoomType, routeData: RoomRouteData) {
 		return { path: roomCoordinator.getRouteLink(roomType, routeData) || '/' };
 	},
