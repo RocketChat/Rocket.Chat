@@ -90,7 +90,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 	if (
 		userData.password &&
 		!settings.get('Accounts_AllowPasswordChange') &&
-		(editingMyself ? user.services?.password : !canEditOtherUserInfo)
+		(editingMyself ? user.services?.password : !canEditOtherUserPassword)
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user password is not allowed', {
 			method: 'insertOrUpdateUser',
