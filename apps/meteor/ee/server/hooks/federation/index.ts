@@ -1,7 +1,14 @@
-import { FederationMatrix } from '@rocket.chat/core-services';
-import { isRoomNativeFederated, type IMessage, type IUser, type IRoom } from '@rocket.chat/core-typings';
+import { api, FederationMatrix } from '@rocket.chat/core-services';
+import {
+	isEditedMessage,
+	isRoomNativeFederated,
+	isMessageFromMatrixFederation,
+	isRoomFederated,
+	type IMessage,
+	type IRoom,
+	type IUser,
+} from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
 
 import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { callbacks } from '../../../../lib/callbacks';
@@ -131,6 +138,24 @@ afterRemoveFromRoomCallback.add(
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-remove-from-room',
+);
+
+callbacks.add(
+	'afterSaveMessage',
+	async (message: IMessage, { room }): Promise<IMessage> => {
+		if (!room || !isRoomFederated(room) || !message || !isMessageFromMatrixFederation(message)) {
+			return message;
+		}
+
+		if (!isEditedMessage(message)) {
+			return message;
+		}
+
+		await FederationMatrix.updateMessage(message._id, message.msg, message.u);
+		return message;
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-room-message-updated',
 );
 
 export const setupTypingEventListenerForRoom = (roomId: string): void => {
