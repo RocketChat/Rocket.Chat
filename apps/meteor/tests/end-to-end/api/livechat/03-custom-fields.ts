@@ -421,6 +421,7 @@ describe('LIVECHAT - custom fields', () => {
 		before(async () => {
 			await updatePermission('create-livechat-contact', ['admin']);
 			await updatePermission('view-livechat-contact', ['admin']);
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
 
 			// Create a Visitor
 			visitor = await createVisitor();
@@ -474,6 +475,7 @@ describe('LIVECHAT - custom fields', () => {
 				deleteCustomField(`${customFieldName}_3`),
 				deleteVisitor(visitor.token),
 				closeOmnichannelRoom(room._id),
+				updateSetting('Livechat_accept_chats_with_no_agents', false),
 			]);
 		});
 
