@@ -115,7 +115,6 @@ describe('LIVECHAT - rooms', () => {
 		visitor = await createVisitor();
 
 		room = await createLivechatRoom(visitor.token);
-		console.log('this room iks open', room._id);
 	});
 
 	after(async () => {
