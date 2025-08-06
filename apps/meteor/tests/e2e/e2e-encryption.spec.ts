@@ -68,6 +68,8 @@ test.describe('initial setup', () => {
 		// Log out
 		await sidenav.logout();
 
+		await expect(loginPage.loginButton).toBeVisible();
+
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
@@ -1056,7 +1058,7 @@ test.describe.serial('e2ee room setup', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
-		await poHomeChannel.sidenav.userProfileMenu.click();
+		await poHomeChannel.sidenav.btnUserProfileMenu.click();
 		await poHomeChannel.sidenav.accountProfileOption.click();
 
 		await page.locator('role=navigation >> a:has-text("Security")').click();

@@ -24,7 +24,7 @@
 		"@types/node": "~22.16.1",
 		"sherif": "^1.6.1",
 		"ts-node": "^10.9.2",
-		"turbo": "^2.5.4",
+		"turbo": "~2.5.5",
 		"typescript": "~5.8.3"
 	},
 	"workspaces": [
