@@ -438,7 +438,6 @@ describe('LIVECHAT - rooms', () => {
 				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 				visitor = await createVisitor();
 				manualRoom = await createLivechatRoom(visitor.token);
-				console.log(manualRoom);
 			});
 
 			after(async () => {
