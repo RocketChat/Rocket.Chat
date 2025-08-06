@@ -1,4 +1,4 @@
-import type { IWebRTCProcessor, MediaSignalRequestOffer, MediaSignalSDP, WebRTCProcessorConfig } from '../../../definition';
+import type { IWebRTCProcessor, WebRTCProcessorConfig } from '../../../definition';
 export declare class MediaCallWebRTCProcessor implements IWebRTCProcessor {
     private readonly config;
     private peer;
@@ -11,9 +11,19 @@ export declare class MediaCallWebRTCProcessor implements IWebRTCProcessor {
     private iceGatheringWaiters;
     constructor(config: WebRTCProcessorConfig);
     getRemoteMediaStream(): MediaStream;
-    createOffer({ iceRestart }: MediaSignalRequestOffer): Promise<MediaSignalSDP>;
-    createAnswer({ sdp }: MediaSignalSDP): Promise<MediaSignalSDP>;
-    setRemoteDescription({ sdp }: MediaSignalSDP): Promise<void>;
+    createOffer({ iceRestart }: {
+        iceRestart?: boolean;
+    }): Promise<{
+        sdp: RTCSessionDescriptionInit;
+    }>;
+    createAnswer({ sdp }: {
+        sdp: RTCSessionDescriptionInit;
+    }): Promise<{
+        sdp: RTCSessionDescriptionInit;
+    }>;
+    setRemoteDescription({ sdp }: {
+        sdp: RTCSessionDescriptionInit;
+    }): Promise<void>;
     protected getuserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>;
     private getLocalDescription;
     private waitForIceGathering;

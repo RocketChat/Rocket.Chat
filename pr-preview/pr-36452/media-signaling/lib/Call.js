@@ -15,7 +15,7 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
 import { Emitter } from '@rocket.chat/emitter';
-import { signalTypeRequiresTargeting } from './utils/signalTypeRequiresTargeting';
+import { mergeContacts } from './utils/mergeContacts';
 const TIMEOUT_TO_ACCEPT = 30000;
 const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
 const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
@@ -30,7 +30,7 @@ export class ClientMediaCall {
         return this._ignored;
     }
     get contact() {
-        return this._contact;
+        return this._contact || {};
     }
     get service() {
         return this._service;
@@ -44,6 +44,7 @@ export class ClientMediaCall {
         this.acceptedLocally = false;
         this.endedLocally = false;
         this.hasRemoteData = false;
+        this.initialized = false;
         this.acknowledged = false;
         this.hasLocalDescription = false;
         this.hasRemoteDescription = false;
@@ -55,28 +56,42 @@ export class ClientMediaCall {
         this._contact = null;
         this._service = null;
     }
+    // Initialize an outbound call with basic contact information until we receive the full call details from the server;
+    // this gets executed once for outbound calls initiated in this session.
     initializeOutboundCall(contact) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.acceptedLocally) {
                 return;
             }
-            if (!this.hasRemoteData) {
-                this._role = 'caller';
-            }
+            const wasInitialized = this.initialized;
+            this.initialized = true;
             this.acceptedLocally = true;
-            this._contact = contact;
+            if (this.hasRemoteData) {
+                this.changeContact(contact, { prioritizeExisting: true });
+            }
+            else {
+                this._role = 'caller';
+                this._contact = contact;
+            }
             this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
+            if (!wasInitialized) {
+                this.emitter.emit('initialized');
+            }
         });
     }
+    // initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call
     initializeRemoteCall(signal) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.hasRemoteData) {
                 return;
             }
             console.log('call.initializeRemoteCall', signal.callId);
+            const wasInitialized = this.initialized;
+            this.initialized = true;
             this.hasRemoteData = true;
-            this._service = signal.body.service;
-            this._role = signal.body.role;
+            this._service = signal.service;
+            this._role = signal.role;
+            this.changeContact(signal.contact);
             // If it's flagged as ignored even before the initialization, tell the server we're unavailable
             if (this.ignored) {
                 return this.rejectAsUnavailable();
@@ -94,6 +109,9 @@ export class ClientMediaCall {
             this.acknowledge();
             if (this._role === 'callee' || !this.acceptedLocally) {
                 this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
+            }
+            if (!wasInitialized) {
+                this.emitter.emit('initialized');
             }
             yield this.processEarlySignals();
         });
@@ -127,13 +145,6 @@ export class ClientMediaCall {
         this.prepareWebRtcProcessor();
         return this.webrtcProcessor.getRemoteMediaStream();
     }
-    setContact(contact) {
-        if (!contact) {
-            return;
-        }
-        this._contact = Object.assign(Object.assign({}, this._contact), contact);
-        this.emitter.emit('contactUpdate');
-    }
     processSignal(signal) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.isOver()) {
@@ -145,10 +156,6 @@ export class ClientMediaCall {
             }
             if (!this.hasRemoteData) {
                 this.earlySignals.add(signal);
-                return;
-            }
-            if (!signal.sessionId && signalTypeRequiresTargeting(signal.type)) {
-                console.error(`Received an untargeted ${signal.type} signal.`);
                 return;
             }
             switch (signal.type) {
@@ -236,10 +243,18 @@ export class ClientMediaCall {
                 break;
         }
     }
+    changeContact(contact, { prioritizeExisting } = {}) {
+        const oldContct = prioritizeExisting ? contact : this._contact;
+        const newContact = prioritizeExisting ? this._contact : contact;
+        this._contact = mergeContacts(oldContct, newContact);
+        if (this._contact) {
+            this.emitter.emit('contactUpdate');
+        }
+    }
     processOfferRequest(signal) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('call.processOfferRequest');
-            if (!signal.sessionId) {
+            if (!signal.contractId) {
                 console.error('Received an untargeted offer request.');
                 return;
             }
@@ -250,7 +265,7 @@ export class ClientMediaCall {
             this.requireWebRTC();
             let offer = null;
             try {
-                offer = yield this.webrtcProcessor.createOffer(signal.body);
+                offer = yield this.webrtcProcessor.createOffer(signal);
             }
             catch (e) {
                 this.config.transporter.sendError(this.callId, 'failed-to-create-offer');
@@ -275,7 +290,7 @@ export class ClientMediaCall {
             this.requireWebRTC();
             let answer = null;
             try {
-                answer = yield this.webrtcProcessor.createAnswer(signal.body);
+                answer = yield this.webrtcProcessor.createAnswer(signal);
             }
             catch (e) {
                 this.config.transporter.sendError(this.callId, 'failed-to-create-answer');
@@ -292,14 +307,18 @@ export class ClientMediaCall {
     processRemoteSDP(signal) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Call.processRemoteSDP');
+            if (!signal.contractId) {
+                console.error('Received untargeted SDP signal');
+                return;
+            }
             if (this.shouldIgnoreWebRTC()) {
                 return;
             }
             this.requireWebRTC();
-            if (signal.body.sdp.type === 'offer') {
+            if (signal.sdp.type === 'offer') {
                 return this.processAnswerRequest(signal);
             }
-            yield this.webrtcProcessor.setRemoteDescription(signal.body);
+            yield this.webrtcProcessor.setRemoteDescription(signal);
             this.hasRemoteDescription = true;
         });
     }
@@ -362,14 +381,14 @@ export class ClientMediaCall {
     }
     processNotification(signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Call.processNotification', signal.body.notification);
-            switch (signal.body.notification) {
+            console.log('Call.processNotification', signal.notification);
+            switch (signal.notification) {
                 case 'accepted':
                     return this.flagAsAccepted();
                 case 'hangup':
                     return this.flagAsEnded('remote');
             }
-            console.log('notification ignored as its type is not handled by this agent', signal.body.notification);
+            console.log('notification ignored as its type is not handled by this agent', signal.notification);
         });
     }
     flagAsAccepted() {

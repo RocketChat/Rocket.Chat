@@ -1,1 +1,0 @@
-{"version":3,"file":"deliverChannelSDP.js","sourceRoot":"","sources":["../../src/channels/deliverChannelSDP.ts"],"names":[],"mappings":";;AAMA,8CAOC;AAVD,wEAAqE;AACrE,oFAAiF;AAE1E,KAAK,UAAU,iBAAiB,CAAC,OAA0B,EAAE,IAAoB;IACvF,IAAA,qDAAyB,EAAC,OAAO,CAAC,CAAC;IAEnC,MAAM,IAAA,yCAAmB,EAAC,OAAO,EAAE;QAClC,IAAI,EAAE,KAAK;QACX,IAAI;KACJ,CAAC,CAAC;AACJ,CAAC"}

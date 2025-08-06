@@ -1,3 +1,4 @@
-import type { MediaSignal } from './MediaSignal';
-export type MediaSignalTransport = (signal: MediaSignal) => void;
+import type { AgentMediaSignal, ServerMediaSignal } from './MediaSignal';
+export type MediaSignalAgentTransport = (signal: AgentMediaSignal) => void;
+export type MediaSignalServerTransport = (signal: ServerMediaSignal) => void;
 //# sourceMappingURL=MediaSignalTransport.d.ts.map

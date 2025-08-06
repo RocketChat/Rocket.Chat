@@ -1,30 +1,19 @@
 export class MediaSignalTransportWrapper {
-    constructor(sessionId, sendSignalFn) {
-        this.sessionId = sessionId;
+    constructor(contractId, sendSignalFn) {
+        this.contractId = contractId;
         this.sendSignalFn = sendSignalFn;
     }
-    sendToServer(callId, type, body) {
-        return this.sendSignalToServer(callId, {
-            type,
-            body,
-        });
+    sendToServer(callId, type, signal) {
+        return this.sendSignal(Object.assign({ callId, contractId: this.contractId, type }, signal));
     }
     sendError(callId, errorCode) {
-        this.sendToServer(callId, 'error', {
-            errorCode,
-        });
+        this.sendToServer(callId, 'error', { errorCode });
     }
     answer(callId, answer) {
         return this.sendToServer(callId, 'answer', { answer });
     }
     hangup(callId, reason) {
         return this.sendToServer(callId, 'hangup', { reason });
-    }
-    notify(callId, notification) {
-        return this.sendToServer(callId, 'notification', { notification });
-    }
-    sendSignalToServer(callId, signal) {
-        return this.sendSignal(Object.assign(Object.assign({}, signal), { callId, sessionId: this.sessionId }));
     }
     sendSignal(signal) {
         console.log('MediaSignalTransport.sendSignal', signal);
