@@ -7,18 +7,30 @@ const logger = new Logger('federation-matrix:reaction');
 
 export function room(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.room.name', async (data) => {
-		const { name,  sender, room_id } = data as unknown as { name: string, sender: string, room_id: string };
+		const { name,  user_id, room_id } = data;
 		
-		await Room.saveRoomName(room_id, name, sender);
+		const localSender = await MatrixBridgedUser.getLocalUserIdByExternalId(user_id);
+		if (!localSender) {
+			logger.error(`No local user ID found for sender ${user_id}`);
+			return;
+		}
+		
+		const localRoomId = await MatrixBridgedRoom.getLocalRoomId(room_id);
+		if (!localRoomId) {
+			logger.error(`No local room ID found for room ${room_id}`);
+			return;
+		}
+		
+		await Room.saveRoomName(localRoomId, name, localSender);
 		
 	});
 	
 	emitter.on('homeserver.matrix.room.topic', async (data) => {
-		const { topic, sender, room_id } = data as unknown as { topic: string, sender: string, room_id: string };
+		const { topic, user_id, room_id } = data;
 		
-		const localUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(sender);
+		const localUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(user_id);
 		if (!localUserId) {	
-			logger.error(`No local user ID found for sender ${sender}`);
+			logger.error(`No local user ID found for sender ${user_id}`);
 			return;
 		}
 		
@@ -65,16 +77,19 @@ export function room(emitter: Emitter<HomeserverEventSignatures>) {
 				continue;
 			}
 			
-			let role: 'owner' | 'leader' | 'moderator' | 'user' = 'user';
+			let role: 'owner' | 'moderator' | 'user' = 'user';
 			if (power === 100) {
 				role = 'owner';
 			} else if (power === 50) {
-				role = 'leader';
-			} else {
 				role = 'moderator';
 			}
 			
-			await Room.addRoomModerator(localSender, user._id, localRoomId, role);
+			try {
+				await Room.addRoomModerator(localSender, user._id, localRoomId, role);
+			} catch (error) {
+				logger.error(`Error adding room moderator: ${error}`);
+				// handle later don't change exisring ones all the time, maybe emit the delta
+			}
 		}
 	});
 }

@@ -13,7 +13,7 @@ export const saveRoomTopic = async function (
 		_id: string;
 	},
 	sendMessage = true,
-	{ skipMatrix = false },
+	{ skipMatrix = false } = {},
 ) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
@@ -25,7 +25,7 @@ export const saveRoomTopic = async function (
 
 	await Room.beforeTopicChange(room!);
 	
-	if (room.federated && !skipMatrix) {
+	if (room?.federated && !skipMatrix) {
 		await FederationMatrix.updateRoomTopic(rid, roomTopic, user._id);
 	}
 

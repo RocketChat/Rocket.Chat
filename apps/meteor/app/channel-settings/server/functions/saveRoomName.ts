@@ -47,7 +47,7 @@ export async function saveRoomName(
 	displayName: string | undefined,
 	user: IUser,
 	sendMessage = true,
-	{ skipMatrix = false },
+	{ skipMatrix = false }: { skipMatrix?: boolean } = {},
 ): Promise<string | undefined> {
 	const room = await Rooms.findOneById(rid);
 	if (!room) {

@@ -534,6 +534,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error(`No Matrix user ID mapping found for user ${userId}`);
 		}
 		
-		await this.homeserverServices.room.setPowerLevelForUser(matrixFromUserId, matrixUserId, matrixRoomId, power);
+		await this.homeserverServices.room.setPowerLevelForUser(matrixRoomId, matrixFromUserId, matrixUserId, power);
 	}
 }

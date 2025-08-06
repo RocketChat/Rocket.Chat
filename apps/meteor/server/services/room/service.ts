@@ -18,6 +18,7 @@ import { saveRoomType } from '../../../app/channel-settings/server/functions/sav
 import { addRoomOwner } from '../../methods/addRoomOwner';
 import { addRoomLeader } from '../../methods/addRoomLeader';
 import { addRoomModerator } from '../../methods/addRoomModerator';
+import { removeRoomModerator } from '../../methods/removeRoomModerator';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -188,13 +189,13 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		await saveRoomType(localRoomId, roomType, user);
 	}
 	
-	async addRoomModerator(fromUserId: string, userId: IUser['_id'], rid: IRoom['_id'], type: 'moderator' | 'owner' | 'leader'): Promise<void> {
+	async addRoomModerator(fromUserId: string, userId: IUser['_id'], rid: IRoom['_id'], type: 'moderator' | 'owner' | 'user'): Promise<void> {
 		if (type === 'owner') {
 			await addRoomOwner(fromUserId, rid, userId, { skipMatrix: true });
-		} else if (type === 'leader') {
-			await addRoomLeader(fromUserId, rid, userId, { skipMatrix: true });
-		} else {
+		} else if (type === 'moderator') {
 			await addRoomModerator(fromUserId, rid, userId, { skipMatrix: true });
+		} else {
+			await removeRoomModerator(fromUserId, rid, userId, { skipMatrix: true });
 		}
 	}
 }

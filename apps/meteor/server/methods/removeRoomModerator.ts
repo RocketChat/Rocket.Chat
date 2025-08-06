@@ -1,4 +1,4 @@
-import { api, Message, Team } from '@rocket.chat/core-services';
+import { api, Message, Team, FederationMatrix } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
@@ -18,7 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const removeRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<boolean> => {
+export const removeRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id'], { skipMatrix = false }: { skipMatrix?: boolean } = {}): Promise<boolean> => {
 	check(rid, String);
 	check(userId, String);
 
@@ -55,6 +55,10 @@ export const removeRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['
 		throw new Meteor.Error('error-user-not-moderator', 'User is not a moderator', {
 			method: 'removeRoomModerator',
 		});
+	}
+	
+	if (room.federated && !skipMatrix) {
+		await FederationMatrix.setUserModerator(fromUserId, userId, rid, 'user');
 	}
 
 	const removeRoleResponse = await Subscriptions.removeRoleById(subscription._id, 'moderator');

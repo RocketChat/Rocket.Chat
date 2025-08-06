@@ -25,5 +25,5 @@ export interface IFederationMatrixService {
 	kickUser(roomId: string, removedUser: IUser, userWhoRemoved: IUser): Promise<void>;
 	setRoomPrivacy(roomId: string, privacy: IRoom['t'], senderId: string): Promise<void>;
 
-	setUserModerator(fromUserId: string, userId: string, roomId: string, role: 'owner' | 'leader' | 'moderator' | 'user'): Promise<void>;
+	setUserModerator(fromUserId: string, userId: string, roomId: string, role: 'owner' | 'moderator' | 'user'): Promise<void>;
 }

@@ -60,5 +60,5 @@ export interface IRoomService {
 	beforeTopicChange(room: IRoom): Promise<void>;
 	saveRoomName(roomId: string, displayName: string, senderId: string): Promise<void>;
 	saveRoomType(roomId: string /* matrixRoomId */, roomType: IRoom['t'], senderId: string /* matrix userId */): Promise<void>;
-	addRoomModerator(fromUserId: string, userId: IUser['_id'], rid: IRoom['_id'], role: 'owner' | 'leader' | 'moderator'): Promise<void>;
+	addRoomModerator(fromUserId: string, userId: IUser['_id'], rid: IRoom['_id'], role: 'owner' | 'moderator' | 'user'): Promise<void>;
 }
