@@ -1,0 +1,157 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ut-dev,ut-test,ut-stage]
+
+env:
+  TOOL_NODE_FLAGS: --max_old_space_size=6000
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '14.19.3'
+          cache: 'yarn'
+
+      - name: Cache meteor local
+        uses: actions/cache@v3
+        with:
+          path: ./apps/meteor/.meteor/local
+          key: meteor-local-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/versions') }}
+          restore-keys: |
+            meteor-local-cache-${{ runner.os }}-
+
+      - name: Cache meteor
+        uses: actions/cache@v3
+        with:
+          path: ~/.meteor
+          key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
+          restore-keys: |
+            meteor-cache-${{ runner.os }}-
+
+      - name: Install Meteor
+        run: |
+          # Restore bin from cache
+          set +e
+          METEOR_SYMLINK_TARGET=$(readlink ~/.meteor/meteor)
+          METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
+          set -e
+          LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
+          if [ -e $LAUNCHER ]
+          then
+            echo "Cached Meteor bin found, restoring it"
+            sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
+          else
+            echo "No cached Meteor bin found."
+          fi
+
+          # only install meteor if bin isn't found
+          command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
+
+      - name: Versions
+        run: |
+          npm --versions
+          yarn -v
+          node -v
+          meteor --version
+          meteor npm --versions
+          meteor node -v
+          git version
+      - name: Run script with bash shell explicitly
+        run: |
+          pwd
+          ls -la 
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build application
+        run: yarn build
+
+      - name: Build bundle
+        run:  meteor build ../rocketchat-build --directory --server-only
+        working-directory: ./apps/meteor/
+
+      - name: Copy  the Bundle
+        run: cp -r ./apps/rocketchat-build/bundle/ ./apps/meteor/.docker/
+        
+      - name: Check After Copy
+        run: ls -al ./apps/meteor/.docker/
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: regdock.ultatel.com
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Get next version
+        id: version
+        run: |
+          # Get branch name
+          BRANCH_NAME="${{ github.ref_name }}"
+          echo "Building for branch: $BRANCH_NAME"
+          
+          # Your Docker registry and image name
+          REGISTRY="regdock.ultatel.com"
+          
+          # Use different image names for different branches
+          if [[ "$BRANCH_NAME" == "ut-dev" ]]; then
+             IMAGE_NAME="utrocketchat_dev"
+          elif [[ "$BRANCH_NAME" == "ut-test" ]]; then
+             IMAGE_NAME="utrocketchat_test"
+          elif [[ "$BRANCH_NAME" == "ut-stage" ]]; then
+             IMAGE_NAME="utrocketchat_stage"
+          else 
+            IMAGE_NAME="utrocketchat_prod"
+          fi
+          
+          echo "Image name: $IMAGE_NAME"
+          
+          # Try to get the latest tag from the registry
+          NEW_VERSION=$(echo "${{ github.sha }}" | cut -c1-12)
+          echo "New version: $NEW_VERSION"
+          
+          # Set outputs
+          echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "image_tag=${REGISTRY}/${IMAGE_NAME}:${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "image_tag=${REGISTRY}/${IMAGE_NAME}:${NEW_VERSION}" >> $GITHUB_ENV
+          echo "branch=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/meteor/.docker/
+          file: ./apps/meteor/.docker/Dockerfile
+          push: true
+          tags: ${{ steps.version.outputs.image_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Run remote command
+        uses: appleboy/ssh-action@v1.0.2
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.IGNSBC2_PASS }}
+          script: |
+            BRANCH_NAME="${{ github.ref_name }}"
+            if [[ "$BRANCH_NAME" == "ut-dev" ]]; then
+            /usr/scripts/update_image.sh dev ${{ env.image_tag }}
+            elif [[ "$BRANCH_NAME" == "ut-test" ]]; then
+            /usr/scripts/update_image.sh test ${{ env.image_tag }}
+            elif [[ "$BRANCH_NAME" == "ut-stage" ]]; then
+            /usr/scripts/update_image.sh stage ${{ env.image_tag }}
+            fi
