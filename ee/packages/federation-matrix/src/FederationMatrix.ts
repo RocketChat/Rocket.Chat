@@ -1,9 +1,10 @@
 import 'reflect-metadata';
 
+import type { PresenceState } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isDeletedMessage, isMessageFromMatrixFederation, UserStatus, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
@@ -63,6 +64,58 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
 		instance.buildMatrixHTTPRoutes();
+		instance.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
+			if (!roomId || !username) {
+				return;
+			}
+			const externalRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+			if (!externalRoomId) {
+				return;
+			}
+			const localUser = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+			if (!localUser) {
+				return;
+			}
+			const externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
+			if (!externalUserId) {
+				return;
+			}
+			void instance.homeserverServices.edu.sendTypingNotification(externalRoomId, externalUserId, isTyping);
+		});
+		instance.onEvent(
+			'presence.status',
+			async ({ user }: { user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'> }): Promise<void> => {
+				if (!user.username || !user.status) {
+					return;
+				}
+				const localUser = await Users.findOneByUsername(user.username, { projection: { _id: 1 } });
+				if (!localUser) {
+					return;
+				}
+				const externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
+				if (!externalUserId) {
+					return;
+				}
+
+				const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
+				const statusMap: Record<UserStatus, PresenceState> = {
+					[UserStatus.ONLINE]: 'online',
+					[UserStatus.OFFLINE]: 'offline',
+					[UserStatus.AWAY]: 'unavailable',
+					[UserStatus.BUSY]: 'unavailable',
+					[UserStatus.DISABLED]: 'offline',
+				};
+				void instance.homeserverServices.edu.sendPresenceUpdateToRooms(
+					[
+						{
+							user_id: externalUserId,
+							presence: statusMap[user.status] || 'offline',
+						},
+					],
+					roomsUserIsMemberOf.map(({ externalRoomId }) => externalRoomId),
+				);
+			},
+		);
 
 		return instance;
 	}
@@ -184,13 +237,80 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
 
-			const result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+			let result;
+
+			if (!message.tmid) {
+				result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+			} else {
+				const threadRootMessage = await Messages.findOneById(message.tmid);
+				const threadRootEventId = threadRootMessage?.federation?.eventId;
+
+				if (threadRootEventId) {
+					const latestThreadMessage = await Messages.findOne(
+						{
+							'tmid': message.tmid,
+							'federation.eventId': { $exists: true },
+							'_id': { $ne: message._id }, // Exclude the current message
+						},
+						{ sort: { ts: -1 } },
+					);
+					const latestThreadEventId = latestThreadMessage?.federation?.eventId;
+
+					result = await this.homeserverServices.message.sendThreadMessage(
+						matrixRoomId,
+						message.msg,
+						actualMatrixUserId,
+						threadRootEventId,
+						latestThreadEventId,
+					);
+				} else {
+					this.logger.warn('Thread root event ID not found, sending as regular message');
+					result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+				}
+			}
+
+			if (!result) {
+				throw new Error('Failed to send message to Matrix - no result returned');
+			}
 
 			await Messages.setFederationEventIdById(message._id, result.eventId);
 
 			this.logger.debug('Message sent to Matrix successfully:', result.eventId);
 		} catch (error) {
 			this.logger.error('Failed to send message to Matrix:', error);
+			throw error;
+		}
+	}
+
+	async deleteMessage(message: IMessage): Promise<void> {
+		try {
+			if (!isMessageFromMatrixFederation(message) || isDeletedMessage(message)) {
+				return;
+			}
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${message.u.username}:${matrixDomain}`;
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(message.u._id);
+			if (!existingMatrixUserId) {
+				await MatrixBridgedUser.createOrUpdateByLocalId(message.u._id, matrixUserId, true, matrixDomain);
+			}
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping message redaction');
+				return;
+			}
+			const matrixEventId = message.federation?.eventId;
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${message._id}`);
+			}
+			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId, matrixUserId);
+
+			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
+		} catch (error) {
+			this.logger.error('Failed to send redaction to Matrix:', error);
 			throw error;
 		}
 	}
