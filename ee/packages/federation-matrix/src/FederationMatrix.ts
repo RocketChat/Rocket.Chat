@@ -4,7 +4,14 @@ import type { PresenceState } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import { isDeletedMessage, isMessageFromMatrixFederation, UserStatus, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import {
+	isDeletedMessage,
+	isMessageFromMatrixFederation,
+	UserStatus,
+	type IMessage,
+	type IRoom,
+	type IUser,
+} from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
@@ -20,6 +27,7 @@ import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
+import { convertExternalUserIdToInternalUsername } from './helpers/identifiers';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -194,7 +202,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 				try {
 					// TODO: Check if it is external user - split domain etc
-					const localUserId = await Users.findOneByUsername(member);
+					const localUserId = await Users.findOneByUsername(convertExternalUserIdToInternalUsername(member));
 					if (localUserId) {
 						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, false, matrixDomain);
 						// continue;
@@ -334,8 +342,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 					const isExternalUser = username.includes(':');
 					if (isExternalUser) {
-						let externalUsernameToInvite = username;
-						const alreadyCreatedLocally = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+						let externalUsernameToInvite = convertExternalUserIdToInternalUsername(username);
+						const alreadyCreatedLocally = await Users.findOneByUsername(externalUsernameToInvite, { projection: { _id: 1 } });
 						if (alreadyCreatedLocally) {
 							externalUsernameToInvite = `@${username}`;
 						}

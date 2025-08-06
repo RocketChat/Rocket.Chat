@@ -6,6 +6,8 @@ import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
 import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
 
+import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
+
 const logger = new Logger('federation-matrix:message');
 
 export function message(emitter: Emitter<HomeserverEventSignatures>) {
@@ -29,13 +31,14 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			}
 			const username = userPart.substring(1);
 
-			let user = await Users.findOneByUsername(data.sender);
+			const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+			let user = await Users.findOneByUsername(internalUsername);
 
 			if (!user) {
-				logger.info('Creating new federated user:', { username: data.sender, externalId: data.sender });
+				logger.info('Creating new federated user:', { username: internalUsername, externalId: data.sender });
 
 				const userData: Partial<IUser> = {
-					username: data.sender,
+					username: internalUsername,
 					name: username, // TODO: Fetch display name from Matrix profile
 					type: 'user',
 					status: UserStatus.ONLINE,
@@ -58,7 +61,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 
 				user = await Users.findOneById(insertedId);
 				if (!user) {
-					logger.error('Failed to create user:', data.sender);
+					logger.error('Failed to create user:', internalUsername);
 					return;
 				}
 
@@ -149,10 +152,10 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				logger.debug(`No RC message found for event ${data.redacts}`);
 				return;
 			}
-
-			const user = await Users.findOneByUsername(data.sender);
+			const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
-				logger.debug(`User not found: ${data.sender}`);
+				logger.debug(`User not found: ${internalUsername}`);
 				return;
 			}
 
