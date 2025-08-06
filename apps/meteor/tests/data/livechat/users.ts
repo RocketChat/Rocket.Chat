@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import { UserStatus, type ILivechatAgent, type IUser } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
 
 import { api, credentials, request, methodCall } from '../api-data';
 import { password } from '../user';
@@ -46,7 +45,7 @@ export const createAnOnlineAgent = async (): Promise<{
 	credentials: Credentials;
 	user: IUser & { username: string };
 }> => {
-	const username = `user.test.${Random.id()}`;
+	const username = `user.test.${Date.now()}`;
 	const email = `${username}@rocket.chat`;
 	const { body } = await request.post(api('users.create')).set(credentials).send({ email, name: username, username, password });
 	const agent = body.user;

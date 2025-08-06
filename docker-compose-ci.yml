@@ -23,7 +23,6 @@ services:
       - 'COVERAGE_DIR=${COVERAGE_DIR}'
       - 'COVERAGE_REPORTER=${COVERAGE_REPORTER}'
       - DISABLE_DB_WATCHERS=${DISABLE_DB_WATCHERS}
-      - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:

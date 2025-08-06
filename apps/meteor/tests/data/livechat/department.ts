@@ -1,11 +1,10 @@
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 
 import { api, credentials, methodCall, request } from '../api-data';
-import { createAnAwayAgent, createAnOfflineAgent, createAnOnlineAgent } from './users';
+import { createAnOnlineAgent, createAnOfflineAgent, createAnAwayAgent } from './users';
 import type { WithRequiredProperty } from './utils';
 
 const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
@@ -115,31 +114,6 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{ department:
 			credentials,
 			user,
 		},
-	};
-};
-
-export const createDepartmentWith2OnlineAgents = async (): Promise<{
-	department: ILivechatDepartment;
-	agent1: OnlineAgent;
-	agent2: OnlineAgent;
-}> => {
-	const [agent1, agent2] = await Promise.all([createAnOnlineAgent(), createAnOnlineAgent()]);
-
-	const department = await createDepartment(
-		{
-			enabled: true,
-			name: Random.id(),
-			showOnRegistration: true,
-			email: `${Random.id()}@example.com`,
-			showOnOfflineForm: true,
-		},
-		[{ agentId: agent1.user._id }, { agentId: agent2.user._id }],
-	);
-
-	return {
-		department,
-		agent1,
-		agent2,
 	};
 };
 
