@@ -81,7 +81,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const canOnlyCreateOneType = useCanOnlyCreateOneType();
+	const canOnlyCreateOneType = useCanOnlyCreateOneType(teamId || undefined);
 
 	const {
 		register,
