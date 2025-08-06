@@ -1,6 +1,12 @@
 import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, IUser, IMediaCall } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { IClientMediaCall, MediaSignal, MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/media-signaling';
+import {
+	IClientMediaCall,
+	MediaSignal,
+	MediaSignalingSession,
+	MediaCallWebRTCProcessor,
+	AgentMediaSignal,
+} from '@rocket.chat/media-signaling';
 
 import type { ContactInfo, VoipSession } from '../definitions';
 import RemoteStream from './RemoteStream';
@@ -22,13 +28,13 @@ type SessionError = {
 
 export type MediaCallsCallee = {
 	identifier: string;
-	identifierKind: 'user' | 'room' | 'extension';
+	identifierKind: 'user' | 'extension';
 };
 
 export type MediaCallsClientConfig = {
 	userId: IUser['_id'];
-	startCallFn: (params: { sessionId: string } & MediaCallsCallee) => Promise<IMediaCall>;
-	sendSignalFn: (signal: MediaSignal) => void;
+	startCallFn: (params: { contractId: string } & MediaCallsCallee) => Promise<IMediaCall>;
+	sendSignalFn: (signal: AgentMediaSignal) => void;
 };
 
 class MediaCallsClient extends Emitter<VoipEvents> {
@@ -57,7 +63,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 		this.session = new MediaSignalingSession({
 			userId: config.userId,
-			transport: (signal: MediaSignal) => config.sendSignalFn(signal),
+			transport: (signal: AgentMediaSignal) => config.sendSignalFn(signal),
 			processorFactories: {
 				webrtc: (config) => new MediaCallWebRTCProcessor(config),
 			},
@@ -69,6 +75,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		this.session.on('newCall', ({ call }) => this.onNewCall(call));
 		this.session.on('acceptedCall', ({ call }) => this.onAcceptedCall(call));
 		this.session.on('endedCall', ({ call }) => this.onEndedCall(call));
+		this.session.on('callContactUpdate', ({ call }) => this.onCallContactUpdate(call));
 	}
 
 	public async init() {
@@ -407,6 +414,11 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		this.emit('stateChanged');
 	}
 
+	private onCallContactUpdate(call: IClientMediaCall): void {
+		console.log('call contact update', call.contact);
+		this.emit('stateChanged');
+	}
+
 	private onEndedCall(_call: IClientMediaCall): void {
 		console.log('onEndedCall');
 
@@ -426,16 +438,11 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		}
 
 		return {
-			id: contactData.id,
+			id: contactData.sipExtension || contactData.username || contactData.id || 'unknown',
 			name: contactData.displayName,
 			host: '',
 		};
 	}
-
-	// private setContactInfo(contact: ContactInfo) {
-	// 	this.contactInfo = contact;
-	// 	this.emit('stateChanged');
-	// }
 
 	private async startCall(target: MediaCallsCallee): Promise<void> {
 		console.log('startCall');
@@ -443,7 +450,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		try {
 			this.emit('stateChanged');
 
-			const call = await this.config.startCallFn({ sessionId: this.session.sessionId, ...target });
+			const call = await this.config.startCallFn({ contractId: this.session.sessionId, ...target });
 
 			console.log('startCall', call);
 			const { _id: callId, callee } = call;
