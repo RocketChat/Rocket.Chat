@@ -62,3 +62,54 @@ settings.watchMultiple(
 		});
 	},
 );
+
+export let passphrasePolicy = new PasswordPolicy({
+	enabled,
+	minLength,
+	maxLength,
+	forbidRepeatingCharacters,
+	forbidRepeatingCharactersCount,
+	mustContainAtLeastOneLowercase,
+	mustContainAtLeastOneUppercase,
+	mustContainAtLeastOneNumber,
+	mustContainAtLeastOneSpecialCharacter,
+	throwError: true,
+});
+
+settings.watchMultiple(
+	[
+		'E2E_Passphrase_Policy_Enabled',
+		'E2E_Passphrase_Policy_MinLength',
+		'E2E_Passphrase_Policy_MaxLength',
+		'E2E_Passphrase_Policy_ForbidRepeatingCharacters',
+		'E2E_Passphrase_Policy_ForbidRepeatingCharactersCount',
+		'E2E_Passphrase_Policy_AtLeastOneLowercase',
+		'E2E_Passphrase_Policy_AtLeastOneUppercase',
+		'E2E_Passphrase_Policy_AtLeastOneNumber',
+		'E2E_Passphrase_Policy_AtLeastOneSpecialCharacter',
+	],
+	([
+		enabled,
+		minLength,
+		maxLength,
+		forbidRepeatingCharacters,
+		forbidRepeatingCharactersCount,
+		mustContainAtLeastOneLowercase,
+		mustContainAtLeastOneUppercase,
+		mustContainAtLeastOneNumber,
+		mustContainAtLeastOneSpecialCharacter,
+	]) => {
+		passphrasePolicy = new PasswordPolicy({
+			enabled: Boolean(enabled),
+			minLength: Number(minLength),
+			maxLength: Number(maxLength),
+			forbidRepeatingCharacters: Boolean(forbidRepeatingCharacters),
+			forbidRepeatingCharactersCount: Number(forbidRepeatingCharactersCount),
+			mustContainAtLeastOneLowercase: Boolean(mustContainAtLeastOneLowercase),
+			mustContainAtLeastOneUppercase: Boolean(mustContainAtLeastOneUppercase),
+			mustContainAtLeastOneNumber: Boolean(mustContainAtLeastOneNumber),
+			mustContainAtLeastOneSpecialCharacter: Boolean(mustContainAtLeastOneSpecialCharacter),
+			throwError: true,
+		});
+	},
+);
