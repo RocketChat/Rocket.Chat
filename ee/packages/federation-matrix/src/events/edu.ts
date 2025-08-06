@@ -5,8 +5,6 @@ import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixBridgedUser, MatrixBridgedRoom, Users } from '@rocket.chat/models';
 
-import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
-
 const logger = new Logger('federation-matrix:edu');
 
 export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
@@ -18,7 +16,7 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 				return;
 			}
 
-			const matrixUser = await MatrixBridgedUser.findOne({ mui: convertExternalUserIdToInternalUsername(data.user_id) });
+			const matrixUser = await MatrixBridgedUser.findOne({ mui: data.user_id });
 			if (!matrixUser) {
 				logger.debug(`No bridged user found for Matrix user_id: ${data.user_id}`);
 				return;
@@ -42,7 +40,7 @@ export const edus = async (emitter: Emitter<HomeserverEventSignatures>) => {
 
 	emitter.on('homeserver.matrix.presence', async (data) => {
 		try {
-			const matrixUser = await MatrixBridgedUser.findOne({ mui: convertExternalUserIdToInternalUsername(data.user_id) });
+			const matrixUser = await MatrixBridgedUser.findOne({ mui: data.user_id });
 			if (!matrixUser) {
 				logger.debug(`No bridged user found for Matrix user_id: ${data.user_id}`);
 				return;
