@@ -221,7 +221,17 @@ test.describe('SAML', () => {
 		});
 	});
 
-	const doLoginStep = async (page: Page, username: string, redirectUrl: string | null = '/home') => {
+	const doLoginStep = async (
+		page: Page,
+		username: string,
+		{
+			redirectUrl = '/home',
+			requireSetUsername = false,
+		}: {
+			redirectUrl?: string | null;
+			requireSetUsername?: boolean;
+		} = {},
+	) => {
 		await test.step('expect successful login', async () => {
 			await poRegistration.btnLoginWithSaml.click();
 			// Redirect to Idp
@@ -232,12 +242,22 @@ test.describe('SAML', () => {
 			await page.getByLabel('Password').fill('password');
 			await page.locator('role=button[name="Login"]').click();
 
+			// Redirect to username selection if username selection is expected
+			if (requireSetUsername) {
+				await expect(poRegistration.username).toBeVisible();
+			}
+
 			// Redirect back to rocket.chat
 			if (redirectUrl) {
 				await expect(page).toHaveURL(redirectUrl);
 				await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
 			}
 		});
+	};
+
+	const doUsernameSelection = async (customUsername: string) => {
+		await poRegistration.username.fill(customUsername);
+		await poRegistration.btnRegisterConfirmUsername.click();
 	};
 
 	const doLogoutStep = async (page: Page) => {
@@ -409,7 +429,7 @@ test.describe('SAML', () => {
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
 
-		await doLoginStep(page, 'samluser1', null);
+		await doLoginStep(page, 'samluser1', { redirectUrl: null });
 
 		await test.step('expect to be redirected to the invited room after succesful login', async () => {
 			await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
@@ -477,22 +497,14 @@ test.describe('SAML', () => {
 	});
 
 	test('Login - User without username can set initial username during first login', async ({ page, api }) => {
-		await test.step('expect successful login to show username selection screen', async () => {
-			await poRegistration.btnLoginWithSaml.click();
-			await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+		await doLoginStep(page, 'samlusernoname2', { redirectUrl: null, requireSetUsername: true });
 
-			await page.getByLabel('Username').fill('samlusernoname2');
-			await page.getByLabel('Password').fill('password');
-			await page.locator('role=button[name="Login"]').click();
+		await test.step('expect to be redirected to the username selection page and set the username', async () => {
+			await expect(poRegistration.username).toBeVisible();
+			await doUsernameSelection('custom_saml_username2');
 		});
 
-		await test.step('expect to be able to set the initial username and submit', async () => {
-			await expect(poRegistration.username).toBeVisible();
-
-			await poRegistration.username.fill('custom_saml_username2');
-
-			await poRegistration.btnRegisterConfirmUsername.click();
-
+		await test.step('expect to be redirected to the homepage after succesful login', async () => {
 			await expect(page).toHaveURL('/home');
 			await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
 		});
@@ -508,7 +520,7 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test.describe('Login - Username selection when username allow change is disabled', () => {
+	test.describe('Login - Username selection when allow username change is disabled', () => {
 		test.beforeAll(async ({ api }) => {
 			await expect((await setSettingValueById(api, 'Accounts_AllowUsernameChange', false)).status()).toBe(200);
 		});
@@ -517,23 +529,15 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'Accounts_AllowUsernameChange', true)).status()).toBe(200);
 		});
 
-		test.fail('Login - User without username can set initial username when username changes are disabled', async ({ page, api }) => {
-			await test.step('expect successful login without username to show username selection screen', async () => {
-				await poRegistration.btnLoginWithSaml.click();
-				await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+		test.fail('User without username can set initial username when username changes are disabled', async ({ page, api }) => {
+			await doLoginStep(page, 'samlusernoname', { redirectUrl: null, requireSetUsername: true });
 
-				await page.getByLabel('Username').fill('samlusernoname');
-				await page.getByLabel('Password').fill('password');
-				await page.locator('role=button[name="Login"]').click();
+			await test.step('expect to be redirected to the username selection page and set the username', async () => {
+				await expect(poRegistration.username).toBeVisible();
+				await doUsernameSelection('custom_saml_username');
 			});
 
-			await test.step('expect to be able to set the initial username and submit', async () => {
-				await expect(poRegistration.username).toBeVisible();
-
-				await poRegistration.username.fill('custom_saml_username');
-
-				await poRegistration.btnRegisterConfirmUsername.click();
-
+			await test.step('expect to be redirected to the homepage after succesful login', async () => {
 				await expect(page).toHaveURL('/home');
 				await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
 			});
