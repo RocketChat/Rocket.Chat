@@ -1,1 +1,0 @@
-{"version":3,"file":"sendSignalToChannels.js","sourceRoot":"","sources":["../../src/signals/sendSignalToChannels.ts"],"names":[],"mappings":";;AAKA,oDAKC;AAPD,+DAA4D;AAErD,KAAK,UAAU,oBAAoB,CACzC,OAA6B,EAC7B,MAAiC;IAEjC,MAAM,OAAO,CAAC,GAAG,CAAC,OAAO,CAAC,GAAG,CAAC,CAAC,OAAO,EAAE,EAAE,CAAC,IAAA,yCAAmB,EAAC,OAAO,EAAE,MAAM,CAAC,CAAC,CAAC,CAAC;AACnF,CAAC"}

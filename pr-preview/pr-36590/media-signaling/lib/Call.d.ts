@@ -2,7 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
 import type { IServiceProcessorFactoryList } from '../definition';
 import type { IWebRTCProcessor } from '../definition/IWebRTCProcessor';
-import type { MediaSignal, MediaSignalSDP } from '../definition/MediaSignal';
+import type { MediaSignal } from '../definition/MediaSignal';
 import type { IClientMediaCall, CallEvents, CallContact, CallRole, CallState, CallService, CallHangupReason } from '../definition/call';
 import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
 export interface IClientMediaCallConfig {
@@ -31,6 +31,7 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private hasRemoteData;
     private hasLocalDescription;
     private hasRemoteDescription;
+    private initialized;
     private acknowledged;
     private earlySignals;
     private stateTimeoutHandlers;
@@ -39,7 +40,6 @@ export declare class ClientMediaCall implements IClientMediaCall {
     initializeRemoteCall(signal: MediaSignal<'new'>): Promise<void>;
     getClientState(): ClientState;
     getRemoteMediaStream(): MediaStream;
-    setContact(contact: CallContact): void;
     processSignal(signal: MediaSignal): Promise<void>;
     accept(): Promise<void>;
     reject(): Promise<void>;
@@ -48,11 +48,14 @@ export declare class ClientMediaCall implements IClientMediaCall {
     isPendingOurAcceptance(): boolean;
     isOver(): boolean;
     private changeState;
+    private changeContact;
     protected processOfferRequest(signal: MediaSignal<'request-offer'>): Promise<void>;
     protected shouldIgnoreWebRTC(): boolean;
     protected processAnswerRequest(signal: MediaSignal<'sdp'>): Promise<void>;
     protected processRemoteSDP(signal: MediaSignal<'sdp'>): Promise<void>;
-    protected deliverSdp(sdp: MediaSignalSDP): Promise<void>;
+    protected deliverSdp(sdp: {
+        sdp: RTCSessionDescriptionInit;
+    }): Promise<void>;
     protected rejectAsUnavailable(): Promise<void>;
     protected processEarlySignals(): Promise<void>;
     protected acknowledge(): void;

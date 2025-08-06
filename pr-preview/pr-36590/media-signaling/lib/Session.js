@@ -11,13 +11,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import { ClientMediaCall } from './Call';
 import { MediaSignalTransportWrapper } from './TransportWrapper';
 import { createRandomToken } from './utils/createRandomToken';
-const stateWeights = {
-    none: 0,
-    ringing: 1,
-    accepted: 2,
-    active: 3,
-    hangup: -1,
-};
 export class MediaSignalingSession extends Emitter {
     get sessionId() {
         return this._sessionId;
@@ -35,42 +28,32 @@ export class MediaSignalingSession extends Emitter {
         this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport);
     }
     isBusy() {
-        return this.hasAnyCallState(['ringing', 'accepted', 'active']);
+        const call = this.getMainCall();
+        if (!call) {
+            return false;
+        }
+        return ['accepted', 'active'].includes(call.state);
     }
     getCallData(callId) {
         return this.knownCalls.get(callId) || null;
     }
-    getAllCallStates() {
-        return this.knownCalls
-            .values()
-            .map(({ state }) => state)
-            .toArray();
-    }
-    hasAnyCallState(states) {
-        const knownStates = this.getAllCallStates();
-        for (const state of knownStates) {
-            if (states.includes(state)) {
-                return true;
+    getMainCall() {
+        let ringingCall = null;
+        let pendingCall = null;
+        for (const call of this.knownCalls.values()) {
+            if (['accepted', 'active'].includes(call.state)) {
+                return call;
+            }
+            if (call.state === 'ringing' && !ringingCall) {
+                ringingCall = call;
+                continue;
+            }
+            if (call.state === 'none') {
+                pendingCall = call;
+                continue;
             }
         }
-        return false;
-    }
-    getSortedCalls() {
-        return this.knownCalls
-            .values()
-            .toArray()
-            .sort((call1, call2) => {
-            const call1Weight = stateWeights[call1.state] || 0;
-            const call2Weight = stateWeights[call2.state] || 0;
-            return call2Weight - call1Weight;
-        });
-    }
-    getMainCall() {
-        const call = this.getSortedCalls().pop();
-        if (call) {
-            return this.getCallData(call.callId);
-        }
-        return null;
+        return ringingCall || pendingCall;
     }
     processSignal(signal) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -89,13 +72,19 @@ export class MediaSignalingSession extends Emitter {
         });
     }
     isSignalTargetingAnotherSession(signal) {
-        if (!signal.sessionId) {
-            return false;
+        if ('sessionId' in signal && signal.sessionId && signal.sessionId !== this._sessionId) {
+            return true;
         }
-        return signal.sessionId !== this._sessionId;
+        return false;
     }
     isCallIgnored(callId) {
         return this.ignoredCalls.has(callId);
+    }
+    ignoreCall(callId) {
+        this.ignoredCalls.add(callId);
+        if (this.knownCalls.has(callId)) {
+            this.knownCalls.delete(callId);
+        }
     }
     getOrCreateCall(callId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -110,13 +99,14 @@ export class MediaSignalingSession extends Emitter {
             };
             const call = new ClientMediaCall(config, callId);
             this.knownCalls.set(callId, call);
+            call.emitter.on('contactUpdate', () => this.emit('callContactUpdate', { call }));
             call.emitter.on('stateChange', (oldState) => this.emit('callStateChange', { call, oldState }));
+            call.emitter.on('initialized', () => this.emit('newCall', { call }));
             call.emitter.on('accepted', () => this.emit('acceptedCall', { call }));
             call.emitter.on('ended', () => {
-                this.ignoredCalls.add(call.callId);
+                this.ignoreCall(call.callId);
                 this.emit('endedCall', { call });
             });
-            this.emit('newCall', { call });
             return call;
         });
     }

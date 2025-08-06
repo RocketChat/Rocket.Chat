@@ -1,10 +1,13 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { IServiceProcessorFactoryList } from '../definition/IServiceProcessorFactoryList';
 import type { MediaSignal } from '../definition/MediaSignal';
-import type { MediaSignalTransport } from '../definition/MediaSignalTransport';
+import type { MediaSignalAgentTransport } from '../definition/MediaSignalTransport';
 import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
 import type { IClientMediaCall, CallState } from '../definition/call';
 export type MediaSignalingEvents = {
+    callContactUpdate: {
+        call: IClientMediaCall;
+    };
     callStateChange: {
         call: IClientMediaCall;
         oldState: CallState;
@@ -23,7 +26,7 @@ export type MediaSignalingSessionConfig = {
     userId: string;
     processorFactories: IServiceProcessorFactoryList;
     mediaStreamFactory: MediaStreamFactory;
-    transport: MediaSignalTransport;
+    transport: MediaSignalAgentTransport;
 };
 export declare class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
     private config;
@@ -37,14 +40,12 @@ export declare class MediaSignalingSession extends Emitter<MediaSignalingEvents>
     constructor(config: MediaSignalingSessionConfig);
     isBusy(): boolean;
     getCallData(callId: string): IClientMediaCall | null;
-    getAllCallStates(): CallState[];
-    hasAnyCallState(states: CallState[]): boolean;
-    getSortedCalls(): IClientMediaCall[];
     getMainCall(): IClientMediaCall | null;
     processSignal(signal: MediaSignal): Promise<void>;
     registerOutboundCall(callId: string, contact: Record<string, string>): Promise<void>;
     private isSignalTargetingAnotherSession;
     private isCallIgnored;
+    private ignoreCall;
     private getOrCreateCall;
 }
 //# sourceMappingURL=Session.d.ts.map
