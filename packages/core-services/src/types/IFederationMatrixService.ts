@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
 
 export interface IRouteContext {
@@ -23,6 +23,7 @@ export interface IFederationMatrixService {
 	updateRoomName(rid: string, displayName: string, senderId: string): Promise<void>;
 	leaveRoom(roomId: string, user: IUser): Promise<void>;
 	kickUser(roomId: string, removedUser: IUser, userWhoRemoved: IUser): Promise<void>;
+	updateMessage(messageId: string, newContent: string, sender: AtLeast<IUser, '_id' | 'username'>): Promise<void>;
 	setRoomPrivacy(roomId: string, privacy: IRoom['t'], senderId: string): Promise<void>;
 
 	setUserModerator(fromUserId: string, userId: string, roomId: string, role: 'owner' | 'moderator' | 'user'): Promise<void>;
