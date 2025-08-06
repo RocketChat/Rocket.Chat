@@ -445,7 +445,7 @@
 		"tinykeys": "^1.4.0",
 		"twilio": "^5.4.2",
 		"twit": "^2.2.11",
-		"typia": "~9.3.1",
+		"typia": "~9.7.0",
 		"ua-parser-js": "^1.0.40",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",

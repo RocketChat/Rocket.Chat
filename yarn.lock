@@ -7140,7 +7140,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.2"
-    typia: "npm:~9.3.1"
+    typia: "npm:~9.7.0"
   languageName: unknown
   linkType: soft
 
@@ -8226,7 +8226,7 @@ __metadata:
     twilio: "npm:^5.4.2"
     twit: "npm:^2.2.11"
     typescript: "npm:~5.9.2"
-    typia: "npm:~9.3.1"
+    typia: "npm:~9.7.0"
     ua-parser-js: "npm:^1.0.40"
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
@@ -9110,7 +9110,7 @@ __metadata:
     ts-jest: "npm:~29.4.0"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.2"
-    typia: "npm:~9.3.1"
+    typia: "npm:~9.7.0"
   peerDependencies:
     "@rocket.chat/icons": "*"
   languageName: unknown
@@ -9530,10 +9530,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@samchon/openapi@npm:^4.3.1":
-  version: 4.3.3
-  resolution: "@samchon/openapi@npm:4.3.3"
-  checksum: 10/a25f66c2735dba223f50f9ff4767494aec401bde895f41982f58c7c1856c5c9f2567ddb26eb5228851a9552767dbe7e9d2032c1946a4c90bba01887216dbde8f
+"@samchon/openapi@npm:^4.7.1":
+  version: 4.7.1
+  resolution: "@samchon/openapi@npm:4.7.1"
+  checksum: 10/4e0a3d529f4113b2a86a369759ecf0d3629af58e4de58d4c9ece737e99219a8f7cf2b9e78ea60a0b99005d5fcdad2269f19c1b792856766025788e1b7b7d00ad
   languageName: node
   linkType: hard
 
@@ -35054,11 +35054,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typia@npm:~9.3.1":
-  version: 9.3.1
-  resolution: "typia@npm:9.3.1"
+"typia@npm:~9.7.0":
+  version: 9.7.0
+  resolution: "typia@npm:9.7.0"
   dependencies:
-    "@samchon/openapi": "npm:^4.3.1"
+    "@samchon/openapi": "npm:^4.7.1"
     "@standard-schema/spec": "npm:^1.0.0"
     commander: "npm:^10.0.0"
     comment-json: "npm:^4.2.3"
@@ -35066,11 +35066,10 @@ __metadata:
     package-manager-detector: "npm:^0.2.0"
     randexp: "npm:^0.5.3"
   peerDependencies:
-    "@samchon/openapi": ">=4.3.1 <5.0.0"
-    typescript: ">=4.8.0 <5.9.0"
+    typescript: ">=4.8.0 <5.10.0"
   bin:
     typia: lib/executable/typia.js
-  checksum: 10/77e593799d5ad6ccf6dcd78431b379cab3771b4d609e04c5a344e09c7a237a6b888c4756b93c2e07a8c6da11116813327a41612d7a9002c336098bb45e37f2cc
+  checksum: 10/1f0b260402900b46225af7bba1110399a21a9276122a306b34448a4d6f9de12035857f520baf1ee27a663274835a85e6f9cdeb856c866e437b544b87164d48f9
   languageName: node
   linkType: hard
 
