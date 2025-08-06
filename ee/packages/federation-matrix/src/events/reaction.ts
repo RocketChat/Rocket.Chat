@@ -5,6 +5,8 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
 import emojione from 'emojione';
 
+import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
+
 const logger = new Logger('federation-matrix:reaction');
 
 export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
@@ -21,9 +23,10 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 				return;
 			}
 
-			const user = await Users.findOneByUsername(data.sender);
+			const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
-				logger.error(`No RC user mapping found for Matrix event ${reactionTargetEventId} ${data.sender}`);
+				logger.error(`No RC user mapping found for Matrix event ${reactionTargetEventId} ${internalUsername}`);
 				return;
 			}
 
@@ -40,7 +43,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 
 			const reactionEmoji = emojione.toShort(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, true);
-			await Messages.setFederationReactionEventId(data.sender, rcMessage._id, reactionEmoji, data.event_id);
+			await Messages.setFederationReactionEventId(internalUsername, rcMessage._id, reactionEmoji, data.event_id);
 		} catch (error) {
 			logger.error('Failed to process Matrix reaction:', error);
 		}
@@ -75,9 +78,10 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 				return;
 			}
 
-			const user = await Users.findOneByUsername(data.sender);
+			const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
-				logger.debug(`User not found: ${data.sender}`);
+				logger.debug(`User not found: ${internalUsername}`);
 				return;
 			}
 
