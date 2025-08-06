@@ -555,4 +555,36 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw error;
 		}
 	}
+
+	async updateMessage(messageId: string, newContent: string, sender: IUser): Promise<void> {
+		try {
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				throw new Error(`Message ${messageId} not found`);
+			}
+
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+
+			const matrixEventId = message.federation?.eventId;
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
+			}
+
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(sender._id);
+			if (!existingMatrixUserId) {
+				this.logger.error(`No Matrix user ID mapping found for user ${sender._id}`);
+				return;
+			}
+
+			const eventId = await this.homeserverServices.message.updateMessage(matrixRoomId, newContent, existingMatrixUserId, matrixEventId);
+
+			this.logger.debug('Message updated in Matrix successfully:', eventId);
+		} catch (error) {
+			this.logger.error('Failed to update message in Matrix:', error);
+			throw error;
+		}
+	}
 }
