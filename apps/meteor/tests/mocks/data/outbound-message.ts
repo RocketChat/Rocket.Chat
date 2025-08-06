@@ -59,6 +59,6 @@ export const createFakeOutboundTemplate = (overrides: Partial<IOutboundProviderT
 	partnerId: '',
 	externalId: '',
 	updatedExternal: '', // ISO 8601 timestamp
-	rejectedReason: null,
+	rejectedReason: '',
 	...overrides,
 });
