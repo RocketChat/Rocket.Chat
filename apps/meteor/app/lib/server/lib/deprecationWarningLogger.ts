@@ -24,7 +24,7 @@ const compareVersions = (version: string, message: string) => {
 	}
 };
 
-export type DeprecationLoggerNextPlannedVersion = '7.0.0' | '8.0.0';
+export type DeprecationLoggerNextPlannedVersion = '9.0.0';
 
 export const apiDeprecationLogger = ((logger) => {
 	return {
