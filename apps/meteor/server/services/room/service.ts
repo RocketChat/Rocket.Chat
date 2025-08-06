@@ -93,7 +93,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		},
 		sendMessage = true,
 	): Promise<void> {
-		await saveRoomTopic(roomId, roomTopic, user, sendMessage);
+		await saveRoomTopic(roomId, roomTopic, user, sendMessage, { skipMatrix: true });
 	}
 
 	async getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean> {
@@ -158,27 +158,15 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async beforeTopicChange(room: IRoom): Promise<void> {
-		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+		// FederationActions.blockIfRoomFederatedButServiceNotReady(room);
 	}
 	
-	async saveRoomName(roomId: string /* matrixRoomId */, displayName: string, senderId: string /* matrix userId */): Promise<void> {
-		const localUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(senderId);
-		if (!localUserId) {
-			throw new Error('local user mapping for external user not found');
+	async saveRoomName(roomId: string, displayName: string, senderId: string): Promise<void> {
+		const sender = await Users.findOneById(senderId);
+		if (!sender) {
+			throw new Error('sender not found');
 		}
-		
-		const user = await Users.findOneById(localUserId);
-		if (!user) {
-			throw new Error('local user object not found');
-		}
-		
-		// do the same for roomId
-		const localRoomId = await MatrixBridgedRoom.getLocalRoomId(roomId)
-		if (!localRoomId) {
-			throw new Error('local room mapping for external room not found');
-		}
-		
-		await saveRoomName(localRoomId, displayName, user);
+		await saveRoomName(roomId, displayName, sender, true, { skipMatrix: true });
 	}
 	
 	async saveRoomType(roomId: string /* matrixRoomId */, roomType: IRoom['t'], senderId: string /* matrix userId */): Promise<void> {
@@ -200,13 +188,13 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		await saveRoomType(localRoomId, roomType, user);
 	}
 	
-	async addRoomModerator(senderId: string, userId: IUser['_id'], rid: IRoom['_id'], type: 'moderator' | 'owner' | 'leader'): Promise<void> {
+	async addRoomModerator(fromUserId: string, userId: IUser['_id'], rid: IRoom['_id'], type: 'moderator' | 'owner' | 'leader'): Promise<void> {
 		if (type === 'owner') {
-			await addRoomOwner(senderId, rid, userId);
+			await addRoomOwner(fromUserId, rid, userId, { skipMatrix: true });
 		} else if (type === 'leader') {
-			await addRoomLeader(senderId, rid, userId);
+			await addRoomLeader(fromUserId, rid, userId, { skipMatrix: true });
 		} else {
-			await addRoomModerator(senderId, rid, userId);
+			await addRoomModerator(fromUserId, rid, userId, { skipMatrix: true });
 		}
 	}
 }

@@ -21,11 +21,6 @@ const TimestampSchema = {
 	description: 'Unix timestamp in milliseconds',
 };
 
-const ServerNameSchema = {
-	type: 'string',
-	description: 'Matrix server name',
-};
-
 const QueryProfileQuerySchema = {
 	type: 'object',
 	properties: {
@@ -133,117 +128,6 @@ const GetDevicesResponseSchema = {
 };
 
 const isGetDevicesResponseProps = ajv.compile(GetDevicesResponseSchema);
-
-const MakeJoinParamsSchema = {
-	type: 'object',
-	properties: {
-		roomId: RoomIdSchema,
-		userId: UsernameSchema,
-	},
-	required: ['roomId', 'userId'],
-};
-
-const isMakeJoinParamsProps = ajv.compile(MakeJoinParamsSchema);
-
-const MakeJoinQuerySchema = {
-	type: 'object',
-	properties: {
-		ver: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			minItems: 0,
-			description: 'Supported room versions',
-		},
-	},
-};
-
-const isMakeJoinQueryProps = ajv.compile(MakeJoinQuerySchema);
-
-const MakeJoinResponseSchema = {
-	type: 'object',
-	properties: {
-		room_version: {
-			type: 'string',
-			description: 'Room version',
-		},
-		event: {
-			type: 'object',
-			properties: {
-				content: {
-					type: 'object',
-					properties: {
-						membership: {
-							type: 'string',
-							const: 'join',
-						},
-						join_authorised_via_users_server: {
-							type: 'string',
-							nullable: true,
-						},
-					},
-					required: ['membership'],
-				},
-				room_id: RoomIdSchema,
-				sender: UsernameSchema,
-				state_key: UsernameSchema,
-				type: {
-					type: 'string',
-					const: 'm.room.member',
-				},
-				origin_server_ts: TimestampSchema,
-				origin: ServerNameSchema,
-				depth: {
-					type: 'number',
-					description: 'Depth of the event in the DAG',
-					nullable: true,
-				},
-				prev_events: {
-					type: 'array',
-					items: {
-						type: 'string',
-					},
-					description: 'Previous events in the room',
-					nullable: true,
-				},
-				auth_events: {
-					type: 'array',
-					items: {
-						type: 'string',
-					},
-					description: 'Authorization events',
-					nullable: true,
-				},
-				hashes: {
-					type: 'object',
-					properties: {
-						sha256: {
-							type: 'string',
-							description: 'SHA256 hash of the event',
-						},
-					},
-					required: ['sha256'],
-					nullable: true,
-				},
-				signatures: {
-					type: 'object',
-					description: 'Event signatures by server and key ID',
-					nullable: true,
-				},
-				unsigned: {
-					type: 'object',
-					description: 'Unsigned data',
-					nullable: true,
-				},
-			},
-			required: ['content', 'room_id', 'sender', 'state_key', 'type', 'origin_server_ts', 'origin'],
-		},
-	},
-	required: ['room_version', 'event'],
-};
-
-const isMakeJoinResponseProps = ajv.compile(MakeJoinResponseSchema);
 
 const GetMissingEventsParamsSchema = {
 	type: 'object',

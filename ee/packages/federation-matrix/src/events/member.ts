@@ -69,35 +69,4 @@ export function member(emitter: Emitter<HomeserverEventSignatures>) {
 
 		await Room.saveRoomType(roomId, privacy === 'public' ? 'c' : 'p', sender)
 	});
-
-	emitter.on('homeserver.matrix.room.power', async (data) => {
-		console.log('room power event', data);
-		const { room_id: roomId, power, sender, user } = data;
-		
-		const localRoomId = await MatrixBridgedRoom.getLocalRoomId(roomId);
-		if (!localRoomId) {
-			logger.warn(`No local room mapping found for room ${roomId}`);
-			return;
-		}
-		
-		const localUserId = await MatrixBridgedUser.getLocalUserIdByExternalId(user);
-		if (!localUserId) {
-			logger.warn(`No local user mapping found for user ${user}`);
-			return;
-		}
-		
-		const localSender = await MatrixBridgedUser.getLocalUserIdByExternalId(sender);	
-		if (!localSender) {
-			logger.warn(`No local user mapping found for sender ${sender}`);
-			return;
-		}
-		
-		if (power === 100) {
-			await Room.addRoomModerator(localSender, localUserId, localRoomId, 'owner');
-		} else if (power === 50) {
-			await Room.addRoomModerator(localSender, localUserId, localRoomId, 'moderator');
-		} else if (power === 0) {
-			// TODO:
-		}
-	})
 }

@@ -357,6 +357,25 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		await this.homeserverServices.room.updateRoomName(matrixRoomId, displayName, userId);
 	}
+	
+	async updateRoomTopic(rid: string, topic: string, senderId: string): Promise<void> {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping room topic update');
+			return;
+		}
+		
+		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
+		if (!matrixRoomId) {
+			throw new Error(`No Matrix room mapping found for room ${rid}`);
+		}
+		
+		const userId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
+		if (!userId) {
+			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
+		}
+
+		await this.homeserverServices.room.setRoomTopic(matrixRoomId, userId, topic);
+	}
 
 	async getEventById(eventId: string): Promise<any | null> {
 		if (!this.homeserverServices) {
@@ -483,5 +502,38 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		} else {
 			throw new Error(`Invalid privacy value: ${privacy}`);
 		}
+	}
+	
+	async setUserModerator(fromUserId: string, userId: string, roomId: string, role: 'owner' | 'leader' | 'moderator' | 'user') {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping user moderator update');
+			return;
+		}
+		
+		let power = 0;
+		if (role === 'owner') {
+			power = 100;
+		} else if (role === 'leader') {
+			power = 50;
+		} else if (role === 'moderator') {
+			power = 50;
+		}
+		
+		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(roomId);
+		if (!matrixRoomId) {
+			throw new Error(`No Matrix room mapping found for room ${roomId}`);
+		}
+		
+		const matrixFromUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(fromUserId);
+		if (!matrixFromUserId) {
+			throw new Error(`No Matrix user ID mapping found for user ${fromUserId}`);
+		}
+		
+		const matrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
+		if (!matrixUserId) {
+			throw new Error(`No Matrix user ID mapping found for user ${userId}`);
+		}
+		
+		await this.homeserverServices.room.setPowerLevelForUser(matrixFromUserId, matrixUserId, matrixRoomId, power);
 	}
 }

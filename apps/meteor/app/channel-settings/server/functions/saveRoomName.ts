@@ -47,6 +47,7 @@ export async function saveRoomName(
 	displayName: string | undefined,
 	user: IUser,
 	sendMessage = true,
+	{ skipMatrix = false },
 ): Promise<string | undefined> {
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
@@ -78,7 +79,9 @@ export async function saveRoomName(
 	let update;
 
 	if (isDiscussion || isRoomFederated(room)) {
-		await FederationMatrix.updateRoomName(rid, displayName, user._id);
+		if (!skipMatrix) {
+			await FederationMatrix.updateRoomName(rid, displayName, user._id);
+		}
 		update = await updateFName(rid, displayName);
 	} else {
 		update = await updateRoomName(rid, displayName, slugifiedRoomName);

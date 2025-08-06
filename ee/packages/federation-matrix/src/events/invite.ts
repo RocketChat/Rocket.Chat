@@ -4,8 +4,6 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import { MatrixBridgedRoom, MatrixBridgedUser, Users } from '@rocket.chat/models';
 
-import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
-
 export function invite(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.accept-invite', async (data) => {
 		const room = await MatrixBridgedRoom.findOne({ mri: data.room_id });

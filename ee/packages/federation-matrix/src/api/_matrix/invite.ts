@@ -1,8 +1,7 @@
 import type { HomeserverServices } from '@hs/federation-sdk';
-import { Room, User } from '@rocket.chat/core-services';
+import { Room } from '@rocket.chat/core-services';
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { Router } from '@rocket.chat/http-router';
-import { Logger } from '@rocket.chat/logger';
 import { MatrixBridgedRoom, MatrixBridgedUser, Rooms, Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 

@@ -1,4 +1,4 @@
-import { api, Message, Team } from '@rocket.chat/core-services';
+import { api, FederationMatrix, Message, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
@@ -10,7 +10,7 @@ import { hasPermissionAsync } from '../../app/authorization/server/functions/has
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
-import { isFederationEnabled, isFederationReady, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
+import { isFederationEnabled, isFederationReady, FederationMatrixInvalidConfigurationError, getFederationVersion } from '../services/federation/utils';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -19,7 +19,7 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<boolean> => {
+export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id'], { skipMatrix = false }: { skipMatrix?: boolean } = {}): Promise<boolean> => {
 	check(rid, String);
 	check(userId, String);
 
@@ -38,7 +38,7 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 		});
 	}
 
-	if (isFederated && (!isFederationEnabled() || !isFederationReady())) {
+	if (isFederated && getFederationVersion() !== 'native' && (!isFederationEnabled() || !isFederationReady())) {
 		throw new FederationMatrixInvalidConfigurationError('unable to change room owners');
 	}
 
@@ -62,6 +62,10 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 		throw new Meteor.Error('error-user-already-moderator', 'User is already a moderator', {
 			method: 'addRoomModerator',
 		});
+	}
+	
+	if (isFederated && getFederationVersion() === 'native' && !skipMatrix) {
+		await FederationMatrix.setUserModerator(fromUserId, userId, rid, 'moderator');
 	}
 
 	const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'moderator');

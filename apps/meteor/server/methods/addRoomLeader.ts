@@ -1,7 +1,7 @@
-import { api, Message, Team } from '@rocket.chat/core-services';
+import { api, FederationMatrix, Message, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -9,6 +9,7 @@ import { hasPermissionAsync } from '../../app/authorization/server/functions/has
 import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { syncRoomRolePriorityForUserAndRoom } from '../lib/roles/syncRoomRolePriority';
+import { getFederationVersion } from '../services/federation/utils';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -17,7 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const addRoomLeader = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<boolean> => {
+export const addRoomLeader = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id'], { skipMatrix = false }: { skipMatrix?: boolean } = {}): Promise<boolean> => {
 	check(rid, String);
 	check(userId, String);
 
@@ -47,6 +48,17 @@ export const addRoomLeader = async (fromUserId: IUser['_id'], rid: IRoom['_id'],
 		throw new Meteor.Error('error-user-already-leader', 'User is already a leader', {
 			method: 'addRoomLeader',
 		});
+	}
+	
+	const room = await Rooms.findOneById(rid);
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			method: 'addRoomLeader',
+		});
+	}
+	
+	if (room.federated && getFederationVersion() === 'native' && !skipMatrix) {
+		await FederationMatrix.setUserModerator(fromUserId, userId, rid, 'leader');
 	}
 
 	const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'leader');

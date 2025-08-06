@@ -1,4 +1,4 @@
-import { Message, Room } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, Room } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -13,6 +13,7 @@ export const saveRoomTopic = async function (
 		_id: string;
 	},
 	sendMessage = true,
+	{ skipMatrix = false },
 ) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
@@ -23,6 +24,10 @@ export const saveRoomTopic = async function (
 	const room = await Rooms.findOneById(rid);
 
 	await Room.beforeTopicChange(room!);
+	
+	if (room.federated && !skipMatrix) {
+		await FederationMatrix.updateRoomTopic(rid, roomTopic, user._id);
+	}
 
 	const update = await Rooms.setTopicById(rid, roomTopic);
 	if (update && sendMessage) {
