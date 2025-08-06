@@ -8,11 +8,11 @@ export interface IOutboundProviderTemplate {
 	name: string;
 	language: string;
 	type: 'whatsapp' | 'email' | string;
-	category: 'AUTHENTICATION' | 'UTILITY' | 'MARKETING' | string;
+	category: 'authentication' | 'utility' | 'marketing' | string;
 	// Note: by default, the app will filter all the templates that are not APPROVED
-	status: 'APPROVED' | 'REJECTED' | 'PENDING' | string;
+	status: 'approved' | 'rejected' | 'pending' | string;
 	qualityScore: {
-		score: 'GREEN' | 'YELLOW' | 'RED' | 'UNKNOWN' | string;
+		score: 'green' | 'yellow' | 'red' | 'unknown' | string;
 		reasons: string[] | null;
 	};
 	components: Component[];
