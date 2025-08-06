@@ -23,9 +23,11 @@ const compareVersions = (version: string, message: string) => {
 	}
 };
 
+export type DeprecationLoggerNextPlannedVersion = '7.0.0' | '8.0.0';
+
 export const apiDeprecationLogger = ((logger) => {
 	return {
-		endpoint: (endpoint: string, version: string, res: Response, info = '') => {
+		endpoint: (endpoint: string, version: DeprecationLoggerNextPlannedVersion, res: Response, info = '') => {
 			const message = `The endpoint "${endpoint}" is deprecated and will be removed on version ${version}${info ? ` (${info})` : ''}`;
 
 			compareVersions(version, message);
@@ -39,7 +41,7 @@ export const apiDeprecationLogger = ((logger) => {
 		parameter: (
 			endpoint: string,
 			parameter: string,
-			version: string,
+			version: DeprecationLoggerNextPlannedVersion,
 			res: Response,
 			messageGenerator?: MessageFn<{ endpoint: string }>,
 		) => {
@@ -61,7 +63,7 @@ export const apiDeprecationLogger = ((logger) => {
 		deprecatedParameterUsage: (
 			endpoint: string,
 			parameter: string,
-			version: string,
+			version: DeprecationLoggerNextPlannedVersion,
 			res: Response,
 			messageGenerator?: MessageFn<{
 				endpoint: string;
@@ -86,13 +88,13 @@ export const apiDeprecationLogger = ((logger) => {
 
 export const methodDeprecationLogger = ((logger) => {
 	return {
-		method: (method: string, version: string, info = '') => {
+		method: (method: string, version: DeprecationLoggerNextPlannedVersion, info = '') => {
 			const message = `The method "${method}" is deprecated and will be removed on version ${version}${info ? ` (${info})` : ''}`;
 			compareVersions(version, message);
 			metrics.deprecations.inc({ type: 'deprecation', name: method, kind: 'method' });
 			logger.warn(message);
 		},
-		parameter: (method: string, parameter: string, version: string) => {
+		parameter: (method: string, parameter: string, version: DeprecationLoggerNextPlannedVersion) => {
 			const message = `The parameter "${parameter}" in the method "${method}" is deprecated and will be removed on version ${version}`;
 
 			metrics.deprecations.inc({ type: 'parameter-deprecation', name: method, params: parameter });
@@ -103,7 +105,7 @@ export const methodDeprecationLogger = ((logger) => {
 		deprecatedParameterUsage: (
 			method: string,
 			parameter: string,
-			version: string,
+			version: DeprecationLoggerNextPlannedVersion,
 			messageGenerator?: MessageFn<{
 				method: string;
 			}>,

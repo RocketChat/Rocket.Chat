@@ -4,6 +4,7 @@ import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, U
 import type { ValidateFunction } from 'ajv';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
+import type { DeprecationLoggerNextPlannedVersion } from '../../lib/server/lib/deprecationWarningLogger';
 
 export type SuccessStatusCodes = Exclude<Range<208>, Range<200>>;
 
@@ -136,7 +137,7 @@ export type SharedOptions<TMethod extends string> = (
 	validateParams?: ValidateFunction | { [key in TMethod]?: ValidateFunction };
 	authOrAnonRequired?: true;
 	deprecation?: {
-		version: string;
+		version: DeprecationLoggerNextPlannedVersion;
 		alternatives?: string[];
 	};
 };
