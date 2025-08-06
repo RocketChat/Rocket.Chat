@@ -155,7 +155,7 @@ export type PartialThis = {
 	readonly route: string;
 };
 
-type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	route: string;
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
