@@ -17,15 +17,15 @@ import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { Subscriptions, Rooms } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { applyQueryOptions } from '../../lib/cachedCollections';
-import type { IDocumentMapStore } from '../../lib/cachedCollections/DocumentMapStore';
+import { applyQueryOptions } from '../../lib/cachedStores';
+import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
+import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
@@ -69,8 +69,11 @@ const queryRoom = (
 };
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
-	const user = useReactiveValue(getUser);
 	const userId = useReactiveValue(getUserId);
+	const user = Users.use((state) => {
+		if (!userId) return null;
+		return state.get(userId) ?? null;
+	});
 	const previousUserId = useRef(userId);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
