@@ -1,4 +1,3 @@
-import Ajv from 'ajv/dist/2019';
 import { ajv } from './../Ajv';
 
 
