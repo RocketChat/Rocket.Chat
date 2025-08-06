@@ -277,7 +277,7 @@ const OutboundProviderMetadataSchema = {
 													type: { const: 'header' },
 													format: {
 														type: 'string',
-														enum: ['TEXT', 'IMAGE', 'VIDEO', 'DOCUMENT'],
+														enum: ['text', 'image', 'video', 'document'],
 													},
 													text: { type: 'string' },
 													example: {

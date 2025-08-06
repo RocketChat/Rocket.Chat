@@ -36,7 +36,7 @@ type Component = IHeaderComponent | IBodyComponent | IFooterComponent;
 interface IHeaderComponent {
 	type: 'header';
 	// For UI: if the format is other than TEXT, it should include a media link
-	format?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
+	format?: 'text' | 'image' | 'video' | 'document';
 	text?: string;
 	example?: {
 		headerText?: string[];
