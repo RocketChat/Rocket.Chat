@@ -4,8 +4,9 @@ import { route } from 'preact-router';
 import { Livechat } from '../../api';
 import CustomFields from '../../lib/customFields';
 import { parentCall } from '../../lib/parentCall';
-import { Consumer } from '../../store';
+import store, { Consumer } from '../../store';
 import Register from './component';
+import { getWidgetDepartmentId } from '../../store/Store';
 
 export class RegisterContainer extends Component {
 	registerCustomFields(customFields = {}) {
@@ -36,7 +37,7 @@ export class RegisterContainer extends Component {
 		const fields = {
 			name,
 			email,
-			department: this.getDepartment(department),
+			department: getWidgetDepartmentId(),
 		};
 
 		await dispatch({ loading: true, department });

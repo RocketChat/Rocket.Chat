@@ -2,6 +2,7 @@ import mitt from 'mitt';
 
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
+import store from '.';
 
 const { localStorage, sessionStorage } = window;
 
@@ -108,4 +109,9 @@ export default class Store {
 export const extractWidgetId = () => {
 		const params = new URLSearchParams(window.location.search);
 		return params.get('id');
+}
+
+
+export const getWidgetDepartmentId = () => {
+		return store.state.config.departments[0]?._id;
 }

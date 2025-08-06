@@ -13,6 +13,7 @@ import { createToken } from '../../lib/random';
 import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
 import { Consumer } from '../../store';
 import Chat from './component';
+import { getWidgetDepartmentId } from '../../store/Store';
 
 class ChatContainer extends Component {
 	state = {
@@ -51,12 +52,11 @@ class ChatContainer extends Component {
 
 	grantUser = async () => {
 		const { token, user, guest, dispatch } = this.props;
-
-		if (user) {
+		const visitor = { token, ...guest, department: getWidgetDepartmentId() };
+		if (user && visitor.department === user.department) {
 			return user;
 		}
 
-		const visitor = { token, ...guest };
 		const newUser = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
 	};
