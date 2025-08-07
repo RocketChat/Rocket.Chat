@@ -530,7 +530,7 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'Accounts_AllowUsernameChange', true)).status()).toBe(200);
 		});
 
-		test.fail('User without username can set initial username when username changes are disabled', async ({ page, api }) => {
+		test('User without username can set initial username when username changes are disabled', async ({ page, api }) => {
 			await doLoginStepWithUsernameSelection(page, 'samlusernoname');
 
 			await test.step('expect to be redirected to the username selection page and set the username', async () => {
