@@ -1,6 +1,6 @@
 {
-	"extends": ["@rocket.chat/eslint-config", "prettier"],
-	"plugins": ["react", "react-hooks", "prettier"],
+	"extends": ["@rocket.chat/eslint-config"],
+	"plugins": ["react", "react-hooks"],
 	"env": {
 		"jest": true
 	},

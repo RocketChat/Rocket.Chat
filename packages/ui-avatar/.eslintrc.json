@@ -4,13 +4,12 @@
 		"plugin:@typescript-eslint/eslint-recommended",
 		"@rocket.chat/eslint-config/original",
 		"@rocket.chat/eslint-config/react",
-		"prettier",
 		"plugin:anti-trojan-source/recommended",
 		"plugin:react/jsx-runtime",
 		"plugin:storybook/recommended"
 	],
 	"parser": "@typescript-eslint/parser",
-	"plugins": ["@typescript-eslint", "prettier"],
+	"plugins": ["@typescript-eslint"],
 	"rules": {
 		"func-call-spacing": "off",
 		"import/named": "error",
@@ -33,8 +32,7 @@
 		"no-unused-vars": "off",
 		"no-useless-constructor": "off",
 		"no-use-before-define": "off",
-		"prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
-		"prettier/prettier": 2
+		"prefer-arrow-callback": ["error", { "allowNamedFunctions": true }]
 	},
 	"settings": {
 		"import/resolver": {

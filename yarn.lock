@@ -7118,7 +7118,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     mongodb: "npm:6.10.0"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.6.2"
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
@@ -7136,7 +7136,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     mongodb: "npm:6.10.0"
     npm-run-all: "npm:~4.1.5"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.6.2"
     rimraf: "npm:^6.0.1"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.8.3"
@@ -7264,17 +7264,14 @@ __metadata:
     "@babel/core": "npm:^7.26.0"
     "@babel/eslint-parser": "npm:~7.25.9"
     "@types/eslint": "npm:~8.44.9"
-    "@types/prettier": "npm:^2.7.3"
     "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
     "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
-    eslint-config-prettier: "npm:~9.1.0"
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-import: "npm:~2.31.0"
     eslint-plugin-jest: "npm:~28.8.3"
     eslint-plugin-jsx-a11y: "npm:^6.10.2"
-    eslint-plugin-prettier: "npm:~5.2.6"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.6.2"
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
@@ -7412,7 +7409,7 @@ __metadata:
     jest: "npm:~30.0.5"
     normalize.css: "npm:^8.0.1"
     npm-run-all: "npm:^4.1.5"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.6.2"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
@@ -7597,7 +7594,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~8.45.0"
     mongodb: "npm:6.10.0"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.6.2"
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
@@ -7824,7 +7821,6 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/peggy-loader": "workspace:~"
-    "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/jest": "npm:~30.0.0"
     "@types/node": "npm:~22.16.1"
     "@typescript-eslint/parser": "npm:~5.58.0"
@@ -7833,8 +7829,8 @@ __metadata:
     jest: "npm:~30.0.5"
     npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
-    prettier: "npm:~3.3.3"
-    prettier-plugin-pegjs: "npm:~0.5.4"
+    prettier: "npm:~3.6.2"
+    prettier-plugin-pegjs: "npm:~2.0.2"
     rimraf: "npm:^6.0.1"
     tldts: "npm:~6.1.86"
     ts-loader: "npm:~9.5.2"
@@ -8083,12 +8079,10 @@ __metadata:
     emojione-assets: "npm:^4.5.0"
     esl: "npm:^11.2.1"
     eslint: "npm:~8.45.0"
-    eslint-config-prettier: "npm:~9.1.0"
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-import: "npm:~2.31.0"
     eslint-plugin-no-floating-promise: "npm:~2.0.0"
     eslint-plugin-playwright: "npm:~2.2.0"
-    eslint-plugin-prettier: "npm:~5.2.6"
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
     eslint-plugin-testing-library: "npm:~6.4.0"
@@ -8177,7 +8171,7 @@ __metadata:
     postcss-nested: "npm:^7.0.2"
     postcss-url: "npm:^10.1.3"
     postis: "npm:^2.2.0"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.6.2"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     proxy-from-env: "npm:^1.1.0"
@@ -8550,12 +8544,11 @@ __metadata:
   resolution: "@rocket.chat/peggy-loader@workspace:packages/peggy-loader"
   dependencies:
     "@rocket.chat/eslint-config": "workspace:~"
-    "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/node": "npm:~22.16.1"
     eslint: "npm:~8.45.0"
     npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.6.2"
     rimraf: "npm:^6.0.1"
     typescript: "npm:~5.8.3"
     webpack: "npm:~5.99.9"
@@ -8630,15 +8623,6 @@ __metadata:
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
-
-"@rocket.chat/prettier-config@npm:~0.31.25":
-  version: 0.31.25
-  resolution: "@rocket.chat/prettier-config@npm:0.31.25"
-  peerDependencies:
-    prettier: ~2.7.1
-  checksum: 10/4c0be678e7c161bf132014aa3f986b84f4ec06808b5149f967d52515fb929ee07d073b00a60e197256c8244e02b7e521be20707d6f841de4949d8f516fb8ec09
-  languageName: node
-  linkType: hard
 
 "@rocket.chat/queue-worker@workspace:ee/apps/queue-worker":
   version: 0.0.0-use.local
@@ -9105,7 +9089,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     npm-run-all: "npm:~4.1.5"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.6.2"
     rimraf: "npm:~6.0.1"
     ts-jest: "npm:~29.4.0"
     ts-patch: "npm:^3.3.0"
@@ -9311,7 +9295,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.20"
     eslint4b-prebuilt: "npm:^6.7.2"
     moment: "npm:^2.30.1"
-    prettier: "npm:~3.3.3"
+    prettier: "npm:~3.6.2"
     rc-scrollbars: "npm:^1.1.6"
     react: "npm:~18.3.1"
     react-beautiful-dnd: "npm:^13.1.1"
@@ -11959,6 +11943,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^20.5.6":
+  version: 20.19.9
+  resolution: "@types/node@npm:20.19.9"
+  dependencies:
+    undici-types: "npm:~6.21.0"
+  checksum: 10/7631e541fb3cdef57d73b626cbcf4365ae5979345ee920429f0de0acceff69dbf843d4815404b58eb3957bace3f825d0ea38889051d2d218301c5dc48ada6cff
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:~22.14.1":
   version: 22.14.1
   resolution: "@types/node@npm:22.14.1"
@@ -12025,13 +12018,6 @@ __metadata:
     "@types/node": "npm:*"
     "@types/trouter": "npm:*"
   checksum: 10/283d444f8d125427ca316b7eb86e97284c0c1f1120e5007e96f5e1fb5898b15d74c6f823e9480651810526467643401d5518e4b94d3716c200c65c75aa227538
-  languageName: node
-  linkType: hard
-
-"@types/prettier@npm:^2.7.3":
-  version: 2.7.3
-  resolution: "@types/prettier@npm:2.7.3"
-  checksum: 10/cda84c19acc3bf327545b1ce71114a7d08efbd67b5030b9e8277b347fa57b05178045f70debe1d363ff7efdae62f237260713aafc2d7217e06fc99b048a88497
   languageName: node
   linkType: hard
 
@@ -19127,17 +19113,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:~9.1.0":
-  version: 9.1.0
-  resolution: "eslint-config-prettier@npm:9.1.0"
-  peerDependencies:
-    eslint: ">=7.0.0"
-  bin:
-    eslint-config-prettier: bin/cli.js
-  checksum: 10/411e3b3b1c7aa04e3e0f20d561271b3b909014956c4dba51c878bf1a23dbb8c800a3be235c46c4732c70827276e540b6eed4636d9b09b444fd0a8e07f0fcd830
-  languageName: node
-  linkType: hard
-
 "eslint-import-resolver-node@npm:^0.3.9":
   version: 0.3.9
   resolution: "eslint-import-resolver-node@npm:0.3.9"
@@ -19259,26 +19234,6 @@ __metadata:
   peerDependencies:
     eslint: ">=8.40.0"
   checksum: 10/f17255ab715a7b57b30080d3b279b4088041bcc4733c4727ba495052ce500a5bd020b4235287da48e4251281d39039e1d55ab37904cbc4522dcf0a1ae6775b39
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-prettier@npm:~5.2.6":
-  version: 5.2.6
-  resolution: "eslint-plugin-prettier@npm:5.2.6"
-  dependencies:
-    prettier-linter-helpers: "npm:^1.0.0"
-    synckit: "npm:^0.11.0"
-  peerDependencies:
-    "@types/eslint": ">=8.0.0"
-    eslint: ">=8.0.0"
-    eslint-config-prettier: ">= 7.0.0 <10.0.0 || >=10.1.0"
-    prettier: ">=3.0.0"
-  peerDependenciesMeta:
-    "@types/eslint":
-      optional: true
-    eslint-config-prettier:
-      optional: true
-  checksum: 10/8f82a3c6bbf2db358476e745501349c8f3d5f0976f15c4af2a07dd62bb70291d29500ad09a354bb33e645c98a378d35544a92e9758aeb65530b1ec6e2dc8b8f9
   languageName: node
   linkType: hard
 
@@ -19939,13 +19894,6 @@ __metadata:
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
   checksum: 10/e21a9d8d84f53493b6aa15efc9cfd53dd5b714a1f23f67fb5dc8f574af80df889b3bce25dc081887c6d25457cce704e636395333abad896ccdec03abaf1f3f9d
-  languageName: node
-  linkType: hard
-
-"fast-diff@npm:^1.1.2":
-  version: 1.2.0
-  resolution: "fast-diff@npm:1.2.0"
-  checksum: 10/f62419b3d770f201d51c3ee8c4443b752b3ba2d548a6639026b7e09a08203ed2699a8d1fe21efcb8c5186135002d5d2916c12a687cac63785626456a92915adc
   languageName: node
   linkType: hard
 
@@ -29766,25 +29714,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-linter-helpers@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "prettier-linter-helpers@npm:1.0.0"
+"prettier-plugin-pegjs@npm:~2.0.2":
+  version: 2.0.2
+  resolution: "prettier-plugin-pegjs@npm:2.0.2"
   dependencies:
-    fast-diff: "npm:^1.1.2"
-  checksum: 10/00ce8011cf6430158d27f9c92cfea0a7699405633f7f1d4a45f07e21bf78e99895911cbcdc3853db3a824201a7c745bd49bfea8abd5fb9883e765a90f74f8392
+    "@types/node": "npm:^20.5.6"
+    prettier: "npm:^3.0.2"
+  checksum: 10/418ae45f2c41acefbd44ddf78110cb95d95b16a3f2febb291ef6a2ef58987f86072885973dd963fa2f60516a1fd578d69fe2bd09ecc5a6697e381f5bd8c8a58d
   languageName: node
   linkType: hard
 
-"prettier-plugin-pegjs@npm:~0.5.4":
-  version: 0.5.4
-  resolution: "prettier-plugin-pegjs@npm:0.5.4"
-  dependencies:
-    prettier: "npm:^2.8.4"
-  checksum: 10/d299a37e4ba03aeea4ba261a8efeec43403dbec345d192c13a9f73e7dbb1625863c4a3e6f4affd1b0b22139619b6534216cead68aa3cec56517e43b831ddacd8
-  languageName: node
-  linkType: hard
-
-"prettier@npm:^2.7.1, prettier@npm:^2.8.4":
+"prettier@npm:^2.7.1":
   version: 2.8.8
   resolution: "prettier@npm:2.8.8"
   bin:
@@ -29793,12 +29733,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:~3.3.3":
-  version: 3.3.3
-  resolution: "prettier@npm:3.3.3"
+"prettier@npm:^3.0.2, prettier@npm:~3.6.2":
+  version: 3.6.2
+  resolution: "prettier@npm:3.6.2"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/5beac1f30b5b40162532b8e2f7c3a4eb650910a2695e9c8512a62ffdc09dae93190c29db9107fa7f26d1b6c71aad3628ecb9b5de1ecb0911191099be109434d7
+  checksum: 10/1213691706bcef1371d16ef72773c8111106c3533b660b1cc8ec158bd109cdf1462804125f87f981f23c4a3dba053b6efafda30ab0114cc5b4a725606bb9ff26
   languageName: node
   linkType: hard
 
@@ -33862,7 +33802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"synckit@npm:^0.11.0, synckit@npm:^0.11.8":
+"synckit@npm:^0.11.8":
   version: 0.11.8
   resolution: "synckit@npm:0.11.8"
   dependencies:

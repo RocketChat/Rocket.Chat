@@ -1,37 +1,19 @@
 module.exports = {
-	extends: ['../original/index.js', 'plugin:prettier/recommended', 'plugin:import/typescript'],
+	extends: ['../original/index.js', 'plugin:import/typescript'],
 	parser: '@babel/eslint-parser',
-	parserOptions: {
-		requireConfigFile: false,
-	},
-	settings: {
-		'import/resolver': {
-			node: {
-				extensions: ['.js', '.ts', '.tsx'],
-			},
-		},
-	},
-	rules: {
-		'jsx-quotes': ['error', 'prefer-single'],
-	},
+	parserOptions: { requireConfigFile: false },
+	settings: { 'import/resolver': { node: { extensions: ['.js', '.ts', '.tsx'] } } },
+	rules: { 'jsx-quotes': ['error', 'prefer-single'] },
 	overrides: [
 		{
 			files: ['**/*.ts', '**/*.tsx'],
-			extends: [
-				'plugin:@typescript-eslint/recommended',
-				'plugin:@typescript-eslint/eslint-recommended',
-				'../original/index.js',
-				'plugin:prettier/recommended',
-			],
+			extends: ['plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/eslint-recommended', '../original/index.js'],
 			parser: '@typescript-eslint/parser',
 			parserOptions: {
 				sourceType: 'module',
 				ecmaVersion: 2018,
 				warnOnUnsupportedTypeScriptVersion: false,
-				ecmaFeatures: {
-					experimentalObjectRestSpread: true,
-					legacyDecorators: true,
-				},
+				ecmaFeatures: { experimentalObjectRestSpread: true, legacyDecorators: true },
 			},
 			plugins: ['@typescript-eslint', 'anti-trojan-source'],
 			rules: {
@@ -53,49 +35,16 @@ module.exports = {
 				'@typescript-eslint/naming-convention': [
 					'error',
 					{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
-					{
-						selector: ['variable'],
-						format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
-						leadingUnderscore: 'allowSingleOrDouble',
-					},
-					{
-						selector: ['function'],
-						format: ['camelCase', 'PascalCase'],
-						leadingUnderscore: 'allowSingleOrDouble',
-					},
-					{
-						selector: 'parameter',
-						format: null,
-						filter: {
-							regex: '^Story$',
-							match: true,
-						},
-					},
-					{
-						selector: 'parameter',
-						format: ['camelCase'],
-						modifiers: ['unused'],
-						leadingUnderscore: 'require',
-					},
-					{
-						selector: 'interface',
-						format: ['PascalCase'],
-						custom: {
-							regex: '^I[A-Z]',
-							match: true,
-						},
-					},
+					{ selector: ['variable'], format: ['camelCase', 'UPPER_CASE', 'PascalCase'], leadingUnderscore: 'allowSingleOrDouble' },
+					{ selector: ['function'], format: ['camelCase', 'PascalCase'], leadingUnderscore: 'allowSingleOrDouble' },
+					{ selector: 'parameter', format: null, filter: { regex: '^Story$', match: true } },
+					{ selector: 'parameter', format: ['camelCase'], modifiers: ['unused'], leadingUnderscore: 'require' },
+					{ selector: 'interface', format: ['PascalCase'], custom: { regex: '^I[A-Z]', match: true } },
 				],
 				'@typescript-eslint/no-dupe-class-members': 'error',
 				'@typescript-eslint/no-explicit-any': 'off',
 				'@typescript-eslint/no-redeclare': 'error',
-				'@typescript-eslint/no-unused-vars': [
-					'error',
-					{
-						argsIgnorePattern: '^_',
-						ignoreRestSiblings: true,
-					},
-				],
+				'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', ignoreRestSiblings: true }],
 				'@typescript-eslint/prefer-optional-chain': 'warn',
 				'anti-trojan-source/no-bidi': 'error',
 				'func-call-spacing': 'off',
@@ -111,25 +60,9 @@ module.exports = {
 				'no-use-before-define': 'off',
 				'no-useless-constructor': 'off',
 			},
-			env: {
-				browser: true,
-				commonjs: true,
-				es6: true,
-				node: true,
-			},
-			settings: {
-				'import/resolver': {
-					node: {
-						extensions: ['.js', '.ts', '.tsx'],
-					},
-				},
-			},
+			env: { browser: true, commonjs: true, es6: true, node: true },
+			settings: { 'import/resolver': { node: { extensions: ['.js', '.ts', '.tsx'] } } },
 		},
-		{
-			files: ['**/*.d.ts'],
-			rules: {
-				'@typescript-eslint/naming-convention': 'off',
-			},
-		},
+		{ files: ['**/*.d.ts'], rules: { '@typescript-eslint/naming-convention': 'off' } },
 	],
 };

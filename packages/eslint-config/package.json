@@ -6,17 +6,13 @@
 		"@babel/core": "^7.26.0",
 		"@babel/eslint-parser": "~7.25.9",
 		"@types/eslint": "~8.44.9",
-		"@types/prettier": "^2.7.3",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
 		"@typescript-eslint/parser": "~5.60.1",
 		"eslint": "~8.45.0",
-		"eslint-config-prettier": "~9.1.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
 		"eslint-plugin-import": "~2.31.0",
 		"eslint-plugin-jest": "~28.8.3",
-		"eslint-plugin-jsx-a11y": "^6.10.2",
-		"eslint-plugin-prettier": "~5.2.6",
-		"prettier": "~3.3.3"
+		"eslint-plugin-jsx-a11y": "^6.10.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js .",
@@ -36,6 +32,7 @@
 		"react.js"
 	],
 	"devDependencies": {
+		"prettier": "~3.6.2",
 		"typescript": "~5.8.3"
 	},
 	"volta": {

@@ -4,13 +4,12 @@
 		"plugin:@typescript-eslint/eslint-recommended",
 		"@rocket.chat/eslint-config/original",
 		"@rocket.chat/eslint-config/react",
-		"prettier",
 		"plugin:anti-trojan-source/recommended",
 		"plugin:react/jsx-runtime",
 		"plugin:storybook/recommended"
 	],
 	"parser": "@typescript-eslint/parser",
-	"plugins": ["@typescript-eslint", "react", "react-hooks", "prettier"],
+	"plugins": ["@typescript-eslint", "react", "react-hooks"],
 	"rules": {
 		"import/named": "error",
 		"import/order": [
@@ -26,7 +25,6 @@
 		"jsx-quotes": ["error", "prefer-single"],
 		"new-cap": ["error"],
 		"prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
-		"prettier/prettier": 2,
 		"react/display-name": "error",
 		"react/jsx-uses-vars": "error",
 		"react/jsx-no-undef": "error",
