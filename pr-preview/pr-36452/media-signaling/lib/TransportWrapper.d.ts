@@ -1,13 +1,13 @@
-import type { MediaSignalAnswer, MediaSignalHangup, AgentMediaSignalType, MediaSignalBody, AgentMediaSignal } from '../definition/MediaSignal';
-import type { MediaSignalAgentTransport } from '../definition/MediaSignalTransport';
+import type { CallAnswer, CallHangupReason } from '../definition';
+import type { MediaSignalTransport, ClientMediaSignalType, ClientMediaSignalBody, ClientMediaSignal } from '../definition/signals';
 export declare class MediaSignalTransportWrapper {
     readonly contractId: string;
     private sendSignalFn;
-    constructor(contractId: string, sendSignalFn: MediaSignalAgentTransport);
-    sendToServer<T extends AgentMediaSignalType>(callId: string, type: T, signal: MediaSignalBody<T>): void;
+    constructor(contractId: string, sendSignalFn: MediaSignalTransport<ClientMediaSignal>);
+    sendToServer<T extends ClientMediaSignalType>(callId: string, type: T, signal: ClientMediaSignalBody<T>): void;
     sendError(callId: string, errorCode: string): void;
-    answer(callId: string, answer: MediaSignalAnswer['answer']): void;
-    hangup(callId: string, reason: MediaSignalHangup['reason']): void;
-    sendSignal(signal: AgentMediaSignal): void;
+    answer(callId: string, answer: CallAnswer): void;
+    hangup(callId: string, reason: CallHangupReason): void;
+    sendSignal(signal: ClientMediaSignal): void;
 }
 //# sourceMappingURL=TransportWrapper.d.ts.map

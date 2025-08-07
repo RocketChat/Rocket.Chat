@@ -23,8 +23,8 @@ class UserMediaCallAgent extends BasicAgent_1.UserBasicAgent {
         console.log('UserAgent.setRemoteDescription');
         await this.sendSignal({
             callId: this.callId,
-            contractId: this.contractId,
-            type: 'sdp',
+            toContractId: this.contractId,
+            type: 'remote-sdp',
             sdp,
         });
     }
@@ -38,7 +38,7 @@ class UserMediaCallAgent extends BasicAgent_1.UserBasicAgent {
         // #ToDo: this function may be called multiple times for the same call until an offer is provided; look into how to handle that
         await this.sendSignal({
             callId: this.callId,
-            contractId: this.contractId,
+            toContractId: this.contractId,
             type: 'request-offer',
             ...params,
         });

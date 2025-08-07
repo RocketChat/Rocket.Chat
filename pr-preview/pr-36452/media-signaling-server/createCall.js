@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCall = createCall;
 const models_1 = require("@rocket.chat/models");
 const Manager_1 = require("./agents/Manager");
-async function createCall(caller, callee) {
+async function createCall(caller, callee, requestedCallId) {
     // The caller must always have a contract to create the call
     if (!caller.contractId) {
         throw new Error('invalid-caller');
@@ -24,6 +24,7 @@ async function createCall(caller, callee) {
         createdAt: new Date(),
         caller,
         callee,
+        ...(requestedCallId && { callerRequestedId: requestedCallId }),
     };
     const insertResult = await models_1.MediaCalls.insertOne(call);
     if (!insertResult.insertedId) {

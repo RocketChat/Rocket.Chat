@@ -1,7 +1,8 @@
 import type { Emitter } from '@rocket.chat/emitter';
 import type { CallEvents } from './CallEvents';
+export type CallActorType = 'user' | 'sip';
 export type CallContact = {
-    type?: 'user' | 'sip';
+    type?: CallActorType;
     id?: string;
     displayName?: string;
     username?: string;
@@ -13,6 +14,7 @@ export type CallRole = 'caller' | 'callee';
 export type CallService = 'webrtc';
 export type CallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 export type CallHangupReason = 'normal' | 'remote' | 'rejected' | 'unavailable' | 'timeout' | 'signaling-error' | 'service-error' | 'media-error' | 'error';
+export type CallAnswer = 'accept' | 'reject' | 'ack' | 'unavailable';
 export type CallNotification = 'accepted' | 'hangup';
 export interface IClientMediaCallData {
     callId: string;

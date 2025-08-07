@@ -61,18 +61,29 @@ export class MediaSignalingSession extends Emitter {
             if (this.isSignalTargetingAnotherSession(signal) || this.isCallIgnored(signal.callId)) {
                 return;
             }
-            const call = yield this.getOrCreateCall(signal.callId);
+            const call = yield this.getOrCreateCallBySignal(signal);
             yield call.processSignal(signal);
         });
     }
-    registerOutboundCall(callId, contact) {
+    startCall(calleeType, calleeId, contactInfo) {
         return __awaiter(this, void 0, void 0, function* () {
-            const call = yield this.getOrCreateCall(callId);
-            return call.initializeOutboundCall(contact);
+            const callId = this.createTemporaryCallId();
+            const call = yield this.createCall(callId);
+            yield call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
         });
     }
+    createTemporaryCallId() {
+        const callId = createRandomToken(20);
+        if (this.knownCalls.has(callId)) {
+            return this.createTemporaryCallId();
+        }
+        return callId;
+    }
     isSignalTargetingAnotherSession(signal) {
-        if ('sessionId' in signal && signal.sessionId && signal.sessionId !== this._sessionId) {
+        if (signal.type === 'new' || signal.type === 'notification') {
+            return false;
+        }
+        if (signal.toContractId && signal.toContractId !== this._sessionId) {
             return true;
         }
         return false;
@@ -86,12 +97,30 @@ export class MediaSignalingSession extends Emitter {
             this.knownCalls.delete(callId);
         }
     }
-    getOrCreateCall(callId) {
+    getOrCreateCall(callId, localCallId) {
         return __awaiter(this, void 0, void 0, function* () {
             const existingCall = this.knownCalls.get(callId);
             if (existingCall) {
                 return existingCall;
             }
+            const localCall = localCallId && this.knownCalls.get(localCallId);
+            if (localCall) {
+                this.knownCalls.set(callId, localCall);
+                return localCall;
+            }
+            return this.createCall(callId);
+        });
+    }
+    getOrCreateCallBySignal(signal) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (signal.type === 'new') {
+                return this.getOrCreateCall(signal.callId, signal.requestedCallId);
+            }
+            return this.getOrCreateCall(signal.callId);
+        });
+    }
+    createCall(callId) {
+        return __awaiter(this, void 0, void 0, function* () {
             const config = {
                 transporter: this.transporter,
                 processorFactories: this.config.processorFactories,
