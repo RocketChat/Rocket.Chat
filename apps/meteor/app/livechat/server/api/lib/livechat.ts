@@ -169,7 +169,8 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			historyMonitorType: initSettings.Livechat_history_monitor_type,
 			forceAcceptDataProcessingConsent: initSettings.Livechat_force_accept_data_processing_consent,
 			showConnecting: initSettings.Livechat_Show_Connecting,
-			agentHiddenInfo: initExternalSettings.omnichannelOnline_ShowAgentInformation === false,
+			agentHiddenInfo: initExternalSettings.omnichannelOnlineShowAgentInformation === false,
+			showAgentEmail: initExternalSettings.omnichannelOnlineShowAgentEmail,
 			clearLocalStorageWhenChatEnded: initSettings.Livechat_clear_local_storage_when_chat_ended,
 			limitTextLength:
 				initExternalSettings.omnichannelOnlineMessageCharacterLimitEnabled &&

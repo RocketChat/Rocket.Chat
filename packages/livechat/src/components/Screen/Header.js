@@ -1,4 +1,4 @@
-import { Component } from 'preact';
+import { Component, Fragment } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import MinimizeIcon from '../../icons/arrowDown.svg';
@@ -11,16 +11,27 @@ import Alert from '../Alert';
 import { Avatar } from '../Avatar';
 import Header from '../Header';
 import Tooltip from '../Tooltip';
+import store from '../../store';
 
 class ScreenHeader extends Component {
+	showAgentInfo = () => {
+		const { config: { settings: { agentHiddenInfo } = {} } = {} } = store.state;
+		return !agentHiddenInfo;
+	};
+
+	showAgentEmail = () => {
+		const { config: { settings: { showAgentEmail } = {} } = {} } = store.state;
+		return showAgentEmail;
+	};
+
 	largeHeader = () => {
 		const { agent } = this.props;
-		return !!(agent && agent.email && agent.phone);
+		return !!(agent && agent.email && agent.phone && this.showAgentInfo());
 	};
 
 	headerTitle = (t) => {
 		const { agent, queueInfo, title } = this.props;
-		if (agent && agent.name) {
+		if (agent && agent.name && this.showAgentInfo()) {
 			return agent.name;
 		}
 
@@ -61,7 +72,7 @@ class ScreenHeader extends Component {
 			}
 			large={this.largeHeader()}
 		>
-			{agent && agent.avatar && (
+			{agent && agent.avatar && this.showAgentInfo() && (
 				<Header.Picture>
 					<Avatar
 						src={agent.avatar.src}
@@ -75,8 +86,12 @@ class ScreenHeader extends Component {
 
 			<Header.Content>
 				<Header.Title>{this.headerTitle(t)}</Header.Title>
-				{agent && agent.email && <Header.SubTitle>{agent.email}</Header.SubTitle>}
-				{agent && agent.phone && <Header.CustomField>{agent.phone}</Header.CustomField>}
+				{this.showAgentInfo() && (
+					<Fragment>
+						{agent && agent.email && this.showAgentEmail() && <Header.SubTitle>{agent.email}</Header.SubTitle>}
+						{agent && agent.phone && <Header.CustomField>{agent.phone}</Header.CustomField>}
+					</Fragment>
+				)}
 			</Header.Content>
 			<Tooltip.Container>
 				<Header.Actions>

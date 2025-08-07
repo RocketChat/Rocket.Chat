@@ -326,12 +326,10 @@ export class Users extends Base {
 				customFields: 1,
 				status: 1,
 				livechat: 1,
+				emails: 1
 			},
 		};
 
-		if (settings.get('Livechat_show_agent_email')) {
-			options.fields.emails = 1;
-		}
 
 		return this.findOne(query, options);
 	}
