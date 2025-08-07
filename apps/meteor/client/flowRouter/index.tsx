@@ -1,3 +1,4 @@
+import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type {
 	LocationPathname,
@@ -5,6 +6,7 @@ import type {
 	RouteName,
 	RouteObject,
 	RouteParameters,
+	RouterContextValue,
 	SearchParameters,
 	To,
 } from '@rocket.chat/ui-contexts';
@@ -13,6 +15,7 @@ import page, { Context } from './page';
 import type { RouteOptions } from './route';
 import Route from './route';
 import { appLayout } from '../lib/appLayout';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 type Current = Readonly<{
 	path: string;
@@ -23,52 +26,35 @@ type Current = Readonly<{
 	queryParams: URLSearchParams;
 }>;
 
-class Router {
+export class Router implements RouterContextValue {
 	private readonly pathRegExp = /(:[\w\(\)\\\+\*\.\?\[\]\-]+)+/g;
 
 	private readonly queryRegExp = /\?([^\/\r\n].*)/;
 
-	private _current: Current | undefined = undefined;
+	private current: Current | undefined = undefined;
 
-	private readonly _specialChars = ['/', '%', '+'];
+	private readonly specialChars = ['/', '%', '+'];
 
-	private _encodeParam(param: string) {
-		const paramArr = param.split('');
-		let _param = '';
-		for (const p of paramArr) {
-			if (this._specialChars.includes(p)) {
-				_param += encodeURIComponent(encodeURIComponent(p));
-			} else {
-				try {
-					_param += encodeURIComponent(p);
-				} catch (e) {
-					_param += p;
-				}
-			}
-		}
-		return _param;
-	}
+	private initialized = false;
 
-	private _initialized = false;
+	private routes = new Set<Route>();
 
-	private _routes = new Set<Route>();
-
-	private _routesMap = new Map<string, Route>();
+	private routesByPathdef = new Map<string, Route>();
 
 	private safeToRun = 0;
 
-	private readonly _basePath = window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+	private readonly basePath = window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
 
-	private _oldRouteChain: (Route | undefined)[] = [];
+	private oldRouteChain: (Route | undefined)[] = [];
 
 	constructor() {
-		this.route('*', {});
-		this._updateCallbacks();
+		this.registerRoute('*', {});
+		this.updateCallbacks();
 	}
 
 	private emitter = new Emitter<{ pathChanged: void }>();
 
-	route(pathDef: string, options: RouteOptions) {
+	private registerRoute(pathDef: string, options: RouteOptions) {
 		if (!/^\//.test(pathDef) && pathDef !== '*') {
 			throw new Error("route's path must start with '/'");
 		}
@@ -76,11 +62,11 @@ class Router {
 		const route = new Route(pathDef, options);
 
 		route._actionHandle = (context: Context) => {
-			const oldRoute = this._current?.route;
-			this._oldRouteChain.push(oldRoute);
+			const oldRoute = this.current?.route;
+			this.oldRouteChain.push(oldRoute);
 
 			const queryParams = new URLSearchParams(context.querystring);
-			this._current = Object.freeze({
+			this.current = Object.freeze({
 				path: context.path,
 				params: new Map(Object.entries<string>(context.params)),
 				route,
@@ -89,22 +75,22 @@ class Router {
 				queryParams,
 			});
 
-			this._invalidateTracker();
+			this.refresh();
 		};
 
-		this._routes.add(route);
+		this.routes.add(route);
 		if (options.name) {
-			this._routesMap.set(options.name, route);
+			this.routesByPathdef.set(options.name, route);
 		}
 
-		this._updateCallbacks();
+		this.updateCallbacks();
 
 		return route;
 	}
 
-	path(pathDef: string, params: Record<string, string | null> = {}, queryParams: Record<string, string | null> = {}): string {
-		if (this._routesMap.has(pathDef)) {
-			pathDef = this._routesMap.get(pathDef)?.pathDef ?? pathDef;
+	private encodePath(pathDef: string, params: Record<string, string | null> = {}, queryParams: Record<string, string | null> = {}): string {
+		if (this.routesByPathdef.has(pathDef)) {
+			pathDef = this.routesByPathdef.get(pathDef)?.pathDef ?? pathDef;
 		}
 
 		if (this.queryRegExp.test(pathDef)) {
@@ -117,8 +103,8 @@ class Router {
 
 		let path = '';
 
-		if (this._basePath) {
-			path += `/${this._basePath}/`;
+		if (this.basePath) {
+			path += `/${this.basePath}/`;
 		}
 
 		path += pathDef.replace(this.pathRegExp, (_key) => {
@@ -127,7 +113,7 @@ class Router {
 			key = key.replace(/[\+\*\?]+/g, '');
 
 			if (params[key]) {
-				return this._encodeParam(`${params[key]}`);
+				return this.encodeParam(`${params[key]}`);
 			}
 
 			return '';
@@ -148,21 +134,34 @@ class Router {
 		return path;
 	}
 
-	get current() {
-		return this._current;
+	private encodeParam(param: string) {
+		const paramArr = param.split('');
+		let buffer = '';
+		for (const p of paramArr) {
+			if (this.specialChars.includes(p)) {
+				buffer += encodeURIComponent(encodeURIComponent(p));
+			} else {
+				try {
+					buffer += encodeURIComponent(p);
+				} catch (e) {
+					buffer += p;
+				}
+			}
+		}
+		return buffer;
 	}
 
-	initialize() {
-		if (this._initialized) {
+	private initialize() {
+		if (this.initialized) {
 			throw new Error('FlowRouter is already initialized');
 		}
 
-		this._updateCallbacks();
+		this.updateCallbacks();
 
-		page.setBase(this._basePath);
+		page.setBase(this.basePath);
 
 		page.start();
-		this._initialized = true;
+		this.initialized = true;
 
 		queueMicrotask(() => {
 			this.emitter.emit('pathChanged');
@@ -170,9 +169,11 @@ class Router {
 	}
 
 	private refresh() {
-		if (!this._current?.route) return;
+		this.safeToRun++;
 
-		const currentContext = this._current;
+		if (!this.current?.route) return;
+
+		const currentContext = this.current;
 		const { route } = currentContext;
 
 		if (this.safeToRun === 0) {
@@ -184,7 +185,7 @@ class Router {
 			isRouteChange = false;
 		}
 
-		this._oldRouteChain = [];
+		this.oldRouteChain = [];
 
 		if (!isRouteChange) {
 			this.emitter.emit('pathChanged');
@@ -198,17 +199,12 @@ class Router {
 		this.safeToRun--;
 	}
 
-	private _invalidateTracker() {
-		this.safeToRun++;
-		this.refresh();
-	}
-
-	_updateCallbacks() {
+	private updateCallbacks() {
 		page.callbacks = [];
 
 		let catchAll: Route | null = null;
 
-		for (const route of this._routes) {
+		for (const route of this.routes) {
 			if (route.pathDef === '*') {
 				catchAll = route;
 			} else {
@@ -221,7 +217,7 @@ class Router {
 		}
 	}
 
-	// public methods
+	// router context implementation
 
 	readonly subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 		const unsubscribe = this.emitter.on('pathChanged', onRouteChange);
@@ -268,12 +264,12 @@ class Router {
 
 		if ('pattern' in to) {
 			const { pattern, params = {}, search = {} } = to;
-			return this.path(pattern, params, search) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+			return this.encodePath(pattern, params, search) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
 		}
 
 		if ('name' in to) {
 			const { name, params = {}, search = {} } = to;
-			return this.path(name, params, search) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+			return this.encodePath(name, params, search) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
 		}
 
 		throw new Error('Invalid route');
@@ -303,8 +299,8 @@ class Router {
 	};
 
 	private updateRoutes() {
-		if (this._initialized) {
-			this._updateCallbacks();
+		if (this.initialized) {
+			this.updateCallbacks();
 			if (this.current) page.dispatch(new Context(this.current.path));
 			return;
 		}
@@ -314,7 +310,7 @@ class Router {
 
 	readonly defineRoutes = (routes: readonly RouteObject[]) => {
 		const flowRoutes = routes.map((route) =>
-			this.route(route.path, {
+			this.registerRoute(route.path, {
 				name: route.id,
 				action: () => appLayout.render(<>{route.element}</>),
 			}),
@@ -324,15 +320,17 @@ class Router {
 
 		return () => {
 			flowRoutes.forEach((flowRoute) => {
-				this._routes.add(flowRoute);
+				this.routes.add(flowRoute);
 				if ('name' in flowRoute && flowRoute.name) {
-					this._routesMap.delete(flowRoute.name);
+					this.routesByPathdef.delete(flowRoute.name);
 				}
 			});
 
 			this.updateRoutes();
 		};
 	};
-}
 
-export default Router;
+	readonly getRoomRoute = (roomType: RoomType, routeData: RoomRouteData) => {
+		return { path: roomCoordinator.getRouteLink(roomType, routeData) || '/' };
+	};
+}

@@ -75,8 +75,8 @@ class Page {
 
 	stop() {
 		if (!this.running) return;
-		this.current = '';
 		this.running = false;
+		this.current = '';
 		document.removeEventListener('click', this.onclick, false);
 		window.removeEventListener('popstate', this.onpopstate, false);
 	}
