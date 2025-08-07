@@ -8,14 +8,13 @@ import type {
 	SearchParameters,
 	To,
 } from '@rocket.chat/ui-contexts';
-import { Tracker } from 'meteor/tracker';
 
 import page, { Context } from './page';
 import type { RouteOptions } from './route';
 import Route from './route';
 import { appLayout } from '../lib/appLayout';
 
-export type Current = Readonly<{
+type Current = Readonly<{
 	path: string;
 	params: Map<string, string>;
 	route: Route;
@@ -28,8 +27,6 @@ class Router {
 	private readonly pathRegExp = /(:[\w\(\)\\\+\*\.\?\[\]\-]+)+/g;
 
 	private readonly queryRegExp = /\?([^\/\r\n].*)/;
-
-	private readonly _tracker = this._buildTracker();
 
 	private _current: Current | undefined = undefined;
 
@@ -151,10 +148,6 @@ class Router {
 		return path;
 	}
 
-	private go(pathDef: string, { reload = false }: { reload?: boolean } = {}): void {
-		page.show(this.path(pathDef), { reload });
-	}
-
 	get current() {
 		return this._current;
 	}
@@ -176,66 +169,38 @@ class Router {
 		});
 	}
 
-	private _buildTracker() {
-		const tracker = Tracker.autorun(() => {
-			if (!this._current?.route) {
-				return;
-			}
+	private refresh() {
+		if (!this._current?.route) return;
 
-			const currentContext = this._current;
-			const { route } = currentContext;
+		const currentContext = this._current;
+		const { route } = currentContext;
 
-			if (this.safeToRun === 0) {
-				throw new Error("You can't use reactive data sources like Session inside the `.subscriptions` method!");
-			}
+		if (this.safeToRun === 0) {
+			throw new Error("You can't use reactive data sources like Session inside the `.subscriptions` method!");
+		}
 
-			Tracker.nonreactive(() => {
-				let isRouteChange = currentContext.oldRoute !== currentContext.route;
-				if (!currentContext.oldRoute) {
-					isRouteChange = false;
-				}
+		let isRouteChange = currentContext.oldRoute !== currentContext.route;
+		if (!currentContext.oldRoute) {
+			isRouteChange = false;
+		}
 
-				this._oldRouteChain = [];
+		this._oldRouteChain = [];
 
-				if (!isRouteChange) {
-					this.emitter.emit('pathChanged');
-				}
-				route.action();
+		if (!isRouteChange) {
+			this.emitter.emit('pathChanged');
+		}
+		route.action();
 
-				Tracker.afterFlush(() => {
-					this.emitter.emit('pathChanged');
-				});
-			});
-
-			this.safeToRun--;
+		queueMicrotask(() => {
+			this.emitter.emit('pathChanged');
 		});
 
-		return tracker;
+		this.safeToRun--;
 	}
-
-	private _nextPath: string | undefined;
 
 	private _invalidateTracker() {
 		this.safeToRun++;
-		this._tracker.invalidate();
-
-		if (!Tracker.currentComputation) {
-			try {
-				Tracker.flush();
-			} catch (ex) {
-				if (!/Tracker\.flush while flushing/.test((ex as Error).message)) {
-					return;
-				}
-
-				queueMicrotask(() => {
-					const path = this._nextPath;
-					if (!path) return;
-
-					delete this._nextPath;
-					this.go(path, { reload: true });
-				});
-			}
-		}
+		this.refresh();
 	}
 
 	_updateCallbacks() {
