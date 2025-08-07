@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
+import { isURL } from '../../../../lib/utils/isURL';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
@@ -66,8 +67,13 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const url = newAvatarSource;
 
 	const handleAvatarFromUrlChange = (event: ChangeEvent<HTMLInputElement>): void => {
-		setAvatarUrlError(undefined);
-		setAvatarFromUrl(event.currentTarget.value);
+		const { value } = event.currentTarget;
+		setAvatarFromUrl(value);
+		if (isURL(value) || !value) {
+			setAvatarUrlError(undefined);
+		} else {
+			setAvatarUrlError(t('error-invalid-image-url'));
+		}
 	};
 
 	const handleSelectSuggestion = useCallback(
@@ -104,7 +110,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<IconButton
 							icon='permalink'
 							secondary
-							disabled={disabled || !avatarFromUrl}
+							disabled={disabled || !avatarFromUrl || !!avatarUrlError}
 							title={t('Add_URL')}
 							mi={4}
 							onClick={handleAddUrl}
