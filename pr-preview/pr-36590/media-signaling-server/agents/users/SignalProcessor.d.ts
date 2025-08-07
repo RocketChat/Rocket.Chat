@@ -1,10 +1,10 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { AgentMediaSignal } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { UserMediaCallAgent } from './Agent';
 export declare class UserAgentSignalProcessor {
     private readonly agent;
     constructor(agent: UserMediaCallAgent);
-    processSignal(signal: AgentMediaSignal, call: IMediaCall): Promise<void>;
+    processSignal(signal: ClientMediaSignal, call: IMediaCall): Promise<void>;
     private saveLocalDescription;
     private processAnswer;
     private processReject;

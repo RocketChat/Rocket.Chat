@@ -1,10 +1,9 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
 import type { IServiceProcessorFactoryList } from '../definition';
-import type { IWebRTCProcessor } from '../definition/IWebRTCProcessor';
-import type { MediaSignal } from '../definition/MediaSignal';
-import type { IClientMediaCall, CallEvents, CallContact, CallRole, CallState, CallService, CallHangupReason } from '../definition/call';
-import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
+import type { IClientMediaCall, CallEvents, CallContact, CallRole, CallState, CallService, CallHangupReason, CallActorType } from '../definition/call';
+import type { IWebRTCProcessor, MediaStreamFactory } from '../definition/services';
+import type { ServerMediaSignal, ServerMediaSignalNewCall, ServerMediaSignalRemoteSDP, ServerMediaSignalRequestOffer } from '../definition/signals/server/MediaSignal';
 export interface IClientMediaCallConfig {
     transporter: MediaSignalTransportWrapper;
     processorFactories: IServiceProcessorFactoryList;
@@ -13,7 +12,7 @@ export interface IClientMediaCallConfig {
 type ClientState = 'pending' | 'accepting' | 'accepted' | 'has-offer' | 'has-answer' | 'active' | 'hangup';
 export declare class ClientMediaCall implements IClientMediaCall {
     private readonly config;
-    readonly callId: string;
+    get callId(): string;
     readonly emitter: Emitter<CallEvents>;
     private _role;
     get role(): CallRole;
@@ -35,12 +34,18 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private acknowledged;
     private earlySignals;
     private stateTimeoutHandlers;
+    private remoteCallId;
+    private localCallId;
     constructor(config: IClientMediaCallConfig, callId: string);
     initializeOutboundCall(contact: CallContact): Promise<void>;
-    initializeRemoteCall(signal: MediaSignal<'new'>): Promise<void>;
+    requestCall(callee: {
+        type: CallActorType;
+        id: string;
+    }, contactInfo?: CallContact): Promise<void>;
+    initializeRemoteCall(signal: ServerMediaSignalNewCall): Promise<void>;
     getClientState(): ClientState;
     getRemoteMediaStream(): MediaStream;
-    processSignal(signal: MediaSignal): Promise<void>;
+    processSignal(signal: ServerMediaSignal): Promise<void>;
     accept(): Promise<void>;
     reject(): Promise<void>;
     hangup(reason?: CallHangupReason): Promise<void>;
@@ -49,11 +54,11 @@ export declare class ClientMediaCall implements IClientMediaCall {
     isOver(): boolean;
     private changeState;
     private changeContact;
-    protected processOfferRequest(signal: MediaSignal<'request-offer'>): Promise<void>;
+    protected processOfferRequest(signal: ServerMediaSignalRequestOffer): Promise<void>;
     protected shouldIgnoreWebRTC(): boolean;
-    protected processAnswerRequest(signal: MediaSignal<'sdp'>): Promise<void>;
-    protected processRemoteSDP(signal: MediaSignal<'sdp'>): Promise<void>;
-    protected deliverSdp(sdp: {
+    protected processAnswerRequest(signal: ServerMediaSignalRemoteSDP): Promise<void>;
+    protected processRemoteSDP(signal: ServerMediaSignalRemoteSDP): Promise<void>;
+    protected deliverSdp(data: {
         sdp: RTCSessionDescriptionInit;
     }): Promise<void>;
     protected rejectAsUnavailable(): Promise<void>;

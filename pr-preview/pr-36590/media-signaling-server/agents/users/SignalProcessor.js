@@ -19,7 +19,7 @@ class UserAgentSignalProcessor {
         // 2. the call has not been accepted yet and the signal came from a valid sesison from the callee
         const params = { channel, call };
         switch (signal.type) {
-            case 'sdp':
+            case 'local-sdp':
                 await this.saveLocalDescription(params, signal.sdp);
                 break;
             case 'error':

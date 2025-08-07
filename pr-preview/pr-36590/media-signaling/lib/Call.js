@@ -20,6 +20,10 @@ const TIMEOUT_TO_ACCEPT = 30000;
 const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
 const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
 export class ClientMediaCall {
+    get callId() {
+        var _a;
+        return (_a = this.remoteCallId) !== null && _a !== void 0 ? _a : this.localCallId;
+    }
     get role() {
         return this._role;
     }
@@ -40,7 +44,8 @@ export class ClientMediaCall {
         this.webrtcProcessor = null;
         this.emitter = new Emitter();
         this.config.transporter = config.transporter;
-        this.callId = callId;
+        this.localCallId = callId;
+        this.remoteCallId = null;
         this.acceptedLocally = false;
         this.endedLocally = false;
         this.hasRemoteData = false;
@@ -79,6 +84,19 @@ export class ClientMediaCall {
             }
         });
     }
+    // Initialize an outbound call with the callee information and send a call request to the server
+    requestCall(callee, contactInfo) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.initialized) {
+                return;
+            }
+            this.config.transporter.sendToServer(this.callId, 'request-call', {
+                callee,
+                supportedServices: Object.keys(this.config.processorFactories),
+            });
+            return this.initializeOutboundCall(Object.assign(Object.assign({}, contactInfo), callee));
+        });
+    }
     // initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call
     initializeRemoteCall(signal) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -86,6 +104,7 @@ export class ClientMediaCall {
                 return;
             }
             console.log('call.initializeRemoteCall', signal.callId);
+            this.remoteCallId = signal.callId;
             const wasInitialized = this.initialized;
             this.initialized = true;
             this.hasRemoteData = true;
@@ -150,23 +169,24 @@ export class ClientMediaCall {
             if (this.isOver()) {
                 return;
             }
-            console.log('ClientMediaCall.processSignal', signal.type);
-            if (signal.type === 'new') {
+            const { type: signalType } = signal;
+            console.log('ClientMediaCall.processSignal', signalType);
+            if (signalType === 'new') {
                 return this.initializeRemoteCall(signal);
             }
             if (!this.hasRemoteData) {
                 this.earlySignals.add(signal);
                 return;
             }
-            switch (signal.type) {
-                case 'sdp':
+            switch (signalType) {
+                case 'remote-sdp':
                     return this.processRemoteSDP(signal);
                 case 'request-offer':
                     return this.processOfferRequest(signal);
                 case 'notification':
                     return this.processNotification(signal);
             }
-            console.log('signal ignored, as its type is not handled by this agent', signal.type);
+            console.log('signal ignored, as its type is not handled by this agent', signalType);
         });
     }
     accept() {
@@ -254,7 +274,7 @@ export class ClientMediaCall {
     processOfferRequest(signal) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('call.processOfferRequest');
-            if (!signal.contractId) {
+            if (!signal.toContractId) {
                 console.error('Received an untargeted offer request.');
                 return;
             }
@@ -307,7 +327,7 @@ export class ClientMediaCall {
     processRemoteSDP(signal) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Call.processRemoteSDP');
-            if (!signal.contractId) {
+            if (!signal.toContractId) {
                 console.error('Received untargeted SDP signal');
                 return;
             }
@@ -322,11 +342,11 @@ export class ClientMediaCall {
             this.hasRemoteDescription = true;
         });
     }
-    deliverSdp(sdp) {
+    deliverSdp(data) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Call.deliverSdp');
             this.hasLocalDescription = true;
-            return this.config.transporter.sendToServer(this.callId, 'sdp', sdp);
+            return this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
         });
     }
     rejectAsUnavailable() {

@@ -22,6 +22,7 @@ class UserNewCallAgent extends BasicAgent_1.UserBasicAgent {
             kind: call.kind,
             role: this.role,
             contact,
+            ...(this.role === 'caller' && call.callerRequestedId && { requestedCallId: call.callerRequestedId }),
         });
     }
 }

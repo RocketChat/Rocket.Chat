@@ -1,5 +1,5 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { AgentMediaSignal, CallRole } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, CallRole } from '@rocket.chat/media-signaling';
 import { UserBasicAgent, type MinimalUserData } from './BasicAgent';
 import { UserAgentSignalProcessor } from './SignalProcessor';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
@@ -15,7 +15,7 @@ export declare class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> 
         contractId: string;
         contractSigned?: boolean;
     });
-    processSignal(signal: AgentMediaSignal, call: IMediaCall): Promise<void>;
+    processSignal(signal: ClientMediaSignal, call: IMediaCall): Promise<void>;
     setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void>;
     getLocalDescription(): Promise<RTCSessionDescriptionInit | null>;
     requestOffer(params: {
