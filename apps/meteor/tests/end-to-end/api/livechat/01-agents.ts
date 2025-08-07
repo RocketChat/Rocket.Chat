@@ -570,8 +570,12 @@ describe('LIVECHAT - Agents', () => {
 		});
 		describe('with no manage-agent permission', () => {
 			before(async () => {
+				await request
+					.post(api('livechat/agent.status'))
+					.set(credentials)
+					.send({ status: 'not-available', agentId: agent2.user._id })
+					.expect(200);
 				await removePermissionFromAllRoles('manage-livechat-agents');
-				console.log('Permissions removed');
 			});
 			after(async () => {
 				await restorePermissionToRoles('manage-livechat-agents');
