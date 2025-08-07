@@ -1,6 +1,13 @@
 import stream from 'stream';
 
-import { DeleteObjectCommand, GetObjectCommand, S3Client, type PutObjectCommandInput } from '@aws-sdk/client-s3';
+import {
+	DeleteObjectCommand,
+	GetObjectCommand,
+	S3Client,
+	type GetObjectCommandInput,
+	type PutObjectCommandInput,
+	type S3ClientConfig,
+} from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
@@ -14,17 +21,11 @@ import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
 
 export type S3Options = StoreOptions & {
-	connection: {
-		accessKeyId?: string;
-		secretAccessKey?: string;
-		endpoint?: string;
-		signatureVersion: string;
-		s3ForcePathStyle?: boolean;
+	connection: S3ClientConfig & {
 		params: {
 			Bucket: string;
 			ACL: string;
 		};
-		region: string;
 	};
 	URLExpiryTimeSpan: number;
 	getPath: (file: OptionalId<IUpload>) => string;
@@ -80,10 +81,12 @@ class AmazonS3Store extends UploadFS.Store {
 				s3,
 				new GetObjectCommand({
 					Key: this.getPath(file),
-					ResponseExpires: new Date(Date.now() + classOptions.URLExpiryTimeSpan * 1000), // convert seconds to milliseconds
 					ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
 					Bucket: classOptions.connection.params.Bucket,
 				}),
+				{
+					expiresIn: classOptions.URLExpiryTimeSpan, // seconds
+				},
 			);
 		};
 
@@ -131,11 +134,7 @@ class AmazonS3Store extends UploadFS.Store {
 		 * Returns the file read stream
 		 */
 		this.getReadStream = async function (_fileId, file, options = {}) {
-			const params: {
-				Key: string;
-				Bucket: string;
-				Range?: string;
-			} = {
+			const params: GetObjectCommandInput = {
 				Key: this.getPath(file),
 				Bucket: classOptions.connection.params.Bucket,
 			};
@@ -151,7 +150,7 @@ class AmazonS3Store extends UploadFS.Store {
 			}
 
 			// If the response is a stream, return it directly
-			if (!(response.Body instanceof stream.Readable)) {
+			if (!('readable' in response.Body)) {
 				throw new Error('Response body is not a readable stream');
 			}
 
@@ -186,7 +185,7 @@ class AmazonS3Store extends UploadFS.Store {
 			}
 
 			// Only set ContentLength if file.size is defined and not null
-			if (file.size != null) {
+			if (file.size) {
 				uploadParams.ContentLength = file.size;
 			}
 
