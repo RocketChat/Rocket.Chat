@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
@@ -17,15 +17,15 @@ import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { Subscriptions, Rooms } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { applyQueryOptions } from '../../lib/cachedCollections';
-import type { IDocumentMapStore } from '../../lib/cachedCollections/DocumentMapStore';
+import { applyQueryOptions } from '../../lib/cachedStores';
+import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
+import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
@@ -69,8 +69,11 @@ const queryRoom = (
 };
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
-	const user = useReactiveValue(getUser);
 	const userId = useReactiveValue(getUserId);
+	const user = Users.use((state) => {
+		if (!userId) return null;
+		return state.get(userId) ?? null;
+	});
 	const previousUserId = useRef(userId);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
@@ -116,6 +119,27 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 		return userId ? createSubscriptionFactory(Subscriptions.use) : createSubscriptionFactory(Rooms.use);
 	}, [userId]);
 
+	const querySubscription = useMemo(() => {
+		return (query: object): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom] => {
+			const predicate = createPredicateFromFilter<SubscriptionWithRoom>(query);
+			let snapshot = Subscriptions.use.getState().find(predicate);
+
+			const subscribe = (onStoreChange: () => void) =>
+				Subscriptions.use.subscribe(() => {
+					const newSnapshot = Subscriptions.use.getState().find(predicate);
+					if (newSnapshot === snapshot) return;
+					snapshot = newSnapshot;
+					onStoreChange();
+				});
+
+			// TODO: this type assertion is completely wrong; however, the `useUserSubscriptions` hook might be deleted in
+			// the future, so we can live with it for now
+			const getSnapshot = () => snapshot as SubscriptionWithRoom;
+
+			return [subscribe, getSnapshot];
+		};
+	}, []);
+
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
 			userId,
@@ -123,9 +147,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			queryPreference: createReactiveSubscriptionFactory(
 				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
 			),
-			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields, sort) =>
-				Subscriptions.findOne(query, { fields, sort }),
-			),
+			querySubscription,
 			queryRoom,
 			querySubscriptions,
 			logout: async () => Meteor.logout(),
@@ -133,7 +155,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 				return ee.on('logout', cb);
 			},
 		}),
-		[userId, user, querySubscriptions],
+		[userId, user, querySubscription, querySubscriptions],
 	);
 
 	useEffect(() => {

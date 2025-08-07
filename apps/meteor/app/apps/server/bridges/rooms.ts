@@ -237,11 +237,9 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	private async getUsersByRoomIdAndSubscriptionRole(roomId: string, role: string): Promise<IUser[]> {
-		const subs = (await Subscriptions.findByRoomIdAndRoles(roomId, [role], {
+		const subs = await Subscriptions.findByRoomIdAndRoles<{ uid: string }>(roomId, [role], {
 			projection: { uid: '$u._id', _id: 0 },
-		}).toArray()) as unknown as {
-			uid: string;
-		}[];
+		}).toArray();
 		// Was this a bug?
 		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid)).toArray();
 		const userConverter = this.orch.getConverters().get('users');
