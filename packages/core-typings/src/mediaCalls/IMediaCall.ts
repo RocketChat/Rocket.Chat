@@ -14,7 +14,6 @@ export type MediaCallSignedActor<T extends MediaCallActor = MediaCallActor> = Re
 export type ServerActor = {
 	type: 'server';
 	id: 'server';
-	contractId: never;
 };
 
 export type MediaCallContactInformation = {

@@ -159,6 +159,41 @@ const mediaCallsSignalPropsSchema: JSONSchemaType<MediaCallsSignalProps> = {
 					additionalProperties: false,
 					required: ['callId', 'contractId', 'type', 'reason'],
 				},
+				{
+					type: 'object',
+					properties: {
+						callId: {
+							type: 'string',
+							nullable: false,
+						},
+						contractId: {
+							type: 'string',
+							nullable: true,
+						},
+						type: {
+							const: 'local-state',
+						},
+						callState: {
+							type: 'string',
+							nullable: false,
+						},
+						clientState: {
+							type: 'string',
+							nullable: false,
+						},
+						serviceStates: {
+							type: 'object',
+							patternProperties: {
+								'.*': {
+									type: 'string',
+								},
+							},
+							nullable: true,
+						},
+					},
+					additionalProperties: false,
+					required: ['callId', 'contractId', 'type', 'callState', 'clientState'],
+				},
 			],
 		},
 	},

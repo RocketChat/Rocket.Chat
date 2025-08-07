@@ -1,6 +1,6 @@
-import type { IMediaCall, RocketChatRecordDeleted, MediaCallActor } from '@rocket.chat/core-typings';
+import type { IMediaCall, RocketChatRecordDeleted, MediaCallActorType } from '@rocket.chat/core-typings';
 import type { IMediaCallsModel } from '@rocket.chat/model-typings';
-import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
+import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult, FindOptions, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -10,7 +10,29 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { rid: 1, createdAt: 1 }, unique: false }];
+		return [
+			{ key: { createdAt: 1 }, unique: false },
+			{ key: { state: 1 }, unique: false },
+			{ key: { 'caller.type': 1, 'caller.id': 1, 'callerRequestedId': 1 }, unique: true, sparse: true },
+		];
+	}
+
+	public async findOneByIdOrCallerRequestedId<T extends Document = IMediaCall>(
+		id: IMediaCall['_id'] | Required<IMediaCall>['callerRequestedId'],
+		caller: { type: MediaCallActorType; id: string },
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne(
+			{
+				$or: [
+					// If we get an id, find any call with that id
+					{ _id: id },
+					// if we get a callerRequestedId, then only find it if it was created by the same actor
+					{ 'caller.type': caller.type, 'caller.id': caller.id, 'callerRequestedId': id },
+				],
+			},
+			options,
+		);
 	}
 
 	public updateOneById(
@@ -19,17 +41,6 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		options?: UpdateOptions,
 	): Promise<UpdateResult> {
 		return this.updateOne({ _id }, update, options);
-	}
-
-	public async setEndedById(callId: string, data?: { endedBy?: MediaCallActor; endedAt?: Date }): Promise<void> {
-		const { endedBy, endedAt } = { endedAt: new Date(), ...data };
-
-		await this.updateOneById(callId, {
-			$set: {
-				...(endedBy && { endedBy }),
-				endedAt,
-			},
-		});
 	}
 
 	public async startRingingById(callId: string): Promise<UpdateResult> {
@@ -53,12 +64,30 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async hangupCallById(callId: string, params?: { endedBy?: MediaCallActor; reason?: string }): Promise<UpdateResult> {
+	public async hangupCallById(callId: string, params?: { endedBy?: IMediaCall['endedBy']; reason?: string }): Promise<UpdateResult> {
 		const { endedBy, reason } = params || {};
 
 		return this.updateOne(
 			{
 				_id: callId,
+				state: { $ne: 'hangup' },
+			},
+			{
+				$set: {
+					state: 'hangup',
+					endedAt: new Date(),
+					...(endedBy && { endedBy }),
+					...(reason && { hangupReason: reason }),
+				},
+			},
+		);
+	}
+
+	public async hangupEveryCall(params?: { endedBy?: IMediaCall['endedBy']; reason?: string }): Promise<UpdateResult> {
+		const { endedBy, reason } = params || {};
+
+		return this.col.updateMany(
+			{
 				state: { $ne: 'hangup' },
 			},
 			{

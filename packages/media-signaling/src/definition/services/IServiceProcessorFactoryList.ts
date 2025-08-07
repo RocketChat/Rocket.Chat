@@ -1,4 +1,4 @@
-import type { WebRTCProcessorFactory } from './IWebRTCProcessor';
+import type { WebRTCProcessorFactory } from './webrtc/IWebRTCProcessor';
 
 export interface IServiceProcessorFactoryList {
 	webrtc?: WebRTCProcessorFactory;
