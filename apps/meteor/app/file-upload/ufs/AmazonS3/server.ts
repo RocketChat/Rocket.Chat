@@ -75,11 +75,11 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
-			return getSignedUrl(
+			return await getSignedUrl(
 				s3,
 				new GetObjectCommand({
 					Key: this.getPath(file),
-					ResponseExpires: new Date(Date.now() + classOptions.URLExpiryTimeSpan),
+					ResponseExpires: new Date(Date.now() + classOptions.URLExpiryTimeSpan * 1000), // convert seconds to milliseconds
 					ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
 					Bucket: classOptions.connection.params.Bucket,
 				}),
@@ -166,6 +166,7 @@ class AmazonS3Store extends UploadFS.Store {
 					Key: this.getPath(file),
 					Body: writeStream,
 					ContentType: file.type,
+					ContentLength: file.size,
 					Bucket: classOptions.connection.params.Bucket,
 				},
 				(error) => {
