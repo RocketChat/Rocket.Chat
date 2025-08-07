@@ -177,7 +177,7 @@ API.v1.addRoute(
 		authRequired: true,
 		deprecation: {
 			version: '8.0.0',
-			alternatives: ['rooms.media'],
+			alternatives: ['/v1/rooms.media/:rid'],
 		},
 	},
 	{

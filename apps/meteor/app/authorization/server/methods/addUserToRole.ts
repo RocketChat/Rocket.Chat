@@ -92,6 +92,8 @@ export const addUserToRole = async (userId: string, roleId: string, username: IU
 
 Meteor.methods<ServerMethods>({
 	async 'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope) {
+		methodDeprecationLogger.method('authorization:addUserToRole', '8.0.0', '/v1/roles.addUserToRole');
+
 		const userId = Meteor.userId();
 
 		if (!userId) {
