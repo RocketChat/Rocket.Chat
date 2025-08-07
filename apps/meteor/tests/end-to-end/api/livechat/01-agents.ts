@@ -624,69 +624,74 @@ describe('LIVECHAT - Agents', () => {
 					expect(res.body).to.have.property('error', 'Agent not found');
 				});
 		});
-		it('should change logged in users status', async () => {
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
-			const currentStatus = currentUser.statusLivechat;
-			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 
-			await request
-				.post(api('livechat/agent.status'))
-				.set(agent2.credentials)
-				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('status', newStatus);
-				});
-		});
-		it('should allow managers to change other agents status', async () => {
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
-			const currentStatus = currentUser.statusLivechat;
-			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
+		describe('cases for valid agents', () => {
+			let currentUser: ILivechatAgent;
+			before(async () => {
+				currentUser = await getMe(agent2.credentials);
+			});
 
-			await request
-				.post(api('livechat/agent.status'))
-				.set(credentials)
-				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('status', newStatus);
-				});
-		});
-		it('should throw an error if agent tries to make themselves available outside of Business hour', async () => {
-			await makeDefaultBusinessHourActiveAndClosed();
+			afterEach(async () => {
+				await request
+					.post(api('livechat/agent.status'))
+					.set(agent2.credentials)
+					.send({ status: 'not-available', agentId: currentUser._id })
+					.expect(200);
+			});
 
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
-			const currentStatus = currentUser.statusLivechat;
-			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
-
-			await request
-				.post(api('livechat/agent.status'))
-				.set(agent2.credentials)
-				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
-				});
-		});
-		it('should not allow managers to make other agents available outside business hour', async () => {
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
-			const currentStatus = currentUser.statusLivechat;
-			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
-
-			await request
-				.post(api('livechat/agent.status'))
-				.set(credentials)
-				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('status', currentStatus);
+			it('should be able to set a logged in users status to available', async () => {
+				await request
+					.post(api('livechat/agent.status'))
+					.set(agent2.credentials)
+					.send({ status: 'available', agentId: currentUser._id })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('status', 'available');
+					});
+			});
+			it('should allow managers to set other agents status to available', async () => {
+				await request
+					.post(api('livechat/agent.status'))
+					.set(credentials)
+					.send({ status: 'available', agentId: currentUser._id })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('status', 'available');
+					});
+			});
+			describe('outside of business hours', () => {
+				before(async () => {
+					await makeDefaultBusinessHourActiveAndClosed();
 				});
 
-			await disableDefaultBusinessHour();
+				after(async () => {
+					await disableDefaultBusinessHour();
+				});
+				it('should throw an error if agent tries to make themselves available outside of Business hour', async () => {
+					await request
+						.post(api('livechat/agent.status'))
+						.set(agent2.credentials)
+						.send({ status: 'available', agentId: currentUser._id })
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
+						});
+				});
+				it('should not allow managers to make other agents available outside business hour', async () => {
+					await request
+						.post(api('livechat/agent.status'))
+						.set(credentials)
+						.send({ status: 'available', agentId: currentUser._id })
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
+						});
+				});
+			});
 		});
 	});
 
