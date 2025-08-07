@@ -1,7 +1,7 @@
 import type { Key } from 'path-to-regexp';
 import { pathToRegexp } from 'path-to-regexp';
 
-type State = { path: string };
+type State = { readonly path: string };
 
 class Context {
 	canonicalPath: string;
@@ -49,16 +49,60 @@ class Context {
 	}
 }
 
+class Route {
+	private readonly regexp: RegExp;
+
+	private readonly keys: Key[] = [];
+
+	constructor(
+		path: string,
+		private readonly fn: (ctx: Context) => void,
+	) {
+		this.regexp = pathToRegexp(path === '*' ? '(.*)' : path, this.keys, { strict: false });
+	}
+
+	match(path: string, params: Record<string, string>): boolean {
+		const { keys } = this;
+		const qsIndex = path.indexOf('?');
+		const pathname = ~qsIndex ? path.slice(0, qsIndex) : path;
+		const m = this.regexp.exec(decodeURIComponent(pathname));
+
+		if (!m) return false;
+
+		for (let i = 1, len = m.length; i < len; ++i) {
+			const key = keys[i - 1];
+			const val = decodeURLEncodedURIComponent(m[i]);
+			if (val !== undefined || !Object.prototype.hasOwnProperty.call(params, key.name)) {
+				params[key.name] = val;
+			}
+		}
+
+		return true;
+	}
+
+	readonly callback = (ctx: Context, next: () => void) => {
+		if (this.match(ctx.path, ctx.params)) {
+			this.fn(ctx);
+			return;
+		}
+		next();
+	};
+}
+
 class Page {
-	callbacks: Callback[] = [];
+	routes: Route[] = [];
 
 	current = '';
 
 	private running: boolean;
 
-	registerRoute(path: string, callback: Callback): void {
-		const route = new Route(path);
-		this.callbacks.push(route.middleware(callback));
+	registerRoute(path: string, callback: (ctx: Context) => void): void {
+		const route = new Route(path, callback);
+		this.routes.push(route);
+	}
+
+	clearRoutes() {
+		this.routes = [];
 	}
 
 	start() {
@@ -164,12 +208,12 @@ class Page {
 		let i = 0;
 
 		const nextEnter = () => {
-			const fn = this.callbacks[i++];
+			const route = this.routes[i++];
 
 			if (ctx.path !== this.current) return;
 
-			if (!fn) return this.unhandled(ctx);
-			fn(ctx, nextEnter);
+			if (!route) return this.unhandled(ctx);
+			route.callback(ctx, nextEnter);
 		};
 
 		nextEnter();
@@ -199,50 +243,11 @@ class Page {
 const page = new Page();
 
 function decodeURLEncodedURIComponent(val: string): string {
-	if (typeof val !== 'string') {
-		return val;
-	}
+	if (typeof val !== 'string') return val;
+
 	return decodeURIComponent(val.replace(/\+/g, ' '));
 }
 
-class Route {
-	private readonly regexp: RegExp;
-
-	private readonly keys: Key[] = [];
-
-	constructor(path: string) {
-		this.regexp = pathToRegexp(path === '*' ? '(.*)' : path, this.keys, { strict: false });
-	}
-
-	middleware(fn: Callback): Callback {
-		return (ctx, next) => {
-			if (this.match(ctx.path, ctx.params)) return fn(ctx, next);
-			next();
-		};
-	}
-
-	match(path: string, params: Record<string, string>): boolean {
-		const { keys } = this;
-		const qsIndex = path.indexOf('?');
-		const pathname = ~qsIndex ? path.slice(0, qsIndex) : path;
-		const m = this.regexp.exec(decodeURIComponent(pathname));
-
-		if (!m) return false;
-
-		for (let i = 1, len = m.length; i < len; ++i) {
-			const key = keys[i - 1];
-			const val = decodeURLEncodedURIComponent(m[i]);
-			if (val !== undefined || !Object.prototype.hasOwnProperty.call(params, key.name)) {
-				params[key.name] = val;
-			}
-		}
-
-		return true;
-	}
-}
-
-type Callback = (ctx: Context, next: () => void) => void;
-
 export default page;
 
-export { Context, Callback };
+export { Context };
