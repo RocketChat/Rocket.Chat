@@ -1,6 +1,9 @@
+import { Emitter } from '@rocket.chat/emitter';
+
 import { LocalStream } from './LocalStream';
 import { RemoteStream } from './RemoteStream';
-import type { IWebRTCProcessor, WebRTCProcessorConfig } from '../../../definition';
+import type { IWebRTCProcessor, WebRTCInternalStateMap, WebRTCProcessorConfig, WebRTCProcessorEvents } from '../../../definition';
+import type { ServiceStateValue } from '../../../definition/services/IServiceProcessor';
 
 type IceGatheringData = {
 	promise: Promise<void>;
@@ -10,9 +13,13 @@ type IceGatheringData = {
 };
 
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
+	public emitter: Emitter<WebRTCProcessorEvents>;
+
 	private peer: RTCPeerConnection;
 
 	private iceGatheringFinished = false;
+
+	private iceGatheringTimedOut = false;
 
 	private localStream: LocalStream;
 
@@ -35,6 +42,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.remoteStream = new RemoteStream(this.remoteMediaStream);
 
 		this.peer = new RTCPeerConnection();
+		this.emitter = new Emitter();
 		this.registerPeerEvents();
 	}
 
@@ -90,8 +98,30 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.peer.setRemoteDescription(sdp);
 	}
 
+	public getInternalState<K extends keyof WebRTCInternalStateMap>(stateName: K): ServiceStateValue<WebRTCInternalStateMap, K> {
+		switch (stateName) {
+			case 'signaling':
+				return this.peer.signalingState;
+			case 'connection':
+				return this.peer.connectionState;
+			case 'iceConnection':
+				return this.peer.iceConnectionState;
+			case 'iceGathering':
+				return this.peer.iceGatheringState;
+			case 'iceUntrickler':
+				if (this.iceGatheringTimedOut) {
+					return 'timeout';
+				}
+				return this.iceGatheringWaiters.size > 0 ? 'waiting' : 'not-waiting';
+		}
+	}
+
 	protected async getuserMedia(constraints: MediaStreamConstraints) {
 		return this.config.mediaStreamFactory(constraints);
+	}
+
+	private changeInternalState(stateName: keyof WebRTCInternalStateMap): void {
+		this.emitter.emit('internalStateChange', stateName);
 	}
 
 	private async getLocalDescription(): Promise<{ sdp: RTCSessionDescriptionInit }> {
@@ -125,6 +155,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 
+		this.iceGatheringTimedOut = false;
+
 		const data: Partial<IceGatheringData> = {};
 
 		data.promise = new Promise((resolve, reject) => {
@@ -137,12 +169,15 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			console.log('timeout');
 			if (this.iceGatheringWaiters.has(iceGatheringData)) {
 				this.clearIceGatheringData(iceGatheringData);
+				this.iceGatheringTimedOut = true;
+				this.changeInternalState('iceUntrickler');
 			} else {
 				console.log('ice gathering not on the list');
 			}
 		}, 500);
 
 		this.iceGatheringWaiters.add(iceGatheringData);
+		this.changeInternalState('iceUntrickler');
 		return data.promise;
 	}
 
@@ -183,7 +218,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 		console.log('onIceCandidate ERROR event');
-		//
+		this.emitter.emit('internalError', { critical: false, error: 'ice-candidate-error' });
 	}
 
 	private onNegotiationNeeded(peer: RTCPeerConnection) {
@@ -209,6 +244,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		console.log('Connection state change', peer.connectionState);
+		this.changeInternalState('connection');
 	}
 
 	private onIceConnectionStateChange(peer: RTCPeerConnection) {
@@ -217,6 +253,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		console.log('Ice connection state change', peer.iceConnectionState);
+		this.changeInternalState('iceConnection');
 	}
 
 	private onSignalingStateChange(peer: RTCPeerConnection) {
@@ -225,6 +262,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		console.log('Signaling state change', peer.signalingState);
+		this.changeInternalState('signaling');
 	}
 
 	private onIceGatheringStateChange(peer: RTCPeerConnection) {
@@ -237,6 +275,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		if (peer.iceGatheringState === 'complete') {
 			this.onIceGatheringComplete();
 		}
+
+		this.changeInternalState('iceGathering');
 	}
 
 	private async initializeLocalMediaStream(): Promise<void> {
@@ -288,9 +328,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		console.log('clear waiters');
 		const waiters = this.iceGatheringWaiters.values().toArray();
 		this.iceGatheringWaiters.clear();
+		this.iceGatheringTimedOut = false;
 
 		for (const iceGatheringData of waiters) {
 			this.clearIceGatheringData(iceGatheringData, error);
 		}
+
+		this.changeInternalState('iceUntrickler');
 	}
 }

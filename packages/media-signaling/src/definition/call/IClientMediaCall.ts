@@ -46,6 +46,13 @@ export type CallNotification =
 	| 'accepted' // notify that the call has been accepted by both actors
 	| 'hangup'; // notify that the call is over;
 
+export type CallRejectedReason =
+	| 'invalid-call-id' // the call id can't be used for a new call
+	| 'invalid-contract-id' // this specific contract can't request this call
+	| 'existing-call-id' // the call already exists with a different callee or contract
+	| 'already-requested' // the request is valid, but a call matching its params is already underway
+	| 'unsupported'; // no matching supported services between actors
+
 export interface IClientMediaCallData {
 	callId: string;
 	role: CallRole;

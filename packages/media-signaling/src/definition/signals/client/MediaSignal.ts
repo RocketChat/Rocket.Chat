@@ -1,4 +1,5 @@
-import type { CallAnswer, CallHangupReason, CallService } from '../../call';
+import type { CallAnswer, CallHangupReason, CallService, CallState } from '../../call';
+import type { ClientState } from '../../client';
 
 export type ClientMediaSignalRequestCall = {
 	// the callId on this signal is temporary and is never propagated to other agents
@@ -48,12 +49,24 @@ export type ClientMediaSignalHangup = {
 	reason: CallHangupReason;
 };
 
+// Client is sending their local call state
+export type ClientMediaSignalLocalState = {
+	callId: string;
+	contractId: string;
+	type: 'local-state';
+
+	callState: CallState;
+	clientState: ClientState;
+	serviceStates?: Record<string, string>;
+};
+
 export type ClientMediaSignal =
 	| ClientMediaSignalLocalSDP
 	| ClientMediaSignalError
 	| ClientMediaSignalAnswer
 	| ClientMediaSignalHangup
-	| ClientMediaSignalRequestCall;
+	| ClientMediaSignalRequestCall
+	| ClientMediaSignalLocalState;
 
 export type ClientMediaSignalType = ClientMediaSignal['type'];
 

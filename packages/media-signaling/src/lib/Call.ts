@@ -12,7 +12,8 @@ import type {
 	CallHangupReason,
 	CallActorType,
 } from '../definition/call';
-import type { IWebRTCProcessor, MediaStreamFactory } from '../definition/services';
+import type { ClientState } from '../definition/client';
+import type { IWebRTCProcessor, MediaStreamFactory, WebRTCInternalStateMap } from '../definition/services';
 import { mergeContacts } from './utils/mergeContacts';
 import type {
 	ServerMediaSignal,
@@ -31,8 +32,7 @@ export interface IClientMediaCallConfig {
 const TIMEOUT_TO_ACCEPT = 30000;
 const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
 const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
-
-type ClientState = 'pending' | 'accepting' | 'accepted' | 'has-offer' | 'has-answer' | 'active' | 'hangup';
+const STATE_REPORT_DELAY = 300;
 
 type StateTimeoutHandler = {
 	state: ClientState;
@@ -98,6 +98,14 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private remoteCallId: string | null;
 
+	private oldClientState: ClientState;
+
+	private serviceStates: Map<string, string>;
+
+	private stateReporterTimeoutHandler: ReturnType<typeof setTimeout> | null;
+
+	private mayReportStates: boolean;
+
 	// localCallId will only be different on calls initiated by this session
 	private localCallId: string;
 
@@ -119,11 +127,15 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.acknowledged = false;
 		this.hasLocalDescription = false;
 		this.hasRemoteDescription = false;
+		this.serviceStates = new Map();
+		this.stateReporterTimeoutHandler = null;
+		this.mayReportStates = true;
 
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
 		this._role = 'callee';
 		this._state = 'none';
+		this.oldClientState = 'none';
 		this._ignored = false;
 		this._contact = null;
 		this._service = null;
@@ -351,7 +363,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const oldState = this._state;
 		this._state = newState;
-		this.updateStateTimeouts();
+		this.updateClientState();
 
 		this.emitter.emit('stateChange', oldState);
 
@@ -363,6 +375,21 @@ export class ClientMediaCall implements IClientMediaCall {
 				this.emitter.emit('ended');
 				break;
 		}
+		this.requestStateReport();
+	}
+
+	private updateClientState(): void {
+		const { oldClientState } = this;
+
+		const clientState = this.getClientState();
+		if (clientState === oldClientState) {
+			return;
+		}
+
+		this.updateStateTimeouts();
+		this.requestStateReport();
+		this.oldClientState = clientState;
+		this.emitter.emit('clientStateChange', oldClientState);
 	}
 
 	private changeContact(contact: CallContact | null, { prioritizeExisting }: { prioritizeExisting?: boolean } = {}): void {
@@ -405,8 +432,17 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected shouldIgnoreWebRTC(): boolean {
-		// Without the remote data we don't know if the call is using webrtc or not
-		return this.hasRemoteData && this._service !== 'webrtc';
+		if (this.hasRemoteData) {
+			return this.service !== 'webrtc';
+		}
+
+		// If we called and we don't support webrtc, assume it's not gonna be a webrtc call
+		if (this._role === 'caller' && !this.config.processorFactories.webrtc) {
+			return true;
+		}
+
+		// With no more info, we can't safely ignore webrtc
+		return false;
 	}
 
 	protected async processAnswerRequest(signal: ServerMediaSignalRemoteSDP): Promise<void> {
@@ -458,7 +494,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		console.log('Call.deliverSdp');
 		this.hasLocalDescription = true;
 
-		return this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+		this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+
+		this.updateClientState();
 	}
 
 	protected async rejectAsUnavailable(): Promise<void> {
@@ -586,6 +624,54 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	private onWebRTCInternalStateChange(stateName: keyof WebRTCInternalStateMap): void {
+		if (!this.webrtcProcessor) {
+			return;
+		}
+		console.log('webrtc internal state changed: ', stateName);
+		const stateValue = this.webrtcProcessor.getInternalState(stateName);
+
+		if (this.serviceStates.get(stateName) !== stateValue) {
+			this.serviceStates.set(stateName, stateValue);
+			this.requestStateReport();
+		}
+	}
+
+	private reportStates(): void {
+		this.clearStateReporter();
+		if (!this.mayReportStates) {
+			return;
+		}
+
+		this.config.transporter.sendToServer(this.callId, 'local-state', {
+			callState: this.state,
+			clientState: this.getClientState(),
+			serviceStates: Object.fromEntries(this.serviceStates.entries()),
+		});
+
+		if (this.state === 'hangup') {
+			this.mayReportStates = false;
+		}
+	}
+
+	private clearStateReporter(): void {
+		if (this.stateReporterTimeoutHandler) {
+			clearTimeout(this.stateReporterTimeoutHandler);
+			this.stateReporterTimeoutHandler = null;
+		}
+	}
+
+	private requestStateReport(): void {
+		this.clearStateReporter();
+		if (!this.mayReportStates) {
+			return;
+		}
+
+		this.stateReporterTimeoutHandler = setTimeout(() => {
+			this.reportStates();
+		}, STATE_REPORT_DELAY);
+	}
+
 	private prepareWebRtcProcessor(): asserts this is ClientMediaCallWebRTC {
 		if (this.webrtcProcessor) {
 			return;
@@ -603,6 +689,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory });
+		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 	}
 
 	private requireWebRTC(): asserts this is ClientMediaCallWebRTC {

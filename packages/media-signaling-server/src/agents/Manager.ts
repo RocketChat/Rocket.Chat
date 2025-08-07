@@ -1,4 +1,4 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallActor } from '@rocket.chat/core-typings';
+import type { IMediaCall, IMediaCallChannel, MediaCallActor, ServerActor } from '@rocket.chat/core-typings';
 import type { CallHangupReason, CallRole, CallNotification } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallChannels, MediaCalls } from '@rocket.chat/models';
@@ -177,7 +177,7 @@ class MediaCallAgentManager {
 		// , errorType?: 'signaling' | 'service' | 'media'
 		// const hangupReason = errorType ? `${errorType}-error` : 'error';
 
-		const endedBy = { type: 'server', id: 'server' } as unknown as MediaCallActor;
+		const endedBy = { type: 'server', id: 'server' } as ServerActor;
 
 		const stateResult = await MediaCalls.hangupCallById(callId, { endedBy, reason: serverErrorCode });
 		const result = Boolean(stateResult.modifiedCount);

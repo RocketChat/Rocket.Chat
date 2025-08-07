@@ -1,4 +1,4 @@
-import type { CallContact, CallNotification, CallRole, CallService } from '../../call';
+import type { CallContact, CallNotification, CallRejectedReason, CallRole, CallService } from '../../call';
 
 // Sent by the server to notify an agent that there's a new call for their actor
 export type ServerMediaSignalNewCall = {
@@ -40,10 +40,18 @@ export type ServerMediaSignalNotification = {
 	notification: CallNotification;
 };
 
+export type ServerMediaSignalRejectedCallRequest = {
+	callId: string;
+	type: 'rejected-call-request';
+	toContractId: string;
+	reason?: CallRejectedReason;
+};
+
 export type ServerMediaSignal =
 	| ServerMediaSignalNewCall
 	| ServerMediaSignalRemoteSDP
 	| ServerMediaSignalRequestOffer
-	| ServerMediaSignalNotification;
+	| ServerMediaSignalNotification
+	| ServerMediaSignalRejectedCallRequest;
 
 export type ServerMediaSignalType = ServerMediaSignal['type'];
