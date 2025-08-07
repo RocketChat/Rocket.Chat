@@ -265,7 +265,9 @@ export class OTRRoom implements IOTRRoom {
 
 	async encryptText(data: string | Uint8Array<ArrayBuffer>): Promise<string> {
 		if (typeof data === 'string') {
-			data = new TextEncoder().encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) })) as Uint8Array<ArrayBuffer>;
+			data = new TextEncoder().encode(
+				EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }),
+			) as Uint8Array<ArrayBuffer>;
 		}
 		try {
 			if (!this._sessionKey) throw new Error('Session Key not available');
