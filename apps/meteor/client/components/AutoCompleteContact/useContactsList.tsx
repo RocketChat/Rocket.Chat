@@ -48,9 +48,5 @@ export const useContactsList = (options: ContactOptions) => {
 			const offset = lastPage.offset + lastPage.count;
 			return offset < lastPage.total ? offset : undefined;
 		},
-		initialData: () => ({
-			pages: [{ contacts: [], offset: 0, count: 0, total: Infinity }],
-			pageParams: [0],
-		}),
 	});
 };

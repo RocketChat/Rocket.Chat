@@ -27,7 +27,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	const hasModule = useHasLicenseModule('outbound-messaging');
 	const isLoadingModule = hasModule === 'loading';
 
-	const { data: hasProviders, isLoading: isLoadingProviders } = useOutboundProvidersList<boolean>({
+	const { data: hasProviders = false, isLoading: isLoadingProviders } = useOutboundProvidersList<boolean>({
 		select: ({ providers = [] }) => providers.length > 0,
 	});
 
