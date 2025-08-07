@@ -34,8 +34,6 @@ queueMicrotask(() => {
 const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 	subscribers.add(onRouteChange);
 
-	computation?.invalidate();
-
 	return () => {
 		subscribers.delete(onRouteChange);
 
