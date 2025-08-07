@@ -16,8 +16,8 @@ import {
 	SaveE2EEPasswordBanner,
 	SaveE2EEPasswordModal,
 } from './page-objects/fragments/e2ee';
+import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
 import { FileUploadModal } from './page-objects/fragments/file-upload-modal';
-import { HomeFlextabExportMessages } from './page-objects/fragments/home-flextab-exportMessages';
 import { LoginPage } from './page-objects/login';
 import { test, expect } from './utils/test';
 
@@ -68,6 +68,8 @@ test.describe('initial setup', () => {
 		// Log out
 		await sidenav.logout();
 
+		await expect(loginPage.loginButton).toBeVisible();
+
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
@@ -116,6 +118,8 @@ test.describe('initial setup', () => {
 		await sidenav.logout();
 
 		// Login again
+		await expect(loginPage.loginButton).toBeVisible();
+
 		await loginPage.loginByUserState(Users.admin);
 
 		// Enter the saved password
@@ -272,7 +276,7 @@ test.describe('basic features', () => {
 	test('should display only the download file method when exporting messages in an e2ee room', async ({ page }) => {
 		const sidenav = new HomeSidenav(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
-		const exportMessagesTab = new HomeFlextabExportMessages(page);
+		const exportMessagesTab = new ExportMessagesTab(page);
 
 		const channelName = faker.string.uuid();
 
@@ -281,14 +285,14 @@ test.describe('basic features', () => {
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 
 		await encryptedRoomPage.showExportMessagesTab();
-		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
-		await expect(exportMessagesTab.sendEmailMethod).not.toBeVisible();
+		await expect(exportMessagesTab.method).toContainClass('disabled'); // FIXME: looks like the component have an a11y issue
+		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file');
 	});
 
 	test('should allow exporting messages as PDF in an encrypted room', async ({ page }) => {
 		const sidenav = new HomeSidenav(page);
 		const encryptedRoomPage = new EncryptedRoomPage(page);
-		const exportMessagesTab = new HomeFlextabExportMessages(page);
+		const exportMessagesTab = new ExportMessagesTab(page);
 
 		const channelName = faker.string.uuid();
 
@@ -298,19 +302,17 @@ test.describe('basic features', () => {
 
 		await encryptedRoomPage.sendMessage('This is a message to export as PDF.');
 		await encryptedRoomPage.showExportMessagesTab();
-		await expect(exportMessagesTab.downloadFileMethod).toBeVisible();
+		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file');
 
 		// Select Output format as PDF
-		await exportMessagesTab.outputFormat.click();
-		await exportMessagesTab.getMethodByName('PDF').click();
+		await exportMessagesTab.setOutputFormat('PDF');
 
 		// select messages to be exported
-		await exportMessagesTab.btnSelectMessages.click();
+		await exportMessagesTab.selectAllMessages();
 
 		// Wait for download event and match format
-		const [download] = await Promise.all([page.waitForEvent('download'), exportMessagesTab.btnDownloadExportMessages.click()]);
-		const suggestedFilename = download.suggestedFilename();
-		expect(suggestedFilename).toMatch(/\.pdf$/);
+		const download = await exportMessagesTab.downloadMessages();
+		expect(download.suggestedFilename()).toMatch(/\.pdf$/);
 	});
 });
 
@@ -1058,7 +1060,7 @@ test.describe.serial('e2ee room setup', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
-		await poHomeChannel.sidenav.userProfileMenu.click();
+		await poHomeChannel.sidenav.btnUserProfileMenu.click();
 		await poHomeChannel.sidenav.accountProfileOption.click();
 
 		await page.locator('role=navigation >> a:has-text("Security")').click();

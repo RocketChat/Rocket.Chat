@@ -43,7 +43,7 @@ export const useDeleteMessageAction = (
 		icon: 'trash',
 		label: 'Delete',
 		context: ['message', 'message-mobile', 'threads', 'federated', 'videoconf', 'videoconf-threads'],
-		color: 'alert',
+		variant: 'danger',
 		type: 'management',
 		async action() {
 			await chat?.flows.requestMessageDeletion(message);

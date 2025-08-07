@@ -1,4 +1,4 @@
-import type { IOutboundMessage } from '@rocket.chat/core-typings';
+import type { IOutboundMessage, IOutboundProvider, IOutboundProviderMetadata, ValidOutboundProvider } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { OutboundCommsEndpoints } from '../api/outbound';
@@ -12,7 +12,9 @@ declare module '@rocket.chat/rest-typings' {
 	interface Endpoints extends OutboundCommsEndpoints {}
 }
 
-type GETOutboundProviderParams = { type?: string };
+type GenericErrorResponse = { success: boolean; message: string };
+
+type GETOutboundProviderParams = { type?: ValidOutboundProvider };
 const GETOutboundProviderSchema = {
 	type: 'object',
 	properties: {
@@ -24,16 +26,55 @@ const GETOutboundProviderSchema = {
 	required: [],
 	additionalProperties: false,
 };
-export const isGETOutboundProviderParams = ajv.compile<GETOutboundProviderParams>(GETOutboundProviderSchema);
+export const GETOutboundProviderParamsSchema = ajv.compile<GETOutboundProviderParams>(GETOutboundProviderSchema);
 
-type POSTOutboundMessageParams = {
-	message: IOutboundMessage;
+const GETOutboundProvidersResponse = {
+	type: 'object',
+	properties: {
+		providers: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					providerId: {
+						type: 'string',
+					},
+					providerName: {
+						type: 'string',
+					},
+					supportsTemplates: {
+						type: 'boolean',
+					},
+					providerType: {
+						type: 'string',
+					},
+				},
+			},
+		},
+	},
 };
+export const GETOutboundProvidersResponseSchema = ajv.compile<{ providers: IOutboundProvider[] }>(GETOutboundProvidersResponse);
+
+const GETOutboundProviderBadRequestError = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+		message: {
+			type: 'string',
+		},
+	},
+};
+export const GETOutboundProviderBadRequestErrorSchema = ajv.compile<GenericErrorResponse>(GETOutboundProviderBadRequestError);
+
+type POSTOutboundMessageParamsType = IOutboundMessage;
+
 const POSTOutboundMessageSchema = {
 	type: 'object',
 	required: ['to', 'type'],
 	properties: {
-		to: { type: 'string' },
+		to: { type: 'string', minLength: 1 },
 		type: { type: 'string' },
 		templateProviderPhoneNumber: { type: 'string' },
 		template: {
@@ -141,4 +182,164 @@ const POSTOutboundMessageSchema = {
 	additionalProperties: false,
 };
 
-export const isPOSTOutboundMessageParams = ajv.compile<POSTOutboundMessageParams>(POSTOutboundMessageSchema);
+export const POSTOutboundMessageParams = ajv.compile<POSTOutboundMessageParamsType>(POSTOutboundMessageSchema);
+
+const POSTOutboundMessageError = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+		message: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTOutboundMessageErrorSchema = ajv.compile<GenericErrorResponse>(POSTOutboundMessageError);
+
+const POSTOutboundMessageSuccess = {
+	type: 'object',
+	properties: {},
+	additionalProperties: false,
+};
+
+export const POSTOutboundMessageSuccessSchema = ajv.compile<void>(POSTOutboundMessageSuccess);
+
+const OutboundProviderMetadataSchema = {
+	type: 'object',
+	properties: {
+		metadata: {
+			type: 'object',
+			properties: {
+				providerId: {
+					type: 'string',
+				},
+				providerName: {
+					type: 'string',
+				},
+				supportsTemplates: {
+					type: 'boolean',
+				},
+				providerType: {
+					type: 'string',
+					enum: ['phone', 'email'],
+				},
+				templates: {
+					type: 'object',
+					additionalProperties: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								id: {
+									type: 'string',
+								},
+								name: {
+									type: 'string',
+								},
+								language: {
+									type: 'string',
+								},
+								type: {
+									type: 'string',
+								},
+								category: {
+									type: 'string',
+								},
+								status: {
+									type: 'string',
+								},
+								qualityScore: {
+									type: 'object',
+									required: ['score', 'reasons'],
+									properties: {
+										score: {
+											type: 'string',
+											enum: ['GREEN', 'YELLOW', 'RED', 'UNKNOWN'],
+										},
+										reasons: {
+											type: ['array', 'null'],
+											items: {
+												type: 'string',
+											},
+										},
+									},
+								},
+								components: {
+									type: 'array',
+									items: {
+										type: 'object',
+										oneOf: [
+											{
+												properties: {
+													type: { const: 'HEADER' },
+													format: {
+														type: 'string',
+														enum: ['TEXT', 'IMAGE', 'VIDEO', 'DOCUMENT'],
+													},
+													text: { type: 'string' },
+													example: {
+														type: 'object',
+														properties: {
+															headerText: {
+																type: 'array',
+																items: { type: 'string' },
+															},
+														},
+													},
+												},
+											},
+											{
+												properties: {
+													type: { const: 'BODY' },
+													text: { type: 'string' },
+													example: {
+														type: 'object',
+														properties: {
+															bodyText: {
+																type: 'array',
+																items: {
+																	type: 'array',
+																	items: { type: 'string' },
+																},
+															},
+														},
+													},
+												},
+												required: ['type', 'text'],
+											},
+											{
+												properties: {
+													type: { const: 'FOOTER' },
+													text: { type: 'string' },
+												},
+												required: ['type', 'text'],
+											},
+										],
+									},
+								},
+								createdAt: { type: 'string' },
+								createdBy: { type: 'string' },
+								modifiedAt: { type: 'string' },
+								modifiedBy: { type: 'string' },
+								namespace: { type: 'string' },
+								wabaAccountId: { type: 'string' },
+								phoneNumber: { type: 'string' },
+								partnerId: { type: 'string' },
+								externalId: { type: 'string' },
+								updatedExternal: { type: 'string' },
+								rejectedReason: {
+									type: ['string', 'null'],
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	},
+};
+
+export const GETOutboundProviderMetadataSchema = ajv.compile<{ metadata: IOutboundProviderMetadata }>(OutboundProviderMetadataSchema);
