@@ -1,4 +1,5 @@
 import store from '../store';
+import { supportedLocales } from '../supportedLocales';
 
 /**
  * To normalize Language String and return language code
@@ -34,73 +35,9 @@ export const configLanguage = () => {
 };
 
 export const getDateFnsLocale = () => {
-	const supportedLocales = [
-		'af',
-		'ar',
-		'be',
-		'bg',
-		'bn',
-		'ca',
-		'cs',
-		'cy',
-		'da',
-		'de',
-		'el',
-		'en-AU',
-		'en-CA',
-		'en-GB',
-		'en-US',
-		'eo',
-		'es',
-		'et',
-		'fa-IR',
-		'fi',
-		'fr',
-		'fr-CA',
-		'gl',
-		'gu',
-		'he',
-		'hi',
-		'hr',
-		'hu',
-		'hy',
-		'id',
-		'is',
-		'it',
-		'ja',
-		'ka',
-		'kk',
-		'ko',
-		'lt',
-		'lv',
-		'nb',
-		'nl',
-		'nn',
-		'pl',
-		'pt',
-		'pt-BR',
-		'ro',
-		'ru',
-		'sk',
-		'sl',
-		'sr',
-		'sr-Latn',
-		'sv',
-		'ta',
-		'te',
-		'th',
-		'tr',
-		'ug',
-		'uk',
-		'vi',
-		'zh_CN',
-		'zh_TW',
-	];
-
 	let fullLanguage = configLanguage() || browserLanguage();
 	fullLanguage = fullLanguage.toLowerCase();
 	const [languageCode] = fullLanguage.split ? fullLanguage.split(/[-_]/) : [];
 	const locale = [fullLanguage, languageCode, 'en-US'].find((lng) => supportedLocales.indexOf(lng) > -1);
-	// eslint-disable-next-line import/no-dynamic-require
-	return import(`date-fns/locale/${locale}/index.js`);
+	return import(`date-fns/locale/${locale}.js`).then((module) => module.default);
 };

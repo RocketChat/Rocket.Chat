@@ -16,7 +16,7 @@ describe('Event License behaviors', () => {
 		const mocked = await new MockedLicenseBuilder();
 		const oldToken = await mocked.sign();
 
-		const newToken = await mocked.withGratedModules(['livechat-enterprise']).sign();
+		const newToken = await mocked.withGrantedModules(['livechat-enterprise']).sign();
 
 		// apply license
 		await expect(license.setLicense(oldToken)).resolves.toBe(true);

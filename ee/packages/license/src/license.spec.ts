@@ -334,7 +334,7 @@ describe('License.setLicense', () => {
 		licenseManager.on('sync', syncCallback);
 		licenseManager.on('module', moduleCallback);
 
-		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']);
+		const license = await new MockedLicenseBuilder().withGrantedModules(['auditing']);
 
 		await expect(licenseManager.setLicense(await license.sign())).resolves.toBe(true);
 
@@ -354,7 +354,7 @@ describe('License.setLicense', () => {
 		licenseManager.on('sync', syncCallback);
 		licenseManager.on('module', moduleCallback);
 
-		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+		const license = await new MockedLicenseBuilder().withGrantedModules(['auditing']).withLimits('activeUsers', [
 			{
 				max: 10,
 				behavior: 'disable_modules',
@@ -393,7 +393,7 @@ describe('License.setLicense', () => {
 		licenseManager.on('sync', syncCallback);
 		licenseManager.on('module', moduleCallback);
 
-		const license = await new MockedLicenseBuilder().withGratedModules(['auditing']).withLimits('activeUsers', [
+		const license = await new MockedLicenseBuilder().withGrantedModules(['auditing']).withLimits('activeUsers', [
 			{
 				max: 10,
 				behavior: 'disable_modules',
@@ -431,7 +431,7 @@ describe('License.removeLicense', () => {
 
 		licenseManager.onModule(moduleCallback);
 
-		const license = await new MockedLicenseBuilder().withGratedModules(['auditing', 'chat.rocket.test-addon']).withLimits('activeUsers', [
+		const license = await new MockedLicenseBuilder().withGrantedModules(['auditing', 'chat.rocket.test-addon']).withLimits('activeUsers', [
 			{
 				max: 10,
 				behavior: 'disable_modules',

@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react';
 
 import { useDraggable } from './DraggableCore';
-import VoipPopup from '../VoipPopup/VoipPopup';
+import VoipPopup from '../VoipPopup';
 import type { PositionOffsets } from '../VoipPopup/components/VoipPopupContainer';
 
 type VoipPopupDraggableProps = {

@@ -7,5 +7,8 @@
 		"typescript": "~5.8.3"
 	},
 	"main": "./src/index.js",
-	"typings": "./dist/index.d.ts"
+	"typings": "./dist/index.d.ts",
+	"volta": {
+		"extends": "../../package.json"
+	}
 }

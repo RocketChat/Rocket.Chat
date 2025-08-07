@@ -23,7 +23,7 @@ export interface IOutboundProviderTemplate {
 	partnerId: string;
 	externalId: string;
 	updatedExternal: string; // ISO 8601 timestamp
-	rejectedReason: string | null;
+	rejectedReason: string | undefined;
 }
 
 type Component = IHeaderComponent | IBodyComponent | IFooterComponent;

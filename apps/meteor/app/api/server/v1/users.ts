@@ -1,5 +1,5 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
@@ -176,7 +176,13 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 					};
 
-			await executeSaveUserProfile.call(this as unknown as Meteor.MethodThisType, userData, this.bodyParams.customFields, twoFactorOptions);
+			await executeSaveUserProfile.call(
+				this as unknown as Meteor.MethodThisType,
+				this.user,
+				userData,
+				this.bodyParams.customFields,
+				twoFactorOptions,
+			);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
@@ -1317,10 +1323,14 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
+			const { _id, username, roles, name } = user;
+			let { statusText } = user;
+
 			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
 				await setStatusText(user._id, this.bodyParams.message);
+				statusText = this.bodyParams.message;
 			}
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
@@ -1343,7 +1353,6 @@ API.v1.addRoute(
 						},
 					);
 
-					const { _id, username, statusText, roles, name } = user;
 					void api.broadcast('presence.status', {
 						user: { status, _id, username, statusText, roles, name },
 						previousStatus: user.status,

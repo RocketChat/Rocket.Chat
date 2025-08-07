@@ -16,13 +16,13 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { FormEvent } from 'react';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
-import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
+import { omnichannelQueryKeys } from '../../../../../lib/queryKeys';
 
 type AssignAgentModalProps = {
 	closeModal: () => void;
@@ -51,7 +51,11 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 	});
 	const handleAgentChange = useEffectEvent((e: string) => setAgent(e));
 
-	const { value: availableExtensions, phase: state } = useEndpointData('/v1/omnichannel/extension', { params: query });
+	const getExtensions = useEndpoint('GET', '/v1/omnichannel/extension');
+	const { isPending, data: availableExtensions } = useQuery({
+		queryKey: omnichannelQueryKeys.extensions(query),
+		queryFn: () => getExtensions(query),
+	});
 
 	return (
 		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleAssignment} {...props} />}>
@@ -71,7 +75,7 @@ const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgent
 						<FieldLabel>{t('Available_extensions')}</FieldLabel>
 						<FieldRow>
 							<Select
-								disabled={state === AsyncStatePhase.LOADING || agent === ''}
+								disabled={isPending || agent === ''}
 								options={availableExtensions?.extensions?.map((extension) => [extension, extension]) || []}
 								value={extension}
 								placeholder={t('Select_an_option')}

@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { ExportMessagesTab } from './export-messages-tab';
 import { HomeFlextabChannels } from './home-flextab-channels';
-import { HomeFlextabExportMessages } from './home-flextab-exportMessages';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
 import { HomeFlextabOtr } from './home-flextab-otr';
@@ -21,7 +21,7 @@ export class HomeFlextab {
 
 	readonly otr: HomeFlextabOtr;
 
-	readonly exportMessages: HomeFlextabExportMessages;
+	readonly exportMessages: ExportMessagesTab;
 
 	readonly pruneMessages: HomeFlextabPruneMessages;
 
@@ -32,7 +32,7 @@ export class HomeFlextab {
 		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
 		this.otr = new HomeFlextabOtr(page);
-		this.exportMessages = new HomeFlextabExportMessages(page);
+		this.exportMessages = new ExportMessagesTab(page);
 		this.pruneMessages = new HomeFlextabPruneMessages(page);
 	}
 

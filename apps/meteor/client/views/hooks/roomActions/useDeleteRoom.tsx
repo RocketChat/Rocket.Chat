@@ -3,9 +3,10 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRouter, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import { useTeamInfoQuery } from '../../../hooks/useTeamInfoQuery';
 import DeleteTeamModal from '../../teams/contextualBar/info/DeleteTeam';
 
 export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { reload }: { reload?: () => void } = {}) => {
@@ -19,19 +20,12 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 
 	const deleteRoomEndpoint = useEndpoint('POST', '/v1/rooms.delete');
 	const deleteTeamEndpoint = useEndpoint('POST', '/v1/teams.delete');
-	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
 
 	const teamId = room.teamId || '';
-	const { data: teamInfoData } = useQuery({
-		queryKey: ['teamId', teamId],
-		queryFn: async () => teamsInfoEndpoint({ teamId }),
-		placeholderData: keepPreviousData,
-		retry: false,
-		enabled: room.teamId !== '',
-	});
+	const { data: teamInfo } = useTeamInfoQuery(teamId);
 
 	const hasPermissionToDeleteRoom = usePermission(`delete-${room.t}`, room._id);
-	const hasPermissionToDeleteTeamRoom = usePermission(`delete-team-${room.t === 'c' ? 'channel' : 'group'}`, teamInfoData?.teamInfo.roomId);
+	const hasPermissionToDeleteTeamRoom = usePermission(`delete-team-${room.t === 'c' ? 'channel' : 'group'}`, teamInfo?.roomId);
 	const isTeamRoom = room.teamId;
 	const canDeleteRoom = isRoomFederated(room) ? false : hasPermissionToDeleteRoom && (!isTeamRoom || hasPermissionToDeleteTeamRoom);
 

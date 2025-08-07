@@ -19,6 +19,10 @@
 /apps/meteor/app/livechat @RocketChat/omnichannel
 /apps/meteor/app/voip @RocketChat/omnichannel
 /apps/meteor/app/sms @RocketChat/omnichannel
+/apps/meteor/app/api @RocketChat/backend
+/apps/meteor/app/federation @RocketChat/backend
+/apps/meteor/app/file-upload @RocketChat/backend
+/apps/meteor/app/integrations @RocketChat/backend
 /apps/meteor/server @RocketChat/backend
 /packages/models @RocketChat/Architecture
 apps/meteor/server/startup/migrations @RocketChat/Architecture

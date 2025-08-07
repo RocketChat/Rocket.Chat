@@ -44,7 +44,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:closeRoom'(roomId: string, comment?: string, options?: CloseRoomOptions) {
-		methodDeprecationLogger.method('livechat:closeRoom', '7.0.0');
+		methodDeprecationLogger.method('livechat:closeRoom', '7.0.0', '/v1/livechat/room.close');
 
 		const userId = Meteor.userId();
 		if (!userId || !(await hasPermissionAsync(userId, 'close-livechat-room'))) {

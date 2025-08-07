@@ -1,13 +1,18 @@
 import { faker } from '@faker-js/faker';
 import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
 import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
-import { AppSubscriptionStatus, ILivechatAgentStatus, OmnichannelSourceType, UserStatus } from '@rocket.chat/core-typings';
+import {
+	AppSubscriptionStatus,
+	ILivechatAgentStatus,
+	LivechatPriorityWeight,
+	OmnichannelSourceType,
+	UserStatus,
+} from '@rocket.chat/core-typings';
 import type {
 	LicenseInfo,
 	App,
 	IMessage,
 	IRoom,
-	ISubscription,
 	IUser,
 	ILivechatContactChannel,
 	Serialized,
@@ -18,6 +23,7 @@ import type {
 	ILivechatMonitor,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import type { MessageWithMdEnforced } from '../../client/lib/parseMessageTextToAstMarkdown';
 
@@ -53,7 +59,7 @@ export const createFakeRoom = <T extends IRoom = IRoom>(overrides?: Partial<T & 
 		...overrides,
 	}) as T;
 
-export const createFakeSubscription = (overrides?: Partial<ISubscription>): ISubscription => ({
+export const createFakeSubscription = (overrides?: Partial<SubscriptionWithRoom>): SubscriptionWithRoom => ({
 	_id: faker.database.mongodbObjectId(),
 	_updatedAt: faker.date.recent(),
 	u: {
@@ -74,6 +80,11 @@ export const createFakeSubscription = (overrides?: Partial<ISubscription>): ISub
 	groupMentions: faker.number.int({ min: 0 }),
 	lowerCaseName: faker.person.fullName().toLowerCase(),
 	lowerCaseFName: faker.person.fullName().toLowerCase(),
+	usersCount: faker.number.int({ min: 0 }),
+	waitingResponse: faker.datatype.boolean(),
+	priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+	estimatedWaitingTimeQueue: faker.number.int({ min: 0, max: 100 }),
+	livechatData: faker.date.recent(),
 	...overrides,
 });
 

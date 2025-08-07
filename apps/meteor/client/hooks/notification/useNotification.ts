@@ -22,7 +22,7 @@ export const useNotification = () => {
 			return;
 		}
 
-		const { rid, name, _id: msgId } = notification.payload;
+		const { rid, name: roomName, _id: msgId } = notification.payload;
 		if (!rid) {
 			return;
 		}
@@ -35,7 +35,7 @@ export const useNotification = () => {
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
 			body: stripTags(message?.msg),
-			tag: notification.payload._id,
+			tag: msgId,
 			canReply: true,
 			silent: true,
 			requireInteraction,
@@ -63,7 +63,9 @@ export const useNotification = () => {
 			n.close();
 			window.focus();
 
-			const jump = msgId && { jump: msgId };
+			if (!msgId || !rid || !roomName) {
+				return;
+			}
 
 			switch (notification.payload?.type) {
 				case 'd':
@@ -76,32 +78,32 @@ export const useNotification = () => {
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...router.getSearchParameters(), ...jump },
+						search: { ...router.getSearchParameters(), jump: msgId },
 					});
 					break;
 				case 'c':
 					return router.navigate({
 						pattern: '/channel/:name/:tab?/:context?',
 						params: {
-							name: name || rid,
+							name: roomName,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...router.getSearchParameters(), ...jump },
+						search: { ...router.getSearchParameters(), jump: msgId },
 					});
 				case 'p':
 					return router.navigate({
 						pattern: '/group/:name/:tab?/:context?',
 						params: {
-							name: name || rid,
+							name: roomName,
 							...(notification.payload.tmid && {
 								tab: 'thread',
 								context: notification.payload.tmid,
 							}),
 						},
-						search: { ...router.getSearchParameters(), ...jump },
+						search: { ...router.getSearchParameters(), jump: msgId },
 					});
 				case 'l':
 					return router.navigate({
@@ -110,7 +112,7 @@ export const useNotification = () => {
 							id: rid,
 							tab: 'room-info',
 						},
-						search: { ...router.getSearchParameters(), ...jump },
+						search: { ...router.getSearchParameters(), jump: msgId },
 					});
 			}
 		};

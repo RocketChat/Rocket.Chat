@@ -1,5 +1,5 @@
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
-import formatDistance from 'date-fns/formatDistance';
+import { formatDistance } from 'date-fns';
 import moment from 'moment';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';

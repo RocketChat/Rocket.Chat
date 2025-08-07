@@ -56,7 +56,7 @@ describe('SystemMessage', () => {
 	it('should render system message', () => {
 		const message = createBaseMessage('& test &');
 
-		render(<SystemMessage message={message} showUserAvatar />, { legacyRoot: true, wrapper: wrapper.build() });
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
 
 		expect(screen.getByText('changed room description to: & test &')).toBeInTheDocument();
 	});
@@ -64,7 +64,7 @@ describe('SystemMessage', () => {
 	it('should not show escaped html while rendering system message', () => {
 		const message = createBaseMessage('& test &');
 
-		render(<SystemMessage message={message} showUserAvatar />, { legacyRoot: true, wrapper: wrapper.build() });
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
 
 		expect(screen.getByText('changed room description to: & test &')).toBeInTheDocument();
 		expect(screen.queryByText('changed room description to: &amp; test &amp;')).not.toBeInTheDocument();
@@ -73,7 +73,7 @@ describe('SystemMessage', () => {
 	it('should not inject html', () => {
 		const message = createBaseMessage('<button title="test-title">OK</button>');
 
-		render(<SystemMessage message={message} showUserAvatar />, { legacyRoot: true, wrapper: wrapper.build() });
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
 
 		expect(screen.queryByTitle('test-title')).not.toBeInTheDocument();
 		expect(screen.getByText('changed room description to: <button title="test-title">OK</button>')).toBeInTheDocument();

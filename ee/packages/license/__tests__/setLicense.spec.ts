@@ -140,7 +140,7 @@ describe('License set license procedures', () => {
 			const mocked = new MockedLicenseBuilder();
 			const oldToken = await mocked.sign();
 
-			const newToken = await mocked.withGratedModules(['livechat-enterprise', 'chat.rocket.test-addon']).sign();
+			const newToken = await mocked.withGrantedModules(['livechat-enterprise', 'chat.rocket.test-addon']).sign();
 
 			await expect(license.setLicense(oldToken)).resolves.toBe(true);
 			expect(license.hasValidLicense()).toBe(true);

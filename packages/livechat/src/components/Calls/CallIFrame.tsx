@@ -1,10 +1,10 @@
 import { useEffect } from 'preact/hooks';
 
+import { CallStatus } from './CallStatus';
+import styles from './styles.scss';
 import { getConnectionBaseUrl } from '../../helpers/baseUrl';
 import { createClassName } from '../../helpers/createClassName';
 import store from '../../store';
-import { CallStatus } from './CallStatus';
-import styles from './styles.scss';
 
 export const CallIframe = () => {
 	const { token, room, incomingCallAlert, ongoingCall } = store.state;

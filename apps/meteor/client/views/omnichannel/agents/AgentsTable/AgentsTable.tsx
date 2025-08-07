@@ -34,7 +34,7 @@ const AgentsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
-	const { data, isSuccess, isLoading, refetch } = useAgentsQuery(query);
+	const { data, isSuccess, isLoading } = useAgentsQuery(query);
 
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
@@ -71,7 +71,7 @@ const AgentsTable = () => {
 
 	return (
 		<>
-			<AddAgent reload={refetch} />
+			<AddAgent />
 			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}

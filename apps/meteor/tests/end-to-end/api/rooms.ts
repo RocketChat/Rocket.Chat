@@ -4431,4 +4431,27 @@ describe('[Rooms]', () => {
 				});
 		});
 	});
+
+	describe('/rooms.roles', () => {
+		let testChannel: IRoom;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` })).body.channel;
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+		it('should get room roles', async () => {
+			const response = await request.get(api('rooms.roles')).set(credentials).query({ rid: testChannel._id }).expect(200);
+			expect(response.body.success).to.be.true;
+			// the schema is already validated in the server on TEST mode
+			expect(response.body.roles).to.be.an('array');
+			// it should have the user roles
+			expect(response.body.roles).to.have.lengthOf(1);
+			expect(response.body.roles[0].rid).to.equal(testChannel._id);
+			expect(response.body.roles[0].roles).to.be.an('array');
+			// it should contain owner role
+			expect(response.body.roles[0].roles).to.include('owner');
+		});
+	});
 });

@@ -1,7 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Rooms } from '../../../app/models/client';
+import { Rooms } from '../../stores';
 
 export const getUidDirectMessage = (rid: IRoom['_id'], uid: IUser['_id'] | null = Meteor.userId()): string | undefined => {
 	const room = Rooms.state.get(rid);

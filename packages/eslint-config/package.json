@@ -37,5 +37,8 @@
 	],
 	"devDependencies": {
 		"typescript": "~5.8.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

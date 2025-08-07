@@ -17,10 +17,16 @@ export type ExecRequestOptions = {
 	timeout?: number;
 };
 
+const defaultRuntimeFactory = (manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) =>
+	new DenoRuntimeSubprocessController(manager, appPackage, storageItem);
+
 export class AppRuntimeManager {
 	private readonly subprocesses: Record<string, DenoRuntimeSubprocessController> = {};
 
-	constructor(private readonly manager: AppManager) {}
+	constructor(
+		private readonly manager: AppManager,
+		private readonly runtimeFactory = defaultRuntimeFactory,
+	) {}
 
 	public async startRuntimeForApp(
 		appPackage: IParseAppPackageResult,
@@ -33,9 +39,16 @@ export class AppRuntimeManager {
 			throw new Error('App already has an associated runtime');
 		}
 
-		this.subprocesses[appId] = new DenoRuntimeSubprocessController(this.manager, appPackage, storageItem);
+		this.subprocesses[appId] = this.runtimeFactory(this.manager, appPackage, storageItem);
 
-		await this.subprocesses[appId].setupApp();
+		try {
+			await this.subprocesses[appId].setupApp();
+		} catch (error) {
+			const subprocess = this.subprocesses[appId];
+			delete this.subprocesses[appId];
+			await subprocess.stopApp();
+			throw error;
+		}
 
 		return this.subprocesses[appId];
 	}

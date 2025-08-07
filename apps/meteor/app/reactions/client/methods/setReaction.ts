@@ -3,8 +3,8 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { Rooms, Subscriptions, Messages } from '../../../../client/stores';
 import { emoji } from '../../../emoji/client';
-import { Messages, Rooms, Subscriptions } from '../../../models/client';
 
 Meteor.methods<ServerMethods>({
 	async setReaction(reaction, messageId) {
@@ -40,7 +40,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!Subscriptions.findOne({ rid: message.rid })) {
+		if (!Subscriptions.state.find(({ rid }) => rid === message.rid)) {
 			return false;
 		}
 

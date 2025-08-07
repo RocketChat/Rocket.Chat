@@ -1,6 +1,7 @@
 import type { RestorableFunctionSpy } from 'alsatian';
 import { Expect, Setup, SetupFixture, SpyOn, Teardown, Test } from 'alsatian';
 
+import type { AppOutboundCommunicationProviderManager } from '../../../server/managers/AppOutboundCommunicationProviderManager';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
@@ -52,7 +53,10 @@ export class AppAccessorManagerTestFixture {
 			getVideoConfProviderManager() {
 				return {} as AppVideoConfProviderManager;
 			},
-		} as AppManager;
+			getOutboundCommunicationProviderManager() {
+				return {} as AppOutboundCommunicationProviderManager;
+			},
+		} as unknown as AppManager;
 	}
 
 	@Setup

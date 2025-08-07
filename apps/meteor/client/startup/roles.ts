@@ -2,9 +2,9 @@ import type { IRole } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { Roles } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
+import { Roles } from '../stores';
 
 Meteor.startup(() => {
 	onLoggedIn(async () => {

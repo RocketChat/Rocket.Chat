@@ -3,9 +3,9 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@types/jest": "~29.5.14",
+		"@types/jest": "~30.0.0",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.2",
+		"jest": "~30.0.5",
 		"ts-jest": "~29.4.0",
 		"typescript": "~5.8.3"
 	},

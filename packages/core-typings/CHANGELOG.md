@@ -1,5 +1,35 @@
 # @rocket.chat/core-typings
 
+## 7.9.0
+
+### Minor Changes
+
+- ([#36377](https://github.com/RocketChat/Rocket.Chat/pull/36377)) Adds new endpoints for outbound communications
+
+### Patch Changes
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+## 7.9.0-rc.2
+
+## 7.9.0-rc.1
+
+## 7.9.0-rc.0
+
+### Minor Changes
+
+- ([#36377](https://github.com/RocketChat/Rocket.Chat/pull/36377)) Adds new endpoints for outbound communications
+
+### Patch Changes
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+## 7.8.3
+
+## 7.8.2
+
+## 7.8.1
+
 ## 7.8.0
 
 ### Minor Changes

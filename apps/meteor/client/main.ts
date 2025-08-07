@@ -9,7 +9,7 @@ FlowRouter.notFound = {
 	action: () => undefined,
 };
 
-import('./polyfills')
+import('@rocket.chat/fuselage-polyfills')
 	.then(() => import('./meteorOverrides'))
 	.then(() => import('./ecdh'))
 	.then(() => import('./importPackages'))

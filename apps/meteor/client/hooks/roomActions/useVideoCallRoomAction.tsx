@@ -77,7 +77,7 @@ export const useVideoCallRoomAction = () => {
 			icon: 'video',
 			featured: true,
 			action: handleOpenVideoConf,
-			order: -1,
+			order: 1,
 			groups,
 			disabled,
 			tooltip,

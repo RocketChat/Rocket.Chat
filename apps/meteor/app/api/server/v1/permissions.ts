@@ -1,17 +1,101 @@
 import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
-import { isBodyParamsValidPermissionUpdate } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { permissionsGetMethod } from '../../../authorization/server/streamer/permissions';
 import { notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
-API.v1.addRoute(
-	'permissions.listAll',
-	{ authRequired: true },
-	{
-		async get() {
+type PermissionsListAllProps = {
+	updatedSince?: string;
+};
+
+type PermissionsUpdateProps = {
+	permissions: { _id: string; roles: string[] }[];
+};
+
+const permissionListAllSchema = {
+	type: 'object',
+	properties: {
+		updatedSince: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+const permissionUpdatePropsSchema = {
+	type: 'object',
+	properties: {
+		permissions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					roles: {
+						type: 'array',
+						items: { type: 'string' },
+						uniqueItems: true,
+					},
+				},
+				additionalProperties: false,
+				required: ['_id', 'roles'],
+			},
+		},
+	},
+	required: ['permissions'],
+	additionalProperties: false,
+};
+
+const isPermissionsListAll = ajv.compile<PermissionsListAllProps>(permissionListAllSchema);
+
+const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(permissionUpdatePropsSchema);
+
+const permissionsEndpoints = API.v1
+	.get(
+		'permissions.listAll',
+		{
+			authRequired: true,
+			query: isPermissionsListAll,
+			response: {
+				200: ajv.compile<{
+					update: IPermission[];
+					remove: IPermission[];
+				}>({
+					type: 'object',
+					properties: {
+						update: {
+							type: 'array',
+							items: { $ref: '#/components/schemas/IPermission' },
+						},
+						remove: {
+							type: 'array',
+							items: { $ref: '#/components/schemas/IPermission' },
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['update', 'remove', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { updatedSince } = this.queryParams;
 
 			let updatedSinceDate: Date | undefined;
@@ -36,14 +120,38 @@ API.v1.addRoute(
 
 			return API.v1.success(result);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'permissions.update',
-	{ authRequired: true, permissionsRequired: ['access-permissions'] },
-	{
-		async post() {
+	)
+	.post(
+		'permissions.update',
+		{
+			authRequired: true,
+			permissionsRequired: ['access-permissions'],
+			body: isBodyParamsValidPermissionUpdate,
+			response: {
+				200: ajv.compile<{
+					permissions: IPermission[];
+				}>({
+					type: 'object',
+					properties: {
+						permissions: {
+							type: 'array',
+							items: { $ref: '#/components/schemas/IPermission' },
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['permissions', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const { bodyParams } = this;
 
 			if (!isBodyParamsValidPermissionUpdate(bodyParams)) {
@@ -76,5 +184,11 @@ API.v1.addRoute(
 				permissions: result,
 			});
 		},
-	},
-);
+	);
+
+export type PermissionsEndpoints = ExtractRoutesFromAPI<typeof permissionsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends PermissionsEndpoints {}
+}

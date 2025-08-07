@@ -1147,15 +1147,19 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	 * @param {IRole['_id'][]} roles the list of roles
 	 * @param {any} options
 	 */
-	findByRoomIdAndRoles(roomId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		roles = ([] as string[]).concat(roles);
+	findByRoomIdAndRoles: ISubscriptionsModel['findByRoomIdAndRoles'] = (
+		roomId: string,
+		roles: string[],
+		options?: FindOptions<ISubscription>,
+	) => {
+		const rolesArray = ([] as string[]).concat(roles);
 		const query = {
 			rid: roomId,
-			roles: { $in: roles },
+			roles: { $in: rolesArray },
 		};
 
 		return this.find(query, options);
-	}
+	};
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number> {
 		roles = ([] as string[]).concat(roles);

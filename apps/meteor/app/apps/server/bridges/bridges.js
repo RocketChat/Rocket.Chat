@@ -16,6 +16,7 @@ import { AppLivechatBridge } from './livechat';
 import { AppMessageBridge } from './messages';
 import { AppModerationBridge } from './moderation';
 import { AppOAuthAppsBridge } from './oauthApps';
+import { OutboundCommunicationBridge } from './outboundCommunication';
 import { AppPersistenceBridge } from './persistence';
 import { AppRoleBridge } from './roles';
 import { AppRoomBridge } from './rooms';
@@ -57,6 +58,7 @@ export class RealAppBridges extends AppBridges {
 		this._roleBridge = new AppRoleBridge(orch);
 		this._emailBridge = new AppEmailBridge(orch);
 		this._contactBridge = new AppContactBridge(orch);
+		this._outboundMessageBridge = new OutboundCommunicationBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -137,6 +139,10 @@ export class RealAppBridges extends AppBridges {
 
 	getVideoConferenceBridge() {
 		return this._videoConfBridge;
+	}
+
+	getOutboundMessageBridge() {
+		return this._outboundMessageBridge;
 	}
 
 	getOAuthAppsBridge() {

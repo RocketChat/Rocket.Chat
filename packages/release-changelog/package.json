@@ -17,5 +17,8 @@
 	"dependencies": {
 		"dataloader": "^2.2.3",
 		"node-fetch": "^2.7.0"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

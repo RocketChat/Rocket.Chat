@@ -154,6 +154,10 @@ jobs:
           setup: false
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Set DEBUG_LOG_LEVEL (debug enabled)
+        if: runner.debug == '1'
+        run: echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
+
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
         run: |
@@ -184,7 +188,7 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          docker compose -f docker-compose-ci.yml up -d rocketchat
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -196,7 +200,7 @@ jobs:
           COVERAGE_REPORTER: 'lcov'
           DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
-          docker compose -f docker-compose-ci.yml up -d
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'

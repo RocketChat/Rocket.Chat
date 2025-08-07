@@ -1,7 +1,8 @@
+import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { buildNotificationDetails } from './buildNotificationDetails';
+import { settings } from '../../../app/settings/server';
 import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 
@@ -40,16 +41,14 @@ class RoomCoordinatorServer extends RoomCoordinator {
 				sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 				notificationMessage: string,
 				userId: string,
-				language?: string,
-			) {
-				return buildNotificationDetails({
-					expectedNotificationMessage: notificationMessage,
-					sender,
-					senderNameExpectedInMessage: true,
-					language,
-					expectedTitle: `#${await this.roomName(room, userId)}`,
-					room,
-				});
+			): Promise<{ title: string | undefined; text: string; name: string | undefined }> {
+				const title = `#${await this.roomName(room, userId)}`;
+				const useRealName = settings.get<boolean>('UI_Use_Real_Name');
+				const senderName = getUserDisplayName(sender.name, sender.username, useRealName);
+
+				const text = `${senderName}: ${notificationMessage}`;
+
+				return { title, text, name: room.name };
 			},
 			getMsgSender(message: IMessage): Promise<IUser | null> {
 				return Users.findOneById(message.u._id);

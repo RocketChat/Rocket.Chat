@@ -97,6 +97,8 @@ export const removeUserFromRole = async (userId: string, roleId: string, usernam
 
 Meteor.methods<ServerMethods>({
 	async 'authorization:removeUserFromRole'(roleId, username, scope) {
+		methodDeprecationLogger.method('authorization:removeUserFromRole', '8.0.0', '/v1/roles.removeUserFromRole');
+
 		const userId = Meteor.userId();
 
 		if (!userId) {

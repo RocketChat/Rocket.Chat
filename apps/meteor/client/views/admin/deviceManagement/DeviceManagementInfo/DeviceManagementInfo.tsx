@@ -17,11 +17,9 @@ import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
-type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
-	onReload: () => void;
-};
+type DeviceManagementInfoProps = DeviceManagementPopulatedSession;
 
-const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, onReload }: DeviceManagementInfoProps): ReactElement => {
+const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }: DeviceManagementInfoProps): ReactElement => {
 	const { t } = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
@@ -91,7 +89,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={(): void => handleDeviceLogout(onReload)}>
+					<Button primary onClick={() => handleDeviceLogout()}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>
