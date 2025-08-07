@@ -1,64 +1,9 @@
-import type { CallAnswer, CallHangupReason, CallService, CallState } from '../../call';
-import type { ClientState } from '../../client';
-
-export type ClientMediaSignalRequestCall = {
-	// the callId on this signal is temporary and is never propagated to other agents
-	callId: string;
-	contractId: string;
-	type: 'request-call';
-	callee: {
-		type: 'user' | 'sip';
-		id: string;
-	};
-	supportedServices: CallService[];
-};
-
-// Client is sending the local session description to the server
-export type ClientMediaSignalLocalSDP = {
-	callId: string;
-	contractId: string;
-	type: 'local-sdp';
-
-	sdp: RTCSessionDescriptionInit;
-};
-
-// Client is reporting an error
-export type ClientMediaSignalError = {
-	callId: string;
-	contractId: string;
-	type: 'error';
-
-	errorCode: string;
-};
-
-// Client is saying that the user accepted or rejected a call, or simply reporting that the user can or can't be reached
-export type ClientMediaSignalAnswer = {
-	callId: string;
-	type: 'answer';
-	contractId: string;
-
-	answer: CallAnswer;
-};
-
-// Client is saying they hanged up from a call. The reason specifies if its a clean hangup or an error
-export type ClientMediaSignalHangup = {
-	callId: string;
-	contractId: string;
-	type: 'hangup';
-
-	reason: CallHangupReason;
-};
-
-// Client is sending their local call state
-export type ClientMediaSignalLocalState = {
-	callId: string;
-	contractId: string;
-	type: 'local-state';
-
-	callState: CallState;
-	clientState: ClientState;
-	serviceStates?: Record<string, string>;
-};
+import { clientMediaSignalAnswerSchema, type ClientMediaSignalAnswer } from './answer';
+import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './error';
+import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup';
+import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './local-sdp';
+import { clientMediaSignalLocalStateSchema, type ClientMediaSignalLocalState } from './local-state';
+import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call';
 
 export type ClientMediaSignal =
 	| ClientMediaSignalLocalSDP
@@ -67,6 +12,21 @@ export type ClientMediaSignal =
 	| ClientMediaSignalHangup
 	| ClientMediaSignalRequestCall
 	| ClientMediaSignalLocalState;
+
+export const clientMediaSignalSchema = {
+	type: 'object',
+	additionalProperties: true,
+	discriminator: { propertyName: 'type' },
+	required: ['type'],
+	oneOf: [
+		clientMediaSignalLocalSDPSchema,
+		clientMediaSignalErrorSchema,
+		clientMediaSignalAnswerSchema,
+		clientMediaSignalHangupSchema,
+		clientMediaSignalRequestCallSchema,
+		clientMediaSignalLocalStateSchema,
+	],
+} as const;
 
 export type ClientMediaSignalType = ClientMediaSignal['type'];
 

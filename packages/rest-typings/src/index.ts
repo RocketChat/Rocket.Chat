@@ -31,7 +31,6 @@ import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
 import type { MailerEndpoints } from './v1/mailer';
 import type { MeEndpoints } from './v1/me';
-import type { MediaCallsEndpoints } from './v1/media-calls';
 import type { MiscEndpoints } from './v1/misc';
 import type { ModerationEndpoints } from './v1/moderation';
 import type { OAuthAppsEndpoint } from './v1/oauthapps';
@@ -102,7 +101,6 @@ export interface Endpoints
 		ImportEndpoints,
 		VoipFreeSwitchEndpoints,
 		ServerEventsEndpoints,
-		MediaCallsEndpoints,
 		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -222,7 +220,6 @@ export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
 export * from './v1/videoConference';
-export * from './v1/media-calls';
 export * from './v1/assets';
 export * from './v1/channels';
 export * from './v1/customUserStatus';

@@ -1,3 +1,3 @@
-export * from './client/MediaSignal';
-export * from './server/MediaSignal';
+export * from './client';
+export * from './server';
 export * from './Transport';

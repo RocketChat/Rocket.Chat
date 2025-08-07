@@ -7820,6 +7820,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
+    ajv: "npm:^8.17.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     typescript: "npm:~5.8.3"

@@ -3,6 +3,7 @@ import type { ClientMediaSignalRequestCall, ServerMediaSignalRejectedCallRequest
 import { MediaCalls } from '@rocket.chat/models';
 
 import { createCall } from './createCall';
+import { logger } from './logger';
 import { mutateCallee } from './mutateCallee';
 import { sendSignal } from './signalHandler';
 
@@ -23,7 +24,7 @@ async function getExistingCall(
 		return null;
 	}
 
-	console.log('getExistingCall');
+	logger.debug({ msg: 'getExistingCall', uid, signal, callee });
 
 	const caller = { type: 'user', id: uid } as const;
 	const rejection = { callId: requestedCallId, toContractId: signal.contractId, reason: 'invalid-call-id' } as const;
@@ -74,7 +75,7 @@ async function getExistingCall(
 }
 
 export async function processNewCallSignal(signal: ClientMediaSignalRequestCall, uid: IUser['_id']): Promise<void> {
-	console.log('processNewCallSignal');
+	logger.debug({ msg: 'processNewCallSignal', signal, uid });
 
 	const caller = { type: 'user', id: uid } as const;
 	const callee = await mutateCallee(signal.callee);

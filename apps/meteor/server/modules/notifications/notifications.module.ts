@@ -1,4 +1,4 @@
-import { Authorization, VideoConf } from '@rocket.chat/core-services';
+import { Authorization, MediaCall, VideoConf } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
@@ -7,6 +7,7 @@ import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocke
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
+import { isClientMediaSignal } from '@rocket.chat/media-signaling-server';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -306,6 +307,21 @@ export class NotificationsModule {
 					uid,
 					rid,
 				});
+			}
+
+			if (e === 'media-calls') {
+				if (!this.userId || !data || typeof data !== 'object') {
+					return false;
+				}
+
+				if (!isClientMediaSignal(data)) {
+					return false;
+				}
+
+				void MediaCall.processSignal(this.userId, data).catch(() => null);
+
+				// media call signals don't ever need to be broadcasted
+				return false;
 			}
 
 			return Boolean(this.userId);

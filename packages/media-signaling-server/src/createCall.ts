@@ -3,8 +3,9 @@ import type { CallService } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
 import { agentManager } from './agents/Manager';
+import { logger } from './logger';
 
-export type CreateCallParams = {
+type CreateCallParams = {
 	caller: MediaCallSignedActor;
 	callee: MediaCallActor;
 	requestedCallId?: string;
@@ -12,7 +13,7 @@ export type CreateCallParams = {
 };
 
 export async function createCall(params: CreateCallParams): Promise<IMediaCall> {
-	console.log('createCall', params);
+	logger.debug({ msg: 'createCall', params });
 	const { caller, callee, requestedCallId, requestedService } = params;
 
 	// The caller must always have a contract to create the call

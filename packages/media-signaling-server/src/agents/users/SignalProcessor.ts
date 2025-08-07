@@ -3,6 +3,7 @@ import type { CallAnswer, ClientMediaSignal } from '@rocket.chat/media-signaling
 import { MediaCallChannels } from '@rocket.chat/models';
 
 import type { UserMediaCallAgent } from './Agent';
+import { logger } from '../../logger';
 import { agentManager } from '../Manager';
 
 type ChannelFunctionParams = {
@@ -14,7 +15,7 @@ export class UserAgentSignalProcessor {
 	constructor(private readonly agent: UserMediaCallAgent) {}
 
 	public async processSignal(signal: ClientMediaSignal, call: IMediaCall): Promise<void> {
-		console.log('SignalProcessor.processSignal');
+		logger.debug({ msg: 'UserAgentSignalProcessor.processSignal', call, signal });
 
 		const channel = await agentManager.getOrCreateContract(call._id, this.agent, { acknowledged: true });
 		if (!channel) {
@@ -45,14 +46,14 @@ export class UserAgentSignalProcessor {
 	}
 
 	private async saveLocalDescription({ channel }: ChannelFunctionParams, sdp: RTCSessionDescriptionInit): Promise<void> {
-		console.log('SignalProcessor.saveLocalDescription');
+		logger.debug({ msg: 'UserAgentSignalProcessor.saveLocalDescription', sdp });
 		await MediaCallChannels.setLocalDescription(channel._id, sdp);
 
 		await agentManager.setLocalDescription(this.agent, sdp);
 	}
 
 	private async processAnswer(params: ChannelFunctionParams, answer: CallAnswer): Promise<void> {
-		console.log('processAnswer');
+		logger.debug({ msg: 'UserAgentSignalProcessor.processAnswer', params, answer });
 		const { call } = params;
 
 		switch (answer) {
@@ -69,13 +70,12 @@ export class UserAgentSignalProcessor {
 	}
 
 	private async processReject(call: IMediaCall): Promise<void> {
-		console.log('SignalProcessor.processReject');
+		logger.debug({ msg: 'UserAgentSignalProcessor.processReject', call });
 		if (this.agent.role !== 'callee') {
 			return;
 		}
 
 		if (!['none', 'ringing'].includes(call.state)) {
-			console.log('cant reject an ongoing call.');
 			return;
 		}
 
@@ -83,6 +83,7 @@ export class UserAgentSignalProcessor {
 	}
 
 	private async processACK({ channel }: ChannelFunctionParams): Promise<void> {
+		logger.debug({ msg: 'UserAgentSignalProcessor.processACK' });
 		switch (this.agent.role) {
 			case 'callee':
 				// Change the call state from 'none' to 'ringing' when any callee session is found

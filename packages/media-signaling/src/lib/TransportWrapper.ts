@@ -35,7 +35,6 @@ export class MediaSignalTransportWrapper {
 	}
 
 	public sendSignal(signal: ClientMediaSignal): void {
-		console.log('MediaSignalTransport.sendSignal', signal);
 		this.sendSignalFn(signal);
 	}
 }
