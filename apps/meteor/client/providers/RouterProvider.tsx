@@ -2,7 +2,7 @@ import { RouterContext } from '@rocket.chat/ui-contexts';
 import type { RouterContextValue } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
-import { Router } from '../flowRouter';
+import { Router } from '../router';
 
 /** @deprecated consume it from the `RouterContext` instead */
 export const router: RouterContextValue = new Router();
