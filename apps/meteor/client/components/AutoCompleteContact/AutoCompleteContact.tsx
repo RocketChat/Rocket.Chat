@@ -34,7 +34,7 @@ const AutoCompleteContact = ({ value, placeholder, disabled, renderItem, onChang
 	const debouncedContactFilter = useDebouncedValue(contactsFilter, 500);
 
 	const {
-		data: contactsItems,
+		data: contactsItems = [],
 		fetchNextPage,
 		isPending,
 	} = useContactsList({
