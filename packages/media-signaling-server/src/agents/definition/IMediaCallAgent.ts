@@ -1,4 +1,4 @@
-import type { IMediaCall, MediaCallActor, MediaCallActorType } from '@rocket.chat/core-typings';
+import type { IMediaCall, MediaCallActor, MediaCallActorType, MediaCallSignedActor } from '@rocket.chat/core-typings';
 import type { CallContact, CallRole, CallNotification } from '@rocket.chat/media-signaling';
 
 // The basic agent may be instantiated to send notifications to actors with no need for a contract
@@ -27,7 +27,7 @@ export interface IMediaCallAgent extends IMediaCallBasicAgent {
 	readonly contractId: string;
 	readonly signed: boolean;
 
-	readonly actor: Required<MediaCallActor>;
+	readonly actor: MediaCallSignedActor;
 
 	setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void>;
 	getLocalDescription(): Promise<RTCSessionDescriptionInit | null>;
@@ -49,7 +49,7 @@ export abstract class MediaCallBasicAgent<T extends IMediaCallBasicAgent = IMedi
 
 	public readonly contractId: T['contractId'];
 
-	public readonly role: T['role'];
+	public readonly role: CallRole;
 
 	public get actor(): { type: T['actorType']; id: T['actorId']; contractId: T['contractId'] } {
 		return {
@@ -59,7 +59,7 @@ export abstract class MediaCallBasicAgent<T extends IMediaCallBasicAgent = IMedi
 		};
 	}
 
-	public get oppositeRole(): T['oppositeRole'] {
+	public get oppositeRole(): CallRole {
 		return ({ callee: 'caller', caller: 'callee' } as const)[this.role];
 	}
 

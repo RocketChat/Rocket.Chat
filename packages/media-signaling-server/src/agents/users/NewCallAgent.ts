@@ -26,6 +26,8 @@ export class UserNewCallAgent extends UserBasicAgent implements INewMediaCallAge
 			kind: call.kind,
 			role: this.role,
 			contact,
+
+			...(this.role === 'caller' && call.callerRequestedId && { requestedCallId: call.callerRequestedId }),
 		});
 	}
 }

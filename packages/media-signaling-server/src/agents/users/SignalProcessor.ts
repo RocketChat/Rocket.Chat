@@ -1,5 +1,5 @@
 import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
-import type { AgentMediaSignal, MediaSignalAnswer } from '@rocket.chat/media-signaling';
+import type { CallAnswer, ClientMediaSignal } from '@rocket.chat/media-signaling';
 import { MediaCallChannels } from '@rocket.chat/models';
 
 import type { UserMediaCallAgent } from './Agent';
@@ -13,7 +13,7 @@ type ChannelFunctionParams = {
 export class UserAgentSignalProcessor {
 	constructor(private readonly agent: UserMediaCallAgent) {}
 
-	public async processSignal(signal: AgentMediaSignal, call: IMediaCall): Promise<void> {
+	public async processSignal(signal: ClientMediaSignal, call: IMediaCall): Promise<void> {
 		console.log('SignalProcessor.processSignal');
 
 		const channel = await agentManager.getOrCreateContract(call._id, this.agent, { acknowledged: true });
@@ -29,7 +29,7 @@ export class UserAgentSignalProcessor {
 		const params = { channel, call };
 
 		switch (signal.type) {
-			case 'sdp':
+			case 'local-sdp':
 				await this.saveLocalDescription(params, signal.sdp);
 				break;
 			case 'error':
@@ -51,7 +51,7 @@ export class UserAgentSignalProcessor {
 		await agentManager.setLocalDescription(this.agent, sdp);
 	}
 
-	private async processAnswer(params: ChannelFunctionParams, answer: MediaSignalAnswer['answer']): Promise<void> {
+	private async processAnswer(params: ChannelFunctionParams, answer: CallAnswer): Promise<void> {
 		console.log('processAnswer');
 		const { call } = params;
 

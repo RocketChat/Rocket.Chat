@@ -1,5 +1,5 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { AgentMediaSignal, CallRole } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, CallRole } from '@rocket.chat/media-signaling';
 
 import { UserBasicAgent, type MinimalUserData } from './BasicAgent';
 import { UserAgentSignalProcessor } from './SignalProcessor';
@@ -29,7 +29,7 @@ export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implemen
 		this.signalProcessor = new UserAgentSignalProcessor(this);
 	}
 
-	public async processSignal(signal: AgentMediaSignal, call: IMediaCall): Promise<void> {
+	public async processSignal(signal: ClientMediaSignal, call: IMediaCall): Promise<void> {
 		return this.signalProcessor.processSignal(signal, call);
 	}
 
@@ -37,8 +37,8 @@ export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implemen
 		console.log('UserAgent.setRemoteDescription');
 		await this.sendSignal({
 			callId: this.callId,
-			contractId: this.contractId,
-			type: 'sdp',
+			toContractId: this.contractId,
+			type: 'remote-sdp',
 			sdp,
 		});
 	}
@@ -56,7 +56,7 @@ export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implemen
 
 		await this.sendSignal({
 			callId: this.callId,
-			contractId: this.contractId,
+			toContractId: this.contractId,
 			type: 'request-offer',
 			...params,
 		});

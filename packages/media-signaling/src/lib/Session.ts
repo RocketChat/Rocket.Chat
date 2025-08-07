@@ -2,12 +2,15 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { ClientMediaCall } from './Call';
 import { MediaSignalTransportWrapper } from './TransportWrapper';
+import type {
+	ClientMediaSignal,
+	IServiceProcessorFactoryList,
+	MediaSignalTransport,
+	MediaStreamFactory,
+	ServerMediaSignal,
+} from '../definition';
 import { createRandomToken } from './utils/createRandomToken';
-import type { IServiceProcessorFactoryList } from '../definition/IServiceProcessorFactoryList';
-import type { MediaSignal } from '../definition/MediaSignal';
-import type { MediaSignalAgentTransport } from '../definition/MediaSignalTransport';
-import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
-import type { IClientMediaCall, CallState } from '../definition/call';
+import type { IClientMediaCall, CallState, CallActorType, CallContact } from '../definition/call';
 
 export type MediaSignalingEvents = {
 	callContactUpdate: { call: IClientMediaCall };
@@ -21,7 +24,7 @@ export type MediaSignalingSessionConfig = {
 	userId: string;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
-	transport: MediaSignalAgentTransport;
+	transport: MediaSignalTransport<ClientMediaSignal>;
 };
 
 export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
@@ -86,24 +89,39 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return ringingCall || pendingCall;
 	}
 
-	public async processSignal(signal: MediaSignal): Promise<void> {
+	public async processSignal(signal: ServerMediaSignal): Promise<void> {
 		console.log('session.processSignal', signal.type);
 		if (this.isSignalTargetingAnotherSession(signal) || this.isCallIgnored(signal.callId)) {
 			return;
 		}
 
-		const call = await this.getOrCreateCall(signal.callId);
+		const call = await this.getOrCreateCallBySignal(signal);
 		await call.processSignal(signal);
 	}
 
-	public async registerOutboundCall(callId: string, contact: Record<string, string>): Promise<void> {
-		const call = await this.getOrCreateCall(callId);
+	public async startCall(calleeType: CallActorType, calleeId: string, contactInfo?: CallContact): Promise<void> {
+		const callId = this.createTemporaryCallId();
+		const call = await this.createCall(callId);
 
-		return call.initializeOutboundCall(contact);
+		await call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
 	}
 
-	private isSignalTargetingAnotherSession(signal: MediaSignal): boolean {
-		if ('sessionId' in signal && signal.sessionId && signal.sessionId !== this._sessionId) {
+	private createTemporaryCallId(): string {
+		const callId = createRandomToken(20);
+
+		if (this.knownCalls.has(callId)) {
+			return this.createTemporaryCallId();
+		}
+
+		return callId;
+	}
+
+	private isSignalTargetingAnotherSession(signal: ServerMediaSignal): boolean {
+		if (signal.type === 'new' || signal.type === 'notification') {
+			return false;
+		}
+
+		if (signal.toContractId && signal.toContractId !== this._sessionId) {
 			return true;
 		}
 
@@ -122,12 +140,30 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 	}
 
-	private async getOrCreateCall(callId: string): Promise<ClientMediaCall> {
+	private async getOrCreateCall(callId: string, localCallId?: string): Promise<ClientMediaCall> {
 		const existingCall = this.knownCalls.get(callId);
 		if (existingCall) {
 			return existingCall;
 		}
 
+		const localCall = localCallId && this.knownCalls.get(localCallId);
+		if (localCall) {
+			this.knownCalls.set(callId, localCall);
+			return localCall;
+		}
+
+		return this.createCall(callId);
+	}
+
+	private async getOrCreateCallBySignal(signal: ServerMediaSignal): Promise<ClientMediaCall> {
+		if (signal.type === 'new') {
+			return this.getOrCreateCall(signal.callId, signal.requestedCallId);
+		}
+
+		return this.getOrCreateCall(signal.callId);
+	}
+
+	private async createCall(callId: string): Promise<ClientMediaCall> {
 		const config = {
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,

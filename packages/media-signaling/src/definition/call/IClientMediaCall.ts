@@ -2,8 +2,10 @@ import type { Emitter } from '@rocket.chat/emitter';
 
 import type { CallEvents } from './CallEvents';
 
+export type CallActorType = 'user' | 'sip';
+
 export type CallContact = {
-	type?: 'user' | 'sip';
+	type?: CallActorType;
 	id?: string;
 	displayName?: string;
 	username?: string;
@@ -33,6 +35,12 @@ export type CallHangupReason =
 	| 'service-error' // Hanging up because of an error setting up the service connection
 	| 'media-error' // Hanging up because of an error setting up the media connection
 	| 'error'; // Hanging up because of an unidentified error
+
+export type CallAnswer =
+	| 'accept' // actor accepts the call
+	| 'reject' // actor rejects the call
+	| 'ack' // agent confirms the actor is reachable
+	| 'unavailable'; // agent reports the actor is unavailable
 
 export type CallNotification =
 	| 'accepted' // notify that the call has been accepted by both actors

@@ -3,7 +3,7 @@ import { MediaCalls } from '@rocket.chat/models';
 
 import { agentManager } from './agents/Manager';
 
-export async function createCall(caller: MediaCallSignedActor, callee: MediaCallActor): Promise<IMediaCall> {
+export async function createCall(caller: MediaCallSignedActor, callee: MediaCallActor, requestedCallId?: string): Promise<IMediaCall> {
 	// The caller must always have a contract to create the call
 	if (!caller.contractId) {
 		throw new Error('invalid-caller');
@@ -29,6 +29,8 @@ export async function createCall(caller: MediaCallSignedActor, callee: MediaCall
 
 		caller,
 		callee,
+
+		...(requestedCallId && { callerRequestedId: requestedCallId }),
 	};
 
 	const insertResult = await MediaCalls.insertOne(call);

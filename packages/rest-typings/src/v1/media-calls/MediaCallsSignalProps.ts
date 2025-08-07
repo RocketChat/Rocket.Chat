@@ -1,10 +1,10 @@
-import { type AgentMediaSignal } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { JSONSchemaType } from 'ajv';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({ discriminator: true });
 
-export type MediaCallsSignalProps = { signal: AgentMediaSignal };
+export type MediaCallsSignalProps = { signal: ClientMediaSignal };
 
 export type SDP = RTCSessionDescriptionInit;
 
@@ -46,7 +46,47 @@ const mediaCallsSignalPropsSchema: JSONSchemaType<MediaCallsSignalProps> = {
 							nullable: true,
 						},
 						type: {
-							const: 'sdp',
+							const: 'request-call',
+						},
+						callee: {
+							type: 'object',
+							properties: {
+								type: {
+									type: 'string',
+									nullable: false,
+								},
+								id: {
+									type: 'string',
+									nullable: false,
+								},
+							},
+							required: ['type', 'id'],
+							additionalProperties: false,
+						},
+						supportedServices: {
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+							nullable: false,
+						},
+					},
+					additionalProperties: false,
+					required: ['callId', 'contractId', 'type', 'callee', 'supportedServices'],
+				},
+				{
+					type: 'object',
+					properties: {
+						callId: {
+							type: 'string',
+							nullable: false,
+						},
+						contractId: {
+							type: 'string',
+							nullable: true,
+						},
+						type: {
+							const: 'local-sdp',
 						},
 						sdp: sdpSchema,
 					},
