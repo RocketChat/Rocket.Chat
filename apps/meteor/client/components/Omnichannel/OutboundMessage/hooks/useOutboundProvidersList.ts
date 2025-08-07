@@ -16,7 +16,6 @@ const useOutboundProvidersList = <TData = OutboundProvidersResponse>(options?: U
 	return useQuery<OutboundProvidersResponse, Error, TData>({
 		queryKey: queryKey ?? ['/v1/omnichannel/outbound/providers'],
 		queryFn: () => getProviders({ type: 'phone' }),
-		initialData: { providers: [] },
 		select,
 	});
 };

@@ -26,7 +26,7 @@ const RecipientStep = ({ defaultValues, onDirty, onSubmit }: RecipientStepProps)
 				onSubmit={handleSubmit}
 				renderActions={({ isSubmitting }) => (
 					<WizardActions>
-						<WizardNextButton type='submit' loading={isSubmitting} />
+						<WizardNextButton manual type='submit' loading={isSubmitting} />
 					</WizardActions>
 				)}
 			/>
