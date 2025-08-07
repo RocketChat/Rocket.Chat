@@ -75,7 +75,7 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
-			return await getSignedUrl(
+			return getSignedUrl(
 				s3,
 				new GetObjectCommand({
 					Key: this.getPath(file),
@@ -141,7 +141,18 @@ class AmazonS3Store extends UploadFS.Store {
 				params.Range = `${options.start} - ${options.end}`;
 			}
 
-			return (await s3.getObject(params)).Body! as stream.Readable;
+			const response = await s3.getObject(params);
+
+			if (!response.Body) {
+				throw new Error('File not found');
+			}
+
+			// If the response is a stream, return it directly
+			if (!(response.Body instanceof stream.Readable)) {
+				throw new Error('Response body is not a readable stream');
+			}
+
+			return response.Body;
 		};
 
 		/**
