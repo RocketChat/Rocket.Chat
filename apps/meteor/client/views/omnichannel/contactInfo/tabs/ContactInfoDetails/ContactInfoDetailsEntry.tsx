@@ -1,37 +1,37 @@
 import type { IconProps } from '@rocket.chat/fuselage';
-import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Icon, IconButton } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ContactInfoCallButton from './ContactInfoCallButton';
-import { useIsCallReady } from '../../../../../contexts/CallContext';
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
 
 type ContactInfoDetailsEntryProps = {
 	icon: IconProps['name'];
-	isPhone: boolean;
 	value: string;
+	actions?: ReactNode;
 };
 
-const ContactInfoDetailsEntry = ({ icon, isPhone, value }: ContactInfoDetailsEntryProps) => {
+const ContactInfoDetailsEntry = ({ icon, value, actions }: ContactInfoDetailsEntryProps) => {
 	const { t } = useTranslation();
 	const { copy } = useClipboardWithToast(value);
-
-	const isCallReady = useIsCallReady();
 
 	return (
 		<Box display='flex' alignItems='center'>
 			<Icon size='x18' name={icon} />
 			<Box withTruncatedText display='flex' flexGrow={1} alignItems='center' justifyContent='space-between'>
-				<Box is='p' fontScale='p2' withTruncatedText data-type={isPhone ? 'phone' : 'email'} mi={4}>
+				{/* } // TODO  data-type={type} */}
+				<Box is='p' fontScale='p2' withTruncatedText mi={4}>
 					{value}
 				</Box>
 				<Box display='flex' alignItems='center'>
-					{isCallReady && isPhone && <ContactInfoCallButton phoneNumber={value} />}
-					<IconButton onClick={() => copy()} tiny title={t('Copy')} icon='copy' />
+					<ButtonGroup>
+						<IconButton onClick={() => copy()} tiny icon='copy' title={t('Copy')} />
+
+						{actions}
+					</ButtonGroup>
 				</Box>
 			</Box>
 		</Box>
 	);
 };
-
 export default ContactInfoDetailsEntry;
