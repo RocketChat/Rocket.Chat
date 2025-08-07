@@ -1,15 +1,29 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import type { AgentMediaSignal } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
 import { UserAgentFactory } from './agents/users/AgentFactory';
+import { createCall } from './createCall';
+import { mutateCallee } from './mutateCallee';
 
-export async function processSignal(signal: AgentMediaSignal, uid: IUser['_id']): Promise<void> {
+export async function processSignal(signal: ClientMediaSignal, uid: IUser['_id']): Promise<void> {
 	console.log('server.processSignal', signal, uid);
 
 	try {
 		const call = await MediaCalls.findOneById(signal.callId);
 		if (!call) {
+			if (signal.type === 'request-call') {
+				console.log('creating call as requested');
+				await createCall({ type: 'user', id: uid, contractId: signal.contractId }, await mutateCallee(signal.callee), signal.callId);
+				return;
+			}
+
+			console.log('call not found', signal.type);
+			throw new Error('invalid-call');
+		}
+
+		if (signal.type === 'request-call') {
+			console.log('call found');
 			throw new Error('invalid-call');
 		}
 

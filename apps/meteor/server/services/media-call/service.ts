@@ -1,6 +1,6 @@
 import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
 import type { IUser, IMediaCall } from '@rocket.chat/core-typings';
-import type { MediaSignal, AgentMediaSignal } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { processSignal, createCall, setSignalHandler } from '@rocket.chat/media-signaling-server';
 import { Users } from '@rocket.chat/models';
 
@@ -12,7 +12,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		setSignalHandler(this.sendSignal.bind(this));
 	}
 
-	public async processSignal(signal: AgentMediaSignal, uid: IUser['_id']): Promise<void> {
+	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		return processSignal(signal, uid);
 	}
 
@@ -53,7 +53,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		return this.createInternalCall(caller, { uid: userId });
 	}
 
-	private async sendSignal(toUid: IUser['_id'], signal: MediaSignal): Promise<void> {
+	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
 		void api.broadcast('user.media-signal', { userId: toUid, signal });
 	}
 }

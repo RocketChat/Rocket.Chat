@@ -2,11 +2,25 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
 import type { IServiceProcessorFactoryList } from '../definition';
-import type { IWebRTCProcessor } from '../definition/IWebRTCProcessor';
-import type { MediaSignal } from '../definition/MediaSignal';
-import type { IClientMediaCall, CallEvents, CallContact, CallRole, CallState, CallService, CallHangupReason } from '../definition/call';
+import type {
+	IClientMediaCall,
+	CallEvents,
+	CallContact,
+	CallRole,
+	CallState,
+	CallService,
+	CallHangupReason,
+	CallActorType,
+} from '../definition/call';
+import type { IWebRTCProcessor, MediaStreamFactory } from '../definition/services';
 import { mergeContacts } from './utils/mergeContacts';
-import type { MediaStreamFactory } from '../definition/MediaStreamFactory';
+import type {
+	ServerMediaSignal,
+	ServerMediaSignalNewCall,
+	ServerMediaSignalNotification,
+	ServerMediaSignalRemoteSDP,
+	ServerMediaSignalRequestOffer,
+} from '../definition/signals/server/MediaSignal';
 
 export interface IClientMediaCallConfig {
 	transporter: MediaSignalTransportWrapper;
@@ -26,7 +40,9 @@ type StateTimeoutHandler = {
 };
 
 export class ClientMediaCall implements IClientMediaCall {
-	public readonly callId: string;
+	public get callId(): string {
+		return this.remoteCallId ?? this.localCallId;
+	}
 
 	public readonly emitter: Emitter<CallEvents>;
 
@@ -76,9 +92,14 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private acknowledged: boolean;
 
-	private earlySignals: Set<MediaSignal>;
+	private earlySignals: Set<ServerMediaSignal>;
 
 	private stateTimeoutHandlers: Set<StateTimeoutHandler>;
+
+	private remoteCallId: string | null;
+
+	// localCallId will only be different on calls initiated by this session
+	private localCallId: string;
 
 	constructor(
 		private readonly config: IClientMediaCallConfig,
@@ -88,7 +109,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.config.transporter = config.transporter;
 
-		this.callId = callId;
+		this.localCallId = callId;
+		this.remoteCallId = null;
 
 		this.acceptedLocally = false;
 		this.endedLocally = false;
@@ -132,13 +154,28 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	// Initialize an outbound call with the callee information and send a call request to the server
+	public async requestCall(callee: { type: CallActorType; id: string }, contactInfo?: CallContact): Promise<void> {
+		if (this.initialized) {
+			return;
+		}
+
+		this.config.transporter.sendToServer(this.callId, 'request-call', {
+			callee,
+			supportedServices: Object.keys(this.config.processorFactories) as CallService[],
+		});
+
+		return this.initializeOutboundCall({ ...contactInfo, ...callee });
+	}
+
 	// initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call
-	public async initializeRemoteCall(signal: MediaSignal<'new'>): Promise<void> {
+	public async initializeRemoteCall(signal: ServerMediaSignalNewCall): Promise<void> {
 		if (this.hasRemoteData) {
 			return;
 		}
 
 		console.log('call.initializeRemoteCall', signal.callId);
+		this.remoteCallId = signal.callId;
 		const wasInitialized = this.initialized;
 
 		this.initialized = true;
@@ -210,15 +247,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.webrtcProcessor.getRemoteMediaStream();
 	}
 
-	public async processSignal(signal: MediaSignal) {
+	public async processSignal(signal: ServerMediaSignal) {
 		if (this.isOver()) {
 			return;
 		}
 
-		console.log('ClientMediaCall.processSignal', signal.type);
+		const { type: signalType } = signal;
 
-		if (signal.type === 'new') {
-			return this.initializeRemoteCall(signal as MediaSignal<'new'>);
+		console.log('ClientMediaCall.processSignal', signalType);
+
+		if (signalType === 'new') {
+			return this.initializeRemoteCall(signal);
 		}
 
 		if (!this.hasRemoteData) {
@@ -226,8 +265,8 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		switch (signal.type) {
-			case 'sdp':
+		switch (signalType) {
+			case 'remote-sdp':
 				return this.processRemoteSDP(signal);
 			case 'request-offer':
 				return this.processOfferRequest(signal);
@@ -235,7 +274,7 @@ export class ClientMediaCall implements IClientMediaCall {
 				return this.processNotification(signal);
 		}
 
-		console.log('signal ignored, as its type is not handled by this agent', signal.type);
+		console.log('signal ignored, as its type is not handled by this agent', signalType);
 	}
 
 	public async accept(): Promise<void> {
@@ -336,9 +375,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	protected async processOfferRequest(signal: MediaSignal<'request-offer'>) {
+	protected async processOfferRequest(signal: ServerMediaSignalRequestOffer) {
 		console.log('call.processOfferRequest');
-		if (!signal.contractId) {
+		if (!signal.toContractId) {
 			console.error('Received an untargeted offer request.');
 			return;
 		}
@@ -370,7 +409,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.hasRemoteData && this._service !== 'webrtc';
 	}
 
-	protected async processAnswerRequest(signal: MediaSignal<'sdp'>): Promise<void> {
+	protected async processAnswerRequest(signal: ServerMediaSignalRemoteSDP): Promise<void> {
 		console.log('Call.processAnswerRequest');
 		if (this.shouldIgnoreWebRTC()) {
 			return;
@@ -395,9 +434,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		await this.deliverSdp(answer);
 	}
 
-	protected async processRemoteSDP(signal: MediaSignal<'sdp'>): Promise<void> {
+	protected async processRemoteSDP(signal: ServerMediaSignalRemoteSDP): Promise<void> {
 		console.log('Call.processRemoteSDP');
-		if (!signal.contractId) {
+		if (!signal.toContractId) {
 			console.error('Received untargeted SDP signal');
 			return;
 		}
@@ -415,11 +454,11 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.hasRemoteDescription = true;
 	}
 
-	protected async deliverSdp(sdp: { sdp: RTCSessionDescriptionInit }) {
+	protected async deliverSdp(data: { sdp: RTCSessionDescriptionInit }) {
 		console.log('Call.deliverSdp');
 		this.hasLocalDescription = true;
 
-		return this.config.transporter.sendToServer(this.callId, 'sdp', sdp);
+		return this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
 	}
 
 	protected async rejectAsUnavailable(): Promise<void> {
@@ -462,7 +501,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	private async processNotification(signal: MediaSignal<'notification'>) {
+	private async processNotification(signal: ServerMediaSignalNotification) {
 		console.log('Call.processNotification', signal.notification);
 
 		switch (signal.notification) {
