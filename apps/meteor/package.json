@@ -221,6 +221,8 @@
 		"webpack": "~5.99.9"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.862.0",
+		"@aws-sdk/s3-request-presigner": "^3.862.0",
 		"@babel/runtime": "~7.26.10",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",
@@ -316,7 +318,6 @@
 		"archiver": "^7.0.1",
 		"asterisk-manager": "^0.2.0",
 		"atlassian-crowd-patched": "^0.5.1",
-		"aws-sdk": "^2.1691.0",
 		"bad-words": "^3.0.4",
 		"bcrypt": "^5.1.1",
 		"body-parser": "1.20.3",
