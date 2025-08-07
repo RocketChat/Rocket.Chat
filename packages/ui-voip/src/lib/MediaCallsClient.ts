@@ -1,11 +1,11 @@
-import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, IUser, IMediaCall } from '@rocket.chat/core-typings';
+import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import {
 	IClientMediaCall,
-	MediaSignal,
 	MediaSignalingSession,
 	MediaCallWebRTCProcessor,
-	AgentMediaSignal,
+	ClientMediaSignal,
+	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
 
 import type { ContactInfo, VoipSession } from '../definitions';
@@ -33,8 +33,7 @@ export type MediaCallsCallee = {
 
 export type MediaCallsClientConfig = {
 	userId: IUser['_id'];
-	startCallFn: (params: { contractId: string } & MediaCallsCallee) => Promise<IMediaCall>;
-	sendSignalFn: (signal: AgentMediaSignal) => void;
+	sendSignalFn: (signal: ClientMediaSignal) => void;
 };
 
 class MediaCallsClient extends Emitter<VoipEvents> {
@@ -58,12 +57,12 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 	private session: MediaSignalingSession;
 
-	constructor(private readonly config: MediaCallsClientConfig) {
+	constructor(config: MediaCallsClientConfig) {
 		super();
 
 		this.session = new MediaSignalingSession({
 			userId: config.userId,
-			transport: (signal: AgentMediaSignal) => config.sendSignalFn(signal),
+			transport: (signal: ClientMediaSignal) => config.sendSignalFn(signal),
 			processorFactories: {
 				webrtc: (config) => new MediaCallWebRTCProcessor(config),
 			},
@@ -93,7 +92,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		return this.startingNewCall || this.session.isBusy();
 	}
 
-	public async processSignal(signal: MediaSignal): Promise<void> {
+	public async processSignal(signal: ServerMediaSignal): Promise<void> {
 		return this.session.processSignal(signal);
 	}
 
@@ -450,11 +449,9 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		try {
 			this.emit('stateChanged');
 
-			const call = await this.config.startCallFn({ contractId: this.session.sessionId, ...target });
-
-			console.log('startCall', call);
-			const { _id: callId, callee } = call;
-			await this.session.registerOutboundCall(callId, callee);
+			console.log('startCall', target);
+			const actorType = target.identifierKind === 'extension' ? 'sip' : 'user';
+			await this.session.startCall(actorType, target.identifier);
 
 			this.emit('stateChanged');
 		} finally {

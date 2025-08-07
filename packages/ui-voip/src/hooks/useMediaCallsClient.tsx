@@ -1,5 +1,5 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { MediaSignal } from '@rocket.chat/media-signaling';
+import { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { useEndpoint, useStream, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
@@ -20,21 +20,8 @@ export const useMediaCallsClient = ({ enabled = true }: MediaCallsClientParams =
 	const { _id: userId } = useUser() || {};
 	const mediaCallsClientRef = useRef<MediaCallsClient | null>(null);
 
-	const mediaCallsStart = useEndpoint('POST', '/v1/media-calls.start');
 	const mediaCallsSignal = useEndpoint('POST', '/v1/media-calls.signal');
 	const notifyUserStream = useStream('notify-user');
-
-	const startCallFn: MediaCallsClientConfig['startCallFn'] = async (params) => {
-		const { call } = await mediaCallsStart(params);
-		const { createdAt, endedAt, _updatedAt, ...callData } = call;
-
-		return {
-			...callData,
-			createdAt: new Date(createdAt),
-			_updatedAt: new Date(_updatedAt),
-			...(endedAt && { endedAt: new Date(endedAt) }),
-		};
-	};
 
 	const sendSignalFn: MediaCallsClientConfig['sendSignalFn'] = async (signal) => {
 		await mediaCallsSignal({ signal });
@@ -55,7 +42,6 @@ export const useMediaCallsClient = ({ enabled = true }: MediaCallsClientParams =
 
 			const config: MediaCallsClientConfig = {
 				userId,
-				startCallFn,
 				sendSignalFn,
 			};
 
@@ -67,7 +53,7 @@ export const useMediaCallsClient = ({ enabled = true }: MediaCallsClientParams =
 		enabled,
 	});
 
-	const notifyNewMediaSignal = useEffectEvent((signal: MediaSignal) => {
+	const notifyNewMediaSignal = useEffectEvent((signal: ServerMediaSignal) => {
 		console.log('new media signal', signal);
 		mediaCallsClient?.processSignal(signal);
 	});
