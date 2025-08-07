@@ -27,6 +27,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/media-signaling": "workspace:^",
-		"@rocket.chat/models": "workspace:^"
+		"@rocket.chat/models": "workspace:^",
+		"ajv": "^8.17.1"
 	}
 }

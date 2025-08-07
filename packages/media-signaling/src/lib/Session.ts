@@ -90,7 +90,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public async processSignal(signal: ServerMediaSignal): Promise<void> {
-		console.log('session.processSignal', signal.type);
 		if (this.isSignalTargetingAnotherSession(signal) || this.isCallIgnored(signal.callId)) {
 			return;
 		}

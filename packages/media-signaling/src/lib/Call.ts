@@ -21,7 +21,7 @@ import type {
 	ServerMediaSignalNotification,
 	ServerMediaSignalRemoteSDP,
 	ServerMediaSignalRequestOffer,
-} from '../definition/signals/server/MediaSignal';
+} from '../definition/signals/server';
 
 export interface IClientMediaCallConfig {
 	transporter: MediaSignalTransportWrapper;
@@ -186,7 +186,6 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		console.log('call.initializeRemoteCall', signal.callId);
 		this.remoteCallId = signal.callId;
 		const wasInitialized = this.initialized;
 
@@ -266,8 +265,6 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const { type: signalType } = signal;
 
-		console.log('ClientMediaCall.processSignal', signalType);
-
 		if (signalType === 'new') {
 			return this.initializeRemoteCall(signal);
 		}
@@ -285,12 +282,9 @@ export class ClientMediaCall implements IClientMediaCall {
 			case 'notification':
 				return this.processNotification(signal);
 		}
-
-		console.log('signal ignored, as its type is not handled by this agent', signalType);
 	}
 
 	public async accept(): Promise<void> {
-		console.log('call.accept');
 		if (!this.isPendingOurAcceptance()) {
 			throw new Error('call-not-pending-acceptance');
 		}
@@ -311,7 +305,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public async reject(): Promise<void> {
-		console.log('call.reject');
 		if (!this.isPendingOurAcceptance()) {
 			throw new Error('call-not-pending-acceptance');
 		}
@@ -325,7 +318,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public async hangup(reason: CallHangupReason = 'normal'): Promise<void> {
-		console.log('call.hangup');
 		if (this.endedLocally || this._state === 'hangup') {
 			return;
 		}
@@ -358,8 +350,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (newState === this._state) {
 			return;
 		}
-
-		console.log('call.changeState', newState);
 
 		const oldState = this._state;
 		this._state = newState;
@@ -403,7 +393,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async processOfferRequest(signal: ServerMediaSignalRequestOffer) {
-		console.log('call.processOfferRequest');
 		if (!signal.toContractId) {
 			console.error('Received an untargeted offer request.');
 			return;
@@ -446,7 +435,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async processAnswerRequest(signal: ServerMediaSignalRemoteSDP): Promise<void> {
-		console.log('Call.processAnswerRequest');
 		if (this.shouldIgnoreWebRTC()) {
 			return;
 		}
@@ -471,7 +459,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async processRemoteSDP(signal: ServerMediaSignalRemoteSDP): Promise<void> {
-		console.log('Call.processRemoteSDP');
 		if (!signal.toContractId) {
 			console.error('Received untargeted SDP signal');
 			return;
@@ -491,7 +478,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async deliverSdp(data: { sdp: RTCSessionDescriptionInit }) {
-		console.log('Call.deliverSdp');
 		this.hasLocalDescription = true;
 
 		this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
@@ -500,8 +486,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async rejectAsUnavailable(): Promise<void> {
-		console.log('call.rejectAsUnavailable');
-
 		// If we have already told the server we accept this call, then we need to send a hangup to get out of it
 		if (this.acceptedLocally) {
 			return this.hangup('unavailable');
@@ -512,7 +496,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async processEarlySignals(): Promise<void> {
-		console.log('call.processEarlySignals');
 		const earlySignals = this.earlySignals.values().toArray();
 		this.earlySignals.clear();
 
@@ -526,7 +509,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected acknowledge(): void {
-		console.log('call.acknowledge');
 		if (this.acknowledged) {
 			return;
 		}
@@ -540,21 +522,15 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private async processNotification(signal: ServerMediaSignalNotification) {
-		console.log('Call.processNotification', signal.notification);
-
 		switch (signal.notification) {
 			case 'accepted':
 				return this.flagAsAccepted();
 			case 'hangup':
 				return this.flagAsEnded('remote');
 		}
-
-		console.log('notification ignored as its type is not handled by this agent', signal.notification);
 	}
 
 	private async flagAsAccepted(): Promise<void> {
-		console.log('flagAsAccepted');
-
 		if (!this.acceptedLocally) {
 			// #ToDo: test this situation; remove exception, read this response on the server
 			this.config.transporter.sendError(this.callId, 'not-accepted');
@@ -569,8 +545,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private flagAsEnded(reason: CallHangupReason): void {
-		console.log('flagAsEnded');
-
 		if (this._state === 'hangup') {
 			return;
 		}
@@ -585,8 +559,6 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		console.log(`adding a timeout of ${timeout / 1000} seconds to the state [${state}]`);
-
 		const handler = {
 			state,
 			handler: setTimeout(() => {
@@ -597,8 +569,6 @@ export class ClientMediaCall implements IClientMediaCall {
 				if (state !== this.getClientState()) {
 					return;
 				}
-
-				console.log(`reached timeout for the [${state}] state.`);
 
 				if (callback) {
 					callback();
@@ -628,7 +598,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (!this.webrtcProcessor) {
 			return;
 		}
-		console.log('webrtc internal state changed: ', stateName);
 		const stateValue = this.webrtcProcessor.getInternalState(stateName);
 
 		if (this.serviceStates.get(stateName) !== stateValue) {
@@ -676,8 +645,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.webrtcProcessor) {
 			return;
 		}
-
-		console.log('session.createWebRtcProcessor');
 
 		const {
 			mediaStreamFactory,

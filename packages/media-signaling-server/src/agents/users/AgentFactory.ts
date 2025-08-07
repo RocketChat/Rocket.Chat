@@ -6,6 +6,7 @@ import type { MinimalUserData } from './BasicAgent';
 import { agentManager } from '../Manager';
 import { UserMediaCallAgent } from './Agent';
 import { UserNewCallAgent } from './NewCallAgent';
+import { logger } from '../../logger';
 import type { IMediaCallAgentFactory } from '../definition/IMediaCallAgent';
 
 // Overriding the interface to use the same factory for the AgentManager class and the processSignal function
@@ -22,7 +23,7 @@ export class UserAgentFactory {
 		});
 
 		if (!user?.username) {
-			console.log('invalid user or no username');
+			logger.debug({ msg: 'invalid user or no username', method: 'UserAgentFactory.getAgentFactoryForUser', userId, contractId });
 			return null;
 		}
 
@@ -36,13 +37,13 @@ export class UserAgentFactory {
 				const { _id: callId } = call;
 
 				if (!contractId) {
-					console.log('no contractId');
+					logger.debug({ msg: 'no contractId', method: 'UserAgentFactory.getCallAgent', userId, contractId, callId });
 					return null;
 				}
 
 				const role = agentManager.getRoleForCallActor(call, { type: 'user', id: userId });
 				if (!role) {
-					console.log('no role');
+					logger.debug({ msg: 'no role', method: 'UserAgentFactory.getCallAgent', userId, contractId, callId });
 					return null;
 				}
 
@@ -51,7 +52,13 @@ export class UserAgentFactory {
 
 				// If the role is already signed with a different contract, do not create the agent
 				if (contractSigned && callActor.contractId !== contractId) {
-					console.log('signed by another contract');
+					logger.debug({
+						msg: 'signed by another contract',
+						method: 'UserAgentFactory.getAgentFactoryForUser',
+						userId,
+						contractId,
+						callActor,
+					});
 					return null;
 				}
 

@@ -3,6 +3,7 @@ import type { ClientMediaSignal, CallRole } from '@rocket.chat/media-signaling';
 
 import { UserBasicAgent, type MinimalUserData } from './BasicAgent';
 import { UserAgentSignalProcessor } from './SignalProcessor';
+import { logger } from '../../logger';
 import { agentManager } from '../Manager';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 
@@ -34,7 +35,7 @@ export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implemen
 	}
 
 	public async setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
-		console.log('UserAgent.setRemoteDescription');
+		logger.debug({ msg: 'UserMediaCallAgent.setRemoteDescription', sdp });
 		await this.sendSignal({
 			callId: this.callId,
 			toContractId: this.contractId,
@@ -44,16 +45,16 @@ export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implemen
 	}
 
 	public async getLocalDescription(): Promise<RTCSessionDescriptionInit | null> {
-		console.log('UserAgent.getRemoteDescription');
+		logger.debug({ msg: 'UserMediaCallAgent.getRemoteDescription' });
 		const channel = await agentManager.getOrCreateContract(this.callId, this);
 
 		return channel?.localDescription ?? null;
 	}
 
 	public async requestOffer(params: { iceRestart?: boolean }): Promise<void> {
-		console.log('UserAgent.requestOffer');
-		// #ToDo: this function may be called multiple times for the same call until an offer is provided; look into how to handle that
+		logger.debug({ msg: 'UserMediaCallAgent.requestOffer', params });
 
+		// #ToDo: this function may be called multiple times for the same call until an offer is provided; look into how to handle that
 		await this.sendSignal({
 			callId: this.callId,
 			toContractId: this.contractId,
