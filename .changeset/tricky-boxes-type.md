@@ -1,5 +1,6 @@
 ---
 "@rocket.chat/meteor": patch
+"@rocket.chat/rest-typings": patch
 ---
 
-Implements OpenAPI support for the Rocket.Chat rooms.favorite API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation
+Add OpenAPI support for the Rocket.Chat rooms.favorite APIs endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
