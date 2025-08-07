@@ -7,6 +7,7 @@ import { parentCall } from '../../lib/parentCall';
 import { alertTimeOut, createToken } from '../../lib/random';
 import { Consumer } from '../../store';
 import LeaveMessage from './component';
+import { getWidgetDepartmentId, getWidgetOfflineEmail } from '../../store/Store';
 
 export class LeaveMessageContainer extends Component {
 	handleSubmit = async (fields) => {
@@ -15,7 +16,11 @@ export class LeaveMessageContainer extends Component {
 		await dispatch({ loading: true });
 		try {
 			const payload = parseOfflineMessage(fields);
-			const text = await Livechat.sendOfflineMessage(payload);
+			const text = await Livechat.sendOfflineMessage({
+				...payload,
+				department: getWidgetDepartmentId(),
+				widgetEmail: getWidgetOfflineEmail(),
+			});
 			await ModalManager.alert({
 				text: successMessage || text,
 			});

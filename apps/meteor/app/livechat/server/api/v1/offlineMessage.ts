@@ -9,8 +9,8 @@ API.v1.addRoute(
 	{ validateParams: isPOSTLivechatOfflineMessageParams },
 	{
 		async post() {
-			const { name, email, message, department, host } = this.bodyParams;
-			if (!Livechat.sendOfflineMessage({ name, email, message, department, host })) {
+			const { name, email, message, department, host, widgetEmail } = this.bodyParams;
+			if (!Livechat.sendOfflineMessage({ name, email, message, department, host, widgetEmail })) {
 				return API.v1.failure({ message: TAPi18n.__('Error_sending_livechat_offline_message') });
 			}
 

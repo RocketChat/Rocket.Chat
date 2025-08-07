@@ -1666,6 +1666,7 @@ type POSTLivechatOfflineMessageParams = {
 	message: string;
 	department?: string;
 	host?: string;
+	widgetEmail: string;
 };
 
 const POSTLivechatOfflineMessageParamsSchema = {
@@ -1687,6 +1688,10 @@ const POSTLivechatOfflineMessageParamsSchema = {
 		host: {
 			type: 'string',
 			nullable: true,
+		},
+		widgetEmail: {
+			type: 'string',
+			nullable: false,
 		},
 	},
 	required: ['name', 'email', 'message'],

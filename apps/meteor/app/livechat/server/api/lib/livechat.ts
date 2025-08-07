@@ -172,6 +172,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			agentHiddenInfo: initExternalSettings.omnichannelOnlineShowAgentInformation === false,
 			showAgentEmail: initExternalSettings.omnichannelOnlineShowAgentEmail,
 			clearLocalStorageWhenChatEnded: initSettings.Livechat_clear_local_storage_when_chat_ended,
+			offlineEmail: initExternalSettings.omnichannelOfflineEmailAddressToSendOfflineMessages,
 			limitTextLength:
 				initExternalSettings.omnichannelOnlineMessageCharacterLimitEnabled &&
 				(initExternalSettings.omnichannelOnlineMessageCharacterLimit || initSettings.Message_MaxAllowedSize),

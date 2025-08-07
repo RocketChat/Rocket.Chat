@@ -1327,7 +1327,7 @@ export const Livechat = {
 			return false;
 		}
 
-		const { message, name, email, department, host } = data;
+		const { message, name, email, department, host, widgetEmail } = data;
 		const emailMessage = `${message}`.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br>$2');
 
 		let html = '<h1>New livechat message</h1>';
@@ -1368,7 +1368,7 @@ export const Livechat = {
 		const from = `${name} - ${email} <${fromEmail}>`;
 		const replyTo = `${name} <${email}>`;
 		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
-		this.sendEmail(from, emailTo, replyTo, subject, html);
+		this.sendEmail(from, widgetEmail || emailTo, replyTo, subject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.offlineMessage', data);

@@ -116,3 +116,9 @@ export const extractWidgetId = () => {
 export const getWidgetDepartmentId = () => {
 		return store.state.config.departments[0]?._id;
 }
+
+
+
+export const getWidgetOfflineEmail = () => {
+		return store.state.config.settings.offlineEmail;
+}
