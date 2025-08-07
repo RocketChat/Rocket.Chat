@@ -1,15 +1,15 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import {
 	SIDE_PANEL_GROUPS,
 	sidePanelFiltersConfig,
 	useRedirectToDefaultTab,
 	useSidePanelRoomsListTab,
 	useUnreadOnlyToggle,
-} from '../../contexts/RoomsNavigationContext';
-import SidePanel from '../SidePanel';
+} from '../../../contexts/RoomsNavigationContext';
+import SidePanel from '../../SidePanel';
 
 const SidePanelOnHold = () => {
 	const { t } = useTranslation();

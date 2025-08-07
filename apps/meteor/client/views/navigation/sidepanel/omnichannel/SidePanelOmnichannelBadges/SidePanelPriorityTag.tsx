@@ -1,7 +1,7 @@
 import type { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { Icon, Tag } from '@rocket.chat/fuselage';
 
-import { useOmnichannelPrioritiesConfig } from '../../../../omnichannel/hooks/useOmnichannelPrioritiesConfig';
+import { useOmnichannelPrioritiesConfig } from '../../../../../omnichannel/hooks/useOmnichannelPrioritiesConfig';
 
 const SidePanelPriorityTag = ({ priorityWeight }: { priorityWeight: LivechatPriorityWeight }) => {
 	const prioritiesConfig = useOmnichannelPrioritiesConfig(priorityWeight, false);

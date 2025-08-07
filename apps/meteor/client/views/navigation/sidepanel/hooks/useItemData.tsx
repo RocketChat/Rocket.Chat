@@ -11,8 +11,8 @@ import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { useUnreadDisplay } from '../../../../sidebarv2/hooks/useUnreadDisplay';
 import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
-import SidePanelOmnichannelBadges from '../SidePanelOmnichannelBadges';
 import RoomMenu from '../SidepanelItem/RoomMenu';
+import SidePanelOmnichannelBadges from '../omnichannel/SidePanelOmnichannelBadges';
 
 export const useItemData = (room: SubscriptionWithRoom, { openedRoom }: { openedRoom: string | undefined }) => {
 	const { t } = useTranslation();
