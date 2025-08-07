@@ -603,7 +603,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Encrypts messages
-	async encryptText(data: Uint8Array<ArrayBufferLike>) {
+	async encryptText(data: Uint8Array<ArrayBuffer>) {
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 
 		try {
@@ -622,7 +622,7 @@ export class E2ERoom extends Emitter {
 	async encryptMessageContent(
 		contentToBeEncrypted: Pick<IMessage, 'attachments' | 'files' | 'file'> & Optional<Pick<IMessage, 'msg'>, 'msg'>,
 	) {
-		const data = new TextEncoder().encode(EJSON.stringify(contentToBeEncrypted));
+		const data = new TextEncoder().encode(EJSON.stringify(contentToBeEncrypted)) as Uint8Array<ArrayBuffer>;
 
 		return {
 			algorithm: 'rc.v1.aes-sha2',
@@ -665,7 +665,7 @@ export class E2ERoom extends Emitter {
 				userId: this.userId,
 				ts,
 			}),
-		);
+		) as Uint8Array<ArrayBuffer>;
 
 		return this.encryptText(data);
 	}
@@ -701,7 +701,7 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
-	async doDecrypt(vector: Uint8Array<ArrayBufferLike>, key: CryptoKey, cipherText: Uint8Array<ArrayBufferLike>) {
+	async doDecrypt(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, cipherText: Uint8Array<ArrayBuffer>) {
 		const result = await decryptAES(vector, key, cipherText);
 		return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 	}
