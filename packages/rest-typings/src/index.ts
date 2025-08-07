@@ -27,7 +27,6 @@ import type { InstancesEndpoints } from './v1/instances';
 import type { IntegrationsEndpoints } from './v1/integrations';
 import type { IntegrationHooksEndpoints } from './v1/integrations/hooks';
 import type { InvitesEndpoints } from './v1/invites';
-import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
 import type { MailerEndpoints } from './v1/mailer';
 import type { MeEndpoints } from './v1/me';
@@ -66,7 +65,6 @@ export interface Endpoints
 		EmojiCustomEndpoints,
 		GroupsEndpoints,
 		ImEndpoints,
-		LDAPEndpoints,
 		RoomsEndpoints,
 		PushEndpoints,
 		RolesEndpoints,
