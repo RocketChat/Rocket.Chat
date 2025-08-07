@@ -4,7 +4,7 @@ import type { IServiceProcessorFactoryList } from '../definition';
 import type { IClientMediaCall, CallEvents, CallContact, CallRole, CallState, CallService, CallHangupReason, CallActorType } from '../definition/call';
 import type { ClientState } from '../definition/client';
 import type { IWebRTCProcessor, MediaStreamFactory } from '../definition/services';
-import type { ServerMediaSignal, ServerMediaSignalNewCall, ServerMediaSignalRemoteSDP, ServerMediaSignalRequestOffer } from '../definition/signals/server/MediaSignal';
+import type { ServerMediaSignal, ServerMediaSignalNewCall, ServerMediaSignalRemoteSDP, ServerMediaSignalRequestOffer } from '../definition/signals/server';
 export interface IClientMediaCallConfig {
     transporter: MediaSignalTransportWrapper;
     processorFactories: IServiceProcessorFactoryList;

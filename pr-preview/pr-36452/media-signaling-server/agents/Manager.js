@@ -2,10 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.agentManager = void 0;
 const models_1 = require("@rocket.chat/models");
+const logger_1 = require("../logger");
 const AgentFactory_1 = require("./users/AgentFactory");
 class MediaCallAgentManager {
     async getAgentFactoryForActor(actor) {
-        console.log('AgentManager.getAgentFactoryForActor');
+        logger_1.logger.debug({ msg: 'AgentManager.getAgentFactoryForActor', actor });
         if (actor.type === 'user') {
             return AgentFactory_1.UserAgentFactory.getAgentFactoryForActor(actor);
         }
@@ -30,8 +31,8 @@ class MediaCallAgentManager {
         return null;
     }
     async getOrCreateContract(callId, agent, params) {
-        console.log('AgentManager.getOrCreateContract');
         const { role, actorType, actorId, contractId } = agent;
+        logger_1.logger.debug({ msg: 'AgentManager.getOrCreateContract', callId, params, role, actorType, actorId, contractId });
         if (!contractId) {
             throw new Error('error-invalid-contract');
         }
@@ -58,7 +59,7 @@ class MediaCallAgentManager {
         return insertedChannel;
     }
     async hangupCall(agent, reason) {
-        console.log('AgentManager.hangupCall');
+        logger_1.logger.debug({ msg: 'AgentManager.hangupCall', reason, actor: agent.actor });
         const endedBy = agent.actor;
         const stateResult = await models_1.MediaCalls.hangupCallById(agent.callId, { endedBy, reason });
         if (!stateResult.modifiedCount) {
@@ -72,14 +73,14 @@ class MediaCallAgentManager {
         }
     }
     async acknowledgeCallee(agent) {
-        console.log('AgentManager.acknowledgeCallee');
+        logger_1.logger.debug({ msg: 'AgentManager.acknowledgeCallee', actor: agent.actor });
         if (agent.role !== 'callee') {
             return;
         }
         await models_1.MediaCalls.startRingingById(agent.callId);
     }
     async acceptCall(agent) {
-        console.log('AgentManager.acceptCall');
+        logger_1.logger.debug({ msg: 'AgentManager.acceptCall', actor: agent.actor });
         if (agent.role !== 'callee') {
             return;
         }
@@ -93,16 +94,16 @@ class MediaCallAgentManager {
         return this.processAcceptedCall(agent);
     }
     async setLocalDescription(agent, sdp) {
-        console.log('agentManager.setLocalDescription');
+        logger_1.logger.debug({ msg: 'AgentManager.setLocalDescription', actor: agent.actor, sdp });
         const otherAgent = await this.getOppositeAgent(agent);
         if (!otherAgent) {
-            console.log('otherAgent not found');
+            logger_1.logger.debug({ msg: 'Opposite agent not found', method: 'AgentManager.setLocalDescription', role: agent.role, actor: agent.actor });
             return;
         }
         otherAgent.setRemoteDescription(sdp);
     }
     async getOppositeAgentFactory(call, agent) {
-        console.log('AgentManager.getOppositeAgentFactory');
+        logger_1.logger.debug({ msg: 'AgentManager.getOppositeAgentFactory', actor: agent.actor });
         switch (agent.role) {
             case 'caller':
                 return this.getAgentFactoryForActor(call.callee);
@@ -114,15 +115,16 @@ class MediaCallAgentManager {
     }
     // This will only return an agent if a contract for the other role has already been signed
     async getOppositeAgent(agent) {
-        console.log('AgentManager.getOppositeAgent');
+        logger_1.logger.debug({ msg: 'AgentManager.getOppositeAgent', actor: agent.actor });
         const call = await models_1.MediaCalls.findOneById(agent.callId);
         if (!call) {
+            logger_1.logger.debug({ msg: 'call not found', method: 'AgentManager.getOppositeAgent' });
             return null;
         }
         return this.getCallAgent(() => this.getOppositeAgentFactory(call, agent), call);
     }
     async getAnyOppositeAgent(agent) {
-        console.log('AgentManager.getAnyOppositeAgent');
+        logger_1.logger.debug({ msg: 'AgentManager.getAnyOppositeAgent', actor: agent.actor });
         const call = await models_1.MediaCalls.findOneById(agent.callId);
         if (!call) {
             return null;
@@ -134,9 +136,7 @@ class MediaCallAgentManager {
         return factory.getCallAgent(call) || factory.getNewAgent(agent.oppositeRole);
     }
     async hangupByServer(callId, serverErrorCode, agentsToNotify) {
-        console.log('AgentManager.hangupByServer');
-        // , errorType?: 'signaling' | 'service' | 'media'
-        // const hangupReason = errorType ? `${errorType}-error` : 'error';
+        logger_1.logger.debug({ msg: 'AgentManager.hangupByServer', callId, serverErrorCode });
         const endedBy = { type: 'server', id: 'server' };
         const stateResult = await models_1.MediaCalls.hangupCallById(callId, { endedBy, reason: serverErrorCode });
         const result = Boolean(stateResult.modifiedCount);
@@ -146,7 +146,7 @@ class MediaCallAgentManager {
         return result;
     }
     hangupAndThrow(callId, error, agents) {
-        console.log('AgentManager.hangupAndThrow');
+        logger_1.logger.debug({ msg: 'AgentManager.hangupAndThrow', callId, error });
         this.shieldPromise(this.hangupByServer(callId, error, agents));
         throw new Error(error);
     }
@@ -155,11 +155,11 @@ class MediaCallAgentManager {
         void promise.catch(() => null);
     }
     async notifyAll(agents, callId, notification) {
-        console.log('AgentManager.notifyAll');
+        logger_1.logger.debug({ msg: 'AgentManager.notifyAll', callId, notification });
         await Promise.all(agents.map((agent) => agent.notify(callId, notification)));
     }
     async processAcceptedCall(calleeAgent) {
-        console.log('AgentManager.processAcceptedCall');
+        logger_1.logger.debug({ msg: 'AgentManager.processAcceptedCall', callee: calleeAgent.actor });
         const { callId } = calleeAgent;
         const call = await models_1.MediaCalls.findOneById(callId);
         if (!call) {
@@ -178,8 +178,7 @@ class MediaCallAgentManager {
         }
         // #ToDo: handle cases where an actor's service role doesn't match the call role
         if (offer.type !== 'offer') {
-            console.log('caller sdp is not an offer');
-            // logger.error({ msg: 'The local description of a caller channel is not an offer', local: offer });
+            logger_1.logger.warn({ msg: 'caller sdp is not an offer', local: offer });
             throw new Error('unexpected-state');
         }
         calleeAgent.setRemoteDescription(offer);

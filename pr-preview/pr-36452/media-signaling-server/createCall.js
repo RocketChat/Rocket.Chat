@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCall = createCall;
 const models_1 = require("@rocket.chat/models");
 const Manager_1 = require("./agents/Manager");
+const logger_1 = require("./logger");
 async function createCall(params) {
-    console.log('createCall', params);
+    logger_1.logger.debug({ msg: 'createCall', params });
     const { caller, callee, requestedCallId, requestedService } = params;
     // The caller must always have a contract to create the call
     if (!caller.contractId) {

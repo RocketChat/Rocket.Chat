@@ -1,48 +1,188 @@
-import type { CallAnswer, CallHangupReason, CallService, CallState } from '../../call';
-import type { ClientState } from '../../client';
-export type ClientMediaSignalRequestCall = {
-    callId: string;
-    contractId: string;
-    type: 'request-call';
-    callee: {
-        type: 'user' | 'sip';
-        id: string;
-    };
-    supportedServices: CallService[];
-};
-export type ClientMediaSignalLocalSDP = {
-    callId: string;
-    contractId: string;
-    type: 'local-sdp';
-    sdp: RTCSessionDescriptionInit;
-};
-export type ClientMediaSignalError = {
-    callId: string;
-    contractId: string;
-    type: 'error';
-    errorCode: string;
-};
-export type ClientMediaSignalAnswer = {
-    callId: string;
-    type: 'answer';
-    contractId: string;
-    answer: CallAnswer;
-};
-export type ClientMediaSignalHangup = {
-    callId: string;
-    contractId: string;
-    type: 'hangup';
-    reason: CallHangupReason;
-};
-export type ClientMediaSignalLocalState = {
-    callId: string;
-    contractId: string;
-    type: 'local-state';
-    callState: CallState;
-    clientState: ClientState;
-    serviceStates?: Record<string, string>;
-};
+import { type ClientMediaSignalAnswer } from './answer';
+import { type ClientMediaSignalError } from './error';
+import { type ClientMediaSignalHangup } from './hangup';
+import { type ClientMediaSignalLocalSDP } from './local-sdp';
+import { type ClientMediaSignalLocalState } from './local-state';
+import { type ClientMediaSignalRequestCall } from './request-call';
 export type ClientMediaSignal = ClientMediaSignalLocalSDP | ClientMediaSignalError | ClientMediaSignalAnswer | ClientMediaSignalHangup | ClientMediaSignalRequestCall | ClientMediaSignalLocalState;
+export declare const clientMediaSignalSchema: {
+    readonly type: "object";
+    readonly additionalProperties: true;
+    readonly discriminator: {
+        readonly propertyName: "type";
+    };
+    readonly required: readonly ["type"];
+    readonly oneOf: readonly [{
+        readonly type: "object";
+        readonly properties: {
+            readonly callId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly contractId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly type: {
+                readonly const: "local-sdp";
+            };
+            readonly sdp: {
+                readonly type: "object";
+                readonly properties: {
+                    readonly sdp: {
+                        readonly type: "string";
+                        readonly nullable: true;
+                    };
+                    readonly type: {
+                        readonly type: "string";
+                        readonly nullable: false;
+                    };
+                };
+                readonly additionalProperties: false;
+                readonly nullable: false;
+                readonly required: readonly ["type"];
+            };
+        };
+        readonly additionalProperties: false;
+        readonly required: readonly ["callId", "contractId", "type", "sdp"];
+    }, {
+        readonly type: "object";
+        readonly properties: {
+            readonly callId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly contractId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly type: {
+                readonly const: "error";
+            };
+            readonly errorCode: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+        };
+        readonly additionalProperties: false;
+        readonly required: readonly ["callId", "contractId", "type", "errorCode"];
+    }, {
+        readonly type: "object";
+        readonly properties: {
+            readonly callId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly contractId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly type: {
+                readonly const: "answer";
+            };
+            readonly answer: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+        };
+        readonly additionalProperties: false;
+        readonly required: readonly ["callId", "contractId", "type", "answer"];
+    }, {
+        readonly type: "object";
+        readonly properties: {
+            readonly callId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly contractId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly type: {
+                readonly const: "hangup";
+            };
+            readonly reason: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+        };
+        readonly additionalProperties: false;
+        readonly required: readonly ["callId", "contractId", "type", "reason"];
+    }, {
+        readonly type: "object";
+        readonly properties: {
+            readonly callId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly contractId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly type: {
+                readonly const: "request-call";
+            };
+            readonly callee: {
+                readonly type: "object";
+                readonly properties: {
+                    readonly type: {
+                        readonly type: "string";
+                        readonly nullable: false;
+                    };
+                    readonly id: {
+                        readonly type: "string";
+                        readonly nullable: false;
+                    };
+                };
+                readonly required: readonly ["type", "id"];
+                readonly additionalProperties: false;
+            };
+            readonly supportedServices: {
+                readonly type: "array";
+                readonly items: {
+                    readonly type: "string";
+                };
+                readonly nullable: false;
+            };
+        };
+        readonly additionalProperties: false;
+        readonly required: readonly ["callId", "contractId", "type", "callee", "supportedServices"];
+    }, {
+        readonly type: "object";
+        readonly properties: {
+            readonly callId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly contractId: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly type: {
+                readonly const: "local-state";
+            };
+            readonly callState: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly clientState: {
+                readonly type: "string";
+                readonly nullable: false;
+            };
+            readonly serviceStates: {
+                readonly type: "object";
+                readonly patternProperties: {
+                    readonly '.*': {
+                        readonly type: "string";
+                    };
+                };
+                readonly nullable: true;
+            };
+        };
+        readonly additionalProperties: false;
+        readonly required: readonly ["callId", "contractId", "type", "callState", "clientState"];
+    }];
+};
 export type ClientMediaSignalType = ClientMediaSignal['type'];
 type ExtractMediaSignal<T, K extends ClientMediaSignalType> = T extends {
     type: K;
