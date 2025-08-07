@@ -1,153 +1,22 @@
 import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
 import { RouterContext } from '@rocket.chat/ui-contexts';
-import type {
-	RouterContextValue,
-	RouteName,
-	LocationPathname,
-	RouteParameters,
-	SearchParameters,
-	To,
-	RouteObject,
-	LocationSearch,
-} from '@rocket.chat/ui-contexts';
-import { Tracker } from 'meteor/tracker';
+import type { RouterContextValue } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
 import { FlowRouter } from '../flowRouter';
-import { appLayout } from '../lib/appLayout';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
-const subscribers = new Set<() => void>();
-
-const listenToRouteChange = () => {
-	FlowRouter.watchPathChange();
-	subscribers.forEach((onRouteChange) => onRouteChange());
-};
-
-let computation: Tracker.Computation | undefined;
-
-queueMicrotask(() => {
-	computation = Tracker.autorun(listenToRouteChange);
-});
-
-const subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
-	subscribers.add(onRouteChange);
-
-	computation?.invalidate();
-
-	return () => {
-		subscribers.delete(onRouteChange);
-
-		if (subscribers.size === 0) {
-			queueMicrotask(() => computation?.stop());
-		}
-	};
-};
-
-const getLocationPathname = () => FlowRouter.current?.path.replace(/\?.*/, '') as LocationPathname;
-
-const getLocationSearch = () => location.search as LocationSearch;
-
-const getRouteParameters = () =>
-	FlowRouter.current?.params ? (Object.fromEntries(FlowRouter.current.params.entries()) as RouteParameters) : {};
-
-const getSearchParameters = () =>
-	FlowRouter.current?.queryParams ? (Object.fromEntries(FlowRouter.current.queryParams.entries()) as SearchParameters) : {};
-
-const getRouteName = () => FlowRouter.current?.route?.name as RouteName | undefined;
-
-const encodeSearchParameters = (searchParameters: SearchParameters) => {
-	const search = new URLSearchParams();
-
-	for (const [key, value] of Object.entries(searchParameters)) {
-		search.append(key, value);
-	}
-
-	const searchString = search.toString();
-
-	return searchString ? `?${searchString}` : '';
-};
-
-const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${LocationSearch}` => {
-	if (typeof to === 'string') {
-		return to;
-	}
-
-	if ('pathname' in to) {
-		const { pathname, search = {} } = to;
-		return (pathname + encodeSearchParameters(search)) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
-	}
-
-	if ('pattern' in to) {
-		const { pattern, params = {}, search = {} } = to;
-		return Tracker.nonreactive(() => FlowRouter.path(pattern, params, search)) as
-			| LocationPathname
-			| `${LocationPathname}?${LocationSearch}`;
-	}
-
-	if ('name' in to) {
-		const { name, params = {}, search = {} } = to;
-		return Tracker.nonreactive(() => FlowRouter.path(name, params, search)) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
-	}
-
-	throw new Error('Invalid route');
-};
-
-const navigate = (
-	toOrDelta: To | number,
-	options?: {
-		replace?: boolean;
-	},
-) => {
-	if (typeof toOrDelta === 'number') {
-		history.go(toOrDelta);
-		return;
-	}
-
-	const path = buildRoutePath(toOrDelta);
-	const state = { path };
-
-	if (options?.replace) {
-		history.replaceState(state, '', path);
-	} else {
-		history.pushState(state, '', path);
-	}
-
-	dispatchEvent(new PopStateEvent('popstate', { state }));
-};
-
-const updateFlowRouter = () => {
-	if (FlowRouter._initialized) {
-		FlowRouter._updateCallbacks();
-		if (FlowRouter.current) FlowRouter._page.dispatch(new FlowRouter._page.Context(FlowRouter.current.path));
-		return;
-	}
-
-	FlowRouter.initialize();
-};
-
-const defineRoutes = (routes: readonly RouteObject[]) => {
-	const flowRoutes = routes.map((route) =>
-		FlowRouter.route(route.path, {
-			name: route.id,
-			action: () => appLayout.render(<>{route.element}</>),
-		}),
-	);
-
-	updateFlowRouter();
-
-	return () => {
-		flowRoutes.forEach((flowRoute) => {
-			FlowRouter._routes.add(flowRoute);
-			if ('name' in flowRoute && flowRoute.name) {
-				FlowRouter._routesMap.delete(flowRoute.name);
-			}
-		});
-
-		updateFlowRouter();
-	};
-};
+const {
+	subscribeToRouteChange,
+	getLocationPathname,
+	getLocationSearch,
+	getRouteParameters,
+	getSearchParameters,
+	getRouteName,
+	buildRoutePath,
+	navigate,
+	defineRoutes,
+} = FlowRouter;
 
 /** @deprecated consume it from the `RouterContext` instead */
 export const router: RouterContextValue = {

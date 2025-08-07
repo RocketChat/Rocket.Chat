@@ -1,9 +1,19 @@
+import { Emitter } from '@rocket.chat/emitter';
+import type {
+	LocationPathname,
+	LocationSearch,
+	RouteName,
+	RouteObject,
+	RouteParameters,
+	SearchParameters,
+	To,
+} from '@rocket.chat/ui-contexts';
 import { Tracker } from 'meteor/tracker';
 
-import type { Context } from './page';
-import page from './page';
+import page, { Context } from './page';
 import type { RouteOptions } from './route';
 import Route from './route';
+import { appLayout } from '../lib/appLayout';
 
 export type Current = Readonly<{
 	path: string;
@@ -42,13 +52,11 @@ class Router {
 		return _param;
 	}
 
-	private readonly _onEveryPath = new Tracker.Dependency();
+	private _initialized = false;
 
-	_initialized = false;
+	private _routes = new Set<Route>();
 
-	_routes = new Set<Route>();
-
-	_routesMap = new Map<string, Route>();
+	private _routesMap = new Map<string, Route>();
 
 	private safeToRun = 0;
 
@@ -61,17 +69,7 @@ class Router {
 		this._updateCallbacks();
 	}
 
-	watchPathChange(): void {
-		const currentRoute = this._current?.route;
-		if (!currentRoute) {
-			this._onEveryPath.depend();
-			return undefined;
-		}
-
-		return currentRoute.watchPathChange.call(currentRoute);
-	}
-
-	readonly _page = page;
+	private emitter = new Emitter<{ pathChanged: void }>();
 
 	route(pathDef: string, options: RouteOptions) {
 		if (!/^\//.test(pathDef) && pathDef !== '*') {
@@ -172,6 +170,10 @@ class Router {
 
 		page.start();
 		this._initialized = true;
+
+		queueMicrotask(() => {
+			this.emitter.emit('pathChanged');
+		});
 	}
 
 	private _buildTracker() {
@@ -193,19 +195,15 @@ class Router {
 					isRouteChange = false;
 				}
 
-				const oldestRoute = this._oldRouteChain[0];
 				this._oldRouteChain = [];
 
-				currentContext.route.registerRouteChange(isRouteChange);
-				route.callAction();
+				if (!isRouteChange) {
+					this.emitter.emit('pathChanged');
+				}
+				route.action();
 
 				Tracker.afterFlush(() => {
-					this._onEveryPath.changed();
-					if (isRouteChange) {
-						if (oldestRoute?.registerRouteClose) {
-							oldestRoute.registerRouteClose();
-						}
-					}
+					this.emitter.emit('pathChanged');
 				});
 			});
 
@@ -257,6 +255,119 @@ class Router {
 			page.registerRoute(catchAll.pathDef, catchAll._actionHandle);
 		}
 	}
+
+	// public methods
+
+	readonly subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
+		const unsubscribe = this.emitter.on('pathChanged', onRouteChange);
+
+		this.emitter.emit('pathChanged'); // FIXME
+
+		return () => {
+			unsubscribe();
+		};
+	};
+
+	readonly getLocationPathname = () => this.current?.path.replace(/\?.*/, '') as LocationPathname;
+
+	readonly getLocationSearch = () => location.search as LocationSearch;
+
+	readonly getRouteParameters = () => (this.current?.params ? (Object.fromEntries(this.current.params.entries()) as RouteParameters) : {});
+
+	readonly getSearchParameters = () =>
+		this.current?.queryParams ? (Object.fromEntries(this.current.queryParams.entries()) as SearchParameters) : {};
+
+	readonly getRouteName = () => this.current?.route?.name as RouteName | undefined;
+
+	private encodeSearchParameters(searchParameters: SearchParameters) {
+		const search = new URLSearchParams();
+
+		for (const [key, value] of Object.entries(searchParameters)) {
+			search.append(key, value);
+		}
+
+		const searchString = search.toString();
+
+		return searchString ? `?${searchString}` : '';
+	}
+
+	readonly buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${LocationSearch}` => {
+		if (typeof to === 'string') {
+			return to;
+		}
+
+		if ('pathname' in to) {
+			const { pathname, search = {} } = to;
+			return (pathname + this.encodeSearchParameters(search)) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+		}
+
+		if ('pattern' in to) {
+			const { pattern, params = {}, search = {} } = to;
+			return this.path(pattern, params, search) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+		}
+
+		if ('name' in to) {
+			const { name, params = {}, search = {} } = to;
+			return this.path(name, params, search) as LocationPathname | `${LocationPathname}?${LocationSearch}`;
+		}
+
+		throw new Error('Invalid route');
+	};
+
+	readonly navigate = (
+		toOrDelta: To | number,
+		options?: {
+			replace?: boolean;
+		},
+	) => {
+		if (typeof toOrDelta === 'number') {
+			history.go(toOrDelta);
+			return;
+		}
+
+		const path = this.buildRoutePath(toOrDelta);
+		const state = { path };
+
+		if (options?.replace) {
+			history.replaceState(state, '', path);
+		} else {
+			history.pushState(state, '', path);
+		}
+
+		dispatchEvent(new PopStateEvent('popstate', { state }));
+	};
+
+	private updateRoutes() {
+		if (this._initialized) {
+			this._updateCallbacks();
+			if (this.current) page.dispatch(new Context(this.current.path));
+			return;
+		}
+
+		this.initialize();
+	}
+
+	readonly defineRoutes = (routes: readonly RouteObject[]) => {
+		const flowRoutes = routes.map((route) =>
+			this.route(route.path, {
+				name: route.id,
+				action: () => appLayout.render(<>{route.element}</>),
+			}),
+		);
+
+		this.updateRoutes();
+
+		return () => {
+			flowRoutes.forEach((flowRoute) => {
+				this._routes.add(flowRoute);
+				if ('name' in flowRoute && flowRoute.name) {
+					this._routesMap.delete(flowRoute.name);
+				}
+			});
+
+			this.updateRoutes();
+		};
+	};
 }
 
 export default Router;
