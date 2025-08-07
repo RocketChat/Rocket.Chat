@@ -10,7 +10,6 @@ import {
 	useUserId,
 	useToastMessageDispatch,
 	useAssetWithDarkModePath,
-	useMethod,
 	useAccountsCustomFields,
 } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -38,8 +37,8 @@ const RegisterUsername = () => {
 		throw new Error('Invalid user');
 	}
 
-	const setUsername = useMethod('setUsername');
-	const saveCustomFields = useMethod('saveCustomFields');
+	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
+
 	const usernameSuggestion = useEndpoint('GET', '/v1/users.getUsernameSuggestion');
 	const { data, isLoading } = useQuery({
 		queryKey: ['suggestion'],
@@ -69,7 +68,7 @@ const RegisterUsername = () => {
 	const registerUsernameMutation = useMutation({
 		mutationFn: async (data: RegisterUsernamePayload) => {
 			const { username, ...customFields } = data;
-			return Promise.all([setUsername(username), saveCustomFields({ ...customFields })]);
+			return Promise.all([setBasicInfo({ data: { username }, customFields })]);
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Username_has_been_updated') });

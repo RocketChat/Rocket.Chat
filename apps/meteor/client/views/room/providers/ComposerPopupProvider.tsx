@@ -11,9 +11,9 @@ import { useTranslation } from 'react-i18next';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { emoji } from '../../../../app/emoji/client';
-import { Messages, Subscriptions } from '../../../../app/models/client';
 import { slashCommands } from '../../../../app/utils/client';
 import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
+import { Messages, Subscriptions } from '../../../stores';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
 import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';
@@ -26,7 +26,7 @@ import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
-import { pipe } from '../../../lib/cachedCollections';
+import { pipe } from '../../../lib/cachedStores';
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
 
