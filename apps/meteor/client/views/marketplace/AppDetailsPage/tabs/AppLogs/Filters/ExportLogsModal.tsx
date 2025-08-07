@@ -57,6 +57,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 	const getFileUrl = ({
 		severity,
 		event,
+		instance,
 		startDate,
 		endDate,
 		count,
@@ -70,6 +71,9 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 		}
 		if (event && event !== 'all') {
 			baseUrl += `method=${event}&`;
+		}
+		if (instance && instance !== 'all') {
+			baseUrl += `instanceId=${instance}&`;
 		}
 		if (startDate) {
 			baseUrl += `startDate=${new Date(`${startDate}T${startTime}`).toISOString()}&`;

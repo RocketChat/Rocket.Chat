@@ -10,6 +10,10 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 const onConfirm = jest.fn();
 const { Default } = composeStories(stories);
 
+afterEach(() => {
+	jest.clearAllMocks();
+});
+
 test.each(testCases)(`renders without crashing`, async (_storyname, Story) => {
 	const view = render(<Story />, {
 		wrapper: mockAppRoot().build(),
@@ -34,4 +38,23 @@ it('should send the correct payload to the endpoint', async () => {
 	await userEvent.click(screen.getByRole('button', { name: 'Download' }));
 	expect(onConfirm).toHaveBeenCalledTimes(1);
 	expect(onConfirm).toHaveBeenCalledWith('/api/apps/undefined/export-logs?count=2000&type=json');
+});
+
+it('should include instance filter in the payload to endpoint', async () => {
+	render(
+		<Default
+			onConfirm={onConfirm}
+			filterValues={{
+				instance: '123',
+			}}
+		/>,
+		{
+			wrapper: mockAppRoot().build(),
+		},
+	);
+
+	expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument();
+	await userEvent.click(screen.getByRole('button', { name: 'Download' }));
+	expect(onConfirm).toHaveBeenCalledTimes(1);
+	expect(onConfirm).toHaveBeenCalledWith('/api/apps/undefined/export-logs?instanceId=123&count=2000&type=json');
 });
