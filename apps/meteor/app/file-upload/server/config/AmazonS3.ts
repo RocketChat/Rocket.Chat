@@ -84,6 +84,7 @@ const configure = _.debounce(() => {
 			// signatureVersion: SignatureVersion,
 			forcePathStyle: ForcePathStyle,
 			region: Region,
+			followRegionRedirects: true,
 		},
 		params: {
 			Bucket,
