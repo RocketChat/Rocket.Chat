@@ -21,11 +21,10 @@ import { UploadFS } from '../../../../server/ufs';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
 
 export type S3Options = StoreOptions & {
-	connection: S3ClientConfig & {
-		params: {
-			Bucket: string;
-			ACL: string;
-		};
+	connection: S3ClientConfig;
+	params: {
+		Bucket: string;
+		ACL: string;
 	};
 	URLExpiryTimeSpan: number;
 	getPath: (file: OptionalId<IUpload>) => string;
@@ -82,7 +81,7 @@ class AmazonS3Store extends UploadFS.Store {
 				new GetObjectCommand({
 					Key: this.getPath(file),
 					ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
-					Bucket: classOptions.connection.params.Bucket,
+					Bucket: classOptions.params.Bucket,
 				}),
 				{
 					expiresIn: classOptions.URLExpiryTimeSpan, // seconds
@@ -122,7 +121,7 @@ class AmazonS3Store extends UploadFS.Store {
 				return await s3.send(
 					new DeleteObjectCommand({
 						Key: this.getPath(file),
-						Bucket: classOptions.connection.params.Bucket,
+						Bucket: classOptions.params.Bucket,
 					}),
 				);
 			} catch (error) {
@@ -136,7 +135,7 @@ class AmazonS3Store extends UploadFS.Store {
 		this.getReadStream = async function (_fileId, file, options = {}) {
 			const params: GetObjectCommandInput = {
 				Key: this.getPath(file),
-				Bucket: classOptions.connection.params.Bucket,
+				Bucket: classOptions.params.Bucket,
 			};
 
 			if (options.start && options.end) {
@@ -176,7 +175,7 @@ class AmazonS3Store extends UploadFS.Store {
 			const uploadParams: PutObjectCommandInput = {
 				Key: this.getPath(file),
 				Body: writeStream,
-				Bucket: classOptions.connection.params.Bucket,
+				Bucket: classOptions.params.Bucket,
 			};
 
 			// Only set ContentType if it's defined
