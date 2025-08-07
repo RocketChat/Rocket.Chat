@@ -19,6 +19,7 @@ import { mergeContacts } from './utils/mergeContacts';
 const TIMEOUT_TO_ACCEPT = 30000;
 const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
 const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
+const STATE_REPORT_DELAY = 300;
 export class ClientMediaCall {
     get callId() {
         var _a;
@@ -53,10 +54,14 @@ export class ClientMediaCall {
         this.acknowledged = false;
         this.hasLocalDescription = false;
         this.hasRemoteDescription = false;
+        this.serviceStates = new Map();
+        this.stateReporterTimeoutHandler = null;
+        this.mayReportStates = true;
         this.earlySignals = new Set();
         this.stateTimeoutHandlers = new Set();
         this._role = 'callee';
         this._state = 'none';
+        this.oldClientState = 'none';
         this._ignored = false;
         this._contact = null;
         this._service = null;
@@ -252,7 +257,7 @@ export class ClientMediaCall {
         console.log('call.changeState', newState);
         const oldState = this._state;
         this._state = newState;
-        this.updateStateTimeouts();
+        this.updateClientState();
         this.emitter.emit('stateChange', oldState);
         switch (newState) {
             case 'accepted':
@@ -262,6 +267,18 @@ export class ClientMediaCall {
                 this.emitter.emit('ended');
                 break;
         }
+        this.requestStateReport();
+    }
+    updateClientState() {
+        const { oldClientState } = this;
+        const clientState = this.getClientState();
+        if (clientState === oldClientState) {
+            return;
+        }
+        this.updateStateTimeouts();
+        this.requestStateReport();
+        this.oldClientState = clientState;
+        this.emitter.emit('clientStateChange', oldClientState);
     }
     changeContact(contact, { prioritizeExisting } = {}) {
         const oldContct = prioritizeExisting ? contact : this._contact;
@@ -298,8 +315,15 @@ export class ClientMediaCall {
         });
     }
     shouldIgnoreWebRTC() {
-        // Without the remote data we don't know if the call is using webrtc or not
-        return this.hasRemoteData && this._service !== 'webrtc';
+        if (this.hasRemoteData) {
+            return this.service !== 'webrtc';
+        }
+        // If we called and we don't support webrtc, assume it's not gonna be a webrtc call
+        if (this._role === 'caller' && !this.config.processorFactories.webrtc) {
+            return true;
+        }
+        // With no more info, we can't safely ignore webrtc
+        return false;
     }
     processAnswerRequest(signal) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -346,7 +370,8 @@ export class ClientMediaCall {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('Call.deliverSdp');
             this.hasLocalDescription = true;
-            return this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+            this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+            this.updateClientState();
         });
     }
     rejectAsUnavailable() {
@@ -468,6 +493,46 @@ export class ClientMediaCall {
             this.stateTimeoutHandlers.delete(handler);
         }
     }
+    onWebRTCInternalStateChange(stateName) {
+        if (!this.webrtcProcessor) {
+            return;
+        }
+        console.log('webrtc internal state changed: ', stateName);
+        const stateValue = this.webrtcProcessor.getInternalState(stateName);
+        if (this.serviceStates.get(stateName) !== stateValue) {
+            this.serviceStates.set(stateName, stateValue);
+            this.requestStateReport();
+        }
+    }
+    reportStates() {
+        this.clearStateReporter();
+        if (!this.mayReportStates) {
+            return;
+        }
+        this.config.transporter.sendToServer(this.callId, 'local-state', {
+            callState: this.state,
+            clientState: this.getClientState(),
+            serviceStates: Object.fromEntries(this.serviceStates.entries()),
+        });
+        if (this.state === 'hangup') {
+            this.mayReportStates = false;
+        }
+    }
+    clearStateReporter() {
+        if (this.stateReporterTimeoutHandler) {
+            clearTimeout(this.stateReporterTimeoutHandler);
+            this.stateReporterTimeoutHandler = null;
+        }
+    }
+    requestStateReport() {
+        this.clearStateReporter();
+        if (!this.mayReportStates) {
+            return;
+        }
+        this.stateReporterTimeoutHandler = setTimeout(() => {
+            this.reportStates();
+        }, STATE_REPORT_DELAY);
+    }
     prepareWebRtcProcessor() {
         if (this.webrtcProcessor) {
             return;
@@ -478,6 +543,7 @@ export class ClientMediaCall {
             throw new Error('webrtc-not-implemented');
         }
         this.webrtcProcessor = webrtcFactory({ mediaStreamFactory });
+        this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
     }
     requireWebRTC() {
         try {

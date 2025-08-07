@@ -1,4 +1,5 @@
-import type { CallAnswer, CallHangupReason, CallService } from '../../call';
+import type { CallAnswer, CallHangupReason, CallService, CallState } from '../../call';
+import type { ClientState } from '../../client';
 export type ClientMediaSignalRequestCall = {
     callId: string;
     contractId: string;
@@ -33,7 +34,15 @@ export type ClientMediaSignalHangup = {
     type: 'hangup';
     reason: CallHangupReason;
 };
-export type ClientMediaSignal = ClientMediaSignalLocalSDP | ClientMediaSignalError | ClientMediaSignalAnswer | ClientMediaSignalHangup | ClientMediaSignalRequestCall;
+export type ClientMediaSignalLocalState = {
+    callId: string;
+    contractId: string;
+    type: 'local-state';
+    callState: CallState;
+    clientState: ClientState;
+    serviceStates?: Record<string, string>;
+};
+export type ClientMediaSignal = ClientMediaSignalLocalSDP | ClientMediaSignalError | ClientMediaSignalAnswer | ClientMediaSignalHangup | ClientMediaSignalRequestCall | ClientMediaSignalLocalState;
 export type ClientMediaSignalType = ClientMediaSignal['type'];
 type ExtractMediaSignal<T, K extends ClientMediaSignalType> = T extends {
     type: K;

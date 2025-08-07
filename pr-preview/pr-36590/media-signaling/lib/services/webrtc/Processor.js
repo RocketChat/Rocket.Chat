@@ -7,12 +7,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { Emitter } from '@rocket.chat/emitter';
 import { LocalStream } from './LocalStream';
 import { RemoteStream } from './RemoteStream';
 export class MediaCallWebRTCProcessor {
     constructor(config) {
         this.config = config;
         this.iceGatheringFinished = false;
+        this.iceGatheringTimedOut = false;
         this.localMediaStreamInitialized = false;
         this.localMediaStream = new MediaStream();
         this.remoteMediaStream = new MediaStream();
@@ -20,6 +22,7 @@ export class MediaCallWebRTCProcessor {
         this.localStream = new LocalStream(this.localMediaStream);
         this.remoteStream = new RemoteStream(this.remoteMediaStream);
         this.peer = new RTCPeerConnection();
+        this.emitter = new Emitter();
         this.registerPeerEvents();
     }
     getRemoteMediaStream() {
@@ -66,10 +69,30 @@ export class MediaCallWebRTCProcessor {
             this.peer.setRemoteDescription(sdp);
         });
     }
+    getInternalState(stateName) {
+        switch (stateName) {
+            case 'signaling':
+                return this.peer.signalingState;
+            case 'connection':
+                return this.peer.connectionState;
+            case 'iceConnection':
+                return this.peer.iceConnectionState;
+            case 'iceGathering':
+                return this.peer.iceGatheringState;
+            case 'iceUntrickler':
+                if (this.iceGatheringTimedOut) {
+                    return 'timeout';
+                }
+                return this.iceGatheringWaiters.size > 0 ? 'waiting' : 'not-waiting';
+        }
+    }
     getuserMedia(constraints) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.config.mediaStreamFactory(constraints);
         });
+    }
+    changeInternalState(stateName) {
+        this.emitter.emit('internalStateChange', stateName);
     }
     getLocalDescription() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -98,6 +121,7 @@ export class MediaCallWebRTCProcessor {
                 console.log('ice gathering already complete');
                 return;
             }
+            this.iceGatheringTimedOut = false;
             const data = {};
             data.promise = new Promise((resolve, reject) => {
                 data.promiseResolve = resolve;
@@ -108,12 +132,15 @@ export class MediaCallWebRTCProcessor {
                 console.log('timeout');
                 if (this.iceGatheringWaiters.has(iceGatheringData)) {
                     this.clearIceGatheringData(iceGatheringData);
+                    this.iceGatheringTimedOut = true;
+                    this.changeInternalState('iceUntrickler');
                 }
                 else {
                     console.log('ice gathering not on the list');
                 }
             }, 500);
             this.iceGatheringWaiters.add(iceGatheringData);
+            this.changeInternalState('iceUntrickler');
             return data.promise;
         });
     }
@@ -147,7 +174,7 @@ export class MediaCallWebRTCProcessor {
             return;
         }
         console.log('onIceCandidate ERROR event');
-        //
+        this.emitter.emit('internalError', { critical: false, error: 'ice-candidate-error' });
     }
     onNegotiationNeeded(peer) {
         if (peer !== this.peer) {
@@ -168,18 +195,21 @@ export class MediaCallWebRTCProcessor {
             return;
         }
         console.log('Connection state change', peer.connectionState);
+        this.changeInternalState('connection');
     }
     onIceConnectionStateChange(peer) {
         if (peer !== this.peer) {
             return;
         }
         console.log('Ice connection state change', peer.iceConnectionState);
+        this.changeInternalState('iceConnection');
     }
     onSignalingStateChange(peer) {
         if (peer !== this.peer) {
             return;
         }
         console.log('Signaling state change', peer.signalingState);
+        this.changeInternalState('signaling');
     }
     onIceGatheringStateChange(peer) {
         if (peer !== this.peer) {
@@ -189,6 +219,7 @@ export class MediaCallWebRTCProcessor {
         if (peer.iceGatheringState === 'complete') {
             this.onIceGatheringComplete();
         }
+        this.changeInternalState('iceGathering');
     }
     initializeLocalMediaStream() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -230,9 +261,11 @@ export class MediaCallWebRTCProcessor {
         console.log('clear waiters');
         const waiters = this.iceGatheringWaiters.values().toArray();
         this.iceGatheringWaiters.clear();
+        this.iceGatheringTimedOut = false;
         for (const iceGatheringData of waiters) {
             this.clearIceGatheringData(iceGatheringData, error);
         }
+        this.changeInternalState('iceUntrickler');
     }
 }
 //# sourceMappingURL=Processor.js.map
