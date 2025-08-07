@@ -668,6 +668,12 @@ describe('LIVECHAT - Agents', () => {
 			describe('outside of business hours', () => {
 				before(async () => {
 					await makeDefaultBusinessHourActiveAndClosed();
+
+					await request
+						.post(api('livechat/agent.status'))
+						.set(agent2.credentials)
+						.send({ status: 'not-available', agentId: currentUser._id })
+						.expect(200);
 				});
 
 				after(async () => {
