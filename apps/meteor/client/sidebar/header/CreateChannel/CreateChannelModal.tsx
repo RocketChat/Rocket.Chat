@@ -28,8 +28,8 @@ import type { ComponentProps, ReactElement } from 'react';
 import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { useCanOnlyCreateOneType } from '../../../NavBarV2/NavBarPagesGroup/hooks/useCanOnlyCreateOneType';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
@@ -83,7 +83,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const canOnlyCreateOneType = useCanOnlyCreateOneType(teamId || mainRoom?._id || undefined);
+	const canOnlyCreateOneType = useCreateChannelTypePermission(mainRoom?._id);
 
 	const {
 		register,

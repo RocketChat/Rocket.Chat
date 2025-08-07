@@ -33,8 +33,8 @@ import type { ComponentProps, ReactElement } from 'react';
 import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { useCanOnlyCreateOneType } from '../../../NavBarV2/NavBarPagesGroup/hooks/useCanOnlyCreateOneType';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
+import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
@@ -69,7 +69,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		return new RegExp(`^${namesValidation}$`);
 	}, [allowSpecialNames, namesValidation]);
 
-	const canOnlyCreateOneType = useCanOnlyCreateOneType();
+	const canOnlyCreateOneType = useCreateChannelTypePermission();
 
 	const validateTeamName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
@@ -235,7 +235,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 										id={privateId}
 										aria-describedby={`${privateId}-hint`}
 										onChange={onChange}
-										checked={value}
+										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
 										disabled={!!canOnlyCreateOneType}
 										ref={ref}
 									/>

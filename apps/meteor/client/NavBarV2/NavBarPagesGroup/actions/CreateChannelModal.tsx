@@ -29,9 +29,9 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
-import { useCanOnlyCreateOneType } from '../hooks/useCanOnlyCreateOneType';
 
 type CreateChannelModalProps = {
 	teamId?: string;
@@ -81,7 +81,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const canOnlyCreateOneType = useCanOnlyCreateOneType(teamId || undefined);
+	const canOnlyCreateOneType = useCreateChannelTypePermission();
 
 	const {
 		register,
@@ -256,7 +256,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 										id={privateId}
 										aria-describedby={`${privateId}-hint`}
 										ref={ref}
-										checked={value}
+										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
 										disabled={!!canOnlyCreateOneType}
 										onChange={onChange}
 									/>
