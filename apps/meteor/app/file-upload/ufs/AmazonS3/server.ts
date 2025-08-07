@@ -2,7 +2,8 @@ import stream from 'stream';
 
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import S3 from 'aws-sdk/clients/s3';
+import { GetObjectCommand, S3 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { check } from 'meteor/check';
 import type { OptionalId } from 'mongodb';
 import _ from 'underscore';
@@ -52,12 +53,7 @@ class AmazonS3Store extends UploadFS.Store {
 
 		const classOptions = options;
 
-		const customUserAgent = process.env.FILE_STORAGE_CUSTOM_USER_AGENT?.trim();
-
-		const s3 = new S3({
-			...(customUserAgent && { customUserAgent }),
-			...options.connection,
-		});
+		const s3 = new S3(options.connection);
 
 		options.getPath =
 			options.getPath ||
@@ -79,20 +75,19 @@ class AmazonS3Store extends UploadFS.Store {
 		};
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
-			const params = {
-				Key: this.getPath(file),
-				Expires: classOptions.URLExpiryTimeSpan,
-				ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
-			};
-
-			return s3.getSignedUrlPromise('getObject', params);
+			return getSignedUrl(
+				s3,
+				new GetObjectCommand({
+					Key: this.getPath(file),
+					ResponseExpires: new Date(Date.now() + classOptions.URLExpiryTimeSpan),
+					ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
+					Bucket: classOptions.connection.params.Bucket,
+				}),
+			);
 		};
 
 		/**
 		 * Creates the file in the collection
-		 * @param file
-		 * @param callback
-		 * @return {string}
 		 */
 		this.create = async (file) => {
 			check(file, Object);
@@ -112,32 +107,25 @@ class AmazonS3Store extends UploadFS.Store {
 
 		/**
 		 * Removes the file
-		 * @param fileId
-		 * @param callback
 		 */
 		this.delete = async function (fileId) {
 			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
 				throw new Error('File not found');
 			}
-			const params = {
-				Key: this.getPath(file),
-				Bucket: classOptions.connection.params.Bucket,
-			};
 
 			try {
-				return s3.deleteObject(params).promise();
-			} catch (err: any) {
-				SystemLogger.error({ err });
+				return await s3.deleteObject({
+					Key: this.getPath(file),
+					Bucket: classOptions.connection.params.Bucket,
+				});
+			} catch (error) {
+				SystemLogger.error(error);
 			}
 		};
 
 		/**
 		 * Returns the file read stream
-		 * @param fileId
-		 * @param file
-		 * @param options
-		 * @return {*}
 		 */
 		this.getReadStream = async function (_fileId, file, options = {}) {
 			const params: {
@@ -153,15 +141,11 @@ class AmazonS3Store extends UploadFS.Store {
 				params.Range = `${options.start} - ${options.end}`;
 			}
 
-			return s3.getObject(params).createReadStream();
+			return (await s3.getObject(params)).Body! as stream.Readable;
 		};
 
 		/**
 		 * Returns the file write stream
-		 * @param fileId
-		 * @param file
-		 * @param options
-		 * @return {*}
 		 */
 		this.getWriteStream = async function (_fileId, file /* , options*/) {
 			const writeStream = new stream.PassThrough();
@@ -184,9 +168,9 @@ class AmazonS3Store extends UploadFS.Store {
 					ContentType: file.type,
 					Bucket: classOptions.connection.params.Bucket,
 				},
-				(err) => {
-					if (err) {
-						SystemLogger.error({ err });
+				(error) => {
+					if (error) {
+						SystemLogger.error(error);
 					}
 
 					writeStream.emit('real_finish');
@@ -194,10 +178,6 @@ class AmazonS3Store extends UploadFS.Store {
 			);
 
 			return writeStream;
-		};
-
-		this.getUrlExpiryTimeSpan = async () => {
-			return options.URLExpiryTimeSpan || null;
 		};
 	}
 }
