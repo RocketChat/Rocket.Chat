@@ -1,4 +1,4 @@
-import type { CallContact, CallNotification, CallRole, CallService } from '../../call';
+import type { CallContact, CallNotification, CallRejectedReason, CallRole, CallService } from '../../call';
 export type ServerMediaSignalNewCall = {
     callId: string;
     type: 'new';
@@ -25,6 +25,12 @@ export type ServerMediaSignalNotification = {
     type: 'notification';
     notification: CallNotification;
 };
-export type ServerMediaSignal = ServerMediaSignalNewCall | ServerMediaSignalRemoteSDP | ServerMediaSignalRequestOffer | ServerMediaSignalNotification;
+export type ServerMediaSignalRejectedCallRequest = {
+    callId: string;
+    type: 'rejected-call-request';
+    toContractId: string;
+    reason?: CallRejectedReason;
+};
+export type ServerMediaSignal = ServerMediaSignalNewCall | ServerMediaSignalRemoteSDP | ServerMediaSignalRequestOffer | ServerMediaSignalNotification | ServerMediaSignalRejectedCallRequest;
 export type ServerMediaSignalType = ServerMediaSignal['type'];
 //# sourceMappingURL=MediaSignal.d.ts.map

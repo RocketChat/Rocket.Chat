@@ -1,6 +1,8 @@
+import type { ClientState } from '../client';
 import type { CallState } from './IClientMediaCall';
 export type CallEvents = {
     stateChange: CallState;
+    clientStateChange: ClientState;
     contactUpdate: void;
     initialized: void;
     accepting: void;

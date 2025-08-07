@@ -2,6 +2,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
 import type { IServiceProcessorFactoryList } from '../definition';
 import type { IClientMediaCall, CallEvents, CallContact, CallRole, CallState, CallService, CallHangupReason, CallActorType } from '../definition/call';
+import type { ClientState } from '../definition/client';
 import type { IWebRTCProcessor, MediaStreamFactory } from '../definition/services';
 import type { ServerMediaSignal, ServerMediaSignalNewCall, ServerMediaSignalRemoteSDP, ServerMediaSignalRequestOffer } from '../definition/signals/server/MediaSignal';
 export interface IClientMediaCallConfig {
@@ -9,7 +10,6 @@ export interface IClientMediaCallConfig {
     processorFactories: IServiceProcessorFactoryList;
     mediaStreamFactory: MediaStreamFactory;
 }
-type ClientState = 'pending' | 'accepting' | 'accepted' | 'has-offer' | 'has-answer' | 'active' | 'hangup';
 export declare class ClientMediaCall implements IClientMediaCall {
     private readonly config;
     get callId(): string;
@@ -35,6 +35,10 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private earlySignals;
     private stateTimeoutHandlers;
     private remoteCallId;
+    private oldClientState;
+    private serviceStates;
+    private stateReporterTimeoutHandler;
+    private mayReportStates;
     private localCallId;
     constructor(config: IClientMediaCallConfig, callId: string);
     initializeOutboundCall(contact: CallContact): Promise<void>;
@@ -53,6 +57,7 @@ export declare class ClientMediaCall implements IClientMediaCall {
     isPendingOurAcceptance(): boolean;
     isOver(): boolean;
     private changeState;
+    private updateClientState;
     private changeContact;
     protected processOfferRequest(signal: ServerMediaSignalRequestOffer): Promise<void>;
     protected shouldIgnoreWebRTC(): boolean;
@@ -69,6 +74,10 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private flagAsEnded;
     private addStateTimeout;
     private updateStateTimeouts;
+    private onWebRTCInternalStateChange;
+    private reportStates;
+    private clearStateReporter;
+    private requestStateReport;
     private prepareWebRtcProcessor;
     private requireWebRTC;
 }
@@ -76,5 +85,4 @@ export declare class ClientMediaCallWebRTC extends ClientMediaCall {
     webrtcProcessor: IWebRTCProcessor;
     constructor(config: IClientMediaCallConfig, callId: string);
 }
-export {};
 //# sourceMappingURL=Call.d.ts.map

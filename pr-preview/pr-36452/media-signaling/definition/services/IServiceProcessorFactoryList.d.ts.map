@@ -1,1 +1,1 @@
-{"version":3,"file":"IServiceProcessorFactoryList.d.ts","sourceRoot":"","sources":["../../../src/definition/services/IServiceProcessorFactoryList.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,MAAM,oBAAoB,CAAC;AAEjE,MAAM,WAAW,4BAA4B;IAC5C,MAAM,CAAC,EAAE,sBAAsB,CAAC;CAChC"}
+{"version":3,"file":"IServiceProcessorFactoryList.d.ts","sourceRoot":"","sources":["../../../src/definition/services/IServiceProcessorFactoryList.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,MAAM,2BAA2B,CAAC;AAExE,MAAM,WAAW,4BAA4B;IAC5C,MAAM,CAAC,EAAE,sBAAsB,CAAC;CAChC"}

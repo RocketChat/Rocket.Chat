@@ -1,8 +1,12 @@
-import type { IWebRTCProcessor, WebRTCProcessorConfig } from '../../../definition';
+import { Emitter } from '@rocket.chat/emitter';
+import type { IWebRTCProcessor, WebRTCInternalStateMap, WebRTCProcessorConfig, WebRTCProcessorEvents } from '../../../definition';
+import type { ServiceStateValue } from '../../../definition/services/IServiceProcessor';
 export declare class MediaCallWebRTCProcessor implements IWebRTCProcessor {
     private readonly config;
+    emitter: Emitter<WebRTCProcessorEvents>;
     private peer;
     private iceGatheringFinished;
+    private iceGatheringTimedOut;
     private localStream;
     private localMediaStream;
     private localMediaStreamInitialized;
@@ -24,7 +28,9 @@ export declare class MediaCallWebRTCProcessor implements IWebRTCProcessor {
     setRemoteDescription({ sdp }: {
         sdp: RTCSessionDescriptionInit;
     }): Promise<void>;
+    getInternalState<K extends keyof WebRTCInternalStateMap>(stateName: K): ServiceStateValue<WebRTCInternalStateMap, K>;
     protected getuserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>;
+    private changeInternalState;
     private getLocalDescription;
     private waitForIceGathering;
     private registerPeerEvents;

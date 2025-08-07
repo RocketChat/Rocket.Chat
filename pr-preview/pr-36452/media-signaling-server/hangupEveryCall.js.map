@@ -1,0 +1,1 @@
+{"version":3,"file":"hangupEveryCall.js","sourceRoot":"","sources":["../src/hangupEveryCall.ts"],"names":[],"mappings":";;AAEA,0CAOC;AATD,gDAAiD;AAE1C,KAAK,UAAU,eAAe,CAAC,YAAqB;IAC1D,kFAAkF;IAElF,MAAM,mBAAU,CAAC,eAAe,CAAC;QAChC,OAAO,EAAE,EAAE,IAAI,EAAE,QAAQ,EAAE,EAAE,EAAE,QAAQ,EAAE;QACzC,MAAM,EAAE,YAAY,IAAI,oBAAoB;KAC5C,CAAC,CAAC;AACJ,CAAC"}
