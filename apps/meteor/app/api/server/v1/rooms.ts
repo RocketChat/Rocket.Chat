@@ -1012,14 +1012,26 @@ const isRoomGetRolesPropsSchema = {
 };
 
 const RoomsFavoriteSchema = {
-	type: 'object',
-	properties: {
-		favorite: { type: 'boolean' },
-		roomId: { type: 'string' },
-		roomName: { type: 'string' },
-	},
-	required: ['favorite'],
-	additionalProperties: false,
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomName: { type: 'string' },
+			},
+			required: ['roomName', 'favorite'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomId: { type: 'string' },
+			},
+			required: ['roomId', 'favorite'],
+			additionalProperties: false,
+		},
+	],
 };
 
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
