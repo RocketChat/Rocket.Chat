@@ -1,6 +1,7 @@
 import stream from 'stream';
 
-import { GetObjectCommand, S3 } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, S3Client, type PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
@@ -53,7 +54,7 @@ class AmazonS3Store extends UploadFS.Store {
 
 		const classOptions = options;
 
-		const s3 = new S3(options.connection);
+		const s3 = new S3Client(options.connection);
 
 		options.getPath =
 			options.getPath ||
@@ -115,10 +116,12 @@ class AmazonS3Store extends UploadFS.Store {
 			}
 
 			try {
-				return await s3.deleteObject({
-					Key: this.getPath(file),
-					Bucket: classOptions.connection.params.Bucket,
-				});
+				return await s3.send(
+					new DeleteObjectCommand({
+						Key: this.getPath(file),
+						Bucket: classOptions.connection.params.Bucket,
+					}),
+				);
 			} catch (error) {
 				SystemLogger.error(error);
 			}
@@ -138,10 +141,10 @@ class AmazonS3Store extends UploadFS.Store {
 			};
 
 			if (options.start && options.end) {
-				params.Range = `${options.start} - ${options.end}`;
+				params.Range = `bytes=${options.start}-${options.end}`;
 			}
 
-			const response = await s3.getObject(params);
+			const response = await s3.send(new GetObjectCommand(params));
 
 			if (!response.Body) {
 				throw new Error('File not found');
@@ -160,8 +163,6 @@ class AmazonS3Store extends UploadFS.Store {
 		 */
 		this.getWriteStream = async function (_fileId, file /* , options*/) {
 			const writeStream = new stream.PassThrough();
-			// TS does not allow but S3 requires a length property;
-			(writeStream as unknown as any).length = file.size;
 
 			writeStream.on('newListener', (event, listener) => {
 				if (event === 'finish') {
@@ -172,22 +173,37 @@ class AmazonS3Store extends UploadFS.Store {
 				}
 			});
 
-			s3.putObject(
-				{
-					Key: this.getPath(file),
-					Body: writeStream,
-					ContentType: file.type,
-					ContentLength: file.size,
-					Bucket: classOptions.connection.params.Bucket,
-				},
-				(error) => {
-					if (error) {
-						SystemLogger.error(error);
-					}
+			// Use Upload class for streaming uploads with AWS SDK v3
+			const uploadParams: PutObjectCommandInput = {
+				Key: this.getPath(file),
+				Body: writeStream,
+				Bucket: classOptions.connection.params.Bucket,
+			};
 
+			// Only set ContentType if it's defined
+			if (file.type) {
+				uploadParams.ContentType = file.type;
+			}
+
+			// Only set ContentLength if file.size is defined and not null
+			if (file.size != null) {
+				uploadParams.ContentLength = file.size;
+			}
+
+			const upload = new Upload({
+				client: s3,
+				params: uploadParams,
+			});
+
+			upload
+				.done()
+				.then(() => {
 					writeStream.emit('real_finish');
-				},
-			);
+				})
+				.catch((error) => {
+					SystemLogger.error(error);
+					writeStream.emit('error', error);
+				});
 
 			return writeStream;
 		};
