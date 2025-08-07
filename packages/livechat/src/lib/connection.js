@@ -5,6 +5,7 @@ import store from '../store';
 import constants from './constants';
 import { loadConfig } from './main';
 import { loadMessages } from './room';
+import { alertTimeOut } from './random';
 
 let self;
 let timer;
@@ -62,18 +63,18 @@ const Connection = {
 
 	async displayAlert(alert = {}) {
 		const { alerts } = store.state;
-		await store.setState({ alerts: (alerts.push(alert), alerts) });
+		await store.setState({ alerts: (alerts.push({...alert,timeout:alertTimeOut}), alerts) });
 	},
 
 	async handleConnected() {
 		await self.clearAlerts();
-		await self.displayAlert({ id: livechatConnectedAlertId, children: i18next.t('livechat_connected'), success: true });
+		await self.displayAlert({ id: livechatConnectedAlertId, children: i18next.t('livechat_connected'), success: true, timeout: alertTimeOut });
 		await loadMessages();
 	},
 
 	async handleDisconnected() {
 		await self.clearAlerts();
-		await self.displayAlert({ id: livechatDisconnectedAlertId, children: i18next.t('livechat_is_not_connected'), error: true, timeout: 0 });
+		await self.displayAlert({ id: livechatDisconnectedAlertId, children: i18next.t('livechat_is_not_connected'), error: true, timeout: alertTimeOut });
 		self.reconnect();
 	},
 

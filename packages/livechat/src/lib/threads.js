@@ -1,7 +1,7 @@
 import { Livechat } from '../api';
 import { parse, upsert } from '../components/helpers';
 import { store } from '../store';
-import { createToken } from './random';
+import { alertTimeOut, createToken } from './random';
 
 const addParentMessage = async (parentMessage) => {
 	const { state } = store;
@@ -43,7 +43,7 @@ const findParentMessage = async (tmid) => {
 			const {
 				data: { error: reason },
 			} = error;
-			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
+			const alert = { id: createToken(), children: reason, error: true, timeout: alertTimeOut };
 			await store.setState({ alerts: (alerts.push(alert), alerts) });
 		}
 	}

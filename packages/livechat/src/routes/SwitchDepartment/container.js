@@ -5,7 +5,7 @@ import { withTranslation } from 'react-i18next';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import { loadConfig } from '../../lib/main';
-import { createToken } from '../../lib/random';
+import { alertTimeOut, createToken } from '../../lib/random';
 import SwitchDepartment from './component';
 
 class SwitchDepartmentContainer extends Component {
@@ -53,7 +53,7 @@ class SwitchDepartmentContainer extends Component {
 		} catch (error) {
 			console.error(error);
 			await dispatch({
-				alerts: (alerts.push({ id: createToken(), children: t('no_available_agents_to_transfer'), warning: true }), alerts),
+				alerts: (alerts.push({ id: createToken(), children: t('no_available_agents_to_transfer'), warning: true, timeout: alertTimeOut }), alerts),
 			});
 		} finally {
 			await dispatch({ loading: false });

@@ -23,3 +23,5 @@ export const createRandomString = (charsCount, alphabet) => Array.from({ length:
 export const createRandomId = (charsCount = 17) => createRandomString(charsCount, UNMISTAKABLE_CHARS);
 
 export const createToken = () => crypto.lib.WordArray.random(32).toString(crypto.enc.Hex);
+
+export const alertTimeOut = 1000;
