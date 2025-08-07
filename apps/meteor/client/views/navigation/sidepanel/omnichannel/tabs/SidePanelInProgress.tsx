@@ -6,8 +6,8 @@ import {
 	sidePanelFiltersConfig,
 	useSidePanelRoomsListTab,
 	useUnreadOnlyToggle,
-} from '../../contexts/RoomsNavigationContext';
-import SidePanel from '../SidePanel';
+} from '../../../contexts/RoomsNavigationContext';
+import SidePanel from '../../SidePanel';
 
 const SidePanelInProgress = () => {
 	const { t } = useTranslation();

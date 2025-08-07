@@ -1,12 +1,12 @@
 import SidePanelAll from './tabs/SidePanelAll';
 import { ALL_GROUPS, useRoomsListContext, useSidePanelFilter } from '../contexts/RoomsNavigationContext';
+import SidePanelInProgress from './omnichannel/tabs/SidePanelInProgress';
+import SidePanelQueue from './omnichannel/tabs/SidePanelQueue';
+import SidePanelOnHold from './omnichannel/tabs/SidepanelOnHold';
 import SidePanelDiscussions from './tabs/SidePanelDiscussions';
 import SidePanelFavorites from './tabs/SidePanelFavorites';
-import SidePanelInProgress from './tabs/SidePanelInProgress';
 import SidePanelMentions from './tabs/SidePanelMentions';
-import SidePanelQueue from './tabs/SidePanelQueue';
 import SidePanelRooms from './tabs/SidePanelRooms';
-import SidePanelOnHold from './tabs/SidepanelOnHold';
 
 const SidePanelRouter = () => {
 	const [currentTab] = useSidePanelFilter();
