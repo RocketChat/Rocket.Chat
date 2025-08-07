@@ -15,8 +15,9 @@ import {
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -376,90 +377,6 @@ API.v1.addRoute(
 		},
 	},
 );
-
-type RoomsFavorite = {
-	favorite: boolean;
-	roomId?: string;
-	roomName?: string;
-};
-
-const RoomsFavoriteSchema = {
-	type: 'object',
-	properties: {
-		favorite: { type: 'boolean' },
-		roomId: { type: 'string' },
-		roomName: { type: 'string' },
-	},
-	required: ['favorite'],
-	additionalProperties: false,
-};
-
-export const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
-
-const roomsFavoriteEndpoints = API.v1.post(
-	'rooms.favorite',
-	{
-		authRequired: true,
-		body: isRoomsFavoriteProps,
-		response: {
-			200: ajv.compile({
-				type: 'object',
-				properties: {
-					success: {
-						type: 'boolean',
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: {
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-					details: { type: 'object' },
-					success: {
-						type: 'boolean',
-						enum: [false],
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['error', 'errorType', 'success'],
-				additionalProperties: false,
-			}),
-			401: ajv.compile({
-				type: 'object',
-				properties: {
-					status: { type: 'string' },
-					message: { type: 'string' },
-					success: {
-						type: 'boolean',
-						enum: [false],
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['message', 'status', 'success'],
-				additionalProperties: false,
-			}),
-		},
-	},
-	async function action() {
-		const { favorite } = this.bodyParams;
-
-		if (!this.bodyParams.hasOwnProperty('favorite')) {
-			return API.v1.failure("The 'favorite' param is required");
-		}
-
-		const room = await findRoomByIdOrName({ params: this.bodyParams });
-
-		await toggleFavoriteMethod(this.userId, room._id, favorite);
-
-		return API.v1.success();
-	},
-);
-
-export type RoomsFavoriteEndpoints = ExtractRoutesFromAPI<typeof roomsFavoriteEndpoints>;
 
 API.v1.addRoute(
 	'rooms.cleanHistory',
@@ -1075,6 +992,16 @@ API.v1.addRoute(
 	},
 );
 
+type RoomsFavorite =
+	| {
+			roomId: string;
+			favorite: boolean;
+	  }
+	| {
+			roomName: string;
+			favorite: boolean;
+	  };
+
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
 	properties: {
@@ -1083,55 +1010,103 @@ const isRoomGetRolesPropsSchema = {
 	additionalProperties: false,
 	required: ['rid'],
 };
-export const roomEndpoints = API.v1.get(
-	'rooms.roles',
-	{
-		authRequired: true,
-		query: ajv.compile<{
-			rid: string;
-		}>(isRoomGetRolesPropsSchema),
-		response: {
-			200: ajv.compile<{
-				roles: RoomRoles[];
-			}>({
-				type: 'object',
-				properties: {
-					roles: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								rid: { type: 'string' },
-								u: {
-									type: 'object',
-									properties: { _id: { type: 'string' }, username: { type: 'string' } },
-									required: ['_id', 'username'],
+
+const RoomsFavoriteSchema = {
+	type: 'object',
+	properties: {
+		favorite: { type: 'boolean' },
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+	},
+	required: ['favorite'],
+	additionalProperties: false,
+};
+
+const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+
+export const roomEndpoints = API.v1
+	.get(
+		'rooms.roles',
+		{
+			authRequired: true,
+			query: ajv.compile<{
+				rid: string;
+			}>(isRoomGetRolesPropsSchema),
+			response: {
+				200: ajv.compile<{
+					roles: RoomRoles[];
+				}>({
+					type: 'object',
+					properties: {
+						roles: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									rid: { type: 'string' },
+									u: {
+										type: 'object',
+										properties: { _id: { type: 'string' }, username: { type: 'string' } },
+										required: ['_id', 'username'],
+									},
+									roles: { type: 'array', items: { type: 'string' } },
 								},
-								roles: { type: 'array', items: { type: 'string' } },
+								required: ['rid', 'u', 'roles'],
 							},
-							required: ['rid', 'u', 'roles'],
 						},
 					},
-				},
-				required: ['roles'],
-			}),
+					required: ['roles'],
+				}),
+			},
 		},
-	},
-	async function () {
-		const { rid } = this.queryParams;
-		const roles = await executeGetRoomRoles(rid, this.userId);
+		async function () {
+			const { rid } = this.queryParams;
+			const roles = await executeGetRoomRoles(rid, this.userId);
 
-		return API.v1.success({
-			roles,
-		});
-	},
-);
+			return API.v1.success({
+				roles,
+			});
+		},
+	)
+	.post(
+		'rooms.favorite',
+		{
+			authRequired: true,
+			body: isRoomsFavoriteProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { favorite } = this.bodyParams;
+
+			if (!this.bodyParams.hasOwnProperty('favorite')) {
+				return API.v1.failure("The 'favorite' param is required");
+			}
+
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+			await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+			return API.v1.success();
+		},
+	);
 
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends RoomEndpoints {}
-  // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RoomsFavoriteEndpoints {}
 }
