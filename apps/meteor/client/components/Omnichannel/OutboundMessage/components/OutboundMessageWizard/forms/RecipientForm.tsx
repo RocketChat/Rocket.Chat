@@ -30,7 +30,6 @@ import SenderSelect from '../../SenderSelect';
 import RetryButton from '../components/RetryButton';
 import { useFormKeyboardSubmit } from '../hooks/useFormKeyboardSubmit';
 import { cxp } from '../utils/cx';
-import { FormFetchError } from '../utils/errors';
 
 export type RecipientFormData = {
 	contactId: string;
@@ -59,7 +58,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 	const { defaultValues, renderActions, onDirty, onSubmit } = props;
 	const getTimeFromNow = useTimeFromNow(true);
 
-	const { trigger, control, handleSubmit, formState, clearErrors } = useForm<RecipientFormData>({
+	const { trigger, control, handleSubmit, formState, clearErrors, setValue } = useForm<RecipientFormData>({
 		mode: 'onChange',
 		reValidateMode: 'onChange',
 		defaultValues: {
@@ -115,29 +114,31 @@ const RecipientForm = (props: RecipientFormProps) => {
 		return findLastChatFromChannel(contact?.channels, providerId);
 	}, [contact?.channels, providerId]);
 
-	useEffect(() => {
-		isErrorContact && trigger('contactId');
-		return () => clearErrors('contactId');
-	}, [clearErrors, isErrorContact, trigger]);
+	const validateContactField = useEffectEvent(() => {
+		trigger('contactId');
+		setValue('recipient', '');
+	});
 
-	useEffect(() => {
-		isErrorProvider && trigger('providerId');
-		return () => clearErrors('providerId');
-	}, [clearErrors, isErrorProvider, trigger]);
+	const validateProviderField = useEffectEvent(() => {
+		trigger('providerId');
+		setValue('sender', '');
+	});
 
-	// validate recipient field when contact changes
-	useEffect(() => {
-		contact && trigger('recipient');
-	}, [contact, trigger]);
+	// clear and validate recipient field when contact changes
+	const handleContactFieldChange = useEffectEvent((onChange: (value: string) => void) => {
+		return (value: string) => {
+			setValue('recipient', '', { shouldValidate: true });
+			onChange(value);
+		};
+	});
 
-	// validate sender field when provider changes
-	useEffect(() => {
-		provider && trigger('sender');
-	}, [provider, trigger]);
-
-	useEffect(() => {
-		isDirty && onDirty?.();
-	}, [isDirty, onDirty]);
+	// clear validate sender field when provider changes
+	const handleProviderFieldChange = useEffectEvent((onChange: (value: string) => void) => {
+		return (value: string) => {
+			setValue('sender', '', { shouldValidate: true });
+			onChange(value);
+		};
+	});
 
 	const submit = useEffectEvent(async (values: RecipientFormData) => {
 		// Wait if contact or provider is still being fetched in background
@@ -147,15 +148,33 @@ const RecipientForm = (props: RecipientFormProps) => {
 		]);
 
 		if (!updatedContact) {
-			throw new FormFetchError('error-contact-not-found');
+			validateContactField();
+			return;
 		}
 
 		if (!updatedProvider) {
-			throw new FormFetchError('error-provider-not-found');
+			validateProviderField();
+			return;
 		}
 
 		onSubmit({ ...values, provider: updatedProvider, contact: updatedContact });
 	});
+
+	useEffect(() => {
+		// if there's an error trigger validation to show the error/retry message
+		isErrorContact && validateContactField();
+		return () => clearErrors('contactId');
+	}, [clearErrors, isErrorContact, validateContactField]);
+
+	useEffect(() => {
+		// if there's an error trigger validation to show the error/retry message
+		isErrorProvider && validateProviderField();
+		return () => clearErrors('providerId');
+	}, [clearErrors, isErrorProvider, validateProviderField]);
+
+	useEffect(() => {
+		isDirty && onDirty?.();
+	}, [isDirty, onDirty]);
 
 	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
 
@@ -181,7 +200,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 									aria-invalid={!!errors.contactId}
 									placeholder={t('Select_recipient')}
 									value={field.value}
-									onChange={field.onChange}
+									onChange={handleContactFieldChange(field.onChange)}
 									error={errors.contactId?.message}
 									renderItem={({ label, ...props }, { phones }) => (
 										<Option {...props} label={label} avatar={<UserAvatar title={label} username={label} size='x20' />}>
@@ -226,7 +245,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 									disabled={!contactId}
 									placeholder={t('Select_channel')}
 									value={field.value}
-									onChange={field.onChange}
+									onChange={handleProviderFieldChange(field.onChange)}
 								/>
 							)}
 						/>
@@ -268,7 +287,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 									error={errors.recipient && 'error'}
 									placeholder={isFetchingContact ? t('Loading...') : t('Contact_detail')}
 									value={field.value}
-									disabled={!providerId}
+									disabled={!providerId || !contact || isFetchingContact}
 									onChange={field.onChange}
 								/>
 							)}
@@ -305,12 +324,12 @@ const RecipientForm = (props: RecipientFormProps) => {
 							render={({ field }) => (
 								<SenderSelect
 									provider={provider}
-									aria-busy={isFetchingContact}
+									aria-busy={isFetchingProvider}
 									aria-labelledby={`${recipientFormId}-sender`}
 									aria-describedby={errors.sender && `${recipientFormId}-sender-error`}
 									aria-invalid={!!errors.sender}
 									error={errors.sender?.message}
-									disabled={!recipient}
+									disabled={!recipient || !provider || isFetchingProvider}
 									placeholder={isFetchingProvider ? t('Loading...') : t('Workspace_detail')}
 									value={field.value}
 									onChange={field.onChange}

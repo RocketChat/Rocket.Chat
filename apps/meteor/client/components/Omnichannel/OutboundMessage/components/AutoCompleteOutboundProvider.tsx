@@ -1,5 +1,5 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Option, OptionDescription, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,17 +29,13 @@ const AutoCompleteOutboundProvider = ({
 	const { t } = useTranslation();
 	const getTimeFromNow = useTimeFromNow(true);
 
-	const { data: options, isPending } = useOutboundProvidersList({
-		queryKey: ['/v1/omnichannel/outbound/providers', contact?._id],
+	const { data: options = [], isPending } = useOutboundProvidersList({
+		queryKey: ['/v1/omnichannel/outbound/providers'],
 		select: ({ providers = [] }) => {
-			return providers.map((prov) => {
-				const lastChat = findLastChatFromChannel(contact?.channels, prov.providerId);
-				return {
-					label: prov.providerName,
-					value: prov.providerId,
-					description: lastChat ? t('Last_message_received__time__', { time: getTimeFromNow(lastChat) }) : '',
-				};
-			});
+			return providers.map((prov) => ({
+				label: prov.providerName,
+				value: prov.providerId,
+			}));
 		},
 	});
 
@@ -56,6 +52,17 @@ const AutoCompleteOutboundProvider = ({
 			setFilter={setChannelsFilter as (value: string | number | undefined) => void}
 			options={options}
 			onChange={onChange}
+			renderItem={({ label, value, ...props }) => {
+				const lastChat = findLastChatFromChannel(contact?.channels, value);
+
+				return (
+					<Option {...props} label={label} value={value}>
+						{lastChat ? (
+							<OptionDescription>{t('Last_message_received__time__', { time: getTimeFromNow(lastChat) })}</OptionDescription>
+						) : null}
+					</Option>
+				);
+			}}
 		/>
 	);
 };
