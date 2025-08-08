@@ -10,6 +10,7 @@ export const clientMediaSignalLocalSDPSchema = {
             nullable: false,
         },
         type: {
+            type: 'string',
             const: 'local-sdp',
         },
         sdp: {

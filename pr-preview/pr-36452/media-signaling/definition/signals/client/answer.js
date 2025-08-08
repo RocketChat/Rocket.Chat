@@ -10,6 +10,7 @@ export const clientMediaSignalAnswerSchema = {
             nullable: false,
         },
         type: {
+            type: 'string',
             const: 'answer',
         },
         answer: {

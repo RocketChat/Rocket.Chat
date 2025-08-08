@@ -10,6 +10,7 @@ export const clientMediaSignalHangupSchema = {
             nullable: false,
         },
         type: {
+            type: 'string',
             const: 'hangup',
         },
         reason: {

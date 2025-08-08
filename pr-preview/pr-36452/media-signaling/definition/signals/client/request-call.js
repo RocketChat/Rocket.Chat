@@ -10,6 +10,7 @@ export const clientMediaSignalRequestCallSchema = {
             nullable: false,
         },
         type: {
+            type: 'string',
             const: 'request-call',
         },
         callee: {

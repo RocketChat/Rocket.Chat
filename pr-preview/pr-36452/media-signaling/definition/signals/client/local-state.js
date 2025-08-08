@@ -10,6 +10,7 @@ export const clientMediaSignalLocalStateSchema = {
             nullable: false,
         },
         type: {
+            type: 'string',
             const: 'local-state',
         },
         callState: {
@@ -28,6 +29,7 @@ export const clientMediaSignalLocalStateSchema = {
                 },
             },
             nullable: true,
+            required: [],
         },
     },
     additionalProperties: false,

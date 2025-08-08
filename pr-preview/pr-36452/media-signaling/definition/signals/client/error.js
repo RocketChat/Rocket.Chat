@@ -10,6 +10,7 @@ export const clientMediaSignalErrorSchema = {
             nullable: false,
         },
         type: {
+            type: 'string',
             const: 'error',
         },
         errorCode: {
