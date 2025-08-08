@@ -5,7 +5,7 @@ import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { i18n } from '../../../../../server/lib/i18n';
+// import { i18n } from '../../../../../server/lib/i18n';
 import { normalizeAgent } from '../../lib/Helper';
 import { getInitSettings } from '../../lib/settings';
 
@@ -80,7 +80,7 @@ export async function findOpenRoom(token: string, departmentId?: string, callerI
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,
-			callStatus: 1,
+			// callStatus: 1,
 		},
 	};
 
@@ -122,7 +122,7 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 			nameFieldRegistrationForm: initSettings.Livechat_name_field_registration_form,
 			emailFieldRegistrationForm: initSettings.Livechat_email_field_registration_form,
 			displayOfflineForm: initSettings.Livechat_display_offline_form,
-			videoCall: initSettings.Omnichannel_call_provider === 'default-provider',
+			// videoCall: initSettings.Omnichannel_call_provider === 'default-provider',
 			fileUpload: initSettings.Livechat_fileupload_enabled && initSettings.FileUpload_Enabled,
 			language: initSettings.Language,
 			transcript: initSettings.Livechat_enable_transcript,
@@ -147,26 +147,26 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 			position: initSettings.Livechat_widget_position || 'right',
 			background: initSettings.Livechat_background,
 			hideExpandChat: initSettings.Livechat_hide_expand_chat,
-			actionLinks: {
-				webrtc: [
-					{
-						actionLinksAlignment: 'flex-start',
-						i18nLabel: 'Join_call',
-						label: i18n.t('Join_call'),
-						method_id: 'joinLivechatWebRTCCall',
-					},
-					{
-						i18nLabel: 'End_call',
-						label: i18n.t('End_call'),
-						method_id: 'endLivechatWebRTCCall',
-						danger: true,
-					},
-				],
-				jitsi: [
-					{ icon: 'icon-videocam', i18nLabel: 'Accept' },
-					{ icon: 'icon-cancel', i18nLabel: 'Decline' },
-				],
-			},
+			// actionLinks: {
+			// webrtc: [
+			// 	{
+			// 		actionLinksAlignment: 'flex-start',
+			// 		i18nLabel: 'Join_call',
+			// 		label: i18n.t('Join_call'),
+			// 		method_id: 'joinLivechatWebRTCCall',
+			// 	},
+			// 	{
+			// 		i18nLabel: 'End_call',
+			// 		label: i18n.t('End_call'),
+			// 		method_id: 'endLivechatWebRTCCall',
+			// 		danger: true,
+			// 	},
+			// ],
+			// jitsi: [
+			// 	{ icon: 'icon-videocam', i18nLabel: 'Accept' },
+			// 	{ icon: 'icon-cancel', i18nLabel: 'Decline' },
+			// ],
+			// },
 		},
 		messages: {
 			offlineMessage: initSettings.Livechat_offline_message,
