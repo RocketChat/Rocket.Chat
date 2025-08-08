@@ -2860,7 +2860,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			$set: {
 				emails: [
 					{
-						address: email,
+						address: email.trim(),
 						verified,
 					},
 				],
