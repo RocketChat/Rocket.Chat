@@ -3,7 +3,7 @@ import { pathToRegexp } from 'path-to-regexp';
 
 type State = { readonly path: string };
 
-class Context {
+export class Context {
 	canonicalPath: string;
 
 	path: string;
@@ -18,7 +18,7 @@ class Context {
 
 	params: Record<string, string>;
 
-	constructor(path: string, state?: State) {
+	constructor(page: Page, path: string, state?: State) {
 		const pageBase = page.getBase();
 		if (path[0] === '/' && path.indexOf(pageBase) !== 0) path = `${pageBase}${path}`;
 		const i = path.indexOf('?');
@@ -89,7 +89,7 @@ class Route {
 	};
 }
 
-class Page {
+export class Page {
 	routes: Route[] = [];
 
 	current = '';
@@ -163,14 +163,14 @@ class Page {
 		if (pageBase && orig === path) return;
 
 		e.preventDefault();
-		page.show(orig);
+		this.show(orig);
 	};
 
 	private readonly onpopstate = (e: PopStateEvent) => {
 		if (e.state) {
-			page.replace(e.state.path, { state: e.state });
+			this.replace(e.state.path, { state: e.state });
 		} else {
-			page.show(location.pathname + location.hash, { push: false });
+			this.show(location.pathname + location.hash, { push: false });
 		}
 	};
 
@@ -185,7 +185,7 @@ class Page {
 		pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
 		path = pathParts.join('?');
 
-		const ctx = new Context(path, state);
+		const ctx = new Context(this, path, state);
 		this.current = ctx.path;
 		if (dispatch) this.dispatch(ctx);
 		if (push) ctx.pushState();
@@ -198,7 +198,7 @@ class Page {
 		pathParts[0] = pathParts[0].replace(/\/\/+/g, '/');
 		path = pathParts.join('?');
 
-		const ctx = new Context(path, state);
+		const ctx = new Context(this, path, state);
 		this.current = ctx.path;
 		ctx.save(); // save before dispatching, which may redirect
 		if (dispatch) this.dispatch(ctx);
@@ -240,14 +240,8 @@ class Page {
 	readonly Context = Context;
 }
 
-const page = new Page();
-
 function decodeURLEncodedURIComponent(val: string): string {
 	if (typeof val !== 'string') return val;
 
 	return decodeURIComponent(val.replace(/\+/g, ' '));
 }
-
-export default page;
-
-export { Context };

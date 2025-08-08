@@ -11,7 +11,7 @@ import type {
 	To,
 } from '@rocket.chat/ui-contexts';
 
-import page, { Context } from './page';
+import { Context, Page } from './page';
 import { appLayout } from '../lib/appLayout';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
@@ -40,6 +40,8 @@ export class Router implements RouterContextValue {
 	private pathDefById = new Map<Route['pathDef'], Route['id']>();
 
 	private readonly basePath = window.__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+
+	private readonly page = new Page();
 
 	constructor() {
 		this.registerRoute('*', { id: 'not-found' });
@@ -153,9 +155,9 @@ export class Router implements RouterContextValue {
 
 		this.updateCallbacks();
 
-		page.setBase(this.basePath);
+		this.page.setBase(this.basePath);
 
-		page.start();
+		this.page.start();
 		this.initialized = true;
 
 		queueMicrotask(() => {
@@ -186,7 +188,7 @@ export class Router implements RouterContextValue {
 	}
 
 	private updateCallbacks() {
-		page.clearRoutes();
+		this.page.clearRoutes();
 
 		let catchAll: Route | null = null;
 
@@ -194,12 +196,12 @@ export class Router implements RouterContextValue {
 			if (route.pathDef === '*') {
 				catchAll = route;
 			} else {
-				page.registerRoute(route.pathDef, route.actionHandle);
+				this.page.registerRoute(route.pathDef, route.actionHandle);
 			}
 		}
 
 		if (catchAll) {
-			page.registerRoute(catchAll.pathDef, catchAll.actionHandle);
+			this.page.registerRoute(catchAll.pathDef, catchAll.actionHandle);
 		}
 	}
 
@@ -294,7 +296,7 @@ export class Router implements RouterContextValue {
 			}),
 		);
 
-		if (this.current) page.dispatch(new Context(this.current.path));
+		if (this.current) this.page.dispatch(new Context(this.page, this.current.path));
 
 		return () => {
 			flowRoutes.forEach((flowRoute) => {
@@ -303,7 +305,7 @@ export class Router implements RouterContextValue {
 			});
 
 			this.updateCallbacks();
-			if (this.current) page.dispatch(new Context(this.current.path));
+			if (this.current) this.page.dispatch(new Context(this.page, this.current.path));
 		};
 	};
 
