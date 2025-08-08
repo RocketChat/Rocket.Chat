@@ -64,7 +64,7 @@ runs:
     - name: Cache meteor
       uses: actions/cache@v3
       with:
-        path: ~/.meteor
+        path: .meteor
         key: meteor-cache-${{ runner.OS }}-${{ hashFiles('apps/meteor/.meteor/release') }}
         restore-keys: |
           meteor-cache-${{ runner.os }}-
