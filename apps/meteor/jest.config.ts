@@ -43,6 +43,7 @@ export default {
 				'<rootDir>/app/api/server/**.spec.ts',
 				'<rootDir>/app/api/server/helpers/**.spec.ts',
 				'<rootDir>/app/api/server/middlewares/**.spec.ts',
+				'<rootDir>/app/custom-oauth/server/**.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},
