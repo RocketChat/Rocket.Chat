@@ -68,6 +68,8 @@ const getStream =
 	<K extends StreamKeys<N>>(eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void): (() => void) =>
 		sdk.stream(streamName, [eventName], callback).stop;
 
+const writeStream = <N extends StreamNames>(streamName: N, ...args: unknown[]) => sdk.publish(streamName, args);
+
 const contextValue = {
 	info,
 	absoluteUrl,
@@ -75,6 +77,7 @@ const contextValue = {
 	callEndpoint,
 	uploadToEndpoint,
 	getStream,
+	writeStream,
 	disconnect: () => Meteor.disconnect(),
 	reconnect: () => Meteor.reconnect(),
 };

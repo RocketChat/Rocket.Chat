@@ -1,6 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ServerMediaSignal } from '@rocket.chat/media-signaling';
-import { useEndpoint, useStream, useUser } from '@rocket.chat/ui-contexts';
+import { useStream, useWriteStream, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
@@ -20,11 +20,12 @@ export const useMediaCallsClient = ({ enabled = true }: MediaCallsClientParams =
 	const { _id: userId } = useUser() || {};
 	const mediaCallsClientRef = useRef<MediaCallsClient | null>(null);
 
-	const mediaCallsSignal = useEndpoint('POST', '/v1/media-calls.signal');
 	const notifyUserStream = useStream('notify-user');
+	const publish = useWriteStream('notify-user');
 
 	const sendSignalFn: MediaCallsClientConfig['sendSignalFn'] = async (signal) => {
-		await mediaCallsSignal({ signal });
+		console.log('new signal', typeof signal, signal);
+		publish(`${userId}/media-calls`, JSON.stringify(signal));
 	};
 
 	// const iceServers = useIceServers();
