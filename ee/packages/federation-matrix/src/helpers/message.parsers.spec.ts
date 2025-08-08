@@ -1,4 +1,9 @@
-import { toExternalMessageFormat, toExternalQuoteMessageFormat, toInternalMessageFormat, toInternalQuoteMessageFormat } from './message.parsers';
+import {
+	toExternalMessageFormat,
+	toExternalQuoteMessageFormat,
+	toInternalMessageFormat,
+	toInternalQuoteMessageFormat,
+} from './message.parsers';
 
 describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 	describe('#toInternalMessageFormat ()', () => {
@@ -106,7 +111,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 		it('should parse the message with all the mentions correctly when an user has the same real name', async () => {
 			expect(
 				await toInternalMessageFormat({
-					rawMessage: 'hey User Real Name, hey Remote User Real Name, hey Remote User Real Name, how are you? Hope **you** __are__ doing well',
+					rawMessage:
+						'hey User Real Name, hey Remote User Real Name, hey Remote User Real Name, how are you? Hope **you** __are__ doing well',
 					formattedMessage:
 						'<p>hey <a href="https://matrix.to/#/@user:localDomain.com">User Real Name</a>, hey <a href="https://matrix.to/#/@remoteuser1:matrix.org">Remote User Real Name</a>,  hey <a href="https://matrix.to/#/@remoteuser2:matrix.org">Remote User Real Name</a> how are you? Hope <strong>you</strong> <strong>are</strong> doing well',
 					homeServerDomain: 'localDomain.com',
@@ -243,7 +249,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					homeServerDomain: 'localDomain.com',
 					senderExternalId: '@user:externalDomain.com',
 				}),
-			).toBe(`@user:externalDomain.com, hello @remoteuser:matrix.org, here's @user:externalDomain.com, how are you? Hope **you** __are__ doing well, please see the list:
+			)
+				.toBe(`@user:externalDomain.com, hello @remoteuser:matrix.org, here's @user:externalDomain.com, how are you? Hope **you** __are__ doing well, please see the list:
 					# List 1:
 					**Ordered List** 
 
@@ -607,7 +614,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
 					senderExternalId: '@user:externalDomain.com',
 				}),
-		).toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, how are you? Hope **you** __are__ doing well, please see the list:
+			)
+				.toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, how are you? Hope **you** __are__ doing well, please see the list:
 							# List 1:
 							**Ordered List** 
 
@@ -636,7 +644,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
 					senderExternalId: '@user:externalDomain.com',
 				}),
-		).toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
+			)
+				.toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
 							# List 1:
 							**Ordered List** 
 
@@ -667,7 +676,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
 					senderExternalId: '@user:externalDomain.com',
 				}),
-		).toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) @user:externalDomain.com, hello @remoteuser:matrix.org, here's @user:externalDomain.com, how are you? Hope **you** __are__ doing well, please see the list:
+			)
+				.toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) @user:externalDomain.com, hello @remoteuser:matrix.org, here's @user:externalDomain.com, how are you? Hope **you** __are__ doing well, please see the list:
 					# List 1:
 					**Ordered List** 
 
@@ -712,7 +722,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
 					senderExternalId: '@user:externalDomain.com',
 				}),
-		).toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
+			)
+				.toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
 						# List 1:
 						**Ordered List** 
 
@@ -744,7 +755,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
 					senderExternalId: '@user:externalDomain.com',
 				}),
-		).toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
+			)
+				.toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
 					# List 1:
 					**Ordered List** 
 
@@ -780,7 +792,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
 					senderExternalId: '@user:externalDomain.com',
 				}),
-		).toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
+			)
+				.toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see the list:
 					# List 1:
 					**Ordered List** 
 
@@ -849,7 +862,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
 					senderExternalId: '@user:externalDomain.com',
 				}),
-		).toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see:
+			)
+				.toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see:
 					# Heading 1 
 
 					**Paragraph text**: **Bold** Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. 
@@ -953,7 +967,8 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
 					senderExternalId: '@user:externalDomain.com',
 				}),
-		).toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see:
+			)
+				.toBe(`[ ](http://localhost:3000/group/1?msg=2354543564) hey @user, here its @remoteuser:matrix.org, how are you? Hope **you** __are__ doing well, please see:
 					# Heading 1 
 
 					**Paragraph text**: **Bold** Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales, enim et facilisis commodo, est augue venenatis ligula, in convallis erat felis nec nisi. In eleifend ligula a nunc efficitur, ut finibus enim fringilla. 
@@ -1003,7 +1018,6 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 		});
 	});
 });
-
 
 describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 	describe('#toExternalMessageFormat ()', () => {
@@ -1716,4 +1730,3 @@ describe('Federation - Infrastructure - Matrix - MatrixTextParser', () => {
 		});
 	});
 });
-

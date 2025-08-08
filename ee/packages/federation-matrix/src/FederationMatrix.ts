@@ -27,8 +27,8 @@ import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
-import { convertExternalUserIdToInternalUsername } from './helpers/identifiers';
 import { getMatrixLocalDomain } from './helpers/domain.builder';
+import { convertExternalUserIdToInternalUsername } from './helpers/identifiers';
 import { toExternalMessageFormat } from './helpers/message.parsers';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
@@ -250,7 +250,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				message: message.msg,
 				externalRoomId: matrixRoomId,
 				homeServerDomain: await this.getMatrixDomain(),
-			});			
+			});
 			if (!message.tmid) {
 				result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
 			} else {
@@ -597,7 +597,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				externalRoomId: matrixRoomId,
 				homeServerDomain: await this.getMatrixDomain(),
 			});
-			const eventId = await this.homeserverServices.message.updateMessage(matrixRoomId, newContent, parsedMessage, existingMatrixUserId, matrixEventId);
+			const eventId = await this.homeserverServices.message.updateMessage(
+				matrixRoomId,
+				newContent,
+				parsedMessage,
+				existingMatrixUserId,
+				matrixEventId,
+			);
 
 			this.logger.debug('Message updated in Matrix successfully:', eventId);
 		} catch (error) {

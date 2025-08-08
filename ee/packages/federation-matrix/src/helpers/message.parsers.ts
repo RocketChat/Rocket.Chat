@@ -1,8 +1,7 @@
-
-import sanitizeHtml from 'sanitize-html';
-import type { IFrame } from 'sanitize-html';
 import type { MentionPill as MentionPillType } from '@vector-im/matrix-bot-sdk';
 import { marked } from 'marked';
+import sanitizeHtml from 'sanitize-html';
+import type { IFrame } from 'sanitize-html';
 
 interface IInternalMention {
 	mention: string;

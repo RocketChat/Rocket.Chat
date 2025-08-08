@@ -6,9 +6,9 @@ import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
 import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
 
+import { getMatrixLocalDomain } from '../helpers/domain.builder';
 import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
 import { toInternalMessageFormat } from '../helpers/message.parsers';
-import { getMatrixLocalDomain } from '../helpers/domain.builder';
 
 const logger = new Logger('federation-matrix:message');
 
@@ -143,7 +143,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 					rawMessage: data.content['m.new_content'].body,
 					formattedMessage: data.content.formatted_body || '',
 					homeServerDomain: localDomain,
-					senderExternalId: data.sender
+					senderExternalId: data.sender,
 				});
 				await Message.updateMessage(
 					{
