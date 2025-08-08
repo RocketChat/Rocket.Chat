@@ -6,13 +6,13 @@ import { pipe } from '../../../../lib/cachedStores';
 import { Subscriptions } from '../../../../stores';
 
 const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => !unreadOnly || subscription.unread > 0;
+
+const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
+
 /**
  * This helper function is used to ensure that the main room (main team room or parent's discussion room)
  * is always at the top of the list.
  */
-
-const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
-
 const getMainRoomAndSort = (records: SubscriptionWithRoom[]) => {
 	const [mainRoom, ...rest] = records;
 	return [mainRoom, ...sortByLmPipe.apply(rest)];
