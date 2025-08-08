@@ -2,7 +2,7 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../../custom-oauth/client/CustomOAuth';
+import { CustomOAuth } from '../../../../client/lib/customOAuth/CustomOAuth';
 
 // Drupal Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/drupal
 // In RocketChat -> Administration the URL needs to be http(s)://{drupal.server}/
