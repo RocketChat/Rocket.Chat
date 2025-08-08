@@ -1,6 +1,7 @@
 /* eslint-disable complexity */
 import type * as AST from './definitions';
 import * as ast from './utils.ts';
+import { EMOTICON_MAP, EMOTICON_KEYS_DESC, isEscapable, VALID_TIMESTAMP_FORMATS, RE_URL_PREFIX } from './constants';
 
 export type * from './definitions';
 
@@ -15,37 +16,6 @@ export type Options = {
   };
   customDomains?: string[];
 };
-
-// Central emoticon map and pre-sorted keys (longest first) to avoid duplication
-const EMOTICON_MAP: Record<string, string> = {
-  ':)': 'slight_smile',
-  ':-)': 'slight_smile',
-  ':(': 'frowning',
-  ':-(': 'frowning',
-  'D:': 'fearful',
-  ':D': 'grinning',
-  ':-D': 'grinning',
-  ':P': 'stuck_out_tongue',
-  ':-P': 'stuck_out_tongue',
-  ':p': 'stuck_out_tongue',
-  ':-p': 'stuck_out_tongue',
-  ';)': 'wink',
-  ';-)': 'wink',
-  ':o': 'open_mouth',
-  ':-o': 'open_mouth',
-  ':O': 'open_mouth',
-  ':-O': 'open_mouth',
-  ':|': 'neutral_face',
-  ':-|': 'neutral_face',
-  ':/': 'confused',
-  ':-/': 'confused',
-  ':\\': 'confused',
-  ':-\\': 'confused',
-  ':*': 'kissing_heart',
-  '-_-': 'expressionless',
-};
-
-const EMOTICON_KEYS_DESC = Object.keys(EMOTICON_MAP).sort((a, b) => b.length - a.length);
 
 // Helper function to detect unicode emoji
 const isEmoji = (char: string): boolean => {
@@ -67,7 +37,6 @@ const isEmoji = (char: string): boolean => {
     (codePoint >= 0x2194 && codePoint <= 0x21aa) ||   // Arrows
     (codePoint >= 0x2b05 && codePoint <= 0x2b07) ||   // Additional Arrows
     (codePoint >= 0x2934 && codePoint <= 0x2935) ||   // Arrow symbols
-    (codePoint >= 0x3030 && codePoint <= 0x303d) ||   // CJK symbols
     (codePoint >= 0x3297 && codePoint <= 0x3299) ||   // CJK unified ideographs
     (codePoint >= 0x2300 && codePoint <= 0x23ff) ||   // Miscellaneous Technical (includes ⌚)
     (codePoint >= 0x2000 && codePoint <= 0x206f) ||   // General Punctuation (includes some emoji-like chars)
@@ -229,7 +198,7 @@ const detectURL = (
   }
 
   // More comprehensive URL pattern - allow numbers in TLDs for flexibility
-  const urlPattern = /^(https?:\/\/|ftp:\/\/|ssh:\/\/|[a-zA-Z]+:\/\/|www\.|[a-zA-Z0-9][a-zA-Z0-9-]*\.[a-zA-Z0-9]{2,})/;
+  const urlPattern = RE_URL_PREFIX;
   const remaining = text.slice(startIndex);
   
   // Check if it starts like a URL
@@ -646,6 +615,36 @@ const filterItalicContent = (tokens: AST.Inlines[]): (AST.MarkupExcluding<AST.It
     (token): token is AST.MarkupExcluding<AST.Italic> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode =>
       token.type !== 'ITALIC' &&
       token.type !== 'TIMESTAMP' &&
+      token.type !== 'IMAGE' &&
+      token.type !== 'COLOR' &&
+      token.type !== 'INLINE_KATEX'
+  );
+};
+
+// Helper function to filter out invalid strike content
+const filterStrikeContent = (tokens: AST.Inlines[]): (
+  | AST.MarkupExcluding<AST.Strike>
+  | AST.Link
+  | AST.Emoji
+  | AST.UserMention
+  | AST.ChannelMention
+  | AST.InlineCode
+  | AST.Italic
+  | AST.Timestamp
+)[] => {
+  return tokens.filter(
+    (
+      token,
+    ): token is
+      | AST.MarkupExcluding<AST.Strike>
+      | AST.Link
+      | AST.Emoji
+      | AST.UserMention
+      | AST.ChannelMention
+      | AST.InlineCode
+      | AST.Italic
+      | AST.Timestamp =>
+      token.type !== 'STRIKE' &&
       token.type !== 'IMAGE' &&
       token.type !== 'COLOR' &&
       token.type !== 'INLINE_KATEX'
@@ -1161,23 +1160,7 @@ const parseStrikeMarkup = (
           
           // Add the strike content (double tilde style)
           const nestedContent = parseInlineContent(content, options);
-          const validContent = nestedContent.filter(
-            (
-              token,
-            ): token is
-              | AST.MarkupExcluding<AST.Strike>
-              | AST.Link
-              | AST.Emoji
-              | AST.UserMention
-              | AST.ChannelMention
-              | AST.InlineCode
-              | AST.Italic
-              | AST.Timestamp =>
-              token.type !== 'STRIKE' &&
-              token.type !== 'IMAGE' &&
-              token.type !== 'COLOR' &&
-              token.type !== 'INLINE_KATEX',
-          );
+          const validContent = filterStrikeContent(nestedContent);
           result.push(ast.strike(validContent));
           
           // Add trailing tilde if this was ~~~Hello~~~ case
@@ -1205,23 +1188,7 @@ const parseStrikeMarkup = (
     
     const nestedContent = parseInlineContent(content, options);
     // Filter to only valid strike content types
-    const validContent = nestedContent.filter(
-      (
-        token,
-      ): token is
-        | AST.MarkupExcluding<AST.Strike>
-        | AST.Link
-        | AST.Emoji
-        | AST.UserMention
-        | AST.ChannelMention
-        | AST.InlineCode
-        | AST.Italic
-        | AST.Timestamp =>
-        token.type !== 'STRIKE' &&
-        token.type !== 'IMAGE' &&
-        token.type !== 'COLOR' &&
-        token.type !== 'INLINE_KATEX',
-    );
+  const validContent = filterStrikeContent(nestedContent);
     return {
       tokens: [ast.strike(validContent)],
       nextIndex: endIndex + delimiterLength,
@@ -1248,23 +1215,7 @@ const parseStrikeMarkup = (
           
           // Add the strike content
           const nestedContent = parseInlineContent(content, options);
-          const validContent = nestedContent.filter(
-            (
-              token,
-            ): token is
-              | AST.MarkupExcluding<AST.Strike>
-              | AST.Link
-              | AST.Emoji
-              | AST.UserMention
-              | AST.ChannelMention
-              | AST.InlineCode
-              | AST.Italic
-              | AST.Timestamp =>
-              token.type !== 'STRIKE' &&
-              token.type !== 'IMAGE' &&
-              token.type !== 'COLOR' &&
-              token.type !== 'INLINE_KATEX',
-          );
+          const validContent = filterStrikeContent(nestedContent);
           result.push(ast.strike(validContent));
           
           return {
@@ -1284,23 +1235,7 @@ const parseStrikeMarkup = (
         
         // Add the strike content
         const nestedContent = parseInlineContent(content, options);
-        const validContent = nestedContent.filter(
-          (
-            token,
-          ): token is
-            | AST.MarkupExcluding<AST.Strike>
-            | AST.Link
-            | AST.Emoji
-            | AST.UserMention
-            | AST.ChannelMention
-            | AST.InlineCode
-            | AST.Italic
-            | AST.Timestamp =>
-            token.type !== 'STRIKE' &&
-            token.type !== 'IMAGE' &&
-            token.type !== 'COLOR' &&
-            token.type !== 'INLINE_KATEX',
-        );
+  const validContent = filterStrikeContent(nestedContent);
         result.push(ast.strike(validContent));
         
         // Add trailing tilde as plain text
@@ -1345,12 +1280,10 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
 
     // Handle escape characters (after KaTeX check)
     if (char === '\\' && i + 1 < text.length) {
-      const nextChar = text[i + 1];
+  const nextChar = text[i + 1];
       
-      // Escape markdown special characters (but not structural ones like [])
-      const markupChars = ['*', '_', '~', '`', '(', ')', '#', '.', '+', '-', '!', '|', '{', '}', '^', ':'];
-      
-      if (markupChars.includes(nextChar)) {
+  // Escape markdown special characters (but not structural ones like [])
+  if (isEscapable(nextChar)) {
         // Escape the markup character by treating it as plain text
         tokens.push(ast.plain(nextChar));
         i += 2; // Skip both the backslash and the escaped character
@@ -1419,9 +1352,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         if (lastColonIndex !== -1 && lastColonIndex < timestampContent.length - 1) {
           // Check if the part after the last colon looks like a format
           const potentialFormat = timestampContent.slice(lastColonIndex + 1);
-          const validFormats = ['t', 'T', 'd', 'D', 'f', 'F', 'R'];
           
-          if (validFormats.includes(potentialFormat)) {
+          if (VALID_TIMESTAMP_FORMATS.has(potentialFormat)) {
             timestampValue = timestampContent.slice(0, lastColonIndex);
             format = potentialFormat;
           } else {
@@ -1830,39 +1762,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     // Emoticon parsing (text-based emoticons like :), D:, etc.)
     let found = false;
     if (options?.emoticons) {
-      // Define emoticon patterns - check longer patterns first to avoid conflicts
-      const emoticonMap: { [key: string]: string } = {
-        ':)': 'slight_smile',
-        ':-)': 'slight_smile',
-        ':(': 'frowning',
-        ':-(': 'frowning',
-        'D:': 'fearful',
-        ':D': 'grinning',
-        ':-D': 'grinning',
-        ':P': 'stuck_out_tongue',
-        ':-P': 'stuck_out_tongue',
-        ':p': 'stuck_out_tongue',
-        ':-p': 'stuck_out_tongue',
-        ';)': 'wink',
-        ';-)': 'wink',
-        ':o': 'open_mouth',
-        ':-o': 'open_mouth',
-        ':O': 'open_mouth',
-        ':-O': 'open_mouth',
-        ':|': 'neutral_face',
-        ':-|': 'neutral_face',
-        ':/': 'confused',
-        ':-/': 'confused',
-        ':\\': 'confused',
-        ':-\\': 'confused',
-        ':*': 'kissing_heart',
-        '-_-': 'expressionless',
-      };
-      
-      // Sort emoticons by length (longest first) to avoid matching conflicts
-      const sortedEmoticons = Object.keys(emoticonMap).sort((a, b) => b.length - a.length);
-      
-      for (const emoticon of sortedEmoticons) {
+      for (const emoticon of EMOTICON_KEYS_DESC) {
         if (text.slice(i, i + emoticon.length) === emoticon) {
           // Check word boundaries - emoticons should be surrounded by whitespace or punctuation
           const prevChar = i > 0 ? text[i - 1] : '';
@@ -1884,7 +1784,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
               break;
             }
             
-            const shortCode = emoticonMap[emoticon];
+            const shortCode = EMOTICON_MAP[emoticon];
             tokens.push(ast.emoticon(emoticon, shortCode));
             i += emoticon.length;
             found = true;
@@ -1930,9 +1830,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         }
         
         // Escape markdown special characters (but not structural ones like [])
-        const markupChars = ['*', '_', '~', '`', '(', ')', '#', '.', '+', '-', '!', '|', '{', '}', '^', ':'];
-        
-        if (markupChars.includes(nextChar)) {
+  if (isEscapable(nextChar)) {
           // Escape the markup character by treating it as plain text
           plainText += nextChar;
           tempI += 2; // Skip both the backslash and the escaped character
