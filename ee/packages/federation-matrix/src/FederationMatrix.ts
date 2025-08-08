@@ -28,6 +28,8 @@ import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
 import { convertExternalUserIdToInternalUsername } from './helpers/identifiers';
+import { getMatrixLocalDomain } from './helpers/domain.builder';
+import { toExternalMessageFormat } from './helpers/message.parsers';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -159,10 +161,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return this.matrixDomain;
 		}
 
-		const port = await Settings.get<number>('Federation_Service_Matrix_Port');
-		const domain = await Settings.get<string>('Federation_Service_Matrix_Domain');
-
-		this.matrixDomain = port === 443 || port === 80 ? domain : `${domain}:${port}`;
+		this.matrixDomain = await getMatrixLocalDomain();
 
 		return this.matrixDomain;
 	}
@@ -247,8 +246,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			let result;
 
+			const parsedMessage = await toExternalMessageFormat({
+				message: message.msg,
+				externalRoomId: matrixRoomId,
+				homeServerDomain: await this.getMatrixDomain(),
+			});
+			console.log({ parsedMessage })
 			if (!message.tmid) {
-				result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+				result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
 			} else {
 				const threadRootMessage = await Messages.findOneById(message.tmid);
 				const threadRootEventId = threadRootMessage?.federation?.eventId;
@@ -267,13 +272,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					result = await this.homeserverServices.message.sendThreadMessage(
 						matrixRoomId,
 						message.msg,
+						parsedMessage,
 						actualMatrixUserId,
 						threadRootEventId,
 						latestThreadEventId,
 					);
 				} else {
 					this.logger.warn('Thread root event ID not found, sending as regular message');
-					result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+					result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
 				}
 			}
 
@@ -587,7 +593,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const eventId = await this.homeserverServices.message.updateMessage(matrixRoomId, newContent, existingMatrixUserId, matrixEventId);
+			const parsedMessage = await toExternalMessageFormat({
+				message: newContent,
+				externalRoomId: matrixRoomId,
+				homeServerDomain: await this.getMatrixDomain(),
+			});
+			const eventId = await this.homeserverServices.message.updateMessage(matrixRoomId, newContent, parsedMessage, existingMatrixUserId, matrixEventId);
 
 			this.logger.debug('Message updated in Matrix successfully:', eventId);
 		} catch (error) {

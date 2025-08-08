@@ -7,6 +7,8 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
 
 import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
+import { toInternalMessageFormat } from '../helpers/message.parsers';
+import { getMatrixLocalDomain } from '../helpers/domain.builder';
 
 const logger = new Logger('federation-matrix:message');
 
@@ -121,6 +123,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				}
 			}
 
+			const localDomain = await getMatrixLocalDomain();
 			const isEditedMessage = data.content['m.relates_to']?.rel_type === 'm.replace';
 			if (isEditedMessage && data.content['m.relates_to']?.event_id && data.content['m.new_content']) {
 				logger.debug('Received edited message from Matrix, updating existing message');
@@ -136,11 +139,16 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 					logger.debug('No changes in message content, skipping update');
 					return;
 				}
-
+				const formatted = toInternalMessageFormat({
+					rawMessage: data.content['m.new_content'].body,
+					formattedMessage: data.content.formatted_body || '',
+					homeServerDomain: localDomain,
+					senderExternalId: data.sender
+				});
 				await Message.updateMessage(
 					{
 						...originalMessage,
-						msg: data.content['m.new_content']?.body,
+						msg: formatted,
 					},
 					user,
 					originalMessage,
@@ -148,10 +156,16 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				return;
 			}
 
+			const formatted = toInternalMessageFormat({
+				rawMessage: message,
+				formattedMessage: data.content.formatted_body || '',
+				homeServerDomain: localDomain,
+				senderExternalId: data.sender,
+			});
 			await Message.saveMessageFromFederation({
 				fromId: user._id,
 				rid: internalRoomId,
-				msg: message,
+				msg: formatted,
 				federation_event_id: data.event_id,
 				tmid,
 			});
