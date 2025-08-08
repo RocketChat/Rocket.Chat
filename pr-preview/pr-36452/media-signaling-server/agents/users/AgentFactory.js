@@ -33,9 +33,12 @@ class UserAgentFactory {
                     return null;
                 }
                 const { [role]: callActor } = call;
-                const contractSigned = Boolean(callActor.contractId);
+                let contractState = 'proposed';
+                if (callActor.contractId) {
+                    contractState = callActor.contractId === contractId ? 'signed' : 'ignored';
+                }
                 // If the role is already signed with a different contract, do not create the agent
-                if (contractSigned && callActor.contractId !== contractId) {
+                if (contractState === 'ignored') {
                     logger_1.logger.debug({
                         msg: 'signed by another contract',
                         method: 'UserAgentFactory.getAgentFactoryForUser',
@@ -45,7 +48,7 @@ class UserAgentFactory {
                     });
                     return null;
                 }
-                return new Agent_1.UserMediaCallAgent(userData, { role, callId, contractId, contractSigned });
+                return new Agent_1.UserMediaCallAgent(userData, { role, callId, contractId, contractState });
             },
         };
     }

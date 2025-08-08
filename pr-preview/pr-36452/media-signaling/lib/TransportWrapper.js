@@ -1,9 +1,12 @@
 export class MediaSignalTransportWrapper {
-    constructor(contractId, sendSignalFn) {
+    constructor(contractId, sendSignalFn, logger) {
         this.contractId = contractId;
         this.sendSignalFn = sendSignalFn;
+        this.logger = logger;
     }
     sendToServer(callId, type, signal) {
+        var _a;
+        (_a = this.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalTransportWrapper.sendToServer', type);
         return this.sendSignal(Object.assign({ callId, contractId: this.contractId, type }, signal));
     }
     sendError(callId, errorCode) {
@@ -16,6 +19,8 @@ export class MediaSignalTransportWrapper {
         return this.sendToServer(callId, 'hangup', { reason });
     }
     sendSignal(signal) {
+        var _a;
+        (_a = this.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalTransportWrapper.sendSignal', signal);
         this.sendSignalFn(signal);
     }
 }

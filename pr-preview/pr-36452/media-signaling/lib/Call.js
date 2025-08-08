@@ -20,6 +20,8 @@ const TIMEOUT_TO_ACCEPT = 30000;
 const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
 const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
 const STATE_REPORT_DELAY = 300;
+// if the server tells us we're the caller in a call we don't recognize, ignore it completely
+const AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS = true;
 export class ClientMediaCall {
     get callId() {
         var _a;
@@ -40,6 +42,12 @@ export class ClientMediaCall {
     get service() {
         return this._service;
     }
+    get signed() {
+        return ['signed', 'pre-signed', 'self-signed'].includes(this.contractState);
+    }
+    get hidden() {
+        return this.ignored || this.contractState === 'ignored';
+    }
     constructor(config, callId) {
         this.config = config;
         this.webrtcProcessor = null;
@@ -52,6 +60,7 @@ export class ClientMediaCall {
         this.hasRemoteData = false;
         this.initialized = false;
         this.acknowledged = false;
+        this.contractState = 'proposed';
         this.hasLocalDescription = false;
         this.hasRemoteDescription = false;
         this.serviceStates = new Map();
@@ -70,9 +79,11 @@ export class ClientMediaCall {
     // this gets executed once for outbound calls initiated in this session.
     initializeOutboundCall(contact) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             if (this.acceptedLocally) {
                 return;
             }
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.initializeOutboundCall');
             const wasInitialized = this.initialized;
             this.initialized = true;
             this.acceptedLocally = true;
@@ -92,9 +103,11 @@ export class ClientMediaCall {
     // Initialize an outbound call with the callee information and send a call request to the server
     requestCall(callee, contactInfo) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             if (this.initialized) {
                 return;
             }
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.requestCall', callee);
             this.config.transporter.sendToServer(this.callId, 'request-call', {
                 callee,
                 supportedServices: Object.keys(this.config.processorFactories),
@@ -105,9 +118,11 @@ export class ClientMediaCall {
     // initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call
     initializeRemoteCall(signal) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
             if (this.hasRemoteData) {
                 return;
             }
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.initializeRemoteCall', signal);
             this.remoteCallId = signal.callId;
             const wasInitialized = this.initialized;
             this.initialized = true;
@@ -115,6 +130,10 @@ export class ClientMediaCall {
             this._service = signal.service;
             this._role = signal.role;
             this.changeContact(signal.contact);
+            if (this._role === 'caller' && !this.acceptedLocally && AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS) {
+                (_b = this.config.logger) === null || _b === void 0 ? void 0 : _b.log('Ignoring Unknown Outbound Call');
+                this.ignore();
+            }
             // If it's flagged as ignored even before the initialization, tell the server we're unavailable
             if (this.ignored) {
                 return this.rejectAsUnavailable();
@@ -133,6 +152,10 @@ export class ClientMediaCall {
             if (this._role === 'callee' || !this.acceptedLocally) {
                 this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
             }
+            // If the call was requested by this specific session, assume we're signed already.
+            if (this._role === 'caller' && this.acceptedLocally && signal.requestedCallId === this.localCallId) {
+                this.contractState = 'pre-signed';
+            }
             if (!wasInitialized) {
                 this.emitter.emit('initialized');
             }
@@ -140,6 +163,12 @@ export class ClientMediaCall {
         });
     }
     getClientState() {
+        if (this.isOver()) {
+            return 'hangup';
+        }
+        if (this.hidden) {
+            return 'busy-elsewhere';
+        }
         switch (this._state) {
             case 'none':
             case 'ringing':
@@ -155,29 +184,32 @@ export class ClientMediaCall {
                     return 'has-offer';
                 }
                 return 'accepted';
-            case 'active':
-                return 'active';
-            case 'hangup':
-                return 'hangup';
+            default:
+                return this._state;
         }
     }
     getRemoteMediaStream() {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.getRemoteMediaStream');
         if (this.shouldIgnoreWebRTC()) {
-            throw new Error('getRemoteMediaStream is not available for this service');
+            this.throwError('getRemoteMediaStream is not available for this service');
         }
         this.prepareWebRtcProcessor();
         return this.webrtcProcessor.getRemoteMediaStream();
     }
     processSignal(signal) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
             if (this.isOver()) {
                 return;
             }
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.processSignal', signal);
             const { type: signalType } = signal;
             if (signalType === 'new') {
                 return this.initializeRemoteCall(signal);
             }
             if (!this.hasRemoteData) {
+                (_b = this.config.logger) === null || _b === void 0 ? void 0 : _b.debug('Remote data missing, adding signal to queue');
                 this.earlySignals.add(signal);
                 return;
             }
@@ -193,11 +225,13 @@ export class ClientMediaCall {
     }
     accept() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.accept');
             if (!this.isPendingOurAcceptance()) {
-                throw new Error('call-not-pending-acceptance');
+                this.throwError('call-not-pending-acceptance');
             }
             if (!this.hasRemoteData) {
-                throw new Error('missing-remote-data');
+                this.throwError('missing-remote-data');
             }
             this.acceptedLocally = true;
             this.config.transporter.answer(this.callId, 'accept');
@@ -210,11 +244,13 @@ export class ClientMediaCall {
     }
     reject() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.reject');
             if (!this.isPendingOurAcceptance()) {
-                throw new Error('call-not-pending-acceptance');
+                this.throwError('call-not-pending-acceptance');
             }
             if (!this.hasRemoteData) {
-                throw new Error('missing-remote-data');
+                this.throwError('missing-remote-data');
             }
             this.config.transporter.answer(this.callId, 'reject');
             this.changeState('hangup');
@@ -222,7 +258,12 @@ export class ClientMediaCall {
     }
     hangup() {
         return __awaiter(this, arguments, void 0, function* (reason = 'normal') {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.hangup', reason);
             if (this.endedLocally || this._state === 'hangup') {
+                return;
+            }
+            if (this.hidden) {
                 return;
             }
             this.endedLocally = true;
@@ -233,25 +274,71 @@ export class ClientMediaCall {
         return ['none', 'ringing'].includes(this._state);
     }
     isPendingOurAcceptance() {
-        if (this._role !== 'callee') {
+        if (this._role !== 'callee' || this.acceptedLocally) {
             return false;
         }
-        if (this.acceptedLocally) {
+        if (this.hidden) {
             return false;
         }
         return this.isPendingAcceptance();
     }
     isOver() {
-        return this.ignored || this._state === 'hangup';
+        return this._state === 'hangup';
+    }
+    ignore() {
+        var _a;
+        if (this.ignored) {
+            return;
+        }
+        const { hidden: wasHidden } = this;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.ignore');
+        this._ignored = true;
+        if (this.hidden && !wasHidden) {
+            this.emitter.emit('hidden');
+        }
+        this.updateClientState();
+        this.reportStates();
+        this.mayReportStates = false;
+    }
+    setContractState(state) {
+        var _a, _b, _c;
+        if (this.contractState === state) {
+            return;
+        }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.setContractState', `${this.contractState} => ${state}`);
+        if (['pre-signed', 'self-signed'].includes(this.contractState) && state === 'signed') {
+            this.contractState = state;
+            return;
+        }
+        if (this.contractState !== 'proposed') {
+            this.reportStates();
+        }
+        if (this.contractState === 'signed') {
+            if (state === 'ignored') {
+                (_b = this.config.logger) === null || _b === void 0 ? void 0 : _b.error('[Media Signal] Trying to ignore a contract that was already signed.');
+            }
+            return;
+        }
+        if (this.contractState === 'pre-signed' && state === 'ignored') {
+            (_c = this.config.logger) === null || _c === void 0 ? void 0 : _c.error('[Media Signal] Our self signed contract was ignored.');
+        }
+        const { hidden: wasHidden } = this;
+        this.contractState = state;
+        if (this.hidden && !wasHidden) {
+            this.emitter.emit('hidden');
+        }
     }
     changeState(newState) {
+        var _a;
         if (newState === this._state) {
             return;
         }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.changeState', `${this._state} => ${newState}`);
         const oldState = this._state;
         this._state = newState;
         this.updateClientState();
         this.emitter.emit('stateChange', oldState);
+        this.requestStateReport();
         switch (newState) {
             case 'accepted':
                 this.emitter.emit('accepted');
@@ -260,20 +347,23 @@ export class ClientMediaCall {
                 this.emitter.emit('ended');
                 break;
         }
-        this.requestStateReport();
     }
     updateClientState() {
+        var _a;
         const { oldClientState } = this;
         const clientState = this.getClientState();
         if (clientState === oldClientState) {
             return;
         }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.updateClientState', `${oldClientState} => ${clientState}`);
         this.updateStateTimeouts();
         this.requestStateReport();
         this.oldClientState = clientState;
         this.emitter.emit('clientStateChange', oldClientState);
     }
     changeContact(contact, { prioritizeExisting } = {}) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.changeContact');
         const oldContct = prioritizeExisting ? contact : this._contact;
         const newContact = prioritizeExisting ? this._contact : contact;
         this._contact = mergeContacts(oldContct, newContact);
@@ -283,12 +373,14 @@ export class ClientMediaCall {
     }
     processOfferRequest(signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!signal.toContractId) {
-                console.error('Received an untargeted offer request.');
+            var _a, _b;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.processOfferRequest', signal);
+            if (!signal.toContractId && !this.signed) {
+                (_b = this.config.logger) === null || _b === void 0 ? void 0 : _b.error('Received an unsigned offer request.');
                 return;
             }
             if (this.shouldIgnoreWebRTC()) {
-                this.config.transporter.sendError(this.callId, 'invalid-service');
+                this.sendError('invalid-service');
                 return;
             }
             this.requireWebRTC();
@@ -297,11 +389,11 @@ export class ClientMediaCall {
                 offer = yield this.webrtcProcessor.createOffer(signal);
             }
             catch (e) {
-                this.config.transporter.sendError(this.callId, 'failed-to-create-offer');
+                this.sendError('failed-to-create-offer');
                 throw e;
             }
             if (!offer) {
-                this.config.transporter.sendError(this.callId, 'implementation-error');
+                this.sendError('implementation-error');
             }
             yield this.deliverSdp(offer);
         });
@@ -319,30 +411,45 @@ export class ClientMediaCall {
     }
     processAnswerRequest(signal) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             if (this.shouldIgnoreWebRTC()) {
                 return;
             }
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.processAnswerRequest', signal);
             this.requireWebRTC();
             let answer = null;
             try {
                 answer = yield this.webrtcProcessor.createAnswer(signal);
             }
             catch (e) {
-                this.config.transporter.sendError(this.callId, 'failed-to-create-answer');
+                this.sendError('failed-to-create-answer');
                 throw e;
             }
             if (!answer) {
-                this.config.transporter.sendError(this.callId, 'implementation-error');
+                this.sendError('implementation-error');
                 return;
             }
             this.hasRemoteDescription = true;
             yield this.deliverSdp(answer);
         });
     }
+    sendError(errorCode) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.sendError', errorCode);
+        if (this.hidden) {
+            return;
+        }
+        this.config.transporter.sendError(this.callId, errorCode);
+    }
     processRemoteSDP(signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!signal.toContractId) {
-                console.error('Received untargeted SDP signal');
+            var _a, _b;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.processRemoteSDP', signal);
+            if (this.hidden) {
+                return;
+            }
+            if (!signal.toContractId && !this.signed) {
+                (_b = this.config.logger) === null || _b === void 0 ? void 0 : _b.error('Received an unsigned SDP signal');
                 return;
             }
             if (this.shouldIgnoreWebRTC()) {
@@ -358,13 +465,19 @@ export class ClientMediaCall {
     }
     deliverSdp(data) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.deliverSdp');
             this.hasLocalDescription = true;
-            this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+            if (!this.hidden) {
+                this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+            }
             this.updateClientState();
         });
     }
     rejectAsUnavailable() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.rejectAsUnavailable');
             // If we have already told the server we accept this call, then we need to send a hangup to get out of it
             if (this.acceptedLocally) {
                 return this.hangup('unavailable');
@@ -376,34 +489,38 @@ export class ClientMediaCall {
     processEarlySignals() {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, e_1, _b, _c;
+            var _d, _e;
+            (_d = this.config.logger) === null || _d === void 0 ? void 0 : _d.debug('ClientMediaCall.processEarlySignals');
             const earlySignals = this.earlySignals.values().toArray();
             this.earlySignals.clear();
             try {
-                for (var _d = true, earlySignals_1 = __asyncValues(earlySignals), earlySignals_1_1; earlySignals_1_1 = yield earlySignals_1.next(), _a = earlySignals_1_1.done, !_a; _d = true) {
+                for (var _f = true, earlySignals_1 = __asyncValues(earlySignals), earlySignals_1_1; earlySignals_1_1 = yield earlySignals_1.next(), _a = earlySignals_1_1.done, !_a; _f = true) {
                     _c = earlySignals_1_1.value;
-                    _d = false;
+                    _f = false;
                     const signal = _c;
                     try {
                         yield this.processSignal(signal);
                     }
                     catch (e) {
-                        console.error('Error processing early signal', e);
+                        (_e = this.config.logger) === null || _e === void 0 ? void 0 : _e.error('Error processing early signal', e);
                     }
                 }
             }
             catch (e_1_1) { e_1 = { error: e_1_1 }; }
             finally {
                 try {
-                    if (!_d && !_a && (_b = earlySignals_1.return)) yield _b.call(earlySignals_1);
+                    if (!_f && !_a && (_b = earlySignals_1.return)) yield _b.call(earlySignals_1);
                 }
                 finally { if (e_1) throw e_1.error; }
             }
         });
     }
     acknowledge() {
-        if (this.acknowledged) {
+        var _a;
+        if (this.acknowledged || this.hidden) {
             return;
         }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.acknowledge');
         this.acknowledged = true;
         this.config.transporter.answer(this.callId, 'ack');
         if (this._state === 'none') {
@@ -412,6 +529,8 @@ export class ClientMediaCall {
     }
     processNotification(signal) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.processNotification');
             switch (signal.notification) {
                 case 'accepted':
                     return this.flagAsAccepted();
@@ -422,10 +541,20 @@ export class ClientMediaCall {
     }
     flagAsAccepted() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.flagAsAccepted');
+            // If hidden, just move the state without doing anything
+            if (this.hidden) {
+                this.changeState('accepted');
+                return;
+            }
             if (!this.acceptedLocally) {
                 // #ToDo: test this situation; remove exception, read this response on the server
                 this.config.transporter.sendError(this.callId, 'not-accepted');
-                throw new Error('Trying to activate a call that was not yet accepted locally.');
+                this.throwError('Trying to activate a call that was not yet accepted locally.');
+            }
+            if (this.contractState === 'proposed') {
+                this.contractState = 'self-signed';
             }
             // Both sides of the call have accepted it, we can change the state now
             this.changeState('accepted');
@@ -434,14 +563,24 @@ export class ClientMediaCall {
         });
     }
     flagAsEnded(reason) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.flagAsEnded', reason);
         if (this._state === 'hangup') {
             return;
         }
-        this.config.transporter.hangup(this.callId, reason);
+        if (!this.hidden) {
+            this.config.transporter.hangup(this.callId, reason);
+        }
         this.changeState('hangup');
     }
     addStateTimeout(state, timeout, callback) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.addStateTimeout', state, `${timeout / 1000}s`);
         if (this.getClientState() !== state) {
+            return;
+        }
+        // Do not set state timeouts if the call is not happening on this session, unless there's a callback attached to that timeout
+        if (this.hidden && !callback) {
             return;
         }
         const handler = {
@@ -464,6 +603,8 @@ export class ClientMediaCall {
         this.stateTimeoutHandlers.add(handler);
     }
     updateStateTimeouts() {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.updateStateTimeouts');
         const clientState = this.getClientState();
         for (const handler of this.stateTimeoutHandlers.values()) {
             if (handler.state === clientState) {
@@ -474,6 +615,8 @@ export class ClientMediaCall {
         }
     }
     onWebRTCInternalStateChange(stateName) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.onWebRTCInternalStateChange');
         if (!this.webrtcProcessor) {
             return;
         }
@@ -484,6 +627,8 @@ export class ClientMediaCall {
         }
     }
     reportStates() {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.reportStates');
         this.clearStateReporter();
         if (!this.mayReportStates) {
             return;
@@ -492,18 +637,24 @@ export class ClientMediaCall {
             callState: this.state,
             clientState: this.getClientState(),
             serviceStates: Object.fromEntries(this.serviceStates.entries()),
+            ignored: this.ignored,
+            contractState: this.contractState,
         });
         if (this.state === 'hangup') {
             this.mayReportStates = false;
         }
     }
     clearStateReporter() {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.clearStateReporter');
         if (this.stateReporterTimeoutHandler) {
             clearTimeout(this.stateReporterTimeoutHandler);
             this.stateReporterTimeoutHandler = null;
         }
     }
     requestStateReport() {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.requestStateReport');
         this.clearStateReporter();
         if (!this.mayReportStates) {
             return;
@@ -512,15 +663,22 @@ export class ClientMediaCall {
             this.reportStates();
         }, STATE_REPORT_DELAY);
     }
+    throwError(error) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.error(error);
+        throw new Error(error);
+    }
     prepareWebRtcProcessor() {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.prepareWebRtcProcessor');
         if (this.webrtcProcessor) {
             return;
         }
-        const { mediaStreamFactory, processorFactories: { webrtc: webrtcFactory }, } = this.config;
+        const { mediaStreamFactory, logger, processorFactories: { webrtc: webrtcFactory }, } = this.config;
         if (!webrtcFactory) {
-            throw new Error('webrtc-not-implemented');
+            this.throwError('webrtc-not-implemented');
         }
-        this.webrtcProcessor = webrtcFactory({ mediaStreamFactory });
+        this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger });
         this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
     }
     requireWebRTC() {
@@ -528,7 +686,7 @@ export class ClientMediaCall {
             this.prepareWebRtcProcessor();
         }
         catch (e) {
-            this.config.transporter.sendError(this.callId, 'webrtc-not-implemented');
+            this.sendError('webrtc-not-implemented');
             throw e;
         }
     }

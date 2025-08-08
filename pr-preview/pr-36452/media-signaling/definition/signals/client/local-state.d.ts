@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 import type { CallState } from '../../call';
-import type { ClientState } from '../../client';
+import type { ClientContractState, ClientState } from '../../client';
 export type ClientMediaSignalLocalState = {
     callId: string;
     contractId: string;
@@ -8,6 +8,8 @@ export type ClientMediaSignalLocalState = {
     callState: CallState;
     clientState: ClientState;
     serviceStates?: Record<string, string>;
+    ignored?: boolean;
+    contractState: ClientContractState;
 };
 export declare const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignalLocalState>;
 //# sourceMappingURL=local-state.d.ts.map

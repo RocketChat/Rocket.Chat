@@ -7,6 +7,7 @@ export type CallEvents = {
     initialized: void;
     accepting: void;
     accepted: void;
+    hidden: void;
     ended: void;
 };
 //# sourceMappingURL=CallEvents.d.ts.map
