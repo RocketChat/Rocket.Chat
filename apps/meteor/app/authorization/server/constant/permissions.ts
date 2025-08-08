@@ -107,6 +107,10 @@ export const permissions = [
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
 	{
+		_id: 'delete-livechat-contact',
+		roles: ['livechat-manager', 'admin'],
+	},
+	{
 		_id: 'view-livechat-contact-history',
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},

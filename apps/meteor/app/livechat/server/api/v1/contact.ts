@@ -17,6 +17,7 @@ import { Meteor } from 'meteor/meteor';
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { createContact } from '../../lib/contacts/createContact';
+import { disableContactById } from '../../lib/contacts/disableContact';
 import { getContactChannelsGrouped } from '../../lib/contacts/getContactChannelsGrouped';
 import { getContactHistory } from '../../lib/contacts/getContactHistory';
 import { getContacts } from '../../lib/contacts/getContacts';
@@ -127,6 +128,37 @@ API.v1.addRoute(
 			const contact = await updateContact(removeEmpty(this.bodyParams));
 
 			return API.v1.success({ contact });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts/:id',
+	{ authRequired: true, permissionsRequired: ['delete-livechat-contact'] },
+	{
+		async delete() {
+			check(this.urlParams, {
+				id: String,
+			});
+			const { id } = this.urlParams;
+
+			try {
+				await disableContactById(id);
+				return API.v1.success();
+			} catch (error: unknown) {
+				if (!(error instanceof Error)) {
+					return API.v1.failure(error);
+				}
+
+				switch (error.message) {
+					case 'error-contact-not-found':
+						return API.v1.notFound(error.message);
+					case 'error-contact-removal-disabled':
+						return API.v1.unauthorized(error.message);
+					default:
+						return API.v1.failure(error);
+				}
+			}
 		},
 	},
 );
