@@ -30,7 +30,7 @@ export class CustomOAuth implements IOAuthProvider {
 
 	constructor(
 		public readonly name: string,
-		options: OauthConfig,
+		options: Readonly<OauthConfig>,
 	) {
 		this.name = name;
 		if (typeof this.name !== 'string') {
@@ -116,7 +116,7 @@ export class CustomOAuth implements IOAuthProvider {
 		});
 	}
 
-	static configureOAuthService(serviceName: string, options: OauthConfig): CustomOAuth {
+	static configureOAuthService(serviceName: string, options: Readonly<OauthConfig>): CustomOAuth {
 		const existingInstance = configuredOAuthServices.get(serviceName);
 		if (existingInstance) {
 			existingInstance.configure(options);
@@ -134,7 +134,7 @@ export class CustomOAuth implements IOAuthProvider {
 		return instance;
 	}
 
-	static configureCustomOAuthService(serviceName: string, options: OauthConfig): CustomOAuth | undefined {
+	static configureCustomOAuthService(serviceName: string, options: Readonly<OauthConfig>): CustomOAuth | undefined {
 		// Custom OAuth services are configured based on the login service list, so if this ends up being called multiple times, simply ignore it
 		// Non-Custom OAuth services are configured based on code, so if configureOAuthService is called multiple times for them, it's a bug and it should throw.
 		try {
