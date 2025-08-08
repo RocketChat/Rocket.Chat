@@ -210,7 +210,8 @@ export class Router implements RouterContextValue {
 	readonly subscribeToRouteChange = (onRouteChange: () => void): (() => void) => {
 		const unsubscribe = this.emitter.on('pathChanged', onRouteChange);
 
-		this.emitter.emit('pathChanged'); // FIXME
+		// FIXME: for some reason this is (and was) necessary to invoke some route actions
+		this.emitter.emit('pathChanged');
 
 		return () => {
 			unsubscribe();
