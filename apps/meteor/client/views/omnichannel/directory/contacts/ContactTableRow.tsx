@@ -58,6 +58,9 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{lastChat && getTimeFromNow(lastChat.ts)}</GenericTableCell>
+			<GenericTableCell withTruncatedText>
+				...
+			</GenericTableCell>
 			{isCallReady && (
 				<GenericTableCell>
 					<CallDialpadButton phoneNumber={phoneNumber} />
