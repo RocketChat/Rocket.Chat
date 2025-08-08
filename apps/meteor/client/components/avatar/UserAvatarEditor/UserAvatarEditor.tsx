@@ -1,14 +1,15 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
+import { Box, Button, Avatar, TextInput, IconButton, Label, FieldError } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import { useId, useState, useCallback } from 'react';
+import { useId, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
+import { isURL } from '../../../../lib/utils/isURL';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
@@ -29,6 +30,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
 	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const [avatarUrlError, setAvatarUrlError] = useState<string | undefined>(undefined);
+
+	useEffect(() => {
+		setAvatarUrlError(undefined);
+	}, []);
 
 	const setUploadedPreview = useCallback(
 		async (file: File, avatarObj: AvatarObject) => {
@@ -61,7 +67,13 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const url = newAvatarSource;
 
 	const handleAvatarFromUrlChange = (event: ChangeEvent<HTMLInputElement>): void => {
-		setAvatarFromUrl(event.currentTarget.value);
+		const { value } = event.currentTarget;
+		setAvatarFromUrl(value);
+		if (isURL(value) || !value) {
+			setAvatarUrlError(undefined);
+		} else {
+			setAvatarUrlError(t('error-invalid-image-url'));
+		}
 	};
 
 	const handleSelectSuggestion = useCallback(
@@ -87,7 +99,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						imageOrientation: rotateImages ? 'from-image' : 'none',
 						objectFit: 'contain',
 					}}
-					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
+					onError={() => setAvatarUrlError(t('error-invalid-image-url'))}
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
@@ -98,7 +110,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<IconButton
 							icon='permalink'
 							secondary
-							disabled={disabled || !avatarFromUrl}
+							disabled={disabled || !avatarFromUrl || !!avatarUrlError}
 							title={t('Add_URL')}
 							mi={4}
 							onClick={handleAddUrl}
@@ -118,6 +130,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						mis={4}
 						onChange={handleAvatarFromUrlChange}
 					/>
+					{avatarUrlError && (
+						<FieldError aria-live='assertive' id={`${imageUrlField}-error`}>
+							{avatarUrlError}
+						</FieldError>
+					)}
 				</Box>
 			</Box>
 		</Box>
