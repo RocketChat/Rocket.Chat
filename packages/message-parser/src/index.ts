@@ -498,6 +498,8 @@ const parseBoldMarkup = (
   const delimiter = isBold ? '**' : '*';
   const delimiterLength = isBold ? 2 : 1;
 
+  // Do not enforce strict opening boundaries; bold can start mid-word per tests
+
   // Handle triple asterisk cases: ***Hello*** and ***Hello**
   const thirdChar = i + 2 < text.length ? text[i + 2] : '';
   if (isBold && thirdChar === '*') {
@@ -605,6 +607,7 @@ const parseBoldMarkup = (
     if (content.trim().length === 0) {
       return null;
     }
+    // Do not enforce strict closing boundaries; allow bold to end mid-word per tests
     
     // Validate that there are no unmatched delimiters inside the content
     // Count strike delimiters (~~) to ensure they are balanced
@@ -683,7 +686,7 @@ const parseItalicMarkup = (
   // Special case: allow consecutive italics like "_text__next_" where double underscore can follow single underscore
   const prevChar = i > 0 ? text[i - 1] : '';
   const followingChar = i + 1 < text.length ? text[i + 1] : '';
-  const atStartWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(prevChar) || 
+  const atStartWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`-]/.test(prevChar) || 
     (prevChar === '_' && followingChar === '_');
   
   if (!atStartWordBoundary) {
@@ -691,39 +694,32 @@ const parseItalicMarkup = (
   }
 
   // Look for consecutive italics pattern: _text__more_
-  const singlePattern = text.slice(i, i + 1);
-  const afterSingleChars = text.slice(i + 1, i + 3);
-  
-  if (singlePattern === '_' && afterSingleChars.startsWith('_') && !afterSingleChars.endsWith('_')) {
-    // Check for pattern _text__more_
-    const contentBeforeDouble = text.slice(i + 1, i + text.slice(i + 1).indexOf('_') + 1);
-    
-    if (contentBeforeDouble && contentBeforeDouble.trim().length > 0) {
-      const doublePos = i + 1 + contentBeforeDouble.length;
-      
-      // Check if we have a double underscore here
-      if (text.slice(doublePos, doublePos + 2) === '__') {
-        // Find the next single underscore after the double
-        const afterDoubleText = text.slice(doublePos + 2);
-        const nextSinglePos = afterDoubleText.indexOf('_');
-        
-        if (nextSinglePos !== -1 && nextSinglePos > 0) {
-          const secondContent = afterDoubleText.slice(0, nextSinglePos);
-          
-          if (secondContent && secondContent.trim().length > 0) {
-            // This is indeed _text__more_ pattern
-            // Process first italic
-            const firstInlineContent = parseInlineContent(contentBeforeDouble, options);
-            // Process second italic  
-            const secondInlineContent = parseInlineContent(secondContent, options);
-            
-            return {
-              tokens: [
-                ast.italic(filterItalicContent(firstInlineContent)),
-                ast.italic(filterItalicContent(secondInlineContent))
-              ],
-              nextIndex: doublePos + 2 + nextSinglePos + 1
-            };
+  // Strategy: find a double underscore (__) after the opening _, use the first _ as closer
+  // and the second _ as the opener for the next italic, then find the closing _ for the second.
+  if (text[i] === '_') {
+    const doublePos = text.indexOf('__', i + 1);
+    if (doublePos !== -1 && doublePos > i + 1) {
+      const contentBeforeDouble = text.slice(i + 1, doublePos);
+      if (contentBeforeDouble.trim().length > 0) {
+        const nextSingleEnd = text.indexOf('_', doublePos + 2);
+        if (nextSingleEnd !== -1 && nextSingleEnd > doublePos + 2) {
+          const secondContent = text.slice(doublePos + 2, nextSingleEnd);
+          if (secondContent.trim().length > 0) {
+            // Ensure closing boundary for the second italic
+            const afterSecond = nextSingleEnd + 1 < text.length ? text[nextSingleEnd + 1] : '';
+            const atSecondEndBoundary = nextSingleEnd + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`-]/.test(afterSecond);
+            if (atSecondEndBoundary) {
+              const firstInlineContent = parseInlineContent(contentBeforeDouble, options);
+              const secondInlineContent = parseInlineContent(secondContent, options);
+              return {
+                tokens: [
+                  ast.italic(filterItalicContent(firstInlineContent)),
+                  ast.italic(filterItalicContent(secondInlineContent)),
+                ],
+                // We consumed: _contentBeforeDouble __ secondContent _
+                nextIndex: nextSingleEnd + 1,
+              };
+            }
           }
         }
       }
@@ -760,7 +756,7 @@ const parseItalicMarkup = (
         
         // Verify word boundary after final delimiter
         const finalChar = endIndex < text.length ? text[endIndex] : '';
-        const atFinalWordBoundary = endIndex >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(finalChar);
+  const atFinalWordBoundary = endIndex >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`-]/.test(finalChar);
         
         if (atFinalWordBoundary) {
           const result = [];
@@ -809,7 +805,7 @@ const parseItalicMarkup = (
   // This handles cases like __Hello_ (should be _[italic]Hello_) and _Hello__ (should be [italic]Hello__[plain]_)
   
   let bestMatch = null;
-  let bestScore = 0;
+  // bestScore removed; we only compare scores via bestMatch.score when computing
   
   // Try single underscore parsing first
   // Find the closing underscore, but skip over emoji shortcodes and certain mention patterns
@@ -955,7 +951,6 @@ const parseItalicMarkup = (
   // If we start with double underscore, also try finding single underscore match with leading plain text
   if (nextChar === '_') {
     // For __Hello_, try to parse as _[italic]Hello_[plain] (skip first underscore)
-    const singleStartOffset = 1; // Skip the first underscore
     searchPos = i + 2; // Start searching after __
     
     while (searchPos < text.length) {
@@ -1015,7 +1010,7 @@ const parseItalicMarkup = (
       
       // Check word boundary
       const nextCharAfter = nextUnderscore + 1 < text.length ? text[nextUnderscore + 1] : '';
-      const atWordBoundary = nextUnderscore + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(nextCharAfter);
+  const atWordBoundary = nextUnderscore + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`-]/.test(nextCharAfter);
       
       if (atWordBoundary) {
         const content = text.slice(i + 2, nextUnderscore); // Skip first underscore
@@ -1039,7 +1034,7 @@ const parseItalicMarkup = (
     const doubleEnd = text.indexOf('__', i + 2);
     if (doubleEnd !== -1 && doubleEnd > i + 2) {
       const nextCharAfterDouble = doubleEnd + 2 < text.length ? text[doubleEnd + 2] : '';
-      const atDoubleEndWordBoundary = doubleEnd + 2 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`]/.test(nextCharAfterDouble);
+  const atDoubleEndWordBoundary = doubleEnd + 2 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`-]/.test(nextCharAfterDouble);
       
       if (atDoubleEndWordBoundary) {
         const doubleContent = text.slice(i + 2, doubleEnd);

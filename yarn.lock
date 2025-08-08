@@ -7842,6 +7842,8 @@ __metadata:
     typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
     webpack-cli: "npm:~5.1.4"
+  bin:
+    message-parser: bin.js
   languageName: unknown
   linkType: soft
 
