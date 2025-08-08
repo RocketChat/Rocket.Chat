@@ -62,6 +62,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 		this.session = new MediaSignalingSession({
 			userId: config.userId,
+			logger: console,
 			transport: (signal: ClientMediaSignal) => config.sendSignalFn(signal),
 			processorFactories: {
 				webrtc: (config) => new MediaCallWebRTCProcessor(config),
@@ -74,6 +75,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		this.session.on('newCall', ({ call }) => this.onNewCall(call));
 		this.session.on('acceptedCall', ({ call }) => this.onAcceptedCall(call));
 		this.session.on('endedCall', ({ call }) => this.onEndedCall(call));
+		this.session.on('hiddenCall', ({ call }) => this.onHiddenCall(call));
 		this.session.on('callContactUpdate', ({ call }) => this.onCallContactUpdate(call));
 	}
 
@@ -303,7 +305,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 	public getSessionType(): VoipSession['type'] | null {
 		const call = this.session.getMainCall();
-		if (!call) {
+		if (!call || call.hidden) {
 			return null;
 		}
 
@@ -422,6 +424,13 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		console.log('onEndedCall');
 
 		this.remoteStream?.clear();
+		this.emit('callterminated');
+		this.emit('stateChanged');
+	}
+
+	private onHiddenCall(_call: IClientMediaCall): void {
+		console.log('onHiddenCall');
+
 		this.emit('callterminated');
 		this.emit('stateChanged');
 	}
