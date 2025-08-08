@@ -2,13 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserAgentSignalProcessor = void 0;
 const models_1 = require("@rocket.chat/models");
+const logger_1 = require("../../logger");
 const Manager_1 = require("../Manager");
 class UserAgentSignalProcessor {
     constructor(agent) {
         this.agent = agent;
     }
     async processSignal(signal, call) {
-        console.log('SignalProcessor.processSignal');
+        logger_1.logger.debug({ msg: 'UserAgentSignalProcessor.processSignal', call, signal });
         const channel = await Manager_1.agentManager.getOrCreateContract(call._id, this.agent, { acknowledged: true });
         if (!channel) {
             throw new Error('invalid-call');
@@ -34,12 +35,12 @@ class UserAgentSignalProcessor {
         }
     }
     async saveLocalDescription({ channel }, sdp) {
-        console.log('SignalProcessor.saveLocalDescription');
+        logger_1.logger.debug({ msg: 'UserAgentSignalProcessor.saveLocalDescription', sdp });
         await models_1.MediaCallChannels.setLocalDescription(channel._id, sdp);
         await Manager_1.agentManager.setLocalDescription(this.agent, sdp);
     }
     async processAnswer(params, answer) {
-        console.log('processAnswer');
+        logger_1.logger.debug({ msg: 'UserAgentSignalProcessor.processAnswer', params, answer });
         const { call } = params;
         switch (answer) {
             case 'ack':
@@ -54,17 +55,17 @@ class UserAgentSignalProcessor {
         }
     }
     async processReject(call) {
-        console.log('SignalProcessor.processReject');
+        logger_1.logger.debug({ msg: 'UserAgentSignalProcessor.processReject', call });
         if (this.agent.role !== 'callee') {
             return;
         }
         if (!['none', 'ringing'].includes(call.state)) {
-            console.log('cant reject an ongoing call.');
             return;
         }
         return Manager_1.agentManager.hangupCall(this.agent, 'rejected');
     }
     async processACK({ channel }) {
+        logger_1.logger.debug({ msg: 'UserAgentSignalProcessor.processACK' });
         switch (this.agent.role) {
             case 'callee':
                 // Change the call state from 'none' to 'ringing' when any callee session is found

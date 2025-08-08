@@ -30,17 +30,13 @@ export class MediaCallWebRTCProcessor {
     }
     createOffer(_a) {
         return __awaiter(this, arguments, void 0, function* ({ iceRestart }) {
-            console.log('processor.createOffer');
             yield this.initializeLocalMediaStream();
             if (iceRestart) {
                 this.restartIce();
             }
-            console.log('peer.createOffer');
             // #ToDo: direction changes
             const offer = yield this.peer.createOffer();
-            console.log('setLocalDescription');
             yield this.peer.setLocalDescription(offer);
-            console.log('return getLocalDescription');
             return this.getLocalDescription();
         });
     }
@@ -62,10 +58,8 @@ export class MediaCallWebRTCProcessor {
     }
     setRemoteDescription(_a) {
         return __awaiter(this, arguments, void 0, function* ({ sdp }) {
-            console.log('setRemoteDescription');
             yield this.initializeLocalMediaStream();
             // #ToDo: validate this.peer.signalingState ?
-            console.log('peer.setRemoteDescription');
             this.peer.setRemoteDescription(sdp);
         });
     }
@@ -96,17 +90,13 @@ export class MediaCallWebRTCProcessor {
     }
     getLocalDescription() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('getLocalDescription');
             yield this.waitForIceGathering();
-            console.log('waited');
+            // always wait a little extra to ensure all relevant events have been fired
             yield new Promise((resolve) => setTimeout(resolve, 30));
-            console.log('extra waited');
             const sdp = this.peer.localDescription;
             if (!sdp) {
-                console.log('no-local-sdp');
                 throw new Error('no-local-sdp');
             }
-            console.log('return sdp');
             return {
                 sdp,
             };
@@ -118,7 +108,6 @@ export class MediaCallWebRTCProcessor {
                 return;
             }
             if (this.peer.iceGatheringState === 'complete') {
-                console.log('ice gathering already complete');
                 return;
             }
             this.iceGatheringTimedOut = false;
@@ -129,14 +118,10 @@ export class MediaCallWebRTCProcessor {
             });
             const iceGatheringData = data;
             data.timeout = setTimeout(() => {
-                console.log('timeout');
                 if (this.iceGatheringWaiters.has(iceGatheringData)) {
                     this.clearIceGatheringData(iceGatheringData);
                     this.iceGatheringTimedOut = true;
                     this.changeInternalState('iceUntrickler');
-                }
-                else {
-                    console.log('ice gathering not on the list');
                 }
             }, 500);
             this.iceGatheringWaiters.add(iceGatheringData);
@@ -165,57 +150,50 @@ export class MediaCallWebRTCProcessor {
             return;
         }
         console.log('onIceCandidate event', event.candidate);
-        // if (event.candidate) {
-        // 	this.localCandidates.add(event.candidate);
-        // }
     }
-    onIceCandidateError(peer, _event) {
+    onIceCandidateError(peer, event) {
         if (peer !== this.peer) {
             return;
         }
-        console.log('onIceCandidate ERROR event');
+        console.error('onIceCandidate ERROR event', event.errorCode, event.errorText);
         this.emitter.emit('internalError', { critical: false, error: 'ice-candidate-error' });
     }
     onNegotiationNeeded(peer) {
         if (peer !== this.peer) {
             return;
         }
-        console.log('onNegotiationNeeded event');
+        // #ToDo negotiation needed
+        console.log('negotiation-needed');
     }
     onTrack(peer, event) {
         if (peer !== this.peer) {
             return;
         }
         // Received a remote stream
-        console.log('ontrack', event.track.kind, event.track.enabled);
         this.remoteStream.setTrack(event.track, peer);
     }
     onConnectionStateChange(peer) {
         if (peer !== this.peer) {
             return;
         }
-        console.log('Connection state change', peer.connectionState);
         this.changeInternalState('connection');
     }
     onIceConnectionStateChange(peer) {
         if (peer !== this.peer) {
             return;
         }
-        console.log('Ice connection state change', peer.iceConnectionState);
         this.changeInternalState('iceConnection');
     }
     onSignalingStateChange(peer) {
         if (peer !== this.peer) {
             return;
         }
-        console.log('Signaling state change', peer.signalingState);
         this.changeInternalState('signaling');
     }
     onIceGatheringStateChange(peer) {
         if (peer !== this.peer) {
             return;
         }
-        console.log('Ice gathering state change', peer.iceGatheringState);
         if (peer.iceGatheringState === 'complete') {
             this.onIceGatheringComplete();
         }
@@ -232,33 +210,27 @@ export class MediaCallWebRTCProcessor {
         });
     }
     onIceGatheringComplete() {
-        console.log('onIceGatheringComplete');
         this.iceGatheringFinished = true;
         this.clearIceGatheringWaiters();
     }
     clearIceGatheringData(iceGatheringData, error) {
-        console.log('clearIceGatheringData');
         if (this.iceGatheringWaiters.has(iceGatheringData)) {
             this.iceGatheringWaiters.delete(iceGatheringData);
         }
         if (iceGatheringData.timeout) {
-            console.log('clearTimeout');
             clearTimeout(iceGatheringData.timeout);
         }
         if (error) {
-            console.log('reject wait promise');
             if (iceGatheringData.promiseReject) {
                 iceGatheringData.promiseReject(error);
             }
             return;
         }
-        console.log('resolve wait promise');
         if (iceGatheringData.promiseResolve) {
             iceGatheringData.promiseResolve();
         }
     }
     clearIceGatheringWaiters(error) {
-        console.log('clear waiters');
         const waiters = this.iceGatheringWaiters.values().toArray();
         this.iceGatheringWaiters.clear();
         this.iceGatheringTimedOut = false;

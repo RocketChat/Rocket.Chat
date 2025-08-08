@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserMediaCallAgent = void 0;
 const BasicAgent_1 = require("./BasicAgent");
 const SignalProcessor_1 = require("./SignalProcessor");
+const logger_1 = require("../../logger");
 const Manager_1 = require("../Manager");
 class UserMediaCallAgent extends BasicAgent_1.UserBasicAgent {
     get signed() {
@@ -20,7 +21,7 @@ class UserMediaCallAgent extends BasicAgent_1.UserBasicAgent {
         return this.signalProcessor.processSignal(signal, call);
     }
     async setRemoteDescription(sdp) {
-        console.log('UserAgent.setRemoteDescription');
+        logger_1.logger.debug({ msg: 'UserMediaCallAgent.setRemoteDescription', sdp });
         await this.sendSignal({
             callId: this.callId,
             toContractId: this.contractId,
@@ -29,12 +30,12 @@ class UserMediaCallAgent extends BasicAgent_1.UserBasicAgent {
         });
     }
     async getLocalDescription() {
-        console.log('UserAgent.getRemoteDescription');
+        logger_1.logger.debug({ msg: 'UserMediaCallAgent.getRemoteDescription' });
         const channel = await Manager_1.agentManager.getOrCreateContract(this.callId, this);
         return channel?.localDescription ?? null;
     }
     async requestOffer(params) {
-        console.log('UserAgent.requestOffer');
+        logger_1.logger.debug({ msg: 'UserMediaCallAgent.requestOffer', params });
         // #ToDo: this function may be called multiple times for the same call until an offer is provided; look into how to handle that
         await this.sendSignal({
             callId: this.callId,

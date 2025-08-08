@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserBasicAgent = void 0;
+const logger_1 = require("../../logger");
 const signalHandler_1 = require("../../signalHandler");
 const IMediaCallAgent_1 = require("../definition/IMediaCallAgent");
 class UserBasicAgent extends IMediaCallAgent_1.MediaCallBasicAgent {
@@ -24,7 +25,7 @@ class UserBasicAgent extends IMediaCallAgent_1.MediaCallBasicAgent {
         };
     }
     async notify(callId, notification) {
-        console.log('UserBasicAgent.notify');
+        logger_1.logger.debug({ msg: 'UserBasicAgent.notify', callId, notification });
         return this.sendSignal({
             callId,
             type: 'notification',

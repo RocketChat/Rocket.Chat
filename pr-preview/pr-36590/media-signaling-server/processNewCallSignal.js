@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.processNewCallSignal = processNewCallSignal;
 const models_1 = require("@rocket.chat/models");
 const createCall_1 = require("./createCall");
+const logger_1 = require("./logger");
 const mutateCallee_1 = require("./mutateCallee");
 const signalHandler_1 = require("./signalHandler");
 function invalidCallId(uid, rejection) {
@@ -14,7 +15,7 @@ async function getExistingCall(uid, signal, callee) {
     if (!requestedCallId) {
         return null;
     }
-    console.log('getExistingCall');
+    logger_1.logger.debug({ msg: 'getExistingCall', uid, signal, callee });
     const caller = { type: 'user', id: uid };
     const rejection = { callId: requestedCallId, toContractId: signal.contractId, reason: 'invalid-call-id' };
     const call = await models_1.MediaCalls.findOneByIdOrCallerRequestedId(requestedCallId, caller);
@@ -54,7 +55,7 @@ async function getExistingCall(uid, signal, callee) {
     return call;
 }
 async function processNewCallSignal(signal, uid) {
-    console.log('processNewCallSignal');
+    logger_1.logger.debug({ msg: 'processNewCallSignal', signal, uid });
     const caller = { type: 'user', id: uid };
     const callee = await (0, mutateCallee_1.mutateCallee)(signal.callee);
     const existingCall = await getExistingCall(uid, signal, callee);

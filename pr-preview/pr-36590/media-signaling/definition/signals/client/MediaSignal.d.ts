@@ -1,48 +1,13 @@
-import type { CallAnswer, CallHangupReason, CallService, CallState } from '../../call';
-import type { ClientState } from '../../client';
-export type ClientMediaSignalRequestCall = {
-    callId: string;
-    contractId: string;
-    type: 'request-call';
-    callee: {
-        type: 'user' | 'sip';
-        id: string;
-    };
-    supportedServices: CallService[];
-};
-export type ClientMediaSignalLocalSDP = {
-    callId: string;
-    contractId: string;
-    type: 'local-sdp';
-    sdp: RTCSessionDescriptionInit;
-};
-export type ClientMediaSignalError = {
-    callId: string;
-    contractId: string;
-    type: 'error';
-    errorCode: string;
-};
-export type ClientMediaSignalAnswer = {
-    callId: string;
-    type: 'answer';
-    contractId: string;
-    answer: CallAnswer;
-};
-export type ClientMediaSignalHangup = {
-    callId: string;
-    contractId: string;
-    type: 'hangup';
-    reason: CallHangupReason;
-};
-export type ClientMediaSignalLocalState = {
-    callId: string;
-    contractId: string;
-    type: 'local-state';
-    callState: CallState;
-    clientState: ClientState;
-    serviceStates?: Record<string, string>;
-};
+import { type JSONSchemaType } from 'ajv';
+import { type ClientMediaSignalAnswer } from './answer';
+import { type ClientMediaSignalError } from './error';
+import { type ClientMediaSignalHangup } from './hangup';
+import { type ClientMediaSignalLocalSDP } from './local-sdp';
+import { type ClientMediaSignalLocalState } from './local-state';
+import { type ClientMediaSignalRequestCall } from './request-call';
 export type ClientMediaSignal = ClientMediaSignalLocalSDP | ClientMediaSignalError | ClientMediaSignalAnswer | ClientMediaSignalHangup | ClientMediaSignalRequestCall | ClientMediaSignalLocalState;
+export declare const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal>;
+export declare const isClientMediaSignal: import("ajv").ValidateFunction<ClientMediaSignal>;
 export type ClientMediaSignalType = ClientMediaSignal['type'];
 type ExtractMediaSignal<T, K extends ClientMediaSignalType> = T extends {
     type: K;

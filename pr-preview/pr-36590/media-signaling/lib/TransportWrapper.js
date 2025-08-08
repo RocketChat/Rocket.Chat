@@ -16,7 +16,6 @@ export class MediaSignalTransportWrapper {
         return this.sendToServer(callId, 'hangup', { reason });
     }
     sendSignal(signal) {
-        console.log('MediaSignalTransport.sendSignal', signal);
         this.sendSignalFn(signal);
     }
 }

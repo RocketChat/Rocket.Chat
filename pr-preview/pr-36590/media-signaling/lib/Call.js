@@ -108,7 +108,6 @@ export class ClientMediaCall {
             if (this.hasRemoteData) {
                 return;
             }
-            console.log('call.initializeRemoteCall', signal.callId);
             this.remoteCallId = signal.callId;
             const wasInitialized = this.initialized;
             this.initialized = true;
@@ -175,7 +174,6 @@ export class ClientMediaCall {
                 return;
             }
             const { type: signalType } = signal;
-            console.log('ClientMediaCall.processSignal', signalType);
             if (signalType === 'new') {
                 return this.initializeRemoteCall(signal);
             }
@@ -191,12 +189,10 @@ export class ClientMediaCall {
                 case 'notification':
                     return this.processNotification(signal);
             }
-            console.log('signal ignored, as its type is not handled by this agent', signalType);
         });
     }
     accept() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('call.accept');
             if (!this.isPendingOurAcceptance()) {
                 throw new Error('call-not-pending-acceptance');
             }
@@ -214,7 +210,6 @@ export class ClientMediaCall {
     }
     reject() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('call.reject');
             if (!this.isPendingOurAcceptance()) {
                 throw new Error('call-not-pending-acceptance');
             }
@@ -227,7 +222,6 @@ export class ClientMediaCall {
     }
     hangup() {
         return __awaiter(this, arguments, void 0, function* (reason = 'normal') {
-            console.log('call.hangup');
             if (this.endedLocally || this._state === 'hangup') {
                 return;
             }
@@ -254,7 +248,6 @@ export class ClientMediaCall {
         if (newState === this._state) {
             return;
         }
-        console.log('call.changeState', newState);
         const oldState = this._state;
         this._state = newState;
         this.updateClientState();
@@ -290,7 +283,6 @@ export class ClientMediaCall {
     }
     processOfferRequest(signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('call.processOfferRequest');
             if (!signal.toContractId) {
                 console.error('Received an untargeted offer request.');
                 return;
@@ -327,7 +319,6 @@ export class ClientMediaCall {
     }
     processAnswerRequest(signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Call.processAnswerRequest');
             if (this.shouldIgnoreWebRTC()) {
                 return;
             }
@@ -350,7 +341,6 @@ export class ClientMediaCall {
     }
     processRemoteSDP(signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Call.processRemoteSDP');
             if (!signal.toContractId) {
                 console.error('Received untargeted SDP signal');
                 return;
@@ -368,7 +358,6 @@ export class ClientMediaCall {
     }
     deliverSdp(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Call.deliverSdp');
             this.hasLocalDescription = true;
             this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
             this.updateClientState();
@@ -376,7 +365,6 @@ export class ClientMediaCall {
     }
     rejectAsUnavailable() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('call.rejectAsUnavailable');
             // If we have already told the server we accept this call, then we need to send a hangup to get out of it
             if (this.acceptedLocally) {
                 return this.hangup('unavailable');
@@ -388,7 +376,6 @@ export class ClientMediaCall {
     processEarlySignals() {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, e_1, _b, _c;
-            console.log('call.processEarlySignals');
             const earlySignals = this.earlySignals.values().toArray();
             this.earlySignals.clear();
             try {
@@ -414,7 +401,6 @@ export class ClientMediaCall {
         });
     }
     acknowledge() {
-        console.log('call.acknowledge');
         if (this.acknowledged) {
             return;
         }
@@ -426,19 +412,16 @@ export class ClientMediaCall {
     }
     processNotification(signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Call.processNotification', signal.notification);
             switch (signal.notification) {
                 case 'accepted':
                     return this.flagAsAccepted();
                 case 'hangup':
                     return this.flagAsEnded('remote');
             }
-            console.log('notification ignored as its type is not handled by this agent', signal.notification);
         });
     }
     flagAsAccepted() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('flagAsAccepted');
             if (!this.acceptedLocally) {
                 // #ToDo: test this situation; remove exception, read this response on the server
                 this.config.transporter.sendError(this.callId, 'not-accepted');
@@ -451,7 +434,6 @@ export class ClientMediaCall {
         });
     }
     flagAsEnded(reason) {
-        console.log('flagAsEnded');
         if (this._state === 'hangup') {
             return;
         }
@@ -462,7 +444,6 @@ export class ClientMediaCall {
         if (this.getClientState() !== state) {
             return;
         }
-        console.log(`adding a timeout of ${timeout / 1000} seconds to the state [${state}]`);
         const handler = {
             state,
             handler: setTimeout(() => {
@@ -472,7 +453,6 @@ export class ClientMediaCall {
                 if (state !== this.getClientState()) {
                     return;
                 }
-                console.log(`reached timeout for the [${state}] state.`);
                 if (callback) {
                     callback();
                 }
@@ -497,7 +477,6 @@ export class ClientMediaCall {
         if (!this.webrtcProcessor) {
             return;
         }
-        console.log('webrtc internal state changed: ', stateName);
         const stateValue = this.webrtcProcessor.getInternalState(stateName);
         if (this.serviceStates.get(stateName) !== stateValue) {
             this.serviceStates.set(stateName, stateValue);
@@ -537,7 +516,6 @@ export class ClientMediaCall {
         if (this.webrtcProcessor) {
             return;
         }
-        console.log('session.createWebRtcProcessor');
         const { mediaStreamFactory, processorFactories: { webrtc: webrtcFactory }, } = this.config;
         if (!webrtcFactory) {
             throw new Error('webrtc-not-implemented');

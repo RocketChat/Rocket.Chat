@@ -57,7 +57,6 @@ export class MediaSignalingSession extends Emitter {
     }
     processSignal(signal) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('session.processSignal', signal.type);
             if (this.isSignalTargetingAnotherSession(signal) || this.isCallIgnored(signal.callId)) {
                 return;
             }

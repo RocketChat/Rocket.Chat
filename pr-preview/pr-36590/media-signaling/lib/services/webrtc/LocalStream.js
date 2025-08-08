@@ -12,11 +12,9 @@ export class LocalStream extends Stream {
     setTrack(newTrack, peer) {
         return __awaiter(this, void 0, void 0, function* () {
             if (newTrack.kind === 'video') {
-                console.log('skipping video track');
                 return;
             }
             if (newTrack.kind !== 'audio') {
-                console.log(newTrack);
                 throw new Error('Unsupported track kind');
             }
             const sender = peer.getSenders().find((sender) => { var _a; return ((_a = sender.track) === null || _a === void 0 ? void 0 : _a.kind) === newTrack.kind; });
@@ -25,9 +23,7 @@ export class LocalStream extends Stream {
                 this.mediaStream.addTrack(newTrack);
                 return;
             }
-            console.log('Replacing sender track');
             yield sender.replaceTrack(newTrack);
-            console.log('Replacing track on local media stream');
             const oldTrack = this.mediaStream.getTracks().find((localTrack) => localTrack.kind === newTrack.kind);
             if (oldTrack) {
                 oldTrack.stop();
