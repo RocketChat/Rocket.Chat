@@ -5,7 +5,7 @@ import { expect, assert } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, reservedWords } from '../../data/api-data';
-import { pinMessage, sendMessage, starMessage } from '../../data/chat.helper';
+import { pinMessage, sendMessage, starMessage, updateMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -3865,6 +3865,7 @@ describe('[Channels]', () => {
 		let emptyChannel: IRoom;
 		let firstUser: IUser;
 		let secondUser: IUser;
+		let pinnedMessageId: IMessage['_id'];
 
 		before(async () => {
 			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
@@ -3901,6 +3902,7 @@ describe('[Channels]', () => {
 				starMessage({ messageId: starredMessage.body.message._id }),
 				pinMessage({ messageId: pinnedMessage.body.message._id }),
 			]);
+			pinnedMessageId = pinnedMessage.body.message._id;
 		});
 
 		after(async () => {
@@ -4042,6 +4044,76 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('total', 1);
 				});
+		});
+
+		describe('_hidden messages behavior when Message_KeepHistory is enabled', async () => {
+			before(async () => {
+				await updateSetting('Message_KeepHistory', true);
+				await pinMessage({ messageId: pinnedMessageId, unpin: true });
+			});
+
+			after(async () => {
+				await updateSetting('Message_KeepHistory', false);
+			});
+
+			it('should return all messages, without any pinned messages', async () => {
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages).to.have.lengthOf(5);
+
+						res.body.messages.forEach((msg: IMessage) => {
+							expect(msg).to.not.have.property('pinned', true);
+							expect(msg).to.not.have.property('_hidden');
+						});
+					});
+			});
+
+			it('should return no pinned messages', async () => {
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						pinned: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.messages).to.have.lengthOf(0);
+						expect(res.body).to.have.property('count', 0);
+						expect(res.body).to.have.property('total', 0);
+					});
+			});
+
+			it('should not return old message when updating a message', async () => {
+				await updateMessage({ msgId: pinnedMessageId, updatedMessage: 'message was unpinned', roomId: testChannel._id });
+
+				await request
+					.get(api('channels.messages'))
+					.set(credentials)
+					.query({ roomId: testChannel._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages).to.have.lengthOf(5);
+						expect(res.body.messages[1]).to.have.property('msg', 'message was unpinned');
+						expect(res.body.messages[1]).to.have.property('editedAt');
+
+						res.body.messages.forEach((msg: IMessage) => {
+							expect(msg).to.not.have.property('_hidden');
+						});
+					});
+			});
 		});
 
 		describe('Additional Visibility Tests', () => {
