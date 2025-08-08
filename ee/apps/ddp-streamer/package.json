@@ -8,6 +8,7 @@
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"lint": "eslint src",
+		"format": "prettier --check .",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"keywords": [

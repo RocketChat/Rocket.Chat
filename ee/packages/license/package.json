@@ -9,6 +9,7 @@
 		"@types/jest": "~30.0.0",
 		"@types/ws": "^8.5.13",
 		"eslint": "~8.45.0",
+		"prettier": "~3.6.2",
 		"jest": "~30.0.5",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.8.3"
@@ -18,6 +19,7 @@
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"format": "prettier --check .",
 		"test": "jest",
 		"testunit": "jest"
 	},

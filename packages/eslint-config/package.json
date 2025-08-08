@@ -16,7 +16,8 @@
 	},
 	"scripts": {
 		"lint": "eslint --ext .js .",
-		"lint:fix": "eslint --ext .js . --fix"
+		"lint:fix": "eslint --ext .js . --fix",
+		"format": "prettier --check ."
 	},
 	"main": "./standard/index.js",
 	"files": [

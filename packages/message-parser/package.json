@@ -43,6 +43,7 @@
     ".:build:clean": "rimraf dist",
     ".:build:bundle": "webpack-cli",
     "lint": "eslint .",
+    "format": "prettier --check .",
     "test": "jest",
     "testunit": "jest",
     "docs": "typedoc"

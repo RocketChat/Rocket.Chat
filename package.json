@@ -13,6 +13,7 @@
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
+		"format": "turbo run format",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"fuselage": "./fuselage.sh",
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"

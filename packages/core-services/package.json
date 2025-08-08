@@ -21,6 +21,7 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"format": "prettier --check .",
 		"testunit": "jest",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"build": "rm -rf dist && tsc"

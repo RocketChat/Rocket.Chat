@@ -5,7 +5,8 @@
 	"scripts": {
 		"clean": "rm -rf ./dist",
 		"build": "tsc",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"format": "prettier --check ."
 	},
 	"files": [
 		"/dist",

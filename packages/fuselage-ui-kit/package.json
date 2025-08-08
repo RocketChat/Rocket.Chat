@@ -31,6 +31,7 @@
 		".:build:cjs": "tsc -p tsconfig.cjs.json",
 		"test": "jest",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"format": "prettier --check .",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit",
 		"docs": "cross-env NODE_ENV=production storybook build -o ../../static/fuselage-ui-kit",

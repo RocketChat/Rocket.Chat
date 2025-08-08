@@ -18,6 +18,7 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"format": "prettier --check .",
 		"test": "echo \"no tests\" && exit 1",
 		".:build:prepare": "ts-patch install && typia patch",
 		".:build:clean": "rimraf dist",

@@ -25,6 +25,9 @@
 			"dependsOn": ["build"],
 			"outputs": []
 		},
+		"format": {
+			"outputs": []
+		},
 		"translation-check": {
 			"outputs": []
 		},

@@ -13,6 +13,7 @@
 		".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
 		"lint": "yarn .:lint:eslint && yarn .:lint:deno",
 		"fix-lint": "yarn .:eslint:fix && yarn .:deno-fmt:fix",
+		"format": "prettier --check .",
 		".:eslint:fix": "eslint . --fix",
 		".:deno-fmt:fix": "cd deno-runtime && deno fmt",
 		"build": "run-s .:build:clean .:build:default .:build:deno-cache",

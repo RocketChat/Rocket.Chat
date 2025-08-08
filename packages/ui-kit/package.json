@@ -31,6 +31,7 @@
 		".:build:esm": "tsc -p tsconfig.esm.json",
 		".:build:cjs": "tsc -p tsconfig.cjs.json",
 		"typecheck": "tsc --noEmit",
+		"format": "prettier --check .",
 		"lint": "eslint . --ext .ts,.tsx",
 		"test": "jest"
 	},

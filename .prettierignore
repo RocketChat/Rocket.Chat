@@ -1,0 +1,3 @@
+apps/meteor/.meteor
+apps/meteor/public
+**/.deno-cache

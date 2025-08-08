@@ -6938,6 +6938,7 @@ __metadata:
   resolution: "@rocket.chat/account-utils@workspace:packages/account-utils"
   dependencies:
     eslint: "npm:~8.45.0"
+    prettier: "npm:~3.6.2"
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft

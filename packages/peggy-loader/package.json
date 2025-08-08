@@ -32,7 +32,8 @@
     ".:build:clean": "rimraf dist",
     ".:build:esm": "tsc -p tsconfig.json",
     ".:build:cjs": "tsc -p tsconfig.cjs.json",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "format": "prettier --check ."
   },
   "bugs": {
     "url": "https://github.com/RocketChat/fuselage/issues"

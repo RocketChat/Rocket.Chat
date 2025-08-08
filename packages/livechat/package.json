@@ -19,6 +19,7 @@
 		"start": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-dev-server --mode development",
 		"lint": "yarn run eslint && yarn run stylelint",
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"format": "prettier --check .",
 		"stylelint": "stylelint 'src/**/*.scss'",
 		"storybook": "storybook dev -p 9001 -c .storybook",
 		"build-storybook": "storybook build",

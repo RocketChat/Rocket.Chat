@@ -12,6 +12,7 @@
 		"typecheck": "tsc --noEmit",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
+		"format": "prettier --check .",
 		"test": "jest"
 	},
 	"devDependencies": {

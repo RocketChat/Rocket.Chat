@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint src"
+		"lint": "eslint src",
+		"format": "prettier --check ."
 	},
 	"main": "dist/index.js",
 	"devDependencies": {

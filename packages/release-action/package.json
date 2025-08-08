@@ -5,7 +5,8 @@
 	"scripts": {
 		"build": "tsc",
 		"lint": "eslint src",
-		"lint:fix": "eslint --fix src"
+		"lint:fix": "eslint --fix src",
+		"format": "prettier --check ."
 	},
 	"main": "dist/index.js",
 	"packageManager": "yarn@4.9.2",

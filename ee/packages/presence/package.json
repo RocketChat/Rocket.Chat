@@ -18,6 +18,7 @@
 	"scripts": {
 		"lint": "eslint src",
 		"lint:fix": "eslint src --fix",
+		"format": "prettier --check .",
 		"test": "jest",
 		"build": "tsc",
 		"testunit": "jest",

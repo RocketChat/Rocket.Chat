@@ -17,6 +17,7 @@
 		".:build:cjs": "tsc -p tsconfig.cjs.json",
 		"lint": "eslint --ext .mjs,.js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .mjs,.js,.jsx,.ts,.tsx . --fix",
+		"format": "prettier --check .",
 		"test": "jest",
 		"testunit": "jest"
 	},
