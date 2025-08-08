@@ -16,7 +16,7 @@ export const getSelectionRange = (input: HTMLDivElement): { selectionStart: numb
 				const tag = node.nodeName.toLowerCase();
 
 				// Skip inline tags that don't cause linebreaks
-				if (['b', 'i', 'u', 'span', 'strong', 'em', 'small', 'abbr', 'sub', 'sup', 'mark'].includes(tag) && node !== input) {
+				if (['b', 'i', 'u', 'span', 'strong', 'em', 'small', 'abbr', 'sub', 'sup', 'mark', 'code', 'del'].includes(tag) && node !== input) {
 					return NodeFilter.FILTER_SKIP;
 				}
 
@@ -116,7 +116,8 @@ export const setSelectionRange = (input: HTMLDivElement, selectionStart: number,
 		} else if (node.nodeType === Node.ELEMENT_NODE) {
 			const tag = (node as HTMLElement).tagName.toLowerCase();
 
-			const isInline = ['b', 'i', 'u', 'span', 'strong', 'em', 'small', 'abbr', 'sub', 'sup', 'mark'].includes(tag) && node !== input;
+			const isInline =
+				['b', 'i', 'u', 'span', 'strong', 'em', 'small', 'abbr', 'sub', 'sup', 'mark', 'code', 'del'].includes(tag) && node !== input;
 			const isBr = tag === 'br';
 
 			// Check for <div><br></div> to count as one offset unit
