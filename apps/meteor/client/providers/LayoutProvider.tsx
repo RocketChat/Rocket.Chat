@@ -33,14 +33,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const isTablet = !breakpoints.includes('lg');
 
 	const shouldToggle = enhancedNavigationEnabled ? isTablet || isMobile : isMobile;
-
-	const shouldDisplaySidePanel = useMemo(() => {
-		if (!isTablet) {
-			return true;
-		}
-
-		return displaySidePanel;
-	}, [displaySidePanel, isTablet]);
+	const shouldDisplaySidePanel = !isTablet || displaySidePanel;
 
 	useEffect(() => {
 		setIsCollapsed(shouldToggle);
