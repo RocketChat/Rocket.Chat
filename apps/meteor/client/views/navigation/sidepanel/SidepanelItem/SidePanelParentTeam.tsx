@@ -6,7 +6,7 @@ import SidePanelTagIcon from './SidePanelTagIcon';
 import { useParentTeamData } from './useParentTeamData';
 
 const SidePanelParentTeam = ({ room }: { room: SubscriptionWithRoom }) => {
-	const { redirectToMainRoom, teamName, shouldDisplayTeam, teamInfoError, isTeamPublic } = useParentTeamData(room);
+	const { redirectToMainRoom, teamName, shouldDisplayTeam, teamInfoError, isTeamPublic } = useParentTeamData(room.teamId);
 
 	const buttonProps = useButtonPattern((e) => {
 		e.preventDefault();
