@@ -8,6 +8,7 @@ import { UserMediaCallAgent } from './Agent';
 import { UserNewCallAgent } from './NewCallAgent';
 import { logger } from '../../logger';
 import type { IMediaCallAgentFactory } from '../definition/IMediaCallAgent';
+import type { AgentContractState } from '../definition/common';
 
 // Overriding the interface to use the same factory for the AgentManager class and the processSignal function
 export interface IUserAgentFactory extends IMediaCallAgentFactory {
@@ -48,10 +49,13 @@ export class UserAgentFactory {
 				}
 
 				const { [role]: callActor } = call;
-				const contractSigned = Boolean(callActor.contractId);
+				let contractState: AgentContractState = 'proposed';
+				if (callActor.contractId) {
+					contractState = callActor.contractId === contractId ? 'signed' : 'ignored';
+				}
 
 				// If the role is already signed with a different contract, do not create the agent
-				if (contractSigned && callActor.contractId !== contractId) {
+				if (contractState === 'ignored') {
 					logger.debug({
 						msg: 'signed by another contract',
 						method: 'UserAgentFactory.getAgentFactoryForUser',
@@ -62,7 +66,7 @@ export class UserAgentFactory {
 					return null;
 				}
 
-				return new UserMediaCallAgent(userData, { role, callId, contractId, contractSigned });
+				return new UserMediaCallAgent(userData, { role, callId, contractId, contractState });
 			},
 		};
 	}

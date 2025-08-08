@@ -1,31 +1,36 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { ClientMediaSignal, CallRole } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, CallRole, CallNotification } from '@rocket.chat/media-signaling';
 
 import { UserBasicAgent, type MinimalUserData } from './BasicAgent';
 import { UserAgentSignalProcessor } from './SignalProcessor';
 import { logger } from '../../logger';
 import { agentManager } from '../Manager';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
+import type { AgentContractState } from '../definition/common';
 
 export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implements IMediaCallAgent {
 	public readonly callId: string;
 
 	public readonly contractId: string;
 
-	protected _signed: boolean;
+	protected contractState: AgentContractState;
 
 	protected signalProcessor: UserAgentSignalProcessor;
 
 	public get signed(): boolean {
-		return this._signed;
+		return this.contractState === 'signed';
 	}
 
-	constructor(user: MinimalUserData, data: { role: CallRole; callId: string; contractId: string; contractSigned?: boolean }) {
-		const { callId, contractSigned, ...params } = data;
+	public get ignored(): boolean {
+		return this.contractState === 'ignored';
+	}
+
+	constructor(user: MinimalUserData, data: { role: CallRole; callId: string; contractId: string; contractState?: AgentContractState }) {
+		const { callId, contractState, ...params } = data;
 		super(user, params);
 		this.contractId = data.contractId;
 		this.callId = callId;
-		this._signed = contractSigned ?? false;
+		this.contractState = (this.contractId && contractState) || 'proposed';
 
 		this.signalProcessor = new UserAgentSignalProcessor(this);
 	}
@@ -52,14 +57,33 @@ export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implemen
 	}
 
 	public async requestOffer(params: { iceRestart?: boolean }): Promise<void> {
-		logger.debug({ msg: 'UserMediaCallAgent.requestOffer', params });
+		logger.debug({ msg: 'UserMediaCallAgent.requestOffer', params, actor: this.actor, contractState: this.contractState });
 
-		// #ToDo: this function may be called multiple times for the same call until an offer is provided; look into how to handle that
+		// #ToDo: this function may be called multiple times for the same call until an offer is provided; maybe consider the channel state before sending the offer
 		await this.sendSignal({
 			callId: this.callId,
 			toContractId: this.contractId,
 			type: 'request-offer',
 			...params,
 		});
+	}
+
+	public async notify(callId: string, notification: CallNotification, signedContractId?: string): Promise<void> {
+		// If we have been ignored, we should not be notifying anyone
+		if (this.ignored) {
+			return;
+		}
+
+		// If we know we're signed, inject our contractId into all notifications we send to the client
+		const signedId = signedContractId || (this.signed && this.contractId) || undefined;
+		return super.notify(callId, notification, signedId);
+	}
+
+	public async sign(): Promise<void> {
+		if (this.contractState !== 'proposed') {
+			throw new Error(`Can't sign a contract that is not pending.`);
+		}
+
+		this.contractState = 'signed';
 	}
 }

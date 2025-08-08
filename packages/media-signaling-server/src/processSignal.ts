@@ -19,6 +19,21 @@ export async function processSignal(signal: ClientMediaSignal, uid: IUser['_id']
 			throw new Error('invalid-call');
 		}
 
+		const isCaller = call.caller.type === 'user' && call.caller.id === uid;
+		const isCallee = call.callee.type === 'user' && call.callee.id === uid;
+		if (!isCaller && !isCallee) {
+			logger.error({ msg: 'actor is not part of the call', method: 'processSignal', signal });
+			throw new Error('invalid-call');
+		}
+
+		// Ignore signals from different sessions
+		if (isCaller && call.caller.contractId && call.caller.contractId !== signal.contractId) {
+			return;
+		}
+		if (isCallee && call.callee.contractId && call.callee.contractId !== signal.contractId) {
+			return;
+		}
+
 		const factory = await UserAgentFactory.getAgentFactoryForUser(uid, signal.contractId);
 		const agent = factory?.getCallAgent(call);
 		if (!agent) {

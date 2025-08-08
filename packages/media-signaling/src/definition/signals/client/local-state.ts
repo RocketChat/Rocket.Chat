@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
 import type { CallState } from '../../call';
-import type { ClientState } from '../../client';
+import type { ClientContractState, ClientState } from '../../client';
 
 // Client is sending their local call state
 export type ClientMediaSignalLocalState = {
@@ -12,6 +12,8 @@ export type ClientMediaSignalLocalState = {
 	callState: CallState;
 	clientState: ClientState;
 	serviceStates?: Record<string, string>;
+	ignored?: boolean;
+	contractState: ClientContractState;
 };
 
 export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignalLocalState> = {
@@ -47,7 +49,15 @@ export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignal
 			nullable: true,
 			required: [],
 		},
+		ignored: {
+			type: 'boolean',
+			nullable: true,
+		},
+		contractState: {
+			type: 'string',
+			nullable: false,
+		},
 	},
 	additionalProperties: false,
-	required: ['callId', 'contractId', 'type', 'callState', 'clientState'],
+	required: ['callId', 'contractId', 'type', 'callState', 'clientState', 'contractState'],
 };
