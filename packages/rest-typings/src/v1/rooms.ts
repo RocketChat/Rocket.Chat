@@ -796,20 +796,6 @@ export type RoomsEndpoints = {
 		POST: (params: { roomId: string; notifications: Notifications }) => void;
 	};
 
-	'/v1/rooms.favorite': {
-		POST: (
-			params:
-				| {
-						roomId: string;
-						favorite: boolean;
-				  }
-				| {
-						roomName: string;
-						favorite: boolean;
-				  },
-		) => void;
-	};
-
 	'/v1/rooms.nameExists': {
 		GET: (params: { roomName: string }) => {
 			exists: boolean;
