@@ -1,4 +1,4 @@
-import { usePermission, useSetting, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
@@ -33,7 +33,7 @@ const SidePanelQueue = () => {
 			currentTab={SIDE_PANEL_GROUPS.QUEUE}
 			unreadOnly={unreadOnly}
 			toggleUnreadOnly={toggleUnreadOnly}
-			rooms={rooms as SubscriptionWithRoom[]}
+			rooms={rooms}
 		/>
 	);
 };

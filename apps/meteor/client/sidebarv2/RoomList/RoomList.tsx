@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -62,8 +61,7 @@ const RoomList = () => {
 							// Grouped virtuoso index increases linearly, but we're indexing the list by group.
 							// Either we go back to providing a single list, or we do this.
 							const correctedIndex = index - groupCounts.slice(0, groupIndex).reduce((acc, count) => acc + count, 0);
-							// TODO: ILivechatInquiryRecord
-							return rooms[correctedIndex] && <RoomListRow data={itemData} item={rooms[correctedIndex] as SubscriptionWithRoom} />;
+							return <RoomListRow data={itemData} item={rooms[correctedIndex]} />;
 						},
 					})}
 					components={{ Header: RoomsListFilters, Item: RoomListRowWrapper, List: RoomListWrapper }}

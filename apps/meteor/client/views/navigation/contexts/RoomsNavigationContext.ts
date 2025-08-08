@@ -79,7 +79,7 @@ export const ALL_GROUPS = {
 	...SIDE_BAR_GROUPS,
 } as const;
 
-export const SidebarOrder = [SIDE_BAR_GROUPS.TEAMS, SIDE_BAR_GROUPS.CHANNELS, SIDE_BAR_GROUPS.DIRECT_MESSAGES];
+export const defaultSidebarOrder = [SIDE_BAR_GROUPS.TEAMS, SIDE_BAR_GROUPS.CHANNELS, SIDE_BAR_GROUPS.DIRECT_MESSAGES];
 
 export type SidePanelFiltersKeys = (typeof SIDE_PANEL_GROUPS)[keyof typeof SIDE_PANEL_GROUPS];
 export type SidePanelFiltersUnreadKeys = `${SidePanelFiltersKeys}_unread`;
@@ -140,29 +140,33 @@ export const getEmptyUnreadInfo = (): GroupedUnreadInfoData => ({
 });
 
 // Hooks
-type RoomListGroup = {
-	group: AllGroupsKeys;
-	rooms: Array<SubscriptionWithRoom | ILivechatInquiryRecord>;
+type RoomListGroup<T extends AllGroupsKeys> = {
+	group: T;
+	rooms: Array<T extends SideBarFiltersKeys ? SubscriptionWithRoom : ILivechatInquiryRecord>;
 	unreadInfo: GroupedUnreadInfoData;
 };
 
-export const useSideBarRoomsList = (): { roomListGroups: RoomListGroup[]; groupCounts: number[]; totalCount: number } & ReturnType<
-	typeof useCollapsedGroups
-> => {
+export const useSideBarRoomsList = (): {
+	roomListGroups: RoomListGroup<SideBarFiltersKeys>[];
+	groupCounts: number[];
+	totalCount: number;
+} & ReturnType<typeof useCollapsedGroups> => {
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groups, unreadGroupData } = useRoomsListContext();
 
-	const roomListGroups = SidebarOrder.map((group) => {
-		const roomSet = groups.get(group);
-		const rooms = roomSet ? Array.from(roomSet) : [];
-		const unreadInfo = unreadGroupData.get(group) || getEmptyUnreadInfo();
+	const roomListGroups = defaultSidebarOrder
+		.map((group) => {
+			const roomSet = (groups as Map<SideBarFiltersKeys, Set<SubscriptionWithRoom>>).get(group);
+			const rooms = roomSet ? Array.from(roomSet) : [];
+			const unreadInfo = unreadGroupData.get(group) || getEmptyUnreadInfo();
 
-		if (!rooms.length) {
-			return undefined;
-		}
+			if (!rooms.length) {
+				return undefined;
+			}
 
-		return { group, rooms, unreadInfo };
-	}).filter(isTruthy);
+			return { group, rooms, unreadInfo };
+		})
+		.filter(isTruthy);
 
 	const groupCounts = roomListGroups.map((group) => {
 		if (collapsedGroups.includes(group.group)) {

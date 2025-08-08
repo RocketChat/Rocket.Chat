@@ -1,4 +1,4 @@
-import { useSetting, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -27,7 +27,7 @@ const SidePanelDiscussions = () => {
 			currentTab={SIDE_PANEL_GROUPS.DISCUSSIONS}
 			unreadOnly={unreadOnly}
 			toggleUnreadOnly={toggleUnreadOnly}
-			rooms={rooms as SubscriptionWithRoom[]}
+			rooms={rooms}
 		/>
 	);
 };
