@@ -9,31 +9,46 @@ import {
 	SidebarV2ItemTimestamp,
 	SidebarV2ItemTitle,
 } from '@rocket.chat/fuselage';
-import { useLayout, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useLayout } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
 import { memo, useState } from 'react';
 
-import SidePanelParent from './SidePanelParent';
 import { useShortTimeAgo } from '../../../../hooks/useTimeAgo';
-import { useItemData } from '../hooks/useItemData';
 
-type SidepanelItemProps = {
-	room: SubscriptionWithRoom;
-	openedRoom?: string;
-	isRoomFilter?: boolean;
+type SidePanelItemProps = {
+	href: string;
+	selected: boolean;
+	title: string;
+	avatar: ReactNode;
+	icon: ReactNode;
+	unread: boolean;
+	time?: Date;
+	subtitle: ReactElement | null;
+	parentRoom?: ReactNode;
+	badges?: ReactElement;
+	menu?: ReactElement;
 };
 
-const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) => {
-	const { href, selected, avatar, unread, icon, title, time, badges, menu, subtitle, ...props } = useItemData(room, {
-		openedRoom,
-	});
+const SidePanelItem = ({
+	href,
+	selected,
+	title,
+	avatar,
+	icon,
+	unread,
+	time,
+	subtitle,
+	parentRoom,
+	badges,
+	menu,
+	...props
+}: SidePanelItemProps) => {
 	const { sidebar } = useLayout();
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const handleFocus = () => setMenuVisibility(true);
 	const handlePointerEnter = () => setMenuVisibility(true);
-
-	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
 
 	return (
 		<SidebarV2Item
@@ -49,14 +64,14 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
 					{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
-					{icon && icon}
+					{icon}
 					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
 					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
-					{!isRoomFilter && parentRoomId && <SidePanelParent room={room} />}
-					{badges && badges}
+					{parentRoom}
+					{badges}
 					{menu && (
 						<SidebarV2ItemMenu>
 							{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
@@ -68,4 +83,4 @@ const SidepanelItem = ({ room, openedRoom, isRoomFilter }: SidepanelItemProps) =
 	);
 };
 
-export default memo(SidepanelItem);
+export default memo(SidePanelItem);

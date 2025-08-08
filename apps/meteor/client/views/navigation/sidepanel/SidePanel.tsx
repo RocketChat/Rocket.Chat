@@ -1,3 +1,4 @@
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { Box, IconButton, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useLayout, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo, useId, useRef } from 'react';
@@ -5,20 +6,20 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import SidePanelNoResults from './SidePanelNoResults';
-import RoomSidepanelItem from './SidepanelItem';
+import RoomSidePanelItem from './SidepanelItem/RoomSidePanelItem';
 import SidepanelListWrapper from './SidepanelListWrapper';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { usePreventDefault } from '../../../sidebarv2/hooks/usePreventDefault';
 import { useIsRoomFilter, type AllGroupsKeys } from '../contexts/RoomsNavigationContext';
+import InquireSidePanelItem from './omnichannel/InquireSidePanelItem';
 
 type SidePanelProps = {
 	title: string;
 	currentTab: AllGroupsKeys;
 	unreadOnly: boolean;
 	toggleUnreadOnly: () => void;
-	// TODO: This can also be of type ILivechatInquiryRecord[]
-	rooms: SubscriptionWithRoom[];
+	rooms: (SubscriptionWithRoom | ILivechatInquiryRecord)[];
 };
 
 const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: SidePanelProps) => {
@@ -57,7 +58,13 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: S
 						totalCount={rooms.length}
 						data={rooms}
 						components={{ Item: SidepanelListItem, List: SidepanelListWrapper }}
-						itemContent={(_, data) => <RoomSidepanelItem openedRoom={openedRoom} room={data} isRoomFilter={isRoomFilter} />}
+						itemContent={(_, room) => {
+							if ('status' in room) {
+								return <InquireSidePanelItem openedRoom={openedRoom} room={room} />;
+							}
+
+							return <RoomSidePanelItem openedRoom={openedRoom} room={room} isRoomFilter={isRoomFilter} />;
+						}}
 					/>
 				</VirtualizedScrollbars>
 			</Box>

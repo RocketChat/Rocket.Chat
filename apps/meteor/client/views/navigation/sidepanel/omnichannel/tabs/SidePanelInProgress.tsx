@@ -1,4 +1,3 @@
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -20,7 +19,7 @@ const SidePanelInProgress = () => {
 			currentTab={SIDE_PANEL_GROUPS.IN_PROGRESS}
 			unreadOnly={unreadOnly}
 			toggleUnreadOnly={toggleUnreadOnly}
-			rooms={rooms as SubscriptionWithRoom[]}
+			rooms={rooms}
 		/>
 	);
 };

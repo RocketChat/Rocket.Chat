@@ -5,7 +5,6 @@ import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-conte
 import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
-// import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 
 import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquiries';
@@ -28,7 +27,14 @@ export type useRoomsGroupsReturnType = {
 	};
 };
 
-const updateGroupUnreadInfo = (room: SubscriptionWithRoom, current: GroupedUnreadInfoData): GroupedUnreadInfoData => {
+const updateGroupUnreadInfo = (
+	room: SubscriptionWithRoom | ILivechatInquiryRecord,
+	current: GroupedUnreadInfoData,
+): GroupedUnreadInfoData => {
+	if ('status' in room) {
+		return getEmptyUnreadInfo();
+	}
+
 	return {
 		...current,
 		userMentions: current.userMentions + (room.userMentions || 0),
@@ -50,17 +56,12 @@ type UnreadGroupDataMap = Map<AllGroupsKeys, GroupedUnreadInfoData>;
 
 const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 	const showOmnichannel = useOmnichannelEnabled();
-	// const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
-	// const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
 	const rooms = useUserSubscriptions(query, sortOptions);
 
 	const inquiries = useQueuedInquiries();
-
-	// const incomingCalls = useVideoConfIncomingCalls();
-
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
 	return useDebouncedValue(
@@ -85,8 +86,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					getGroupSet(`${key}_unread`).add(room);
 
 					const currentUnreadData = unreadGroupData.get(key) || getEmptyUnreadInfo();
-					// TODO: Fix this type casting. We have to handle ILivechatInquiryRecord as well
-					const unreadInfo = updateGroupUnreadInfo(room as SubscriptionWithRoom, currentUnreadData);
+					const unreadInfo = updateGroupUnreadInfo(room, currentUnreadData);
 					unreadGroupData.set(key, unreadInfo);
 				}
 			};

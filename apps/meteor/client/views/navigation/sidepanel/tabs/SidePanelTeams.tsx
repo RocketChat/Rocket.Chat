@@ -1,5 +1,4 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { SIDE_BAR_GROUPS, useUnreadOnlyToggle } from '../../contexts/RoomsNavigationContext';
 import SidePanel from '../SidePanel';
@@ -15,7 +14,7 @@ const SidePanelTeams = ({ parentRid, subscription }: { parentRid: string; subscr
 			currentTab={SIDE_BAR_GROUPS.TEAMS}
 			unreadOnly={unreadOnly}
 			toggleUnreadOnly={toggleUnreadOnly}
-			rooms={rooms as SubscriptionWithRoom[]}
+			rooms={rooms}
 		/>
 	);
 };
