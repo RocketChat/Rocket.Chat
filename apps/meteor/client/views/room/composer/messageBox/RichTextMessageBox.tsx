@@ -53,7 +53,7 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 // The second boolean will be used to show/hide the placeholder
 type TypingState = {
 	isTyping: boolean;
-	hidePlaceholder: boolean;
+	hideplaceholder: boolean;
 };
 
 const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): TypingState => {
@@ -73,7 +73,7 @@ const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): TypingState => {
 	return {
 		isTyping: Boolean(target.innerText.trim()),
 		// Show placeholder only if there's exactly one <br> and nothing else
-		hidePlaceholder: Boolean(childNodes.length !== 1 || childNodes[0].nodeName !== 'BR'),
+		hideplaceholder: Boolean(childNodes.length !== 1 || childNodes[0].nodeName !== 'BR'),
 	};
 };
 
@@ -141,8 +141,8 @@ const RichTextMessageBox = ({
 	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
-	const [stateTyping, setTyping] = useReducer(reducer, { isTyping: false, hidePlaceholder: false });
-	const { isTyping: typing, hidePlaceholder } = stateTyping;
+	const [stateTyping, setTyping] = useReducer(reducer, { isTyping: false, hideplaceholder: false });
+	const { isTyping: typing, hideplaceholder } = stateTyping;
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -500,7 +500,7 @@ const RichTextMessageBox = ({
 					onInput={setTyping}
 					/* style={textAreaStyle} */
 					placeholder={composerPlaceholder}
-					hidePlaceholder={hidePlaceholder}
+					hideplaceholder={hideplaceholder}
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 					onBlur={setLastCursorPosition}

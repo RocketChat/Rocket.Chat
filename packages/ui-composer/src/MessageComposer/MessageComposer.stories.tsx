@@ -58,7 +58,7 @@ export const RichTextComposer: StoryFn<typeof RichTextComposerInput> = (args) =>
 			Experiment: Real Time Composer
 		</MessageComposerHint>
 		<MessageComposer>
-			<RichTextComposerInput placeholder={args.placeholder || 'Placeholder text'} hidePlaceholder={args.hidePlaceholder} />
+			<RichTextComposerInput placeholder={args.placeholder || 'Placeholder text'} hideplaceholder={args.hideplaceholder} />
 			<MessageComposerToolbar>
 				<MessageToolbarActions />
 				<MessageComposerToolbarSubmit>

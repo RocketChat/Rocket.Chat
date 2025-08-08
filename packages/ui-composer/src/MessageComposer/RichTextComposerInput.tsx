@@ -14,12 +14,16 @@ const RichTextComposerInputStyle = css`
 
 type RichTextComposerInputProps = ComponentProps<typeof Box> & {
 	placeholder?: string;
-	hidePlaceholder?: boolean;
+	hideplaceholder?: boolean;
 };
 
 const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputProps>(function RichTextComposerInput(props, ref) {
 	// The whitespace pre-wrap style is passed into the div contenteditable as without it, additional whitespace gets collapsed
 	// This would then interfere with .innerText a LOT and should now be fixed
+
+	// Supress warnings related to hideplaceholder being invalid DOM prop
+	const { placeholder, hideplaceholder, ...rest } = props;
+
 	return (
 		<Box is='div' width='full'>
 			<Box
@@ -37,11 +41,11 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				style={{
 					position: 'absolute',
 					pointerEvents: 'none',
-					opacity: props.hidePlaceholder ? 0 : 1,
+					opacity: hideplaceholder ? 0 : 1,
 				}}
-				{...props}
+				{...rest}
 			>
-				{props.placeholder}
+				{placeholder}
 			</Box>
 			<Box
 				className={[RichTextComposerInputStyle, 'rc-message-box__divcontenteditable js-input-message']}
@@ -64,7 +68,7 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 					cursor: 'text',
 					overflowY: 'scroll',
 				}}
-				{...props}
+				{...rest}
 			/>
 		</Box>
 	);
