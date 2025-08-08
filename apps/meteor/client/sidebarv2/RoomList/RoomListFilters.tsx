@@ -5,14 +5,9 @@ import type { Components } from 'react-virtuoso';
 import OmnichannelFilters from './OmnichannelFilters';
 import TeamCollabFilters from './TeamCollabFilters';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
-import { SIDE_PANEL_GROUPS } from '../../views/navigation/contexts/RoomsNavigationContext';
 
 const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrapper(_, ref) {
 	const showOmnichannel = useOmnichannelEnabled();
-
-	if (Object.values(SIDE_PANEL_GROUPS).length === 0) {
-		return null;
-	}
 
 	return (
 		<Box ref={ref} display='flex' flexDirection='column'>
