@@ -2,7 +2,7 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../../../client/lib/customOAuth/CustomOAuth';
+import { CustomOAuth } from '../../../../lib/customOAuth/CustomOAuth';
 
 const config = {
 	serverURL: '',
@@ -19,7 +19,7 @@ const config = {
 
 const Dolphin = CustomOAuth.configureOAuthService('dolphin', config);
 
-export const useDolphin = () => {
+export const useDolphinOAuth = () => {
 	const enabled = useSetting('Accounts_OAuth_Dolphin');
 	const url = useSetting('Accounts_OAuth_Dolphin_URL') as string;
 

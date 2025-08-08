@@ -2,7 +2,7 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../../../client/lib/customOAuth/CustomOAuth';
+import { CustomOAuth } from '../../../../lib/customOAuth/CustomOAuth';
 
 const config = {
 	serverURL: 'https://gitlab.com',
@@ -18,7 +18,7 @@ const config = {
 
 const Gitlab = CustomOAuth.configureOAuthService('gitlab', config);
 
-export const useGitLabAuth = () => {
+export const useGitLabOAuth = () => {
 	const gitlabApiUrl = useSetting('API_Gitlab_URL') as string;
 	const gitlabIdentiry = useSetting('Accounts_OAuth_Gitlab_identity_path') as string;
 	const gitlabMergeUsers = useSetting('Accounts_OAuth_Gitlab_merge_users', false);

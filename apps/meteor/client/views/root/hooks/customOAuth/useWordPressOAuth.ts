@@ -2,7 +2,7 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../../lib/customOAuth/CustomOAuth';
+import { CustomOAuth } from '../../../../lib/customOAuth/CustomOAuth';
 
 const configDefault = {
 	serverURL: '',
@@ -22,7 +22,7 @@ const configureServerType = (
 	tokenPath?: string,
 	authorizePath?: string,
 	scope?: string,
-) => {
+): OauthConfig => {
 	switch (serverType) {
 		case 'custom': {
 			return {

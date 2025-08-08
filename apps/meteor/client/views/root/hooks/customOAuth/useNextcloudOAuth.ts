@@ -2,7 +2,7 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../../client/lib/customOAuth/CustomOAuth';
+import { CustomOAuth } from '../../../../lib/customOAuth/CustomOAuth';
 
 const config = {
 	serverURL: '',
@@ -19,7 +19,7 @@ const config = {
 
 const Nextcloud = CustomOAuth.configureOAuthService('nextcloud', config);
 
-export const useNextcloud = (): void => {
+export const useNextcloudOAuth = (): void => {
 	const nextcloudURL = useSetting('Accounts_OAuth_Nextcloud_URL') as string;
 
 	useEffect(() => {

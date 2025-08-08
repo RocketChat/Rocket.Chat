@@ -2,7 +2,7 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../../../client/lib/customOAuth/CustomOAuth';
+import { CustomOAuth } from '../../../../lib/customOAuth/CustomOAuth';
 
 const config = {
 	serverURL: '',
@@ -22,7 +22,7 @@ const config = {
 
 const Tokenpass = CustomOAuth.configureOAuthService('tokenpass', config);
 
-export const useTokenPassAuth = () => {
+export const useTokenpassOAuth = () => {
 	const setting = useSetting('API_Tokenpass_URL') as string | undefined;
 
 	useEffect(() => {

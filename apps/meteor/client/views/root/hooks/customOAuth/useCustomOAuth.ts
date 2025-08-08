@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../lib/customOAuth/CustomOAuth';
-import { loginServices } from '../../lib/loginServices';
+import { CustomOAuth } from '../../../../lib/customOAuth/CustomOAuth';
+import { loginServices } from '../../../../lib/loginServices';
 
 export const useCustomOAuth = () => {
 	useEffect(
