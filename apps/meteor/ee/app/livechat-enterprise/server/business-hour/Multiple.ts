@@ -69,7 +69,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			},
 		});
 		for (const businessHour of businessHours) {
-			void this.openBusinessHour(businessHour);
+			void this.openBusinessHour(businessHour).catch(bhLogger.error);
 		}
 	}
 
