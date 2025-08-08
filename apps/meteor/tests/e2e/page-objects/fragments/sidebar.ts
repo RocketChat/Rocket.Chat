@@ -9,7 +9,7 @@ export class Sidebar {
 
 	// New navigation locators
 	get sidebar(): Locator {
-		return this.page.getByRole('navigation', { name: 'sidebar' });
+		return this.page.getByRole('navigation', { name: 'Sidebar' });
 	}
 
 	get teamCollabFilters(): Locator {
