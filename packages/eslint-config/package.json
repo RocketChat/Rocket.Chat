@@ -3,7 +3,7 @@
 	"version": "0.7.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
 	"dependencies": {
-		"@babel/core": "^7.26.0",
+		"@babel/core": "~7.26.10",
 		"@babel/eslint-parser": "~7.25.9",
 		"@types/eslint": "~8.44.9",
 		"@types/prettier": "^2.7.3",
