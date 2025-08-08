@@ -1,14 +1,10 @@
 import { isOTRAckMessage, isOTRMessage, type IThreadMessage } from '@rocket.chat/core-typings';
 import {
-	Skeleton,
 	ThreadMessage,
 	ThreadMessageRow,
 	ThreadMessageLeftContainer,
-	ThreadMessageIconThread,
 	ThreadMessageContainer,
-	ThreadMessageOrigin,
 	ThreadMessageBody,
-	ThreadMessageUnfollow,
 	CheckBox,
 	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
@@ -17,30 +13,24 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
 import {
 	useIsSelecting,
 	useToggleSelect,
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessageBody';
-import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
-import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import Emoji from '../../Emoji';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
+import { useThreadMessageProps } from './threadPreview/useThreadMessageProps';
 
 type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
 	showUserAvatar: boolean;
-	sequential: boolean;
 } & ComponentProps<typeof ThreadMessage>;
 
-const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
-	const parentMessage = useParentMessage(message.tmid);
-
+const ThreadMessagePreview = ({ message, showUserAvatar, ...props }: ThreadMessagePreviewProps): ReactElement => {
 	const translated = useShowTranslated(message);
 	const { t } = useTranslation();
 
@@ -51,19 +41,10 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const isSelected = useIsSelectedMessage(message._id, isOTRMsg);
 	useCountSelected();
 
-	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
-	const messageBody = useMessageBody(parentMessage.data);
-
-	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
-
 	const goToThread = useGoToThread();
 
 	const handleThreadClick = () => {
 		if (!isSelecting) {
-			if (!sequential) {
-				return parentMessage.isSuccess && goToThread({ rid: message.rid, tmid: message.tmid, msg: parentMessage.data?._id });
-			}
-
 			return goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id });
 		}
 
@@ -74,46 +55,10 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 		return toggleSelected();
 	};
 
+	const threadMessageProps = useThreadMessageProps(handleThreadClick, isOTRMsg, isSelected);
+
 	return (
-		<ThreadMessage
-			role='link'
-			aria-roledescription={isOTRMsg ? t('OTR_thread_message_preview') : t('thread_message_preview')}
-			tabIndex={0}
-			onClick={handleThreadClick}
-			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
-			isSelected={isSelected}
-			data-qa-selected={isSelected}
-			{...props}
-		>
-			{!sequential && (
-				<ThreadMessageRow>
-					<ThreadMessageLeftContainer>
-						<ThreadMessageIconThread />
-					</ThreadMessageLeftContainer>
-					<ThreadMessageContainer>
-						<ThreadMessageOrigin system={!!messageType}>
-							{parentMessage.isSuccess && !messageType && (
-								<>
-									{(parentMessage.data as { ignored?: boolean })?.ignored ? (
-										t('Message_Ignored')
-									) : (
-										<ThreadMessagePreviewBody message={{ ...parentMessage.data, ...previewMessage }} />
-									)}
-									{translated && (
-										<>
-											{' '}
-											<MessageStatusIndicatorItem name='language' color='info' title={t('Translated')} />
-										</>
-									)}
-								</>
-							)}
-							{messageType && t(messageType.message, messageType.data ? messageType.data(message) : {})}
-							{parentMessage.isLoading && <Skeleton />}
-						</ThreadMessageOrigin>
-						<ThreadMessageUnfollow />
-					</ThreadMessageContainer>
-				</ThreadMessageRow>
-			)}
+		<ThreadMessage {...threadMessageProps} {...props}>
 			<ThreadMessageRow>
 				<ThreadMessageLeftContainer>
 					{!isSelecting && showUserAvatar && (
