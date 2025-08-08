@@ -1,5 +1,5 @@
+import type { ITeam } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 
@@ -7,9 +7,7 @@ import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 
 type APIErrorResult = { success: boolean; error: string };
 
-export const useParentTeamData = (room: SubscriptionWithRoom) => {
-	const { teamId } = room;
-
+export const useParentTeamData = (teamId?: ITeam['_id']) => {
 	const userId = useUserId();
 
 	if (!teamId) {
