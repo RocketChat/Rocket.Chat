@@ -7,7 +7,6 @@ import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocke
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
-import { isClientMediaSignal } from '@rocket.chat/media-signaling-server';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -310,15 +309,11 @@ export class NotificationsModule {
 			}
 
 			if (e === 'media-calls') {
-				if (!this.userId || !data || typeof data !== 'object') {
+				if (!this.userId || !data || typeof data !== 'string') {
 					return false;
 				}
 
-				if (!isClientMediaSignal(data)) {
-					return false;
-				}
-
-				void MediaCall.processSignal(this.userId, data).catch(() => null);
+				void MediaCall.processSerializedSignal(this.userId, data).catch(() => null);
 
 				// media call signals don't ever need to be broadcasted
 				return false;

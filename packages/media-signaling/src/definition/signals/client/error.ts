@@ -1,3 +1,5 @@
+import type { JSONSchemaType } from 'ajv';
+
 // Client is reporting an error
 export type ClientMediaSignalError = {
 	callId: string;
@@ -7,7 +9,7 @@ export type ClientMediaSignalError = {
 	errorCode: string;
 };
 
-export const clientMediaSignalErrorSchema = {
+export const clientMediaSignalErrorSchema: JSONSchemaType<ClientMediaSignalError> = {
 	type: 'object',
 	properties: {
 		callId: {
@@ -19,6 +21,7 @@ export const clientMediaSignalErrorSchema = {
 			nullable: false,
 		},
 		type: {
+			type: 'string',
 			const: 'error',
 		},
 		errorCode: {
@@ -28,4 +31,4 @@ export const clientMediaSignalErrorSchema = {
 	},
 	additionalProperties: false,
 	required: ['callId', 'contractId', 'type', 'errorCode'],
-} as const;
+};

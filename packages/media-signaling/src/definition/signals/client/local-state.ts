@@ -1,3 +1,5 @@
+import type { JSONSchemaType } from 'ajv';
+
 import type { CallState } from '../../call';
 import type { ClientState } from '../../client';
 
@@ -12,7 +14,7 @@ export type ClientMediaSignalLocalState = {
 	serviceStates?: Record<string, string>;
 };
 
-export const clientMediaSignalLocalStateSchema = {
+export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignalLocalState> = {
 	type: 'object',
 	properties: {
 		callId: {
@@ -24,6 +26,7 @@ export const clientMediaSignalLocalStateSchema = {
 			nullable: false,
 		},
 		type: {
+			type: 'string',
 			const: 'local-state',
 		},
 		callState: {
@@ -42,8 +45,9 @@ export const clientMediaSignalLocalStateSchema = {
 				},
 			},
 			nullable: true,
+			required: [],
 		},
 	},
 	additionalProperties: false,
 	required: ['callId', 'contractId', 'type', 'callState', 'clientState'],
-} as const;
+};

@@ -24,6 +24,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/emitter": "~0.31.25"
+		"@rocket.chat/emitter": "~0.31.25",
+		"ajv": "^8.17.1"
 	}
 }
