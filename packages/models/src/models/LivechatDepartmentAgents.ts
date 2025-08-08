@@ -1,5 +1,5 @@
 import type { AvailableAgentsAggregation, ILivechatDepartmentAgents, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, ILivechatDepartmentAgentsModel } from '@rocket.chat/model-typings';
 import type {
 	Collection,
 	FindCursor,
@@ -15,7 +15,6 @@ import type {
 } from 'mongodb';
 
 import { Users } from '../index';
-import { readSecondaryPreferred } from '../readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgents> implements ILivechatDepartmentAgentsModel {
@@ -88,72 +87,29 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find({ agentId }, options);
 	}
 
+	findAgentsByDepartmentId(departmentId: string): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
+
 	findAgentsByDepartmentId(
 		departmentId: string,
-		options?: FindOptions<ILivechatDepartmentAgents>,
-	): AggregationCursor<{
-		result: (ILivechatDepartmentAgents & { user: { _id: string; username: string; name: string } })[];
-		totalCount: { _id: null; total: number }[];
-	}> {
-		const lookup = {
-			$lookup: {
-				from: 'users',
-				let: {
-					agentId: '$agentId',
-				},
-				pipeline: [
-					{
-						$match: {
-							$expr: {
-								$eq: ['$_id', '$$agentId'],
-							},
-						},
-					},
-					{
-						$project: {
-							_id: 1,
-							username: 1,
-							name: 1,
-						},
-					},
-				],
-				as: 'user',
-			},
-		};
-		const unwind = { $unwind: { path: '$user' } };
+		options: FindOptions<ILivechatDepartmentAgents>,
+	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
-		const sort: Document = { $sort: options?.sort || { username: 1 } };
-		const pagination = [sort];
+	findAgentsByDepartmentId<P extends Document>(
+		departmentId: string,
+		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
+	): FindPaginated<FindCursor<P>>;
 
-		if (options?.skip) {
-			pagination.push({ $skip: options.skip });
+	findAgentsByDepartmentId(
+		departmentId: string,
+		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
+	): FindPaginated<FindCursor<ILivechatDepartmentAgents>> {
+		const query = { departmentId };
+
+		if (options === undefined) {
+			return this.findPaginated(query);
 		}
 
-		if (options?.limit) {
-			pagination.push({ $limit: options.limit });
-		}
-
-		const facet = {
-			$facet: {
-				result: pagination,
-				totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-			},
-		};
-
-		return this.col.aggregate<{
-			result: (ILivechatDepartmentAgents & { user: { _id: string; username: string; name: string } })[];
-			totalCount: { _id: null; total: number }[];
-		}>(
-			[
-				{
-					$match: { departmentId },
-				},
-				lookup,
-				unwind,
-				facet,
-			],
-			{ readPreference: readSecondaryPreferred(), allowDiskUse: true },
-		);
+		return this.findPaginated(query, options);
 	}
 
 	findByDepartmentIds(departmentIds: string[], options = {}): FindCursor<ILivechatDepartmentAgents> {
