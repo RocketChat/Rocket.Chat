@@ -2,8 +2,8 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
 import { filterBusinessHoursThatMustBeOpened } from './filterBusinessHoursThatMustBeOpened';
 
-describe('different timezones between server and business hours', () => {
-	beforeEach(() => jest.useFakeTimers().setSystemTime(new Date('2025-07-27T11:02:11Z')));
+describe('different timezones between server and business hours saturday ', () => {
+	beforeEach(() => jest.useFakeTimers().setSystemTime(new Date('2024-04-20T20:10:11Z')));
 	afterEach(() => jest.useRealTimers());
 	it('should return a bh when the finish time resolves to a different day on server', async () => {
 		const bh = await filterBusinessHoursThatMustBeOpened([
@@ -51,7 +51,11 @@ describe('different timezones between server and business hours', () => {
 
 		expect(bh.length).toEqual(1);
 	});
+});
 
+describe('different timezones between server and business hours sunday ', () => {
+	beforeEach(() => jest.useFakeTimers().setSystemTime(new Date('2025-07-27T11:02:11Z')));
+	afterEach(() => jest.useRealTimers());
 	it('should return a bh when the finish time resolves to a different day on server', async () => {
 		const bh = await filterBusinessHoursThatMustBeOpened([
 			{

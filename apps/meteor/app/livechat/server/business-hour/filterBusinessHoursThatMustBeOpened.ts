@@ -33,12 +33,12 @@ export const filterBusinessHoursThatMustBeOpened = async (
 						}
 
 						// During Saturday, if current weekday is the same but the start time is after the current time, we need to subtract a week
-						if (currentDay === localTimeStartDay && localTimeStart.diff(currentTime) > 1) {
+						if (currentDay === localTimeStartDay && localTimeStart.diff(currentTime, 'days') > 0) {
 							localTimeStart.subtract(1, 'week');
 						}
 
 						// During Saturday, if current weekday is the same but the finish time is before the current time, we need to add a week
-						if (currentDay === localTimeStartDay && localTimeFinish.diff(currentTime) < 1) {
+						if (currentDay === localTimeStartDay && localTimeFinish.diff(currentTime, 'days') < 0) {
 							localTimeFinish.add(1, 'week');
 						}
 
