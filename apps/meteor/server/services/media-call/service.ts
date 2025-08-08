@@ -1,6 +1,6 @@
 import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
 import type { IUser, IMediaCall } from '@rocket.chat/core-typings';
-import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
+import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { processSignal, createCall, setSignalHandler, logger } from '@rocket.chat/media-signaling-server';
 import { MediaCalls, Users } from '@rocket.chat/models';
 
@@ -14,9 +14,22 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		try {
+			logger.debug({ msg: 'new client signal', signal, uid });
 			await processSignal(signal, uid);
 		} catch (error) {
-			logger.error({ msg: 'failed to process client signal', error });
+			logger.error({ msg: 'failed to process client signal', error, signal, uid });
+		}
+	}
+
+	public async processSerializedSignal(uid: IUser['_id'], signal: string): Promise<void> {
+		try {
+			logger.debug({ msg: 'new client signal', signal, uid });
+
+			const deserialized = await this.deserializeClientSignal(signal);
+
+			await processSignal(deserialized, uid);
+		} catch (error) {
+			logger.error({ msg: 'failed to process client signal', error, signal, uid });
 		}
 	}
 
@@ -57,10 +70,6 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		return this.createInternalCall(caller, { uid: userId });
 	}
 
-	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
-		void api.broadcast('user.media-signal', { userId: toUid, signal });
-	}
-
 	public async hangupEveryCall(hangupReason?: string): Promise<void> {
 		// change every pending or active call state to 'hangup' with the specified reason
 
@@ -68,5 +77,22 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			endedBy: { type: 'server', id: 'server' },
 			reason: hangupReason || 'full-server-hangup',
 		});
+	}
+
+	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
+		void api.broadcast('user.media-signal', { userId: toUid, signal });
+	}
+
+	private async deserializeClientSignal(serialized: string): Promise<ClientMediaSignal> {
+		try {
+			const signal = JSON.parse(serialized);
+			if (!isClientMediaSignal(signal)) {
+				throw new Error('signal-format-invalid');
+			}
+			return signal;
+		} catch (error) {
+			logger.error({ msg: 'Failed to parse client signal' }, error);
+			throw error;
+		}
 	}
 }

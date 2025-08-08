@@ -1,3 +1,5 @@
+import type { JSONSchemaType } from 'ajv';
+
 // Client is sending the local session description to the server
 export type ClientMediaSignalLocalSDP = {
 	callId: string;
@@ -7,7 +9,7 @@ export type ClientMediaSignalLocalSDP = {
 	sdp: RTCSessionDescriptionInit;
 };
 
-export const clientMediaSignalLocalSDPSchema = {
+export const clientMediaSignalLocalSDPSchema: JSONSchemaType<ClientMediaSignalLocalSDP> = {
 	type: 'object',
 	properties: {
 		callId: {
@@ -19,6 +21,7 @@ export const clientMediaSignalLocalSDPSchema = {
 			nullable: false,
 		},
 		type: {
+			type: 'string',
 			const: 'local-sdp',
 		},
 		sdp: {
@@ -40,4 +43,4 @@ export const clientMediaSignalLocalSDPSchema = {
 	},
 	additionalProperties: false,
 	required: ['callId', 'contractId', 'type', 'sdp'],
-} as const;
+};

@@ -1,3 +1,5 @@
+import type { JSONSchemaType } from 'ajv';
+
 import type { CallHangupReason } from '../../call';
 
 // Client is saying they hanged up from a call. The reason specifies if its a clean hangup or an error
@@ -9,7 +11,7 @@ export type ClientMediaSignalHangup = {
 	reason: CallHangupReason;
 };
 
-export const clientMediaSignalHangupSchema = {
+export const clientMediaSignalHangupSchema: JSONSchemaType<ClientMediaSignalHangup> = {
 	type: 'object',
 	properties: {
 		callId: {
@@ -21,6 +23,7 @@ export const clientMediaSignalHangupSchema = {
 			nullable: false,
 		},
 		type: {
+			type: 'string',
 			const: 'hangup',
 		},
 		reason: {
@@ -30,4 +33,4 @@ export const clientMediaSignalHangupSchema = {
 	},
 	additionalProperties: false,
 	required: ['callId', 'contractId', 'type', 'reason'],
-} as const;
+};

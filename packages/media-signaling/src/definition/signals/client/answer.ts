@@ -1,3 +1,5 @@
+import type { JSONSchemaType } from 'ajv';
+
 import type { CallAnswer } from '../../call';
 
 // Client is saying that the user accepted or rejected a call, or simply reporting that the user can or can't be reached
@@ -9,7 +11,7 @@ export type ClientMediaSignalAnswer = {
 	answer: CallAnswer;
 };
 
-export const clientMediaSignalAnswerSchema = {
+export const clientMediaSignalAnswerSchema: JSONSchemaType<ClientMediaSignalAnswer> = {
 	type: 'object',
 	properties: {
 		callId: {
@@ -21,6 +23,7 @@ export const clientMediaSignalAnswerSchema = {
 			nullable: false,
 		},
 		type: {
+			type: 'string',
 			const: 'answer',
 		},
 		answer: {
@@ -30,4 +33,4 @@ export const clientMediaSignalAnswerSchema = {
 	},
 	additionalProperties: false,
 	required: ['callId', 'contractId', 'type', 'answer'],
-} as const;
+};

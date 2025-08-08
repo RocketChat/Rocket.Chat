@@ -1,3 +1,5 @@
+import type { JSONSchemaType } from 'ajv';
+
 import type { CallService } from '../../call';
 
 export type ClientMediaSignalRequestCall = {
@@ -12,7 +14,7 @@ export type ClientMediaSignalRequestCall = {
 	supportedServices: CallService[];
 };
 
-export const clientMediaSignalRequestCallSchema = {
+export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSignalRequestCall> = {
 	type: 'object',
 	properties: {
 		callId: {
@@ -24,6 +26,7 @@ export const clientMediaSignalRequestCallSchema = {
 			nullable: false,
 		},
 		type: {
+			type: 'string',
 			const: 'request-call',
 		},
 		callee: {
@@ -51,4 +54,4 @@ export const clientMediaSignalRequestCallSchema = {
 	},
 	additionalProperties: false,
 	required: ['callId', 'contractId', 'type', 'callee', 'supportedServices'],
-} as const;
+};
