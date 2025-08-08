@@ -8,7 +8,7 @@
 		"jscolor": false
 	},
 	"rules": {
-		"import/named": "error",
+		"import-x/named": "error",
 		"react-hooks/exhaustive-deps": [
 			"warn",
 			{
