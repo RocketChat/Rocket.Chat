@@ -53,18 +53,18 @@ export type CallRejectedReason =
 	| 'already-requested' // the request is valid, but a call matching its params is already underway
 	| 'unsupported'; // no matching supported services between actors
 
-export interface IClientMediaCallData {
+export interface IClientMediaCall {
 	callId: string;
 	role: CallRole;
 	service: CallService | null;
 
-	state?: CallState;
-	ignored?: boolean;
+	state: CallState;
+	ignored: boolean;
+	signed: boolean;
+	hidden: boolean;
 
-	contact?: CallContact;
-}
+	contact: CallContact;
 
-export interface IClientMediaCall extends Required<IClientMediaCallData> {
 	emitter: Emitter<CallEvents>;
 
 	getRemoteMediaStream(): MediaStream;

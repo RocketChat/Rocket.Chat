@@ -1,4 +1,5 @@
 import type { CallAnswer, CallHangupReason } from '../definition';
+import type { IMediaSignalLogger } from '../definition/logger';
 import type {
 	MediaSignalTransport,
 	ClientMediaSignalType,
@@ -11,9 +12,11 @@ export class MediaSignalTransportWrapper {
 	constructor(
 		public readonly contractId: string,
 		private sendSignalFn: MediaSignalTransport<ClientMediaSignal>,
+		private logger?: IMediaSignalLogger,
 	) {}
 
 	public sendToServer<T extends ClientMediaSignalType>(callId: string, type: T, signal: ClientMediaSignalBody<T>) {
+		this.logger?.debug('MediaSignalTransportWrapper.sendToServer', type);
 		return this.sendSignal({
 			callId,
 			contractId: this.contractId,
@@ -35,6 +38,7 @@ export class MediaSignalTransportWrapper {
 	}
 
 	public sendSignal(signal: ClientMediaSignal): void {
+		this.logger?.debug('MediaSignalTransportWrapper.sendSignal', signal);
 		this.sendSignalFn(signal);
 	}
 }

@@ -32,6 +32,7 @@ export interface IMediaCallAgent extends IMediaCallBasicAgent {
 	setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void>;
 	getLocalDescription(): Promise<RTCSessionDescriptionInit | null>;
 	requestOffer(params: { iceRestart?: boolean }): Promise<void>;
+	sign(): Promise<void>;
 }
 
 // The agent factory is an object with functions to instantiate the two agent types

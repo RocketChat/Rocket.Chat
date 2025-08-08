@@ -34,12 +34,13 @@ export class UserBasicAgent<T extends IMediaCallBasicAgent = INewMediaCallAgent>
 		};
 	}
 
-	public async notify(callId: string, notification: CallNotification): Promise<void> {
+	public async notify(callId: string, notification: CallNotification, signedContractId?: string): Promise<void> {
 		logger.debug({ msg: 'UserBasicAgent.notify', callId, notification });
 		return this.sendSignal({
 			callId,
 			type: 'notification',
 			notification,
+			...(signedContractId && { signedContractId }),
 		});
 	}
 

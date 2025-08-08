@@ -1,5 +1,6 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
+import type { IMediaSignalLogger } from '../../logger';
 import type { IServiceProcessor, ServiceProcessorEvents } from '../IServiceProcessor';
 import type { MediaStreamFactory } from '../MediaStreamFactory';
 
@@ -25,6 +26,7 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 
 export type WebRTCProcessorConfig = {
 	mediaStreamFactory: MediaStreamFactory;
+	logger?: IMediaSignalLogger;
 };
 
 export type WebRTCProcessorFactory = (config: WebRTCProcessorConfig) => IWebRTCProcessor;

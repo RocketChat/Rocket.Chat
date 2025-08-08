@@ -4,6 +4,7 @@ import { ClientMediaCall } from './Call';
 import { MediaSignalTransportWrapper } from './TransportWrapper';
 import type {
 	ClientMediaSignal,
+	ClientState,
 	IServiceProcessorFactoryList,
 	MediaSignalTransport,
 	MediaStreamFactory,
@@ -11,17 +12,21 @@ import type {
 } from '../definition';
 import { createRandomToken } from './utils/createRandomToken';
 import type { IClientMediaCall, CallState, CallActorType, CallContact } from '../definition/call';
+import type { IMediaSignalLogger } from '../definition/logger';
 
 export type MediaSignalingEvents = {
 	callContactUpdate: { call: IClientMediaCall };
 	callStateChange: { call: IClientMediaCall; oldState: CallState };
+	callClientStateChange: { call: IClientMediaCall; oldState: ClientState };
 	newCall: { call: IClientMediaCall };
 	acceptedCall: { call: IClientMediaCall };
 	endedCall: { call: IClientMediaCall };
+	hiddenCall: { call: IClientMediaCall };
 };
 
 export type MediaSignalingSessionConfig = {
 	userId: string;
+	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
@@ -53,7 +58,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
 
-		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport);
+		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
 	}
 
 	public isBusy(): boolean {
@@ -74,6 +79,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		let pendingCall: IClientMediaCall | null = null;
 
 		for (const call of this.knownCalls.values()) {
+			if (call.state === 'hangup' || call.ignored) {
+				continue;
+			}
+
 			if (['accepted', 'active'].includes(call.state)) {
 				return call;
 			}
@@ -81,7 +90,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 				ringingCall = call;
 				continue;
 			}
-			if (call.state === 'none') {
+			if (call.state === 'none' && !pendingCall) {
 				pendingCall = call;
 				continue;
 			}
@@ -90,17 +99,29 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public async processSignal(signal: ServerMediaSignal): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.processSignal', signal);
 		if (this.isSignalTargetingAnotherSession(signal) || this.isCallIgnored(signal.callId)) {
 			return;
 		}
 
-		const call = await this.getOrCreateCallBySignal(signal);
+		const call = this.getOrCreateCallBySignal(signal);
+
+		if (signal.type === 'notification' && signal.signedContractId) {
+			if (signal.signedContractId === this._sessionId) {
+				call.setContractState('signed');
+			} else if (signal.notification === 'accepted') {
+				// The server accepted a contract, but it wasn't ours - ignore the call in this session
+				call.setContractState('ignored');
+			}
+		}
+
 		await call.processSignal(signal);
 	}
 
 	public async startCall(calleeType: CallActorType, calleeId: string, contactInfo?: CallContact): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
 		const callId = this.createTemporaryCallId();
-		const call = await this.createCall(callId);
+		const call = this.createCall(callId);
 
 		await call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
 	}
@@ -132,38 +153,48 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private ignoreCall(callId: string) {
+		this.config.logger?.debug('MediaSignalingSession.ignoreCall', callId);
 		this.ignoredCalls.add(callId);
 
 		if (this.knownCalls.has(callId)) {
+			const call = this.knownCalls.get(callId);
 			this.knownCalls.delete(callId);
+
+			call?.ignore();
 		}
 	}
 
-	private async getOrCreateCall(callId: string, localCallId?: string): Promise<ClientMediaCall> {
-		const existingCall = this.knownCalls.get(callId);
+	private getExistingCallBySignal(signal: ServerMediaSignal): ClientMediaCall | null {
+		const existingCall = this.knownCalls.get(signal.callId);
 		if (existingCall) {
 			return existingCall;
 		}
 
-		const localCall = localCallId && this.knownCalls.get(localCallId);
-		if (localCall) {
-			this.knownCalls.set(callId, localCall);
-			return localCall;
+		if (signal.type === 'new' && signal.requestedCallId) {
+			const localCall = this.knownCalls.get(signal.requestedCallId);
+			if (localCall) {
+				this.knownCalls.set(signal.callId, localCall);
+				return localCall;
+			}
 		}
 
-		return this.createCall(callId);
+		return null;
 	}
 
-	private async getOrCreateCallBySignal(signal: ServerMediaSignal): Promise<ClientMediaCall> {
-		if (signal.type === 'new') {
-			return this.getOrCreateCall(signal.callId, signal.requestedCallId);
+	private getOrCreateCallBySignal(signal: ServerMediaSignal): ClientMediaCall {
+		this.config.logger?.debug('MediaSignalingSession.getOrCreateCallBySignal', signal);
+		const existingCall = this.getExistingCallBySignal(signal);
+		if (existingCall) {
+			return existingCall;
 		}
 
-		return this.getOrCreateCall(signal.callId);
+		return this.createCall(signal.callId);
 	}
 
-	private async createCall(callId: string): Promise<ClientMediaCall> {
+	private createCall(callId: string): ClientMediaCall {
+		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
+			logger: this.config.logger,
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,
 			mediaStreamFactory: this.config.mediaStreamFactory,
@@ -172,15 +203,70 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		const call = new ClientMediaCall(config, callId);
 		this.knownCalls.set(callId, call);
 
-		call.emitter.on('contactUpdate', () => this.emit('callContactUpdate', { call }));
-		call.emitter.on('stateChange', (oldState) => this.emit('callStateChange', { call, oldState }));
-		call.emitter.on('initialized', () => this.emit('newCall', { call }));
-		call.emitter.on('accepted', () => this.emit('acceptedCall', { call }));
-		call.emitter.on('ended', () => {
-			this.ignoreCall(call.callId);
-			this.emit('endedCall', { call });
-		});
+		call.emitter.on('contactUpdate', () => this.onCallContactUpdate(call));
+		call.emitter.on('stateChange', (oldState) => this.onCallStateChange(call, oldState));
+		call.emitter.on('clientStateChange', (oldState) => this.onCallClientStateChange(call, oldState));
+		call.emitter.on('initialized', () => this.onNewCall(call));
+		call.emitter.on('accepted', () => this.onAcceptedCall(call));
+		call.emitter.on('hidden', () => this.onHiddenCall(call));
+		call.emitter.on('ended', () => this.onEndedCall(call));
 
 		return call;
+	}
+
+	private onCallContactUpdate(call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onCallContactUpdate');
+		if (call.hidden) {
+			return;
+		}
+
+		this.emit('callContactUpdate', { call });
+	}
+
+	private onCallStateChange(call: ClientMediaCall, oldState: CallState): void {
+		this.config.logger?.debug('MediaSignalingSession.onCallStateChange');
+		if (call.hidden && call.state !== 'hangup') {
+			return;
+		}
+
+		this.emit('callStateChange', { call, oldState });
+	}
+
+	private onCallClientStateChange(call: ClientMediaCall, oldState: ClientState): void {
+		this.config.logger?.debug('MediaSignalingSession.onCallClientStateChange');
+		if (call.hidden && call.state !== 'hangup') {
+			return;
+		}
+
+		this.emit('callClientStateChange', { call, oldState });
+	}
+
+	private onNewCall(call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onNewCall');
+		if (call.hidden) {
+			return;
+		}
+
+		this.emit('newCall', { call });
+	}
+
+	private onAcceptedCall(call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onAcceptedCall');
+		if (call.hidden) {
+			return;
+		}
+
+		this.emit('acceptedCall', { call });
+	}
+
+	private onEndedCall(call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onEndedCall');
+		this.ignoreCall(call.callId);
+		this.emit('endedCall', { call });
+	}
+
+	private onHiddenCall(call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onHiddenCall');
+		this.emit('hiddenCall', { call });
 	}
 }
