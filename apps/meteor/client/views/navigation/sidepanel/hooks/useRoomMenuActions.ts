@@ -40,7 +40,7 @@ export const useRoomMenuActions = ({
 	const isFavorite = Boolean(subscription?.f);
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
-	const canFavorite = useSetting('Favorite_Rooms') as boolean;
+	const canFavorite = useSetting('Favorite_Rooms', true);
 	const isNotificationEnabled = !subscription?.disableNotifications;
 
 	const canLeave = ((): boolean => {
