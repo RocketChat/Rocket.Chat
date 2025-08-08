@@ -12,7 +12,7 @@ type PriorityIconProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color'> & {
 export const PriorityIcon = ({ level, size = 20, showUnprioritized = false, ...props }: PriorityIconProps): ReactElement | null => {
 	const prioritiesConfig = useOmnichannelPrioritiesConfig(level, showUnprioritized);
 
-	if (!prioritiesConfig?.iconName) {
+	if (!prioritiesConfig) {
 		return null;
 	}
 
