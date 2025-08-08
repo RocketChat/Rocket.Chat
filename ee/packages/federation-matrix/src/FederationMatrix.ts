@@ -250,8 +250,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				message: message.msg,
 				externalRoomId: matrixRoomId,
 				homeServerDomain: await this.getMatrixDomain(),
-			});
-			console.log({ parsedMessage })
+			});			
 			if (!message.tmid) {
 				result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
 			} else {
