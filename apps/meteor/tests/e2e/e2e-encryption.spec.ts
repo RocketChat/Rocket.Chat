@@ -68,6 +68,8 @@ test.describe('initial setup', () => {
 		// Log out
 		await sidenav.logout();
 
+		await expect(loginPage.loginButton).toBeVisible();
+
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
@@ -116,6 +118,8 @@ test.describe('initial setup', () => {
 		await sidenav.logout();
 
 		// Login again
+		await expect(loginPage.loginButton).toBeVisible();
+
 		await loginPage.loginByUserState(Users.admin);
 
 		// Enter the saved password
