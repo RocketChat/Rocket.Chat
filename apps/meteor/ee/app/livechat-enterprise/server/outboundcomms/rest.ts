@@ -274,10 +274,10 @@ const OutboundProviderMetadataSchema = {
 										oneOf: [
 											{
 												properties: {
-													type: { const: 'HEADER' },
+													type: { const: 'header' },
 													format: {
 														type: 'string',
-														enum: ['TEXT', 'IMAGE', 'VIDEO', 'DOCUMENT'],
+														enum: ['text', 'image', 'video', 'document'],
 													},
 													text: { type: 'string' },
 													example: {
@@ -293,7 +293,7 @@ const OutboundProviderMetadataSchema = {
 											},
 											{
 												properties: {
-													type: { const: 'BODY' },
+													type: { const: 'body' },
 													text: { type: 'string' },
 													example: {
 														type: 'object',
@@ -312,7 +312,7 @@ const OutboundProviderMetadataSchema = {
 											},
 											{
 												properties: {
-													type: { const: 'FOOTER' },
+													type: { const: 'footer' },
 													text: { type: 'string' },
 												},
 												required: ['type', 'text'],

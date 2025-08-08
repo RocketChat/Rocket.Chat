@@ -8,11 +8,11 @@ export interface IOutboundProviderTemplate {
 	name: string;
 	language: string;
 	type: 'whatsapp' | 'email' | string;
-	category: 'AUTHENTICATION' | 'UTILITY' | 'MARKETING' | string;
+	category: 'authentication' | 'utility' | 'marketing' | string;
 	// Note: by default, the app will filter all the templates that are not APPROVED
-	status: 'APPROVED' | 'REJECTED' | 'PENDING' | string;
+	status: 'approved' | 'rejected' | 'pending' | string;
 	qualityScore: {
-		score: 'GREEN' | 'YELLOW' | 'RED' | 'UNKNOWN' | string;
+		score: 'green' | 'yellow' | 'red' | 'unknown' | string;
 		reasons: string[] | null;
 	};
 	components: Component[];
@@ -34,9 +34,9 @@ type Component = IHeaderComponent | IBodyComponent | IFooterComponent;
 
 // If we happen to have a different structure for this (since this could be a link or idk) we are gonna update this component type
 interface IHeaderComponent {
-	type: 'HEADER';
+	type: 'header';
 	// For UI: if the format is other than TEXT, it should include a media link
-	format?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
+	format?: 'text' | 'image' | 'video' | 'document';
 	text?: string;
 	example?: {
 		headerText?: string[];
@@ -44,7 +44,7 @@ interface IHeaderComponent {
 }
 
 interface IBodyComponent {
-	type: 'BODY';
+	type: 'body';
 	text: string;
 	example?: {
 		bodyText: string[][];
@@ -52,7 +52,7 @@ interface IBodyComponent {
 }
 
 interface IFooterComponent {
-	type: 'FOOTER';
+	type: 'footer';
 	text: string;
 }
 
