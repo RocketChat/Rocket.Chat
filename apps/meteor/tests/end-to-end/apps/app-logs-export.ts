@@ -3,7 +3,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, request, credentials } from '../../data/api-data';
+import { getCredentials, request, credentials, getInstanceId } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
 import { installTestApp, cleanupApps } from '../../data/apps/helper';
 import { IS_EE } from '../../e2e/config/constants';
@@ -163,6 +163,25 @@ import { IS_EE } from '../../e2e/config/constants';
 
 				logs.forEach((log: ILoggerStorageEntry) => {
 					expect(log.method).to.equal('app:construct');
+				});
+			})
+			.end(done);
+	});
+
+	it('should export app logs filtered by instance id', (done) => {
+		const instanceId = getInstanceId();
+		void request
+			.get(apps(`/${app.id}/export-logs`))
+			.query({ instanceId, type: 'json' })
+			.set(credentials)
+			.expect('Content-Type', 'text/plain')
+			.expect(200)
+			.expect((res) => {
+				const logs = JSON.parse(res.text);
+				expect(logs).to.be.an('array');
+
+				logs.forEach((log: ILoggerStorageEntry) => {
+					expect(log.instanceId).to.equal(instanceId);
 				});
 			})
 			.end(done);
