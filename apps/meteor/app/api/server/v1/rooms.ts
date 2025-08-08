@@ -208,7 +208,7 @@ API.v1.addRoute(
 			};
 
 			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
+			if (stripExif && file.mimetype !== 'application/pdf') {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
 				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
 			}
@@ -286,7 +286,7 @@ API.v1.addRoute(
 			};
 
 			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
+			if (stripExif && file.mimetype !== 'application/pdf') {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
 				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
 			}
