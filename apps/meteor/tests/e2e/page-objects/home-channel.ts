@@ -77,24 +77,12 @@ export class HomeChannel {
 		return this.page.locator('role=menuitem[name="Mark Unread"]');
 	}
 
-	get audioVideoConfRingtone(): Locator {
-		return this.page.locator('#custom-sound-ringtone');
-	}
-
-	get audioVideoConfDialtone(): Locator {
-		return this.page.locator('#custom-sound-dialtone');
-	}
-
 	get dialogEnterE2EEPassword(): Locator {
 		return this.page.getByRole('dialog', { name: 'Enter E2EE password' });
 	}
 
 	get dialogSaveE2EEPassword(): Locator {
 		return this.page.getByRole('dialog', { name: 'Save your encryption password' });
-	}
-
-	get btnSaveE2EEPassword(): Locator {
-		return this.dialogSaveE2EEPassword.getByRole('button', { name: 'Save E2EE password' });
 	}
 
 	get btnRoomSaveE2EEPassword(): Locator {
@@ -109,20 +97,12 @@ export class HomeChannel {
 		return this.dialogSaveE2EEPassword.getByRole('button', { name: 'I saved my password' });
 	}
 
-	get btnEnterE2EEPassword(): Locator {
-		return this.dialogEnterE2EEPassword.getByRole('button', { name: 'Enter your E2E password' });
-	}
-
 	get bannerSaveEncryptionPassword(): Locator {
 		return this.page.getByRole('button', { name: 'Save your encryption password' });
 	}
 
 	get bannerEnterE2EEPassword(): Locator {
 		return this.page.getByRole('button', { name: 'Enter your E2E password' });
-	}
-
-	get btnNotPossibleDecodeKey(): Locator {
-		return this.page.getByRole('button', { name: "Wasn't possible to decode your encryption key to be imported." });
 	}
 
 	get audioRecorder(): Locator {

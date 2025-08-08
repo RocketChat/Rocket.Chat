@@ -35,10 +35,6 @@ export class Registration {
 		return this.page.locator('role=link[name="Create an account"]');
 	}
 
-	get backToLogin(): Locator {
-		return this.page.locator('role=link[name="Back to Login"]');
-	}
-
 	get btnRegister(): Locator {
 		return this.page.locator('role=button[name="Join your team"]');
 	}

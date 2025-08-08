@@ -30,8 +30,4 @@ export class OmnichannelLivechatAppearance extends OmnichannelAdministration {
 	get btnSave(): Locator {
 		return this.page.locator('role=button[name="Save changes"]');
 	}
-
-	get btnCancel(): Locator {
-		return this.page.locator('role=button[name="Cancel"]');
-	}
 }
