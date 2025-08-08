@@ -18,8 +18,13 @@ const VideoAttachment = ({
 	title_link_download: hasDownload,
 	collapsed,
 }: VideoAttachmentProps) => {
-	const getURL = useMediaUrl();
+	const originalGetURL = useMediaUrl();
 
+	// Ensure getURL is always a function
+	const getURL = window.location.origin.includes('gitpod.io')
+		? (path: string) => `${window.location.origin}${path}`
+		: originalGetURL;
+   
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
