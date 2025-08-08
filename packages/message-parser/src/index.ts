@@ -16,6 +16,37 @@ export type Options = {
   customDomains?: string[];
 };
 
+// Central emoticon map and pre-sorted keys (longest first) to avoid duplication
+const EMOTICON_MAP: Record<string, string> = {
+  ':)': 'slight_smile',
+  ':-)': 'slight_smile',
+  ':(': 'frowning',
+  ':-(': 'frowning',
+  'D:': 'fearful',
+  ':D': 'grinning',
+  ':-D': 'grinning',
+  ':P': 'stuck_out_tongue',
+  ':-P': 'stuck_out_tongue',
+  ':p': 'stuck_out_tongue',
+  ':-p': 'stuck_out_tongue',
+  ';)': 'wink',
+  ';-)': 'wink',
+  ':o': 'open_mouth',
+  ':-o': 'open_mouth',
+  ':O': 'open_mouth',
+  ':-O': 'open_mouth',
+  ':|': 'neutral_face',
+  ':-|': 'neutral_face',
+  ':/': 'confused',
+  ':-/': 'confused',
+  ':\\': 'confused',
+  ':-\\': 'confused',
+  ':*': 'kissing_heart',
+  '-_-': 'expressionless',
+};
+
+const EMOTICON_KEYS_DESC = Object.keys(EMOTICON_MAP).sort((a, b) => b.length - a.length);
+
 // Helper function to detect unicode emoji
 const isEmoji = (char: string): boolean => {
   // Check for emoji surrogate pairs
@@ -354,38 +385,7 @@ const detectEmail = (
 
 // Helper function to check if there's an emoticon at a specific position
 const getEmoticonAt = (text: string, position: number): { emoticon: string; length: number } | null => {
-  const emoticonMap: { [key: string]: string } = {
-    ':)': 'slight_smile',
-    ':-)': 'slight_smile',
-    ':(': 'frowning',
-    ':-(': 'frowning',
-    'D:': 'fearful',
-    ':D': 'grinning',
-    ':-D': 'grinning',
-    ':P': 'stuck_out_tongue',
-    ':-P': 'stuck_out_tongue',
-    ':p': 'stuck_out_tongue',
-    ':-p': 'stuck_out_tongue',
-    ';)': 'wink',
-    ';-)': 'wink',
-    ':o': 'open_mouth',
-    ':-o': 'open_mouth',
-    ':O': 'open_mouth',
-    ':-O': 'open_mouth',
-    ':|': 'neutral_face',
-    ':-|': 'neutral_face',
-    ':/': 'confused',
-    ':-/': 'confused',
-    ':\\': 'confused',
-    ':-\\': 'confused',
-    ':*': 'kissing_heart',
-    '-_-': 'expressionless',
-  };
-  
-  // Sort emoticons by length (longest first) to avoid matching conflicts
-  const sortedEmoticons = Object.keys(emoticonMap).sort((a, b) => b.length - a.length);
-  
-  for (const emoticon of sortedEmoticons) {
+  for (const emoticon of EMOTICON_KEYS_DESC) {
     if (text.slice(position, position + emoticon.length) === emoticon) {
       // Check word boundaries - emoticons should be separated by whitespace
       const prevChar = position > 0 ? text[position - 1] : '';
@@ -483,6 +483,32 @@ const shouldSkipConsecutiveEmoticons = (text: string, startPos: number): boolean
   return emoticonCount >= 4 || (emoticonCount >= 2 && (hasNonWhitespaceBefore || hasNonWhitespaceAfter));
 };
 
+// Helper to filter nested content for bold, converting unsupported nodes to plain text
+const filterBoldContent = (
+  tokens: AST.Inlines[],
+): (AST.MarkupExcluding<AST.Bold> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] => {
+  const valid: (AST.MarkupExcluding<AST.Bold> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] = [];
+  for (const token of tokens) {
+    if (
+      token.type === 'BOLD' ||
+      token.type === 'TIMESTAMP' ||
+      token.type === 'IMAGE' ||
+      token.type === 'COLOR' ||
+      token.type === 'INLINE_KATEX'
+    ) {
+      if (token.type === 'TIMESTAMP') {
+        const format = token.value.format && token.value.format !== 't' ? `:${token.value.format}` : '';
+        valid.push(ast.plain(`<t:${token.value.timestamp}${format}>`));
+      } else {
+        valid.push(ast.plain('[unsupported content]'));
+      }
+    } else {
+      valid.push(token);
+    }
+  }
+  return valid;
+};
+
 // Helper function to parse bold markup
 const parseBoldMarkup = (
   text: string,
@@ -522,37 +548,15 @@ const parseBoldMarkup = (
         }
         // else: ***Hello** case (no trailing asterisk)
         
-        const result = [];
+  const result = [];
         
-        // Add leading asterisk as plain text
-        result.push(ast.plain('*'));
+  // Add leading asterisk as plain text
+  result.push(ast.plain('*'));
         
-        // Add the bold content (double asterisk style)
-        const nestedContent = parseInlineContent(content, options);
-        const validContent: (AST.MarkupExcluding<AST.Bold> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] = [];
-        
-        for (const token of nestedContent) {
-          if (token.type === 'BOLD' || 
-              token.type === 'TIMESTAMP' || 
-              token.type === 'IMAGE' || 
-              token.type === 'COLOR' || 
-              token.type === 'INLINE_KATEX') {
-            // Convert filtered tokens to plain text
-            if (token.type === 'TIMESTAMP') {
-              // Convert timestamp back to its original text format
-              // Only include format if it's not the default 't'
-              const format = token.value.format && token.value.format !== 't' ? `:${token.value.format}` : '';
-              validContent.push(ast.plain(`<t:${token.value.timestamp}${format}>`));
-            } else {
-              // For other filtered tokens, convert to plain text representation
-              // This is a fallback - ideally we'd have the original text
-              validContent.push(ast.plain('[unsupported content]'));
-            }
-          } else {
-            validContent.push(token);
-          }
-        }
-        result.push(ast.bold(validContent));
+  // Add the bold content (double asterisk style)
+  const nestedContent = parseInlineContent(content, options);
+  const validContent = filterBoldContent(nestedContent);
+  result.push(ast.bold(validContent));
         
         // Add trailing asterisk if this was ***Hello*** case
         if (trailingAsterisk) {
@@ -625,30 +629,8 @@ const parseBoldMarkup = (
       return null;
     }
     
-    const nestedContent = parseInlineContent(content, options);
-    // Filter to only valid bold content types, converting filtered tokens to plain text
-    const validContent: (AST.MarkupExcluding<AST.Bold> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] = [];
-    
-    for (const token of nestedContent) {
-      if (token.type === 'BOLD' || 
-          token.type === 'TIMESTAMP' || 
-          token.type === 'IMAGE' || 
-          token.type === 'COLOR' || 
-          token.type === 'INLINE_KATEX') {
-        // Convert filtered tokens to plain text
-        if (token.type === 'TIMESTAMP') {
-          // Convert timestamp back to its original text format
-          // Only include format if it's not the default 't'
-          const format = token.value.format && token.value.format !== 't' ? `:${token.value.format}` : '';
-          validContent.push(ast.plain(`<t:${token.value.timestamp}${format}>`));
-        } else {
-          // For other filtered tokens, convert to plain text representation
-          validContent.push(ast.plain('[unsupported content]'));
-        }
-      } else {
-        validContent.push(token);
-      }
-    }
+  const nestedContent = parseInlineContent(content, options);
+  const validContent = filterBoldContent(nestedContent);
     return {
       tokens: [ast.bold(validContent)],
       nextIndex: endIndex + delimiterLength,
