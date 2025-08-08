@@ -22,6 +22,7 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
+import { Users } from '../../../stores/Users';
 
 type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -89,16 +90,23 @@ const RoomMessage = ({
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && !selecting && showUserAvatar && (
-					<MessageAvatar
-						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
-						avatarUrl={message.avatar}
-						username={message.u.username}
-						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
-						style={{ cursor: 'pointer' }}
-						role='button'
-						{...triggerProps}
-					/>
+					(() => {
+						const user = Users.state.find((u) => u.username === message.u.username);
+						const etag = user?.avatarETag;
+						const avatarUrl = etag ? `/avatar/${message.u.username}?etag=${etag}` : message.avatar;
+						return (
+							<MessageAvatar
+								emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
+								avatarUrl={avatarUrl}
+								username={message.u.username}
+								size='x36'
+								onClick={(e) => openUserCard(e, message.u.username)}
+								style={{ cursor: 'pointer' }}
+								role='button'
+								{...triggerProps}
+							/>
+						);
+					})()
 				)}
 				{selecting && <CheckBox disabled={isOTRMsg} checked={selected} onChange={toggleSelected} />}
 				{sequential && <StatusIndicators message={message} />}
