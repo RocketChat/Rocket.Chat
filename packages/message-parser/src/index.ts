@@ -1010,7 +1010,7 @@ const parseItalicMarkup = (
       
       // Check word boundary
       const nextCharAfter = nextUnderscore + 1 < text.length ? text[nextUnderscore + 1] : '';
-  const atWordBoundary = nextUnderscore + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`-]/.test(nextCharAfter);
+      const atWordBoundary = nextUnderscore + 1 >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?*~`-]/.test(nextCharAfter);
       
       if (atWordBoundary) {
         const content = text.slice(i + 2, nextUnderscore); // Skip first underscore
