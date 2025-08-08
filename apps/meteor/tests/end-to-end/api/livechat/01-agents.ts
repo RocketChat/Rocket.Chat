@@ -690,15 +690,15 @@ describe('LIVECHAT - Agents', () => {
 							expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
 						});
 				});
-				it('should not allow managers to make other agents available outside business hour', async () => {
+				it('should return success but not change the agent  when admin make try other agents available outside business hour', async () => {
 					await request
 						.post(api('livechat/agent.status'))
 						.set(credentials)
 						.send({ status: 'available', agentId: currentUser._id })
 						.expect(200)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('status', 'not-available');
 						});
 				});
 			});
