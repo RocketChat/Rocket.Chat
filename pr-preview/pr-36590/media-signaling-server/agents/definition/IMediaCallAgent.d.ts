@@ -23,6 +23,7 @@ export interface IMediaCallAgent extends IMediaCallBasicAgent {
     requestOffer(params: {
         iceRestart?: boolean;
     }): Promise<void>;
+    sign(): Promise<void>;
 }
 export interface IMediaCallAgentFactory {
     getNewAgent(role: CallRole): INewMediaCallAgent;

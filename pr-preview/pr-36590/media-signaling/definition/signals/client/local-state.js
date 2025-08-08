@@ -31,8 +31,16 @@ export const clientMediaSignalLocalStateSchema = {
             nullable: true,
             required: [],
         },
+        ignored: {
+            type: 'boolean',
+            nullable: true,
+        },
+        contractState: {
+            type: 'string',
+            nullable: false,
+        },
     },
     additionalProperties: false,
-    required: ['callId', 'contractId', 'type', 'callState', 'clientState'],
+    required: ['callId', 'contractId', 'type', 'callState', 'clientState', 'contractState'],
 };
 //# sourceMappingURL=local-state.js.map

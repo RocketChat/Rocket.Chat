@@ -30,6 +30,8 @@ export class MediaCallWebRTCProcessor {
     }
     createOffer(_a) {
         return __awaiter(this, arguments, void 0, function* ({ iceRestart }) {
+            var _b;
+            (_b = this.config.logger) === null || _b === void 0 ? void 0 : _b.debug('MediaCallWebRTCProcessor.createOffer');
             yield this.initializeLocalMediaStream();
             if (iceRestart) {
                 this.restartIce();
@@ -42,13 +44,14 @@ export class MediaCallWebRTCProcessor {
     }
     createAnswer(_a) {
         return __awaiter(this, arguments, void 0, function* ({ sdp }) {
-            var _b;
+            var _b, _c;
+            (_b = this.config.logger) === null || _b === void 0 ? void 0 : _b.debug('MediaCallWebRTCProcessor.createAnswer');
             if (sdp.type !== 'offer') {
                 throw new Error('invalid-webrtc-offer');
             }
             yield this.initializeLocalMediaStream();
             // #ToDo: direction changes
-            if (((_b = this.peer.remoteDescription) === null || _b === void 0 ? void 0 : _b.sdp) !== sdp.sdp) {
+            if (((_c = this.peer.remoteDescription) === null || _c === void 0 ? void 0 : _c.sdp) !== sdp.sdp) {
                 this.peer.setRemoteDescription(sdp);
             }
             const answer = yield this.peer.createAnswer();
@@ -58,6 +61,8 @@ export class MediaCallWebRTCProcessor {
     }
     setRemoteDescription(_a) {
         return __awaiter(this, arguments, void 0, function* ({ sdp }) {
+            var _b;
+            (_b = this.config.logger) === null || _b === void 0 ? void 0 : _b.debug('MediaCallWebRTCProcessor.setRemoteDescription');
             yield this.initializeLocalMediaStream();
             // #ToDo: validate this.peer.signalingState ?
             this.peer.setRemoteDescription(sdp);
@@ -82,14 +87,20 @@ export class MediaCallWebRTCProcessor {
     }
     getuserMedia(constraints) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.getuserMedia');
             return this.config.mediaStreamFactory(constraints);
         });
     }
     changeInternalState(stateName) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.changeInternalState', stateName);
         this.emitter.emit('internalStateChange', stateName);
     }
     getLocalDescription() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.getLocalDescription');
             yield this.waitForIceGathering();
             // always wait a little extra to ensure all relevant events have been fired
             yield new Promise((resolve) => setTimeout(resolve, 30));
@@ -104,6 +115,8 @@ export class MediaCallWebRTCProcessor {
     }
     waitForIceGathering() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.waitForIceGathering');
             if (this.iceGatheringFinished) {
                 return;
             }
@@ -141,59 +154,75 @@ export class MediaCallWebRTCProcessor {
         peer.onsignalingstatechange = () => this.onSignalingStateChange(peer);
     }
     restartIce() {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.restartIce');
         this.iceGatheringFinished = false;
         this.clearIceGatheringWaiters(new Error('ice-restart'));
         this.peer.restartIce();
     }
     onIceCandidate(peer, event) {
+        var _a;
         if (peer !== this.peer) {
             return;
         }
-        console.log('onIceCandidate event', event.candidate);
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.onIceCandidate', event.candidate);
     }
     onIceCandidateError(peer, event) {
+        var _a, _b;
         if (peer !== this.peer) {
             return;
         }
-        console.error('onIceCandidate ERROR event', event.errorCode, event.errorText);
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.onIceCandidateError');
+        (_b = this.config.logger) === null || _b === void 0 ? void 0 : _b.error(event);
         this.emitter.emit('internalError', { critical: false, error: 'ice-candidate-error' });
     }
     onNegotiationNeeded(peer) {
+        var _a;
         if (peer !== this.peer) {
             return;
         }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.onNegotiationNeeded');
         // #ToDo negotiation needed
-        console.log('negotiation-needed');
     }
     onTrack(peer, event) {
+        var _a;
         if (peer !== this.peer) {
             return;
         }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.onTrack', event.track.kind);
         // Received a remote stream
         this.remoteStream.setTrack(event.track, peer);
     }
     onConnectionStateChange(peer) {
+        var _a;
         if (peer !== this.peer) {
             return;
         }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.onConnectionStateChange');
         this.changeInternalState('connection');
     }
     onIceConnectionStateChange(peer) {
+        var _a;
         if (peer !== this.peer) {
             return;
         }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.onIceConnectionStateChange');
         this.changeInternalState('iceConnection');
     }
     onSignalingStateChange(peer) {
+        var _a;
         if (peer !== this.peer) {
             return;
         }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.onSignalingStateChange');
         this.changeInternalState('signaling');
     }
     onIceGatheringStateChange(peer) {
+        var _a;
         if (peer !== this.peer) {
             return;
         }
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.onIceGatheringStateChange');
         if (peer.iceGatheringState === 'complete') {
             this.onIceGatheringComplete();
         }
@@ -201,19 +230,25 @@ export class MediaCallWebRTCProcessor {
     }
     initializeLocalMediaStream() {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             if (this.localMediaStreamInitialized) {
                 return;
             }
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.initializeLocalMediaStream');
             const mediaStream = yield this.getuserMedia({ audio: true });
             this.localStream.setStreamTracks(mediaStream, this.peer);
             this.localMediaStreamInitialized = true;
         });
     }
     onIceGatheringComplete() {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.onIceGatheringComplete');
         this.iceGatheringFinished = true;
         this.clearIceGatheringWaiters();
     }
     clearIceGatheringData(iceGatheringData, error) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.clearIceGatheringData');
         if (this.iceGatheringWaiters.has(iceGatheringData)) {
             this.iceGatheringWaiters.delete(iceGatheringData);
         }
@@ -231,6 +266,8 @@ export class MediaCallWebRTCProcessor {
         }
     }
     clearIceGatheringWaiters(error) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaCallWebRTCProcessor.clearIceGatheringWaiters');
         const waiters = this.iceGatheringWaiters.values().toArray();
         this.iceGatheringWaiters.clear();
         this.iceGatheringTimedOut = false;

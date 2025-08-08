@@ -17,15 +17,15 @@ export type CallHangupReason = 'normal' | 'remote' | 'rejected' | 'unavailable' 
 export type CallAnswer = 'accept' | 'reject' | 'ack' | 'unavailable';
 export type CallNotification = 'accepted' | 'hangup';
 export type CallRejectedReason = 'invalid-call-id' | 'invalid-contract-id' | 'existing-call-id' | 'already-requested' | 'unsupported';
-export interface IClientMediaCallData {
+export interface IClientMediaCall {
     callId: string;
     role: CallRole;
     service: CallService | null;
-    state?: CallState;
-    ignored?: boolean;
-    contact?: CallContact;
-}
-export interface IClientMediaCall extends Required<IClientMediaCallData> {
+    state: CallState;
+    ignored: boolean;
+    signed: boolean;
+    hidden: boolean;
+    contact: CallContact;
     emitter: Emitter<CallEvents>;
     getRemoteMediaStream(): MediaStream;
     accept(): Promise<void>;

@@ -24,12 +24,13 @@ class UserBasicAgent extends IMediaCallAgent_1.MediaCallBasicAgent {
             // host
         };
     }
-    async notify(callId, notification) {
+    async notify(callId, notification, signedContractId) {
         logger_1.logger.debug({ msg: 'UserBasicAgent.notify', callId, notification });
         return this.sendSignal({
             callId,
             type: 'notification',
             notification,
+            ...(signedContractId && { signedContractId }),
         });
     }
     async sendSignal(signal) {

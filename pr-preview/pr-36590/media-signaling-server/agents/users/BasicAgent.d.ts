@@ -11,6 +11,6 @@ export declare class UserBasicAgent<T extends IMediaCallBasicAgent = INewMediaCa
     });
     isRepresentingActor(actor: MediaCallActor): actor is MediaCallActor<'user'>;
     getContactInfo(): Promise<CallContact>;
-    notify(callId: string, notification: CallNotification): Promise<void>;
+    notify(callId: string, notification: CallNotification, signedContractId?: string): Promise<void>;
     protected sendSignal(signal: ServerMediaSignal): Promise<void>;
 }

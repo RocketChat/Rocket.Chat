@@ -90,6 +90,7 @@ class MediaCallAgentManager {
             // Notify something?
             return;
         }
+        agent.sign();
         // #ToDo: notify client if this throws any error
         return this.processAcceptedCall(agent);
     }

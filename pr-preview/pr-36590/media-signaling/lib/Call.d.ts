@@ -4,8 +4,10 @@ import type { IServiceProcessorFactoryList } from '../definition';
 import type { IClientMediaCall, CallEvents, CallContact, CallRole, CallState, CallService, CallHangupReason, CallActorType } from '../definition/call';
 import type { ClientState } from '../definition/client';
 import type { IWebRTCProcessor, MediaStreamFactory } from '../definition/services';
+import type { IMediaSignalLogger } from '../definition/logger';
 import type { ServerMediaSignal, ServerMediaSignalNewCall, ServerMediaSignalRemoteSDP, ServerMediaSignalRequestOffer } from '../definition/signals/server';
 export interface IClientMediaCallConfig {
+    logger?: IMediaSignalLogger;
     transporter: MediaSignalTransportWrapper;
     processorFactories: IServiceProcessorFactoryList;
     mediaStreamFactory: MediaStreamFactory;
@@ -24,6 +26,8 @@ export declare class ClientMediaCall implements IClientMediaCall {
     get contact(): CallContact;
     private _service;
     get service(): CallService | null;
+    get signed(): boolean;
+    get hidden(): boolean;
     protected webrtcProcessor: IWebRTCProcessor | null;
     private acceptedLocally;
     private endedLocally;
@@ -39,6 +43,7 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private serviceStates;
     private stateReporterTimeoutHandler;
     private mayReportStates;
+    private contractState;
     private localCallId;
     constructor(config: IClientMediaCallConfig, callId: string);
     initializeOutboundCall(contact: CallContact): Promise<void>;
@@ -56,12 +61,15 @@ export declare class ClientMediaCall implements IClientMediaCall {
     isPendingAcceptance(): boolean;
     isPendingOurAcceptance(): boolean;
     isOver(): boolean;
+    ignore(): void;
+    setContractState(state: 'signed' | 'ignored'): void;
     private changeState;
     private updateClientState;
     private changeContact;
     protected processOfferRequest(signal: ServerMediaSignalRequestOffer): Promise<void>;
     protected shouldIgnoreWebRTC(): boolean;
     protected processAnswerRequest(signal: ServerMediaSignalRemoteSDP): Promise<void>;
+    protected sendError(errorCode: string): void;
     protected processRemoteSDP(signal: ServerMediaSignalRemoteSDP): Promise<void>;
     protected deliverSdp(data: {
         sdp: RTCSessionDescriptionInit;
@@ -78,6 +86,7 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private reportStates;
     private clearStateReporter;
     private requestStateReport;
+    private throwError;
     private prepareWebRtcProcessor;
     private requireWebRTC;
 }

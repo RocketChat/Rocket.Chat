@@ -25,7 +25,7 @@ export class MediaSignalingSession extends Emitter {
         this._sessionId = createRandomToken(8);
         this.knownCalls = new Map();
         this.ignoredCalls = new Set();
-        this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport);
+        this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
     }
     isBusy() {
         const call = this.getMainCall();
@@ -41,6 +41,9 @@ export class MediaSignalingSession extends Emitter {
         let ringingCall = null;
         let pendingCall = null;
         for (const call of this.knownCalls.values()) {
+            if (call.state === 'hangup' || call.ignored) {
+                continue;
+            }
             if (['accepted', 'active'].includes(call.state)) {
                 return call;
             }
@@ -48,7 +51,7 @@ export class MediaSignalingSession extends Emitter {
                 ringingCall = call;
                 continue;
             }
-            if (call.state === 'none') {
+            if (call.state === 'none' && !pendingCall) {
                 pendingCall = call;
                 continue;
             }
@@ -57,17 +60,30 @@ export class MediaSignalingSession extends Emitter {
     }
     processSignal(signal) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.processSignal', signal);
             if (this.isSignalTargetingAnotherSession(signal) || this.isCallIgnored(signal.callId)) {
                 return;
             }
-            const call = yield this.getOrCreateCallBySignal(signal);
+            const call = this.getOrCreateCallBySignal(signal);
+            if (signal.type === 'notification' && signal.signedContractId) {
+                if (signal.signedContractId === this._sessionId) {
+                    call.setContractState('signed');
+                }
+                else if (signal.notification === 'accepted') {
+                    // The server accepted a contract, but it wasn't ours - ignore the call in this session
+                    call.setContractState('ignored');
+                }
+            }
             yield call.processSignal(signal);
         });
     }
     startCall(calleeType, calleeId, contactInfo) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.startCall', calleeId);
             const callId = this.createTemporaryCallId();
-            const call = yield this.createCall(callId);
+            const call = this.createCall(callId);
             yield call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
         });
     }
@@ -91,52 +107,108 @@ export class MediaSignalingSession extends Emitter {
         return this.ignoredCalls.has(callId);
     }
     ignoreCall(callId) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.ignoreCall', callId);
         this.ignoredCalls.add(callId);
         if (this.knownCalls.has(callId)) {
+            const call = this.knownCalls.get(callId);
             this.knownCalls.delete(callId);
+            call === null || call === void 0 ? void 0 : call.ignore();
         }
     }
-    getOrCreateCall(callId, localCallId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const existingCall = this.knownCalls.get(callId);
-            if (existingCall) {
-                return existingCall;
-            }
-            const localCall = localCallId && this.knownCalls.get(localCallId);
+    getExistingCallBySignal(signal) {
+        const existingCall = this.knownCalls.get(signal.callId);
+        if (existingCall) {
+            return existingCall;
+        }
+        if (signal.type === 'new' && signal.requestedCallId) {
+            const localCall = this.knownCalls.get(signal.requestedCallId);
             if (localCall) {
-                this.knownCalls.set(callId, localCall);
+                this.knownCalls.set(signal.callId, localCall);
                 return localCall;
             }
-            return this.createCall(callId);
-        });
+        }
+        return null;
     }
     getOrCreateCallBySignal(signal) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (signal.type === 'new') {
-                return this.getOrCreateCall(signal.callId, signal.requestedCallId);
-            }
-            return this.getOrCreateCall(signal.callId);
-        });
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.getOrCreateCallBySignal', signal);
+        const existingCall = this.getExistingCallBySignal(signal);
+        if (existingCall) {
+            return existingCall;
+        }
+        return this.createCall(signal.callId);
     }
     createCall(callId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const config = {
-                transporter: this.transporter,
-                processorFactories: this.config.processorFactories,
-                mediaStreamFactory: this.config.mediaStreamFactory,
-            };
-            const call = new ClientMediaCall(config, callId);
-            this.knownCalls.set(callId, call);
-            call.emitter.on('contactUpdate', () => this.emit('callContactUpdate', { call }));
-            call.emitter.on('stateChange', (oldState) => this.emit('callStateChange', { call, oldState }));
-            call.emitter.on('initialized', () => this.emit('newCall', { call }));
-            call.emitter.on('accepted', () => this.emit('acceptedCall', { call }));
-            call.emitter.on('ended', () => {
-                this.ignoreCall(call.callId);
-                this.emit('endedCall', { call });
-            });
-            return call;
-        });
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.createCall');
+        const config = {
+            logger: this.config.logger,
+            transporter: this.transporter,
+            processorFactories: this.config.processorFactories,
+            mediaStreamFactory: this.config.mediaStreamFactory,
+        };
+        const call = new ClientMediaCall(config, callId);
+        this.knownCalls.set(callId, call);
+        call.emitter.on('contactUpdate', () => this.onCallContactUpdate(call));
+        call.emitter.on('stateChange', (oldState) => this.onCallStateChange(call, oldState));
+        call.emitter.on('clientStateChange', (oldState) => this.onCallClientStateChange(call, oldState));
+        call.emitter.on('initialized', () => this.onNewCall(call));
+        call.emitter.on('accepted', () => this.onAcceptedCall(call));
+        call.emitter.on('hidden', () => this.onHiddenCall(call));
+        call.emitter.on('ended', () => this.onEndedCall(call));
+        return call;
+    }
+    onCallContactUpdate(call) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.onCallContactUpdate');
+        if (call.hidden) {
+            return;
+        }
+        this.emit('callContactUpdate', { call });
+    }
+    onCallStateChange(call, oldState) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.onCallStateChange');
+        if (call.hidden && call.state !== 'hangup') {
+            return;
+        }
+        this.emit('callStateChange', { call, oldState });
+    }
+    onCallClientStateChange(call, oldState) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.onCallClientStateChange');
+        if (call.hidden && call.state !== 'hangup') {
+            return;
+        }
+        this.emit('callClientStateChange', { call, oldState });
+    }
+    onNewCall(call) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.onNewCall');
+        if (call.hidden) {
+            return;
+        }
+        this.emit('newCall', { call });
+    }
+    onAcceptedCall(call) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.onAcceptedCall');
+        if (call.hidden) {
+            return;
+        }
+        this.emit('acceptedCall', { call });
+    }
+    onEndedCall(call) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.onEndedCall');
+        this.ignoreCall(call.callId);
+        this.emit('endedCall', { call });
+    }
+    onHiddenCall(call) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.onHiddenCall');
+        this.emit('hiddenCall', { call });
     }
 }
 //# sourceMappingURL=Session.js.map
