@@ -1,3 +1,4 @@
+import { api, FederationMatrix } from '@rocket.chat/core-services';
 import {
 	isEditedMessage,
 	isMessageFromMatrixFederation,
@@ -6,7 +7,6 @@ import {
 	type IRoom,
 	type IUser,
 } from '@rocket.chat/core-typings';
-import { api, FederationMatrix } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 
 import notifications from '../../../../app/notifications/server/lib/Notifications';

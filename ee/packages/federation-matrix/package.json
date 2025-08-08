@@ -10,6 +10,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/emojione": "^2.2.9",
 		"@types/node": "~22.14.0",
+		"@types/sanitize-html": "^2",
 		"babel-jest": "~30.0.0",
 		"eslint": "~8.45.0",
 		"jest": "~30.0.0",
@@ -41,9 +42,13 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
+		"@types/marked": "^6.0.0",
+		"@vector-im/matrix-bot-sdk": "^0.7.1-element.6",
 		"emojione": "^4.5.0",
+		"marked": "^16.1.2",
 		"mongodb": "6.10.0",
 		"pino": "8.21.0",
-		"reflect-metadata": "^0.2.2"
+		"reflect-metadata": "^0.2.2",
+		"sanitize-html": "^2.17.0"
 	}
 }
