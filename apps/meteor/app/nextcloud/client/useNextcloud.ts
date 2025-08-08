@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
 
-const config: OauthConfig = {
+const config = {
 	serverURL: '',
 	tokenPath: '/index.php/apps/oauth2/api/v1/token',
 	tokenSentVia: 'header',
@@ -15,7 +15,7 @@ const config: OauthConfig = {
 		forLoggedInUser: ['services.nextcloud'],
 		forOtherUsers: ['services.nextcloud.name'],
 	},
-};
+} as const satisfies OauthConfig;
 
 const Nextcloud = CustomOAuth.configureOAuthService('nextcloud', config);
 
@@ -24,8 +24,10 @@ export const useNextcloud = (): void => {
 
 	useEffect(() => {
 		if (nextcloudURL) {
-			config.serverURL = nextcloudURL.trim().replace(/\/*$/, '');
-			Nextcloud.configure(config);
+			Nextcloud.configure({
+				...config,
+				serverURL: nextcloudURL.trim().replace(/\/*$/, ''),
+			});
 		}
 	}, [nextcloudURL]);
 };

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 import { CustomOAuth } from '../../../custom-oauth/client/CustomOAuth';
 
-const config: OauthConfig = {
+const config = {
 	serverURL: 'https://gitlab.com',
 	identityPath: '/api/v4/user',
 	scope: 'read_user',
@@ -14,7 +14,7 @@ const config: OauthConfig = {
 		forOtherUsers: ['services.gitlab.username'],
 	},
 	accessTokenParam: 'access_token',
-};
+} as const satisfies OauthConfig;
 
 const Gitlab = CustomOAuth.configureOAuthService('gitlab', config);
 
@@ -24,18 +24,11 @@ export const useGitLabAuth = () => {
 	const gitlabMergeUsers = useSetting('Accounts_OAuth_Gitlab_merge_users', false);
 
 	useEffect(() => {
-		if (gitlabApiUrl) {
-			config.serverURL = gitlabApiUrl.trim().replace(/\/*$/, '');
-		}
-
-		if (gitlabIdentiry) {
-			config.identityPath = gitlabIdentiry.trim() || config.identityPath;
-		}
-
-		if (gitlabMergeUsers) {
-			config.mergeUsers = true;
-		}
-
-		Gitlab.configure(config);
+		Gitlab.configure({
+			...config,
+			...(gitlabApiUrl && { serverURL: gitlabApiUrl.trim().replace(/\/*$/, '') }),
+			...(gitlabIdentiry && { identityPath: gitlabIdentiry.trim() || config.identityPath }),
+			...(gitlabMergeUsers && { mergeUsers: true }),
+		});
 	}, [gitlabApiUrl, gitlabIdentiry, gitlabMergeUsers]);
 };

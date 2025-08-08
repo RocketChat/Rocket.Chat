@@ -7,7 +7,7 @@ import { CustomOAuth } from '../../../custom-oauth/client/CustomOAuth';
 // Drupal Server CallBack URL needs to be http(s)://{rocketchat.server}[:port]/_oauth/drupal
 // In RocketChat -> Administration the URL needs to be http(s)://{drupal.server}/
 
-const config: OauthConfig = {
+const config = {
 	serverURL: '',
 	identityPath: '/oauth2/UserInfo',
 	authorizePath: '/oauth2/authorize',
@@ -21,7 +21,7 @@ const config: OauthConfig = {
 		forOtherUsers: ['services.drupal.name'],
 	},
 	accessTokenParam: 'access_token',
-};
+} as const satisfies OauthConfig;
 
 const Drupal = CustomOAuth.configureOAuthService('drupal', config);
 
@@ -30,8 +30,10 @@ export const useDrupal = () => {
 
 	useEffect(() => {
 		if (drupalUrl) {
-			config.serverURL = drupalUrl;
-			Drupal.configure(config);
+			Drupal.configure({
+				...config,
+				serverURL: drupalUrl,
+			});
 		}
 	}, [drupalUrl]);
 };

@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 
 import { CustomOAuth } from '../../../../app/custom-oauth/client/CustomOAuth';
 
-const configDefault: OauthConfig = {
+const configDefault = {
 	serverURL: '',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.wordpress'],
 		forOtherUsers: ['services.wordpress.user_login'],
 	},
 	accessTokenParam: 'access_token',
-};
+} as const satisfies OauthConfig;
 
 const WordPress = CustomOAuth.configureOAuthService('wordpress', configDefault);
 

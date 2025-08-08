@@ -2,7 +2,6 @@ import type { OAuthConfiguration, OauthConfig } from '@rocket.chat/core-typings'
 import { Random } from '@rocket.chat/random';
 import { capitalize } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
-import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
@@ -34,7 +33,7 @@ export class CustomOAuth implements IOAuthProvider {
 		options: OauthConfig,
 	) {
 		this.name = name;
-		if (!Match.test(this.name, String)) {
+		if (typeof this.name !== 'string') {
 			throw new Meteor.Error('CustomOAuth: Name is required and must be String');
 		}
 
@@ -45,26 +44,18 @@ export class CustomOAuth implements IOAuthProvider {
 		this.configureLogin();
 	}
 
-	configure(options: OauthConfig) {
-		if (!Match.test(options, Object)) {
+	configure(options: Readonly<OauthConfig>) {
+		if (typeof options !== 'object' || !options) {
 			throw new Meteor.Error('CustomOAuth: Options is required and must be Object');
 		}
 
-		if (!Match.test(options.serverURL, String)) {
+		if (typeof options.serverURL !== 'string') {
 			throw new Meteor.Error('CustomOAuth: Options.serverURL is required and must be String');
 		}
 
-		if (!Match.test(options.authorizePath, String)) {
-			options.authorizePath = '/oauth/authorize';
-		}
-
-		if (!Match.test(options.scope, String)) {
-			options.scope = 'openid';
-		}
-
 		this.serverURL = options.serverURL;
-		this.authorizePath = options.authorizePath;
-		this.scope = options.scope;
+		this.authorizePath = options.authorizePath ?? '/oauth/authorize';
+		this.scope = options.scope ?? 'openid';
 		this.responseType = options.responseType || 'code';
 
 		if (!isURL(this.authorizePath)) {
