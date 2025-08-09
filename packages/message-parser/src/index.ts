@@ -2,6 +2,7 @@
 import type * as AST from './definitions';
 import * as ast from './utils.ts';
 import { EMOTICON_MAP, EMOTICON_KEYS_DESC, isEscapable, VALID_TIMESTAMP_FORMATS, RE_URL_PREFIX } from './constants';
+import { filterBoldContent, filterItalicContent, filterStrikeContent } from './filters';
 
 export type * from './definitions';
 
@@ -452,31 +453,6 @@ const shouldSkipConsecutiveEmoticons = (text: string, startPos: number): boolean
   return emoticonCount >= 4 || (emoticonCount >= 2 && (hasNonWhitespaceBefore || hasNonWhitespaceAfter));
 };
 
-// Helper to filter nested content for bold, converting unsupported nodes to plain text
-const filterBoldContent = (
-  tokens: AST.Inlines[],
-): (AST.MarkupExcluding<AST.Bold> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] => {
-  const valid: (AST.MarkupExcluding<AST.Bold> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] = [];
-  for (const token of tokens) {
-    if (
-      token.type === 'BOLD' ||
-      token.type === 'TIMESTAMP' ||
-      token.type === 'IMAGE' ||
-      token.type === 'COLOR' ||
-      token.type === 'INLINE_KATEX'
-    ) {
-      if (token.type === 'TIMESTAMP') {
-        const format = token.value.format && token.value.format !== 't' ? `:${token.value.format}` : '';
-        valid.push(ast.plain(`<t:${token.value.timestamp}${format}>`));
-      } else {
-        valid.push(ast.plain('[unsupported content]'));
-      }
-    } else {
-      valid.push(token);
-    }
-  }
-  return valid;
-};
 
 // Helper function to parse bold markup
 const parseBoldMarkup = (
@@ -609,47 +585,6 @@ const parseBoldMarkup = (
   return null;
 };
 
-// Helper function to filter out invalid italic content
-const filterItalicContent = (tokens: AST.Inlines[]): (AST.MarkupExcluding<AST.Italic> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode)[] => {
-  return tokens.filter(
-    (token): token is AST.MarkupExcluding<AST.Italic> | AST.Link | AST.Emoji | AST.UserMention | AST.ChannelMention | AST.InlineCode =>
-      token.type !== 'ITALIC' &&
-      token.type !== 'TIMESTAMP' &&
-      token.type !== 'IMAGE' &&
-      token.type !== 'COLOR' &&
-      token.type !== 'INLINE_KATEX'
-  );
-};
-
-// Helper function to filter out invalid strike content
-const filterStrikeContent = (tokens: AST.Inlines[]): (
-  | AST.MarkupExcluding<AST.Strike>
-  | AST.Link
-  | AST.Emoji
-  | AST.UserMention
-  | AST.ChannelMention
-  | AST.InlineCode
-  | AST.Italic
-  | AST.Timestamp
-)[] => {
-  return tokens.filter(
-    (
-      token,
-    ): token is
-      | AST.MarkupExcluding<AST.Strike>
-      | AST.Link
-      | AST.Emoji
-      | AST.UserMention
-      | AST.ChannelMention
-      | AST.InlineCode
-      | AST.Italic
-      | AST.Timestamp =>
-      token.type !== 'STRIKE' &&
-      token.type !== 'IMAGE' &&
-      token.type !== 'COLOR' &&
-      token.type !== 'INLINE_KATEX'
-  );
-};
 
 // Helper function to parse italic markup
 const parseItalicMarkup = (
