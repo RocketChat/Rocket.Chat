@@ -3,7 +3,6 @@ import type { IUploadWithUser, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIn
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
 import type { ChannelsConvertToTeamProps } from './ChannelsConvertToTeamProps';
-import type { ChannelsCreateProps } from './ChannelsCreateProps';
 import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
 import type { ChannelsFilesListProps } from './ChannelsFilesListProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
@@ -62,11 +61,6 @@ export type ChannelsEndpoints = {
 	};
 	'/v1/channels.unarchive': {
 		POST: (params: ChannelsUnarchiveProps) => void;
-	};
-	'/v1/channels.create': {
-		POST: (params: ChannelsCreateProps) => {
-			channel: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
-		};
 	};
 	'/v1/channels.convertToTeam': {
 		POST: (params: ChannelsConvertToTeamProps) => {

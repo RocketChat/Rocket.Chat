@@ -91,7 +91,7 @@ export interface IRoom extends IRocketChatRecord {
 	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
 
 	sidepanel?: {
-		items: [SidepanelItem, SidepanelItem?];
+		items: [SidepanelItem] | [SidepanelItem, SidepanelItem];
 	};
 
 	/**
