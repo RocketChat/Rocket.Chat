@@ -84,7 +84,9 @@ type ConvertToRoute<TRoute extends MinimalRoute> = {
 				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
 			: K2 extends 'POST'
 				? (
-						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
+						...args: [ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>] extends [never]
+							? [params?: never]
+							: [params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>]
 					) => ExtractValidation<
 						200 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
 							? Extract<TRoute, { path: K; method: K2 }>['response'][200]
