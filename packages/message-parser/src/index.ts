@@ -1,8 +1,30 @@
 /* eslint-disable complexity */
 import type * as AST from './definitions';
 import * as ast from './utils.ts';
-import { EMOTICON_MAP, EMOTICON_KEYS_DESC, isEscapable, VALID_TIMESTAMP_FORMATS, RE_URL_PREFIX } from './constants';
-import { filterBoldContent, filterItalicContent, filterStrikeContent } from './filters';
+import {
+  EMOTICON_MAP,
+  EMOTICON_KEYS_DESC,
+  isEscapable,
+  VALID_TIMESTAMP_FORMATS,
+  RE_URL_PREFIX,
+  RE_HEADING,
+  RE_BLOCKQUOTE_LINE,
+  RE_TASK_ITEM_LINE,
+  RE_TASK_ITEM_EXTRACT,
+  RE_UNORDERED_BULLET,
+  RE_UNORDERED_BULLET_EMPTY,
+  RE_UNORDERED_STAR_INLINE,
+  RE_UNORDERED_MARKER,
+  RE_ORDERED_LINE,
+  RE_ORDERED_EXTRACT,
+  RE_NON_DIGITS_GLOBAL,
+  RE_TIMESTAMP_ALL_DIGITS,
+  RE_TIMESTAMP_ISO,
+  RE_TIMESTAMP_TIME_ONLY,
+  RE_TIMESTAMP_TIME_CAPTURE,
+  TRIGGER_CHARS,
+} from './constants.ts';
+import { filterBoldContent, filterItalicContent, filterStrikeContent } from './filters.ts';
 
 export type * from './definitions';
 
@@ -1303,14 +1325,14 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         }
         
         // Check if it's a valid timestamp (numbers or ISO date)
-        if (/^\d+$/.test(timestampValue)) {
+  if (RE_TIMESTAMP_ALL_DIGITS.test(timestampValue)) {
           // Unix timestamp
           if (timestampValue.length >= 9) { // Reasonable timestamp length
             tokens.push(ast.timestamp(timestampValue, format as 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' | undefined));
             i = closeIndex + 1;
             continue;
           }
-        } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?([+-]\d{2}:\d{2}|Z)?$/.test(timestampValue)) {
+  } else if (RE_TIMESTAMP_ISO.test(timestampValue)) {
           // ISO date format with optional milliseconds and timezone - convert to unix timestamp
           const unixTimestamp = Math.floor(new Date(timestampValue).getTime() / 1000).toString();
           if (!isNaN(parseInt(unixTimestamp))) {
@@ -1318,9 +1340,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
             i = closeIndex + 1;
             continue;
           }
-        } else if (/^\d{1,2}:\d{2}(:\d{2})?([+-]\d{2}:\d{2})?$/.test(timestampValue)) {
+  } else if (RE_TIMESTAMP_TIME_ONLY.test(timestampValue)) {
           // Time-only format like "10:00:00+00:00" - need to handle via timestampFromHours
-          const timeMatch = timestampValue.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?([+-]\d{2}:\d{2})?$/);
+          const timeMatch = timestampValue.match(RE_TIMESTAMP_TIME_CAPTURE);
           if (timeMatch) {
             const [, hours, minutes, seconds = '00', timezone = '+00:00'] = timeMatch;
             // This would need timestampFromHours utility - let's implement basic logic
@@ -1334,6 +1356,16 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
             }
           }
         }
+      }
+    }
+
+    // Fast-path: if current char cannot start any special token, try only Unicode emoji and continue
+    if (!TRIGGER_CHARS.has(char)) {
+      const emojiResultFast = getEmojiChar(text, i);
+      if (emojiResultFast.char) {
+        tokens.push(ast.emojiUnicode(emojiResultFast.char));
+        i += emojiResultFast.length;
+        continue;
       }
     }
 
@@ -1605,7 +1637,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
 
             // Check if the URL is a phone number pattern
             if (url.startsWith('+') && /^[+0-9()\-]+$/.test(url)) {
-              const digitsOnly = url.replace(/[^0-9]/g, '');
+              const digitsOnly = url.replace(RE_NON_DIGITS_GLOBAL, '');
               if (digitsOnly.length >= 5) {
                 // This is a phone number in link syntax - use phoneChecker
                 let labelContent: AST.Markup[] | undefined;
@@ -2307,7 +2339,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
     }
     
     // Check for markdown headings (lines starting with # or ##)
-    const headingMatch = line.match(/^(#{1,4})\s+(.+)$/);
+  const headingMatch = line.match(RE_HEADING);
     if (headingMatch) {
       const level = headingMatch[1].length;
       const content = headingMatch[2];
@@ -2317,16 +2349,16 @@ export const parse = (input: string, options?: Options): AST.Root => {
     }
     
     // Check for quote blocks (lines starting with >)
-    if (line.match(/^\s*>/)) {
+  if (RE_BLOCKQUOTE_LINE.test(line)) {
       const quoteLines: string[] = [];
       let quoteIndex = i;
       let hasNonEmptyQuoteLine = false;
       
       // Collect consecutive quote lines
-      while (quoteIndex < lines.length && lines[quoteIndex].match(/^\s*>/)) {
+  while (quoteIndex < lines.length && RE_BLOCKQUOTE_LINE.test(lines[quoteIndex])) {
         const quoteLine = lines[quoteIndex];
         // Remove the > and optional space after it
-        const content = quoteLine.replace(/^\s*>\s?/, '');
+  const content = quoteLine.replace(/^\s*>\s?/, '');
         quoteLines.push(content);
         if (content.trim() !== '') {
           hasNonEmptyQuoteLine = true;
@@ -2358,16 +2390,16 @@ export const parse = (input: string, options?: Options): AST.Root => {
     }
     
     // Check for task items (lines starting with - [ ] or - [x])
-    if (line.match(/^\s*-\s*\[[x ]\]\s/)) {
+  if (RE_TASK_ITEM_LINE.test(line)) {
       const taskItems: AST.Task[] = [];
       let taskIndex = i;
       
       // Collect consecutive task items
-      while (taskIndex < lines.length && lines[taskIndex].match(/^\s*-\s*\[[x ]\]\s/)) {
+  while (taskIndex < lines.length && RE_TASK_ITEM_LINE.test(lines[taskIndex])) {
         const taskLine = lines[taskIndex];
         
         // Extract the checkbox status and content
-        const taskMatch = taskLine.match(/^\s*-\s*\[([x ])\]\s(.*)$/);
+  const taskMatch = taskLine.match(RE_TASK_ITEM_EXTRACT);
         if (taskMatch) {
           const status = taskMatch[1] === 'x'; // true for [x], false for [ ]
           const content = taskMatch[2];
@@ -2387,17 +2419,17 @@ export const parse = (input: string, options?: Options): AST.Root => {
     // Check for unordered list items (lines starting with - or *)
     // But exclude lines that look like emphasis (single character content)
     // Also exclude lines that could be bold formatting (e.g., "* Hello*")
-    if (line.match(/^\s*[-*]\s/) && !line.match(/^\s*[-*]\s*[*_~]?\s*$/) && !line.match(/^\s*\*\s.*\*\s*$/)) {
+  if (RE_UNORDERED_BULLET.test(line) && !RE_UNORDERED_BULLET_EMPTY.test(line) && !RE_UNORDERED_STAR_INLINE.test(line)) {
       const listItems: AST.ListItem[] = [];
       let listIndex = i;
       
       // Get the marker type from the first line (- or *)
-      const firstMarker = line.match(/^\s*([-*])\s/)?.[1];
+  const firstMarker = line.match(RE_UNORDERED_MARKER)?.[1];
       
       // Collect consecutive unordered list items with the same marker
-      while (listIndex < lines.length && lines[listIndex].match(/^\s*[-*]\s/)) {
+  while (listIndex < lines.length && RE_UNORDERED_BULLET.test(lines[listIndex])) {
         const listLine = lines[listIndex];
-        const currentMarker = listLine.match(/^\s*([-*])\s/)?.[1];
+  const currentMarker = listLine.match(RE_UNORDERED_MARKER)?.[1];
         
         // Stop if the marker changes (different marker = different list)
         if (currentMarker !== firstMarker) {
@@ -2405,12 +2437,12 @@ export const parse = (input: string, options?: Options): AST.Root => {
         }
         
         // Skip lines that look like emphasis patterns
-        if (listLine.match(/^\s*[-*]\s*[*_~]?\s*$/)) {
+  if (RE_UNORDERED_BULLET_EMPTY.test(listLine)) {
           break;
         }
         
         // Remove the - or * and space after it
-        const content = listLine.replace(/^\s*[-*]\s/, '');
+  const content = listLine.replace(RE_UNORDERED_BULLET, '');
         const inlineContent = parseInlineContent(content, options);
         listItems.push(ast.listItem(inlineContent));
         listIndex++;
@@ -2424,15 +2456,15 @@ export const parse = (input: string, options?: Options): AST.Root => {
     }
     
     // Check for ordered list items (lines starting with numbers followed by .)
-    if (line.match(/^\s*\d+\.\s/)) {
+  if (RE_ORDERED_LINE.test(line)) {
       const listItems: AST.ListItem[] = [];
       let listIndex = i;
       
       // Collect consecutive ordered list items
-      while (listIndex < lines.length && lines[listIndex].match(/^\s*\d+\.\s/)) {
+  while (listIndex < lines.length && RE_ORDERED_LINE.test(lines[listIndex])) {
         const listLine = lines[listIndex];
         // Extract the number and content
-        const match = listLine.match(/^\s*(\d+)\.\s(.*)$/);
+  const match = listLine.match(RE_ORDERED_EXTRACT);
         if (match) {
           const number = parseInt(match[1], 10);
           const content = match[2];

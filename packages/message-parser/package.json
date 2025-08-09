@@ -46,9 +46,11 @@
     "lint": "eslint .",
     "test": "jest",
     "testunit": "jest",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "bench": "node --loader ts-node/esm bench/benchmark.ts"
   },
   "devDependencies": {
+    "ts-node": "~10.9.2",
     "@babel/core": "~7.26.10",
     "@babel/eslint-parser": "~7.25.9",
     "@babel/preset-env": "~7.26.9",
