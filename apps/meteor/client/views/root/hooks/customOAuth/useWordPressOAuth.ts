@@ -2,16 +2,16 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../../../app/custom-oauth/client/CustomOAuth';
+import { CustomOAuth } from '../../../../lib/customOAuth/CustomOAuth';
 
-const configDefault: OauthConfig = {
+const configDefault = {
 	serverURL: '',
 	addAutopublishFields: {
 		forLoggedInUser: ['services.wordpress'],
 		forOtherUsers: ['services.wordpress.user_login'],
 	},
 	accessTokenParam: 'access_token',
-};
+} as const satisfies OauthConfig;
 
 const WordPress = CustomOAuth.configureOAuthService('wordpress', configDefault);
 
@@ -22,7 +22,7 @@ const configureServerType = (
 	tokenPath?: string,
 	authorizePath?: string,
 	scope?: string,
-) => {
+): OauthConfig => {
 	switch (serverType) {
 		case 'custom': {
 			return {

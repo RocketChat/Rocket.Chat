@@ -2,9 +2,9 @@ import type { OauthConfig } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CustomOAuth } from '../../../custom-oauth/client/CustomOAuth';
+import { CustomOAuth } from '../../../../lib/customOAuth/CustomOAuth';
 
-const config: OauthConfig = {
+const config = {
 	serverURL: '',
 	identityPath: '/oauth/user',
 	authorizePath: '/oauth/authorize',
@@ -18,18 +18,19 @@ const config: OauthConfig = {
 		forOtherUsers: ['services.tokenpass.name'],
 	},
 	accessTokenParam: 'access_token',
-};
+} as const satisfies OauthConfig;
 
 const Tokenpass = CustomOAuth.configureOAuthService('tokenpass', config);
 
-export const useTokenPassAuth = () => {
+export const useTokenpassOAuth = () => {
 	const setting = useSetting('API_Tokenpass_URL') as string | undefined;
 
 	useEffect(() => {
-		if (!setting) {
-			return;
-		}
-		config.serverURL = setting;
-		Tokenpass.configure(config);
+		if (!setting) return;
+
+		Tokenpass.configure({
+			...config,
+			serverURL: setting,
+		});
 	}, [setting]);
 };
