@@ -68,6 +68,10 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 		return this.updateOneById(_id, { $set: { state } });
 	}
 
+	public async setActiveById(_id: string): Promise<UpdateResult> {
+		return this.updateOne({ _id, activeAt: { $exists: false } }, { $set: { state: 'active', activeAt: new Date() } });
+	}
+
 	public async setLocalDescription(_id: string, localDescription: RTCSessionDescriptionInit): Promise<UpdateResult> {
 		return this.updateOneById(_id, { $set: { localDescription } });
 	}

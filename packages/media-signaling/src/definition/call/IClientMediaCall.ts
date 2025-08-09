@@ -44,6 +44,7 @@ export type CallAnswer =
 
 export type CallNotification =
 	| 'accepted' // notify that the call has been accepted by both actors
+	| 'active' // notify that call activity was confirmed
 	| 'hangup'; // notify that the call is over;
 
 export type CallRejectedReason =
@@ -69,7 +70,7 @@ export interface IClientMediaCall {
 
 	getRemoteMediaStream(): MediaStream;
 
-	accept(): Promise<void>;
-	reject(): Promise<void>;
-	hangup(): Promise<void>;
+	accept(): void;
+	reject(): void;
+	hangup(): void;
 }

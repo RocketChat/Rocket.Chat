@@ -99,6 +99,20 @@ class MediaCallAgentManager {
 		}
 	}
 
+	public async activateCall(agent: IMediaCallAgent): Promise<void> {
+		logger.debug({ msg: 'AgentManager.activateCall', actor: agent.actor });
+
+		const stateResult = await MediaCalls.activateCallById(agent.callId);
+		if (!stateResult.modifiedCount) {
+			return;
+		}
+
+		const otherAgent = await this.getAnyOppositeAgent(agent);
+		if (otherAgent) {
+			otherAgent.notify(agent.callId, 'active');
+		}
+	}
+
 	public async acknowledgeCallee(agent: IMediaCallAgent): Promise<void> {
 		logger.debug({ msg: 'AgentManager.acknowledgeCallee', actor: agent.actor });
 		if (agent.role !== 'callee') {

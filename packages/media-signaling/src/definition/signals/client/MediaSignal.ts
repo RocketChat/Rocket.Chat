@@ -5,6 +5,7 @@ import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './err
 import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup';
 import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './local-sdp';
 import { clientMediaSignalLocalStateSchema, type ClientMediaSignalLocalState } from './local-state';
+import { clientMediaSignalRegisterSchema, type ClientMediaSignalRegister } from './register';
 import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call';
 
 const ajv = new Ajv({ discriminator: true });
@@ -15,7 +16,8 @@ export type ClientMediaSignal =
 	| ClientMediaSignalAnswer
 	| ClientMediaSignalHangup
 	| ClientMediaSignalRequestCall
-	| ClientMediaSignalLocalState;
+	| ClientMediaSignalLocalState
+	| ClientMediaSignalRegister;
 
 export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 	type: 'object',
@@ -29,8 +31,9 @@ export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 		clientMediaSignalHangupSchema,
 		clientMediaSignalRequestCallSchema,
 		clientMediaSignalLocalStateSchema,
+		clientMediaSignalRegisterSchema,
 	],
-} as const;
+};
 
 export const isClientMediaSignal = ajv.compile(clientMediaSignalSchema);
 

@@ -20,17 +20,21 @@ export type MediaSignalingEvents = {
 	callClientStateChange: { call: IClientMediaCall; oldState: ClientState };
 	newCall: { call: IClientMediaCall };
 	acceptedCall: { call: IClientMediaCall };
+	activeCall: { call: IClientMediaCall };
 	endedCall: { call: IClientMediaCall };
 	hiddenCall: { call: IClientMediaCall };
 };
 
 export type MediaSignalingSessionConfig = {
 	userId: string;
+	oldSessionId?: string;
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 };
+
+const STATE_REPORT_INTERVAL = 60000;
 
 export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private _userId: string;
@@ -42,6 +46,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private ignoredCalls: Set<string>;
 
 	private transporter: MediaSignalTransportWrapper;
+
+	private recurringStateReportHandler: ReturnType<typeof setInterval> | null;
 
 	public get sessionId(): string {
 		return this._sessionId;
@@ -55,10 +61,14 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		super();
 		this._userId = config.userId;
 		this._sessionId = createRandomToken(8);
+		this.recurringStateReportHandler = null;
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
 
 		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
+
+		this.register();
+		this.enableStateReport(STATE_REPORT_INTERVAL);
 	}
 
 	public isBusy(): boolean {
@@ -68,6 +78,21 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		return ['accepted', 'active'].includes(call.state);
+	}
+
+	public enableStateReport(interval: number): void {
+		this.disableStateReport();
+
+		this.recurringStateReportHandler = setInterval(() => {
+			this.reportState();
+		}, interval);
+	}
+
+	public disableStateReport(): void {
+		if (this.recurringStateReportHandler) {
+			clearInterval(this.recurringStateReportHandler);
+			this.recurringStateReportHandler = null;
+		}
 	}
 
 	public getCallData(callId: string): IClientMediaCall | null {
@@ -191,6 +216,25 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.createCall(signal.callId);
 	}
 
+	private reportState(): void {
+		const call = this.getMainCall() as ClientMediaCall | null;
+		if (call && !call.isOver()) {
+			call.reportStates();
+			return;
+		}
+
+		// If we don't have any call to report the state on, send a register signal instead; the server will ignore it if there's nothing on that side either
+		this.register();
+	}
+
+	private register(): void {
+		this.transporter.sendSignal({
+			type: 'register',
+			contractId: this._sessionId,
+			...(this.config.oldSessionId && { oldContractId: this.config.oldSessionId }),
+		});
+	}
+
 	private createCall(callId: string): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
@@ -209,6 +253,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('initialized', () => this.onNewCall(call));
 		call.emitter.on('accepted', () => this.onAcceptedCall(call));
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
+		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ended', () => this.onEndedCall(call));
 
 		return call;
@@ -268,5 +313,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private onHiddenCall(call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onHiddenCall');
 		this.emit('hiddenCall', { call });
+	}
+
+	private onActiveCall(call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onActiveCall');
+		this.emit('activeCall', { call });
 	}
 }

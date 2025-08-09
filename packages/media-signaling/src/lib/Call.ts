@@ -324,7 +324,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public async accept(): Promise<void> {
+	public accept(): void {
 		this.config.logger?.debug('ClientMediaCall.accept');
 
 		if (!this.isPendingOurAcceptance()) {
@@ -346,7 +346,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public async reject(): Promise<void> {
+	public reject(): void {
 		this.config.logger?.debug('ClientMediaCall.reject');
 
 		if (!this.isPendingOurAcceptance()) {
@@ -361,7 +361,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.changeState('hangup');
 	}
 
-	public async hangup(reason: CallHangupReason = 'normal'): Promise<void> {
+	public hangup(reason: CallHangupReason = 'normal'): void {
 		this.config.logger?.debug('ClientMediaCall.hangup', reason);
 		if (this.endedLocally || this._state === 'hangup') {
 			return;
@@ -447,6 +447,26 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	public reportStates(): void {
+		this.config.logger?.debug('ClientMediaCall.reportStates');
+		this.clearStateReporter();
+		if (!this.mayReportStates) {
+			return;
+		}
+
+		this.config.transporter.sendToServer(this.callId, 'local-state', {
+			callState: this.state,
+			clientState: this.getClientState(),
+			serviceStates: Object.fromEntries(this.serviceStates.entries()),
+			ignored: this.ignored,
+			contractState: this.contractState,
+		});
+
+		if (this.state === 'hangup') {
+			this.mayReportStates = false;
+		}
+	}
+
 	private changeState(newState: CallState): void {
 		if (newState === this._state) {
 			return;
@@ -464,8 +484,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		switch (newState) {
 			case 'accepted':
 				this.emitter.emit('accepted');
-
 				break;
+			case 'active':
+				this.emitter.emit('active');
+				this.reportStates();
+				break;
+
 			case 'hangup':
 				this.emitter.emit('ended');
 				break;
@@ -662,6 +686,11 @@ export class ClientMediaCall implements IClientMediaCall {
 		switch (signal.notification) {
 			case 'accepted':
 				return this.flagAsAccepted();
+			case 'active':
+				if (this.state === 'accepted') {
+					this.changeState('active');
+				}
+				return;
 
 			case 'hangup':
 				return this.flagAsEnded('remote');
@@ -762,27 +791,48 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		if (this.serviceStates.get(stateName) !== stateValue) {
 			this.serviceStates.set(stateName, stateValue);
+
+			switch (stateName) {
+				case 'connection':
+					this.onWebRTCConnectionStateChange(stateValue as RTCPeerConnectionState);
+					break;
+			}
+
 			this.requestStateReport();
 		}
 	}
 
-	private reportStates(): void {
-		this.config.logger?.debug('ClientMediaCall.reportStates');
-		this.clearStateReporter();
-		if (!this.mayReportStates) {
+	private onWebRTCConnectionStateChange(stateValue: RTCPeerConnectionState): void {
+		if (this.hidden) {
 			return;
 		}
 
-		this.config.transporter.sendToServer(this.callId, 'local-state', {
-			callState: this.state,
-			clientState: this.getClientState(),
-			serviceStates: Object.fromEntries(this.serviceStates.entries()),
-			ignored: this.ignored,
-			contractState: this.contractState,
-		});
-
-		if (this.state === 'hangup') {
-			this.mayReportStates = false;
+		try {
+			switch (stateValue) {
+				case 'connected':
+					if (this.state === 'accepted') {
+						this.changeState('active');
+					}
+					break;
+				case 'failed':
+					if (!this.isOver()) {
+						this.hangup('service-error');
+					}
+					break;
+				case 'closed':
+					if (!this.isOver()) {
+						this.hangup('service-error');
+					}
+					break;
+				case 'disconnected':
+					// #ToDo: Attempt to reconnect when possible
+					if (this.state === 'active') {
+						this.hangup('service-error');
+					}
+					break;
+			}
+		} catch (e) {
+			this.config.logger?.error('An error occured while reviewing the webrtc connection state change', e);
 		}
 	}
 

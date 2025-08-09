@@ -11,6 +11,7 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	): Promise<T | null>;
 	startRingingById(callId: string): Promise<UpdateResult>;
 	acceptCallById(callId: string, calleeContractId: string): Promise<UpdateResult>;
+	activateCallById(callId: string): Promise<UpdateResult>;
 	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<UpdateResult>;
 	hangupEveryCall(params?: { endedBy?: IMediaCall['endedBy']; reason?: string }): Promise<UpdateResult>;
 }

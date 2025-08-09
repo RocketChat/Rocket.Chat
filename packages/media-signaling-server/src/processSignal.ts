@@ -12,6 +12,13 @@ export async function processSignal(signal: ClientMediaSignal, uid: IUser['_id']
 		return processNewCallSignal(signal, uid);
 	}
 
+	if (signal.type === 'register') {
+		// #ToDo: client registration
+		// 1. Re-send signals for any pending calls involving this actor;
+		// 2. Hangup active calls involving the oldContractId if it's different from the new one.
+		return;
+	}
+
 	try {
 		const call = await MediaCalls.findOneById(signal.callId);
 		if (!call) {
