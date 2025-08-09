@@ -62,6 +62,17 @@ export const RE_TIMESTAMP_TIME_CAPTURE = /^(\d{1,2}):(\d{2})(?::(\d{2}))?([+-]\d
 // Characters that can start interesting tokens in the inline scanner
 export const TRIGGER_CHARS = new Set(['*', '_', '~', '`', '(', ')', '<', '!', '[', ']', ':', '@', '#']);
 
+// Precomputed ASCII trigger bitset for faster hot-path checks
+export const TRIGGER_ASCII = (() => {
+  const arr = new Uint8Array(128);
+  const triggers = ['*', '_', '~', '`', '(', ')', '<', '!', '[', ']', ':', '@', '#'];
+  for (let i = 0; i < triggers.length; i++) {
+    const code = triggers[i].charCodeAt(0);
+    if (code < 128) arr[code] = 1;
+  }
+  return arr;
+})();
+
 // Emoticon special-case detection
 export const RE_CONSECUTIVE_EMOTICONS_2PLUS = /^\s*(?::\)|D:){2,}\s*$/;
 export const RE_CONSECUTIVE_EMOTICONS_4PLUS = /^(?::\)|D:){4,}$/;

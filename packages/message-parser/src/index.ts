@@ -22,7 +22,8 @@ import {
   RE_TIMESTAMP_ISO,
   RE_TIMESTAMP_TIME_ONLY,
   RE_TIMESTAMP_TIME_CAPTURE,
-  TRIGGER_CHARS,
+  
+  TRIGGER_ASCII,
   RE_CONSECUTIVE_EMOTICONS_2PLUS,
   RE_CONSECUTIVE_EMOTICONS_4PLUS,
 } from './constants.ts';
@@ -1371,7 +1372,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     }
 
     // Fast-path: if current char cannot start any special token, try only Unicode emoji and continue
-    if (!TRIGGER_CHARS.has(char)) {
+  if ((char.charCodeAt(0) & 0x80) === 0 && TRIGGER_ASCII[char.charCodeAt(0)] === 0) {
       const emojiResultFast = getEmojiChar(text, i);
       if (emojiResultFast.char) {
         tokens.push(ast.emojiUnicode(emojiResultFast.char));
@@ -2523,7 +2524,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
         const ch = line[k];
         const code = line.charCodeAt(k);
         // Obvious token starters disable fast-path
-        if (TRIGGER_CHARS.has(ch) || ch === '\\' || ch === '+') { canFastPath = false; break; }
+  if (((ch.charCodeAt(0) & 0x80) === 0 && TRIGGER_ASCII[ch.charCodeAt(0)] === 1) || ch === '\\' || ch === '+') { canFastPath = false; break; }
         // If non-ASCII, allow multilingual text; only probe for emoji when likely:
         // - high surrogate (most emoji are surrogate pairs), or
         // - BMP emoji-heavy blocks: 0x2600–0x27BF, 0x2300–0x23FF, 0x2000–0x206F
