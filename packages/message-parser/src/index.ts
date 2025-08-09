@@ -2509,30 +2509,46 @@ export const parse = (input: string, options?: Options): AST.Root => {
       // - Known inline trigger chars (markdown, links, mentions, emoji shortcode, etc.)
       // - Backslash (possible KaTeX), plus (phones), at (email/mention), dot (domains/emails)
       // - Any non-ASCII codepoint (possible Unicode emoji or i18n domains)
-      let canFastPath = true;
-      const ln = line.length;
-      for (let k = 0; k < ln; k++) {
+  let canFastPath = true;
+  const ln = line.length;
+      for (let k = 0; canFastPath && k < ln; k++) {
         const ch = line[k];
         const code = line.charCodeAt(k);
         // Obvious token starters disable fast-path
         if (TRIGGER_CHARS.has(ch) || ch === '\\' || ch === '+') { canFastPath = false; break; }
-        // If non-ASCII, only disable if it's actually an emoji; allow multilingual text
+        // If non-ASCII, allow multilingual text; only probe for emoji when likely:
+        // - high surrogate (most emoji are surrogate pairs), or
+        // - BMP emoji-heavy blocks: 0x2600–0x27BF, 0x2300–0x23FF, 0x2000–0x206F
         if (code > 127) {
-          const emojiProbe = getEmojiChar(line, k);
-          if (emojiProbe.char) { canFastPath = false; break; }
-          // Skip ahead if we just probed a surrogate pair start to avoid double work
-          if (emojiProbe.length > 1) { k += emojiProbe.length - 1; }
+          // Probe emoji only for likely ranges: high surrogate or BMP emoji-ish blocks
+          const probe = (code >= 0xD800 && code <= 0xDBFF) ||
+            (code >= 0x2600 && code <= 0x27BF) ||
+            (code >= 0x2300 && code <= 0x23FF) ||
+            (code >= 0x2000 && code <= 0x206F);
+          if (probe) {
+            const emojiProbe = getEmojiChar(line, k);
+            if (emojiProbe.char) { canFastPath = false; break; }
+            // Skip ahead if we just probed a surrogate pair/sequence to avoid double work
+            if (emojiProbe.length > 1) { k += emojiProbe.length - 1; }
+          }
           continue;
         }
         // Period only disables fast-path when it looks like part of a domain
         if (ch === '.') {
-          // www. heuristic
-          if (k >= 3 && line.slice(k - 3, k + 1).toLowerCase() === 'www.') { canFastPath = false; break; }
+          // Check for immediate 'www.' pattern (case-insensitive) ending at this dot
+          if (
+            k >= 3 &&
+            ((line[k - 1] === 'w' || line[k - 1] === 'W') &&
+             (line[k - 2] === 'w' || line[k - 2] === 'W') &&
+             (line[k - 3] === 'w' || line[k - 3] === 'W'))
+          ) { canFastPath = false; break; }
+          // Check alnum '.' alpha pattern without creating helper closures
           const prev = k > 0 ? line[k - 1] : '';
           const next = k + 1 < ln ? line[k + 1] : '';
-          const isAlpha = (c: string) => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
-          const isAlnum = (c: string) => isAlpha(c) || (c >= '0' && c <= '9');
-          if (isAlnum(prev) && isAlpha(next)) { canFastPath = false; break; }
+          const prevAlpha = (prev >= 'A' && prev <= 'Z') || (prev >= 'a' && prev <= 'z');
+          const prevNum = prev >= '0' && prev <= '9';
+          const nextAlpha = (next >= 'A' && next <= 'Z') || (next >= 'a' && next <= 'z');
+          if ((prevAlpha || prevNum) && nextAlpha) { canFastPath = false; break; }
         }
       }
       if (canFastPath) {
