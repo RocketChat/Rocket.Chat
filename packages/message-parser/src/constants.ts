@@ -61,3 +61,7 @@ export const RE_TIMESTAMP_TIME_CAPTURE = /^(\d{1,2}):(\d{2})(?::(\d{2}))?([+-]\d
 
 // Characters that can start interesting tokens in the inline scanner
 export const TRIGGER_CHARS = new Set(['*', '_', '~', '`', '(', ')', '<', '!', '[', ']', ':', '@', '#']);
+
+// Emoticon special-case detection
+export const RE_CONSECUTIVE_EMOTICONS_2PLUS = /^\s*(?::\)|D:){2,}\s*$/;
+export const RE_CONSECUTIVE_EMOTICONS_4PLUS = /^(?::\)|D:){4,}$/;

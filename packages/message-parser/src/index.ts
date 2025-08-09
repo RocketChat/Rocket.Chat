@@ -23,6 +23,8 @@ import {
   RE_TIMESTAMP_TIME_ONLY,
   RE_TIMESTAMP_TIME_CAPTURE,
   TRIGGER_CHARS,
+  RE_CONSECUTIVE_EMOTICONS_2PLUS,
+  RE_CONSECUTIVE_EMOTICONS_4PLUS,
 } from './constants.ts';
 import { filterBoldContent, filterItalicContent, filterStrikeContent } from './filters.ts';
 
@@ -1192,7 +1194,7 @@ const parseStrikeMarkup = (
         
         // Add the strike content
         const nestedContent = parseInlineContent(content, options);
-  const validContent = filterStrikeContent(nestedContent);
+        const validContent = filterStrikeContent(nestedContent);
         result.push(ast.strike(validContent));
         
         // Add trailing tilde as plain text
@@ -1215,8 +1217,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
 
   const tokens: AST.Inlines[] = [];
   let i = 0;
+  const n = text.length;
 
-  while (i < text.length) {
+  while (i < n) {
     const char = text[i];
 
     // KaTeX parsing - inline only: \(...\) - check before escape processing
@@ -1236,7 +1239,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     }
 
     // Handle escape characters (after KaTeX check)
-    if (char === '\\' && i + 1 < text.length) {
+  if (char === '\\' && i + 1 < n) {
   const nextChar = text[i + 1];
       
   // Escape markdown special characters (but not structural ones like [])
@@ -1251,7 +1254,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     }
 
     // Phone number detection - must be before URL detection
-    if (char === '+') {
+  if (char === '+') {
       // Check if + is at a word boundary (start of string or after whitespace/punctuation)
       const prevChar = i > 0 ? text[i - 1] : '';
       const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(prevChar);
@@ -1262,8 +1265,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         let phoneText = '+';
         let digitsOnly = '';
         
-        // Allow digits, parentheses, and hyphens immediately after +
-        while (j < text.length) {
+  // Allow digits, parentheses, and hyphens immediately after +
+  while (j < n) {
           const phoneChar = text[j];
           // Allow digits, parentheses, and hyphens only
           if (/[0-9()\-]/.test(phoneChar)) {
@@ -1281,8 +1284,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
         // Check if this looks like a phone number (at least 5 digits)
         if (digitsOnly.length >= 5) {
           // Additional validation - should not end with patterns that indicate it's not a phone number
-          const nextChar = j < text.length ? text[j] : '';
-          const isValidPhoneEnd = j >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(nextChar);
+          const nextChar = j < n ? text[j] : '';
+          const isValidPhoneEnd = j >= n || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(nextChar);
           
           if (isValidPhoneEnd) {
             tokens.push(ast.phoneChecker(phoneText, digitsOnly));
@@ -1403,12 +1406,12 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     }
 
     // Color parsing - pattern: color:#hex (3, 4, 6, or 8 hex digits)
-    if (options?.colors && text.slice(i, i + 6) === 'color:') {
-      const colorStart = i + 6;
-      if (colorStart < text.length && text[colorStart] === '#') {
+  if (options?.colors && text.slice(i, i + 6) === 'color:') {
+  const colorStart = i + 6;
+  if (colorStart < n && text[colorStart] === '#') {
         // Find the end of the hex color
-        let hexEnd = colorStart + 1;
-        while (hexEnd < text.length && /[0-9a-fA-F]/.test(text[hexEnd])) {
+  let hexEnd = colorStart + 1;
+  while (hexEnd < n && /[0-9a-fA-F]/.test(text[hexEnd])) {
           hexEnd++;
         }
         
@@ -1489,8 +1492,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
                 !/^\d+$/.test(shortCode)) {
               
               // Check for word boundary after closing colon - emojis should be separated by whitespace
-              const nextChar = endIndex + 1 < text.length ? text[endIndex + 1] : '';
-              const afterWordBoundary = endIndex + 1 >= text.length || /\s/.test(nextChar);
+              const nextChar = endIndex + 1 < n ? text[endIndex + 1] : '';
+              const afterWordBoundary = endIndex + 1 >= n || /\s/.test(nextChar);
               
               if (afterWordBoundary) {
                 tokens.push(ast.emoji(shortCode));
@@ -1511,8 +1514,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       
       if (atWordBoundary) {
         // Look for username pattern - stop at whitespace and punctuation (but allow colons for Matrix usernames)
-        let j = i + 1;
-        while (j < text.length) {
+  let j = i + 1;
+  while (j < n) {
           const char = text[j];
           // Stop at whitespace or punctuation (but allow underscores, dots, colons in usernames)
           if (/[\s\n\r\t\(\)\[\]{},;!?#]/.test(char)) {
@@ -1538,8 +1541,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       
       if (atWordBoundary) {
         // Look for channel pattern - use permissive Unicode character detection like emails
-        let j = i + 1;
-        while (j < text.length) {
+  let j = i + 1;
+  while (j < n) {
           const char = text[j];
           // Stop at clear separators (whitespace, punctuation, etc.) - allow Unicode characters
           // Also stop at # to prevent ##Hello from being parsed as #Hello
@@ -1570,9 +1573,9 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     }
 
     // Markdown images ![alt](url) - only at word boundaries
-    if (char === '!' && i + 1 < text.length && text[i + 1] === '[') {
+  if (char === '!' && i + 1 < n && text[i + 1] === '[') {
       // Check if this is at a word boundary (start of string or after whitespace/punctuation)
-      const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(text[i - 1]);
+  const atWordBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(text[i - 1]);
       
       if (atWordBoundary) {
         // Look for the ]( pattern after ![
@@ -1609,7 +1612,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       if (atWordBoundary) {
         // Look for the first ]( pattern instead of balancing all brackets
         // This handles nested cases like [text [nested](url)](outer-url) correctly
-        const linkPattern = text.indexOf('](', i + 1);
+  const linkPattern = text.indexOf('](', i + 1);
         
         if (linkPattern !== -1) {
           // Found ]( pattern, now find the closing )
@@ -1618,7 +1621,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           let parenCount = 0;
           let j = linkPattern + 2;
           
-          while (j < text.length) {
+          while (j < n) {
             if (text[j] === '(') {
               parenCount++;
             } else if (text[j] === ')') {
@@ -1727,13 +1730,13 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     }
     
     // Emoticon parsing (text-based emoticons like :), D:, etc.)
-    let found = false;
+  let found = false;
     if (options?.emoticons) {
       for (const emoticon of EMOTICON_KEYS_DESC) {
         if (text.slice(i, i + emoticon.length) === emoticon) {
           // Check word boundaries - emoticons should be surrounded by whitespace or punctuation
           const prevChar = i > 0 ? text[i - 1] : '';
-          const nextChar = i + emoticon.length < text.length ? text[i + emoticon.length] : '';
+      const nextChar = i + emoticon.length < n ? text[i + emoticon.length] : '';
           
           // Boundary check for emoticons
           const prevBoundary = i === 0 || /[\s\n\r\t\(\)\[\]{}.,;*_]/.test(prevChar);
@@ -1767,7 +1770,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
     let plainText = '';
     let tempI = i;
     
-    while (tempI < text.length) {
+  while (tempI < n) {
       const currentChar = text[tempI];
       
       // Check for KaTeX patterns FIRST, before any escape processing
@@ -1780,7 +1783,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       }
       
       // Handle escape characters in plain text accumulation
-      if (currentChar === '\\' && tempI + 1 < text.length) {
+  if (currentChar === '\\' && tempI + 1 < n) {
         const nextChar = text[tempI + 1];
         
         // Always escape backslash with backslash
@@ -1789,7 +1792,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           tempI += 2; // Skip both backslashes
           
           // After double backslash, the next character should be literal
-          if (tempI < text.length) {
+          if (tempI < n) {
             plainText += text[tempI]; // Add the literal character
             tempI++; // Skip the literal character
           }
@@ -1857,8 +1860,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
       // Special handling for colon - only treat as delimiter if it could be emoji shortcode
       if (currentChar === ':') {
         // Don't break on colon if it's clearly part of a URL
-        const beforeColon = text.slice(Math.max(0, tempI - 8), tempI);
-        const afterColon = text.slice(tempI, tempI + 10);
+          const beforeColon = text.slice(Math.max(0, tempI - 8), tempI);
+        const afterColon = text.slice(tempI, Math.min(n, tempI + 10));
         if (/https?$/.test(beforeColon) || /^:\/\//.test(afterColon)) {
           // This is likely part of a URL, continue accumulating
           plainText += currentChar;
@@ -1894,7 +1897,7 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           let j = tempI + 1;
           let digitsOnly = '';
           
-          while (j < text.length && /[0-9()\-]/.test(text[j])) {
+          while (j < n && /[0-9()\-]/.test(text[j])) {
             if (/[0-9]/.test(text[j])) {
               digitsOnly += text[j];
             }
@@ -1903,8 +1906,8 @@ const parseInlineContent = (text: string, options?: Options, skipUrlDetection = 
           
           // If it has enough digits to be a phone number, stop accumulating plain text
           if (digitsOnly.length >= 5) {
-            const nextChar = j < text.length ? text[j] : '';
-            const isValidPhoneEnd = j >= text.length || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(nextChar);
+            const nextChar = j < n ? text[j] : '';
+            const isValidPhoneEnd = j >= n || /[\s\n\r\t\(\)\[\]{}.,;:!?]/.test(nextChar);
             
             if (isValidPhoneEnd) {
               break;
@@ -1980,7 +1983,8 @@ const detectEmailsInText = (text: string): AST.Inlines[] => {
   // First pass: check if there are any valid emails in the text
   let hasValidEmail = false;
   let i = 0;
-  while (i < text.length) {
+  const n = text.length;
+  while (i < n) {
     const atIndex = text.indexOf('@', i);
     if (atIndex === -1) break;
     
@@ -2015,13 +2019,13 @@ const detectEmailsInText = (text: string): AST.Inlines[] => {
   const tokens: AST.Inlines[] = [];
   i = 0;
 
-  while (i < text.length) {
+  while (i < n) {
     // Look for @ character
     const atIndex = text.indexOf('@', i);
     if (atIndex === -1) {
       // No more @ characters, add remaining text as plain text
-      if (i < text.length) {
-        tokens.push(ast.plain(text.slice(i)));
+      if (i < n) {
+        tokens.push(ast.plain(text.slice(i, n)));
       }
       break;
     }
@@ -2029,7 +2033,7 @@ const detectEmailsInText = (text: string): AST.Inlines[] => {
     // Find start of potential email
     let emailStart = atIndex;
     // Use same permissive character checking as detectEmail - allow Unicode characters
-    while (emailStart > 0) {
+  while (emailStart > 0) {
       const char = text[emailStart - 1];
       // Stop at clear separators (same logic as detectEmail)
       if (/[\s\n\r\t\(\)\[\]{},;:!?]/.test(char)) {
@@ -2056,7 +2060,7 @@ const detectEmailsInText = (text: string): AST.Inlines[] => {
       const displayText = email.replace(/^mailto:/, '');
       
       tokens.push(ast.link(linkUrl, [ast.plain(displayText)]));
-      i = emailStart + emailResult.length;
+  i = emailStart + emailResult.length;
     } else {
       // Not a valid email, just move past this @ and continue searching
       i = atIndex + 1;
@@ -2105,9 +2109,8 @@ export const parse = (input: string, options?: Options): AST.Root => {
 
   // Special case 1: Check for consecutive emoticons pattern like ":):):)" or " :):):) "
   // But make exception for ":):):):)" which should be plain text according to tests
-  const consecutiveEmoticonRegex = /^\s*(?::\)|D:){2,}\s*$/;
-  const matchesConsecutiveEmoticons = consecutiveEmoticonRegex.test(normalizedInput);
-  const isFourOrMoreConsecutiveEmoticons = normalizedInput.trim().match(/^(?::\)|D:){4,}$/);
+  const matchesConsecutiveEmoticons = RE_CONSECUTIVE_EMOTICONS_2PLUS.test(normalizedInput);
+  const isFourOrMoreConsecutiveEmoticons = RE_CONSECUTIVE_EMOTICONS_4PLUS.test(normalizedInput.trim());
 
   // Special case 2: Check for consecutive emoji shortcodes like ":smile::smile::smile:"
   const consecutiveEmojiRegex = /^\s*(?::[\w+-]+:)+\s*$/;
@@ -2338,8 +2341,13 @@ export const parse = (input: string, options?: Options): AST.Root => {
       continue;
     }
     
+    // Compute first non-whitespace starter char for fast guards
+    let __ns = 0;
+    while (__ns < line.length && (line[__ns] === ' ' || line[__ns] === '\t')) __ns++;
+    const starter = line[__ns] || '';
+
     // Check for markdown headings (lines starting with # or ##)
-  const headingMatch = line.match(RE_HEADING);
+  const headingMatch = starter === '#' ? line.match(RE_HEADING) : null;
     if (headingMatch) {
       const level = headingMatch[1].length;
       const content = headingMatch[2];
@@ -2349,7 +2357,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
     }
     
     // Check for quote blocks (lines starting with >)
-  if (RE_BLOCKQUOTE_LINE.test(line)) {
+  if (starter === '>' && RE_BLOCKQUOTE_LINE.test(line)) {
       const quoteLines: string[] = [];
       let quoteIndex = i;
       let hasNonEmptyQuoteLine = false;
@@ -2390,7 +2398,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
     }
     
     // Check for task items (lines starting with - [ ] or - [x])
-  if (RE_TASK_ITEM_LINE.test(line)) {
+  if (starter === '-' && RE_TASK_ITEM_LINE.test(line)) {
       const taskItems: AST.Task[] = [];
       let taskIndex = i;
       
@@ -2419,7 +2427,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
     // Check for unordered list items (lines starting with - or *)
     // But exclude lines that look like emphasis (single character content)
     // Also exclude lines that could be bold formatting (e.g., "* Hello*")
-  if (RE_UNORDERED_BULLET.test(line) && !RE_UNORDERED_BULLET_EMPTY.test(line) && !RE_UNORDERED_STAR_INLINE.test(line)) {
+  if ((starter === '-' || starter === '*') && RE_UNORDERED_BULLET.test(line) && !RE_UNORDERED_BULLET_EMPTY.test(line) && !RE_UNORDERED_STAR_INLINE.test(line)) {
       const listItems: AST.ListItem[] = [];
       let listIndex = i;
       
@@ -2456,7 +2464,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
     }
     
     // Check for ordered list items (lines starting with numbers followed by .)
-  if (RE_ORDERED_LINE.test(line)) {
+  if ((starter >= '0' && starter <= '9') && RE_ORDERED_LINE.test(line)) {
       const listItems: AST.ListItem[] = [];
       let listIndex = i;
       
@@ -2495,8 +2503,38 @@ export const parse = (input: string, options?: Options): AST.Root => {
       }
     } else {
       // Non-empty line creates a paragraph
-      const inlineContent = parseInlineContent(line, options);
-      result.push(ast.paragraph(inlineContent));
+      // Fast-path: if the line is trivially plain ASCII text without any potential token starters,
+      // treat it as a single plain text node without running the inline scanner.
+      // Safety: skip fast-path if the line contains any of:
+      // - Known inline trigger chars (markdown, links, mentions, emoji shortcode, etc.)
+      // - Backslash (possible KaTeX), plus (phones), at (email/mention), dot (domains/emails)
+      // - Any non-ASCII codepoint (possible Unicode emoji or i18n domains)
+      let canFastPath = true;
+      const ln = line.length;
+      for (let k = 0; k < ln; k++) {
+        const ch = line[k];
+        const code = line.charCodeAt(k);
+        // Any non-ASCII disables fast-path (for Unicode emoji/domains)
+        if (code > 127) { canFastPath = false; break; }
+        // Obvious token starters disable fast-path
+        if (TRIGGER_CHARS.has(ch) || ch === '\\' || ch === '+') { canFastPath = false; break; }
+        // Period only disables fast-path when it looks like part of a domain
+        if (ch === '.') {
+          // www. heuristic
+          if (k >= 3 && line.slice(k - 3, k + 1).toLowerCase() === 'www.') { canFastPath = false; break; }
+          const prev = k > 0 ? line[k - 1] : '';
+          const next = k + 1 < ln ? line[k + 1] : '';
+          const isAlpha = (c: string) => (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+          const isAlnum = (c: string) => isAlpha(c) || (c >= '0' && c <= '9');
+          if (isAlnum(prev) && isAlpha(next)) { canFastPath = false; break; }
+        }
+      }
+      if (canFastPath) {
+        result.push(ast.paragraph([ast.plain(line)]));
+      } else {
+        const inlineContent = parseInlineContent(line, options);
+        result.push(ast.paragraph(inlineContent));
+      }
     }
     i++;
   }
