@@ -42,6 +42,14 @@ export type Options = {
   customDomains?: string[];
 };
 
+// Char code constants for fast comparisons
+const CODE_A = 65; // 'A'
+const CODE_Z = 90; // 'Z'
+const CODE_a = 97; // 'a'
+const CODE_z = 122; // 'z'
+const CODE_0 = 48; // '0'
+const CODE_9 = 57; // '9'
+
 // Helper function to detect unicode emoji
 const isEmoji = (char: string): boolean => {
   // Check for emoji surrogate pairs
@@ -2545,9 +2553,18 @@ export const parse = (input: string, options?: Options): AST.Root => {
           // Check alnum '.' alpha pattern without creating helper closures
           const prev = k > 0 ? line[k - 1] : '';
           const next = k + 1 < ln ? line[k + 1] : '';
-          const prevAlpha = (prev >= 'A' && prev <= 'Z') || (prev >= 'a' && prev <= 'z');
-          const prevNum = prev >= '0' && prev <= '9';
-          const nextAlpha = (next >= 'A' && next <= 'Z') || (next >= 'a' && next <= 'z');
+          let prevAlpha = false;
+          let prevNum = false;
+          let nextAlpha = false;
+          if (prev) {
+            const pc = prev.charCodeAt(0);
+            prevAlpha = (pc >= CODE_A && pc <= CODE_Z) || (pc >= CODE_a && pc <= CODE_z);
+            prevNum = (pc >= CODE_0 && pc <= CODE_9);
+          }
+          if (next) {
+            const nc = next.charCodeAt(0);
+            nextAlpha = (nc >= CODE_A && nc <= CODE_Z) || (nc >= CODE_a && nc <= CODE_z);
+          }
           if ((prevAlpha || prevNum) && nextAlpha) { canFastPath = false; break; }
         }
       }
