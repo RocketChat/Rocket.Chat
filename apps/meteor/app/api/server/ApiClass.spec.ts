@@ -65,14 +65,16 @@ describe('ExtractRoutesFromAPI', () => {
 				method: 'POST';
 				path: '/v1/endpoint.test';
 				response: {
-					200: ValidateFunction<unknown>;
+					200: ValidateFunction<{
+						test: string[];
+					}>;
 				};
 				authRequired: true;
 			}
 		>;
 		type ExpectedFunctionSignature = Expect<
-			ShallowEqual<ExtractRoutesFromAPI<APIWithNeverQuery>['/v1/endpoint.test']['POST'], () => unknown>
+			ShallowEqual<ExtractRoutesFromAPI<APIWithNeverQuery>['/v1/endpoint.test']['POST'], () => { test: string[] }>
 		>;
-		true as ExpectedFunctionSignature;
+		true satisfies ExpectedFunctionSignature;
 	});
 });
