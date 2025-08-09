@@ -1,4 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
+import type { PathPattern } from '@rocket.chat/rest-typings';
 import semver from 'semver';
 
 import { metrics } from '../../../metrics/server/lib/metrics';
@@ -23,9 +24,11 @@ const compareVersions = (version: string, message: string) => {
 	}
 };
 
+export type DeprecationLoggerNextPlannedVersion = '7.0.0' | '8.0.0';
+
 export const apiDeprecationLogger = ((logger) => {
 	return {
-		endpoint: (endpoint: string, version: string, res: Response, info = '') => {
+		endpoint: (endpoint: string, version: DeprecationLoggerNextPlannedVersion, res: Response, info = '') => {
 			const message = `The endpoint "${endpoint}" is deprecated and will be removed on version ${version}${info ? ` (${info})` : ''}`;
 
 			compareVersions(version, message);
@@ -39,7 +42,7 @@ export const apiDeprecationLogger = ((logger) => {
 		parameter: (
 			endpoint: string,
 			parameter: string,
-			version: string,
+			version: DeprecationLoggerNextPlannedVersion,
 			res: Response,
 			messageGenerator?: MessageFn<{ endpoint: string }>,
 		) => {
@@ -61,7 +64,7 @@ export const apiDeprecationLogger = ((logger) => {
 		deprecatedParameterUsage: (
 			endpoint: string,
 			parameter: string,
-			version: string,
+			version: DeprecationLoggerNextPlannedVersion,
 			res: Response,
 			messageGenerator?: MessageFn<{
 				endpoint: string;
@@ -86,13 +89,18 @@ export const apiDeprecationLogger = ((logger) => {
 
 export const methodDeprecationLogger = ((logger) => {
 	return {
-		method: (method: string, version: string, info = '') => {
-			const message = `The method "${method}" is deprecated and will be removed on version ${version}${info ? ` (${info})` : ''}`;
+		method: <T extends string | PathPattern>(
+			method: string,
+			version: DeprecationLoggerNextPlannedVersion,
+			info: T extends `/${string}` ? (T extends PathPattern ? T : never) : string,
+		) => {
+			const replacement = typeof info === 'string' ? info : `Use the ${info} endpoint instead`;
+			const message = `The method "${method}" is deprecated and will be removed on version ${version}${replacement ? ` (${replacement})` : ''}`;
 			compareVersions(version, message);
 			metrics.deprecations.inc({ type: 'deprecation', name: method, kind: 'method' });
 			logger.warn(message);
 		},
-		parameter: (method: string, parameter: string, version: string) => {
+		parameter: (method: string, parameter: string, version: DeprecationLoggerNextPlannedVersion) => {
 			const message = `The parameter "${parameter}" in the method "${method}" is deprecated and will be removed on version ${version}`;
 
 			metrics.deprecations.inc({ type: 'parameter-deprecation', name: method, params: parameter });
@@ -103,7 +111,7 @@ export const methodDeprecationLogger = ((logger) => {
 		deprecatedParameterUsage: (
 			method: string,
 			parameter: string,
-			version: string,
+			version: DeprecationLoggerNextPlannedVersion,
 			messageGenerator?: MessageFn<{
 				method: string;
 			}>,
