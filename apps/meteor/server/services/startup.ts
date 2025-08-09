@@ -13,6 +13,7 @@ import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
 import { ImportService } from './import/service';
 import { LDAPService } from './ldap/service';
+import { MediaCallService } from './media-call/service';
 import { MessageService } from './messages/service';
 import { MeteorService } from './meteor/service';
 import { NPSService } from './nps/service';
@@ -61,6 +62,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new ImportService());
 	api.registerService(new OmnichannelAnalyticsService());
 	api.registerService(new UserService());
+	api.registerService(new MediaCallService());
 
 	// if the process is running in micro services mode we don't need to register services that will run separately
 	if (!isRunningMs()) {
