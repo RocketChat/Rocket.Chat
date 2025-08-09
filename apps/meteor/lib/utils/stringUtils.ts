@@ -111,3 +111,9 @@ export function pad(_str: unknown, _length: number, padStr?: string, type: 'righ
 export function lrpad(str: unknown, length: number, padStr?: string): string {
 	return pad(str, length, padStr, 'both');
 }
+
+// Convert wildcard pattern (*, ?) to regex pattern for file search
+export function wildcardToRegex(pattern: string): string {
+	const regex = escapeRegExp(pattern).replace(/\\\*/g, '.*').replace(/\\\?/g, '.');
+	return `^${regex}$`;
+}
