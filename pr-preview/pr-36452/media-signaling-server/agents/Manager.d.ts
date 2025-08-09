@@ -8,6 +8,7 @@ declare class MediaCallAgentManager {
     getRoleForCallActor(call: IMediaCall, actor: Pick<MediaCallActor, 'type' | 'id'>): CallRole | null;
     getOrCreateContract(callId: string, agent: IMediaCallBasicAgent, params?: Pick<IMediaCallChannel, 'acknowledged'>): Promise<IMediaCallChannel>;
     hangupCall(agent: IMediaCallAgent, reason: CallHangupReason): Promise<void>;
+    activateCall(agent: IMediaCallAgent): Promise<void>;
     acknowledgeCallee(agent: IMediaCallAgent): Promise<void>;
     acceptCall(agent: IMediaCallAgent): Promise<void>;
     setLocalDescription(agent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void>;

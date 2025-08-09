@@ -4,6 +4,7 @@ import { clientMediaSignalErrorSchema } from './error';
 import { clientMediaSignalHangupSchema } from './hangup';
 import { clientMediaSignalLocalSDPSchema } from './local-sdp';
 import { clientMediaSignalLocalStateSchema } from './local-state';
+import { clientMediaSignalRegisterSchema } from './register';
 import { clientMediaSignalRequestCallSchema } from './request-call';
 const ajv = new Ajv({ discriminator: true });
 export const clientMediaSignalSchema = {
@@ -18,6 +19,7 @@ export const clientMediaSignalSchema = {
         clientMediaSignalHangupSchema,
         clientMediaSignalRequestCallSchema,
         clientMediaSignalLocalStateSchema,
+        clientMediaSignalRegisterSchema,
     ],
 };
 export const isClientMediaSignal = ajv.compile(clientMediaSignalSchema);

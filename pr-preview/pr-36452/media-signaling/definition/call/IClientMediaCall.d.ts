@@ -15,7 +15,7 @@ export type CallService = 'webrtc';
 export type CallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 export type CallHangupReason = 'normal' | 'remote' | 'rejected' | 'unavailable' | 'timeout' | 'signaling-error' | 'service-error' | 'media-error' | 'error';
 export type CallAnswer = 'accept' | 'reject' | 'ack' | 'unavailable';
-export type CallNotification = 'accepted' | 'hangup';
+export type CallNotification = 'accepted' | 'active' | 'hangup';
 export type CallRejectedReason = 'invalid-call-id' | 'invalid-contract-id' | 'existing-call-id' | 'already-requested' | 'unsupported';
 export interface IClientMediaCall {
     callId: string;
@@ -28,8 +28,8 @@ export interface IClientMediaCall {
     contact: CallContact;
     emitter: Emitter<CallEvents>;
     getRemoteMediaStream(): MediaStream;
-    accept(): Promise<void>;
-    reject(): Promise<void>;
-    hangup(): Promise<void>;
+    accept(): void;
+    reject(): void;
+    hangup(): void;
 }
 //# sourceMappingURL=IClientMediaCall.d.ts.map

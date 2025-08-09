@@ -224,51 +224,45 @@ export class ClientMediaCall {
         });
     }
     accept() {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.accept');
-            if (!this.isPendingOurAcceptance()) {
-                this.throwError('call-not-pending-acceptance');
-            }
-            if (!this.hasRemoteData) {
-                this.throwError('missing-remote-data');
-            }
-            this.acceptedLocally = true;
-            this.config.transporter.answer(this.callId, 'accept');
-            if (this.getClientState() === 'accepting') {
-                this.updateStateTimeouts();
-                this.addStateTimeout('accepting', TIMEOUT_TO_CONFIRM_ACCEPTANCE);
-                this.emitter.emit('accepting');
-            }
-        });
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.accept');
+        if (!this.isPendingOurAcceptance()) {
+            this.throwError('call-not-pending-acceptance');
+        }
+        if (!this.hasRemoteData) {
+            this.throwError('missing-remote-data');
+        }
+        this.acceptedLocally = true;
+        this.config.transporter.answer(this.callId, 'accept');
+        if (this.getClientState() === 'accepting') {
+            this.updateStateTimeouts();
+            this.addStateTimeout('accepting', TIMEOUT_TO_CONFIRM_ACCEPTANCE);
+            this.emitter.emit('accepting');
+        }
     }
     reject() {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.reject');
-            if (!this.isPendingOurAcceptance()) {
-                this.throwError('call-not-pending-acceptance');
-            }
-            if (!this.hasRemoteData) {
-                this.throwError('missing-remote-data');
-            }
-            this.config.transporter.answer(this.callId, 'reject');
-            this.changeState('hangup');
-        });
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.reject');
+        if (!this.isPendingOurAcceptance()) {
+            this.throwError('call-not-pending-acceptance');
+        }
+        if (!this.hasRemoteData) {
+            this.throwError('missing-remote-data');
+        }
+        this.config.transporter.answer(this.callId, 'reject');
+        this.changeState('hangup');
     }
-    hangup() {
-        return __awaiter(this, arguments, void 0, function* (reason = 'normal') {
-            var _a;
-            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.hangup', reason);
-            if (this.endedLocally || this._state === 'hangup') {
-                return;
-            }
-            if (this.hidden) {
-                return;
-            }
-            this.endedLocally = true;
-            this.flagAsEnded(reason);
-        });
+    hangup(reason = 'normal') {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.hangup', reason);
+        if (this.endedLocally || this._state === 'hangup') {
+            return;
+        }
+        if (this.hidden) {
+            return;
+        }
+        this.endedLocally = true;
+        this.flagAsEnded(reason);
     }
     isPendingAcceptance() {
         return ['none', 'ringing'].includes(this._state);
@@ -328,6 +322,24 @@ export class ClientMediaCall {
             this.emitter.emit('hidden');
         }
     }
+    reportStates() {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.reportStates');
+        this.clearStateReporter();
+        if (!this.mayReportStates) {
+            return;
+        }
+        this.config.transporter.sendToServer(this.callId, 'local-state', {
+            callState: this.state,
+            clientState: this.getClientState(),
+            serviceStates: Object.fromEntries(this.serviceStates.entries()),
+            ignored: this.ignored,
+            contractState: this.contractState,
+        });
+        if (this.state === 'hangup') {
+            this.mayReportStates = false;
+        }
+    }
     changeState(newState) {
         var _a;
         if (newState === this._state) {
@@ -342,6 +354,10 @@ export class ClientMediaCall {
         switch (newState) {
             case 'accepted':
                 this.emitter.emit('accepted');
+                break;
+            case 'active':
+                this.emitter.emit('active');
+                this.reportStates();
                 break;
             case 'hangup':
                 this.emitter.emit('ended');
@@ -534,6 +550,11 @@ export class ClientMediaCall {
             switch (signal.notification) {
                 case 'accepted':
                     return this.flagAsAccepted();
+                case 'active':
+                    if (this.state === 'accepted') {
+                        this.changeState('active');
+                    }
+                    return;
                 case 'hangup':
                     return this.flagAsEnded('remote');
             }
@@ -623,25 +644,46 @@ export class ClientMediaCall {
         const stateValue = this.webrtcProcessor.getInternalState(stateName);
         if (this.serviceStates.get(stateName) !== stateValue) {
             this.serviceStates.set(stateName, stateValue);
+            switch (stateName) {
+                case 'connection':
+                    this.onWebRTCConnectionStateChange(stateValue);
+                    break;
+            }
             this.requestStateReport();
         }
     }
-    reportStates() {
+    onWebRTCConnectionStateChange(stateValue) {
         var _a;
-        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('ClientMediaCall.reportStates');
-        this.clearStateReporter();
-        if (!this.mayReportStates) {
+        if (this.hidden) {
             return;
         }
-        this.config.transporter.sendToServer(this.callId, 'local-state', {
-            callState: this.state,
-            clientState: this.getClientState(),
-            serviceStates: Object.fromEntries(this.serviceStates.entries()),
-            ignored: this.ignored,
-            contractState: this.contractState,
-        });
-        if (this.state === 'hangup') {
-            this.mayReportStates = false;
+        try {
+            switch (stateValue) {
+                case 'connected':
+                    if (this.state === 'accepted') {
+                        this.changeState('active');
+                    }
+                    break;
+                case 'failed':
+                    if (!this.isOver()) {
+                        this.hangup('service-error');
+                    }
+                    break;
+                case 'closed':
+                    if (!this.isOver()) {
+                        this.hangup('service-error');
+                    }
+                    break;
+                case 'disconnected':
+                    // #ToDo: Attempt to reconnect when possible
+                    if (this.state === 'active') {
+                        this.hangup('service-error');
+                    }
+                    break;
+            }
+        }
+        catch (e) {
+            (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.error('An error occured while reviewing the webrtc connection state change', e);
         }
     }
     clearStateReporter() {

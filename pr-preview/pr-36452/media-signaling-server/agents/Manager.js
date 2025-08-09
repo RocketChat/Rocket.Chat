@@ -72,6 +72,17 @@ class MediaCallAgentManager {
             otherAgent.notify(agent.callId, 'hangup');
         }
     }
+    async activateCall(agent) {
+        logger_1.logger.debug({ msg: 'AgentManager.activateCall', actor: agent.actor });
+        const stateResult = await models_1.MediaCalls.activateCallById(agent.callId);
+        if (!stateResult.modifiedCount) {
+            return;
+        }
+        const otherAgent = await this.getAnyOppositeAgent(agent);
+        if (otherAgent) {
+            otherAgent.notify(agent.callId, 'active');
+        }
+    }
     async acknowledgeCallee(agent) {
         logger_1.logger.debug({ msg: 'AgentManager.acknowledgeCallee', actor: agent.actor });
         if (agent.role !== 'callee') {

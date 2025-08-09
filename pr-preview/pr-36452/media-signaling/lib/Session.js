@@ -11,6 +11,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { ClientMediaCall } from './Call';
 import { MediaSignalTransportWrapper } from './TransportWrapper';
 import { createRandomToken } from './utils/createRandomToken';
+const STATE_REPORT_INTERVAL = 60000;
 export class MediaSignalingSession extends Emitter {
     get sessionId() {
         return this._sessionId;
@@ -23,9 +24,12 @@ export class MediaSignalingSession extends Emitter {
         this.config = config;
         this._userId = config.userId;
         this._sessionId = createRandomToken(8);
+        this.recurringStateReportHandler = null;
         this.knownCalls = new Map();
         this.ignoredCalls = new Set();
         this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
+        this.register();
+        this.enableStateReport(STATE_REPORT_INTERVAL);
     }
     isBusy() {
         const call = this.getMainCall();
@@ -33,6 +37,18 @@ export class MediaSignalingSession extends Emitter {
             return false;
         }
         return ['accepted', 'active'].includes(call.state);
+    }
+    enableStateReport(interval) {
+        this.disableStateReport();
+        this.recurringStateReportHandler = setInterval(() => {
+            this.reportState();
+        }, interval);
+    }
+    disableStateReport() {
+        if (this.recurringStateReportHandler) {
+            clearInterval(this.recurringStateReportHandler);
+            this.recurringStateReportHandler = null;
+        }
     }
     getCallData(callId) {
         return this.knownCalls.get(callId) || null;
@@ -139,6 +155,18 @@ export class MediaSignalingSession extends Emitter {
         }
         return this.createCall(signal.callId);
     }
+    reportState() {
+        const call = this.getMainCall();
+        if (call && !call.isOver()) {
+            call.reportStates();
+            return;
+        }
+        // If we don't have any call to report the state on, send a register signal instead; the server will ignore it if there's nothing on that side either
+        this.register();
+    }
+    register() {
+        this.transporter.sendSignal(Object.assign({ type: 'register', contractId: this._sessionId }, (this.config.oldSessionId && { oldContractId: this.config.oldSessionId })));
+    }
     createCall(callId) {
         var _a;
         (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.createCall');
@@ -156,6 +184,7 @@ export class MediaSignalingSession extends Emitter {
         call.emitter.on('initialized', () => this.onNewCall(call));
         call.emitter.on('accepted', () => this.onAcceptedCall(call));
         call.emitter.on('hidden', () => this.onHiddenCall(call));
+        call.emitter.on('active', () => this.onActiveCall(call));
         call.emitter.on('ended', () => this.onEndedCall(call));
         return call;
     }
@@ -209,6 +238,11 @@ export class MediaSignalingSession extends Emitter {
         var _a;
         (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.onHiddenCall');
         this.emit('hiddenCall', { call });
+    }
+    onActiveCall(call) {
+        var _a;
+        (_a = this.config.logger) === null || _a === void 0 ? void 0 : _a.debug('MediaSignalingSession.onActiveCall');
+        this.emit('activeCall', { call });
     }
 }
 //# sourceMappingURL=Session.js.map
