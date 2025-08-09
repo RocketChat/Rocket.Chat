@@ -2514,10 +2514,16 @@ export const parse = (input: string, options?: Options): AST.Root => {
       for (let k = 0; k < ln; k++) {
         const ch = line[k];
         const code = line.charCodeAt(k);
-        // Any non-ASCII disables fast-path (for Unicode emoji/domains)
-        if (code > 127) { canFastPath = false; break; }
         // Obvious token starters disable fast-path
         if (TRIGGER_CHARS.has(ch) || ch === '\\' || ch === '+') { canFastPath = false; break; }
+        // If non-ASCII, only disable if it's actually an emoji; allow multilingual text
+        if (code > 127) {
+          const emojiProbe = getEmojiChar(line, k);
+          if (emojiProbe.char) { canFastPath = false; break; }
+          // Skip ahead if we just probed a surrogate pair start to avoid double work
+          if (emojiProbe.length > 1) { k += emojiProbe.length - 1; }
+          continue;
+        }
         // Period only disables fast-path when it looks like part of a domain
         if (ch === '.') {
           // www. heuristic
