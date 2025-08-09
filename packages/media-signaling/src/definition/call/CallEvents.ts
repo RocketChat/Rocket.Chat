@@ -15,6 +15,7 @@ export type CallEvents = {
 
 	accepting: void;
 	accepted: void;
+	active: void;
 	hidden: void;
 
 	ended: void;

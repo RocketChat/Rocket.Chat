@@ -1,5 +1,5 @@
 import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
-import type { CallAnswer, ClientMediaSignal } from '@rocket.chat/media-signaling';
+import type { CallAnswer, ClientMediaSignal, ClientMediaSignalLocalState } from '@rocket.chat/media-signaling';
 import { MediaCallChannels } from '@rocket.chat/models';
 
 import type { UserMediaCallAgent } from './Agent';
@@ -41,6 +41,9 @@ export class UserAgentSignalProcessor {
 				break;
 			case 'hangup':
 				await agentManager.hangupCall(this.agent, signal.reason);
+				break;
+			case 'local-state':
+				await this.reviewLocalState(params, signal);
 				break;
 		}
 	}
@@ -103,5 +106,24 @@ export class UserAgentSignalProcessor {
 		}
 
 		await this.agent.requestOffer(params);
+	}
+
+	private async reviewLocalState({ channel }: ChannelFunctionParams, signal: ClientMediaSignalLocalState): Promise<void> {
+		if (!this.agent.signed) {
+			return;
+		}
+
+		// #ToDo: Save the timestamp of the last active state so we can autodetect lost calls
+
+		if (signal.clientState === 'active') {
+			if (channel.state === 'active' || channel.activeAt) {
+				return;
+			}
+
+			const result = await MediaCallChannels.setActiveById(channel._id);
+			if (result.modifiedCount) {
+				await agentManager.activateCall(this.agent);
+			}
+		}
 	}
 }

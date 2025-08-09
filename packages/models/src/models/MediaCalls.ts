@@ -64,6 +64,20 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public async activateCallById(callId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				state: 'accepted',
+			},
+			{
+				$set: {
+					state: 'active',
+				},
+			},
+		);
+	}
+
 	public async hangupCallById(callId: string, params?: { endedBy?: IMediaCall['endedBy']; reason?: string }): Promise<UpdateResult> {
 		const { endedBy, reason } = params || {};
 
