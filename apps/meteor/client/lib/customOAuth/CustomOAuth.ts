@@ -27,11 +27,6 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 		public readonly name: TServiceName,
 		options: Readonly<OauthConfig>,
 	) {
-		this.name = name;
-		if (typeof this.name !== 'string') {
-			throw new CustomOAuthError('name is required and must be string');
-		}
-
 		this.configure(options);
 
 		Accounts.oauth.registerService(this.name);
