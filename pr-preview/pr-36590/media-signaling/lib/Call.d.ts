@@ -55,14 +55,15 @@ export declare class ClientMediaCall implements IClientMediaCall {
     getClientState(): ClientState;
     getRemoteMediaStream(): MediaStream;
     processSignal(signal: ServerMediaSignal): Promise<void>;
-    accept(): Promise<void>;
-    reject(): Promise<void>;
-    hangup(reason?: CallHangupReason): Promise<void>;
+    accept(): void;
+    reject(): void;
+    hangup(reason?: CallHangupReason): void;
     isPendingAcceptance(): boolean;
     isPendingOurAcceptance(): boolean;
     isOver(): boolean;
     ignore(): void;
     setContractState(state: 'signed' | 'ignored'): void;
+    reportStates(): void;
     private changeState;
     private updateClientState;
     private changeContact;
@@ -83,7 +84,7 @@ export declare class ClientMediaCall implements IClientMediaCall {
     private addStateTimeout;
     private updateStateTimeouts;
     private onWebRTCInternalStateChange;
-    private reportStates;
+    private onWebRTCConnectionStateChange;
     private clearStateReporter;
     private requestStateReport;
     private throwError;

@@ -32,6 +32,9 @@ class UserAgentSignalProcessor {
             case 'hangup':
                 await Manager_1.agentManager.hangupCall(this.agent, signal.reason);
                 break;
+            case 'local-state':
+                await this.reviewLocalState(params, signal);
+                break;
         }
     }
     async saveLocalDescription({ channel }, sdp) {
@@ -83,6 +86,21 @@ class UserAgentSignalProcessor {
             return;
         }
         await this.agent.requestOffer(params);
+    }
+    async reviewLocalState({ channel }, signal) {
+        if (!this.agent.signed) {
+            return;
+        }
+        // #ToDo: Save the timestamp of the last active state so we can autodetect lost calls
+        if (signal.clientState === 'active') {
+            if (channel.state === 'active' || channel.activeAt) {
+                return;
+            }
+            const result = await models_1.MediaCallChannels.setActiveById(channel._id);
+            if (result.modifiedCount) {
+                await Manager_1.agentManager.activateCall(this.agent);
+            }
+        }
     }
 }
 exports.UserAgentSignalProcessor = UserAgentSignalProcessor;

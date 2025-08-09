@@ -10,6 +10,12 @@ async function processSignal(signal, uid) {
     if (signal.type === 'request-call') {
         return (0, processNewCallSignal_1.processNewCallSignal)(signal, uid);
     }
+    if (signal.type === 'register') {
+        // #ToDo: client registration
+        // 1. Re-send signals for any pending calls involving this actor;
+        // 2. Hangup active calls involving the oldContractId if it's different from the new one.
+        return;
+    }
     try {
         const call = await models_1.MediaCalls.findOneById(signal.callId);
         if (!call) {

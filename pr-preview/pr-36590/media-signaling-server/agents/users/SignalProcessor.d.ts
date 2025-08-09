@@ -10,4 +10,5 @@ export declare class UserAgentSignalProcessor {
     private processReject;
     private processACK;
     private requestChannelOffer;
+    private reviewLocalState;
 }

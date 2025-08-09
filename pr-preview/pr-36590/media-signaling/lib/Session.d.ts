@@ -20,6 +20,9 @@ export type MediaSignalingEvents = {
     acceptedCall: {
         call: IClientMediaCall;
     };
+    activeCall: {
+        call: IClientMediaCall;
+    };
     endedCall: {
         call: IClientMediaCall;
     };
@@ -29,6 +32,7 @@ export type MediaSignalingEvents = {
 };
 export type MediaSignalingSessionConfig = {
     userId: string;
+    oldSessionId?: string;
     logger?: IMediaSignalLogger;
     processorFactories: IServiceProcessorFactoryList;
     mediaStreamFactory: MediaStreamFactory;
@@ -41,10 +45,13 @@ export declare class MediaSignalingSession extends Emitter<MediaSignalingEvents>
     private knownCalls;
     private ignoredCalls;
     private transporter;
+    private recurringStateReportHandler;
     get sessionId(): string;
     get userId(): string;
     constructor(config: MediaSignalingSessionConfig);
     isBusy(): boolean;
+    enableStateReport(interval: number): void;
+    disableStateReport(): void;
     getCallData(callId: string): IClientMediaCall | null;
     getMainCall(): IClientMediaCall | null;
     processSignal(signal: ServerMediaSignal): Promise<void>;
@@ -55,6 +62,8 @@ export declare class MediaSignalingSession extends Emitter<MediaSignalingEvents>
     private ignoreCall;
     private getExistingCallBySignal;
     private getOrCreateCallBySignal;
+    private reportState;
+    private register;
     private createCall;
     private onCallContactUpdate;
     private onCallStateChange;
@@ -63,5 +72,6 @@ export declare class MediaSignalingSession extends Emitter<MediaSignalingEvents>
     private onAcceptedCall;
     private onEndedCall;
     private onHiddenCall;
+    private onActiveCall;
 }
 //# sourceMappingURL=Session.d.ts.map
