@@ -62,7 +62,6 @@ oauth1@1.5.2
 oauth2@1.3.3
 ordered-dict@1.2.0
 ostrio:cookies@2.7.2
-ostrio:flow-router-extra@3.11.0
 promise@1.0.0
 random@1.2.2
 rate-limit@1.1.2
