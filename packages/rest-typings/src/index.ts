@@ -33,9 +33,7 @@ import type { MailerEndpoints } from './v1/mailer';
 import type { MeEndpoints } from './v1/me';
 import type { MiscEndpoints } from './v1/misc';
 import type { ModerationEndpoints } from './v1/moderation';
-import type { OAuthAppsEndpoint } from './v1/oauthapps';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
-import type { PermissionsEndpoints } from './v1/permissions';
 import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { QRCodeEndpoint } from './v1/qrcode';
@@ -80,7 +78,6 @@ export interface Endpoints
 		StatisticsEndpoints,
 		LicensesEndpoints,
 		MiscEndpoints,
-		PermissionsEndpoints,
 		PresenceEndpoints,
 		InstancesEndpoints,
 		IntegrationsEndpoints,
@@ -216,7 +213,6 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
 export * from './apps';
-export * from './v1/permissions';
 export * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';
@@ -236,8 +232,6 @@ export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
 export * from './v1/licenses';
 export * from './v1/omnichannel';
-export * from './v1/oauthapps';
-export * from './v1/oauthapps/OAuthAppsGetParamsGET';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
