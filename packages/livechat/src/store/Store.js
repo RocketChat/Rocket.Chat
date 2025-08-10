@@ -12,14 +12,11 @@ export default class Store {
 
 		this.localStorageKey = localStorageKey;
 		this.dontPersist = dontPersist;
-		const isPopout = window.opener && window.opener[0].localStorage?.getItem(this.localStorageKey);
 
 		let storedState;
 
 		try {
-			storedState = isPopout
-				? JSON.parse(window.opener[0].localStorage.getItem(this.localStorageKey))
-				: JSON.parse(localStorage.getItem(this.localStorageKey));
+			storedState = JSON.parse(localStorage.getItem(this.localStorageKey));
 		} catch (e) {
 			storedState = {};
 		} finally {
@@ -32,7 +29,7 @@ export default class Store {
 
 		window.addEventListener('storage', (e) => {
 			// Cross-tab communication
-			console.log('Storage event:', e.key, e.newValue);
+			console.log('Storage event:', e.key );
 			if (e.key !== this.localStorageKey) {
 				return;
 			}
@@ -111,14 +108,17 @@ export default class Store {
 }
 
 export const extractWidgetId = () => {
-	const params = new URLSearchParams(window.location.search);
-	return params.get('id');
-};
+		const params = new URLSearchParams(window.location.search);
+		return params.get('id');
+}
+
 
 export const getWidgetDepartmentId = () => {
-	return store.state.config.departments[0]?._id;
-};
+		return store.state.config.departments[0]?._id;
+}
+
+
 
 export const getWidgetOfflineEmail = () => {
-	return store.state.config.settings.offlineEmail;
-};
+		return store.state.config.settings.offlineEmail;
+}

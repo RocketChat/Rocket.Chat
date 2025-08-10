@@ -155,9 +155,6 @@ export class App extends Component {
 		window.addEventListener('beforeunload', () => {
 			visibility.removeListener(this.handleVisibilityChange);
 			dispatch({ minimized: true, undocked: false });
-			if (window.opener && window.opener.localStorage?.getItem(this.localStorageKey)) {
-				localStorage.setItem(store.localStorageKey, JSON.stringify({ ...store.state, minimized: true, undocked: false }));
-			}
 		});
 
 		i18next.on('languageChanged', this.handleLanguageChange);
