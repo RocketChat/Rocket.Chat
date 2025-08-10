@@ -12,11 +12,14 @@ export default class Store {
 
 		this.localStorageKey = localStorageKey;
 		this.dontPersist = dontPersist;
+		const isPopout = window.opener && window.opener[0].localStorage && window.opener[0].localStorage.getItem(this.localStorageKey);
 
 		let storedState;
 
 		try {
-			storedState = JSON.parse(localStorage.getItem(this.localStorageKey));
+			storedState = isPopout
+				? JSON.parse(window.opener[0].localStorage.getItem(this.localStorageKey))
+				: JSON.parse(localStorage.getItem(this.localStorageKey));
 		} catch (e) {
 			storedState = {};
 		} finally {
@@ -24,9 +27,6 @@ export default class Store {
 		}
 
 		this._state = { ...initialState, ...storedState };
-		const storedToken = this.getStoredToken();
-		console.log('Using stored token:', { localStorageKey, storedToken, storedStateToken: storedState?.token });
-		console.log('states', { initialState, storedState });
 
 		this.setWidgetId();
 
@@ -107,18 +107,6 @@ export default class Store {
 	// Get widget ID from URL parameters
 	setWidgetId() {
 		this.setState({ widgetId: extractWidgetId() });
-	}
-
-	getStoredToken() {
-		const storedData = localStorage.getItem(this.localStorageKey);
-		if (storedData) {
-			try {
-				const parsedData = JSON.parse(storedData);
-				if (parsedData && parsedData.token) {
-					return parsedData.token;
-				}
-			} catch (error) {}
-		}
 	}
 }
 
