@@ -5,26 +5,19 @@ export type Blockquote = {
 
 export type OrderedList = {
   type: 'ORDERED_LIST';
-  value: OrderedListItem[];
+  value: ListItem[];
 };
 
 export type UnorderedList = {
   type: 'UNORDERED_LIST';
-  value: UnorderedListItem[];
+  value: ListItem[];
 };
 
-export type UnorderedListItem = {
+export type ListItem = {
   type: 'LIST_ITEM';
   value: Inlines[];
+  number?: number;
 };
-
-export type OrderedListItem = {
-  type: 'LIST_ITEM';
-  value: Inlines[];
-  number: number;
-};
-
-export type ListItem = UnorderedListItem | OrderedListItem;
 
 export type Tasks = {
   type: 'TASKS';
@@ -91,11 +84,12 @@ export type Quote = {
 };
 
 export type Markup = Italic | Strike | Bold | Plain | ChannelMention;
+export type MarkupExcluding<T extends Markup> = Exclude<Markup, T>;
 
 export type Bold = {
   type: 'BOLD';
   value: Array<
-    | Exclude<Markup, Bold>
+    | MarkupExcluding<Bold>
     | Link
     | Emoji
     | UserMention
@@ -107,7 +101,7 @@ export type Bold = {
 export type Italic = {
   type: 'ITALIC';
   value: Array<
-    | Exclude<Markup, Italic>
+    | MarkupExcluding<Italic>
     | Link
     | Emoji
     | UserMention
@@ -119,7 +113,7 @@ export type Italic = {
 export type Strike = {
   type: 'STRIKE';
   value: Array<
-    | Exclude<Markup, Strike>
+    | MarkupExcluding<Strike>
     | Link
     | Emoji
     | UserMention

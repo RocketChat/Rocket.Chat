@@ -2763,7 +2763,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
           const number = parseInt(match[1], 10);
           const content = match[2];
           const inlineContent = parseInlineContent(content, options);
-          listItems.push(ast.listItem(inlineContent, number));
+          listItems.push(ast.orderedListItem(inlineContent, number));
         }
         listIndex++;
       }

@@ -73,9 +73,28 @@ export const RE_UNORDERED_BULLET = /^\s*[-*]\s/;
 export const RE_UNORDERED_BULLET_EMPTY = /^\s*[-*]\s*[*_~]?\s*$/;
 export const RE_UNORDERED_STAR_INLINE = /^\s*\*\s.*\*\s*$/;
 export const RE_UNORDERED_MARKER = /^\s*([-*])\s/;
+
+/**
+ * Regular expression for matching ordered list items.
+ * @example
+ * This is a message with an ordered list item:
+ * 1. First item
+ */
 export const RE_ORDERED_LINE = /^\s*\d+\.\s/;
+
+/**
+ * Regular expression for matching ordered list items.
+ * @example
+ * This is a message with an ordered list item:
+ * 1. First item
+ */
 export const RE_ORDERED_EXTRACT = /^\s*(\d+)\.\s(.*)$/;
 
+/**
+ * Regular expression for matching all non-digit characters (global).
+ * @example
+ * This is a message with a timestamp: 123456
+ */
 export const RE_NON_DIGITS_GLOBAL = /[^0-9]/g;
 
 /**

@@ -15,8 +15,8 @@ import type {
   InlineKaTeX,
   Link,
   Timestamp,
-  OrderedListItem,
-  UnorderedListItem,
+  ListItem,
+  Plain,
 } from './definitions';
 
 const generate =
@@ -85,7 +85,10 @@ export const link = (src: string, label?: Markup[]): Link => ({
   value: { src: plain(src), label: label ?? [plain(src)] },
 });
 
-export const autoLink = (src: string, customDomains?: string[]) => {
+export const autoLink = (
+  src: string,
+  customDomains?: string[],
+): Plain | Link => {
   const validHosts = ['localhost', ...(customDomains ?? [])];
   const { isIcann, isIp, isPrivate, domain } = tldParse(src, {
     detectIp: false,
@@ -104,7 +107,7 @@ export const autoLink = (src: string, customDomains?: string[]) => {
   return link(href, [plain(src)]);
 };
 
-export const autoEmail = (src: string) => {
+export const autoEmail = (src: string): Plain | Link => {
   const href = `mailto:${src}`;
 
   const { isIcann, isIp, isPrivate } = tldParse(href, {
@@ -136,15 +139,12 @@ export const orderedList = generate('ORDERED_LIST');
 
 export const unorderedList = generate('UNORDERED_LIST');
 
-export const listItem = (text: Inlines[]): UnorderedListItem => ({
+export const listItem = (text: Inlines[]): ListItem => ({
   type: 'LIST_ITEM',
   value: text,
 });
 
-export const orderedListItem = (
-  text: Inlines[],
-  number: number,
-): OrderedListItem => ({
+export const orderedListItem = (text: Inlines[], number: number): ListItem => ({
   type: 'LIST_ITEM',
   value: text,
   number,
