@@ -1,14 +1,22 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
+import type { Dispatch, SetStateAction } from 'react';
 
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
+import type { CursorHistory } from './messageStateHandler';
+import { resolveBeforeInput } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange, getCursorSelectionInfo } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: string): ComposerAPI => {
+export const createRichTextComposerAPI = (
+	input: HTMLDivElement,
+	storageID: string,
+	setMdLines: Dispatch<SetStateAction<string[] | undefined>>,
+	setCursorHistory: Dispatch<SetStateAction<CursorHistory | undefined>>,
+): ComposerAPI => {
 	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -51,6 +59,9 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 	};
 
 	input.addEventListener('input', persist);
+	input.addEventListener('beforeinput', (e: InputEvent) => {
+		resolveBeforeInput(e, setMdLines, setCursorHistory);
+	});
 	document.addEventListener('selectionchange', printSelection);
 
 	const setText = (
@@ -221,6 +232,9 @@ export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: stri
 
 	const release = (): void => {
 		input.removeEventListener('input', persist);
+		input.removeEventListener('beforeinput', (e: InputEvent) => {
+			resolveBeforeInput(e, setMdLines, setCursorHistory);
+		});
 		document.removeEventListener('selectionchange', printSelection);
 		stopFormatterTracker.stop();
 	};
