@@ -18,7 +18,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -30,6 +30,7 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import type { CursorHistory } from '../../../../../app/ui-message/client/messageBox/messageStateHandler';
 import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
@@ -183,6 +184,10 @@ const RichTextMessageBox = ({
 		console.log('Restored cursor position for:', node);
 	};
 
+	// This state will update every time the input is updated
+	const [, setMdLines] = useState<string[]>();
+	const [, setCursorHistory] = useState<CursorHistory>();
+
 	/* const textareaRef = useRef<HTMLTextAreaElement>(null); */
 
 	/* NEW: contenteditableRef */
@@ -201,7 +206,7 @@ const RichTextMessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createRichTextComposerAPI(node, storageID));
+			chat.setComposerAPI(createRichTextComposerAPI(node, storageID, setMdLines, setCursorHistory));
 		},
 		[chat, storageID],
 	);
