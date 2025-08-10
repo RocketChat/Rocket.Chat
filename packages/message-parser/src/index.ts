@@ -4,7 +4,7 @@ import * as ast from './utils.ts';
 import {
   EMOTICON_MAP,
   EMOTICON_KEYS_DESC,
-  ESCAPABLE_MARKUP_CHARS,
+  isEscapable,
   VALID_TIMESTAMP_FORMATS,
   RE_URL_PREFIX,
   RE_HEADING,
@@ -23,6 +23,8 @@ import {
   RE_TIMESTAMP_TIME_ONLY,
   RE_TIMESTAMP_TIME_CAPTURE,
   TRIGGER_ASCII,
+  ALPHA_ASCII,
+  DIGIT_ASCII,
   RE_CONSECUTIVE_EMOTICONS_2PLUS,
   RE_CONSECUTIVE_EMOTICONS_4PLUS,
 } from './constants.ts';
@@ -43,31 +45,6 @@ export type Options = {
   };
   customDomains?: string[];
 };
-
-/**
- * Character code for 'A'
- */
-const CODE_A = 65;
-/**
- * Character code for 'Z'
- */
-const CODE_Z = 90;
-/**
- * Character code for 'a'
- */
-const CODE_a = 97;
-/**
- * Character code for 'z'
- */
-const CODE_z = 122;
-/**
- * Character code for '0'
- */
-const CODE_0 = 48;
-/**
- * Character code for '9'
- */
-const CODE_9 = 57;
 
 /**
  * Detect unicode emoji
@@ -1353,6 +1330,7 @@ const parseInlineContent = (
 
   while (i < n) {
     const char = text[i];
+    const code = text.charCodeAt(i); // Hoist code unit lookup
 
     // KaTeX parsing - inline only: \(...\) - check before escape processing
     if (options?.katex && char === '\\') {
@@ -1375,7 +1353,7 @@ const parseInlineContent = (
       const nextChar = text[i + 1];
 
       // Escape markdown special characters (but not structural ones like [])
-      if (ESCAPABLE_MARKUP_CHARS.has(nextChar)) {
+      if (isEscapable(nextChar)) {
         // Escape the markup character by treating it as plain text
         tokens.push(ast.plain(nextChar));
         i += 2; // Skip both the backslash and the escaped character
@@ -1521,10 +1499,7 @@ const parseInlineContent = (
     }
 
     // Fast-path: if current char cannot start any special token, try only Unicode emoji and continue
-    if (
-      (char.charCodeAt(0) & 0x80) === 0 &&
-      TRIGGER_ASCII[char.charCodeAt(0)] === 0
-    ) {
+    if ((code & 0x80) === 0 && TRIGGER_ASCII[code] === 0) {
       const emojiResultFast = getEmojiChar(text, i);
       if (emojiResultFast.char) {
         tokens.push(ast.emojiUnicode(emojiResultFast.char));
@@ -1544,26 +1519,30 @@ const parseInlineContent = (
       }
     }
 
-    // Try parsing markup
-    const boldResult = parseBoldMarkup(text, i, options);
-    if (boldResult) {
-      tokens.push(...boldResult.tokens);
-      i = boldResult.nextIndex;
-      continue;
+    // Try parsing emphasis markup only when opener matches current char
+    if (char === '*') {
+      const boldResult = parseBoldMarkup(text, i, options);
+      if (boldResult) {
+        tokens.push(...boldResult.tokens);
+        i = boldResult.nextIndex;
+        continue;
+      }
     }
-
-    const italicResult = parseItalicMarkup(text, i, options);
-    if (italicResult) {
-      tokens.push(...italicResult.tokens);
-      i = italicResult.nextIndex;
-      continue;
+    if (char === '_') {
+      const italicResult = parseItalicMarkup(text, i, options);
+      if (italicResult) {
+        tokens.push(...italicResult.tokens);
+        i = italicResult.nextIndex;
+        continue;
+      }
     }
-
-    const strikeResult = parseStrikeMarkup(text, i, options);
-    if (strikeResult) {
-      tokens.push(...strikeResult.tokens);
-      i = strikeResult.nextIndex;
-      continue;
+    if (char === '~') {
+      const strikeResult = parseStrikeMarkup(text, i, options);
+      if (strikeResult) {
+        tokens.push(...strikeResult.tokens);
+        i = strikeResult.nextIndex;
+        continue;
+      }
     }
 
     // Color parsing - pattern: color:#hex (3, 4, 6, or 8 hex digits)
@@ -2005,7 +1984,7 @@ const parseInlineContent = (
         }
 
         // Escape markdown special characters (but not structural ones like [])
-        if (ESCAPABLE_MARKUP_CHARS.has(nextChar)) {
+        if (isEscapable(nextChar)) {
           // Escape the markup character by treating it as plain text
           plainText += nextChar;
           tempI += 2; // Skip both the backslash and the escaped character
@@ -2802,8 +2781,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
         const code = line.charCodeAt(k);
         // Obvious token starters disable fast-path
         if (
-          ((ch.charCodeAt(0) & 0x80) === 0 &&
-            TRIGGER_ASCII[ch.charCodeAt(0)] === 1) ||
+          ((code & 0x80) === 0 && TRIGGER_ASCII[code] === 1) ||
           ch === '\\' ||
           ch === '+'
         ) {
@@ -2845,7 +2823,7 @@ export const parse = (input: string, options?: Options): AST.Root => {
             canFastPath = false;
             break;
           }
-          // Check alnum '.' alpha pattern without creating helper closures
+          // Check alnum '.' alpha pattern using ASCII bitsets
           const prev = k > 0 ? line[k - 1] : '';
           const next = k + 1 < ln ? line[k + 1] : '';
           let prevAlpha = false;
@@ -2853,14 +2831,12 @@ export const parse = (input: string, options?: Options): AST.Root => {
           let nextAlpha = false;
           if (prev) {
             const pc = prev.charCodeAt(0);
-            prevAlpha =
-              (pc >= CODE_A && pc <= CODE_Z) || (pc >= CODE_a && pc <= CODE_z);
-            prevNum = pc >= CODE_0 && pc <= CODE_9;
+            prevAlpha = pc < 128 ? ALPHA_ASCII[pc] === 1 : false;
+            prevNum = pc < 128 ? DIGIT_ASCII[pc] === 1 : false;
           }
           if (next) {
             const nc = next.charCodeAt(0);
-            nextAlpha =
-              (nc >= CODE_A && nc <= CODE_Z) || (nc >= CODE_a && nc <= CODE_z);
+            nextAlpha = nc < 128 ? ALPHA_ASCII[nc] === 1 : false;
           }
           if ((prevAlpha || prevNum) && nextAlpha) {
             canFastPath = false;

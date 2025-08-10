@@ -51,6 +51,13 @@ export const ESCAPABLE_MARKUP_CHARS = new Set([
   ':',
 ]);
 
+export const isEscapable = (ch: string): boolean => {
+  const code = ch.charCodeAt(0);
+  return code < 128
+    ? ESCAPABLE_ASCII[code] === 1
+    : ESCAPABLE_MARKUP_CHARS.has(ch);
+};
+
 export const VALID_TIMESTAMP_FORMATS = new Set([
   't',
   'T',
@@ -159,6 +166,58 @@ export const TRIGGER_ASCII = (() => {
   ];
   for (let i = 0; i < triggers.length; i++) {
     const code = triggers[i].charCodeAt(0);
+    if (code < 128) arr[code] = 1;
+  }
+  return arr;
+})();
+
+// ASCII character class bitsets for hot-path lookups
+export const ALPHA_ASCII = (() => {
+  const arr = new Uint8Array(128);
+  // A-Z: 65-90, a-z: 97-122
+  for (let i = 65; i <= 90; i++) arr[i] = 1;
+  for (let i = 97; i <= 122; i++) arr[i] = 1;
+  return arr;
+})();
+
+export const DIGIT_ASCII = (() => {
+  const arr = new Uint8Array(128);
+  // 0-9: 48-57
+  for (let i = 48; i <= 57; i++) arr[i] = 1;
+  return arr;
+})();
+
+export const ALNUM_ASCII = (() => {
+  const arr = new Uint8Array(128);
+  // A-Z: 65-90, a-z: 97-122, 0-9: 48-57
+  for (let i = 65; i <= 90; i++) arr[i] = 1;
+  for (let i = 97; i <= 122; i++) arr[i] = 1;
+  for (let i = 48; i <= 57; i++) arr[i] = 1;
+  return arr;
+})();
+
+export const ESCAPABLE_ASCII = (() => {
+  const arr = new Uint8Array(128);
+  const chars = [
+    '*',
+    '_',
+    '~',
+    '`',
+    '(',
+    ')',
+    '#',
+    '.',
+    '+',
+    '-',
+    '!',
+    '|',
+    '{',
+    '}',
+    '^',
+    ':',
+  ];
+  for (let i = 0; i < chars.length; i++) {
+    const code = chars[i].charCodeAt(0);
     if (code < 128) arr[code] = 1;
   }
   return arr;
