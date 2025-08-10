@@ -84,7 +84,7 @@ export const muteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']; 
 
 Meteor.methods<ServerMethods>({
 	async muteUserInRoom(data) {
-		methodDeprecationLogger.method('muteUserInRoom', '8.0.0');
+		methodDeprecationLogger.method('muteUserInRoom', '8.0.0', '/v1/rooms.muteUser');
 
 		check(
 			data,
