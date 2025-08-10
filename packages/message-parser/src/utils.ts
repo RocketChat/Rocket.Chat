@@ -6,10 +6,8 @@ import type {
   Color,
   Heading,
   Markup,
-  Paragraph,
   Types,
   Task,
-  ListItem,
   Inlines,
   LineBreak,
   Emoji,
@@ -17,6 +15,8 @@ import type {
   InlineKaTeX,
   Link,
   Timestamp,
+  OrderedListItem,
+  UnorderedListItem,
 } from './definitions';
 
 const generate =
@@ -136,10 +136,18 @@ export const orderedList = generate('ORDERED_LIST');
 
 export const unorderedList = generate('UNORDERED_LIST');
 
-export const listItem = (text: Inlines[], number?: number): ListItem => ({
+export const listItem = (text: Inlines[]): UnorderedListItem => ({
   type: 'LIST_ITEM',
   value: text,
-  ...(number && { number }),
+});
+
+export const orderedListItem = (
+  text: Inlines[],
+  number: number,
+): OrderedListItem => ({
+  type: 'LIST_ITEM',
+  value: text,
+  number,
 });
 
 export const mentionUser = (() => {
@@ -165,57 +173,6 @@ export const emoticon = (emoticon: string, shortCode: string): Emoji => ({
   shortCode,
 });
 
-const joinEmoji = (
-  current: Inlines,
-  previous: Inlines | undefined,
-  next: Inlines | undefined,
-): Inlines => {
-  if (current.type !== 'EMOJI' || !current.value || (!previous && !next)) {
-    return current;
-  }
-
-  const hasEmojiAsNeighbor =
-    previous?.type === current.type || current.type === next?.type;
-  const hasPlainAsNeighbor =
-    (previous?.type === 'PLAIN_TEXT' && previous.value.trim() !== '') ||
-    (next?.type === 'PLAIN_TEXT' && next.value.trim() !== '');
-  const isEmoticon = current.shortCode !== current.value.value;
-
-  if (current.value && (hasEmojiAsNeighbor || hasPlainAsNeighbor)) {
-    if (isEmoticon) {
-      return current.value;
-    }
-
-    return {
-      ...current.value,
-      value: `:${current.value.value}:`,
-    };
-  }
-
-  return current;
-};
-
-export const reducePlainTexts = (
-  values: Paragraph['value'],
-): Paragraph['value'] =>
-  values.flat().reduce(
-    (result, item, index, values) => {
-      const next = values[index + 1];
-      const current = joinEmoji(item, values[index - 1], next);
-      const previous: Inlines = result[result.length - 1];
-
-      if (
-        previous &&
-        current.type === 'PLAIN_TEXT' &&
-        current.type === previous.type
-      ) {
-        previous.value += current.value;
-        return result;
-      }
-      return [...result, current];
-    },
-    [] as Paragraph['value'],
-  );
 export const lineBreak: LineBreak = {
   type: 'LINE_BREAK',
 };

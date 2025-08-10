@@ -44,13 +44,13 @@
     "build": "tsc -p tsconfig-bundle.json --noCheck",
     "typecheck": "tsc -p tsconfig-bundle.json",
     "lint": "eslint .",
+    "format": "prettier --check .",
     "test": "jest",
     "testunit": "jest",
     "docs": "typedoc",
     "bench": "node --loader ts-node/esm bench/benchmark.ts"
   },
   "devDependencies": {
-    "ts-node": "~10.9.2",
     "@babel/core": "~7.26.10",
     "@babel/eslint-parser": "~7.25.9",
     "@babel/preset-env": "~7.26.9",
@@ -70,6 +70,7 @@
     "prettier-plugin-pegjs": "~0.5.4",
     "rimraf": "^6.0.1",
     "ts-loader": "~9.5.2",
+    "ts-node": "~10.9.2",
     "typedoc": "~0.28.5",
     "typescript": "~5.9.2",
     "webpack": "~5.99.9",

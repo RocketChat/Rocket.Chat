@@ -5,19 +5,26 @@ export type Blockquote = {
 
 export type OrderedList = {
   type: 'ORDERED_LIST';
-  value: ListItem[];
+  value: OrderedListItem[];
 };
 
 export type UnorderedList = {
   type: 'UNORDERED_LIST';
-  value: ListItem[];
+  value: UnorderedListItem[];
 };
 
-export type ListItem = {
+export type UnorderedListItem = {
   type: 'LIST_ITEM';
   value: Inlines[];
-  number?: number;
 };
+
+export type OrderedListItem = {
+  type: 'LIST_ITEM';
+  value: Inlines[];
+  number: number;
+};
+
+export type ListItem = UnorderedListItem | OrderedListItem;
 
 export type Tasks = {
   type: 'TASKS';
@@ -84,12 +91,11 @@ export type Quote = {
 };
 
 export type Markup = Italic | Strike | Bold | Plain | ChannelMention;
-export type MarkupExcluding<T extends Markup> = Exclude<Markup, T>;
 
 export type Bold = {
   type: 'BOLD';
   value: Array<
-    | MarkupExcluding<Bold>
+    | Exclude<Markup, Bold>
     | Link
     | Emoji
     | UserMention
@@ -101,7 +107,7 @@ export type Bold = {
 export type Italic = {
   type: 'ITALIC';
   value: Array<
-    | MarkupExcluding<Italic>
+    | Exclude<Markup, Italic>
     | Link
     | Emoji
     | UserMention
@@ -113,7 +119,7 @@ export type Italic = {
 export type Strike = {
   type: 'STRIKE';
   value: Array<
-    | MarkupExcluding<Strike>
+    | Exclude<Markup, Strike>
     | Link
     | Emoji
     | UserMention
@@ -146,7 +152,7 @@ export type InlineKaTeX = {
 
 export type Paragraph = {
   type: 'PARAGRAPH';
-  value: Array<Exclude<Inlines, Paragraph>>;
+  value: Inlines[];
 };
 
 export type Image = {

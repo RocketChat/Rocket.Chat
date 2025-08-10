@@ -7838,6 +7838,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     tldts: "npm:~6.1.86"
     ts-loader: "npm:~9.5.2"
+    ts-node: "npm:~10.9.2"
     typedoc: "npm:~0.28.5"
     typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
@@ -34572,7 +34573,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.9.2":
+"ts-node@npm:^10.9.2, ts-node@npm:~10.9.2":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:

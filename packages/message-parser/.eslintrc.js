@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   extends: '@rocket.chat/eslint-config',
   env: {
     jest: true,
