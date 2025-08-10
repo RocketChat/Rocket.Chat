@@ -12,7 +12,7 @@ export default class Store {
 
 		this.localStorageKey = localStorageKey;
 		this.dontPersist = dontPersist;
-		const isPopout = window.opener && window.opener[0].localStorage && window.opener[0].localStorage.getItem(this.localStorageKey);
+		const isPopout = window.opener && window.opener[0].localStorage?.getItem(this.localStorageKey);
 
 		let storedState;
 
