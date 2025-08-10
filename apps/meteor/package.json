@@ -221,9 +221,9 @@
 		"webpack": "~5.99.9"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.862.0",
-		"@aws-sdk/lib-storage": "^3.862.0",
-		"@aws-sdk/s3-request-presigner": "^3.862.0",
+		"@aws-sdk/client-s3": "^3.864.0",
+		"@aws-sdk/lib-storage": "^3.864.0",
+		"@aws-sdk/s3-request-presigner": "^3.864.0",
 		"@babel/runtime": "~7.26.10",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",
@@ -309,6 +309,7 @@
 		"@rocket.chat/web-ui-registration": "workspace:^",
 		"@slack/bolt": "^3.22.0",
 		"@slack/rtm-api": "^7.0.3",
+		"@smithy/node-http-handler": "^4.1.1",
 		"@tanstack/react-query": "~5.65.1",
 		"@types/meteor": "^2.9.9",
 		"@vector-im/matrix-bot-sdk": "0.7.1-element.11",

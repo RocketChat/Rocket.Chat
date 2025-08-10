@@ -1,3 +1,4 @@
+import { Agent as HttpsAgent } from 'https';
 import stream from 'stream';
 
 import {
@@ -12,6 +13,7 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { check } from 'meteor/check';
 import type { OptionalId } from 'mongodb';
 import _ from 'underscore';
@@ -54,7 +56,15 @@ class AmazonS3Store extends UploadFS.Store {
 
 		const classOptions = options;
 
-		const s3 = new S3Client(options.connection);
+		const s3 = new S3Client({
+			...options.connection,
+			// Ensure sockets stay alive and set explicit timeouts to avoid idle disconnects
+			requestHandler: new NodeHttpHandler({
+				connectionTimeout: 5_000, // time to establish TCP/TLS
+				socketTimeout: 120_000, // inactivity timeout per request
+				httpsAgent: new HttpsAgent({ keepAlive: true, keepAliveMsecs: 1_000, maxSockets: 50 }),
+			}),
+		});
 
 		options.getPath =
 			options.getPath ||
@@ -183,14 +193,16 @@ class AmazonS3Store extends UploadFS.Store {
 				uploadParams.ContentType = file.type;
 			}
 
-			// Only set ContentLength if file.size is defined and not null
-			if (file.size) {
-				uploadParams.ContentLength = file.size;
-			}
+			// Avoid setting ContentLength for streaming uploads unless strictly necessary,
+			// as mismatches can cause stalls/timeouts. S3 supports chunked streaming.
 
 			const upload = new Upload({
 				client: s3,
 				params: uploadParams,
+				// Smaller part size and limited concurrency help keep data flowing and reduce idle time.
+				partSize: 5 * 1024 * 1024, // 5 MiB
+				queueSize: 2,
+				leavePartsOnError: false,
 			});
 
 			upload
