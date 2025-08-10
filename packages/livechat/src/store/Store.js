@@ -24,12 +24,15 @@ export default class Store {
 		}
 
 		this._state = { ...initialState, ...storedState };
+		const storedToken = this.getStoredToken();
+		console.log('Using stored token:', { localStorageKey, storedToken, storedStateToken: storedState?.token });
+		console.log('states', { initialState, storedState });
 
 		this.setWidgetId();
 
 		window.addEventListener('storage', (e) => {
 			// Cross-tab communication
-			console.log('Storage event:', e.key );
+			console.log('Storage event:', e.key, e.newValue);
 			if (e.key !== this.localStorageKey) {
 				return;
 			}
@@ -105,20 +108,29 @@ export default class Store {
 	setWidgetId() {
 		this.setState({ widgetId: extractWidgetId() });
 	}
+
+	getStoredToken() {
+		const storedData = localStorage.getItem(this.localStorageKey);
+		if (storedData) {
+			try {
+				const parsedData = JSON.parse(storedData);
+				if (parsedData && parsedData.token) {
+					return parsedData.token;
+				}
+			} catch (error) {}
+		}
+	}
 }
 
 export const extractWidgetId = () => {
-		const params = new URLSearchParams(window.location.search);
-		return params.get('id');
-}
-
+	const params = new URLSearchParams(window.location.search);
+	return params.get('id');
+};
 
 export const getWidgetDepartmentId = () => {
-		return store.state.config.departments[0]?._id;
-}
-
-
+	return store.state.config.departments[0]?._id;
+};
 
 export const getWidgetOfflineEmail = () => {
-		return store.state.config.settings.offlineEmail;
-}
+	return store.state.config.settings.offlineEmail;
+};
