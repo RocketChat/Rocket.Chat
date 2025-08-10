@@ -98,11 +98,9 @@ export class MockedAppRootBuilder {
 		getLocationSearch: () => '',
 		getRouteName: () => undefined,
 		getRouteParameters: () => ({}),
-		getRoutes: () => [],
 		getSearchParameters: () => ({}),
 		navigate: () => undefined,
 		subscribeToRouteChange: () => () => undefined,
-		subscribeToRoutesChange: () => () => undefined,
 		getRoomRoute: () => ({ path: '/' }),
 	};
 
