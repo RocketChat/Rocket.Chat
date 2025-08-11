@@ -1,1 +1,0 @@
-{"version":3,"file":"request-offer.d.ts","sourceRoot":"","sources":["../../../../src/definition/signals/server/request-offer.ts"],"names":[],"mappings":"AACA,MAAM,MAAM,6BAA6B,GAAG;IAC3C,MAAM,EAAE,MAAM,CAAC;IACf,YAAY,EAAE,MAAM,CAAC;IACrB,IAAI,EAAE,eAAe,CAAC;IAEtB,UAAU,CAAC,EAAE,OAAO,CAAC;CACrB,CAAC"}

@@ -1,1 +1,0 @@
-{"version":3,"file":"LocalStream.d.ts","sourceRoot":"","sources":["../../../../src/lib/services/webrtc/LocalStream.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,UAAU,CAAC;AAElC,qBAAa,WAAY,SAAQ,MAAM;IACzB,QAAQ,CAAC,QAAQ,EAAE,gBAAgB,EAAE,IAAI,EAAE,iBAAiB,GAAG,OAAO,CAAC,IAAI,CAAC;IA2B5E,eAAe,CAAC,MAAM,EAAE,WAAW,EAAE,IAAI,EAAE,iBAAiB,GAAG,OAAO,CAAC,IAAI,CAAC;CAMzF"}
