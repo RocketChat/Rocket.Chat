@@ -33,7 +33,7 @@ export class SignalGateway extends GlobalSignalProcessor implements ISignalGatew
 
 		if (!this.handler) {
 			this.debugError('The Media Signal Server tried to send a signal to a client without being configured first.', { signal });
-			throw new Error('media-signaling-server-not-configured');
+			throw new Error('media-calls-server-not-configured');
 		}
 
 		try {

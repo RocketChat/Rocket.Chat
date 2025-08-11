@@ -2,7 +2,7 @@ import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/
 import type { IUser, IMediaCall } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
-import { gateway } from '@rocket.chat/media-signaling-server';
+import { gateway } from '@rocket.chat/media-calls';
 import { MediaCalls, Users } from '@rocket.chat/models';
 
 const logger = new Logger('media-call service');
