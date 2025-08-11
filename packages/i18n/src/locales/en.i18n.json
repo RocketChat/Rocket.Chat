@@ -5954,7 +5954,7 @@
   "edit-livechat-room-customfields": "Edit Livechat Room Custom Fields",
   "edit-livechat-room-customfields_description": "Permission to edit the custom fields of livechat room",
   "edit-message": "Edit Message",
-  "edit-message_description": "Permission to edit a message within a room",
+  "edit-message_description": "Permission to edit other user’s messages within a room",
   "edit-omnichannel-contact": "Edit Omnichannel Contact",
   "edit-omnichannel-contact_description": "Permission to edit Omnichannel Contact",
   "edit-other-user-active-status": "Edit Other User Active Status",
@@ -6360,7 +6360,7 @@
   "meteor_status_connecting": "Connecting...",
   "meteor_status_failed": "Connection attempt failed",
   "meteor_status_offline": "You’re offline",
-  "meteor_status_reconnect_in_one": "Trying to reconnect in 1 second",
+  "meteor_status_reconnect_in_one": "Trying to reconnect in {{count}} second",
   "meteor_status_reconnect_in_other": "Trying to reconnect in {{count}} seconds",
   "meteor_status_try_again_later": "Please try again later or ask your workspace admin for assistance",
   "meteor_status_try_now_offline": "Connect again",
@@ -6895,5 +6895,34 @@
   "__usernames__and__count__more_joined": "{{usernames}} and {{count}} more joined",
   "__usernames__joined": "{{usernames}} joined",
   "__usersCount__joined": "{{count}} joined",
-  "__usersCount__people_will_be_invited": "{{usersCount}} people will be invited"
+  "__usersCount__people_will_be_invited": "{{usersCount}} people will be invited",
+  "message_counter_many": "{{count}} messages",
+  "message_counter_few": "{{count}} messages",
+  "message_counter_two": "{{count}} messages",
+  "message_counter_zero": "{{count}} message",
+  "meteor_status_reconnect_in_many": "Trying to reconnect in {{count}} seconds",
+  "meteor_status_reconnect_in_few": "Trying to reconnect in {{count}} seconds",
+  "meteor_status_reconnect_in_two": "Trying to reconnect in {{count}} seconds",
+  "meteor_status_reconnect_in_zero": "Trying to reconnect in {{count}} second",
+  "mentions_counter_many": "{{count}} mentions",
+  "__count__message_pruned_many": "{{count}} messages pruned",
+  "__count__message_pruned_few": "{{count}} messages pruned",
+  "subscription": {
+    "callout": {
+      "description": {
+        "limitsExceeded_many": "our workspace exceeded the <1>{{val, list}}</1> license limits. <3>Manage your subscription</3> to increase limits.",
+        "limitsReached_many": "Your workspace reached the <1>{{val, list}}</1> license limits. <3>Manage your subscription</3> to increase limits."
+      }
+    }
+  },
+  "threads_counter_many": "{{count}} unread threaded messages",
+  "unread_messages_counter_many": "{{count}} unread messages",
+  "Apps_Count_Enabled_many": "{{count}} apps enabled",
+  "Private_Apps_Count_Enabled_many": "{{count}} private apps enabled",
+  "App_has_been_disabled_addon_message_many": "The apps {{appNames}} have been disabled because of invalid add-ons. A valid add-on subscription is required to re-enable them",
+  "Follower_many": "Followers",
+  "group_mentions_counter_many": "{{count}} group mentions",
+  "__count__follower_many": "+{{count}} followers",
+  "Apps_Count_Enabled_few": "{{count}} apps enabled",
+  "Private_Apps_Count_Enabled_few": "{{count}} private apps enabled"
 }
