@@ -18,7 +18,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState, useEffect } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -30,7 +30,7 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import type { CursorHistory } from '../../../../../app/ui-message/client/messageBox/messageStateHandler';
+import { getTextLines, type CursorHistory } from '../../../../../app/ui-message/client/messageBox/messageStateHandler';
 import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
@@ -197,6 +197,12 @@ const RichTextMessageBox = ({
 
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
+	// Update the state of the raw markdown lines when room changes
+	useEffect(() => {
+		const input = contentEditableRef.current as HTMLDivElement;
+		setMdLines(getTextLines(input.innerText, '\n'));
+	}, [storageID]);
+
 	const callbackRef = useCallback(
 		(node: HTMLDivElement) => {
 			if (node === null && chat.composer) {
@@ -346,6 +352,14 @@ const RichTextMessageBox = ({
 	});
 
 	const isEditing = useSyncExternalStore(chat.composer?.editing.subscribe ?? emptySubscribe, chat.composer?.editing.get ?? getEmptyFalse);
+
+	// Update the state of the raw markdown lines when message is being edited
+	useEffect(() => {
+		setTimeout(() => {
+			const input = contentEditableRef.current as HTMLDivElement;
+			setMdLines(getTextLines(input.innerText, '\n'));
+		}, 0);
+	}, [isEditing]);
 
 	const isRecordingAudio = useSyncExternalStore(
 		chat.composer?.recording.subscribe ?? emptySubscribe,
