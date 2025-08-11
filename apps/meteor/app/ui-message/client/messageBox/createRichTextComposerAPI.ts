@@ -14,8 +14,8 @@ import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 export const createRichTextComposerAPI = (
 	input: HTMLDivElement,
 	storageID: string,
-	setMdLines: Dispatch<SetStateAction<string[] | undefined>>,
-	setCursorHistory: Dispatch<SetStateAction<CursorHistory | undefined>>,
+	setMdLines: Dispatch<SetStateAction<string[]>>,
+	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
 ): ComposerAPI => {
 	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
