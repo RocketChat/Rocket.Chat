@@ -4884,5 +4884,13 @@
   "__count__empty_rooms_will_be_removed_automatically": "ستتم إزالة {{count}} من الغرف الفارغة تلقائيًا.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "ستتم إزالة <bold>{{count}}</bold> من الغرف الفارغة تلقائيًا: <br/> {{rooms}}",
   "__username__is_no_longer__role__defined_by__user_by_": "لم يعد {{username}} في دور {{role}} من قِبل {{user_by}}",
-  "__username__was_set__role__by__user_by_": "تم تعيين {{username}} في دور {{role}} من قِبل {{user_by}}"
+  "__username__was_set__role__by__user_by_": "تم تعيين {{username}} في دور {{role}} من قِبل {{user_by}}",
+  "message_counter_many": "{{count}} رسائل",
+  "message_counter_few": "{{count}} رسائل",
+  "message_counter_two": "{{count}} رسائل",
+  "message_counter_zero": "{{count}} رسائل",
+  "meteor_status_reconnect_in_many": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
+  "meteor_status_reconnect_in_few": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
+  "meteor_status_reconnect_in_two": "المحاولة مرة أخرى خلال {{count}} من الثواني...",
+  "meteor_status_reconnect_in_zero": "المحاولة مرة أخرى خلال {{count}} من الثواني..."
 }

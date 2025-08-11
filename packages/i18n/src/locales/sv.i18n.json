@@ -6672,8 +6672,6 @@
   "unpinning-not-allowed": "Det är inte tillåtet att lossa",
   "unread_messages_counter_one": "{{count}} oläst meddelande",
   "unread_messages_counter_other": "{{count}} olästa meddelanden",
-  "unread_messages_one": "{{count}} oläst meddelande",
-  "unread_messages_other": "{{count}} olästa meddelanden",
   "update-livechat-contact": "Uppdatera Omnichannel-kontakter",
   "used_limit": "{{used, number}} / {{limit, number}}",
   "used_limit_infinite": "{{used, number}} / ∞",

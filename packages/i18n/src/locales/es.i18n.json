@@ -4994,8 +4994,6 @@
   "unpinning-not-allowed": "No se puede desfijar",
   "unread_messages_counter_one": "{{count}} mensaje sin leer",
   "unread_messages_counter_other": "{{count}} mensajes sin leer",
-  "unread_messages_one": "{{count}} mensaje sin leer",
-  "unread_messages_other": "{{count}} mensajes sin leer",
   "user-generate-access-token": "Token de acceso generado por el usuario",
   "user-generate-access-token_description": "Permiso para que los usuarios generen tokens de acceso",
   "user_joined_otr": "Se ha unido al chat OTR.",
@@ -5083,5 +5081,13 @@
   "__departments__departments_and__count__conversations__period__": "{{departments}} departamentos y {{count}} conversaciones, {{period}}",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ya no es {{role}} (por {{user_by}})",
   "__username__was_set__role__by__user_by_": "{{username}} se ha establecido como {{role}} por {{user_by}}",
-  "__usersCount__people_will_be_invited": "{{usersCount}} miembros sern invitados"
+  "__usersCount__people_will_be_invited": "{{usersCount}} miembros sern invitados",
+  "message_counter_many": "{{count}} mensajes",
+  "meteor_status_reconnect_in_many": "intentando de nuevo dentro de {{count}} segundos...",
+  "mentions_counter_many": "{{count}} menciones",
+  "__count__message_pruned_many": "{{count}} mensajes borrados",
+  "subscription.callout.description.limitsExceeded_many": "Su espacio de trabajo ha superado los límites <1> {{val, list}} </1>. <3> Administre su suscripción </3> para incrementar los límites.",
+  "subscription.callout.description.limitsReached_many": "Su espacio de trabajo ha alcanzado los límites <1> {{val, list}} </1>. <3> Administre su suscripción </3> para incrementar los límites.",
+  "threads_counter_many": "{{count}} mensajes en hilo sin leer",
+  "unread_messages_counter_many": "{{count}} mensajes sin leer"
 }

@@ -5082,5 +5082,15 @@
   "__count__message_pruned_other": "{{count}} сообщений удалено",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} больше не {{role}} по решению {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} был установлен {{role}} по решению {{user_by}}",
-  "__usersCount__people_will_be_invited": "{{usersCount}} человек будет приглашено"
+  "__usersCount__people_will_be_invited": "{{usersCount}} человек будет приглашено",
+  "message_counter_many": "{{count}} сообщения",
+  "message_counter_few": "{{count}} сообщения",
+  "meteor_status_reconnect_in_many": "пытается снова через {{count}} секунд ...",
+  "meteor_status_reconnect_in_few": "пытается снова через {{count}} секунд ...",
+  "__count__message_pruned_many": "{{count}} сообщений удалено",
+  "__count__message_pruned_few": "{{count}} сообщений удалено",
+  "Apps_Count_Enabled_many": "{{count}} приложений(-я) включено",
+  "Private_Apps_Count_Enabled_many": "{{count}} приватных приложений включено",
+  "Apps_Count_Enabled_few": "{{count}} приложений(-я) включено",
+  "Private_Apps_Count_Enabled_few": "{{count}} приватных приложений включено"
 }

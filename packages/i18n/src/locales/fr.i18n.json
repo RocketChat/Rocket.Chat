@@ -4889,5 +4889,7 @@
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} salons vides seront supprimés automatiquement.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> salons vides seront supprimés automatiquement : <br/>  {{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{user_by}} a retiré le rôle {{role}} à {{username}}",
-  "__username__was_set__role__by__user_by_": "{{user_by}} a donné le rôle {{role}} à {{username}}"
+  "__username__was_set__role__by__user_by_": "{{user_by}} a donné le rôle {{role}} à {{username}}",
+  "message_counter_many": "{{count}} messages",
+  "meteor_status_reconnect_in_many": "nouvelle tentative dans {{count}} secondes..."
 }

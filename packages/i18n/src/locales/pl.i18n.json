@@ -5415,5 +5415,11 @@
   "__roomName__was_removed_from_favorites": "{{roomName}} został usunięty z ulubionych",
   "__username__is_no_longer__role__defined_by__user_by_": "Użytkownik {{username}} nie ma już roli {{role}}; zmienił to użytkownik {{user_by}}",
   "__username__was_set__role__by__user_by_": "Użytkownik {{username}} otrzymał rolę {{role}} od użytkownika {{user_by}}",
-  "__usersCount__people_will_be_invited": "{{usersCount}} ludzi zostanie zostanie zaproszonych"
+  "__usersCount__people_will_be_invited": "{{usersCount}} ludzi zostanie zostanie zaproszonych",
+  "message_counter_many": "{{count}} wiadomości",
+  "message_counter_few": "{{count}} wiadomości",
+  "meteor_status_reconnect_in_many": "spróbuj jeszcze raz za {{count}} sekund...",
+  "meteor_status_reconnect_in_few": "spróbuj jeszcze raz za {{count}} sekund...",
+  "__count__message_pruned_many": "{{count}} wiadomość(i) usuniętych",
+  "__count__message_pruned_few": "{{count}} wiadomość(i) usuniętych"
 }
