@@ -1389,6 +1389,48 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
+type POSTOmnichannelContactDeleteProps = {
+	contactId: string;
+};
+
+const POSTOmnichannelContactDeleteSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isPOSTOmnichannelContactDeleteProps = ajv.compile<POSTOmnichannelContactDeleteProps>(POSTOmnichannelContactDeleteSchema);
+
+const POSTOmnichannelContactDeleteError = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+		message: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTOmnichannelContactDeleteErrorSchema = ajv.compile<{ success: boolean; message: string }>(
+	POSTOmnichannelContactDeleteError,
+);
+
+const POSTOmnichannelContactDeleteSuccess = {
+	type: 'object',
+	properties: {},
+	additionalProperties: false,
+};
+
+export const POSTOmnichannelContactDeleteSuccessSchema = ajv.compile<void>(POSTOmnichannelContactDeleteSuccess);
+
 type POSTOmnichannelContactsConflictsProps = {
 	contactId: string;
 	name?: string;
@@ -4105,9 +4147,6 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/omnichannel/contacts.update': {
 		POST: (params: POSTUpdateOmnichannelContactsProps) => { contact: ILivechatContact };
-	};
-	'/v1/omnichannel/contacts/:id': {
-		DELETE: () => void;
 	};
 	'/v1/omnichannel/contacts.conflicts': {
 		POST: (params: POSTOmnichannelContactsConflictsProps) => { contact: ILivechatContact };

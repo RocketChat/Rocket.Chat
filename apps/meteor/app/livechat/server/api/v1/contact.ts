@@ -8,6 +8,9 @@ import {
 	isGETOmnichannelContactsSearchProps,
 	isGETOmnichannelContactsCheckExistenceProps,
 	isPOSTOmnichannelContactsConflictsProps,
+	isPOSTOmnichannelContactDeleteProps,
+	POSTOmnichannelContactDeleteErrorSchema,
+	POSTOmnichannelContactDeleteSuccessSchema,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { removeEmpty } from '@rocket.chat/tools';
@@ -15,6 +18,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { createContact } from '../../lib/contacts/createContact';
 import { disableContactById } from '../../lib/contacts/disableContact';
@@ -133,37 +137,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'omnichannel/contacts/:id',
-	{ authRequired: true, permissionsRequired: ['delete-livechat-contact'] },
-	{
-		async delete() {
-			check(this.urlParams, {
-				id: String,
-			});
-			const { id } = this.urlParams;
-
-			try {
-				await disableContactById(id);
-				return API.v1.success();
-			} catch (error: unknown) {
-				if (!(error instanceof Error)) {
-					return API.v1.failure(error);
-				}
-
-				switch (error.message) {
-					case 'error-contact-not-found':
-						return API.v1.notFound(error.message);
-					case 'error-contact-removal-disabled':
-						return API.v1.unauthorized(error.message);
-					default:
-						return API.v1.failure(error);
-				}
-			}
-		},
-	},
-);
-
-API.v1.addRoute(
 	'omnichannel/contacts.conflicts',
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTOmnichannelContactsConflictsProps },
 	{
@@ -256,3 +229,30 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const omnichannelContactsEndpoints = API.v1.post(
+	'omnichannel/contacts.delete',
+	{
+		response: {
+			200: POSTOmnichannelContactDeleteSuccessSchema,
+			400: POSTOmnichannelContactDeleteErrorSchema,
+			404: POSTOmnichannelContactDeleteErrorSchema,
+		},
+		authRequired: true,
+		permissionsRequired: ['delete-livechat-contact'],
+		body: isPOSTOmnichannelContactDeleteProps,
+	},
+	async function action() {
+		const { contactId } = this.bodyParams;
+
+		await disableContactById(contactId);
+		return API.v1.success();
+	},
+);
+
+type OmnichannelContactsEndpoints = ExtractRoutesFromAPI<typeof omnichannelContactsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends OmnichannelContactsEndpoints {}
+}

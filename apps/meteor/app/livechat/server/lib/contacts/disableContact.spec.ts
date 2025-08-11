@@ -45,13 +45,4 @@ describe('disableContact', () => {
 		expect(modelsMock.LivechatContacts.findOneById.getCall(0).args[0]).to.be.equal('contactId');
 		expect(modelsMock.LivechatContacts.disableByContactId.getCall(0)).to.be.null;
 	});
-
-	it('should throw error if contact removal setting is disabled', async () => {
-		settingsMock.get.withArgs('Omnichannel_enable_contact_removal').returns(false);
-
-		await expect(disableContactById('contactId')).to.be.rejectedWith('error-contact-removal-disabled');
-
-		expect(modelsMock.LivechatContacts.disableByContactId.getCall(0)).to.be.null;
-		expect(modelsMock.LivechatContacts.disableByContactId.getCall(0)).to.be.null;
-	});
 });
