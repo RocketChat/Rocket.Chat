@@ -7,7 +7,6 @@ import {
 	ajv,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
-	validateForbiddenErrorResponse,
 	isDmFileProps,
 	isDmMemberProps,
 	isDmMessagesProps,
@@ -31,6 +30,7 @@ import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
+import type { TypedAction } from '../definition';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -124,33 +124,33 @@ const isDmDeleteProps = ajv.compile<DmDeleteProps>({
 	],
 });
 
-const imEndpoints = API.v1.post(
-	['dm.delete', 'im.delete'],
-	{
-		authRequired: true,
-		body: isDmDeleteProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: {
-						type: 'boolean',
-						enum: [true],
-					},
+const dmDeleteEndpointsProps = {
+	authRequired: true,
+	body: isDmDeleteProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		200: ajv.compile<void>({
+			type: 'object',
+			properties: {
+				success: {
+					type: 'boolean',
+					enum: [true],
 				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-		},
+			},
+			required: ['success'],
+			additionalProperties: false,
+		}),
 	},
+} as const;
 
+const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dmDeleteEndpointsProps, Path> =>
 	async function action() {
 		const { room } = await findDirectMessageRoom(this.bodyParams, this.userId);
 
 		const canAccess =
 			(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.userId, 'view-room-administration'));
+
 		if (!canAccess) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
@@ -158,8 +158,11 @@ const imEndpoints = API.v1.post(
 		await eraseRoom(room._id, this.userId);
 
 		return API.v1.success();
-	},
-);
+	};
+
+const dmEndpoints = API.v1
+	.post('im.delete', dmDeleteEndpointsProps, dmDeleteAction('im.delete'))
+	.post('dm.delete', dmDeleteEndpointsProps, dmDeleteAction('dm.delete'));
 
 API.v1.addRoute(
 	['dm.close', 'im.close'],
@@ -641,9 +644,9 @@ API.v1.addRoute(
 	},
 );
 
-export type ImEndpoints = ExtractRoutesFromAPI<typeof imEndpoints>;
+export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ImEndpoints {}
+	interface Endpoints extends DmEndpoints {}
 }
