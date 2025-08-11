@@ -98,46 +98,48 @@ class Notifications {
 		});
 	}
 
-	notifyAll(eventName, data) {
+	notifyAll(eventName, value) {
 		if (settings.get('Troubleshoot_Disable_Instance_Broadcast')) { return; }
 		if (this.debug === true) {
 			console.log('notifyAll', [eventName, data]);
 		}
 
 		const body = {
+			ns: 'broadcast',
 			funcName: 'notifyAllInThisInstance',
 			eventName,
-			data,
+			value,
 		};
 
 		return publishToRedis('broadcast', body);
 	}
 
-	notifyLogged(eventName, data) {
+	notifyLogged(eventName, value) {
 		if (settings.get('Troubleshoot_Disable_Instance_Broadcast')) { return; }
 		if (this.debug === true) {
 			console.log('notifyLogged', [eventName, data]);
 		}
 		const body = {
+			ns: 'broadcast',
 			funcName: 'notifyLoggedInThisInstance',
 			eventName,
-			data,
+			value,
 		};
 
 		return publishToRedis('broadcast', body);
 	}
 
-	notifyRoom(room, eventName, data) {
+	notifyRoom(room, eventName, value) {
 		if (settings.get('Troubleshoot_Disable_Instance_Broadcast')) { return; }
 		if (this.debug === true) {
 			console.log('notifyRoom', [room, eventName, data]);
 		}
 		const body = {
 			funcName: 'notifyRoomInThisInstance',
-			broadcast: true,
+			ns: 'broadcast',
 			key: room,
 			eventName,
-			data,
+			value,
 		};
 
 		if (room.length === 17) {
@@ -150,17 +152,17 @@ class Notifications {
 		}
 	}
 
-	notifyUser(userId, eventName, data) {
+	notifyUser(userId, eventName, value) {
 		if (settings.get('Troubleshoot_Disable_Instance_Broadcast')) { return; }
 		if (this.debug === true) {
 			console.log('notifyUser', [userId, eventName, data]);
 		}
 		const body = {
-			broadcast: true,
+			ns: 'broadcast',
 			key: userId,
 			funcName: 'notifyUserInThisInstance',
 			eventName,
-			data,
+			value,
 		};
 		return publishToRedis(`user-${ userId }`, body);
 	}
