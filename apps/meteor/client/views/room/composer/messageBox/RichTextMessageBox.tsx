@@ -239,6 +239,7 @@ const RichTextMessageBox = ({
 		const cleanedText = text.replace(/\n{2,}/g, (match) => '\n'.repeat((match.length + 1) / 2));
 		chat.composer?.clear();
 		popup.clear();
+		setMdLines(['']);
 
 		const isFirefox = typeof navigator !== 'undefined' && /Firefox\/\d+/.test(navigator.userAgent);
 
