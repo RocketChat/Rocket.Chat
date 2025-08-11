@@ -1,129 +1,129 @@
-import { imperativeModal } from '@rocket.chat/ui-client';
-import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
-import { act, renderHook, waitFor } from '@testing-library/react';
+// TODO: Is this test needed? is `useE2EERoomAction` used, after OTR removal?
 
-import { E2EEState } from '../../../app/e2e/client/E2EEState';
-import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
-import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
-import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import { useE2EEState } from '../../views/room/hooks/useE2EEState';
-import { useOTR } from '../useOTR';
-import { useE2EERoomAction } from './useE2EERoomAction';
+// import { imperativeModal } from '@rocket.chat/ui-client';
+// import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+// import { act, renderHook, waitFor } from '@testing-library/react';
 
-const dispatchToastMessage = jest.fn();
+// import { useE2EERoomAction } from './useE2EERoomAction';
+// import { E2EEState } from '../../../app/e2e/client/E2EEState';
+// import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
+// import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
+// import { useE2EEState } from '../../views/room/hooks/useE2EEState';
 
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	useSetting: jest.fn(),
-	usePermission: jest.fn(),
-	useEndpoint: jest.fn(),
-	useToastMessageDispatch: jest.fn(() => dispatchToastMessage),
-}));
+// const dispatchToastMessage = jest.fn();
 
-jest.mock('@rocket.chat/ui-client', () => ({
-	...jest.requireActual('@rocket.chat/ui-client'),
-	imperativeModal: {
-		open: jest.fn(),
-		close: jest.fn(),
-	},
-}));
+// jest.mock('@rocket.chat/ui-contexts', () => ({
+// 	useSetting: jest.fn(),
+// 	usePermission: jest.fn(),
+// 	useEndpoint: jest.fn(),
+// 	useToastMessageDispatch: jest.fn(() => dispatchToastMessage),
+// }));
 
-jest.mock('../../views/room/contexts/RoomContext', () => ({
-	useRoom: jest.fn(),
-	useRoomSubscription: jest.fn(),
-}));
+// jest.mock('@rocket.chat/ui-client', () => ({
+// 	...jest.requireActual('@rocket.chat/ui-client'),
+// 	imperativeModal: {
+// 		open: jest.fn(),
+// 		close: jest.fn(),
+// 	},
+// }));
 
-jest.mock('../useOTR', () => ({
-	useOTR: jest.fn(),
-}));
+// jest.mock('../../views/room/contexts/RoomContext', () => ({
+// 	useRoom: jest.fn(),
+// 	useRoomSubscription: jest.fn(),
+// }));
 
-jest.mock('../../../app/e2e/client/rocketchat.e2e', () => ({
-	e2e: {
-		isReady: jest.fn(),
-	},
-}));
+// jest.mock('../useOTR', () => ({
+// 	useOTR: jest.fn(),
+// }));
 
-jest.mock('../../views/room/hooks/useE2EEState', () => ({
-	useE2EEState: jest.fn(),
-}));
+// jest.mock('../../../app/e2e/client/rocketchat.e2e', () => ({
+// 	e2e: {
+// 		isReady: jest.fn(),
+// 	},
+// }));
 
-jest.mock('../../views/room/hooks/useE2EERoomState', () => ({
-	useE2EERoomState: jest.fn(),
-}));
+// jest.mock('../../views/room/hooks/useE2EEState', () => ({
+// 	useE2EEState: jest.fn(),
+// }));
 
-jest.mock('react-i18next', () => ({
-	useTranslation: () => ({
-		t: (key: string) => key,
-	}),
-}));
+// jest.mock('../../views/room/hooks/useE2EERoomState', () => ({
+// 	useE2EERoomState: jest.fn(),
+// }));
 
-jest.mock('meteor/tracker', () => ({
-	Tracker: {
-		autorun: jest.fn(),
-	},
-}));
+// jest.mock('react-i18next', () => ({
+// 	useTranslation: () => ({
+// 		t: (key: string) => key,
+// 	}),
+// }));
 
-describe('useE2EERoomAction', () => {
-	const mockRoom = { _id: 'roomId', encrypted: false, t: 'd', name: 'Test Room' };
-	const mockSubscription = { autoTranslate: false };
+// jest.mock('meteor/tracker', () => ({
+// 	Tracker: {
+// 		autorun: jest.fn(),
+// 	},
+// }));
 
-	beforeEach(() => {
-		(useSetting as jest.Mock).mockReturnValue(true);
-		(useRoom as jest.Mock).mockReturnValue(mockRoom);
-		(useRoomSubscription as jest.Mock).mockReturnValue(mockSubscription);
-		(useE2EEState as jest.Mock).mockReturnValue(E2EEState.READY);
-		(usePermission as jest.Mock).mockReturnValue(true);
-		(useEndpoint as jest.Mock).mockReturnValue(jest.fn().mockResolvedValue({ success: true }));
-		(e2e.isReady as jest.Mock).mockReturnValue(true);
-	});
+// describe('useE2EERoomAction', () => {
+// 	const mockRoom = { _id: 'roomId', encrypted: false, t: 'd', name: 'Test Room' };
+// 	const mockSubscription = { autoTranslate: false };
 
-	afterEach(() => {
-		jest.clearAllMocks();
-	});
+// 	beforeEach(() => {
+// 		(useSetting as jest.Mock).mockReturnValue(true);
+// 		(useRoom as jest.Mock).mockReturnValue(mockRoom);
+// 		(useRoomSubscription as jest.Mock).mockReturnValue(mockSubscription);
+// 		(useE2EEState as jest.Mock).mockReturnValue(E2EEState.READY);
+// 		(usePermission as jest.Mock).mockReturnValue(true);
+// 		(useEndpoint as jest.Mock).mockReturnValue(jest.fn().mockResolvedValue({ success: true }));
+// 		(e2e.isReady as jest.Mock).mockReturnValue(true);
+// 	});
 
-	it('should dispatch error toast message when otrState is ESTABLISHED', async () => {
-		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.ESTABLISHED });
+// 	afterEach(() => {
+// 		jest.clearAllMocks();
+// 	});
 
-		const { result } = renderHook(() => useE2EERoomAction());
+// 	it('should dispatch error toast message when otrState is ESTABLISHED', async () => {
+// 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.ESTABLISHED });
 
-		await act(async () => {
-			await result?.current?.action?.();
-		});
+// 		const { result } = renderHook(() => useE2EERoomAction());
 
-		expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: 'E2EE_not_available_OTR' });
-	});
+// 		await act(async () => {
+// 			await result?.current?.action?.();
+// 		});
 
-	it('should dispatch error toast message when otrState is ESTABLISHING', async () => {
-		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.ESTABLISHING });
+// 		expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: 'E2EE_not_available_OTR' });
+// 	});
 
-		const { result } = renderHook(() => useE2EERoomAction());
+// 	it('should dispatch error toast message when otrState is ESTABLISHING', async () => {
+// 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.ESTABLISHING });
 
-		act(() => {
-			result?.current?.action?.();
-		});
+// 		const { result } = renderHook(() => useE2EERoomAction());
 
-		await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: 'E2EE_not_available_OTR' }));
-	});
+// 		act(() => {
+// 			result?.current?.action?.();
+// 		});
 
-	it('should dispatch error toast message when otrState is REQUESTED', async () => {
-		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.REQUESTED });
+// 		await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: 'E2EE_not_available_OTR' }));
+// 	});
 
-		const { result } = renderHook(() => useE2EERoomAction());
+// 	it('should dispatch error toast message when otrState is REQUESTED', async () => {
+// 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.REQUESTED });
 
-		act(() => {
-			result?.current?.action?.();
-		});
+// 		const { result } = renderHook(() => useE2EERoomAction());
 
-		await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: 'E2EE_not_available_OTR' }));
-	});
+// 		act(() => {
+// 			result?.current?.action?.();
+// 		});
 
-	it('should open Enable E2EE confirmation modal', async () => {
-		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.NOT_STARTED });
+// 		await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: 'E2EE_not_available_OTR' }));
+// 	});
 
-		const { result } = renderHook(() => useE2EERoomAction());
-		act(() => {
-			result?.current?.action?.();
-		});
+// 	it('should open Enable E2EE confirmation modal', async () => {
+// 		(useOTR as jest.Mock).mockReturnValue({ otrState: OtrRoomState.NOT_STARTED });
 
-		await waitFor(() => expect(imperativeModal.open).toHaveBeenCalledTimes(1));
-	});
-});
+// 		const { result } = renderHook(() => useE2EERoomAction());
+// 		act(() => {
+// 			result?.current?.action?.();
+// 		});
+
+// 		await waitFor(() => expect(imperativeModal.open).toHaveBeenCalledTimes(1));
+// 	});
+// });

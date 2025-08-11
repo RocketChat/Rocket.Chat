@@ -544,34 +544,6 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.tabs.room.checkboxEncrypted).toBeVisible();
 	});
 
-	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page }) => {
-		await poHomeChannel.sidenav.openNewByLabel('Direct message');
-		await poHomeChannel.sidenav.inputDirectUsername.click();
-		await page.keyboard.type('user2');
-		await page.waitForTimeout(1000);
-		await page.keyboard.press('Enter');
-		await poHomeChannel.sidenav.btnCreate.click();
-
-		await expect(page).toHaveURL(`/direct/user2${Users.userE2EE.data.username}`);
-
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
-		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
-		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
-		await page.getByRole('button', { name: 'Enable encryption' }).click();
-		await page.waitForTimeout(1000);
-
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-
-		await poHomeChannel.dismissToast();
-
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnEnableOTR).toBeVisible();
-		await poHomeChannel.tabs.btnEnableOTR.click({ force: true });
-
-		await expect(page.getByText('OTR not available')).toBeVisible();
-	});
-
 	test.describe('File Encryption', async () => {
 		test.afterAll(async ({ api }) => {
 			await api.post('/settings/FileUpload_MediaTypeWhiteList', { value: '' });
