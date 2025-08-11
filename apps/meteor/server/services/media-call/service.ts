@@ -1,21 +1,24 @@
 import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
 import type { IUser, IMediaCall } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
-import { processSignal, createCall, setSignalHandler, logger } from '@rocket.chat/media-signaling-server';
+import { gateway } from '@rocket.chat/media-signaling-server';
 import { MediaCalls, Users } from '@rocket.chat/models';
+
+const logger = new Logger('media-call service');
 
 export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
 	protected name = 'media-call';
 
 	constructor() {
 		super();
-		setSignalHandler(this.sendSignal.bind(this));
+		gateway.setSignalHandler(this.sendSignal.bind(this));
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		try {
 			logger.debug({ msg: 'new client signal', signal, uid });
-			await processSignal(signal, uid);
+			gateway.receiveSignal(uid, signal);
 		} catch (error) {
 			logger.error({ msg: 'failed to process client signal', error, signal, uid });
 		}
@@ -27,7 +30,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 			const deserialized = await this.deserializeClientSignal(signal);
 
-			await processSignal(deserialized, uid);
+			gateway.receiveSignal(uid, deserialized);
 		} catch (error) {
 			logger.error({ msg: 'failed to process client signal', error, signal, uid });
 		}
@@ -39,7 +42,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			throw new Error('invalid-user');
 		}
 
-		return createCall({
+		return gateway.createCall({
 			caller: {
 				type: 'user',
 				id: caller.uid,
@@ -55,7 +58,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			throw new Error('invalid-user');
 		}
 
-		return createCall({
+		return gateway.createCall({
 			caller: {
 				type: 'user',
 				id: caller.uid,
