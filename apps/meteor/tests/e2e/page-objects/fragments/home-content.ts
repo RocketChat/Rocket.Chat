@@ -71,10 +71,6 @@ export class HomeContent {
 		return this.page.locator('role=button[name="Join"]');
 	}
 
-	async openRoomInfo(): Promise<void> {
-		await this.channelHeader.locator('button[data-qa-id="ToolBoxAction-info-circled"]').click();
-	}
-
 	async joinRoom(): Promise<void> {
 		await this.btnJoinRoom.click();
 	}
@@ -505,10 +501,6 @@ export class HomeContent {
 		return this.page.locator('.rcx-videoconf-message-block');
 	}
 
-	get videoConfMessageBlockAvatars(): Locator {
-		return this.videoConfMessageBlock.getByLabel('figure');
-	}
-
 	get btnAnonymousSignIn(): Locator {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
 	}
@@ -591,10 +583,6 @@ export class HomeContent {
 
 	get btnDismissContactUnknownCallout() {
 		return this.contactUnknownCallout.getByRole('button', { name: 'Dismiss' });
-	}
-
-	async expectLastMessageToHaveText(text: string): Promise<void> {
-		await expect(this.lastUserMessageBody).toHaveText(text);
 	}
 
 	get btnOptionStartDiscussion(): Locator {
