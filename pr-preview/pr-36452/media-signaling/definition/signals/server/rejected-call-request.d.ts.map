@@ -1,1 +1,0 @@
-{"version":3,"file":"rejected-call-request.d.ts","sourceRoot":"","sources":["../../../../src/definition/signals/server/rejected-call-request.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,kBAAkB,EAAE,MAAM,YAAY,CAAC;AAErD,MAAM,MAAM,oCAAoC,GAAG;IAClD,MAAM,EAAE,MAAM,CAAC;IACf,IAAI,EAAE,uBAAuB,CAAC;IAC9B,YAAY,EAAE,MAAM,CAAC;IACrB,MAAM,CAAC,EAAE,kBAAkB,CAAC;CAC5B,CAAC"}

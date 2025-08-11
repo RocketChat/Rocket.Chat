@@ -1,1 +1,0 @@
-{"version":3,"file":"error.d.ts","sourceRoot":"","sources":["../../../../src/definition/signals/client/error.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,KAAK,CAAC;AAG1C,MAAM,MAAM,sBAAsB,GAAG;IACpC,MAAM,EAAE,MAAM,CAAC;IACf,UAAU,EAAE,MAAM,CAAC;IACnB,IAAI,EAAE,OAAO,CAAC;IAEd,SAAS,EAAE,MAAM,CAAC;CAClB,CAAC;AAEF,eAAO,MAAM,4BAA4B,EAAE,cAAc,CAAC,sBAAsB,CAsB/E,CAAC"}
