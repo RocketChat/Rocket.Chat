@@ -113,8 +113,7 @@ export class UserAgentSignalProcessor {
 			return;
 		}
 
-		// #ToDo: Save the timestamp of the last active state so we can autodetect lost calls
-
+		// #ToDo: Monitor other states as well
 		if (signal.clientState === 'active') {
 			if (channel.state === 'active' || channel.activeAt) {
 				return;
