@@ -12,6 +12,7 @@ import { MediaCalls, Users } from '@rocket.chat/models';
 import { agentManager } from '../agents/Manager';
 import { UserAgentFactory } from '../agents/users/AgentFactory';
 import { logger } from '../logger';
+import { MediaCallMonitor } from './CallMonitor';
 import type { CreateCallParams } from './ISignalGateway';
 
 export abstract class GlobalSignalProcessor {
@@ -53,6 +54,8 @@ export abstract class GlobalSignalProcessor {
 
 			caller,
 			callee,
+
+			expiresAt: MediaCallMonitor.getNewExpirationTime(),
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 		};
@@ -128,6 +131,8 @@ export abstract class GlobalSignalProcessor {
 			if (isCallee && call.callee.contractId && call.callee.contractId !== signal.contractId) {
 				return;
 			}
+
+			await MediaCallMonitor.renewCallId(call._id);
 
 			const factory = await UserAgentFactory.getAgentFactoryForUser(uid, signal.contractId);
 			const agent = factory?.getCallAgent(call);

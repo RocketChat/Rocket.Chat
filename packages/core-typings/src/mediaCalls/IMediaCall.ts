@@ -45,5 +45,7 @@ export interface IMediaCall extends IRocketChatRecord {
 	endedAt?: Date;
 	hangupReason?: string;
 
+	expiresAt: Date;
+
 	callerRequestedId?: string;
 }
