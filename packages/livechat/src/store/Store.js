@@ -76,12 +76,14 @@ export default class Store {
 	}
 
 	setState(partialState) {
-
 		// Ultatel: avoid redundant alerts
 		if(partialState.alerts && partialState.alerts.length){
 			partialState.alerts = partialState.alerts.filter(alert => 
 				!this._state.alerts.some(existingAlert => existingAlert.children === alert.children )
 			);
+			if(partialState.alerts.length === 0) {
+				delete partialState.alerts;
+			}
 		}
 		const prevState = this._state;
 		this._state = { ...prevState, ...partialState };
