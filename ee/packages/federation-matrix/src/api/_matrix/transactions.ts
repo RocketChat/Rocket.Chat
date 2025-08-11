@@ -155,9 +155,10 @@ const ErrorResponseSchema = {
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event } = services;
+	const { event, config } = services;
 
-	return new Router('/federation').put(
+	const router = new Router('/federation');
+	router.put(
 		'/v1/send/:txnId',
 		{
 			params: isSendTransactionParamsProps,
@@ -195,4 +196,43 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 			};
 		},
 	);
+
+	router.get(
+		'/v1/event/:eventId',
+		{
+			params: ajv.compile({
+				type: 'object',
+				properties: {
+					eventId: {
+						type: 'string',
+						description: 'Event ID to retrieve',
+					},
+				},
+				required: ['eventId'],
+			}),
+			response: {
+				200: ajv.compile({
+					type: 'object',
+				}),
+				404: isErrorResponseProps,
+			},
+			tags: ['Federation'],
+			license: ['federation'],
+		},
+		async (c) => {
+			const { eventId } = c.req.param();
+
+			const eventDoc = await event.getEventById(eventId);
+
+			return {
+				body: {
+					origin: config.getServerName(),
+					origin_server_ts: Date.now(),
+					pdus: [eventDoc],
+				},
+				statusCode: eventDoc ? 200 : 404,
+			};
+		},
+	);
+	return router;
 };

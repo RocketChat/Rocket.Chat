@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isDeletedMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
@@ -315,6 +315,39 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
+	async deleteMessage(message: IMessage): Promise<void> {
+		try {
+			if (!message.federation?.eventId || isDeletedMessage(message)) {
+				return;
+			}
+			const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(message.rid);
+			if (!matrixRoomId) {
+				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
+			}
+			const matrixDomain = await this.getMatrixDomain();
+			const matrixUserId = `@${message.u.username}:${matrixDomain}`;
+			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(message.u._id);
+			if (!existingMatrixUserId) {
+				await MatrixBridgedUser.createOrUpdateByLocalId(message.u._id, matrixUserId, true, matrixDomain);
+			}
+
+			if (!this.homeserverServices) {
+				this.logger.warn('Homeserver services not available, skipping message redaction');
+				return;
+			}
+			const matrixEventId = message.federation?.eventId;
+			if (!matrixEventId) {
+				throw new Error(`No Matrix event ID mapping found for message ${message._id}`);
+			}
+			const eventId = await this.homeserverServices.message.redactMessage(matrixRoomId, matrixEventId, matrixUserId);
+
+			this.logger.debug('Message Redaction sent to Matrix successfully:', eventId);
+		} catch (error) {
+			this.logger.error('Failed to send redaction to Matrix:', error);
+			throw error;
+		}
+	}
+
 	async removeReaction(messageId: string, reaction: string, user: IUser, oldMessage: IMessage): Promise<void> {
 		try {
 			const message = await Messages.findOneById(messageId);
@@ -386,7 +419,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const userId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
 		if (!userId) {
 			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
-			}
+		}
 
 		await this.homeserverServices.room.updateRoomName(matrixRoomId, displayName, userId);
 	}

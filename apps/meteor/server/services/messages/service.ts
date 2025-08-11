@@ -113,6 +113,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	async deleteMessage(user: IUser, message: IMessage): Promise<void> {
 		return deleteMessage(message, user);
+
 	}
 
 	async updateMessage(message: IMessage, user: IUser, originalMsg?: IMessage, previewUrls?: string[]): Promise<void> {
@@ -287,8 +288,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	async beforeDelete(message: IMessage, room: IRoom) {
-		if (!FederationActions.shouldPerformAction(message, room)) {
-			throw new FederationMatrixInvalidConfigurationError('Unable to delete message');
-		}
+		// if (!FederationActions.shouldPerformAction(message, room)) {
+		// 	throw new FederationMatrixInvalidConfigurationError('Unable to delete message');
+		// }
 	}
 }

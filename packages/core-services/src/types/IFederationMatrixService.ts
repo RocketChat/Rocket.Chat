@@ -27,4 +27,6 @@ export interface IFederationMatrixService {
 	setRoomPrivacy(roomId: string, privacy: IRoom['t'], senderId: string): Promise<void>;
 
 	setUserModerator(fromUserId: string, userId: string, roomId: string, role: 'owner' | 'moderator' | 'user'): Promise<void>;
+
+	deleteMessage(message: IMessage, user: IUser): Promise<void>;
 }

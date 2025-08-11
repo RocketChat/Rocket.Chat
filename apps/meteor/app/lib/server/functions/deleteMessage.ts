@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { api, Message } from '@rocket.chat/core-services';
+import { api, FederationMatrix, Message } from '@rocket.chat/core-services';
 import { isThreadMessage, type AtLeast, type IMessage, type IRoom, type IThreadMessage, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Uploads, Users, ReadReceipts, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -102,6 +102,8 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 			id: message._id,
 		});
 	}
+
+	await FederationMatrix.deleteMessage(message, user);
 
 	if (bridges && deletedMsg) {
 		void bridges.getListenerBridge().messageEvent(AppEvents.IPostMessageDeleted, deletedMsg, user);
