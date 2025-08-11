@@ -4,15 +4,14 @@ import { useEffect } from 'react';
 
 import { mainReady } from '../../../../app/ui-utils/client';
 import { RoomsCachedStore, SubscriptionsCachedStore, PublicSettingsCachedStore } from '../../../cachedStores';
-import { useReactiveVar } from '../../../hooks/useReactiveVar';
-import { isSyncReady } from '../../../lib/userData';
+import { useUserDataSyncReady } from '../../../lib/userData';
 import PageLoading from '../PageLoading';
 
 const Preload = ({ children }: { children: ReactNode }): ReactElement => {
 	const uid = useUserId();
 	const subscriptionsReady = SubscriptionsCachedStore.useReady();
 	const settingsReady = PublicSettingsCachedStore.useReady();
-	const userDataReady = useReactiveVar(isSyncReady);
+	const userDataReady = useUserDataSyncReady();
 
 	const ready = !uid || (userDataReady && subscriptionsReady && settingsReady);
 
