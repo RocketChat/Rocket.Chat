@@ -29,7 +29,7 @@ export default class Store {
 
 		window.addEventListener('storage', (e) => {
 			// Cross-tab communication
-			console.log('Storage event:', e.key );
+			console.log('Storage event:', e.key);
 			if (e.key !== this.localStorageKey) {
 				return;
 			}
@@ -76,6 +76,13 @@ export default class Store {
 	}
 
 	setState(partialState) {
+
+		// Ultatel: avoid redundant alerts
+		if(partialState.alerts && partialState.alerts.length){
+			partialState.alerts = partialState.alerts.filter(alert => 
+				!this._state.alerts.some(existingAlert => existingAlert.children === alert.children )
+			);
+		}
 		const prevState = this._state;
 		this._state = { ...prevState, ...partialState };
 		this.persist();
@@ -108,17 +115,14 @@ export default class Store {
 }
 
 export const extractWidgetId = () => {
-		const params = new URLSearchParams(window.location.search);
-		return params.get('id');
-}
-
+	const params = new URLSearchParams(window.location.search);
+	return params.get('id');
+};
 
 export const getWidgetDepartmentId = () => {
-		return store.state.config.departments[0]?._id;
-}
-
-
+	return store.state.config.departments[0]?._id;
+};
 
 export const getWidgetOfflineEmail = () => {
-		return store.state.config.settings.offlineEmail;
-}
+	return store.state.config.settings.offlineEmail;
+};

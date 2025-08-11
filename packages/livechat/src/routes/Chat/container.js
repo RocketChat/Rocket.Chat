@@ -79,16 +79,14 @@ class ChatContainer extends Component {
 			parentCall('callback', 'chat-started');
 			return newRoom;
 		} catch (error) {
-			const {
-				data: { error: reason },
-			} = error;
+			const reason = error?.data?.error ?? error.message;
 			const alert = {
 				id: createToken(),
 				children: i18n.t('error_starting_a_new_conversation_reason', { reason }),
 				error: true,
 				timeout: alertTimeOut,
 			};
-			await dispatch({ loading: false, alerts: (alerts.push(alert), alerts) });
+			await dispatch({ loading: false, alerts: [...alerts, alert] });
 
 			runCallbackEventEmitter(reason);
 			throw error;
@@ -205,7 +203,7 @@ class ChatContainer extends Component {
 		} catch (error) {
 			console.error(error);
 			const alert = { id: createToken(), children: i18n.t('error_closing_chat'), error: true, timeout: 0 };
-			await dispatch({ alerts: (alerts.push(alert), alerts) });
+			await dispatch({ alerts: [...alerts, alert] });
 		} finally {
 			await dispatch({ loading: false });
 			await closeChat();
