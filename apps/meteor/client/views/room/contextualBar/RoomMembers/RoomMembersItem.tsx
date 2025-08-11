@@ -12,6 +12,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useUserRoom } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent } from 'react';
 import { useState } from 'react';
 
@@ -25,6 +26,7 @@ type RoomMembersItemProps = {
 	rid: IRoom['_id'];
 	reload: () => void;
 	useRealName: boolean;
+	adminView?: boolean;
 } & Pick<IUser, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension'>;
 
 const RoomMembersItem = ({
@@ -38,7 +40,8 @@ const RoomMembersItem = ({
 	reload,
 	useRealName,
 }: RoomMembersItemProps): ReactElement => {
-	const [showButton, setShowButton] = useState();
+	const [showButton, setShowButton] = useState(false);
+	const room = useUserRoom(rid);
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
 	const handleMenuEvent = {
@@ -59,7 +62,7 @@ const RoomMembersItem = ({
 				{nameOrUsername} {displayUsername && <OptionDescription>({displayUsername})</OptionDescription>}
 			</OptionContent>
 			<OptionMenu onClick={preventPropagation}>
-				{showButton ? (
+				{showButton && room ? (
 					<UserActions username={username} name={name} rid={rid} _id={_id} freeSwitchExtension={freeSwitchExtension} reload={reload} />
 				) : (
 					<IconButton tiny icon='kebab' />

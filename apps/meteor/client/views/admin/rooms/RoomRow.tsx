@@ -53,14 +53,13 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 				icon: 'members' as const,
 				content: t('Manage_Members'),
 				onClick: () => {
-					// 直接显示 members sidebar
 					setModal(
 						<ContextualbarDialog onClose={() => setModal(null)}>
 							<ContextualbarHeader>
 								<ContextualbarTitle>{t('Members')}</ContextualbarTitle>
 								<ContextualbarClose onClick={() => setModal(null)} />
 							</ContextualbarHeader>
-							<RoomMembersWithData rid={_id} />
+							<RoomMembersWithData rid={_id} adminView />
 						</ContextualbarDialog>,
 					);
 				},

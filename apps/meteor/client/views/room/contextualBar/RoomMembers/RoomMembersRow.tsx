@@ -9,13 +9,14 @@ type RoomMembersRowProps = {
 	data: {
 		onClickView: (e: MouseEvent<HTMLElement>) => void;
 		rid: IRoom['_id'];
+		adminView?: boolean;
 	};
 	index: number;
 	reload: () => void;
 	useRealName: boolean;
 };
 
-const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRealName }: RoomMembersRowProps): ReactElement => {
+const RoomMembersRow = ({ user, data: { onClickView, rid, adminView }, index, reload, useRealName }: RoomMembersRowProps): ReactElement => {
 	if (!user?._id) {
 		return <RoomMembersItem.Skeleton />;
 	}
@@ -32,6 +33,7 @@ const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRe
 			freeSwitchExtension={user.freeSwitchExtension}
 			onClickView={onClickView}
 			reload={reload}
+			adminView={adminView}
 		/>
 	);
 };
