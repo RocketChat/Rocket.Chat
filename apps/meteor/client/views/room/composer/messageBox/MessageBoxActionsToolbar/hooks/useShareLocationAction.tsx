@@ -21,7 +21,8 @@ export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): G
 
 	const handleShareLocation = () => setModal(<ShareLocationModal rid={room._id} tmid={tmid} onClose={() => setModal(null)} />);
 
-	const allowGeolocation = room && canGetGeolocation && !isRoomFederated(room);
+	const allowGeolocation = true;
+	// const allowGeolocation = room && canGetGeolocation && !isRoomFederated(room);
 
 	return {
 		id: 'share-location',
