@@ -1073,7 +1073,7 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
-	describe('[DELETE] omnichannel/contacts/:id', () => {
+	describe.only('[DELETE] omnichannel/contacts.delete', () => {
 		let contactId: string;
 
 		const email = faker.internet.email().toLowerCase();

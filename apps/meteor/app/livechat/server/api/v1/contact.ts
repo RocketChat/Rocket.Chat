@@ -236,6 +236,7 @@ const omnichannelContactsEndpoints = API.v1.post(
 		response: {
 			200: POSTOmnichannelContactDeleteSuccessSchema,
 			400: POSTOmnichannelContactDeleteErrorSchema,
+			401: POSTOmnichannelContactDeleteErrorSchema,
 			404: POSTOmnichannelContactDeleteErrorSchema,
 		},
 		authRequired: true,
@@ -245,8 +246,18 @@ const omnichannelContactsEndpoints = API.v1.post(
 	async function action() {
 		const { contactId } = this.bodyParams;
 
-		await disableContactById(contactId);
-		return API.v1.success();
+		try {
+			await disableContactById(contactId);
+			return API.v1.success();
+		} catch (error) {
+			if (!(error instanceof Error)) {
+				return API.v1.failure('something-went-wrong');
+			}
+
+			if (error.message === 'contact-not-found') {
+				return API.v1.notFound(error.message);
+			}
+		}
 	},
 );
 
