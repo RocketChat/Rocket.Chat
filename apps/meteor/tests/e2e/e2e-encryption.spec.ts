@@ -118,6 +118,8 @@ test.describe('initial setup', () => {
 		await sidenav.logout();
 
 		// Login again
+		await expect(loginPage.loginButton).toBeVisible();
+
 		await loginPage.loginByUserState(Users.admin);
 
 		// Enter the saved password
