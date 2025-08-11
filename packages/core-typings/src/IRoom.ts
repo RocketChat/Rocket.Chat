@@ -78,7 +78,6 @@ export interface IRoom extends IRocketChatRecord {
 	favorite?: boolean;
 	archived?: boolean;
 	description?: string;
-	createdOTR?: boolean;
 	e2eKeyId?: string;
 
 	/* @deprecated */

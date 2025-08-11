@@ -1,12 +1,4 @@
-import type {
-	IMessage,
-	IRoom,
-	MessageAttachment,
-	ReadReceipt,
-	OtrSystemMessages,
-	MessageUrl,
-	IThreadMainMessage,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment, ReadReceipt, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -893,24 +885,6 @@ const ChatGetURLPreviewSchema = {
 
 export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
-type ChatOTR = { roomId: string; type: OtrSystemMessages };
-const ChatOTRSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-		type: {
-			type: 'string',
-			enum: ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'],
-		},
-	},
-	required: ['roomId', 'type'],
-	additionalProperties: false,
-};
-export const isChatOTRProps = ajv.compile<ChatOTR>(ChatOTRSchema);
-
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
 		POST: (params: ChatSendMessage) => {
@@ -1052,9 +1026,6 @@ export type ChatEndpoints = {
 			offset: number;
 			total: number;
 		};
-	};
-	'/v1/chat.otr': {
-		POST: (params: ChatOTR) => void;
 	};
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };

@@ -1,4 +1,3 @@
-import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -21,7 +20,6 @@ import {
 	isChatFollowMessageProps,
 	isChatUnfollowMessageProps,
 	isChatGetMentionedMessagesProps,
-	isChatOTRProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
@@ -41,7 +39,6 @@ import { messageSearch } from '../../../../server/methods/messageSearch';
 import { getMessageHistory } from '../../../../server/publications/messages';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
@@ -839,28 +836,6 @@ API.v1.addRoute(
 				},
 			});
 			return API.v1.success(messages);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.otr',
-	{ authRequired: true, validateParams: isChatOTRProps },
-	{
-		async post() {
-			const { roomId, type: otrType } = this.bodyParams;
-
-			const { username, type } = this.user;
-
-			if (!username) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user');
-			}
-
-			await canSendMessageAsync(roomId, { uid: this.userId, username, type });
-
-			await Message.saveSystemMessage(otrType, roomId, username, { _id: this.userId, username });
-
-			return API.v1.success();
 		},
 	},
 );
