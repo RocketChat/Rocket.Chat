@@ -1,9 +1,9 @@
 import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
 import type { IUser, IMediaCall } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
+import { gateway, MediaCallMonitor } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
-import { gateway } from '@rocket.chat/media-calls';
-import { MediaCalls, Users } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 
 const logger = new Logger('media-call service');
 
@@ -73,12 +73,9 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		return this.createInternalCall(caller, { uid: userId });
 	}
 
-	public async hangupEveryCall(hangupReason?: string): Promise<void> {
-		// change every pending or active call state to 'hangup' with the specified reason
-
-		await MediaCalls.hangupEveryCall({
-			endedBy: { type: 'server', id: 'server' },
-			reason: hangupReason || 'full-server-hangup',
+	public async hangupExpiredCalls(): Promise<void> {
+		MediaCallMonitor.hangupExpiredCalls().catch((error) => {
+			logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error });
 		});
 	}
 

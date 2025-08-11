@@ -1,10 +1,11 @@
+import { MediaCall } from '@rocket.chat/core-services';
+import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
-import { Meteor } from 'meteor/meteor';
 
 import { addSettings } from '../settings/voip';
 
-Meteor.startup(async () => {
-	License.onValidateLicense(async () => {
-		await addSettings();
-	});
+License.onValidateLicense(async () => {
+	await addSettings();
+
+	await cronJobs.add('expire-media-calls', '* * * * *', () => MediaCall.hangupExpiredCalls());
 });

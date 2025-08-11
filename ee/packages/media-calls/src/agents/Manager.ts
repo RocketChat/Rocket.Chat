@@ -6,6 +6,8 @@ import { MediaCallChannels, MediaCalls } from '@rocket.chat/models';
 import { logger } from '../logger';
 import type { IMediaCallAgent, IMediaCallAgentFactory, IMediaCallBasicAgent, INewMediaCallAgent } from './definition/IMediaCallAgent';
 import { UserAgentFactory } from './users/AgentFactory';
+import { MediaCallMonitor } from '../global/CallMonitor';
+import { gateway } from '../global/SignalGateway';
 
 type FactoryFn = () => Promise<IMediaCallAgentFactory | null>;
 
@@ -99,10 +101,37 @@ class MediaCallAgentManager {
 		}
 	}
 
+	public async expireCall(call: Pick<IMediaCall, '_id' | 'caller' | 'callee'>): Promise<void> {
+		logger.debug({ msg: 'AgentManager.expireCall', call });
+
+		if (!(await this.hangupByServer(call._id, 'timeout'))) {
+			return;
+		}
+
+		// We send a signal to rocket.chat users involved on the call without instantiating a full agent
+		// Once a sip agent is implemented, we may review if it is worth sending them some form of notification here too.
+
+		if (call.callee.type === 'user') {
+			gateway.sendSignal(call.callee.id, {
+				callId: call._id,
+				type: 'notification',
+				notification: 'hangup',
+			});
+		}
+
+		if (call.caller.type === 'user') {
+			gateway.sendSignal(call.caller.id, {
+				callId: call._id,
+				type: 'notification',
+				notification: 'hangup',
+			});
+		}
+	}
+
 	public async activateCall(agent: IMediaCallAgent): Promise<void> {
 		logger.debug({ msg: 'AgentManager.activateCall', actor: agent.actor });
 
-		const stateResult = await MediaCalls.activateCallById(agent.callId);
+		const stateResult = await MediaCalls.activateCallById(agent.callId, MediaCallMonitor.getNewExpirationTime());
 		if (!stateResult.modifiedCount) {
 			return;
 		}
@@ -119,7 +148,7 @@ class MediaCallAgentManager {
 			return;
 		}
 
-		await MediaCalls.startRingingById(agent.callId);
+		await MediaCalls.startRingingById(agent.callId, MediaCallMonitor.getNewExpirationTime());
 	}
 
 	public async acceptCall(agent: IMediaCallAgent): Promise<void> {
@@ -128,7 +157,7 @@ class MediaCallAgentManager {
 			return;
 		}
 
-		const stateResult = await MediaCalls.acceptCallById(agent.callId, agent.contractId);
+		const stateResult = await MediaCalls.acceptCallById(agent.callId, agent.contractId, MediaCallMonitor.getNewExpirationTime());
 		// If nothing changed, the call was no longer ringing
 		if (!stateResult.modifiedCount) {
 			// Notify something?
@@ -150,6 +179,21 @@ class MediaCallAgentManager {
 		}
 
 		otherAgent.setRemoteDescription(sdp);
+	}
+
+	public async hangupByServer(callId: string, serverErrorCode: string, agentsToNotify?: IMediaCallBasicAgent[]): Promise<boolean> {
+		logger.debug({ msg: 'AgentManager.hangupByServer', callId, serverErrorCode });
+
+		const endedBy = { type: 'server', id: 'server' } as ServerActor;
+
+		const stateResult = await MediaCalls.hangupCallById(callId, { endedBy, reason: serverErrorCode });
+		const result = Boolean(stateResult.modifiedCount);
+
+		if (result && agentsToNotify) {
+			await Promise.allSettled(agentsToNotify.map((agent) => agent.notify(callId, 'hangup')));
+		}
+
+		return result;
 	}
 
 	private async getOppositeAgentFactory(call: IMediaCall, agent: IMediaCallAgent): Promise<IMediaCallAgentFactory | null> {
@@ -189,21 +233,6 @@ class MediaCallAgentManager {
 		}
 
 		return factory.getCallAgent(call) || factory.getNewAgent(agent.oppositeRole);
-	}
-
-	private async hangupByServer(callId: string, serverErrorCode: string, agentsToNotify?: IMediaCallBasicAgent[]): Promise<boolean> {
-		logger.debug({ msg: 'AgentManager.hangupByServer', callId, serverErrorCode });
-
-		const endedBy = { type: 'server', id: 'server' } as ServerActor;
-
-		const stateResult = await MediaCalls.hangupCallById(callId, { endedBy, reason: serverErrorCode });
-		const result = Boolean(stateResult.modifiedCount);
-
-		if (result && agentsToNotify) {
-			await Promise.allSettled(agentsToNotify.map((agent) => agent.notify(callId, 'hangup')));
-		}
-
-		return result;
 	}
 
 	private hangupAndThrow(callId: string, error: string, agents?: IMediaCallBasicAgent[]): never {
