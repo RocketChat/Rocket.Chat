@@ -1816,7 +1816,7 @@
   "Edit_Business_Hour": "Edit Business Hour",
   "Edit_CannedResponse": "Edit Canned Response",
   "Edit_Canned_Response": "Edit Canned Response",
-  "Edit_Canned_Responses": "Edit Canned Responses",
+  "Edit_Canned_Responses": "Edit canned responses",
   "Edit_Contact_Profile": "Edit Contact Profile",
   "Edit_Custom_Field": "Edit Custom Field",
   "Edit_Department": "Edit Department",
@@ -6916,5 +6916,9 @@
   "group_mentions_counter_many": "{{count}} group mentions",
   "__count__follower_many": "+{{count}} followers",
   "Apps_Count_Enabled_few": "{{count}} apps enabled",
-  "Private_Apps_Count_Enabled_few": "{{count}} private apps enabled"
+  "Private_Apps_Count_Enabled_few": "{{count}} private apps enabled",
+  "message_counter": {
+    "one": "{{count}} message",
+    "other": "{{count}} messages"
+  }
 }
