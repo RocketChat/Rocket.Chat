@@ -734,8 +734,11 @@ describe('[Groups]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(res.body.messages).to.have.lengthOf(5);
-						expect(res.body.messages[1]).to.have.property('msg', 'message was unpinned');
-						expect(res.body.messages[1]).to.have.property('editedAt');
+
+						const updatedMessage = res.body.messages.find((msg: IMessage) => msg._id === pinnedMessageId);
+
+						expect(updatedMessage).to.have.property('msg', 'message was unpinned');
+						expect(updatedMessage).to.have.property('editedAt');
 
 						res.body.messages.forEach((msg: IMessage) => {
 							expect(msg).to.not.have.property('_hidden');
