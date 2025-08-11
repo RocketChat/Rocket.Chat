@@ -194,7 +194,9 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-department'>
 						{department ? department.name : ''}
 					</GenericTableCell>
-					<GenericTableCell withTruncatedText>{servedBy?.username}</GenericTableCell>
+					<GenericTableCell withTruncatedText data-qa='current-chats-cell-servedBy'>
+						{servedBy?.username}
+					</GenericTableCell>
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-startedAt'>
 						{moment(ts).format('L LTS')}
 					</GenericTableCell>

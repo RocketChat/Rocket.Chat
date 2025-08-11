@@ -137,11 +137,11 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 				</Box>
 				<Box display='flex' mie={8} flexGrow={0} flexDirection='column'>
 					<Label mb={4}>{t('From')}</Label>
-					<InputBox type='date' placeholder={t('From')} onChange={handleFrom} value={from} color='default' />
+					<InputBox type='date' placeholder={t('From')} onChange={handleFrom} value={from} data-qa='current-chats-from' color='default' />
 				</Box>
 				<Box display='flex' mie={8} flexGrow={0} flexDirection='column'>
 					<Label mb={4}>{t('To')}</Label>
-					<InputBox type='date' placeholder={t('To')} onChange={handleTo} value={to} color='default' />
+					<InputBox type='date' placeholder={t('To')} onChange={handleTo} value={to} data-qa='current-chats-to' color='default' />
 				</Box>
 
 				<RemoveAllClosed
