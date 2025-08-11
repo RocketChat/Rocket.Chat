@@ -476,7 +476,7 @@ describe('[Direct Messages]', () => {
 		await testFileUploads('im.files', 'd', 'invalid-channel');
 	});
 
-	describe.only('/im.messages', () => {
+	describe('/im.messages', () => {
 		let testUser: IUser;
 		let testUser2: IUser;
 		let testUserDMRoom: IRoom;
