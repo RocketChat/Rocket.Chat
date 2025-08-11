@@ -40,7 +40,7 @@ redis.on('message', (channel: string, msg: string) => {
 
 	const message = parseRedisMessage(msg) as IBroadcastMsg | IRedisMsg;
 
-	if (channel === 'broadcast' || message?.broadcast) {
+	if (message.ns === 'broadcast') {
 		const data = message as IBroadcastMsg;
 		Notifications.pubsubAdapter(data.key, data.eventName, data.funcName, data.data);
 	} else {
