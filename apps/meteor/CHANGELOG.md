@@ -1,5 +1,45 @@
 # @rocket.chat/meteor
 
+## 7.9.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36680](https://github.com/RocketChat/Rocket.Chat/pull/36680) by [@dionisio-bot](https://github.com/dionisio-bot)) fixes an issue where some apps that don't need permission would have grantedPermissions as null making it impossible to activate the app
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.2
+  - @rocket.chat/rest-typings@7.9.2
+  - @rocket.chat/license@1.0.26
+  - @rocket.chat/omnichannel-services@0.3.32
+  - @rocket.chat/pdf-worker@0.3.14
+  - @rocket.chat/presence@0.2.35
+  - @rocket.chat/api-client@0.2.35
+  - @rocket.chat/apps@0.5.14
+  - @rocket.chat/core-services@0.9.14
+  - @rocket.chat/cron@0.1.35
+  - @rocket.chat/freeswitch@1.2.22
+  - @rocket.chat/fuselage-ui-kit@21.0.2
+  - @rocket.chat/gazzodown@21.0.2
+  - @rocket.chat/http-router@7.9.2
+  - @rocket.chat/model-typings@1.6.14
+  - @rocket.chat/ui-avatar@17.0.2
+  - @rocket.chat/ui-client@21.0.2
+  - @rocket.chat/ui-contexts@21.0.2
+  - @rocket.chat/web-ui-registration@21.0.2
+  - @rocket.chat/models@1.5.14
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.14
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@21.0.2
+  - @rocket.chat/ui-voip@11.0.2
+  - @rocket.chat/instance-status@0.1.35
+  </details>
+
 ## 7.9.1
 
 ### Patch Changes
