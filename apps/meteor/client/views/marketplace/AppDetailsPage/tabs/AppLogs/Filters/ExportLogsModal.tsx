@@ -24,6 +24,7 @@ import type { AppLogsFilterFormData } from '../useAppLogsFilterForm';
 type ExportLogsModalProps = {
 	onClose: () => void;
 	filterValues: AppLogsFilterFormData;
+	onConfirm: (url: string) => void;
 };
 
 type FormDataType = {
@@ -32,7 +33,7 @@ type FormDataType = {
 	customExportAmount: number;
 };
 
-export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps) => {
+export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogsModalProps) => {
 	const { t } = useTranslation();
 
 	const appId = useRouteParameter('id');
@@ -56,6 +57,7 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 	const getFileUrl = ({
 		severity,
 		event,
+		instance,
 		startDate,
 		endDate,
 		count,
@@ -67,8 +69,11 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 		if (severity && severity !== 'all') {
 			baseUrl += `logLevel=${severity}&`;
 		}
-		if (event) {
+		if (event && event !== 'all') {
 			baseUrl += `method=${event}&`;
+		}
+		if (instance && instance !== 'all') {
+			baseUrl += `instanceId=${instance}&`;
 		}
 		if (startDate) {
 			baseUrl += `startDate=${new Date(`${startDate}T${startTime}`).toISOString()}&`;
@@ -85,7 +90,7 @@ export const ExportLogsModal = ({ onClose, filterValues }: ExportLogsModalProps)
 
 	const handleConfirm = (): void => {
 		const url = getFileUrl({ ...filterValues, type, count: count === 'max' ? 2000 : getValues('customExportAmount') });
-		window.open(url, '_blank', 'noopener noreferrer');
+		onConfirm(url);
 		onClose();
 	};
 

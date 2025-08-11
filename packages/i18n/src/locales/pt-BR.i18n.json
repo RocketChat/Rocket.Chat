@@ -6063,7 +6063,6 @@
   "error-message-editing-blocked": "Edição de mensagens bloqueada",
   "error-message-size-exceeded": "O tamanho da mensagem excede Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "Você deve fornecer o link para [cancelar inscrição].",
-  "error-no-agents-online-in-department": "Nenhum agente online no departamento",
   "error-no-message-for-unread": "Não há mensagens para serem marcadas como não lidas",
   "error-no-owner-channel": "Apenas proprietários podem adicionar este canal à equipe",
   "error-no-permission-team-channel": "Você não tem permissão para incluir este canal à equipe",

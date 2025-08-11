@@ -1,11 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 
-import { Rooms } from '../../../app/models/client';
+import { goToRoomById } from './goToRoomById';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
 import { router } from '../../providers/RouterProvider';
+import { Rooms } from '../../stores';
 import { RoomManager } from '../RoomManager';
-import { goToRoomById } from './goToRoomById';
 
 /** @deprecated */
 export const legacyJumpToMessage = async (message: IMessage) => {
