@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiUsername, apiEmail, methodCall } from '../../data/api-data';
-import { pinMessage, sendMessage, starMessage } from '../../data/chat.helper';
+import { pinMessage, sendMessage, starMessage, updateMessage } from '../../data/chat.helper';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
@@ -476,12 +476,13 @@ describe('[Direct Messages]', () => {
 		await testFileUploads('im.files', 'd', 'invalid-channel');
 	});
 
-	describe('/im.messages', () => {
+	describe.only('/im.messages', () => {
 		let testUser: IUser;
 		let testUser2: IUser;
 		let testUserDMRoom: IRoom;
 		let testUserCredentials: Credentials;
 		let testUser2Credentials: Credentials;
+		let pinnedMessageId: IMessage['_id'];
 
 		let messages: Pick<IMessage, 'rid' | 'msg' | 'mentions'>[] = [];
 
@@ -538,6 +539,7 @@ describe('[Direct Messages]', () => {
 				starMessage({ messageId: starredMessage.body.message._id, requestCredentials: testUserCredentials }),
 				pinMessage({ messageId: pinnedMessage.body.message._id, requestCredentials: testUserCredentials }),
 			]);
+			pinnedMessageId = pinnedMessage.body.message._id;
 		});
 
 		after(async () => Promise.all([deleteUser(testUser), deleteUser(testUser2)]));
@@ -701,6 +703,76 @@ describe('[Direct Messages]', () => {
 					expect(res.body).to.have.property('count', 1);
 					expect(res.body).to.have.property('total', 1);
 				});
+		});
+
+		describe.skip('_hidden messages behavior when Message_KeepHistory is enabled', async () => {
+			before(async () => {
+				await updateSetting('Message_KeepHistory', true);
+				await pinMessage({ messageId: pinnedMessageId, unpin: true });
+			});
+
+			after(async () => {
+				await updateSetting('Message_KeepHistory', false);
+			});
+
+			it('should return all messages, without any pinned messages', async () => {
+				await request
+					.get(api('im.messages'))
+					.set(testUserCredentials)
+					.query({ roomId: testUserDMRoom._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages).to.have.lengthOf(5);
+
+						res.body.messages.forEach((msg: IMessage) => {
+							expect(msg).to.not.have.property('pinned', true);
+							expect(msg).to.not.have.property('_hidden');
+						});
+					});
+			});
+
+			it('should return no pinned messages', async () => {
+				await request
+					.get(api('im.messages'))
+					.set(testUserCredentials)
+					.query({
+						roomId: testUserDMRoom._id,
+						pinned: true,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body.messages).to.have.lengthOf(0);
+						expect(res.body).to.have.property('count', 0);
+						expect(res.body).to.have.property('total', 0);
+					});
+			});
+
+			it('should not return old message when updating a message', async () => {
+				await updateMessage({ msgId: pinnedMessageId, updatedMessage: 'message was unpinned', roomId: testUserDMRoom._id });
+
+				await request
+					.get(api('im.messages'))
+					.set(testUserCredentials)
+					.query({ roomId: testUserDMRoom._id })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+						expect(res.body.messages).to.have.lengthOf(5);
+						expect(res.body.messages[1]).to.have.property('msg', 'message was unpinned');
+						expect(res.body.messages[1]).to.have.property('editedAt');
+
+						res.body.messages.forEach((msg: IMessage) => {
+							expect(msg).to.not.have.property('_hidden');
+						});
+					});
+			});
 		});
 	});
 
