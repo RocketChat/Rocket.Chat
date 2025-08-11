@@ -454,14 +454,6 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		await this.add('Omnichannel_enable_contact_removal', false, {
-			type: 'boolean',
-			group: 'Omnichannel',
-			public: true,
-			i18nLabel: 'Omnichannel_enable_contact_removal',
-			i18nDescription: 'Omnichannel_enable_contact_removal_description',
-			enableQuery: omnichannelEnabledQuery,
-		});
 		await this.add('Omnichannel_enable_department_removal', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
