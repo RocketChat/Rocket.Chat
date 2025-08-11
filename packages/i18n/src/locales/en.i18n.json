@@ -3786,8 +3786,6 @@
   "Omnichannel_chat_closed_due_to_inactivity": "The chat was automatically closed because we haven't received any reply from {{guest}} in {{timeout}} seconds",
   "Omnichannel_contact_manager_routing": "Assign new conversations to the contact manager",
   "Omnichannel_contact_manager_routing_Description": "This setting allocates a chat to the assigned Contact Manager, as long as the Contact Manager is online when the chat starts",
-  "Omnichannel_enable_contact_removal": "Enable contact removal",
-  "Omnichannel_enable_contact_removal_description": "Deleted contacts cannot be retrieved.",
   "Omnichannel_enable_department_removal": "Enable department removal",
   "Omnichannel_enable_department_removal_alert": "Departments removed cannot be restored, we recommend archiving the department instead.",
   "Omnichannel_hide_conversation_after_closing": "Hide conversation after closing",
