@@ -1,3 +1,11 @@
+import type { Dispatch, SetStateAction } from 'react';
+import { getCursorSelectionInfo, getSelectionRange } from './selectionRange';
+
+export type CursorHistory = {
+	undoStack: number[];
+	redoStack: number[];
+};
+
 // Return an array of strings representing each line of the Composer
 export const getTextLines = (str: string, delimiter: string): string[] => {
 	const result = [];
@@ -15,4 +23,23 @@ export const getTextLines = (str: string, delimiter: string): string[] => {
 	}
 
 	return result;
+};
+
+// Resolve state of the composer during beforeInput
+export const resolveBeforeInput = (
+	event: InputEvent,
+	setMdLines: Dispatch<SetStateAction<string[] | undefined>>,
+	setCursorHistory: Dispatch<SetStateAction<CursorHistory | undefined>>,
+): void => {
+	const input = event.target as HTMLDivElement;
+
+	const selection = getSelectionRange(input);
+	const { selectionStart, selectionEnd } = selection;
+
+	const lineInfo = getCursorSelectionInfo(input, selection);
+	const { start, end } = lineInfo;
+
+	console.log('event', e);
+	console.log('input', input);
+	setMdLines(getTextLines(input.innerText, '\n'));
 };
