@@ -19,7 +19,7 @@ import Register from '../../routes/Register';
 import SwitchDepartment from '../../routes/SwitchDepartment';
 import TriggerMessage from '../../routes/TriggerMessage';
 import { store } from '../../store';
-import { visibility, isActiveSession, setInitCookies } from '../helpers';
+import { visibility, isActiveSession, setInitCookies, canRenderMessage } from '../helpers';
 
 function isRTL(s) {
 	const rtlChars = '\u0591-\u07FF\u200F\u202B\u202E\uFB1D-\uFDFD\uFE70-\uFEFC';
@@ -106,7 +106,17 @@ export class App extends Component {
 	handleRestore = () => {
 		parentCall('restoreWindow');
 		const { dispatch, undocked } = this.props;
-		const dispatchRestore = () => dispatch({ minimized: false, undocked: false });
+		// Ultatel: Reset unread relevent keys to mark chat as readed with opened
+		const renderedMessages = store._state.messages?.filter((message) => canRenderMessage(message));
+		const lastRenderedMessage = renderedMessages?.at(-1);
+		const dispatchRestore = () =>
+			dispatch({
+				minimized: false,
+				undocked: false,
+				unread: 0,
+				alerts: [],
+				lastReadMessageId: lastRenderedMessage?._id,
+			});
 		const dispatchEvent = () => {
 			dispatchRestore();
 			store.off('storageSynced', dispatchEvent);
