@@ -4,7 +4,10 @@
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
-	isDmDeleteProps,
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	isDmFileProps,
 	isDmMemberProps,
 	isDmMessagesProps,
@@ -26,6 +29,7 @@ import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions
 import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -87,26 +91,73 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+type DmDeleteProps =
+	| {
+			roomId: string;
+	  }
+	| {
+			username: string;
+	  };
+
+const isDmDeleteProps = ajv.compile<DmDeleteProps>({
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				username: {
+					type: 'string',
+				},
+			},
+			required: ['username'],
+			additionalProperties: false,
+		},
+	],
+});
+
+const imEndpoints = API.v1.post(
 	['dm.delete', 'im.delete'],
 	{
 		authRequired: true,
-		validateParams: isDmDeleteProps,
-	},
-	{
-		async post() {
-			const { room } = await findDirectMessageRoom(this.bodyParams, this.userId);
-
-			const canAccess =
-				(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.userId, 'view-room-administration'));
-			if (!canAccess) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			await eraseRoom(room._id, this.userId);
-
-			return API.v1.success();
+		body: isDmDeleteProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+
+	async function action() {
+		const { room } = await findDirectMessageRoom(this.bodyParams, this.userId);
+
+		const canAccess =
+			(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.userId, 'view-room-administration'));
+		if (!canAccess) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		await eraseRoom(room._id, this.userId);
+
+		return API.v1.success();
 	},
 );
 
@@ -589,3 +640,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type ImEndpoints = ExtractRoutesFromAPI<typeof imEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ImEndpoints {}
+}
