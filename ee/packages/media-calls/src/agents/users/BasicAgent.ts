@@ -1,8 +1,8 @@
 import type { IUser, MediaCallActor } from '@rocket.chat/core-typings';
 import type { CallContact, CallRole, ServerMediaSignal, CallNotification } from '@rocket.chat/media-signaling';
 
+import { gateway } from '../../global/SignalGateway';
 import { logger } from '../../logger';
-import { sendSignal } from '../../signalHandler';
 import type { IMediaCallBasicAgent, INewMediaCallAgent } from '../definition/IMediaCallAgent';
 import { MediaCallBasicAgent } from '../definition/IMediaCallAgent';
 
@@ -45,6 +45,6 @@ export class UserBasicAgent<T extends IMediaCallBasicAgent = INewMediaCallAgent>
 	}
 
 	protected async sendSignal(signal: ServerMediaSignal): Promise<void> {
-		sendSignal(this.user._id, signal);
+		gateway.sendSignal(this.user._id, signal);
 	}
 }

@@ -25,5 +25,6 @@ export interface IMediaCallChannel extends IRocketChatRecord {
 
 	localDescription?: RTCSessionDescriptionInit;
 
+	// for rocket.chat users, acknowledged means that a client user session was reached by the signaling
 	acknowledged: boolean;
 }

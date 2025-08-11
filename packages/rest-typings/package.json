@@ -25,7 +25,6 @@
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"ajv": "^8.17.1",
