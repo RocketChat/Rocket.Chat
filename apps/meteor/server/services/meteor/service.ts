@@ -18,6 +18,7 @@ import { use } from '../../../app/settings/server/Middleware';
 import { setValue, updateValue } from '../../../app/settings/server/raw';
 import { getURL } from '../../../app/utils/server/getURL';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { ListenersModule } from '../../modules/listeners/listeners.module';
 
 type Callbacks = {
@@ -291,5 +292,9 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 
 	async getURL(path: string, params: Record<string, any> = {}, cloudDeepLinkUrl?: string): Promise<string> {
 		return getURL(path, params, cloudDeepLinkUrl);
+	}
+
+	async getMessageURLToReplyTo(roomType: string, roomId: string, roomName: string, messageIdToReplyTo: string): Promise<string> {
+		return getURL(`${roomCoordinator.getRouteLink(roomType, { rid: roomId, name: roomName })}?msg=${messageIdToReplyTo}`, { full: true });
 	}
 }

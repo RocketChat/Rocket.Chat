@@ -1,5 +1,5 @@
 import type { HomeserverEventSignatures } from '@hs/federation-sdk';
-import { FederationMatrix, Message } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
@@ -8,7 +8,7 @@ import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Mess
 
 import { getMatrixLocalDomain } from '../helpers/domain.builder';
 import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
-import { toInternalMessageFormat } from '../helpers/message.parsers';
+import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../helpers/message.parsers';
 
 const logger = new Logger('federation-matrix:message');
 
@@ -22,9 +22,10 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			}
 
 			const content = data.content as any;
-			const threadRelation = content?.['m.relates_to'];
-			const isThreadMessage = threadRelation?.rel_type === 'm.thread';
-			const threadRootEventId = isThreadMessage ? threadRelation.event_id : undefined;
+			const replyToRelation = content?.['m.relates_to'];
+			const isThreadMessage = replyToRelation?.rel_type === 'm.thread';
+			const isQuoteMessage = replyToRelation?.['m.in_reply_to']?.event_id && !replyToRelation?.is_falling_back;
+			const threadRootEventId = isThreadMessage ? replyToRelation.event_id : undefined;
 
 			const [userPart, domain] = data.sender.split(':');
 			if (!userPart || !domain) {
@@ -139,6 +140,32 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 					logger.debug('No changes in message content, skipping update');
 					return;
 				}
+
+				if (isQuoteMessage && room.name) {
+					const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(
+						room.t as string,
+						room._id,
+						room.name,
+						originalMessage._id,
+					);
+					const formatted = await toInternalQuoteMessageFormat({
+						messageToReplyToUrl,
+						formattedMessage: data.content.formatted_body || '',
+						rawMessage: message,
+						homeServerDomain: localDomain,
+						senderExternalId: data.sender,
+					});
+					await Message.updateMessage(
+						{
+							...originalMessage,
+							msg: formatted,
+						},
+						user,
+						originalMessage,
+					);
+					return;
+				}
+
 				const formatted = toInternalMessageFormat({
 					rawMessage: data.content['m.new_content'].body,
 					formattedMessage: data.content.formatted_body || '',
@@ -155,8 +182,31 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				);
 				return;
 			}
+			if (isQuoteMessage && room.name) {
+				const originalMessage = await Messages.findOneByFederationId(replyToRelation?.['m.in_reply_to']?.event_id);
+				if (!originalMessage) {
+					logger.error('Original message not found for edit:', replyToRelation?.['m.in_reply_to']?.event_id);
+					return;
+				}
+				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, room.name, originalMessage._id);
+				const formatted = await toInternalQuoteMessageFormat({
+					messageToReplyToUrl,
+					formattedMessage: data.content.formatted_body || '',
+					rawMessage: message,
+					homeServerDomain: localDomain,
+					senderExternalId: data.sender,
+				});
+				await Message.saveMessageFromFederation({
+					fromId: user._id,
+					rid: internalRoomId,
+					msg: formatted,
+					federation_event_id: data.event_id,
+					tmid,
+				});
+				return;
+			}
 
-			const formatted = toInternalMessageFormat({
+			const formatted = await toInternalMessageFormat({
 				rawMessage: message,
 				formattedMessage: data.content.formatted_body || '',
 				homeServerDomain: localDomain,
