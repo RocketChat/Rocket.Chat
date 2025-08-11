@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react';
+
 import { getCursorSelectionInfo, getSelectionRange } from './selectionRange';
 
 export type CursorHistory = {
@@ -28,8 +29,8 @@ export const getTextLines = (str: string, delimiter: string): string[] => {
 // Resolve state of the composer during beforeInput
 export const resolveBeforeInput = (
 	event: InputEvent,
-	setMdLines: Dispatch<SetStateAction<string[] | undefined>>,
-	setCursorHistory: Dispatch<SetStateAction<CursorHistory | undefined>>,
+	setMdLines: Dispatch<SetStateAction<string[]>>,
+	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
 ): void => {
 	const input = event.target as HTMLDivElement;
 

@@ -174,7 +174,7 @@ const RichTextMessageBox = ({
 		const node = e.currentTarget as HTMLDivElement;
 		const savedPosition = cursorMap.get(node);
 		if (savedPosition === undefined) {
-			console.warn('There is no savedPosition for', node);
+			console.log('There is no savedPosition for current node');
 			return;
 		} // no saved cursor position
 
@@ -185,8 +185,8 @@ const RichTextMessageBox = ({
 	};
 
 	// This state will update every time the input is updated
-	const [, setMdLines] = useState<string[]>();
-	const [, setCursorHistory] = useState<CursorHistory>();
+	const [, setMdLines] = useState<string[]>([]);
+	const [, setCursorHistory] = useState<CursorHistory>({ undoStack: [], redoStack: [] });
 
 	/* const textareaRef = useRef<HTMLTextAreaElement>(null); */
 
