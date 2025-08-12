@@ -1,22 +1,29 @@
 {
 	"name": "@rocket.chat/ui-theming",
-	"version": "0.4.0",
+	"version": "0.4.3",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.59.4",
-		"@rocket.chat/fuselage-hooks": "^0.33.1",
-		"@rocket.chat/icons": "~0.39.0",
+		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/fuselage": "^0.66.0",
+		"@rocket.chat/fuselage-hooks": "^0.37.0",
+		"@rocket.chat/fuselage-polyfills": "~0.31.25",
+		"@rocket.chat/fuselage-tokens": "~0.33.2",
+		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/ui-contexts": "workspace:~",
-		"@types/react": "~17.0.80",
+		"@types/react": "~18.3.23",
+		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
-		"eslint-plugin-react": "~7.37.2",
+		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
 		"eslint-plugin-testing-library": "^6.4.0",
-		"react": "~17.0.2",
+		"react": "~18.3.1",
 		"react-docgen-typescript-plugin": "~1.0.8",
-		"typescript": "~5.6.3"
+		"react-dom": "~18.3.1",
+		"react-virtuoso": "^4.12.0",
+		"typescript": "~5.8.3",
+		"webpack": "~5.99.9"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -34,7 +41,7 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"react": "~17.0.2"
+		"react": "*"
 	},
 	"volta": {
 		"extends": "../../../package.json"

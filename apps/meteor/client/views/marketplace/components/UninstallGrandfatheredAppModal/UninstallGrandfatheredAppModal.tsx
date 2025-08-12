@@ -1,5 +1,15 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import {
+	Button,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterAnnotation,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
@@ -25,29 +35,29 @@ const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninsta
 
 	return (
 		<Modal>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Title>{t('Uninstall_grandfathered_app', { appName })}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close onClick={handleClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTitle>{t('Uninstall_grandfathered_app', { appName })}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose onClick={handleClose} />
+			</ModalHeader>
+			<ModalContent>
 				<MarkdownText content={modalContent} />
-			</Modal.Content>
-			<Modal.Footer justifyContent='space-between'>
-				<Modal.FooterAnnotation>
+			</ModalContent>
+			<ModalFooter justifyContent='space-between'>
+				<ModalFooterAnnotation>
 					{/* TODO: Move the link to a go link when available */}
 					<a target='_blank' rel='noopener noreferrer' href='https://docs.rocket.chat/docs/rocketchat-marketplace'>
 						{t('Learn_more')}
 					</a>
-				</Modal.FooterAnnotation>
-				<Modal.FooterControllers>
+				</ModalFooterAnnotation>
+				<ModalFooterControllers>
 					<Button onClick={handleClose}>{t('Cancel')}</Button>
 					<Button danger onClick={handleUninstall}>
 						{t('Uninstall')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

@@ -1,8 +1,9 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, Margins, Option } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { MutableRefObject } from 'react';
-import React, { useRef, useState, useMemo, useEffect, Fragment } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useQueryClient } from '@tanstack/react-query';
+import type { Key } from 'react';
+import { useState, useMemo, useEffect, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
@@ -19,55 +20,27 @@ import AgentsOverview from './overviews/AgentsOverview';
 import ChatsOverview from './overviews/ChatsOverview';
 import ConversationOverview from './overviews/ConversationOverview';
 import ProductivityOverview from './overviews/ProductivityOverview';
-
-const randomizeKeys = (keys: MutableRefObject<number[] | string[]>): void => {
-	keys.current = keys.current.map((_key, i) => {
-		return `${i}_${new Date().getTime()}`;
-	});
-};
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 const dateRange = getDateRange();
 
 const RealTimeMonitoringPage = () => {
 	const { t } = useTranslation();
 
-	const keys = useRef([...Array(10).keys()]);
-
 	const [reloadFrequency, setReloadFrequency] = useState(5);
 	const [departmentId, setDepartment] = useState('');
 
-	const reloadRef = useRef<Record<string, () => void>>({});
+	const queryClient = useQueryClient();
 
-	const departmentParams = useMemo(
-		() => ({
-			...(departmentId && { departmentId }),
-		}),
-		[departmentId],
-	);
-
-	const allParams = useMemo(
-		() => ({
-			...departmentParams,
-			...dateRange,
-		}),
-		[departmentParams],
-	);
-
-	useEffect(() => {
-		randomizeKeys(keys);
-	}, [allParams]);
-
-	const reloadCharts = useMutableCallback(() => {
-		Object.values(reloadRef.current).forEach((reload) => {
-			reload();
-		});
+	const reloadCharts = useEffectEvent(() => {
+		queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.analytics.all(departmentId) });
 	});
 
 	useEffect(() => {
 		const interval = setInterval(reloadCharts, reloadFrequency * 1000);
+
 		return () => {
 			clearInterval(interval);
-			randomizeKeys(keys);
 		};
 	}, [reloadCharts, reloadFrequency]);
 
@@ -103,60 +76,36 @@ const RealTimeMonitoringPage = () => {
 							<Label mb={4}>{t('Update_every')}</Label>
 							<Select
 								options={reloadOptions}
-								onChange={useMutableCallback((val) => setReloadFrequency(val as number))}
+								onChange={useEffectEvent((val: Key) => setReloadFrequency(val as number))}
 								value={reloadFrequency}
 							/>
 						</Box>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ConversationOverview key={keys?.current[0]} flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
+						<ConversationOverview flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsChart key={keys?.current[1]} flexGrow={1} flexShrink={1} width='50%' mie={2} reloadRef={reloadRef} params={allParams} />
-						<ChatsPerAgentChart
-							key={keys?.current[2]}
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							mis={2}
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
+						<ChatsChart flexGrow={1} flexShrink={1} width='50%' mie={2} departmentId={departmentId} dateRange={dateRange} />
+						<ChatsPerAgentChart flexGrow={1} flexShrink={1} width='50%' mis={2} departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsOverview key={keys?.current[3]} flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
+						<ChatsOverview flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<AgentStatusChart
-							key={keys?.current[4]}
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							mie={2}
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
-						<ChatsPerDepartmentChart
-							key={keys?.current[5]}
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							mis={2}
-							reloadRef={reloadRef}
-							params={allParams}
-						/>
+						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' mie={2} departmentId={departmentId} />
+						<ChatsPerDepartmentChart flexGrow={1} flexShrink={1} width='50%' mis={2} departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<AgentsOverview key={keys?.current[6]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
+						<AgentsOverview flexGrow={1} flexShrink={1} departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ChatDurationChart key={keys?.current[7]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ChatDurationChart flexGrow={1} flexShrink={1} w='100%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ProductivityOverview key={keys?.current[8]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
+						<ProductivityOverview flexGrow={1} flexShrink={1} departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ResponseTimesChart key={keys?.current[9]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ResponseTimesChart flexGrow={1} flexShrink={1} w='100%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 				</Margins>
 			</PageScrollableContentWithShadow>

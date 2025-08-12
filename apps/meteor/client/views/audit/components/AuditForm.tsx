@@ -1,6 +1,6 @@
 import type { IAuditLog, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import React from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +16,7 @@ import UsersTab from './tabs/UsersTab';
 type AuditFormProps = {
 	type: IAuditLog['fields']['type'];
 	onSubmit?: (payload: { type: IAuditLog['fields']['type'] } & AuditFields) => void;
-	setSelectedRoom: React.Dispatch<React.SetStateAction<IRoom | undefined>>;
+	setSelectedRoom: Dispatch<SetStateAction<IRoom | undefined>>;
 };
 
 const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {

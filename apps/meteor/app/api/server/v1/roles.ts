@@ -1,16 +1,19 @@
-import { api } from '@rocket.chat/core-services';
+import { api, Authorization } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
+import { ajv, isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { addUserToRole } from '../../../authorization/server/methods/addUserToRole';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
@@ -68,7 +71,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
+				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
@@ -80,7 +83,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.callAsync('authorization:addUserToRole', role._id, user.username, roomId);
+			await addUserToRole(this.userId, role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
@@ -122,7 +125,7 @@ API.v1.addRoute(
 				}
 
 				apiDeprecationLogger.deprecatedParameterUsage(
-					this.request.route,
+					this.route,
 					'role',
 					'7.0.0',
 					this.response,
@@ -195,7 +198,7 @@ API.v1.addRoute(
 					return API.v1.failure('error-invalid-role-properties');
 				}
 
-				apiDeprecationLogger.parameter(this.request.route, 'roleName', '7.0.0', this.response);
+				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
 			}
 
 			const user = await Users.findOneByUsername(username);
@@ -221,7 +224,7 @@ API.v1.addRoute(
 				}
 			}
 
-			await Roles.removeUserRoles(user._id, [role._id], scope);
+			await removeUserFromRolesAsync(user._id, [role._id], scope);
 
 			if (settings.get('UI_DisplayRoles')) {
 				void api.broadcast('user.roleUpdate', {
@@ -241,3 +244,43 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const rolesRoutes = API.v1.get(
+	'roles.getUsersInPublicRoles',
+	{
+		authRequired: true,
+		response: {
+			200: ajv.compile<{
+				users: {
+					_id: string;
+					username: string;
+					roles: string[];
+				}[];
+			}>({
+				type: 'object',
+				properties: {
+					users: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+						},
+					},
+				},
+			}),
+		},
+	},
+
+	async () => {
+		return API.v1.success({
+			users: await Authorization.getUsersFromPublicRoles(),
+		});
+	},
+);
+
+type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends RolesEndpoints {}
+}

@@ -1,6 +1,5 @@
 import { useCurrentRoutePath, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { memo, useSyncExternalStore } from 'react';
 
 import { getAccountSidebarItems, subscribeToAccountSidebarItems } from './sidebarItems';
 import Sidebar from '../../components/Sidebar';
@@ -17,7 +16,7 @@ const AccountSidebar = () => {
 
 	// TODO: uplift this provider
 	return (
-		<SettingsProvider privileged>
+		<SettingsProvider>
 			<Sidebar>
 				<Sidebar.Header onClose={sidebar.close} title={t('Account')} />
 				<Sidebar.Content>

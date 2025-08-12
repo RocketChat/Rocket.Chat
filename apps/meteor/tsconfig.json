@@ -1,5 +1,5 @@
 {
-	"extends": "../../tsconfig.base.json",
+	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
 		"target": "es2018",
 		"module": "esNext",
@@ -7,7 +7,7 @@
 
 		"allowJs": true,
 		"checkJs": false,
-		"jsx": "react",
+		"jsx": "react-jsx",
 		"noEmit": true,
 
 		/* Strict Type-Checking Options */

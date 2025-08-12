@@ -1,18 +1,14 @@
 import type { IOmnichannelBusinessUnit, ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatUnitModel } from '@rocket.chat/model-typings';
-import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms } from '@rocket.chat/models';
+import { LivechatUnitMonitors, LivechatDepartment, LivechatRooms, BaseRaw } from '@rocket.chat/models';
 import type { FindOptions, Filter, FindCursor, Db, FilterOperators, UpdateResult, DeleteResult, Document, UpdateFilter } from 'mongodb';
 
-import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
-import { getUnitsFromUser } from '../../../app/livechat-enterprise/server/lib/units';
-
-const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}) => {
+const addQueryRestrictions = async (originalQuery: Filter<IOmnichannelBusinessUnit> = {}, unitsFromUser?: string[]) => {
 	const query: FilterOperators<IOmnichannelBusinessUnit> = { ...originalQuery, type: 'u' };
 
-	const units = await getUnitsFromUser();
-	if (Array.isArray(units)) {
+	if (Array.isArray(unitsFromUser)) {
 		const expressions = query.$and || [];
-		const condition = { $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] };
+		const condition = { $or: [{ ancestors: { $in: unitsFromUser } }, { _id: { $in: unitsFromUser } }] };
 		query.$and = [condition, ...expressions];
 	}
 
@@ -33,21 +29,24 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 	}
 
 	// @ts-expect-error - Overriding base types :)
-	async find(
+	async findOne<P extends Document = IOmnichannelBusinessUnit>(
 		originalQuery: Filter<IOmnichannelBusinessUnit>,
 		options: FindOptions<IOmnichannelBusinessUnit>,
-	): Promise<FindCursor<IOmnichannelBusinessUnit>> {
-		const query = await addQueryRestrictions(originalQuery);
-		return this.col.find(query, options) as FindCursor<IOmnichannelBusinessUnit>;
+		extra?: Record<string, any>,
+	): Promise<P | null> {
+		const query = await addQueryRestrictions(originalQuery, extra?.unitsFromUser);
+		return this.col.findOne<P>(query, options);
 	}
 
-	// @ts-expect-error - Overriding base types :)
-	async findOne(
-		originalQuery: Filter<IOmnichannelBusinessUnit>,
+	async findOneById<P extends Document = IOmnichannelBusinessUnit>(
+		_id: IOmnichannelBusinessUnit['_id'],
 		options: FindOptions<IOmnichannelBusinessUnit>,
-	): Promise<IOmnichannelBusinessUnit | null> {
-		const query = await addQueryRestrictions(originalQuery);
-		return this.col.findOne(query, options);
+		extra?: Record<string, any>,
+	): Promise<P | null> {
+		if (options) {
+			return this.findOne<P>({ _id }, options, extra);
+		}
+		return this.findOne<P>({ _id }, {}, extra);
 	}
 
 	remove(query: Filter<IOmnichannelBusinessUnit>): Promise<DeleteResult> {
@@ -154,6 +153,19 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return this.deleteOne(query);
 	}
 
+	async removeByIdAndUnit(_id: string, unitsFromUser?: string[]): Promise<DeleteResult> {
+		const originalQuery = { _id };
+		const query = await addQueryRestrictions(originalQuery, unitsFromUser);
+		const result = await this.deleteOne(query);
+		if (result.deletedCount > 0) {
+			await LivechatUnitMonitors.removeByUnitId(_id);
+			await this.removeParentAndAncestorById(_id);
+			await LivechatRooms.removeUnitAssociationFromRooms(_id);
+		}
+
+		return result;
+	}
+
 	findOneByIdOrName(_idOrName: string, options: FindOptions<IOmnichannelBusinessUnit>): Promise<IOmnichannelBusinessUnit | null> {
 		const query = {
 			$or: [
@@ -188,6 +200,6 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 	}
 
 	countUnits(): Promise<number> {
-		return this.col.countDocuments({ type: 'u' });
+		return this.countDocuments({ type: 'u' });
 	}
 }

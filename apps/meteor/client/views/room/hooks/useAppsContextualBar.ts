@@ -1,32 +1,41 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
+import { useCallback, useSyncExternalStore } from 'react';
 
 import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
+import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 
 export const useAppsContextualBar = () => {
-	const viewId = useRouteParameter('context');
+	const context = useRouteParameter('context');
 	const actionManager = useUiKitActionManager();
+	const tab = useRouteParameter('tab');
+	const { closeTab } = useRoomToolbox();
 
 	const getSnapshot = useCallback(() => {
-		if (!viewId) {
+		if (tab !== 'app' || !context) {
 			return undefined;
 		}
 
-		return actionManager.getInteractionPayloadByViewId(viewId)?.view;
-	}, [actionManager, viewId]);
+		return actionManager.getInteractionPayloadByViewId(context)?.view;
+	}, [actionManager, context, tab]);
 
 	const subscribe = useCallback(
 		(handler: () => void) => {
-			if (!viewId) {
+			if (tab !== 'app' || !context) {
 				return () => undefined;
 			}
 
-			actionManager.on(viewId, handler);
+			const view = actionManager.getInteractionPayloadByViewId(context)?.view;
 
-			return () => actionManager.off(viewId, handler);
+			if (!view) {
+				closeTab();
+				return () => undefined;
+			}
+
+			actionManager.on(context, handler);
+
+			return () => actionManager.off(context, handler);
 		},
-		[actionManager, viewId],
+		[actionManager, closeTab, tab, context],
 	);
 
 	const view = useSyncExternalStore(subscribe, getSnapshot);

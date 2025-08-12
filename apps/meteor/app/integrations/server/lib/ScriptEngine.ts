@@ -17,7 +17,7 @@ import { updateHistory } from './updateHistory';
 
 type OutgoingRequestBaseData = {
 	token: IOutgoingIntegration['token'];
-	bot: false;
+	bot: boolean;
 	trigger_word: string;
 };
 
@@ -82,7 +82,7 @@ type OutgoingRequestUserCreatedData = OutgoingRequestBaseData & {
 	bot?: boolean;
 };
 
-type OutgoingRequestData =
+export type OutgoingRequestData =
 	| OutgoingRequestSendMessageData
 	| OutgoingRequestUploadedFileData
 	| OutgoingRequestRoomCreatedData

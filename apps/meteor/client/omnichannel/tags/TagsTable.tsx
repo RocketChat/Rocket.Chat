@@ -1,8 +1,8 @@
 import { IconButton, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashQueryKey } from '@tanstack/react-query';
-import React, { useMemo, useState } from 'react';
+import { useQuery, hashKey } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
 import { useRemoveTag } from './useRemoveTag';
 import FilterByText from '../../components/FilterByText';
@@ -27,8 +27,8 @@ const TagsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description'>('name');
 
-	const onRowClick = useMutableCallback((id) => router.navigate(`/omnichannel/tags/edit/${id}`));
-	const handleAddNew = useMutableCallback(() => router.navigate('/omnichannel/tags/new'));
+	const onRowClick = useEffectEvent((id: string) => router.navigate(`/omnichannel/tags/edit/${id}`));
+	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/tags/new'));
 	const handleDeleteTag = useRemoveTag();
 
 	const query = useDebouncedValue(
@@ -46,10 +46,14 @@ const TagsTable = () => {
 	);
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data, isSuccess, isLoading } = useQuery(['livechat-tags', query], async () => getTags(query), { refetchOnWindowFocus: false });
+	const { data, isSuccess, isLoading } = useQuery({
+		queryKey: ['livechat-tags', query],
+		queryFn: async () => getTags(query),
+		refetchOnWindowFocus: false,
+	});
 
-	const [defaultQuery] = useState(hashQueryKey([query]));
-	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+	const [defaultQuery] = useState(hashKey([query]));
+	const queryHasChanged = defaultQuery !== hashKey([query]);
 
 	const headers = (
 		<>

@@ -1,7 +1,6 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
-import type React from 'react';
+import type { DragEvent, ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { useDropTarget } from './useDropTarget';
@@ -13,7 +12,7 @@ import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 
 export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
-		onDragEnter: (event: React.DragEvent<Element>) => void;
+		onDragEnter: (event: DragEvent<Element>) => void;
 	},
 	fileUploadOverlayProps: {
 		visible: boolean;
@@ -32,13 +31,13 @@ export const useFileUploadDropTarget = (): readonly [
 	const fileUploadEnabled = useSetting('FileUpload_Enabled', true);
 	const user = useUser();
 	const fileUploadAllowedForUser = useReactiveValue(
-		useCallback(() => !roomCoordinator.readOnly(room._id, { username: user?.username }), [room._id, user?.username]),
+		useCallback(() => !roomCoordinator.readOnly(room, { username: user?.username }), [room, user?.username]),
 	);
 
 	const chat = useChat();
 	const subscription = useRoomSubscription();
 
-	const onFileDrop = useMutableCallback(async (files: File[]) => {
+	const onFileDrop = useEffectEvent(async (files: File[]) => {
 		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];

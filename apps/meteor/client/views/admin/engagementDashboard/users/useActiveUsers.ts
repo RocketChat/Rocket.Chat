@@ -9,9 +9,10 @@ type UseActiveUsersOptions = { utc: boolean };
 export const useActiveUsers = ({ utc }: UseActiveUsersOptions) => {
 	const getActiveUsers = useEndpoint('GET', '/v1/engagement-dashboard/users/active-users');
 
-	return useQuery(
-		['admin/engagement-dashboard/users/active', { utc }],
-		async () => {
+	return useQuery({
+		queryKey: ['admin/engagement-dashboard/users/active', { utc }],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange('last 30 days', utc);
 
 			const response = await getActiveUsers({
@@ -27,9 +28,8 @@ export const useActiveUsers = ({ utc }: UseActiveUsersOptions) => {
 					}
 				: undefined;
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+		throwOnError: true,
+	});
 };

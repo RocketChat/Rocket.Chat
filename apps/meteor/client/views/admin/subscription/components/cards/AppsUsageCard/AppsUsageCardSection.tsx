@@ -1,7 +1,5 @@
 import { Box, ProgressBar } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import type { ReactNode } from 'react';
-import React from 'react';
+import { useId, type ReactNode } from 'react';
 
 type AppsUsageCardSectionProps = {
 	title: ReactNode;
@@ -14,10 +12,10 @@ type AppsUsageCardSectionProps = {
 const AppsUsageCardSection = ({ title, tip, appsCount, appsMaxCount, warningThreshold }: AppsUsageCardSectionProps) => {
 	const percentage = appsMaxCount === 0 ? 100 : Math.round((appsCount * 100) / appsMaxCount);
 	const warningThresholdCrossed = percentage >= warningThreshold;
-	const labelId = useUniqueId();
+	const labelId = useId();
 
 	return (
-		<Box fontScale='c1' mb={12} title={tip}>
+		<Box fontScale='c1' mb={12} title={tip} display='flex' flexDirection='column' width='100%'>
 			<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 				<div id={labelId}>{title}</div>
 

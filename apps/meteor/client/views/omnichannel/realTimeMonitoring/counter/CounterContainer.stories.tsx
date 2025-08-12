@@ -1,5 +1,4 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import React from 'react';
 
 import CounterContainer from './CounterContainer';
 
@@ -11,11 +10,10 @@ export default {
 export const Default: StoryFn<typeof CounterContainer> = (args) => <CounterContainer {...args} />;
 Default.storyName = 'CounterContainer';
 Default.args = {
-	initialData: [
+	totals: [
 		{ title: 'Total_conversations', value: 10 },
 		{ title: 'Open_conversations', value: 10 },
 		{ title: 'Total_messages', value: 10 },
 		{ title: 'Total_visitors', value: 0 },
 	],
-	data: { totalizers: [] },
 };

@@ -1,9 +1,10 @@
-import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type { IServerEvents, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Settings]', () => {
 	before((done) => getCredentials(done));
@@ -99,6 +100,20 @@ describe('[Settings]', () => {
 					expect(res.body).to.have.property('count');
 				})
 				.end(done);
+		});
+		it('should return the default values of the settings when includeDefaults is true', async () => {
+			return request
+				.get(api('settings'))
+				.query({ includeDefaults: true })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('settings');
+					expect(res.body).to.have.property('count');
+					expect(res.body.settings[0]).to.have.property('packageValue');
+				});
 		});
 	});
 
@@ -257,6 +272,120 @@ describe('[Settings]', () => {
 					expect(res.body).to.have.property('services').and.to.be.an('array');
 				})
 				.end(done);
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('/audit.settings', () => {
+		const formatDate = (date: Date) => date.toISOString();
+		let startDate: Date;
+		let endDate: Date;
+
+		before(async () => {
+			// Changing these settings to true and then false ensures that we have audited events
+			// So we can test filtering reliably
+			startDate = new Date();
+			await Promise.all([updateSetting('Accounts_AllowAnonymousRead', true), updateSetting('Accounts_AllowDeleteOwnAccount', true)]);
+
+			await Promise.all([updateSetting('Accounts_AllowAnonymousRead', false), updateSetting('Accounts_AllowDeleteOwnAccount', false)]);
+			endDate = new Date();
+		});
+
+		it('should return list of settings changed (no filters)', async () => {
+			await request
+				.get(api('audit.settings'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+					expect(res.body.events.length).to.be.greaterThanOrEqual(4);
+				});
+		});
+
+		it('should return list of settings between date ranges', async () => {
+			await request
+				.get(api('audit.settings'))
+				.query({ start: formatDate(startDate), end: formatDate(endDate) })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+					expect(res.body.events.length).to.be.greaterThanOrEqual(4);
+					(res.body.events as IServerEvents['settings.changed'][]).forEach((event) => {
+						expect(new Date(event.ts).getTime()).to.be.greaterThanOrEqual(startDate.getTime());
+						expect(new Date(event.ts).getTime()).to.be.lessThanOrEqual(endDate.getTime());
+					});
+				});
+		});
+
+		it('should throw error when sending invalid dates', async () => {
+			const startDate = new Date();
+			const endDate = 'abcdef';
+
+			await request
+				.get(api('audit.settings'))
+				.query({ start: formatDate(startDate), end: endDate })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The "end" query parameter must be a valid date.');
+				});
+		});
+
+		it('should return list of settings changed filtered by an actor', async () => {
+			await request
+				.get(api('audit.settings'))
+				.query({ actor: { type: 'user' }, count: 10 })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+					expect(res.body.events.length).to.be.greaterThanOrEqual(1);
+					(res.body.events as IServerEvents['settings.changed'][]).forEach((sEvent) => expect(sEvent.actor.type).to.be.equal('user'));
+				});
+		});
+
+		it('should return list of changes of an specific setting', async () => {
+			await request
+				.get(api('audit.settings'))
+				.query({ settingId: 'Site_Url' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+					(res.body.events as IServerEvents['settings.changed'][]).forEach((event) => {
+						expect(event.data[0].key).to.be.equal('id');
+						expect(event.data[0].value).to.be.equal('Site_Url');
+					});
+				});
+		});
+
+		it('should return list of changes filtered by an actor between date ranges', async () => {
+			await request
+				.get(api('audit.settings'))
+				.query({ actor: { type: 'user' }, start: formatDate(startDate), end: formatDate(endDate) })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('events').and.to.be.an('array');
+					expect(res.body.events.length).to.be.greaterThanOrEqual(4);
+					(res.body.events as IServerEvents['settings.changed'][]).forEach((event) => {
+						expect(event.actor.type).to.be.equal('user');
+						expect(new Date(event.ts).getTime()).to.be.greaterThanOrEqual(startDate.getTime());
+						expect(new Date(event.ts).getTime()).to.be.lessThanOrEqual(endDate.getTime());
+					});
+				});
 		});
 	});
 });

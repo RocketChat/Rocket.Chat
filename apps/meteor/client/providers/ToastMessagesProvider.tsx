@@ -1,7 +1,9 @@
 import { ToastBarProvider, useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
+import type { DefaultError, Query } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import { isValidElement, useEffect } from 'react';
 
 import { getErrorMessage } from '../lib/errorHandling';
 import { dispatchToastMessage, subscribeToToastMessages } from '../lib/toast';
@@ -17,11 +19,37 @@ type ToastMessageInnerProviderProps = {
 const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps) => {
 	const dispatchToastBar = useToastBarDispatch();
 
+	const queryClient = useQueryClient();
+	const queryCacheInstance = queryClient.getQueryCache();
+	queryCacheInstance.config.onError = (error: DefaultError, query: Query<unknown, unknown, unknown>) => {
+		const meta = query?.meta;
+		if (meta) {
+			const { errorToastMessage, apiErrorToastMessage } = meta as {
+				errorToastMessage?: string;
+				apiErrorToastMessage?: boolean;
+			};
+			if (apiErrorToastMessage) {
+				dispatchToastMessage({ type: 'error', message: error });
+			} else if (errorToastMessage) {
+				dispatchToastMessage({ type: 'error', message: errorToastMessage });
+			}
+		}
+	};
+	queryCacheInstance.config.onSuccess = (_, query: Query<unknown, unknown, unknown>) => {
+		const meta = query?.meta;
+		if (meta) {
+			const { successToastMessage } = meta as { successToastMessage?: string };
+			if (successToastMessage) {
+				dispatchToastMessage({ type: 'success', message: successToastMessage });
+			}
+		}
+	};
+
 	useEffect(
 		() =>
-			subscribeToToastMessages(({ type, message, title = '' }) => {
+			subscribeToToastMessages(({ type, message, title = '', options }) => {
 				if (type === 'error' && typeof message === 'object') {
-					dispatchToastBar({ type, message: getErrorMessage(message) });
+					dispatchToastBar({ type, title, message: getErrorMessage(message), ...options });
 					return;
 				}
 
@@ -33,7 +61,12 @@ const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps)
 					return;
 				}
 
-				dispatchToastBar({ type, message: title + message });
+				if (isValidElement(message)) {
+					dispatchToastBar({ type, title, message, ...options });
+					return;
+				}
+
+				dispatchToastBar({ type, title, message: String(message), ...options });
 			}),
 		[dispatchToastBar],
 	);

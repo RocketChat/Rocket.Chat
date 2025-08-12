@@ -12,6 +12,7 @@ import {
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
 	isSettingsPublicWithPaginationProps,
+	isSettingsGetParams,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
@@ -21,6 +22,7 @@ import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSett
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
 import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
+import { addOAuthServiceMethod } from '../../../lib/server/methods/addOAuthService';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 import { API } from '../api';
@@ -122,7 +124,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
 
-			await Meteor.callAsync('addOAuthService', this.bodyParams.name, this.userId);
+			await addOAuthServiceMethod(this.userId, this.bodyParams.name);
 
 			return API.v1.success();
 		},
@@ -131,9 +133,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'settings',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isSettingsGetParams },
 	{
 		async get() {
+			const { includeDefaults } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
@@ -146,6 +149,11 @@ API.v1.addRoute(
 			}
 
 			ourQuery = Object.assign({}, query, ourQuery);
+
+			// Note: change this when `fields` gets removed
+			if (includeDefaults) {
+				fields.packageValue = 1;
+			}
 
 			const { settings, totalCount: total } = await fetchSettings(ourQuery, sort, offset, count, fields);
 
@@ -185,7 +193,7 @@ API.v1.addRoute(
 
 				// Disable custom scripts in cloud trials to prevent phishing campaigns
 				if (disableCustomScripts() && /^Custom_Script_/.test(this.urlParams._id)) {
-					return API.v1.unauthorized();
+					return API.v1.forbidden();
 				}
 
 				// allow special handling of particular setting types
@@ -205,7 +213,7 @@ API.v1.addRoute(
 					_id: this.userId,
 					username: this.user.username!,
 					ip: this.requestIp,
-					useragent: this.request.headers['user-agent'] || '',
+					useragent: this.request.headers.get('user-agent') || '',
 				});
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {

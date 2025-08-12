@@ -1,8 +1,10 @@
-import { Box, Menu, Option } from '@rocket.chat/fuselage';
-import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Box } from '@rocket.chat/fuselage';
+import { useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
-import type { KeyboardEvent, ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import type { KeyboardEvent } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
@@ -19,7 +21,6 @@ type DeviceRowProps = {
 	deviceOSName?: string;
 	loginAt: string;
 	rcVersion?: string;
-	onReload: () => void;
 };
 
 const DeviceManagementAdminRow = ({
@@ -31,8 +32,7 @@ const DeviceManagementAdminRow = ({
 	deviceOSName = '',
 	loginAt,
 	rcVersion,
-	onReload,
-}: DeviceRowProps): ReactElement => {
+}: DeviceRowProps) => {
 	const { t } = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
@@ -40,7 +40,7 @@ const DeviceManagementAdminRow = ({
 
 	const handleDeviceLogout = useDeviceLogout(_id, '/v1/sessions/logout');
 
-	const handleClick = useMutableCallback((): void => {
+	const handleClick = useEffectEvent((): void => {
 		deviceManagementRouter.push({
 			context: 'info',
 			id: _id,
@@ -57,12 +57,14 @@ const DeviceManagementAdminRow = ({
 		[handleClick],
 	);
 
-	const menuOptions = {
-		logout: {
-			label: { label: t('Logout_Device'), icon: 'sign-out' },
-			action: (): void => handleDeviceLogout(onReload),
+	const menuItems: GenericMenuItemProps[] = [
+		{
+			id: 'logoutDevice',
+			icon: 'sign-out',
+			content: t('Logout_Device'),
+			onClick: () => handleDeviceLogout(),
 		},
-	};
+	];
 
 	return (
 		<GenericTableRow key={_id} onKeyDown={handleKeyDown} onClick={handleClick} tabIndex={0} action>
@@ -78,12 +80,8 @@ const DeviceManagementAdminRow = ({
 			{mediaQuery && <GenericTableCell>{formatDateAndTime(loginAt)}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{_id}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{ip}</GenericTableCell>}
-			<GenericTableCell onClick={(e): void => e.stopPropagation()}>
-				<Menu
-					title={t('Options')}
-					options={menuOptions}
-					renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} icon={icon} {...props} />}
-				/>
+			<GenericTableCell onClick={(e) => e.stopPropagation()}>
+				<GenericMenu detached placement='bottom-end' title={t('Options')} items={menuItems} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);

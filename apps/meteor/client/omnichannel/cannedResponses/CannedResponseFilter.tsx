@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select } from '@rocket.chat/fuselage';
 import type { ChangeEvent } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';

@@ -11,12 +11,12 @@ import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { Messages, Subscriptions } from '../../../../client/stores';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
 import { hasPermission } from '../../../authorization/client';
-import { Subscriptions, Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
@@ -37,10 +37,10 @@ Meteor.startup(() => {
 export const AutoTranslate = {
 	initialized: false,
 	providersMetadata: {} as { [providerNamer: string]: { name: string; displayName: string } },
-	messageIdsToWait: {} as { [messageId: string]: string },
+	messageIdsToWait: {} as { [messageId: string]: boolean },
 	supportedLanguages: [] as ISupportedLanguage[] | undefined,
 
-	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
+	findSubscriptionByRid: mem((rid) => Subscriptions.state.find((record) => record.rid === rid)),
 
 	getLanguage(rid: IRoom['_id']): string {
 		let subscription: ISubscription | undefined;
@@ -120,12 +120,8 @@ export const AutoTranslate = {
 			}
 		});
 
-		Subscriptions.find().observeChanges({
-			changed: (_id: string, fields: ISubscription) => {
-				if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
-					mem.clear(this.findSubscriptionByRid);
-				}
-			},
+		Subscriptions.use.subscribe(() => {
+			mem.clear(this.findSubscriptionByRid);
 		});
 
 		this.initialized = true;
@@ -146,13 +142,27 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 				(!message.translations ||
 					(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)))
 			) {
-				// || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
-				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+				Messages.state.update(
+					(record) => record._id === message._id,
+					(record) => ({
+						...record,
+						autoTranslateFetching: true,
+					}),
+				);
 			} else if (AutoTranslate.messageIdsToWait[message._id] !== undefined && subscription && subscription.autoTranslate !== true) {
-				Messages.update({ _id: message._id }, { $set: { autoTranslateShowInverse: true }, $unset: { autoTranslateFetching: true } });
+				Messages.state.update(
+					(record) => record._id === message._id,
+					({ autoTranslateFetching: _, ...record }) => ({
+						...record,
+						autoTranslateShowInverse: true,
+					}),
+				);
 				delete AutoTranslate.messageIdsToWait[message._id];
 			} else if (message.autoTranslateFetching === true) {
-				Messages.update({ _id: message._id }, { $unset: { autoTranslateFetching: true } });
+				Messages.state.update(
+					(record) => record._id === message._id,
+					({ autoTranslateFetching: _, ...record }) => record,
+				);
 			}
 		}
 	};

@@ -1,10 +1,9 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import AppPermissionsList from './components/AppPermissionsList';
-import GenericModal from '../../components/GenericModal';
 
 export type AppPermissionsReviewModalProps = {
 	appPermissions: App['permissions'];

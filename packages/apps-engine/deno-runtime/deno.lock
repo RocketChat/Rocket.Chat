@@ -2,6 +2,7 @@
   "version": "3",
   "packages": {
     "specifiers": {
+      "jsr:@std/cli@^1.0.9": "jsr:@std/cli@1.0.13",
       "npm:@msgpack/msgpack@3.0.0-beta2": "npm:@msgpack/msgpack@3.0.0-beta2",
       "npm:@rocket.chat/ui-kit@^0.31.22": "npm:@rocket.chat/ui-kit@0.31.25_@rocket.chat+icons@0.32.0",
       "npm:acorn-walk@8.2.0": "npm:acorn-walk@8.2.0",
@@ -11,6 +12,11 @@
       "npm:stack-trace": "npm:stack-trace@0.0.10",
       "npm:stack-trace@0.0.10": "npm:stack-trace@0.0.10",
       "npm:uuid@8.3.2": "npm:uuid@8.3.2"
+    },
+    "jsr": {
+      "@std/cli@1.0.13": {
+        "integrity": "5db2d95ab2dca3bca9fb6ad3c19908c314e93d6391c8b026725e4892d4615a69"
+      }
     },
     "npm": {
       "@msgpack/msgpack@3.0.0-beta2": {
@@ -90,10 +96,12 @@
     "https://deno.land/std@0.203.0/testing/bdd.ts": "3f446df5ef8e856a869e8eec54c8482590415741ff0b6358a00c43486cc15769",
     "https://deno.land/std@0.203.0/testing/mock.ts": "6576b4aa55ee20b1990d656a78fff83599e190948c00e9f25a7f3ac5e9d6492d",
     "https://deno.land/std@0.216.0/io/types.ts": "748bbb3ac96abda03594ef5a0db15ce5450dcc6c0d841c8906f8b10ac8d32c96",
-    "https://deno.land/std@0.216.0/io/write_all.ts": "24aac2312bb21096ae3ae0b102b22c26164d3249dff96dbac130958aa736f038"
+    "https://deno.land/std@0.216.0/io/write_all.ts": "24aac2312bb21096ae3ae0b102b22c26164d3249dff96dbac130958aa736f038",
+    "https://jsr.io/@std/cli/1.0.9/parse_args.ts": "29ac18602d8836d2723cab1d90111ff954acc369f184626a3f9f677e3185caef"
   },
   "workspace": {
     "dependencies": [
+      "jsr:@std/cli@^1.0.9",
       "npm:@msgpack/msgpack@3.0.0-beta2",
       "npm:@rocket.chat/ui-kit@^0.31.22",
       "npm:acorn-walk@8.2.0",

@@ -25,6 +25,9 @@ module.exports = {
 	exit: true,
 	spec: [
 		'lib/callbacks.spec.ts',
+		'server/lib/ldap/*.spec.ts',
+		'server/lib/ldap/**/*.spec.ts',
+		'server/ufs/*.spec.ts',
 		'ee/server/lib/ldap/*.spec.ts',
 		'ee/tests/**/*.tests.ts',
 		'ee/tests/**/*.spec.ts',
@@ -36,6 +39,7 @@ module.exports = {
 		'tests/unit/lib/**/*.spec.ts',
 		'tests/unit/server/**/*.tests.ts',
 		'tests/unit/server/**/*.spec.ts',
-		'app/api/**/*.spec.ts',
+		'app/api/server/lib/**/*.spec.ts',
+		'app/file-upload/server/**/*.spec.ts',
 	],
 };

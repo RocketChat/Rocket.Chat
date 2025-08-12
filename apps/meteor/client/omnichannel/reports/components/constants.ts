@@ -41,4 +41,4 @@ export const COLORS = {
 	warning2: Palette.statusColor['status-font-on-warning-2'].toString(),
 };
 
-export const PERIOD_OPTIONS: Period['key'][] = ['today', 'this week', 'last 15 days', 'this month', 'last 6 months', 'last year'];
+export const PERIOD_OPTIONS: Period['key'][] = ['today', 'this week', 'last 15 days', 'this month', 'last 6 months', 'this year'];

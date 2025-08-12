@@ -4,7 +4,7 @@ import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
-import { ObjectID } from 'bson';
+import { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
 
 function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promise<void> {
@@ -159,7 +159,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 
 		let cancelQuery;
 		try {
-			cancelQuery = { _id: new ObjectID(jobId.split('_')[0]) };
+			cancelQuery = { _id: new ObjectId(jobId.split('_')[0]) };
 		} catch (jobDocIdError) {
 			// it is not a valid objectid, so it won't try to cancel by document id
 			cancelQuery = { name: jobId };

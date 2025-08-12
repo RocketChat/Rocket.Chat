@@ -1,9 +1,10 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, Select, ToggleSwitch } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+
+import type { EditRolePageFormData } from './EditRolePage';
 
 type RoleFormProps = {
 	className?: string;
@@ -12,13 +13,13 @@ type RoleFormProps = {
 	isDisabled?: boolean;
 };
 
-const RoleForm = ({ className, editing = false, isProtected = false, isDisabled = false }: RoleFormProps): ReactElement => {
+const RoleForm = ({ className, editing = false, isProtected = false, isDisabled = false }: RoleFormProps) => {
 	const { t } = useTranslation();
 	const {
 		register,
 		control,
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<EditRolePageFormData>();
 
 	const options: SelectOption[] = useMemo(
 		() => [
@@ -54,9 +55,7 @@ const RoleForm = ({ className, editing = false, isProtected = false, isDisabled 
 					<Controller
 						name='scope'
 						control={control}
-						render={({ field }): ReactElement => (
-							<Select {...field} options={options} disabled={isProtected || isDisabled} placeholder={t('Scope')} />
-						)}
+						render={({ field }) => <Select {...field} options={options} disabled={isProtected || isDisabled} placeholder={t('Scope')} />}
 					/>
 				</FieldRow>
 			</Field>
@@ -66,7 +65,7 @@ const RoleForm = ({ className, editing = false, isProtected = false, isDisabled 
 					<Controller
 						name='mandatory2fa'
 						control={control}
-						render={({ field }): ReactElement => <ToggleSwitch {...field} checked={field.value} disabled={isDisabled} />}
+						render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={isDisabled} />}
 					/>
 				</FieldRow>
 			</Field>

@@ -1,7 +1,7 @@
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { CachedChatRoom, CachedChatSubscription } from '../../app/models/client';
+import { RoomsCachedStore, SubscriptionsCachedStore } from '../cachedStores';
 
 export const useLoadRoomForAllowedAnonymousRead = () => {
 	const userId = useUserId();
@@ -9,8 +9,12 @@ export const useLoadRoomForAllowedAnonymousRead = () => {
 
 	useEffect(() => {
 		if (!userId && accountsAllowAnonymousRead === true) {
-			CachedChatRoom.init();
-			CachedChatSubscription.ready.set(true);
+			RoomsCachedStore.init();
+			SubscriptionsCachedStore.setReady(true);
+			return () => {
+				RoomsCachedStore.setReady(false);
+				SubscriptionsCachedStore.setReady(false);
+			};
 		}
 	}, [accountsAllowAnonymousRead, userId]);
 };

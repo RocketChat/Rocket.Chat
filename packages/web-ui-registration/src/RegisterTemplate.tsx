@@ -1,16 +1,20 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
-import type { AllHTMLAttributes } from 'react';
+import type { ReactNode } from 'react';
 
 import HorizontalTemplate from './template/HorizontalTemplate';
 import VerticalTemplate from './template/VerticalTemplate';
 
-const RegisterTemplate = ({ children, ...props }: AllHTMLAttributes<HTMLElement>) => {
+type RegisterTemplateProps = {
+	children: ReactNode;
+};
+
+const RegisterTemplate = ({ children }: RegisterTemplateProps) => {
 	const template = useSetting<'vertical-template' | 'horizontal-template'>('Layout_Login_Template', 'horizontal-template');
 
 	return (
 		<main>
-			{template === 'vertical-template' && <VerticalTemplate {...props} children={children} />}
-			{template === 'horizontal-template' && <HorizontalTemplate {...props} children={children} />}
+			{template === 'vertical-template' && <VerticalTemplate>{children}</VerticalTemplate>}
+			{template === 'horizontal-template' && <HorizontalTemplate>{children}</HorizontalTemplate>}
 		</main>
 	);
 };

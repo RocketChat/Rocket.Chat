@@ -424,7 +424,7 @@ export const bigConversationData = {
 			},
 			files: [
 				{
-					name: 'Transcript_Another test_4/24/2024_Alayna.pdf',
+					name: 'Transcript_Another test_4-24-2024_Alayna.pdf',
 					buffer: null,
 				},
 			],
@@ -454,7 +454,7 @@ export const bigConversationData = {
 			},
 			files: [
 				{
-					name: 'Transcript_Another test_4/24/2024_Alayna.pdf',
+					name: 'Transcript_Another test_4-24-2024_Alayna.pdf',
 					buffer: null,
 				},
 			],
@@ -767,6 +767,679 @@ export const dataWithASingleSystemMessage = {
 			},
 			t: 'livechat-started',
 			msg: 'livechat started',
+		},
+	],
+};
+
+export const dataWith2ReallyBigMessages = {
+	agent: {
+		name: 'Juanito De Ponce',
+		username: 'juanito.ponce',
+	},
+	visitor: {
+		name: 'Christian Castro',
+		username: 'christian.castro',
+	},
+	siteName: 'Rocket.Chat',
+	closedAt: '2022-11-21T00:00:00.000Z',
+	dateFormat: 'MMM D, YYYY',
+	timeAndDateFormat: 'MMM D, YYYY H:mm:ss',
+	timezone: 'Etc/GMT+1',
+	translations: [
+		{
+			key: 'Agent',
+			value: 'Agent',
+		},
+		{
+			key: 'Date',
+			value: 'Date',
+		},
+		{
+			key: 'Customer',
+			value: 'Customer',
+		},
+		{
+			key: 'Chat_transcript',
+			value: 'Chat transcript',
+		},
+		{
+			key: 'Time',
+			value: 'Time',
+		},
+		{
+			key: 'This_attachment_is_not_supported',
+			value: 'Attachment format not supported',
+		},
+	],
+	messages: [
+		{
+			_id: 'nDYb7NKuL3T7RL6Wg',
+			rid: 'Zyutf8db4pSn3qbW4',
+			msg: 'Guten Tag alle! Ich brauche eine kleine Hilfe mit der TechSuiteX Anwendung.',
+			ts: '2025-04-02T12:55:06.279Z',
+			u: {
+				_id: '67e6671d9ddc2fe11b73ec5b',
+				username: 'Guest',
+				name: 'Anonymous User',
+			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Guten Tag alle! ',
+						},
+						{
+							type: 'EMOJI',
+							value: {
+								type: 'PLAIN_TEXT',
+								value: ':)',
+							},
+							shortCode: 'slight_smile',
+						},
+						{
+							type: 'PLAIN_TEXT',
+							value: ' Ich brauche eine kleine Hilfe mit der TechSuiteX Anwendung.',
+						},
+					],
+				},
+			],
+			files: [],
+			quotes: [],
+		},
+		{
+			_id: 'vM2j9MFa4aXQukWJG',
+			rid: 'Zyutf8db4pSn3qbW4',
+			msg: 'Könntet ihr mir die Mindestvoraussetzungen für V2.0 mitteilen? Und ebenso die Spezifikationen für V2.3? Wir planen die Anschaffung eines stärkeren Computers, und unser IT-Team hat nach den Details gefragt.',
+			ts: '2025-04-02T12:56:32.098Z',
+			u: {
+				_id: '67e6671d9ddc2fe11b73ec5b',
+				username: 'Guest',
+				name: 'Anonymous User',
+			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value:
+								'Könntet ihr mir die Mindestvoraussetzungen für V2.0 mitteilen? Und ebenso die Spezifikationen für V2.3? Wir planen die Anschaffung eines stärkeren Computers, und unser IT-Team hat nach den Details gefragt.',
+						},
+					],
+				},
+			],
+			files: [],
+			quotes: [],
+		},
+		{
+			_id: 'T8nHTGt6TnuoSJqCj',
+			rid: 'Zyutf8db4pSn3qbW4',
+			msg: 'Willkommen bei der TechSupport Kundenhotline!',
+			ts: '2025-04-02T12:58:36.380Z',
+			u: {
+				_id: 'K4hFYDc2aFXhcRPGj',
+				username: 'User123',
+				name: 'Anonymous User',
+			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Willkommen bei der TechSupport Kundenhotline!',
+						},
+					],
+				},
+			],
+			files: [],
+			quotes: [],
+		},
+		{
+			_id: 'YCXWJ32cFSPdxwuX8',
+			rid: 'Zyutf8db4pSn3qbW4',
+			msg: 'Guten Tag, danke für Ihre Nachricht. Ich stehe Ihnen im Support-Chat zur Verfügung.',
+			ts: '2025-04-02T12:58:50.921Z',
+			u: {
+				_id: 'K4hFYDc2aFXhcRPGj',
+				username: 'KosuchK',
+				name: 'Kosuch, Karl-Heinz',
+			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Guten Tag, danke für Ihre Nachricht. Ich stehe Ihnen im Support-Chat zur Verfügung.',
+						},
+					],
+				},
+			],
+			files: [],
+			quotes: [],
+		},
+		{
+			_id: 'QvoAfRg4AAXCCgFuE',
+			rid: 'Zyutf8db4pSn3qbW4',
+			msg: 'Here are the system requirements for the application:\n\n1. Hardware Requirements\n\nMinimum system requirements:\n• Standard PC with Intel processor, at least 3.1 GHz\n• 4 GB RAM\n• At least 10 GB of free disk space\n• Screen resolution of at least 1280 x 768 pixels and 65k colors\n• DVD drive for installation (USB installation possible)\n• Required interfaces for peripherals: RS-232, Ethernet, USB 2.0\n• Printer: Any OS-supported printer\n\n¹ Adapter required if no free RS-232 port is available.\n² Ethernet adapter required if no free port is available.\n\nRecommended system:\n• Intel Core i5, 3.4 GHz\n• 8 GB (preferably 16 GB) RAM\n• 500 GB SSD storage\n• Screen resolution of 1920 x 1080 pixels\n• DVD drive\n• 1 serial RS-232 interface\n• 2 × 1-Gbit Ethernet interfaces\n\nSpecial requirements apply for advanced peripherals.\n\n2. Software Requirements\n\n• Operating Systems:\n  - Windows 7 / 8 / 8.1 / 10 (latest service pack recommended)\n  - Future versions will support only Windows 10.\n  - Graphics driver must support OpenGL V2.1 or higher.\n\n• Media Player:\n  - Some OS versions do not include the default media player.\n\n• Office Integration:\n  - Spreadsheet and document software must be installed to use export features.',
+			ts: '2025-04-02T13:01:04.324Z',
+			u: {
+				_id: 'K4hFYDc2aFXhcRPGj',
+				username: 'User123',
+				name: 'Anonymous User',
+			},
+			md: [
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'Here are the system requirements for the application' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '1. Hardware Requirements' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'Minimum system requirements:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Standard PC with Intel processor, at least 3.1 GHz' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• 4 GB RAM' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• At least 10 GB of free disk space' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Screen resolution of at least 1280 x 768 pixels and 65k colors' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• DVD drive for installation (USB installation possible)' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Required interfaces: RS-232, Ethernet, USB 2.0' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Printer: Any OS-supported printer' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '¹ Adapter required if no free RS-232 port is available.' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '² Ethernet adapter required if no free port is available.' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'Recommended system:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Intel Core i5, 3.4 GHz' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• 8 GB (preferably 16 GB) RAM' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• 500 GB SSD storage' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Screen resolution of 1920 x 1080 pixels' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• DVD drive' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• 1 serial RS-232 interface' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• 2 × 1-Gbit Ethernet interfaces' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'Special requirements apply for advanced peripherals.' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '2. Software Requirements' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Operating Systems:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '  - Windows 7 / 8 / 8.1 / 10 (latest service pack recommended)' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '  - Future versions will support only Windows 10.' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '  - Graphics driver must support OpenGL V2.1 or higher.' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Media Player:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '  - Some OS versions do not include the default media player.' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: '• Office Integration:' }] },
+				{
+					type: 'PARAGRAPH',
+					value: [{ type: 'PLAIN_TEXT', value: '  - Spreadsheet and document software must be installed to use export features.' }],
+				},
+			],
+		},
+		{
+			_id: 'b8mMFBNoDe6umGP6e',
+			rid: 'Zyutf8db4pSn3qbW4',
+			msg: 'Here are the system requirements for Application X V1.91\n1. Hardware Requirements\n\nRecommended System:\n• Intel Core-i5, 3.4 GHz (Turbo > 4 GHz)\n• 16 GB RAM\n• 500 GB SSD\n• Screen resolution 1920 x 1080\n• 2 * 1-Gbit Ethernet interfaces (Communication with test machine and company network)\n(• USB 2.0 interfaces when using USB devices)\n(• RS-232 interfaces when using RS-232 devices; USB-RS-232 adapter possible)\n\nSpecial requirements apply when using additional peripherals or starting multiple devices at once.\nSince 1.9.2024, Application X is available as a download from the customer portal and can be downloaded. No DVD is included by default.\n(https://www.example.com/)\n\n2. Software Requirements\n\n• Operating Systems:\n  - Microsoft Windows 11 from Application X V1.6\n  - Microsoft Windows 7 up to Application X V1.5\n  - Microsoft Windows 10 for all Application X versions\n\nIt is generally recommended to install the latest service pack for the operating system.\n\n• Required Programs:\n  - Media Player\n  - Microsoft Excel or Word if using optional export interfaces for these types',
+			ts: '2025-04-02T13:03:06.045Z',
+			u: {
+				_id: 'K4hFYDc2aFXhcRPGj',
+				username: 'User123',
+				name: 'Anonymous User',
+			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Here are the system requirements for Application X V1.91',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '1. Hardware Requirements',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Recommended System:',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• Intel Core-i5, 3.4 GHz (Turbo > 4 GHz)',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• 16 GB RAM',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• 500 GB SSD',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• Screen resolution 1920 x 1080',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• 2 * 1-Gbit Ethernet interfaces (Communication with test machine and company network)',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '(• USB 2.0 interfaces when using USB devices)',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '(• RS-232 interfaces when using RS-232 devices; USB-RS-232 adapter possible)',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Special requirements apply when using additional peripherals or starting multiple devices at once.',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value:
+								'Since 1.9.2024, Application X is available as a download from the customer portal and can be downloaded. No DVD is included by default.',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '(https://www.example.com/)',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '2. Software Requirements',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• Operating Systems:',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '  - Microsoft Windows 11 from Application X V1.6',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '  - Microsoft Windows 7 up to Application X V1.5',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '  - Microsoft Windows 10 for all Application X versions',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'It is generally recommended to install the latest service pack for the operating system.',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• Required Programs:',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '  - Media Player',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '(  - Microsoft Excel or Word if using optional export interfaces for these types)',
+						},
+					],
+				},
+			],
+			files: [],
+			quotes: [],
+		},
+		{
+			_id: 'b8mMFBNoDe6umGP6e',
+			rid: 'Zyutf8db4pSn3qbW4',
+			msg: 'Here are the system requirements for Application X V1.91\n1. Hardware Requirements\n\nRecommended System:\n• Intel Core-i5, 3.4 GHz (Turbo > 4 GHz)\n• 16 GB RAM\n• 500 GB SSD\n• Screen resolution 1920 x 1080\n• 2 * 1-Gbit Ethernet interfaces (Communication with test machine and company network)\n(• USB 2.0 interfaces when using USB devices)\n(• RS-232 interfaces when using RS-232 devices; USB-RS-232 adapter possible)\n\nSpecial requirements apply when using additional peripherals or starting multiple devices at once.\nSince 1.9.2024, Application X is available as a download from the customer portal and can be downloaded. No DVD is included by default.\n(https://www.example.com/)\n\n2. Software Requirements\n\n• Operating Systems:\n  - Microsoft Windows 11 from Application X V1.6\n  - Microsoft Windows 7 up to Application X V1.5\n  - Microsoft Windows 10 for all Application X versions\n\nIt is generally recommended to install the latest service pack for the operating system.\n\n• Required Programs:\n  - Media Player\n  - Microsoft Excel or Word if using optional export interfaces for these types',
+			ts: '2025-04-02T13:03:06.045Z',
+			u: {
+				_id: 'K4hFYDc2aFXhcRPGj',
+				username: 'User123',
+				name: 'Anonymous User',
+			},
+			md: [
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Here are the system requirements for Application X V1.91',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '1. Hardware Requirements',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Recommended System:',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• Intel Core-i5, 3.4 GHz (Turbo > 4 GHz)',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• 16 GB RAM',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• 500 GB SSD',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• Screen resolution 1920 x 1080',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• 2 * 1-Gbit Ethernet interfaces (Communication with test machine and company network)',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '(• USB 2.0 interfaces when using USB devices)',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '(• RS-232 interfaces when using RS-232 devices; USB-RS-232 adapter possible)',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Special requirements apply when using additional peripherals or starting multiple devices at once.',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value:
+								'Since 1.9.2024, Application X is available as a download from the customer portal and can be downloaded. No DVD is included by default.',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '(https://www.example.com/)',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '2. Software Requirements',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• Operating Systems:',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '  - Microsoft Windows 11 from Application X V1.6',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '  - Microsoft Windows 7 up to Application X V1.5',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '  - Microsoft Windows 10 for all Application X versions',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'It is generally recommended to install the latest service pack for the operating system.',
+						},
+					],
+				},
+				{
+					type: 'LINE_BREAK',
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '• Required Programs:',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '  - Media Player',
+						},
+					],
+				},
+				{
+					type: 'PARAGRAPH',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: '(  - Microsoft Excel or Word if using optional export interfaces for these types)',
+						},
+					],
+				},
+			],
+			files: [],
+			quotes: [],
 		},
 	],
 };

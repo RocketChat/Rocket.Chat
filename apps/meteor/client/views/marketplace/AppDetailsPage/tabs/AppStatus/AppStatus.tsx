@@ -1,10 +1,9 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Tag, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Tag, Margins, Icon } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useState, memo } from 'react';
+import { useCallback, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
@@ -33,7 +32,6 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const setModal = useSetModal();
 	const isAdminUser = usePermission('manage-apps');
 	const context = useRouteParameter('context');
-
 	const { price, purchaseType, pricingPlans } = app;
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
@@ -96,22 +94,28 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		appInstallationHandler();
 	}, [button?.action, appAddon, appInstallationHandler, cancelAction, isAdminUser, setLoading, setModal, workspaceHasAddon]);
 
-	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
-		if (isAppRequestsPage && totalUnseenRequests && (status.label === 'request' || status.label === 'requests')) {
+		if (isAppRequestsPage && totalUnseenRequests && status.type === 'primary') {
 			return 'primary';
 		}
 
-		if (isAppRequestsPage && status.label === 'Requested') {
-			return undefined;
-		}
-
-		// includes() here because the label can be 'Disabled' or 'Disabled*'
-		if (status.label.includes('Disabled')) {
+		if (status.type === 'danger') {
 			return 'secondary-danger';
 		}
 
 		return undefined;
+	};
+
+	const getStatusFontColor = (status: appStatusSpanResponseProps) => {
+		if (status.type === 'warning') {
+			return 'status-font-on-warning';
+		}
+
+		if (status.type === 'danger') {
+			return 'status-font-on-danger';
+		}
+
+		return 'font-default';
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
@@ -152,7 +156,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						onClick={handleAcquireApp}
 						mie={8}
 					>
-						{t(button.label.replace(' ', '_') as TranslationKey)}
+						{t(button.label)}
 					</Button>
 
 					{shouldShowPriceDisplay && !installed && (
@@ -164,7 +168,10 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			{statuses?.map((status, index) => (
 				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
 					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
-						{handleAppRequestsNumber(status)} {t(status.label)}
+						<Box display='flex' color={getStatusFontColor(status)} alignItems='center'>
+							{status.icon && <Icon name={status.icon} size={16} mie={2} />}
+							{handleAppRequestsNumber(status)} {t(status.label)}
+						</Box>
 					</Tag>
 				</Margins>
 			))}

@@ -1,5 +1,5 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { useRemoveLicense } from './useRemoveLicense';
 import { useLicenseName } from '../../../../hooks/useLicense';
@@ -23,6 +23,6 @@ export const useCancelSubscriptionModal = () => {
 
 	return {
 		open,
-		isLoading: removeLicense.isLoading,
+		isLoading: removeLicense.isPending,
 	};
 };

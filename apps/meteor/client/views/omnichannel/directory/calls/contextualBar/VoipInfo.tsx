@@ -3,7 +3,7 @@ import { Box, Icon, Chip, ButtonGroup } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { InfoField } from './InfoField';
@@ -15,6 +15,7 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
 import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 import { UserStatus } from '../../../../../components/UserStatus';
@@ -44,7 +45,7 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 	const _name = fname || name;
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClickClose}>
 			<ContextualbarHeader expanded>
 				<ContextualbarIcon name='phone' />
 				<ContextualbarTitle>{t('Call_Information')}</ContextualbarTitle>
@@ -104,6 +105,6 @@ export const VoipInfo = ({ room, onClickClose /* , onClickReport  */ }: VoipInfo
 					{isCallReady && <VoipInfoCallButton phoneNumber={phoneNumber} />}
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };

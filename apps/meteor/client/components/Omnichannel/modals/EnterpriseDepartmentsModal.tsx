@@ -1,8 +1,21 @@
-import { Button, Modal, Box } from '@rocket.chat/fuselage';
+import {
+	Button,
+	Modal,
+	Box,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTagline,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalHeroImage,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
@@ -30,29 +43,29 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 
 	return (
 		<Modal data-qa-id='enterprise-departments-modal' ref={ref}>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Tagline>{t('Premium_capability')}</Modal.Tagline>
-					<Modal.Title>{t('Departments')}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close onClick={onClose} data-qa='modal-close' />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>
-				<Modal.HeroImage src='/images/departments.svg' />
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTagline>{t('Premium_capability')}</ModalTagline>
+					<ModalTitle>{t('Departments')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose onClick={onClose} data-qa='modal-close' />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>
+				<ModalHeroImage src='/images/departments.svg' />
 				<Box fontScale='h3' mbe={28}>
 					{t('Premium_Departments_title')}
 				</Box>
 				{t('Premium_Departments_description_upgrade')}
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 
 					<Button onClick={goToManageSubscriptionPage} primary data-qa-id='upgrade-now'>
 						{t('Upgrade')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

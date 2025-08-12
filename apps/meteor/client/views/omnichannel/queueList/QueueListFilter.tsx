@@ -1,7 +1,7 @@
 import { Box, Select, Label } from '@rocket.chat/fuselage';
-import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { Dispatch, SetStateAction } from 'react';
-import React, { useEffect } from 'react';
+import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import type { Dispatch, FormEvent, Key, SetStateAction } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
@@ -23,11 +23,11 @@ export const QueueListFilter = ({ setFilter, ...props }: QueueListFilterProps) =
 	const [status, setStatus] = useLocalStorage('status', 'online');
 	const [department, setDepartment] = useLocalStorage<string>('department', 'all');
 
-	const handleServedBy = useMutableCallback((e) => setServedBy(e));
-	const handleStatus = useMutableCallback((e) => setStatus(e));
-	const handleDepartment = useMutableCallback((e) => setDepartment(e));
+	const handleServedBy = useEffectEvent((e: string) => setServedBy(e));
+	const handleStatus = useEffectEvent((e: Key) => setStatus(e as string));
+	const handleDepartment = useEffectEvent((e: string) => setDepartment(e));
 
-	const onSubmit = useMutableCallback((e) => e.preventDefault());
+	const onSubmit = useEffectEvent((e: FormEvent) => e.preventDefault());
 
 	useEffect(() => {
 		const filters = { status } as {

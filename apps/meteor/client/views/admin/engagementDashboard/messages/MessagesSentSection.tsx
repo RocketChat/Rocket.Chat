@@ -3,7 +3,7 @@ import { Box, Flex, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import moment from 'moment';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
@@ -13,14 +13,21 @@ import { usePeriodSelectorState } from '../../../../components/dashboards/usePer
 import CounterSet from '../../../../components/dataView/CounterSet';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import { useMessagesSent } from './useMessagesSent';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
 
-const MessagesSentSection = (): ReactElement => {
+type MessagesSentSectionProps = {
+	timezone: 'utc' | 'local';
+};
+
+const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactElement => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
 	const periodLabel = usePeriodLabel(period);
 
 	const { t } = useTranslation();
+	const utc = timezone === 'utc';
+	const { data } = useMessagesSent({ period, utc });
 
-	const { data } = useMessagesSent({ period });
+	const formatDate = useFormatDate();
 
 	const [countFromPeriod, variatonFromPeriod, countFromYesterday, variationFromYesterday, values] = useMemo(() => {
 		if (!data) {
@@ -70,7 +77,7 @@ const MessagesSentSection = (): ReactElement => {
 			/>
 			<Flex.Container>
 				{values ? (
-					<Box style={{ height: 240 }}>
+					<Box style={{ height: 300 }}>
 						<Flex.Item align='stretch' grow={1} shrink={0}>
 							<Box style={{ position: 'relative' }}>
 								<Box
@@ -88,7 +95,9 @@ const MessagesSentSection = (): ReactElement => {
 										padding={0.25}
 										margin={{
 											// TODO: Get it from theme
-											bottom: 20,
+											bottom: 50,
+											left: 20,
+											top: 20,
 										}}
 										colors={[
 											// TODO: Get it from theme
@@ -98,17 +107,21 @@ const MessagesSentSection = (): ReactElement => {
 										enableGridY={false}
 										axisTop={null}
 										axisRight={null}
-										axisBottom={
-											(values.length === 7 && {
-												tickSize: 0,
-												// TODO: Get it from theme
-												tickPadding: 4,
-												tickRotation: 0,
-												format: (date): string => moment(date).format('dddd'),
-											}) ||
-											null
-										}
-										axisLeft={null}
+										valueScale={{ type: 'linear' }}
+										axisBottom={{
+											tickSize: values.length > 31 ? 4 : 0,
+											// TODO: Get it from theme
+											tickPadding: 8,
+											tickRotation: values.length > 31 ? 90 : 0,
+											truncateTickAt: 0,
+											format: (date): string => moment(date).format('DD/MM'),
+										}}
+										axisLeft={{
+											tickSize: 0,
+											// TODO: Get it from theme
+											tickPadding: 4,
+											tickRotation: 0,
+										}}
 										animate={true}
 										motionConfig='stiff'
 										theme={{
@@ -128,14 +141,20 @@ const MessagesSentSection = (): ReactElement => {
 												},
 											},
 										}}
-										tooltip={({ value }) => <Tooltip>{t('Value_messages', { value })}</Tooltip>}
+										tooltip={({ value, indexValue }) => (
+											<Tooltip>
+												{t('Value_messages', { value })}, {formatDate(indexValue)}
+											</Tooltip>
+										)}
 									/>
 								</Box>
 							</Box>
 						</Flex.Item>
 					</Box>
 				) : (
-					<Skeleton variant='rect' height={240} />
+					<Box>
+						<Skeleton variant='rect' height={240} />
+					</Box>
 				)}
 			</Flex.Container>
 		</>

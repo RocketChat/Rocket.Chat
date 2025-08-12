@@ -2,20 +2,17 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLogout } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
-import { useVoipItemsSection } from './useVoipItemsSection';
 
 export const useUserMenu = (user: IUser) => {
 	const { t } = useTranslation();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
-	const voipSection = useVoipItemsSection();
 
 	const logout = useLogout();
 	const handleLogout = useEffectEvent(() => {
@@ -38,7 +35,6 @@ export const useUserMenu = (user: IUser) => {
 			title: t('Status'),
 			items: statusItems,
 		},
-		voipSection,
 		{
 			title: t('Account'),
 			items: accountItems,

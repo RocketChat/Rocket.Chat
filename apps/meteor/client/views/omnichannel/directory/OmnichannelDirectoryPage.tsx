@@ -1,6 +1,6 @@
 import { Tabs } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContextualBarRouter from './ContextualBarRouter';
@@ -8,7 +8,6 @@ import CallTab from './calls/CallTab';
 import ChatsTab from './chats/ChatsTab';
 import ContactTab from './contacts/ContactTab';
 import ChatsProvider from './providers/ChatsProvider';
-import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 
 const DEFAULT_TAB = 'chats';
@@ -34,7 +33,7 @@ const OmnichannelDirectoryPage = () => {
 		[router],
 	);
 
-	const handleTabClick = useCallback((tab) => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
+	const handleTabClick = useCallback((tab: string) => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
 
 	return (
 		<ChatsProvider>
@@ -58,11 +57,7 @@ const OmnichannelDirectoryPage = () => {
 						{tab === 'calls' && <CallTab />}
 					</PageContent>
 				</Page>
-				{context && (
-					<ContextualbarDialog>
-						<ContextualBarRouter />
-					</ContextualbarDialog>
-				)}
+				{context && <ContextualBarRouter />}
 			</Page>
 		</ChatsProvider>
 	);

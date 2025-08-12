@@ -1,8 +1,17 @@
-import type { IOmnichannelRoom, IUser, ILivechatVisitor, IMessage, MessageAttachment, IMessageInbox } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelRoom,
+	IUser,
+	ILivechatVisitor,
+	IMessage,
+	MessageAttachment,
+	IMessageInbox,
+	IOmnichannelAgent,
+} from '@rocket.chat/core-typings';
 
-export type GenericCloseRoomParams = {
+type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
 	comment?: string;
+	forceClose?: boolean;
 	options?: {
 		clientAction?: boolean;
 		tags?: string[];
@@ -53,3 +62,27 @@ export interface ILivechatMessage {
 	blocks?: IMessage['blocks'];
 	email?: IMessageInbox['email'];
 }
+
+export type ICRMData = {
+	_id: string;
+	label?: string;
+	topic?: string;
+	createdAt: Date;
+	lastMessageAt?: Date;
+	tags?: string[];
+	customFields?: IOmnichannelRoom['livechatData'];
+	visitor: Pick<ILivechatVisitor, '_id' | 'token' | 'name' | 'username' | 'department' | 'phone' | 'ip'> & {
+		email?: ILivechatVisitor['visitorEmails'];
+		os?: string;
+		browser?: string;
+		customFields: ILivechatVisitor['livechatData'];
+	};
+	agent?: Pick<IOmnichannelAgent, '_id' | 'username' | 'name' | 'customFields'> & {
+		email?: NonNullable<IOmnichannelAgent['emails']>[number]['address'];
+	};
+	crmData?: IOmnichannelRoom['crmData'];
+};
+
+export type AKeyOf<T> = {
+	[K in keyof T]?: T[K];
+};

@@ -1,5 +1,5 @@
 import { Box, Avatar } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 type AttachmentThumbProps = { url: string };
 

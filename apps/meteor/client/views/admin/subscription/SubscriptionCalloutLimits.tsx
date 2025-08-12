@@ -1,7 +1,6 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { useCheckoutUrl } from './hooks/useCheckoutUrl';
@@ -26,8 +25,12 @@ export const SubscriptionCalloutLimits = () => {
 		<>
 			{start_fair_policy && (
 				<Callout type='warning' title={t('subscription.callout.servicesDisruptionsMayOccur')} m={8}>
-					<Trans i18nKey='subscription.callout.description.limitsReached' count={start_fair_policy.length}>
-						Your workspace reached the <>{{ val: start_fair_policy.map(toTranslationKey) }}</> limit.
+					<Trans
+						i18nKey='subscription.callout.description.limitsReached'
+						count={start_fair_policy.length}
+						value={{ val: start_fair_policy.map(toTranslationKey) }}
+					>
+						Your workspace reached the <>{start_fair_policy.map(toTranslationKey)}</> limit.
 						<ExternalLink
 							to={manageSubscriptionUrl({
 								target: 'callout',
@@ -44,8 +47,12 @@ export const SubscriptionCalloutLimits = () => {
 
 			{prevent_action && (
 				<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} m={8}>
-					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={prevent_action.length}>
-						Your workspace exceeded the <>{{ val: prevent_action.map(toTranslationKey) }}</> license limit.
+					<Trans
+						i18nKey='subscription.callout.description.limitsExceeded'
+						count={prevent_action.length}
+						values={{ val: prevent_action.map(toTranslationKey) }}
+					>
+						Your workspace exceeded the <>{prevent_action.map(toTranslationKey)}</> license limit.
 						<ExternalLink
 							to={manageSubscriptionUrl({
 								target: 'callout',
@@ -62,8 +69,12 @@ export const SubscriptionCalloutLimits = () => {
 
 			{disable_modules && (
 				<Callout type='danger' title={t('subscription.callout.capabilitiesDisabled')} m={8}>
-					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
-						Your workspace exceeded the <>{{ val: disable_modules.map(toTranslationKey) }}</> license limit.
+					<Trans
+						i18nKey='subscription.callout.description.limitsExceeded'
+						count={disable_modules.length}
+						values={{ val: disable_modules.map(toTranslationKey) }}
+					>
+						Your workspace exceeded the <>{disable_modules.map(toTranslationKey)}</> license limit.
 						<ExternalLink
 							to={manageSubscriptionUrl({
 								target: 'callout',
@@ -80,8 +91,12 @@ export const SubscriptionCalloutLimits = () => {
 
 			{invalidate_license && (
 				<Callout type='danger' title={t('subscription.callout.allPremiumCapabilitiesDisabled')} m={8}>
-					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={disable_modules.length}>
-						Your workspace exceeded the <>{{ val: invalidate_license.map(toTranslationKey) }}</> license limit.
+					<Trans
+						i18nKey='subscription.callout.description.limitsExceeded'
+						count={disable_modules.length}
+						values={{ val: invalidate_license.map(toTranslationKey) }}
+					>
+						Your workspace exceeded the <>{invalidate_license.map(toTranslationKey)}</> license limit.
 						<ExternalLink
 							to={manageSubscriptionUrl({
 								target: 'callout',

@@ -2,7 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { UserStatus } from '../../components/UserStatus';
 
@@ -13,17 +12,13 @@ const anon = {
 	avatarETag: undefined,
 } as const;
 
-/**
- * @deprecated Feature preview
- * @description Should be moved to the core when the feature is ready
- * @memberof navigationBar
- */
-
 const UserAvatarWithStatus = () => {
 	const user = useUser();
 	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
+
+	const effectiveStatus = presenceDisabled ? 'disabled' : status;
 
 	return (
 		<Box
@@ -51,7 +46,7 @@ const UserAvatarWithStatus = () => {
 				mie='neg-x2'
 				mbe='neg-x2'
 			>
-				<UserStatus small status={presenceDisabled ? 'disabled' : status} />
+				<UserStatus role='status' aria-label={effectiveStatus} small status={effectiveStatus} />
 			</Box>
 		</Box>
 	);

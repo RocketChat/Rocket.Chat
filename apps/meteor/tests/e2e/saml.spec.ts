@@ -18,14 +18,26 @@ import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
 
+const KEY = 'fuselage-sessionStorage-saml_invite_token';
+
 const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupOnly?: boolean } = {}) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
 	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	const usernamesToDelete = [Users.userForSamlMerge, Users.userForSamlMerge2, Users.samluser1, Users.samluser2, Users.samluser4].map(
-		({ data: { username } }) => username,
-	);
+	const usernamesToDelete = [
+		...[
+			Users.userForSamlMerge,
+			Users.userForSamlMerge2,
+			Users.samluser1,
+			Users.samluser2,
+			Users.samluser4,
+			Users.samlusernoname,
+			Users.samlusernoname2,
+		].map(({ data: { username } }) => username),
+		'custom_saml_username',
+		'custom_saml_username2',
+	];
 	await connection
 		.db()
 		.collection('users')
@@ -48,6 +60,7 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 
 	const settings = [
 		{ _id: 'Accounts_AllowAnonymousRead', value: false },
+		{ _id: 'Accounts_AllowUsernameChange', value: true },
 		{ _id: 'SAML_Custom_Default_logout_behaviour', value: 'SAML' },
 		{ _id: 'SAML_Custom_Default_immutable_property', value: 'EMail' },
 		{ _id: 'SAML_Custom_Default_mail_overwrite', value: false },
@@ -227,6 +240,27 @@ test.describe('SAML', () => {
 		});
 	};
 
+	const doLoginStepWithUsernameSelection = async (page: Page, username: string) => {
+		await test.step('expect successful login without username to show username selection screen', async () => {
+			await poRegistration.btnLoginWithSaml.click();
+			// Redirect to Idp
+			await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+			// Fill username and password
+			await page.getByLabel('Username').fill(username);
+			await page.getByLabel('Password').fill('password');
+			await page.locator('role=button[name="Login"]').click();
+
+			// Should redirect to username selection screen
+			await expect(poRegistration.username).toBeVisible();
+		});
+	};
+
+	const doUsernameSelection = async (customUsername: string) => {
+		await poRegistration.username.fill(customUsername);
+		await poRegistration.btnRegisterConfirmUsername.click();
+	};
+
 	const doLogoutStep = async (page: Page) => {
 		await test.step('logout', async () => {
 			await page.getByRole('button', { name: 'User menu' }).click();
@@ -394,11 +428,26 @@ test.describe('SAML', () => {
 		await page.goto(`/invite/${inviteId}`);
 		await page.getByRole('link', { name: 'Back to Login' }).click();
 
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+
 		await doLoginStep(page, 'samluser1', null);
 
 		await test.step('expect to be redirected to the invited room after succesful login', async () => {
 			await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
+			expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
 		});
+	});
+
+	test('Remove invite token from session storage if invite is not used', async ({ page }) => {
+		await page.goto(`/invite/${inviteId}`);
+		await page.getByRole('link', { name: 'Back to Login' }).click();
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+
+		await page.goto(`/home`);
+		await doLoginStep(page, 'samluser2');
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
 	});
 
 	test('Redirect to home after login when no redirectUrl is provided', async ({ page }) => {
@@ -406,6 +455,103 @@ test.describe('SAML', () => {
 
 		await test.step('expect to be redirected to the homepage after succesful login', async () => {
 			await expect(page).toHaveURL('/home');
+		});
+	});
+
+	test('Respect redirectUrl on multiple parallel logins', async ({ page, browser }) => {
+		const page2 = await browser.newPage();
+		const poRegistration2 = new Registration(page2);
+
+		await page2.goto(`/home`);
+		await expect(page2).toHaveURL('/home');
+
+		await page.goto(`/invite/${inviteId}`);
+		await page.getByRole('link', { name: 'Back to Login' }).click();
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+		expect(await page2.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
+
+		await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+		await poRegistration.btnLoginWithSaml.click();
+		await expect(page).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+		await expect(page2.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+		await expect(poRegistration2.btnLoginWithSaml).toBeVisible();
+		await poRegistration2.btnLoginWithSaml.click();
+		await expect(page2).toHaveURL(/.*\/simplesaml\/module.php\/core\/loginuserpass.php.*/);
+
+		await page.getByLabel('Username').fill('samluser1');
+		await page.getByLabel('Password').fill('password');
+		await page.locator('role=button[name="Login"]').click();
+
+		await page2.getByLabel('Username').fill('samluser2');
+		await page2.getByLabel('Password').fill('password');
+		await page2.locator('role=button[name="Login"]').click();
+
+		await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
+		await expect(page2).toHaveURL('/home');
+
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
+		expect(await page2.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
+
+		await page2.close();
+	});
+
+	test('Login - User without username can set initial username during first login', async ({ page, api }) => {
+		await doLoginStepWithUsernameSelection(page, 'samlusernoname2');
+
+		await test.step('expect to be redirected to the username selection page and set the username', async () => {
+			await expect(poRegistration.btnRegisterConfirmUsername).toBeVisible();
+			await doUsernameSelection('custom_saml_username2');
+		});
+
+		await test.step('expect to be redirected to the homepage after succesful login', async () => {
+			await expect(page).toHaveURL('/home');
+			await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
+		});
+
+		await test.step('expect user data to have been created with custom username', async () => {
+			const user = await getUserInfo(api, 'custom_saml_username2');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('custom_saml_username2');
+			expect(user?.name).toBe('Saml User No Username 2');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samlusernoname2@example.com');
+		});
+	});
+
+	test.describe('Login - Username selection when allow username change is disabled', () => {
+		test.beforeAll(async ({ api }) => {
+			await expect((await setSettingValueById(api, 'Accounts_AllowUsernameChange', false)).status()).toBe(200);
+		});
+
+		test.afterAll(async ({ api }) => {
+			await expect((await setSettingValueById(api, 'Accounts_AllowUsernameChange', true)).status()).toBe(200);
+		});
+
+		test('User without username can set initial username when username changes are disabled', async ({ page, api }) => {
+			await doLoginStepWithUsernameSelection(page, 'samlusernoname');
+
+			await test.step('expect to be redirected to the username selection page and set the username', async () => {
+				await expect(poRegistration.btnRegisterConfirmUsername).toBeVisible();
+				await doUsernameSelection('custom_saml_username');
+			});
+
+			await test.step('expect to be redirected to the homepage after succesful login', async () => {
+				await expect(page).toHaveURL('/home');
+				await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
+			});
+
+			await test.step('expect user data to have been created with the custom username', async () => {
+				const user = await getUserInfo(api, 'custom_saml_username');
+
+				expect(user).toBeDefined();
+				expect(user?.username).toBe('custom_saml_username');
+				expect(user?.name).toBe('Saml User No Username');
+				expect(user?.emails).toBeDefined();
+				expect(user?.emails?.[0].address).toBe('samlusernoname@example.com');
+			});
 		});
 	});
 

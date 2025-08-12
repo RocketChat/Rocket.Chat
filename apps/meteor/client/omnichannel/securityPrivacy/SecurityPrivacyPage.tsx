@@ -1,5 +1,4 @@
 import { useIsPrivilegedSettingsContext } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import { useEditableSettingsGroupSections } from '../../views/admin/EditableSettingsContext';
 import GenericGroupPage from '../../views/admin/settings/groups/GenericGroupPage';

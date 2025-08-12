@@ -7,7 +7,6 @@ import { useAirGappedRestriction } from './useAirGappedRestriction';
 describe('useAirGappedRestriction hook', () => {
 	it('should return [false, false, -1] if setting value is not a number', () => {
 		const { result } = renderHook(() => useAirGappedRestriction(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().withSetting('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', -1).build(),
 		});
 
@@ -16,7 +15,6 @@ describe('useAirGappedRestriction hook', () => {
 
 	it('should return [false, false, -1] if user has a license (remaining days is a negative value)', () => {
 		const { result } = renderHook(() => useAirGappedRestriction(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().withSetting('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', -1).build(),
 		});
 
@@ -25,7 +23,6 @@ describe('useAirGappedRestriction hook', () => {
 
 	it('should return [false, false, 8] if not on warning or restriction phase', () => {
 		const { result } = renderHook(() => useAirGappedRestriction(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().withSetting('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', 8).build(),
 		});
 
@@ -34,7 +31,6 @@ describe('useAirGappedRestriction hook', () => {
 
 	it('should return [true, false, 7] if on warning phase', () => {
 		const { result } = renderHook(() => useAirGappedRestriction(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().withSetting('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', 7).build(),
 		});
 
@@ -43,7 +39,6 @@ describe('useAirGappedRestriction hook', () => {
 
 	it('should return [true, false, 0] if on restriction phase', () => {
 		const { result } = renderHook(() => useAirGappedRestriction(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().withSetting('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', 0).build(),
 		});
 

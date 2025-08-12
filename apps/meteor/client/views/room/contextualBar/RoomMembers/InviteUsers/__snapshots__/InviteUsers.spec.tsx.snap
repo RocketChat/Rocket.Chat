@@ -1,0 +1,703 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-ftwpdg"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              title="Back"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+              >
+                ⦉
+              </i>
+            </button>
+            <div
+              class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+              id="contextualbarTitle"
+            >
+              Invite users
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-iag4sp"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-irxdij"
+                    for=":r1:"
+                  >
+                    Invite link
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-url rcx-input-box"
+                        id=":r1:"
+                        size="1"
+                        type="url"
+                        value="https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a"
+                      />
+                      <span
+                        class="rcx-box rcx-box--full rcx-input-box__addon"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                        >
+                          
+                        </i>
+                      </span>
+                    </label>
+                  </span>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-ox4caw"
+                  >
+                    Expire on February 4, 2020 4:45 PM.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders InviteEdit without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-ftwpdg"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              title="Back"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+              >
+                ⦉
+              </i>
+            </button>
+            <div
+              class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+              id="contextualbarTitle"
+            >
+              Invite users
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-iag4sp"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-irxdij"
+                    for=":r3:"
+                  >
+                    Expiration (Days)
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-labelledby="react-aria-:rc:"
+                      class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                      id=":r3:"
+                      type="button"
+                    >
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      >
+                        <label>
+                          <select
+                            name="days"
+                            tabindex="-1"
+                          >
+                            <option />
+                            <option
+                              value="1"
+                            >
+                              1
+                            </option>
+                            <option
+                              value="7"
+                            >
+                              7
+                            </option>
+                            <option
+                              value="15"
+                            >
+                              15
+                            </option>
+                            <option
+                              value="30"
+                            >
+                              30
+                            </option>
+                            <option
+                              value="0"
+                            >
+                              0
+                            </option>
+                          </select>
+                        </label>
+                      </div>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                        id="react-aria-:rc:"
+                      >
+                        1
+                      </span>
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                      >
+                        
+                      </i>
+                    </button>
+                  </span>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-irxdij"
+                    for=":r4:"
+                  >
+                    Max number of uses
+                  </label>
+                  <span
+                    class="rcx-box rcx-box--full rcx-field__row"
+                  >
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      aria-labelledby="react-aria-:rk:"
+                      class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
+                      id=":r4:"
+                      type="button"
+                    >
+                      <div
+                        aria-hidden="true"
+                        data-a11y-ignore="aria-hidden-focus"
+                        data-react-aria-prevent-focus="true"
+                        data-testid="hidden-select-container"
+                        style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                      >
+                        <label>
+                          <select
+                            name="maxUses"
+                            tabindex="-1"
+                          >
+                            <option />
+                            <option
+                              value="5"
+                            >
+                              5
+                            </option>
+                            <option
+                              value="10"
+                            >
+                              10
+                            </option>
+                            <option
+                              value="25"
+                            >
+                              25
+                            </option>
+                            <option
+                              value="50"
+                            >
+                              50
+                            </option>
+                            <option
+                              value="100"
+                            >
+                              100
+                            </option>
+                            <option
+                              value="0"
+                            >
+                              0
+                            </option>
+                          </select>
+                        </label>
+                      </div>
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-4w7o7u"
+                        id="react-aria-:rk:"
+                      >
+                        5
+                      </span>
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-6vi44e"
+                      >
+                        
+                      </i>
+                    </button>
+                  </span>
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-31obua"
+                >
+                  <button
+                    class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+                    disabled=""
+                    type="button"
+                  >
+                    <span
+                      class="rcx-button--content"
+                    >
+                      Generate_New_Link
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders InviteError without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-ftwpdg"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              title="Back"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+              >
+                ⦉
+              </i>
+            </button>
+            <div
+              class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+              id="contextualbarTitle"
+            >
+              Invite users
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-iag4sp"
+              >
+                <section
+                  class="rcx-box rcx-box--full rcx-callout rcx-callout--danger rcx-css-1jggbrp rcx-css-1fuhgt0"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-ban rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+                  >
+                    
+                  </i>
+                  <div
+                    class="rcx-box rcx-box--full rcx-callout__wrapper"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+                    >
+                      <div
+                        class="rcx-box rcx-box--full rcx-callout__content"
+                      >
+                        Error: Error message
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders InviteLoading without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
+    >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
+      <div
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-ftwpdg"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              title="Back"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+              >
+                ⦉
+              </i>
+            </button>
+            <div
+              class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+              id="contextualbarTitle"
+            >
+              Invite users
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
+          >
+            <div
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
+            <div
+              class=""
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+              tabindex="-1"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-iag4sp"
+              >
+                <span
+                  class="rcx-skeleton rcx-skeleton--text rcx-css-1jggbrp rcx-css-1qcz93u"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+            <div
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+            >
+              <div
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
+    </div>
+  </div>
+</body>
+`;

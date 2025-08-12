@@ -4,7 +4,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
@@ -44,7 +44,7 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 	};
 
 	const onClick = useCallback(
-		(rid) => (): void =>
+		(rid: string) => (): void =>
 			router.navigate({
 				name: 'admin-rooms',
 				params: {

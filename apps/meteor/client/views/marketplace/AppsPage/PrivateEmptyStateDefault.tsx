@@ -1,5 +1,4 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const PrivateEmptyStateDefault = () => {

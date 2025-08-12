@@ -1,6 +1,5 @@
 import type { IconProps } from '@rocket.chat/fuselage';
 import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContactInfoCallButton from './ContactInfoCallButton';

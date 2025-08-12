@@ -3,7 +3,7 @@ import { Badge, Card, CardBody, CardCol, CardControls, CardHeader, CardRow, Card
 import { AppAvatar } from '@rocket.chat/ui-avatar';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import semver from 'semver';
 
 import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';

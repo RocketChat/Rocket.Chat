@@ -1,17 +1,17 @@
+import { useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import OTRComponent from './OTR';
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import { useOTR } from '../../../../hooks/useOTR';
-import { usePresence } from '../../../../hooks/usePresence';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const OTRWithData = (): ReactElement => {
 	const { otr, otrState } = useOTR();
 	const { closeTab } = useRoomToolbox();
 
-	const peerUserPresence = usePresence(otr?.getPeerId());
+	const peerUserPresence = useUserPresence(otr?.getPeerId());
 	const userStatus = peerUserPresence?.status;
 	const peerUsername = peerUserPresence?.username;
 	const isOnline = !['offline', 'loading'].includes(userStatus || '');

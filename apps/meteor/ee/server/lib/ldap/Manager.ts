@@ -291,6 +291,10 @@ export class LDAPEEManager extends LDAPManager {
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 
 		const user = await Users.findOneByUsernameIgnoringCase(roomOwner);
+		if (!user) {
+			logger.error(`Unable to find user '${roomOwner}' to be the owner of the channel '${channel}'.`);
+			return;
+		}
 
 		const room = await createRoom('c', channel, user, [], false, false, {
 			customFields: { ldap: true },
@@ -616,14 +620,14 @@ export class LDAPEEManager extends LDAPManager {
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
 				converter.addObjectToMemory(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
-			} else if (disableMissingUsers) {
+			} else if (disableMissingUsers && user.active) {
 				await setUserActiveStatus(user._id, false, true);
 			}
 		}
 	}
 
 	private static async disableMissingUsers(foundUsers: IUser['_id'][]): Promise<void> {
-		const userIds = (await Users.findLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+		const userIds = (await Users.findActiveLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
 
 		await Promise.allSettled(userIds.map((id) => setUserActiveStatus(id, false, true)));
 	}

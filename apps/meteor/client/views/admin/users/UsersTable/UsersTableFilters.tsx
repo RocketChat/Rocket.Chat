@@ -3,14 +3,14 @@ import { Box, Icon, Margins, TextInput } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
-import type { FormEvent } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import type { Dispatch, FormEvent, SetStateAction } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UsersFilters } from '../AdminUsersPage';
 
 type UsersTableFiltersProps = {
-	setUsersFilters: React.Dispatch<React.SetStateAction<UsersFilters>>;
+	setUsersFilters: Dispatch<SetStateAction<UsersFilters>>;
 	roleData: { roles: IRole[] } | undefined;
 };
 
@@ -21,9 +21,9 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 	const [text, setText] = useState('');
 
 	const handleSearchTextChange = useCallback(
-		({ target: { value } }) => {
-			setText(value);
-			setUsersFilters({ text: value, roles: selectedRoles });
+		(event: FormEvent<HTMLInputElement>) => {
+			setText(event.currentTarget.value);
+			setUsersFilters({ text: event.currentTarget.value, roles: selectedRoles });
 		},
 		[selectedRoles, setUsersFilters],
 	);

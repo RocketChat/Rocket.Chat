@@ -1,7 +1,6 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, Button } from '@rocket.chat/fuselage';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UpdateRocketChatButton from '../components/UpdateRocketChatButton';

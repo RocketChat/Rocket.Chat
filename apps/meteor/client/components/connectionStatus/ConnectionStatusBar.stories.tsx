@@ -2,7 +2,6 @@ import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ContextType, ReactElement } from 'react';
-import React from 'react';
 
 import ConnectionStatusBar from './ConnectionStatusBar';
 
@@ -27,6 +26,7 @@ Connected.decorators = [
 		status: 'connected',
 		retryTime: undefined,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];
 
@@ -37,6 +37,7 @@ Connecting.decorators = [
 		status: 'connecting',
 		retryTime: undefined,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];
 
@@ -47,6 +48,7 @@ Failed.decorators = [
 		status: 'failed',
 		retryTime: undefined,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];
 
@@ -57,6 +59,7 @@ Waiting.decorators = [
 		status: 'waiting',
 		retryTime: Date.now() + 300000,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];
 
@@ -67,5 +70,6 @@ Offline.decorators = [
 		status: 'offline',
 		retryTime: undefined,
 		reconnect: action('reconnect'),
+		isLoggingIn: false,
 	}),
 ];

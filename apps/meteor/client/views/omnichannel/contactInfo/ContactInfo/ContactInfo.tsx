@@ -1,16 +1,21 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { usePermission, useRouter, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ReviewContactModal from './ReviewContactModal';
-import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+} from '../../../../components/Contextualbar';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
 import { useValidCustomFields } from '../hooks/useValidCustomFields';
-import ContactInfoChannels from '../tabs/ContactInfoChannels/ContactInfoChannels';
+import ContactInfoChannels from '../tabs/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';
 import ContactInfoHistory from '../tabs/ContactInfoHistory';
 
@@ -22,25 +27,20 @@ type ContactInfoProps = {
 const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const { t } = useTranslation();
 
-	const { getRouteName } = useRouter();
 	const setModal = useSetModal();
-	const currentRouteName = getRouteName();
 	const handleNavigate = useContactRoute();
 	const context = useRouteParameter('context');
 
 	const formatDate = useFormatDate();
-
 	const canEditContact = usePermission('edit-omnichannel-contact');
 
 	const { name, emails, phones, conflictingFields, createdAt, lastChat, contactManager, customFields: userCustomFields } = contact;
 
 	const hasConflicts = conflictingFields && conflictingFields?.length > 0;
-	const showContactHistory = (currentRouteName === 'live' || currentRouteName === 'omnichannel-directory') && lastChat;
-
 	const customFieldEntries = useValidCustomFields(userCustomFields);
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='user' />
 				<ContextualbarTitle>{t('Contact')}</ContextualbarTitle>
@@ -90,11 +90,9 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				<TabsItem onClick={() => handleNavigate({ context: 'channels' })} selected={context === 'channels'}>
 					{t('Channels')}
 				</TabsItem>
-				{showContactHistory && (
-					<TabsItem onClick={() => handleNavigate({ context: 'history' })} selected={context === 'history'}>
-						{t('History')}
-					</TabsItem>
-				)}
+				<TabsItem onClick={() => handleNavigate({ context: 'history' })} selected={context === 'history'}>
+					{t('History')}
+				</TabsItem>
 			</Tabs>
 			{context === 'details' && (
 				<ContactInfoDetails
@@ -106,8 +104,8 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 				/>
 			)}
 			{context === 'channels' && <ContactInfoChannels contactId={contact?._id} />}
-			{context === 'history' && showContactHistory && <ContactInfoHistory contact={contact} />}
-		</>
+			{context === 'history' && <ContactInfoHistory contact={contact} />}
+		</ContextualbarDialog>
 	);
 };
 

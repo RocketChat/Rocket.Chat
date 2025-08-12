@@ -17,12 +17,13 @@ import {
 	FieldRow,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import DOMPurify from 'dompurify';
+import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
 import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
@@ -35,7 +36,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 		control,
 		watch,
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<EditIncomingWebhookFormData>();
 	const { alias, emoji, avatar } = watch();
 
 	const url = absoluteUrl(`hooks/${webhookData?._id}/${webhookData?.token}`);
@@ -62,20 +63,20 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 
 	const hilightedExampleJson = useHighlightedCode('json', JSON.stringify(exampleData, null, 2));
 
-	const enabledField = useUniqueId();
-	const nameField = useUniqueId();
-	const channelField = useUniqueId();
-	const usernameField = useUniqueId();
-	const aliasField = useUniqueId();
-	const avatarField = useUniqueId();
-	const emojiField = useUniqueId();
-	const overrideDestinationChannelEnabledField = useUniqueId();
-	const scriptEnabledField = useUniqueId();
-	const scriptEngineField = useUniqueId();
-	const scriptField = useUniqueId();
-	const webhookUrlField = useUniqueId();
-	const tokenField = useUniqueId();
-	const curlField = useUniqueId();
+	const enabledField = useId();
+	const nameField = useId();
+	const channelField = useId();
+	const usernameField = useId();
+	const aliasField = useId();
+	const avatarField = useId();
+	const emojiField = useId();
+	const overrideDestinationChannelEnabledField = useId();
+	const scriptEnabledField = useId();
+	const scriptEngineField = useId();
+	const scriptField = useId();
+	const webhookUrlField = useId();
+	const tokenField = useId();
+	const curlField = useId();
 
 	return (
 		<Box maxWidth='x600' alignSelf='center' w='full'>
@@ -111,7 +112,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							<FieldRow>
 								<Box fontScale='p2' withRichContent flexGrow={1}>
 									<pre>
-										<code dangerouslySetInnerHTML={{ __html: hilightedExampleJson }}></code>
+										<code dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(hilightedExampleJson) }}></code>
 									</pre>
 								</Box>
 							</FieldRow>
@@ -179,10 +180,12 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							<FieldHint
 								id={`${channelField}-hint-2`}
 								dangerouslySetInnerHTML={{
-									__html: t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
-										postProcess: 'sprintf',
-										sprintf: ['@', '#', '@john', '#general'],
-									}),
+									__html: DOMPurify.sanitize(
+										t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
+											postProcess: 'sprintf',
+											sprintf: ['@', '#', '@john', '#general'],
+										}),
+									),
 								}}
 							/>
 							{errors?.channel && (
@@ -271,7 +274,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
 							<FieldHint
 								id={`${emojiField}-hint-2`}
-								dangerouslySetInnerHTML={{ __html: t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] }) }}
+								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] })) }}
 							/>
 						</Field>
 						<Field>

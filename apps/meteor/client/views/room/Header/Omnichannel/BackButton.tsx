@@ -1,7 +1,6 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { HeaderToolbarAction } from '../../../../components/Header';
@@ -10,7 +9,7 @@ export const BackButton = ({ routeName }: { routeName?: string }): ReactElement 
 	const router = useRouter();
 	const { t } = useTranslation();
 
-	const back = useMutableCallback(() => {
+	const back = useEffectEvent(() => {
 		switch (routeName) {
 			case 'omnichannel-directory':
 				router.navigate({

@@ -1,14 +1,22 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, TextInput, Button, Margins, Select } from '@rocket.chat/fuselage';
+import { Box, TextInput, Button, Margins, Select, FieldError, FieldGroup, Field, FieldRow } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useCallback, useMemo, useEffect } from 'react';
+import DOMPurify from 'dompurify';
+import { useCallback, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../components/GenericModal';
+type AddTokenFormData = {
+	name: string;
+	bypassTwoFactor: string;
+};
 
-const AddToken = ({ reload }: { reload: () => void }): ReactElement => {
+type AddTokenProps = {
+	reload: () => void;
+};
+
+const AddToken = ({ reload }: AddTokenProps) => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const setModal = useSetModal();
@@ -18,12 +26,11 @@ const AddToken = ({ reload }: { reload: () => void }): ReactElement => {
 	const initialValues = useMemo(() => ({ name: '', bypassTwoFactor: 'require' }), []);
 
 	const {
-		register,
-		resetField,
 		handleSubmit,
 		control,
-		formState: { isSubmitted, submitCount },
-	} = useForm({ defaultValues: initialValues });
+		reset,
+		formState: { errors },
+	} = useForm<AddTokenFormData>({ defaultValues: initialValues });
 
 	const twoFactorAuthOptions: SelectOption[] = useMemo(
 		() => [
@@ -34,18 +41,26 @@ const AddToken = ({ reload }: { reload: () => void }): ReactElement => {
 	);
 
 	const handleAddToken = useCallback(
-		async ({ name: tokenName, bypassTwoFactor }) => {
+		async ({ name: tokenName, bypassTwoFactor }: AddTokenFormData) => {
 			try {
 				const token = await createTokenFn({ tokenName, bypassTwoFactor: bypassTwoFactor === 'bypass' });
 
+				const handleDismissModal = () => {
+					setModal(null);
+					reload();
+					reset();
+				};
+
 				setModal(
-					<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={() => setModal(null)} onClose={() => setModal(null)}>
+					<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={handleDismissModal} onClose={handleDismissModal}>
 						<Box
 							dangerouslySetInnerHTML={{
-								__html: t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-									token,
-									userId,
-								}),
+								__html: DOMPurify.sanitize(
+									t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
+										token,
+										userId,
+									}),
+								),
 							}}
 						/>
 					</GenericModal>,
@@ -54,32 +69,48 @@ const AddToken = ({ reload }: { reload: () => void }): ReactElement => {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[createTokenFn, dispatchToastMessage, setModal, t, userId],
+		[createTokenFn, dispatchToastMessage, reload, reset, setModal, t, userId],
 	);
 
-	useEffect(() => {
-		resetField('name');
-		reload();
-	}, [isSubmitted, submitCount, reload, resetField]);
+	const nameErrorId = useId();
 
 	return (
-		<Box display='flex' is='form' onSubmit={handleSubmit(handleAddToken)} mb={8}>
-			<Box display='flex' width='100%'>
-				<Margins inlineEnd={4}>
-					<TextInput data-qa='PersonalTokenField' {...register('name')} placeholder={t('API_Add_Personal_Access_Token')} />
-					<Box>
+		<FieldGroup is='form' onSubmit={handleSubmit(handleAddToken)} mb={8}>
+			<Field>
+				<FieldRow>
+					<Margins inlineEnd={4}>
 						<Controller
-							name='bypassTwoFactor'
+							name='name'
 							control={control}
-							render={({ field }) => <Select {...field} options={twoFactorAuthOptions} />}
+							rules={{ validate: (value) => (value.trim() ? undefined : t('Please_provide_a_name_for_your_token')) }}
+							render={({ field }) => (
+								<TextInput
+									aria-describedby={nameErrorId}
+									data-qa='PersonalTokenField'
+									{...field}
+									placeholder={t('API_Add_Personal_Access_Token')}
+								/>
+							)}
 						/>
-					</Box>
-				</Margins>
-			</Box>
-			<Button primary type='submit'>
-				{t('Add')}
-			</Button>
-		</Box>
+						<Box>
+							<Controller
+								name='bypassTwoFactor'
+								control={control}
+								render={({ field }) => <Select {...field} options={twoFactorAuthOptions} />}
+							/>
+						</Box>
+					</Margins>
+					<Button primary type='submit'>
+						{t('Add')}
+					</Button>
+				</FieldRow>
+				{errors?.name && (
+					<FieldError id={nameErrorId} role='alert'>
+						{errors.name.message}
+					</FieldError>
+				)}
+			</Field>
+		</FieldGroup>
 	);
 };
 

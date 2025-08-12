@@ -5,25 +5,23 @@ import { useEffect } from 'react';
 
 import { useVideoConfData } from './useVideoConfData';
 
-export const useVideoConfDataStream = ({
-  rid,
-  callId,
-}: {
-  rid: IRoom['_id'];
-  callId: string;
-}) => {
-  const queryClient = useQueryClient();
+export const useVideoConfDataStream = ({ rid, callId }: { rid: IRoom['_id']; callId: string }) => {
+	const queryClient = useQueryClient();
 
-  const subscribeNotifyRoom = useStream('notify-room');
+	const subscribeNotifyRoom = useStream('notify-room');
 
-  useEffect(() => {
-    return subscribeNotifyRoom(
-      `${rid}/videoconf`,
-      (id) =>
-        id === callId &&
-        queryClient.invalidateQueries(['video-conference', callId]),
-    );
-  }, [rid, callId, subscribeNotifyRoom, queryClient]);
+	useEffect(
+		() =>
+			subscribeNotifyRoom(
+				`${rid}/videoconf`,
+				(id) =>
+					id === callId &&
+					queryClient.invalidateQueries({
+						queryKey: ['video-conference', callId],
+					}),
+			),
+		[rid, callId, subscribeNotifyRoom, queryClient],
+	);
 
-  return useVideoConfData({ callId });
+	return useVideoConfData({ callId });
 };

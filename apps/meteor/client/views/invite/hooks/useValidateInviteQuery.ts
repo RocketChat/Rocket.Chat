@@ -2,22 +2,19 @@ import { useEndpoint, useSessionDispatch, useSetting, useToastMessageDispatch } 
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { useInviteTokenMutation } from './useInviteTokenMutation';
-
-export const useValidateInviteQuery = (userId: string | null, token: string | undefined) => {
+export const useValidateInviteQuery = (token: string | undefined) => {
 	const { t } = useTranslation();
 
 	const registrationForm = useSetting('Accounts_RegistrationForm');
 
 	const setLoginDefaultState = useSessionDispatch('loginDefaultState');
 	const dispatchToastMessage = useToastMessageDispatch();
-	const getInviteRoomMutation = useInviteTokenMutation();
 
 	const handleValidateInviteToken = useEndpoint('POST', '/v1/validateInviteToken');
 
-	return useQuery(
-		['invite', token],
-		async () => {
+	const result = useQuery({
+		queryKey: ['validateInviteToken', token],
+		queryFn: async () => {
 			if (!token) {
 				return false;
 			}
@@ -25,14 +22,7 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 			try {
 				const { valid } = await handleValidateInviteToken({ token });
 
-				return valid;
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Failed_to_validate_invite_token') });
-				return false;
-			}
-		},
-		{
-			onSuccess: async (valid) => {
+				// FIXME: decouple this state management from the query
 				if (!token) {
 					return;
 				}
@@ -43,12 +33,17 @@ export const useValidateInviteQuery = (userId: string | null, token: string | un
 					setLoginDefaultState('login');
 				}
 
-				if (!valid || !userId) {
-					return;
+				if (!valid) {
+					throw new Error('Invalid token');
 				}
 
-				return getInviteRoomMutation(token);
-			},
+				return valid;
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: t('Failed_to_validate_invite_token') });
+				return false;
+			}
 		},
-	);
+	});
+
+	return result;
 };

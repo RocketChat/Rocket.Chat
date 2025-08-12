@@ -4,7 +4,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -58,7 +58,10 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	);
 
 	const getEmojiList = useEndpoint('GET', '/v1/emoji-custom.all');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery(['getEmojiList', query], () => getEmojiList(query));
+	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
+		queryKey: ['getEmojiList', query],
+		queryFn: () => getEmojiList(query),
+	});
 
 	useEffect(() => {
 		reload.current = refetch;

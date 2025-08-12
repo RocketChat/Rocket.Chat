@@ -2,17 +2,18 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useMethod, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import { useMethod, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { CannedResponse } from '../../../../app/canned-responses/client/collections/CannedResponse';
 import { emoji } from '../../../../app/emoji/client';
-import { Subscriptions } from '../../../../app/models/client';
-import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
 import { slashCommands } from '../../../../app/utils/client';
+import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
+import { Messages, Subscriptions } from '../../../stores';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
 import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';
@@ -24,26 +25,65 @@ import ComposerBoxPopupUser from '../composer/ComposerBoxPopupUser';
 import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser';
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
+import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
+import { pipe } from '../../../lib/cachedStores';
+
+export type CannedResponse = { _id: string; shortcut: string; text: string };
 
 type ComposerPopupProviderProps = {
 	children: ReactNode;
 	room: IRoom;
 };
 
+const getLastRecentUsers = (rid: string, uid: string) => {
+	const uniqueUsers = new Map<
+		string,
+		{
+			_id: string;
+			username: string;
+			name?: string;
+			ts: Date;
+			suggestion?: boolean;
+		}
+	>();
+	Messages.state
+		.filter((record) => record.rid === rid && record.u && record.u._id !== uid && !record.t && !!record.ts)
+		.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+		.forEach(({ u: { username, name, _id }, ts }) => {
+			if (!uniqueUsers.has(username)) {
+				uniqueUsers.set(username, {
+					_id,
+					username,
+					name,
+					ts,
+				});
+			}
+		});
+
+	return Array.from(uniqueUsers.values());
+};
 const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) => {
 	const { _id: rid, encrypted: isRoomEncrypted } = room;
+
+	// TODO: this is awful because we are just triggering the query to get the data
+	// and we are not using the data itself, we should find a better way to do this
+	useCannedResponsesQuery(room);
+
 	const userSpotlight = useMethod('spotlight');
 	const suggestionsCount = useSetting('Number_of_users_autocomplete_suggestions', 5);
 	const cannedResponseEnabled = useSetting('Canned_Responses_Enable', true);
 	const [recentEmojis] = useLocalStorage('emoji.recent', []);
+	const [previewTitle, setPreviewTitle] = useState('');
 	const isOmnichannel = isOmnichannelRoom(room);
 	const useEmoji = useUserPreference('useEmojis');
 	const { t, i18n } = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable', false);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const encrypted = isRoomEncrypted && e2eEnabled && !unencryptedMessagesAllowed;
-
+	const queryClient = useQueryClient();
+	const uid = useUserId();
 	const call = useMethod('getSlashCommandPreviews');
+
 	const value: ComposerPopupContextValue = useMemo(() => {
 		return [
 			createMessageBoxPopupConfig({
@@ -53,24 +93,18 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const items: ComposerBoxPopupUserProps[] = [];
 
-					const users = usersFromRoomMessages
-						.find(
-							{
-								ts: { $exists: true },
-								...(filter && {
-									$or: [{ username: filterRegex }, { name: filterRegex }],
-								}),
-							},
-							{
-								limit: suggestionsCount ?? 5,
-								sort: { ts: -1 },
-							},
-						)
-						.fetch()
-						.map((u) => {
-							u.suggestion = true;
-							return u;
-						});
+					const roomMessageUsers = getLastRecentUsers(rid, uid!)
+						.filter((u) => {
+							if (!filterRegex) return true;
+							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
+						})
+						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+						.slice(0, suggestionsCount ?? 5)
+						.map((u) => ({
+							...u,
+							suggestion: true,
+						}));
+
 					if (!filterRegex || filterRegex.test('all')) {
 						items.push({
 							_id: 'all',
@@ -91,27 +125,19 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						});
 					}
 
-					return [...users, ...items];
+					return [...roomMessageUsers, ...items];
 				},
 				getItemsFromServer: async (filter: string) => {
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
-					const usernames = usersFromRoomMessages
-						.find(
-							{
-								ts: { $exists: true },
-								...(filter && {
-									$or: [{ username: filterRegex }, { name: filterRegex }],
-								}),
-							},
-							{
-								limit: suggestionsCount ?? 5,
-								sort: { ts: -1 },
-							},
-						)
-						.fetch()
-						.map((u) => {
-							return u.username;
-						});
+					const usernames = getLastRecentUsers(rid, uid!)
+						.filter((u) => {
+							if (!filterRegex) return true;
+							return filterRegex.test(u.username) || (u.name && filterRegex.test(u.name));
+						})
+						.sort((a, b) => b.ts.getTime() - a.ts.getTime())
+						.slice(0, suggestionsCount ?? 5)
+						.map((u) => u.username);
+
 					const { users = [] } = await userSpotlight(filter, usernames, { users: true, mentions: true }, rid);
 
 					return users.map(({ _id, username, nickname, name, status, avatarETag, outside }) => {
@@ -135,27 +161,19 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				title: t('Channels'),
 				getItemsFromLocal: async (filter: string) => {
 					const filterRegex = new RegExp(escapeRegExp(filter), 'i');
-					const records = Subscriptions.find(
-						{
-							$and: [
-								{
-									$or: [{ fname: filterRegex }, { name: filterRegex }],
-								},
-								{
-									$or: [{ federated: { $exists: false } }, { federated: false }],
-								},
-							],
-							t: {
-								$in: ['c', 'p'],
-							},
-						},
-						{
-							limit: suggestionsCount ?? 5,
-							sort: {
-								ls: -1,
-							},
-						},
-					).fetch();
+
+					const { apply: transform } = pipe<SubscriptionWithRoom>()
+						.sortByField('ls', -1)
+						.slice(0, suggestionsCount ?? 5);
+
+					const predicate = (record: SubscriptionWithRoom): boolean =>
+						Boolean(
+							(record.fname?.match(filterRegex) || record.name?.match(filterRegex)) &&
+								!record.federated &&
+								(record.t === 'c' || record.t === 'p'),
+						);
+
+					const records = transform(Subscriptions.state.filter(predicate));
 					return records;
 				},
 				getItemsFromServer: async (filter: string) => {
@@ -333,18 +351,12 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					renderItem: ({ item }) => <ComposerBoxPopupCannedResponse {...item} />,
 					getItemsFromLocal: async (filter: string) => {
 						const exp = new RegExp(filter, 'i');
-						return CannedResponse.find(
-							{
-								shortcut: exp,
-							},
-							{
-								limit: 12,
-								sort: {
-									shortcut: -1,
-								},
-							},
-						)
-							.fetch()
+						// TODO: this is bad, but can only be fixed by refactoring the whole thing
+						const cannedResponses = queryClient.getQueryData<CannedResponse[]>(cannedResponsesQueryKeys.all) ?? [];
+						return cannedResponses
+							.filter((record) => record.shortcut.match(exp))
+							.sort((a, b) => a.shortcut.localeCompare(b.shortcut))
+							.slice(0, 11)
 							.map((record) => ({
 								_id: record._id,
 								text: record.text,
@@ -352,15 +364,17 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 							}));
 					},
 					getItemsFromServer: async () => [],
-					getValue: (item) => {
-						return item.text;
-					},
+					getValue: (item) => item.text,
 				}),
 			createMessageBoxPopupConfig({
+				title: previewTitle,
 				matchSelectorRegex: /(?:^)(\/[\w\d\S]+ )[^]*$/,
 				preview: true,
 				getItemsFromLocal: async ({ cmd, params, tmid }: { cmd: string; params: string; tmid: string }) => {
 					const result = await call({ cmd, params, msg: { rid, tmid } });
+
+					setPreviewTitle(t(result?.i18nTitle ?? ''));
+
 					return (
 						result?.items.map((item) => ({
 							_id: item.id,
@@ -371,7 +385,22 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				},
 			}),
 		].filter(Boolean);
-	}, [t, i18n, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call, useEmoji, encrypted]);
+	}, [
+		call,
+		cannedResponseEnabled,
+		encrypted,
+		i18n,
+		isOmnichannel,
+		previewTitle,
+		queryClient,
+		recentEmojis,
+		rid,
+		suggestionsCount,
+		t,
+		uid,
+		useEmoji,
+		userSpotlight,
+	]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };

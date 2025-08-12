@@ -14,5 +14,5 @@ async function runNPS(): Promise<void> {
 }
 
 export async function npsCron(): Promise<void> {
-	await cronJobs.add('NPS', '21 15 * * *', async () => runNPS());
+	return cronJobs.add('NPS', '21 15 * * *', async () => runNPS());
 }

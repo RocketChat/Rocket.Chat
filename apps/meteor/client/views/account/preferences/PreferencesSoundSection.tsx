@@ -1,30 +1,32 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldLabel, FieldRow, Select, FieldGroup, ToggleSwitch, FieldHint, Slider } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { AccordionItem, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, Slider, ToggleSwitch } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useTranslation } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const PreferencesSoundSection = () => {
 	const t = useTranslation();
 
 	const customSound = useCustomSound();
-	const soundsList: SelectOption[] = customSound?.getList()?.map((value) => [value._id, value.name]) || [];
+	const soundsList: SelectOption[] = customSound.list?.map((value) => [value._id, t(value.name as TranslationKey)]) || [];
 	const { control, watch } = useFormContext();
 	const { newMessageNotification, notificationsSoundVolume = 100, masterVolume = 100, voipRingerVolume = 100 } = watch();
 
-	const newRoomNotificationId = useUniqueId();
-	const newMessageNotificationId = useUniqueId();
-	const muteFocusedConversationsId = useUniqueId();
-	const masterVolumeId = useUniqueId();
-	const notificationsSoundVolumeId = useUniqueId();
-	const voipRingerVolumeId = useUniqueId();
+	const newRoomNotificationId = useId();
+	const newMessageNotificationId = useId();
+	const muteFocusedConversationsId = useId();
+	const masterVolumeId = useId();
+	const notificationsSoundVolumeId = useId();
+	const voipRingerVolumeId = useId();
 
 	return (
-		<Accordion.Item title={t('Sound')}>
+		<AccordionItem title={t('Sound')}>
 			<FieldGroup>
 				<Field>
-					<FieldLabel aria-describedby={`${masterVolumeId}-hint`}>{t('Master_volume')}</FieldLabel>
+					<FieldLabel is='span' aria-describedby={`${masterVolumeId}-hint`}>
+						{t('Master_volume')}
+					</FieldLabel>
 					<FieldHint id={`${masterVolumeId}-hint`} mbe={4}>
 						{t('Master_volume_hint')}
 					</FieldHint>
@@ -34,7 +36,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={masterVolumeId}
+									aria-label={t('Master_volume')}
 									aria-describedby={`${masterVolumeId}-hint`}
 									value={value}
 									minValue={0}
@@ -46,7 +48,9 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel id={notificationsSoundVolumeId}>{t('Notification_volume')}</FieldLabel>
+					<FieldLabel is='span' id={notificationsSoundVolumeId}>
+						{t('Notification_volume')}
+					</FieldLabel>
 					<FieldHint id={`${notificationsSoundVolumeId}-hint`} mbe={4}>
 						{t('Notification_volume_hint')}
 					</FieldHint>
@@ -56,7 +60,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={notificationsSoundVolumeId}
+									aria-label={t('Notification_volume')}
 									aria-describedby={`${notificationsSoundVolumeId}-hint`}
 									value={value}
 									minValue={0}
@@ -72,7 +76,9 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel aria-describedby={`${voipRingerVolumeId}-hint`}>{t('Call_ringer_volume')}</FieldLabel>
+					<FieldLabel is='span' aria-describedby={`${voipRingerVolumeId}-hint`}>
+						{t('Call_ringer_volume')}
+					</FieldLabel>
 					<FieldHint id={`${voipRingerVolumeId}-hint`} mbe={4}>
 						{t('Call_ringer_volume_hint')}
 					</FieldHint>
@@ -82,7 +88,7 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { onChange, value } }) => (
 								<Slider
-									aria-labelledby={voipRingerVolumeId}
+									aria-label={t('Call_ringer_volume')}
 									aria-describedby={`${voipRingerVolumeId}-hint`}
 									value={value}
 									minValue={0}
@@ -98,14 +104,16 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={newRoomNotificationId}>{t('New_Room_Notification')}</FieldLabel>
+					<FieldLabel is='span' id={newRoomNotificationId}>
+						{t('New_Room_Notification')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='newRoomNotification'
 							control={control}
 							render={({ field: { value, onChange } }) => (
 								<Select
-									id={newRoomNotificationId}
+									aria-labelledby={newRoomNotificationId}
 									value={value}
 									options={soundsList}
 									onChange={(value) => {
@@ -118,14 +126,16 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel htmlFor={newMessageNotificationId}>{t('New_Message_Notification')}</FieldLabel>
+					<FieldLabel is='span' id={newMessageNotificationId}>
+						{t('New_Message_Notification')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='newMessageNotification'
 							control={control}
 							render={({ field: { value, onChange } }) => (
 								<Select
-									id={newMessageNotificationId}
+									aria-labelledby={newMessageNotificationId}
 									value={value}
 									options={soundsList}
 									onChange={(value) => {
@@ -150,7 +160,7 @@ const PreferencesSoundSection = () => {
 					</FieldRow>
 				</Field>
 			</FieldGroup>
-		</Accordion.Item>
+		</AccordionItem>
 	);
 };
 

@@ -1,9 +1,23 @@
-import { Button, Modal, Select, Field, FieldGroup, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import {
+	Button,
+	Modal,
+	Select,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	Box,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -28,9 +42,9 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 	const assignUser = useEndpoint('POST', '/v1/voip-freeswitch.extension.assign');
 	const getAvailableExtensions = useEndpoint('GET', '/v1/voip-freeswitch.extension.list');
 
-	const modalTitleId = useUniqueId();
-	const usersWithoutExtensionsId = useUniqueId();
-	const freeExtensionNumberId = useUniqueId();
+	const modalTitleId = useId();
+	const usersWithoutExtensionsId = useId();
+	const freeExtensionNumberId = useId();
 
 	const {
 		control,
@@ -46,14 +60,12 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 	const selectedUsername = useWatch({ control, name: 'username' });
 	const selectedExtension = useWatch({ control, name: 'extension' });
 
-	const { data: availableExtensions = [], isLoading } = useQuery(
-		['/v1/voip-freeswitch.extension.list', selectedUsername],
-		() => getAvailableExtensions({ type: 'available' as const, username: selectedUsername }),
-		{
-			select: (data) => data.extensions || [],
-			enabled: !!selectedUsername,
-		},
-	);
+	const { data: availableExtensions = [], isLoading } = useQuery({
+		queryKey: ['/v1/voip-freeswitch.extension.list', selectedUsername],
+		queryFn: () => getAvailableExtensions({ type: 'available' as const, username: selectedUsername }),
+		select: (data) => data.extensions || [],
+		enabled: !!selectedUsername,
+	});
 
 	const extensionOptions = useMemo<[string, string][]>(
 		() => availableExtensions.map(({ extension }) => [extension, extension]),
@@ -64,9 +76,13 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 		mutationFn: async ({ username, extension }: FormValue) => {
 			await assignUser({ username, extension });
 
-			queryClient.invalidateQueries(['users.list']);
+			queryClient.invalidateQueries({
+				queryKey: ['users.list'],
+			});
 			if (loggedUser?.username === username) {
-				queryClient.invalidateQueries(['voip-client']);
+				queryClient.invalidateQueries({
+					queryKey: ['voip-client'],
+				});
 			}
 
 			onClose();
@@ -82,11 +98,11 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 			aria-labelledby={modalTitleId}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit((data) => handleAssignment.mutateAsync(data))} {...props} />}
 		>
-			<Modal.Header>
-				<Modal.Title id={modalTitleId}>{t('Assign_extension')}</Modal.Title>
-				<Modal.Close aria-label={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle id={modalTitleId}>{t('Assign_extension')}</ModalTitle>
+				<ModalClose aria-label={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={usersWithoutExtensionsId}>{t('User')}</FieldLabel>
@@ -132,15 +148,15 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button primary disabled={!selectedUsername || !selectedExtension} loading={isSubmitting} type='submit'>
 						{t('Associate')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

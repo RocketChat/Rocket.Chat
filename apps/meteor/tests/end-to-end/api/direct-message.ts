@@ -1,5 +1,6 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -343,26 +344,132 @@ describe('[Direct Messages]', () => {
 			.end(done);
 	});
 
-	it('/im.counters', (done) => {
-		void request
-			.get(api('im.counters'))
-			.set(credentials)
-			.query({
-				roomId: directMessage._id,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('joined', true);
-				expect(res.body).to.have.property('members');
-				expect(res.body).to.have.property('unreads');
-				expect(res.body).to.have.property('unreadsFrom');
-				expect(res.body).to.have.property('msgs');
-				expect(res.body).to.have.property('latest');
-				expect(res.body).to.have.property('userMentions');
-			})
-			.end(done);
+	describe('/im.counters', () => {
+		it('should require auth', async () => {
+			await request
+				.get(api('im.counters'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+		it('should require a roomId', async () => {
+			await request
+				.get(api('im.counters'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+		it('should work with all params right', (done) => {
+			void request
+				.get(api('im.counters'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('joined', true);
+					expect(res.body).to.have.property('members');
+					expect(res.body).to.have.property('unreads');
+					expect(res.body).to.have.property('unreadsFrom');
+					expect(res.body).to.have.property('msgs');
+					expect(res.body).to.have.property('latest');
+					expect(res.body).to.have.property('userMentions');
+				})
+				.end(done);
+		});
+
+		describe('with valid room id', () => {
+			let testDM: IRoom & { rid: IRoom['_id'] };
+			let user2: TestUser<IUser>;
+			let userCreds: Credentials;
+
+			before(async () => {
+				user2 = await createUser();
+				userCreds = await login(user2.username, password);
+				await request
+					.post(api('im.create'))
+					.set(credentials)
+					.send({
+						username: user2.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						testDM = res.body.room;
+					});
+
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							text: 'Sample message',
+							rid: testDM._id,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			after(async () => {
+				await request
+					.post(api('im.delete'))
+					.set(credentials)
+					.send({
+						roomId: testDM._id,
+					})
+					.expect(200);
+
+				await deleteUser(user2);
+			});
+
+			it('should properly return counters before opening the dm', async () => {
+				await request
+					.get(api('im.counters'))
+					.set(userCreds)
+					.query({
+						roomId: testDM._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('joined', true);
+						expect(res.body).to.have.property('members').and.to.be.a('number').and.to.be.eq(2);
+						expect(res.body).to.have.property('unreads').and.to.be.a('number').and.to.be.eq(1);
+						expect(res.body).to.have.property('unreadsFrom');
+						expect(res.body).to.have.property('msgs').and.to.be.a('number').and.to.be.eq(1);
+						expect(res.body).to.have.property('latest');
+						expect(res.body).to.have.property('userMentions').and.to.be.a('number').and.to.be.eq(0);
+					});
+			});
+		});
+
+		describe('with deactived users', async () => {
+			before(() => request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user._id, activeStatus: false }));
+			after(() => request.post(api('users.setActiveStatus')).set(credentials).send({ userId: user._id, activeStatus: true }));
+			it('should not include deactivated users in members count', async () => {
+				// Deactivate the second user
+
+				const res = await request.get(api('im.counters')).set(credentials).query({ roomId: directMessage._id });
+
+				expect(res.status).to.equal(200);
+				expect(res.body.success).to.be.true;
+				// Only  admin remain active
+				expect(res.body.members).to.equal(1);
+			});
+		});
 	});
 
 	describe('[/im.files]', async () => {
@@ -371,23 +478,33 @@ describe('[Direct Messages]', () => {
 
 	describe('/im.messages', () => {
 		let testUser: IUser;
+		let testUser2: IUser;
 		let testUserDMRoom: IRoom;
 		let testUserCredentials: Credentials;
+		let testUser2Credentials: Credentials;
+
+		let messages: Pick<IMessage, 'rid' | 'msg' | 'mentions'>[] = [];
 
 		before(async () => {
-			testUser = await createUser({ joinDefaultChannels: false, roles: ['admin'] });
+			[testUser, testUser2] = await Promise.all([
+				createUser({ joinDefaultChannels: false, roles: ['admin'], username: `a_${Random.id()}` }),
+				createUser({ joinDefaultChannels: false, username: `b_${Random.id()}` }),
+			]);
 
-			testUserCredentials = await login(testUser.username, password);
+			[testUserCredentials, testUser2Credentials] = await Promise.all([
+				login(testUser.username, password),
+				login(testUser2.username, password),
+			]);
 			await setUserStatus(testUserCredentials);
 
 			testUserDMRoom = (
 				await request
 					.post(api('im.create'))
 					.set(testUserCredentials)
-					.send({ username: `${testUser.username}` })
+					.send({ username: `${testUser2.username}` })
 			).body.room;
 
-			const messages = [
+			messages = [
 				{
 					rid: testUserDMRoom._id,
 					msg: `@${adminUsername} youre being mentioned`,
@@ -408,15 +525,22 @@ describe('[Direct Messages]', () => {
 				},
 			];
 
-			const [, , starredMessage, pinnedMessage] = await Promise.all(
-				messages.map((message) => sendMessage({ message, requestCredentials: testUserCredentials })),
-			);
+			/**
+			 * We are not using `Promise.all` here because we want to ensure that each message is sent sequentially.
+			 * This approach helps in maintaining the order of messages by ts.
+			 */
+			const starredMessage = await sendMessage({ message: messages[0], requestCredentials: testUserCredentials });
+			const pinnedMessage = await sendMessage({ message: messages[1], requestCredentials: testUser2Credentials });
+			await sendMessage({ message: messages[2], requestCredentials: testUserCredentials });
+			await sendMessage({ message: messages[3], requestCredentials: testUser2Credentials });
 
 			await Promise.all([
 				starMessage({ messageId: starredMessage.body.message._id, requestCredentials: testUserCredentials }),
 				pinMessage({ messageId: pinnedMessage.body.message._id, requestCredentials: testUserCredentials }),
 			]);
 		});
+
+		after(async () => Promise.all([deleteUser(testUser), deleteUser(testUser2)]));
 
 		it('should return all DM messages that were sent to yourself using your username', (done) => {
 			void request
@@ -432,6 +556,57 @@ describe('[Direct Messages]', () => {
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
 				})
 				.end(done);
+		});
+
+		it('should sort by ts by default', async () => {
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages.map((m: IMessage) => m.u.username)).to.deep.equal(
+						res.body.messages
+							.sort((a: IMessage, b: IMessage) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
+							.map((m: IMessage) => m.u.username),
+					);
+				});
+		});
+
+		it('should allow custom sorting', async () => {
+			const { messages } = (
+				await request
+					.get(api('im.messages'))
+					.set(testUserCredentials)
+					.query({
+						roomId: testUserDMRoom._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+			).body;
+
+			await request
+				.get(api('im.messages'))
+				.set(testUserCredentials)
+				.query({
+					roomId: testUserDMRoom._id,
+					sort: '{"u.username":-1}',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.messages.map((m: IMessage) => m.u.username)).to.deep.equal(
+						messages.map((m: IMessage) => m.u.username).sort((a: string, b: string) => b.localeCompare(a)),
+					);
+				});
 		});
 
 		it('should return an error when trying to access a DM that does not belong to the current user', async () => {

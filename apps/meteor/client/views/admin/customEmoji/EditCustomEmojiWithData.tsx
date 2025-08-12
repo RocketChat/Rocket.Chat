@@ -1,7 +1,7 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditCustomEmoji from './EditCustomEmoji';
@@ -19,12 +19,16 @@ const EditCustomEmojiWithData = ({ _id, onChange, close, ...props }: EditCustomE
 
 	const getEmojis = useEndpoint('GET', '/v1/emoji-custom.list');
 
-	const { data, isLoading, error, refetch } = useQuery(['custom-emojis', query], async () => {
-		const emoji = await getEmojis(query);
-		return emoji;
+	const { data, isPending, error, refetch } = useQuery({
+		queryKey: ['custom-emojis', query],
+
+		queryFn: async () => {
+			const emoji = await getEmojis(query);
+			return emoji;
+		},
 	});
 
-	if (isLoading) {
+	if (isPending) {
 		return <FormSkeleton pi={20} />;
 	}
 

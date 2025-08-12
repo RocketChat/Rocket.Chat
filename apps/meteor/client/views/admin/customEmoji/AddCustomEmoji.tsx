@@ -1,10 +1,11 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, IconButton } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
-import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
+import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type AddCustomEmojiProps = {
@@ -21,7 +22,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	const [errors, setErrors] = useState({ name: false, emoji: false, aliases: false });
 
 	const setEmojiPreview = useCallback(
-		async (file) => {
+		async (file: Blob) => {
 			setEmojiFile(file);
 			setNewEmojiPreview(URL.createObjectURL(file));
 			setErrors((prevState) => ({ ...prevState, emoji: false }));
@@ -29,7 +30,15 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		[setEmojiFile],
 	);
 
-	const saveAction = useEndpointUpload('/v1/emoji-custom.create', t('Custom_Emoji_Added_Successfully'));
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/emoji-custom.create', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Added_Successfully') });
+			onChange();
+			close();
+		},
+	});
 
 	const handleSave = useCallback(async () => {
 		if (!name) {
@@ -48,13 +57,8 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		formData.append('emoji', emojiFile);
 		formData.append('name', name);
 		formData.append('aliases', aliases);
-		const result = (await saveAction(formData)) as { success: boolean };
-
-		if (result.success) {
-			onChange();
-			close();
-		}
-	}, [emojiFile, name, aliases, saveAction, onChange, close]);
+		await saveAction(formData);
+	}, [emojiFile, name, aliases, saveAction]);
 
 	const [clickUpload] = useSingleFileInput(setEmojiPreview, 'emoji');
 

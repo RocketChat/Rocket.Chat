@@ -10,9 +10,10 @@ type UseTopFivePopularChannelsOptions = { period: Period['key'] };
 export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsOptions) => {
 	const getTopFivePopularChannels = useEndpoint('GET', '/v1/engagement-dashboard/messages/top-five-popular-channels');
 
-	return useQuery(
-		['admin/engagement-dashboard/messages/top-five-popular-channels', { period }],
-		async () => {
+	return useQuery({
+		queryKey: ['admin/engagement-dashboard/messages/top-five-popular-channels', { period }],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 
 			const response = await getTopFivePopularChannels({
@@ -28,9 +29,8 @@ export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsO
 					}
 				: undefined;
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-			useErrorBoundary: true,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+		throwOnError: true,
+	});
 };

@@ -1,5 +1,4 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 

@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Decorator } from '@storybook/react';
-import React from 'react';
 
 import ModalContextMock from '../client/stories/contexts/ModalContextMock';
 import RouterContextMock from '../client/stories/contexts/RouterContextMock';

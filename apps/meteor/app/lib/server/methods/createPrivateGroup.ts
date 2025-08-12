@@ -25,7 +25,7 @@ export const createPrivateGroupMethod = async (
 	name: string,
 	members: string[],
 	readOnly = false,
-	customFields: Record<string, any> = {},
+	customFields?: Record<string, any>,
 	extraData: Record<string, any> = {},
 	excludeSelf = false,
 ): Promise<
@@ -51,7 +51,7 @@ export const createPrivateGroupMethod = async (
 	}
 
 	return createRoom('p', name, user, members, excludeSelf, readOnly, {
-		customFields,
+		...(customFields && Object.keys(customFields).length && { customFields }),
 		...extraData,
 	});
 };

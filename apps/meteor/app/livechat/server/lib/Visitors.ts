@@ -1,6 +1,7 @@
-import { UserStatus, type ILivechatVisitor } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatContactVisitorAssociation, IOmnichannelSource, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatDepartment, LivechatVisitors } from '@rocket.chat/models';
+import { LivechatContacts, LivechatDepartment, LivechatVisitors, Users } from '@rocket.chat/models';
 
 import { validateEmail } from './Helper';
 import { settings } from '../../../settings/server';
@@ -17,6 +18,16 @@ export type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' 
 export const Visitors = {
 	isValidObject(obj: unknown): obj is Record<string, any> {
 		return typeof obj === 'object' && obj !== null;
+	},
+
+	makeVisitorAssociation(visitorId: string, roomInfo: IOmnichannelSource): ILivechatContactVisitorAssociation {
+		return {
+			visitorId,
+			source: {
+				type: roomInfo.type,
+				id: roomInfo.id,
+			},
+		};
 	},
 
 	async registerGuest({
@@ -46,6 +57,23 @@ export const Visitors = {
 			const visitorEmail = email.trim().toLowerCase();
 			validateEmail(visitorEmail);
 			visitorDataToUpdate.visitorEmails = [{ address: visitorEmail }];
+
+			const contact = await LivechatContacts.findContactByEmailAndContactManager(visitorEmail);
+			if (contact?.contactManager) {
+				const shouldConsiderIdleAgent = settings.get<boolean>('Livechat_enabled_when_agent_idle');
+				const agent = await Users.findOneOnlineAgentById(contact.contactManager, shouldConsiderIdleAgent, {
+					projection: { _id: 1, username: 1, name: 1, emails: 1 },
+				});
+				if (agent?.username && agent.name && agent.emails) {
+					visitorDataToUpdate.contactManager = {
+						_id: agent._id,
+						username: agent.username,
+						name: agent.name,
+						emails: agent.emails,
+					};
+					logger.debug(`Assigning visitor ${token} to agent ${agent.username}`);
+				}
+			}
 		}
 
 		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
@@ -100,11 +128,11 @@ export const Visitors = {
 			returnDocument: 'after',
 		});
 
-		if (!upsertedLivechatVisitor.value) {
+		if (!upsertedLivechatVisitor) {
 			logger.debug(`No visitor found after upsert`);
 			return null;
 		}
 
-		return upsertedLivechatVisitor.value;
+		return upsertedLivechatVisitor;
 	},
 };

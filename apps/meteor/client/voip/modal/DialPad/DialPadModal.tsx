@@ -1,7 +1,16 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Field, FieldError, Modal, IconButton } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldError,
+	Modal,
+	IconButton,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+} from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { DialInput } from './DialInput';
 import Pad from './Pad';
@@ -37,11 +46,11 @@ const DialPadModal = ({ initialValue, errorMessage: initialErrorMessage, handleC
 
 	return (
 		<Modal width='432px'>
-			<Modal.Header>
-				<Modal.Title />
-				<Modal.Close onClick={handleClose} />
-			</Modal.Header>
-			<Modal.Content display='flex' justifyContent='center' flexDirection='column'>
+			<ModalHeader>
+				<ModalTitle />
+				<ModalClose onClick={handleClose} />
+			</ModalHeader>
+			<ModalContent display='flex' justifyContent='center' flexDirection='column'>
 				<Field>
 					<DialInput
 						ref={inputRef}
@@ -56,8 +65,8 @@ const DialPadModal = ({ initialValue, errorMessage: initialErrorMessage, handleC
 					</FieldError>
 				</Field>
 				<Pad onClickPadButton={handlePadButtonClick} onLongPressPadButton={handlePadButtonLongPressed} />
-			</Modal.Content>
-			<Modal.Footer justifyContent='center'>
+			</ModalContent>
+			<ModalFooter justifyContent='center'>
 				<IconButton
 					className={callButtonStyle}
 					icon='phone'
@@ -71,7 +80,7 @@ const DialPadModal = ({ initialValue, errorMessage: initialErrorMessage, handleC
 						handleClose();
 					}}
 				/>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };

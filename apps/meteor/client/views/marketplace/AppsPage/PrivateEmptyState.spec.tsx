@@ -1,6 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import PrivateEmptyState from './PrivateEmptyState';
 import { AppsContext } from '../../../contexts/AppsContext';
@@ -28,7 +27,7 @@ describe('with private apps enabled', () => {
 		));
 
 	it('should offer to upgrade to unlock private apps', () => {
-		render(<PrivateEmptyState />, { wrapper: appRoot.build(), legacyRoot: true });
+		render(<PrivateEmptyState />, { wrapper: appRoot.build() });
 
 		expect(screen.getByRole('heading', { name: 'No private apps installed' })).toBeInTheDocument();
 	});
@@ -56,7 +55,7 @@ describe('without private apps enabled', () => {
 		));
 
 	it('should offer to upgrade to unlock private apps', () => {
-		render(<PrivateEmptyState />, { wrapper: appRoot.build(), legacyRoot: true });
+		render(<PrivateEmptyState />, { wrapper: appRoot.build() });
 
 		expect(screen.getByRole('heading', { name: 'Upgrade to unlock private apps' })).toBeInTheDocument();
 	});

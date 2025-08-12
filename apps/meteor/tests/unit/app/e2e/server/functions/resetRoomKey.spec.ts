@@ -5,6 +5,10 @@ import sinon from 'sinon';
 
 import { generateMultipleSubs } from '../../../../../mocks/data/subscriptions';
 
+function addSecondsToDate(seconds: number, date = new Date()) {
+	return new Date(date.getTime() + seconds * 1000);
+}
+
 const models = {
 	Users: {
 		findOneById: sinon.stub(),
@@ -66,16 +70,16 @@ describe('replicateMongoSlice', () => {
 	it('should unshift a new key, and eliminate the 10th key if array has 10 items', () => {
 		const result = replicateMongoSlice('1', {
 			oldRoomKeys: [
-				{ E2EKey: '1', ts: new Date() },
-				{ E2EKey: '2', ts: new Date() },
-				{ E2EKey: '3', ts: new Date() },
-				{ E2EKey: '4', ts: new Date() },
-				{ E2EKey: '5', ts: new Date() },
-				{ E2EKey: '6', ts: new Date() },
-				{ E2EKey: '7', ts: new Date() },
-				{ E2EKey: '8', ts: new Date() },
-				{ E2EKey: '9', ts: new Date() },
-				{ E2EKey: '10', ts: new Date() },
+				{ E2EKey: '1', ts: addSecondsToDate(0) },
+				{ E2EKey: '2', ts: addSecondsToDate(-10) },
+				{ E2EKey: '3', ts: addSecondsToDate(-20) },
+				{ E2EKey: '4', ts: addSecondsToDate(-30) },
+				{ E2EKey: '5', ts: addSecondsToDate(-40) },
+				{ E2EKey: '6', ts: addSecondsToDate(-50) },
+				{ E2EKey: '7', ts: addSecondsToDate(-60) },
+				{ E2EKey: '8', ts: addSecondsToDate(-70) },
+				{ E2EKey: '9', ts: addSecondsToDate(-80) },
+				{ E2EKey: '10', ts: addSecondsToDate(-90) },
 			],
 			E2EKey: '11',
 		});

@@ -1,11 +1,9 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { SettingsContext } from '@rocket.chat/ui-contexts';
-import React from 'react';
-import type { ContextType } from 'react';
+import type { ContextType, ReactNode } from 'react';
 
 const settingContextValue: ContextType<typeof SettingsContext> = {
 	hasPrivateAccess: true,
-	isLoading: false,
 	querySetting: (_id: string) => [() => () => undefined, () => undefined],
 	querySettings: () => [() => () => undefined, () => []],
 	dispatch: async () => undefined,
@@ -31,12 +29,6 @@ const createSettingContextValue = ({ settings }: { settings?: Record<string, ISe
 	};
 };
 
-export const MockedSettingsContext = ({
-	settings,
-	children,
-}: {
-	children: React.ReactNode;
-	settings?: Record<string, ISetting['value']>;
-}) => {
+export const MockedSettingsContext = ({ settings, children }: { children: ReactNode; settings?: Record<string, ISetting['value']> }) => {
 	return <SettingsContext.Provider value={createSettingContextValue({ settings })}>{children}</SettingsContext.Provider>;
 };

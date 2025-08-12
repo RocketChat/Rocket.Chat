@@ -6,7 +6,7 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 
 import { schedulerLogger } from './logger';
 import { notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
@@ -92,7 +92,7 @@ export class VisitorInactivityMonitor {
 		if (room.departmentId) {
 			comment = (await this._getDepartmentAbandonedCustomMessage(room.departmentId)) || comment;
 		}
-		await Livechat.closeRoom({
+		await closeRoom({
 			comment,
 			room,
 			user: this.user,

@@ -23,7 +23,7 @@ export const useVideoConfList = (options: {
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (_start, _end) => {
+		async (_start: number, _end: number) => {
 			const { data, total } = await getVideoConfs({
 				roomId: options.roomId,
 			});

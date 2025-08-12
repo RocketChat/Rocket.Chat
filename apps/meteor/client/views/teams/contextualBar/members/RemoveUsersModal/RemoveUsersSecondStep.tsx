@@ -1,9 +1,7 @@
 import type { Serialized, IRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
-import React from 'react';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../../../../components/GenericModal';
 
 type RemoveUsersSecondStepProps = {
 	onClose: () => void;

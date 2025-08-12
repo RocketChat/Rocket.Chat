@@ -251,7 +251,7 @@ export class CsvImporter extends Importer {
 		}
 
 		if (usersCount) {
-			const { value } = await Settings.incrementValueById('CSV_Importer_Count', usersCount, { returnDocument: 'after' });
+			const value = await Settings.incrementValueById('CSV_Importer_Count', usersCount, { returnDocument: 'after' });
 			if (value) {
 				void notifyOnSettingChanged(value);
 			}

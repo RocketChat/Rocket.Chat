@@ -6,6 +6,8 @@ describe('LocalBroker', () => {
 		it('should call all the expected lifecycle hooks when creating a service', () => {
 			const createdStub = jest.fn();
 			const instance = new (class extends ServiceClass {
+				name = 'test';
+
 				async created() {
 					createdStub();
 				}
@@ -14,7 +16,7 @@ describe('LocalBroker', () => {
 			const broker = new LocalBroker();
 			broker.createService(instance);
 
-			expect(createdStub).toBeCalled();
+			expect(createdStub).toHaveBeenCalled();
 		});
 	});
 
@@ -23,6 +25,8 @@ describe('LocalBroker', () => {
 			const removeAllListenersStub = jest.fn();
 			const stoppedStub = jest.fn();
 			const instance = new (class extends ServiceClass {
+				name = 'test';
+
 				removeAllListeners() {
 					removeAllListenersStub();
 				}
@@ -36,14 +40,16 @@ describe('LocalBroker', () => {
 			broker.createService(instance);
 			broker.destroyService(instance);
 
-			expect(removeAllListenersStub).toBeCalled();
-			expect(stoppedStub).toBeCalled();
+			expect(removeAllListenersStub).toHaveBeenCalled();
+			expect(stoppedStub).toHaveBeenCalled();
 		});
 	});
 
 	describe('#broadcast()', () => {
 		it('should call all the ServiceClass instance registered events', () => {
-			const instance = new (class extends ServiceClass {})();
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+			})();
 			const testListener = jest.fn();
 			const testListener2 = jest.fn();
 			const test2Listener = jest.fn();
@@ -56,13 +62,15 @@ describe('LocalBroker', () => {
 			broker.broadcast('test' as any, 'test');
 			broker.broadcast('test2' as any, 'test2');
 
-			expect(testListener).toBeCalledWith('test');
-			expect(testListener2).toBeCalledWith('test');
-			expect(test2Listener).toBeCalledWith('test2');
+			expect(testListener).toHaveBeenCalledWith('test');
+			expect(testListener2).toHaveBeenCalledWith('test');
+			expect(test2Listener).toHaveBeenCalledWith('test2');
 		});
 
 		it('should NOT call any instance event anymore after the service being destroyed', () => {
-			const instance = new (class extends ServiceClass {})();
+			const instance = new (class extends ServiceClass {
+				name = 'test';
+			})();
 			const testListener = jest.fn();
 			const test2Listener = jest.fn();
 			instance.onEvent('test' as any, testListener);
@@ -75,8 +83,8 @@ describe('LocalBroker', () => {
 			broker.broadcast('test' as any, 'test');
 			broker.broadcast('test2' as any, 'test2');
 
-			expect(testListener).not.toBeCalled();
-			expect(test2Listener).not.toBeCalled();
+			expect(testListener).not.toHaveBeenCalled();
+			expect(test2Listener).not.toHaveBeenCalled();
 		});
 	});
 });

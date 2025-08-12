@@ -1,8 +1,21 @@
-import { Button, Modal, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import {
+	Button,
+	Modal,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	TextInput,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type RemoveExtensionModalProps = {
@@ -21,18 +34,22 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 
 	const removeExtension = useEndpoint('POST', '/v1/voip-freeswitch.extension.assign');
 
-	const modalTitleId = useUniqueId();
-	const userFieldId = useUniqueId();
-	const freeExtensionNumberId = useUniqueId();
+	const modalTitleId = useId();
+	const userFieldId = useId();
+	const freeExtensionNumberId = useId();
 
 	const handleRemoveExtension = useMutation({
 		mutationFn: (username: string) => removeExtension({ username }),
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Extension_removed') });
 
-			queryClient.invalidateQueries(['users.list']);
+			queryClient.invalidateQueries({
+				queryKey: ['users.list'],
+			});
 			if (loggedUser?.username === username) {
-				queryClient.invalidateQueries(['voip-client']);
+				queryClient.invalidateQueries({
+					queryKey: ['voip-client'],
+				});
 			}
 
 			onClose();
@@ -45,11 +62,11 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 
 	return (
 		<Modal aria-labelledby={modalTitleId}>
-			<Modal.Header>
-				<Modal.Title id={modalTitleId}>{t('Remove_extension')}</Modal.Title>
-				<Modal.Close aria-label={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle id={modalTitleId}>{t('Remove_extension')}</ModalTitle>
+				<ModalClose aria-label={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={userFieldId}>{t('User')}</FieldLabel>
@@ -65,15 +82,15 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button danger onClick={() => handleRemoveExtension.mutate(username)} loading={handleRemoveExtension.isLoading}>
+					<Button danger onClick={() => handleRemoveExtension.mutate(username)} loading={handleRemoveExtension.isPending}>
 						{t('Remove')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

@@ -31,7 +31,7 @@ export class ChatMessages implements ChatAPI {
 
 	public composer: ComposerAPI | undefined;
 
-	public setComposerAPI = (composer: ComposerAPI): void => {
+	public setComposerAPI = (composer?: ComposerAPI): void => {
 		this.composer?.release();
 		this.composer = composer;
 	};
@@ -64,7 +64,7 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			if (!this.currentEditing) {
-				let lastMessage = await this.data.findLastOwnMessage();
+				let lastMessage = await this.data.findPreviousOwnMessage();
 
 				// Videoconf messages should not be edited
 				if (lastMessage && isVideoConfMessage(lastMessage)) {

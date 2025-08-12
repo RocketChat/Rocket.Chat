@@ -19,12 +19,12 @@ beforeAll(() => {
 });
 
 test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const tree = render(<Story />, { wrapper: mockAppRoot().build(), legacyRoot: true });
+	const tree = render(<Story />, { wrapper: mockAppRoot().build() });
 	expect(tree.baseElement).toMatchSnapshot();
 });
 
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-	const { container } = render(<Story />, { wrapper: mockAppRoot().build(), legacyRoot: true });
+	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 
 	const results = await axe(container);
 	expect(results).toHaveNoViolations();
@@ -33,17 +33,15 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 it('should display avatar and name when username is available', () => {
 	render(<VoipContactId name='John Doe' username='john.doe' />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
-	expect(screen.getByRole('img', { hidden: true })).toHaveAttribute('title', 'john.doe');
+	expect(screen.getByRole('presentation', { hidden: true })).toHaveAttribute('title', 'john.doe');
 	expect(screen.getByText('John Doe')).toBeInTheDocument();
 });
 
 it('should display transferedBy information when available', () => {
 	render(<VoipContactId name='John Doe' username='john.doe' transferedBy='Jane Doe' />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	expect(screen.getByText('From: Jane Doe')).toBeInTheDocument();
@@ -53,7 +51,6 @@ it('should display copy button when username isnt available', async () => {
 	const phone = faker.phone.number();
 	render(<VoipContactId name={phone} />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	const copyButton = screen.getByRole('button', { name: 'Copy_phone_number' });

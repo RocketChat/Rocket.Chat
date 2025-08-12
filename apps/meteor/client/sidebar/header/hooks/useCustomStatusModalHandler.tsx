@@ -1,5 +1,4 @@
 import { useSetModal, useUser } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import EditStatusModal from '../EditStatusModal';
 

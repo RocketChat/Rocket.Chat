@@ -1,7 +1,6 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useEndpoint, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import PreferencesConversationTranscript from './PreferencesConversationTranscript';

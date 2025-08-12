@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
@@ -9,7 +9,7 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
-import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -48,23 +48,25 @@ const RoomList = () => {
 	useShortcutOpenMenu(ref);
 
 	return (
-		<Box position='relative' display='flex' overflow='hidden' height='full' flexGrow={1} flexShrink={1} flexBasis='auto' ref={ref}>
-			<GroupedVirtuoso
-				groupCounts={groupsCount}
-				groupContent={(index) => (
-					<RoomListCollapser
-						collapsedGroups={collapsedGroups}
-						onClick={() => handleClick(groupsList[index])}
-						onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
-						groupTitle={groupsList[index]}
-						unreadCount={groupedUnreadInfo[index]}
-					/>
-				)}
-				{...(roomList.length > 0 && {
-					itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
-				})}
-				components={{ Item: RoomListRowWrapper, List: RoomListWrapper, Scroller: VirtuosoScrollbars }}
-			/>
+		<Box position='relative' overflow='hidden' height='full' ref={ref}>
+			<VirtualizedScrollbars>
+				<GroupedVirtuoso
+					groupCounts={groupsCount}
+					groupContent={(index) => (
+						<RoomListCollapser
+							collapsedGroups={collapsedGroups}
+							onClick={() => handleClick(groupsList[index])}
+							onKeyDown={(e) => handleKeyDown(e, groupsList[index])}
+							groupTitle={groupsList[index]}
+							unreadCount={groupedUnreadInfo[index]}
+						/>
+					)}
+					{...(roomList.length > 0 && {
+						itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
+					})}
+					components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
+				/>
+			</VirtualizedScrollbars>
 		</Box>
 	);
 };

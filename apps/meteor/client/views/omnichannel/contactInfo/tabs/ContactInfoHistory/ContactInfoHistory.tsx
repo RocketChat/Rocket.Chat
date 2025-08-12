@@ -5,13 +5,13 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { Key } from 'react';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
@@ -34,9 +34,10 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 	const { getSourceName } = useOmnichannelSource();
 
 	const getContactHistory = useEndpoint('GET', '/v1/omnichannel/contacts.history');
-	const { data, isLoading, isError } = useQuery(['getContactHistory', contact._id, type], () =>
-		getContactHistory({ contactId: contact._id, source: type === 'all' ? undefined : type }),
-	);
+	const { data, isLoading, isError } = useQuery({
+		queryKey: ['getContactHistory', contact._id, type],
+		queryFn: () => getContactHistory({ contactId: contact._id, source: type === 'all' ? undefined : type }),
+	});
 
 	const handleChangeFilter = (value: Key) => {
 		if (isFilterBlocked(hasLicense, value)) {
@@ -111,14 +112,15 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
 						</Box>
 					</Box>
-					<Box role='list' flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-						<Virtuoso
-							totalCount={data.history.length}
-							overscan={25}
-							data={data?.history}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(index, data) => <ContactInfoHistoryItem key={index} onClick={() => setChatId(data._id)} {...data} />}
-						/>
+					<Box role='list' height='100%' overflow='hidden' flexShrink={1}>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								totalCount={data.history.length}
+								overscan={25}
+								data={data?.history}
+								itemContent={(index, data) => <ContactInfoHistoryItem key={index} onClick={() => setChatId(data._id)} {...data} />}
+							/>
+						</VirtualizedScrollbars>
 					</Box>
 				</>
 			)}

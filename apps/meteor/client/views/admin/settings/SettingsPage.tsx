@@ -1,9 +1,8 @@
-import { Icon, SearchInput, Skeleton, CardGrid } from '@rocket.chat/fuselage';
+import { Icon, SearchInput, CardGrid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useIsSettingsContextLoading } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useCallback, useState } from 'react';
+import type { ChangeEvent, ReactElement } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SettingsGroupCard from './SettingsGroupCard';
@@ -15,10 +14,9 @@ import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 const SettingsPage = (): ReactElement => {
 	const { t } = useTranslation();
 	const [filter, setFilter] = useState('');
-	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
+	const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => setFilter(e.currentTarget.value), []);
 
 	const groups = useSettingsGroups(useDebouncedValue(filter, 400));
-	const isLoadingGroups = useIsSettingsContextLoading();
 
 	return (
 		<Page background='tint'>
@@ -28,7 +26,6 @@ const SettingsPage = (): ReactElement => {
 			</PageBlockWithBorder>
 
 			<PageScrollableContentWithShadow p={0} mi={24} mbe={16}>
-				{isLoadingGroups && <Skeleton />}
 				<CardGrid
 					breakpoints={{
 						xs: 4,
@@ -39,8 +36,7 @@ const SettingsPage = (): ReactElement => {
 						p: 8,
 					}}
 				>
-					{!isLoadingGroups &&
-						!!groups.length &&
+					{!!groups.length &&
 						groups.map((group) => (
 							<SettingsGroupCard
 								key={group._id}
@@ -51,7 +47,7 @@ const SettingsPage = (): ReactElement => {
 						))}
 				</CardGrid>
 
-				{!isLoadingGroups && !groups.length && <GenericNoResults />}
+				{!groups.length && <GenericNoResults />}
 			</PageScrollableContentWithShadow>
 		</Page>
 	);

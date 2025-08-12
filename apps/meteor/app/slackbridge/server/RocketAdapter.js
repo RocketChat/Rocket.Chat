@@ -62,8 +62,9 @@ export default class RocketAdapter {
 			try {
 				if (!slack.getSlackChannel(rocketMessageDeleted.rid)) {
 					// This is on a channel that the rocket bot is not subscribed on this slack server
-					return;
+					continue;
 				}
+
 				rocketLogger.debug('onRocketMessageDelete', rocketMessageDeleted);
 				await slack.postDeleteMessage(rocketMessageDeleted);
 			} catch (err) {
@@ -134,22 +135,23 @@ export default class RocketAdapter {
 			try {
 				if (!slack.getSlackChannel(rocketMessage.rid)) {
 					// This is on a channel that the rocket bot is not subscribed
-					return;
+					continue;
 				}
 				rocketLogger.debug('onRocketMessage', rocketMessage);
 
 				if (rocketMessage.editedAt) {
 					// This is an Edit Event
 					await this.processMessageChanged(rocketMessage, slack);
-					return rocketMessage;
+					continue;
 				}
 				// Ignore messages originating from Slack
 				if (rocketMessage._id.indexOf('slack-') === 0) {
-					return rocketMessage;
+					continue;
 				}
 
 				if (rocketMessage.file) {
-					return this.processFileShare(rocketMessage, slack);
+					await this.processFileShare(rocketMessage, slack);
+					continue;
 				}
 
 				// A new message from Rocket.Chat
@@ -206,10 +208,7 @@ export default class RocketAdapter {
 				}
 			}
 
-			const message = `${text} ${fileName}`;
-
-			rocketMessage.msg = message;
-			await slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
+			await slack.postMessage(slack.getSlackChannel(rocketMessage.rid), { ...rocketMessage, msg: `${text} ${fileName}` });
 		}
 	}
 
@@ -266,7 +265,7 @@ export default class RocketAdapter {
 
 		for await (const slack of this.slackAdapters) {
 			if (addedRoom) {
-				return;
+				continue;
 			}
 
 			const slackChannel = await slack.slackAPI.getRoomInfo(slackChannelID);
@@ -274,7 +273,7 @@ export default class RocketAdapter {
 				const members = await slack.slackAPI.getMembers(slackChannelID);
 				if (!members) {
 					rocketLogger.error('Could not fetch room members');
-					return;
+					continue;
 				}
 
 				const rocketRoom = await Rooms.findOneByName(slackChannel.name);
@@ -288,7 +287,7 @@ export default class RocketAdapter {
 
 					if (!rocketUserCreator) {
 						rocketLogger.error({ msg: 'Could not fetch room creator information', creator: slackChannel.creator });
-						return;
+						continue;
 					}
 
 					try {

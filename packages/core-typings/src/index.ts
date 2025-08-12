@@ -1,5 +1,7 @@
 import './ServerAudit/IAuditServerSettingEvent';
+import './ServerAudit/IAuditUserChangedEvent';
 
+export * from './ServerAudit/IAuditUserChangedEvent';
 export * from './Apps';
 export * from './AppOverview';
 export * from './FeaturedApps';
@@ -9,6 +11,7 @@ export * from './IRoom';
 export * from './IMessage';
 export * from './federation';
 export * from './Serialized';
+export * from './Subscribable';
 export * from './ISetting';
 export * from './ISubscription';
 export * from './ITeam';
@@ -72,7 +75,7 @@ export * from './IOembed';
 export * from './IEmailInbox';
 export * from './ILoginServiceConfiguration';
 export * from './ISocketConnection';
-export * from './IMethodThisType';
+export * from './IMethodConnection';
 export * from './IPassword';
 export * from './IBaseData';
 export * from './IOAuthApps';
@@ -81,8 +84,6 @@ export * from './IOAuthAccessToken';
 export * from './IOAuthRefreshToken';
 export * from './ISmarshHistory';
 export * from './IReport';
-
-// export * from './IMethodConnection';
 
 export * from './ldap';
 // TODO: move to separated package
@@ -145,3 +146,5 @@ export * from './RoomRouteData';
 
 export * as Cloud from './cloud';
 export * from './themes';
+
+export { schemas } from './Ajv';

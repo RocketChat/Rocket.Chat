@@ -12,7 +12,6 @@ import {
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const DOCS_URL = 'https://go.rocket.chat/i/e2ee-guide';

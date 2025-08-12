@@ -1,45 +1,35 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Mongo } from 'meteor/mongo';
 import { useCallback } from 'react';
+import { useShallow } from 'zustand/shallow';
 
+import { useFilteredPermissions } from './useFilteredPermissions';
 import { CONSTANTS } from '../../../../../app/authorization/lib';
-import { Permissions, Roles } from '../../../../../app/models/client';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { pipe } from '../../../../lib/cachedStores';
+import { Permissions, Roles } from '../../../../stores';
 
 export const usePermissionsAndRoles = (
 	type = 'permissions',
 	filter = '',
 	limit = 25,
 	skip = 0,
-): { permissions: IPermission[]; total: number; roleList: IRole[]; reload: () => void } => {
-	const getFilter = useCallback((): Mongo.Selector<IPermission> => {
-		const filterRegExp = new RegExp(escapeRegExp(filter), 'i');
+): { permissions: IPermission[]; total: number; roleList: IRole[] } => {
+	const filteredIds = useFilteredPermissions({ filter });
 
-		return {
-			level: type === 'permissions' ? { $ne: CONSTANTS.SETTINGS_LEVEL } : CONSTANTS.SETTINGS_LEVEL,
-			_id: filterRegExp,
-		};
-	}, [type, filter]);
-
-	const getPermissions = useCallback(
-		() =>
-			Permissions.find(getFilter(), {
-				sort: {
-					_id: 1,
-				},
-				skip,
-				limit,
-			}),
-		[limit, skip, getFilter],
+	const predicate = useCallback(
+		(record: IPermission): boolean => {
+			if (type === 'permissions') {
+				return record.level !== CONSTANTS.SETTINGS_LEVEL && filteredIds.includes(record._id);
+			}
+			return record.level === CONSTANTS.SETTINGS_LEVEL && filteredIds.includes(record._id);
+		},
+		[filteredIds, type],
 	);
-	const getTotalPermissions = useCallback(() => Permissions.find(getFilter()).count(), [getFilter]);
 
-	const permissions = useReactiveValue(getPermissions);
-	const permissionsTotal = useReactiveValue(getTotalPermissions);
-	const getRoles = useMutableCallback(() => Roles.find().fetch());
-	const roles = useReactiveValue(getRoles);
+	const { apply: transform } = pipe<IPermission>().sortByField('_id', 1).slice(skip, limit);
+	const permissions = Permissions.use(useShallow((state) => transform(state.filter(predicate))));
+	const permissionsTotal = Permissions.use(useShallow((state) => state.count(predicate)));
 
-	return { permissions: permissions.fetch(), total: permissionsTotal, roleList: roles, reload: getRoles };
+	const roleList = Roles.use(useShallow((state) => Array.from(state.records.values())));
+
+	return { permissions, total: permissionsTotal, roleList };
 };

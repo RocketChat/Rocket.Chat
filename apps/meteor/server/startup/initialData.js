@@ -217,7 +217,7 @@ Meteor.startup(async () => {
 			emails: [
 				{
 					address: 'rocketchat.internal.admin.test@rocket.chat',
-					verified: false,
+					verified: true,
 				},
 			],
 			status: 'offline',

@@ -1,6 +1,6 @@
 import { Box, Card, CardTitle, CardBody, CardCol, CardRow } from '@rocket.chat/fuselage';
 import type { ReactElement, ComponentProps } from 'react';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 import { ReportCardContent } from './ReportCardContent';
 import DownloadDataButton from '../../../components/dashboards/DownloadDataButton';
@@ -12,7 +12,7 @@ type ReportCardProps = {
 	children: ReactElement;
 	periodSelectorProps: ComponentProps<typeof PeriodSelector>;
 	downloadProps: ComponentProps<typeof DownloadDataButton>;
-	isLoading?: boolean;
+	isPending?: boolean;
 	isDataFound?: boolean;
 	minHeight?: number;
 	subtitle?: string;
@@ -23,12 +23,12 @@ type ReportCardProps = {
 };
 
 export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function ReportCard(
-	{ id, title, children, periodSelectorProps, downloadProps, isLoading, isDataFound, subtitle, emptyStateSubtitle, isError, onRetry },
+	{ id, title, children, periodSelectorProps, downloadProps, isPending, isDataFound, subtitle, emptyStateSubtitle, isError, onRetry },
 	ref,
 ) {
 	return (
 		<Box h='full' ref={ref}>
-			<Card height='full' aria-busy={isLoading} data-qa={id}>
+			<Card height='full' aria-busy={isPending} data-qa={id}>
 				<Box rcx-card__header justifyContent='space-between'>
 					<CardCol>
 						<CardTitle>{title}</CardTitle>
@@ -46,7 +46,7 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 				<CardBody flexDirection='column' height='full'>
 					<Box h='full' display='flex' flexDirection='column' justifyContent='center'>
 						<ReportCardContent
-							isLoading={isLoading}
+							isPending={isPending}
 							isDataFound={isDataFound}
 							isError={isError}
 							onRetry={onRetry}

@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	useTranslation,
 	useUserSubscription,
@@ -30,7 +30,7 @@ export const useIgnoreUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: 
 
 	const { roomCanIgnore } = getRoomDirectives({ room, showingUserId: uid, userSubscription: currentSubscription });
 
-	const ignoreUserAction = useMutableCallback(async () => {
+	const ignoreUserAction = useEffectEvent(async () => {
 		try {
 			await ignoreUser({ rid, userId: uid, ignore: String(!isIgnored) });
 			if (isIgnored) {

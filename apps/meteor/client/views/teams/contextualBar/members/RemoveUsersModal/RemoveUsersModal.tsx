@@ -1,10 +1,10 @@
 import type { Serialized, IRoom } from '@rocket.chat/core-typings';
-import React, { useMemo } from 'react';
+import { GenericModalSkeleton } from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
 import BaseRemoveUsersModal from './BaseRemoveUsersModal';
-import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../lib/asyncState';
+import { teamsQueryKeys, usersQueryKeys } from '../../../../../lib/queryKeys';
 
 type RemoveUsersModalProps = {
 	onClose: () => void;
@@ -15,10 +15,19 @@ type RemoveUsersModalProps = {
 };
 
 const RemoveUsersModal = ({ teamId, userId, onClose, onCancel, onConfirm }: RemoveUsersModalProps) => {
-	const { value, phase } = useEndpointData('/v1/teams.listRoomsOfUser', { params: useMemo(() => ({ teamId, userId }), [teamId, userId]) });
-	const { value: userData } = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId }), [userId]) });
+	const listRoomsOfUser = useEndpoint('GET', '/v1/teams.listRoomsOfUser');
+	const { isPending, data } = useQuery({
+		queryKey: teamsQueryKeys.roomsOfUser(teamId, userId),
+		queryFn: () => listRoomsOfUser({ teamId, userId, canUserDelete: 'true' }),
+	});
 
-	if (phase === AsyncStatePhase.LOADING) {
+	const getUserInfo = useEndpoint('GET', '/v1/users.info');
+	const { data: userData } = useQuery({
+		queryKey: usersQueryKeys.userInfo({ uid: userId }),
+		queryFn: () => getUserInfo({ userId }),
+	});
+
+	if (isPending) {
 		return <GenericModalSkeleton />;
 	}
 
@@ -28,7 +37,7 @@ const RemoveUsersModal = ({ teamId, userId, onClose, onCancel, onConfirm }: Remo
 			username={userData?.user.username ?? ''}
 			onCancel={onCancel}
 			onConfirm={onConfirm}
-			rooms={value?.rooms ?? []}
+			rooms={data?.rooms ?? []}
 		/>
 	);
 };

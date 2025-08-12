@@ -1,16 +1,15 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { Rooms } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getRoomAvatarURL } from '../../../../app/utils/client/getRoomAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
+import { Rooms } from '../../../stores';
 import * as Federation from '../../federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
@@ -109,16 +108,15 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			const query: Mongo.Selector<IRoom> = {
-				t: 'c',
-				name: identifier,
+			const predicate = (record: IRoom): boolean => {
+				return record.t === 'c' && record.name === identifier;
 			};
-
-			return Rooms.findOne(query);
+			return Rooms.state.find(predicate);
 		},
 
 		showJoinLink(roomId) {
-			return !!Rooms.findOne({ _id: roomId, t: 'c' });
+			const predicate = (record: IRoom): boolean => record.t === 'c' && record._id === roomId;
+			return !!Rooms.state.find(predicate);
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,
 );

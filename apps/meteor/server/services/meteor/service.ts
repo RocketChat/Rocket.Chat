@@ -3,11 +3,13 @@ import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
+import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
+import { isOutgoingIntegration } from '../../../app/integrations/server/lib/definition';
 import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { Livechat } from '../../../app/livechat/server/lib/LivechatTyped';
+import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
 import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
 import { metrics } from '../../../app/metrics/server';
 import notifications from '../../../app/notifications/server/lib/Notifications';
@@ -146,14 +148,14 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 			this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
 				if (clientAction === 'removed') {
 					serviceConfigCallbacks.forEach((callbacks) => {
-						callbacks.removed?.(id);
+						wrapExceptions(() => callbacks.removed?.(id)).suppress();
 					});
 					return;
 				}
 
 				if (data) {
 					serviceConfigCallbacks.forEach((callbacks) => {
-						callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data);
+						wrapExceptions(() => callbacks[clientAction === 'inserted' ? 'added' : 'changed']?.(id, data)).suppress();
 					});
 				}
 			});
@@ -201,12 +203,12 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		this.onEvent('watch.integrations', async ({ clientAction, id, data }) => {
 			switch (clientAction) {
 				case 'inserted':
-					if (data.type === 'webhook-outgoing') {
+					if (isOutgoingIntegration(data)) {
 						triggerHandler.addIntegration(data);
 					}
 					break;
 				case 'updated':
-					if (data.type === 'webhook-outgoing') {
+					if (isOutgoingIntegration(data)) {
 						triggerHandler.removeIntegration(data);
 						triggerHandler.addIntegration(data);
 					}
@@ -261,23 +263,30 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		return LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
 	}
 
-	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {
+	async callMethodWithToken(
+		userId: string,
+		token: string,
+		method: string,
+		args: any[],
+	): Promise<{
+		result: unknown;
+	}> {
 		const user = await Users.findOneByIdAndLoginHashedToken(userId, token, {
 			projection: { _id: 1 },
 		});
 		if (!user) {
 			return {
-				result: Meteor.callAsync(method, ...args),
+				result: await Meteor.callAsync(method, ...args),
 			};
 		}
 
 		return {
-			result: Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
+			result: await Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
 		};
 	}
 
 	async notifyGuestStatusChanged(token: string, status: UserStatus): Promise<void> {
-		return Livechat.notifyGuestStatusChanged(token, status);
+		return notifyGuestStatusChanged(token, status);
 	}
 
 	async getURL(path: string, params: Record<string, any> = {}, cloudDeepLinkUrl?: string): Promise<string> {

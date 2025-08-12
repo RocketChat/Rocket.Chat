@@ -9,6 +9,14 @@
 			}
 		]
 	],
+	"plugins": [
+    [
+      "@babel/plugin-transform-react-jsx",
+      {
+        "runtime": "automatic"
+      }
+    ]
+  ],
 	"env": {
 		"coverage": {
 			"plugins": [

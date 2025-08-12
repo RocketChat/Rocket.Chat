@@ -1,11 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserRoom } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useState } from 'react';
-
-import IncomingPopup from './IncomingPopup';
-import OutgoingPopup from './OutgoingPopup';
-import StartCallPopup from './StartCallPopup';
 import {
 	useVideoConfAcceptCall,
 	useVideoConfAbortCall,
@@ -13,7 +7,13 @@ import {
 	useVideoConfDismissCall,
 	useVideoConfStartCall,
 	useVideoConfDismissOutgoing,
-} from '../../../../../../contexts/VideoConfContext';
+} from '@rocket.chat/ui-video-conf';
+import type { ReactElement } from 'react';
+import { useState } from 'react';
+
+import IncomingPopup from './IncomingPopup';
+import OutgoingPopup from './OutgoingPopup';
+import StartCallPopup from './StartCallPopup';
 
 type TimedVideoConfPopupProps = {
 	id: string;

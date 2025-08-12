@@ -1,33 +1,30 @@
 import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEndpointAction } from '../../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
-type AddAgentProps = {
-	reload: () => void;
-};
-
-const AddAgent = ({ reload }: AddAgentProps): ReactElement => {
+const AddAgent = () => {
 	const { t } = useTranslation();
 	const [username, setUsername] = useState('');
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
-	const saveAction = useEndpointAction('POST', '/v1/livechat/users/agent');
-
-	const handleSave = useMutableCallback(async () => {
-		try {
-			await saveAction({ username });
-			reload();
+	const { mutateAsync: saveAction } = useEndpointMutation('POST', '/v1/livechat/users/agent', {
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agents() });
 			setUsername('');
 			dispatchToastMessage({ type: 'success', message: t('Agent_added') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
+		},
+	});
+
+	const handleSave = useEffectEvent(async () => {
+		await saveAction({ username });
 	});
 
 	const handleChange = (value: unknown): void => {

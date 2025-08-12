@@ -2,9 +2,10 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { Badge, Sidebar, SidebarItemAction, SidebarItemActions, Margins } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 import { RoomIcon } from '../../components/RoomIcon';
@@ -63,7 +64,7 @@ type RoomListRowProps = {
 			actions: unknown;
 			href: string;
 			time?: Date;
-			menu?: ReactNode;
+			menu?: () => ReactNode;
 			menuOptions?: unknown;
 			subtitle?: ReactNode;
 			titleIcon?: string;
@@ -147,7 +148,9 @@ function SideBarItemTemplateWithData({
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const message = extended && getMessage(room, lastMessage, t);
-	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
+	const subtitle = message ? (
+		<span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message) }} />
+	) : null;
 
 	const threadUnread = tunread.length > 0;
 	const variant =
@@ -161,8 +164,14 @@ function SideBarItemTemplateWithData({
 	const badges = (
 		<Margins inlineStart={8}>
 			{showBadge && isUnread && (
-				<Badge role='status' {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
-					{unread + tunread?.length}
+				<Badge
+					role='status'
+					{...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)}
+					variant={variant}
+					title={badgeTitle}
+					aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle: badgeTitle, roomTitle: title })}
+				>
+					<span aria-hidden>{unread + tunread?.length}</span>
 				</Badge>
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
@@ -181,7 +190,7 @@ function SideBarItemTemplateWithData({
 			onClick={(): void => {
 				!selected && sidebar.toggle();
 			}}
-			aria-label={title}
+			aria-label={showBadge && isUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle: badgeTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}
 			subtitle={subtitle}
@@ -191,22 +200,21 @@ function SideBarItemTemplateWithData({
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
-				!isIOsDevice &&
-				!isAnonymous &&
-				(!isQueued || (isQueued && isPriorityEnabled)) &&
-				((): ReactElement => (
-					<RoomMenu
-						alert={alert}
-						threadUnread={threadUnread}
-						rid={rid}
-						unread={!!unread}
-						roomOpen={selected}
-						type={type}
-						cl={cl}
-						name={title}
-						hideDefaultOptions={isQueued}
-					/>
-				))
+				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
+					? (): ReactElement => (
+							<RoomMenu
+								alert={alert}
+								threadUnread={threadUnread}
+								rid={rid}
+								unread={!!unread}
+								roomOpen={selected}
+								type={type}
+								cl={cl}
+								name={title}
+								hideDefaultOptions={isQueued}
+							/>
+						)
+					: undefined
 			}
 		/>
 	);

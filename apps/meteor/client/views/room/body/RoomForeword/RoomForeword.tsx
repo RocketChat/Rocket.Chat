@@ -3,7 +3,6 @@ import { isVoipRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Flex, Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomForewordUsernameList from './RoomForewordUsernameList';

@@ -237,6 +237,7 @@ export const createAccountSettings = () =>
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
 			public: true,
+			i18nDescription: 'Accounts_CustomFieldsToShowInUserInfo_Description',
 		});
 		await this.add('Accounts_LoginExpiration', 90, {
 			type: 'int',

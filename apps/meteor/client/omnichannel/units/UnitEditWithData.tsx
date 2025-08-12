@@ -2,13 +2,12 @@ import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UnitEdit from './UnitEdit';
-import { ContextualbarSkeleton } from '../../components/Contextualbar';
+import { ContextualbarSkeletonBody } from '../../components/Contextualbar';
 
-const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] }) => {
+const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUnit['_id']; onClose: () => void }) => {
 	const { t } = useTranslation();
 
 	const getUnitById = useEndpoint('GET', '/v1/livechat/units/:id', { id: unitId });
@@ -19,22 +18,32 @@ const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] 
 		data: unitData,
 		isError,
 		isLoading,
-	} = useQuery(['livechat-getUnitById', unitId], async () => getUnitById(), { refetchOnWindowFocus: false });
+	} = useQuery({
+		queryKey: ['livechat-getUnitById', unitId],
+		queryFn: async () => getUnitById(),
+		refetchOnWindowFocus: false,
+	});
 	const {
 		data: unitMonitors,
 		isError: unitMonitorsError,
 		isLoading: unitMonitorsLoading,
-	} = useQuery(['livechat-getMonitorsByUnitId', unitId], async () => getMonitorsByUnitId({ unitId }), { refetchOnWindowFocus: false });
+	} = useQuery({
+		queryKey: ['livechat-getMonitorsByUnitId', unitId],
+		queryFn: async () => getMonitorsByUnitId({ unitId }),
+		refetchOnWindowFocus: false,
+	});
 	const {
 		data: unitDepartments,
 		isError: unitDepartmentsError,
 		isLoading: unitDepartmentsLoading,
-	} = useQuery(['livechat-getDepartmentsByUnitId', unitId], async () => getDepartmentsByUnitId({ unitId }), {
+	} = useQuery({
+		queryKey: ['livechat-getDepartmentsByUnitId', unitId],
+		queryFn: async () => getDepartmentsByUnitId({ unitId }),
 		refetchOnWindowFocus: false,
 	});
 
 	if (isLoading || unitMonitorsLoading || unitDepartmentsLoading) {
-		return <ContextualbarSkeleton />;
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError || unitMonitorsError || unitDepartmentsError) {
@@ -45,7 +54,9 @@ const UnitEditWithData = ({ unitId }: { unitId: IOmnichannelBusinessUnit['_id'] 
 		);
 	}
 
-	return <UnitEdit unitData={unitData} unitMonitors={unitMonitors.monitors} unitDepartments={unitDepartments.departments} />;
+	return (
+		<UnitEdit unitData={unitData} unitMonitors={unitMonitors?.monitors} unitDepartments={unitDepartments?.departments} onClose={onClose} />
+	);
 };
 
 export default UnitEditWithData;

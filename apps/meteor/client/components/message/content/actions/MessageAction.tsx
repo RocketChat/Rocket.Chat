@@ -2,7 +2,6 @@ import { Button } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const resolveLegacyIcon = (legacyIcon: IconName | `icon-${IconName | 'videocam'}`): IconName => {

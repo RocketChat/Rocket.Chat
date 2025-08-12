@@ -1,68 +1,69 @@
-import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { usePermission, useSetModal, useSetting, useUser } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../../app/authorization/client';
-import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import CreateDiscussion from '../../CreateDiscussion';
 
-export const useNewDiscussionMessageAction = () => {
+export const useNewDiscussionMessageAction = (
+	message: IMessage,
+	{ room, subscription }: { room: IRoom; subscription: ISubscription | undefined },
+): MessageActionConfig | null => {
+	const user = useUser();
 	const enabled = useSetting('Discussion_enabled', false);
 
 	const setModal = useSetModal();
 
-	useEffect(() => {
-		if (!enabled) {
-			return MessageAction.removeButton('start-discussion');
-		}
-		MessageAction.addButton({
-			id: 'start-discussion',
-			icon: 'discussion',
-			label: 'Discussion_start',
-			type: 'communication',
-			context: ['message', 'message-mobile', 'videoconf'],
-			async action(_, { message, room }) {
-				setModal(
-					<CreateDiscussion
-						defaultParentRoom={room?.prid || room?._id}
-						onClose={() => setModal(undefined)}
-						parentMessageId={message._id}
-						nameSuggestion={message?.msg?.substr(0, 140)}
-					/>,
-				);
-			},
-			condition({
-				message: {
-					u: { _id: uid },
-					drid,
-					dcount,
-				},
-				room,
-				subscription,
-				user,
-			}) {
-				if (drid || !Number.isNaN(Number(dcount))) {
-					return false;
-				}
-				if (!subscription) {
-					return false;
-				}
-				const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
-				if (isLivechatRoom) {
-					return false;
-				}
+	const canStartDiscussion = usePermission('start-discussion', room._id);
+	const canStartDiscussionOtherUser = usePermission('start-discussion-other-user', room._id);
 
-				if (!user) {
-					return false;
-				}
+	if (!enabled) {
+		return null;
+	}
 
-				return uid !== user._id ? hasPermission('start-discussion-other-user', room._id) : hasPermission('start-discussion', room._id);
-			},
-			order: 1,
-			group: 'menu',
-		});
-		return () => {
-			MessageAction.removeButton('start-discussion');
-		};
-	}, [enabled, setModal]);
+	const {
+		u: { _id: uid },
+		drid,
+		dcount,
+	} = message;
+	if (drid || !Number.isNaN(Number(dcount))) {
+		return null;
+	}
+
+	if (!subscription) {
+		return null;
+	}
+
+	const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
+	if (isLivechatRoom) {
+		return null;
+	}
+
+	if (!user) {
+		return null;
+	}
+
+	if (!(uid !== user._id ? canStartDiscussionOtherUser : canStartDiscussion)) {
+		return null;
+	}
+
+	return {
+		id: 'start-discussion',
+		icon: 'discussion',
+		label: 'Discussion_start',
+		type: 'communication',
+		context: ['message', 'message-mobile', 'videoconf'],
+		async action() {
+			setModal(
+				<CreateDiscussion
+					defaultParentRoom={room?.prid || room?._id}
+					onClose={() => setModal(undefined)}
+					parentMessageId={message._id}
+					nameSuggestion={message?.msg?.substr(0, 140)}
+				/>,
+			);
+		},
+		order: 1,
+		group: 'menu',
+	};
 };

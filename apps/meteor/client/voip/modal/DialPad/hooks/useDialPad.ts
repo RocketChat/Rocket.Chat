@@ -83,7 +83,7 @@ export const useDialPad = ({ initialValue, initialErrorMessage }: DialPadProps):
 		closeDialModal();
 	}, [outboundClient, setError, t, value, closeDialModal]);
 
-	const handleOnChange = useCallback((e) => onChange(e), [onChange]);
+	const handleOnChange = useCallback((e: ChangeEvent<HTMLInputElement>) => onChange(e), [onChange]);
 
 	useEffect(() => {
 		setDisabled(!value);

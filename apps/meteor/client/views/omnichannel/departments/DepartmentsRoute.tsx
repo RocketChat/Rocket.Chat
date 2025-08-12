@@ -1,5 +1,4 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import DepartmentsPage from './DepartmentsPage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';

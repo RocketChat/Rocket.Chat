@@ -1,8 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -47,9 +46,9 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 	const { daysTime } = watch();
 	const { fields: daysTimeFields, replace } = useFieldArray({ control, name: 'daysTime' });
 
-	const timezoneField = useUniqueId();
-	const daysOpenField = useUniqueId();
-	const daysTimeField = useUniqueId();
+	const timezoneField = useId();
+	const daysOpenField = useId();
+	const daysTimeField = useId();
 
 	const handleChangeDaysTime = (values: string[]) => {
 		const newValues = values

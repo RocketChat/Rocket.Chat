@@ -1,7 +1,6 @@
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useLanguages } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';

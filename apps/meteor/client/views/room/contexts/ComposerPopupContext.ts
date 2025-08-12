@@ -42,10 +42,10 @@ export const createMessageBoxPopupConfig = <T extends { _id: string; sort?: numb
 	};
 };
 
-export const useComposerPopup = () => {
+export const useComposerPopupOptions = () => {
 	const composerPopupContext = useContext(ComposerPopupContext);
 	if (!composerPopupContext) {
-		throw new Error('useComposerPopup must be used within ComposerPopupContext');
+		throw new Error('useComposerPopupOptions must be used within ComposerPopupContext');
 	}
 	return composerPopupContext;
 };

@@ -1,8 +1,8 @@
 import { MeteorError } from '@rocket.chat/core-services';
-import type { IUser, RequiredField } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import type { SaveUserData } from './saveUser';
+import type { UpdateUserData } from './saveUser';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../../settings/server';
 
@@ -17,7 +17,7 @@ const isEditingField = (previousValue?: string, newValue?: string) => typeof new
  * @param {string} userId
  * @param {{ _id: string, roles?: string[], username?: string, name?: string, statusText?: string, email?: string, password?: string}} userData
  */
-export async function validateUserEditing(userId: IUser['_id'], userData: RequiredField<SaveUserData, '_id'>): Promise<void> {
+export async function validateUserEditing(userId: IUser['_id'], userData: UpdateUserData): Promise<void> {
 	const editingMyself = userData._id && userId === userData._id;
 
 	const canEditOtherUserInfo = await hasPermissionAsync(userId, 'edit-other-user-info');
@@ -45,7 +45,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Requir
 	if (
 		isEditingField(user.username, userData.username) &&
 		!settings.get('Accounts_AllowUsernameChange') &&
-		(!canEditOtherUserInfo || editingMyself)
+		(editingMyself ? user.username : !canEditOtherUserInfo)
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',
@@ -87,7 +87,11 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Requir
 		});
 	}
 
-	if (userData.password && !settings.get('Accounts_AllowPasswordChange') && (!canEditOtherUserPassword || editingMyself)) {
+	if (
+		userData.password &&
+		!settings.get('Accounts_AllowPasswordChange') &&
+		(editingMyself ? user.services?.password || !user.requirePasswordChange : !canEditOtherUserPassword)
+	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user password is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',

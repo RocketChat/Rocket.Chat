@@ -1,8 +1,8 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
+import type { UserPresenceContextValue } from '@rocket.chat/ui-contexts';
+import { useSetting, UserPresenceContext } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 
-import { UserPresenceContext } from '../contexts/UserPresenceContext';
 import { Presence } from '../lib/presence';
 
 type UserPresenceProviderProps = {
@@ -16,30 +16,30 @@ const UserPresenceProvider = ({ children }: UserPresenceProviderProps): ReactEle
 		Presence.setStatus(usePresenceDisabled ? 'disabled' : 'enabled');
 	}, [usePresenceDisabled]);
 
-	return (
-		<UserPresenceContext.Provider
-			value={useMemo(
-				() => ({
-					queryUserData: (uid) => {
-						const subscribe = (callback: () => void) => {
-							Presence.listen(uid, callback);
+	const contextValue: UserPresenceContextValue = useMemo(
+		() => ({
+			queryUserData: (uid) => {
+				if (!uid) {
+					return { get: () => undefined, subscribe: () => () => undefined };
+				}
 
-							return () => {
-								Presence.stop(uid, callback);
-							};
-						};
+				const subscribe = (callback: () => void) => {
+					Presence.listen(uid, callback);
 
-						const get = () => Presence.store.get(uid);
+					return () => {
+						Presence.stop(uid, callback);
+					};
+				};
 
-						return { subscribe, get };
-					},
-				}),
-				[],
-			)}
-		>
-			{children}
-		</UserPresenceContext.Provider>
+				const get = () => Presence.store.get(uid);
+
+				return { subscribe, get };
+			},
+		}),
+		[],
 	);
+
+	return <UserPresenceContext.Provider value={contextValue}>{children}</UserPresenceContext.Provider>;
 };
 
 export default UserPresenceProvider;

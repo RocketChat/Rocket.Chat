@@ -1,5 +1,4 @@
 import { Box, Icon, Skeleton, Scrollable } from '@rocket.chat/fuselage';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useStatistics } from '../../hooks/useStatistics';

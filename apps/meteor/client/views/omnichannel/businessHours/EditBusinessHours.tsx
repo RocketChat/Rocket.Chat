@@ -1,8 +1,8 @@
 import type { ILivechatBusinessHour, LivechatBusinessHourTypes, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useId } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import type { BusinessHoursFormData } from './BusinessHoursForm';
@@ -25,7 +25,7 @@ const getInitialData = (businessHourData: Serialized<ILivechatBusinessHour> | un
 			open,
 		})),
 	departmentsToApplyBusinessHour: '',
-	active: businessHourData?.active || true,
+	active: businessHourData?.active ?? true,
 	departments: businessHourData?.departments?.map(({ _id, name }) => ({ value: _id, label: name })) || [],
 });
 
@@ -51,7 +51,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 		formState: { isDirty },
 	} = methods;
 
-	const handleSave = useMutableCallback(async ({ departments, ...data }: BusinessHoursFormData) => {
+	const handleSave = useEffectEvent(async ({ departments, ...data }: BusinessHoursFormData) => {
 		const departmentsToApplyBusinessHour = departments?.map((dep) => dep.value).join(',') || '';
 
 		try {
@@ -77,7 +77,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 		}
 	});
 
-	const formId = useUniqueId();
+	const formId = useId();
 
 	return (
 		<Page>

@@ -26,13 +26,6 @@ export type UserConverterOptions = {
 	enableEmail2fa?: boolean;
 };
 
-export type ConvertUsersResult = {
-	inserted: string[];
-	updated: string[];
-	skipped: number;
-	failed: number;
-};
-
 export class UserConverter extends RecordConverter<IImportUserRecord, UserConverterOptions & RecordConverterOptions> {
 	private insertedIds = new Set<IUser['_id']>();
 
@@ -134,7 +127,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		return newIds;
 	}
 
-	async findExistingUser(data: IImportUser): Promise<IUser | undefined> {
+	async findExistingUser(data: IImportUser): Promise<IUser | null | undefined> {
 		if (data.emails.length) {
 			const emailUser = await Users.findOneByEmailAddress(data.emails[0], {});
 
@@ -145,7 +138,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		// If we couldn't find one by their email address, try to find an existing user by their username
 		if (data.username) {
-			return Users.findOneByUsernameIgnoringCase(data.username, {});
+			return Users.findOneByUsernameIgnoringCase<IUser>(data.username, {});
 		}
 	}
 
@@ -208,7 +201,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		const subset = (source: Record<string, any>, currentPath: string): void => {
 			for (const key in source) {
-				if (!source.hasOwnProperty(key)) {
+				if (!source.hasOwnProperty(key) || source[key] === undefined) {
 					continue;
 				}
 
@@ -228,7 +221,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		subset(userData.customFields, 'customFields');
 	}
 
-	async insertOrUpdateUser(existingUser: IUser | undefined, data: IImportUser): Promise<void> {
+	async insertOrUpdateUser(existingUser: IUser | null | undefined, data: IImportUser): Promise<void> {
 		if (!data.username && !existingUser?.username) {
 			const emails = data.emails.filter(Boolean).map((email) => ({ address: email }));
 			data.username = await generateUsernameSuggestion({
@@ -266,6 +259,10 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			return;
 		}
 
+		if (Boolean(userData.federated) !== Boolean(existingUser.federated)) {
+			throw new Error("Local and Federated users can't be converted to each other.");
+		}
+
 		userData._id = _id;
 
 		if (!userData.roles && !existingUser.roles) {
@@ -289,7 +286,9 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		this.addCustomFields(updateData, userData);
 		this.addUserServices(updateData, userData);
 		this.addUserImportId(updateData, userData);
-		this.addUserEmails(updateData, userData, existingUser.emails || []);
+		if (!userData.federated) {
+			this.addUserEmails(updateData, userData, existingUser.emails || []);
+		}
 
 		if (Object.keys(updateData.$set).length === 0) {
 			delete updateData.$set;
@@ -302,8 +301,9 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			await Users.setUtcOffset(_id, userData.utcOffset);
 		}
 
-		if (userData.name || userData.username) {
-			await saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
+		const localUsername = userData.federated ? undefined : userData.username;
+		if (userData.name || localUsername) {
+			await saveUserIdentity({ _id, name: userData.name, username: localUsername } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		if (userData.importIds.length) {
@@ -354,6 +354,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			...(!!userData.customFields && { customFields: userData.customFields }),
 			...(userData.deleted !== undefined && { active: !userData.deleted }),
 			...(userData.voipExtension !== undefined && { freeSwitchExtension: userData.voipExtension }),
+			...(userData.federated !== undefined && { federated: userData.federated }),
 		};
 	}
 

@@ -1,23 +1,22 @@
 import type { ILivechatInquiryRecord, ILivechatPriority } from '@rocket.chat/core-typings';
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { ModifyResult, UpdateResult, Document } from 'mongodb';
-
-import { LivechatInquiryRaw } from '../../../../server/models/raw/LivechatInquiry';
+import { LivechatInquiryRaw } from '@rocket.chat/models';
+import type { UpdateResult, Document, WithId } from 'mongodb';
 
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatInquiryModel {
-		setSlaForRoom(rid: string, sla: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<ModifyResult<ILivechatInquiryRecord>>;
-		unsetSlaForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>>;
+		setSlaForRoom(rid: string, sla: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<null | WithId<ILivechatInquiryRecord>>;
+		unsetSlaForRoom(rid: string): Promise<null | WithId<ILivechatInquiryRecord>>;
 		bulkUnsetSla(roomIds: string[]): Promise<Document | UpdateResult>;
-		setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>>;
-		unsetPriorityForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>>;
+		setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<null | WithId<ILivechatInquiryRecord>>;
+		unsetPriorityForRoom(rid: string): Promise<null | WithId<ILivechatInquiryRecord>>;
 	}
 }
 
 // Note: Expect a circular dependency error here 😓
 export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivechatInquiryModel {
-	setSlaForRoom(rid: string, sla: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<ModifyResult<ILivechatInquiryRecord>> {
+	setSlaForRoom(rid: string, sla: { estimatedWaitingTimeQueue: number; slaId: string }): Promise<null | WithId<ILivechatInquiryRecord>> {
 		const { estimatedWaitingTimeQueue, slaId } = sla;
 
 		return this.findOneAndUpdate(
@@ -31,7 +30,7 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 		);
 	}
 
-	unsetSlaForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
+	unsetSlaForRoom(rid: string): Promise<null | WithId<ILivechatInquiryRecord>> {
 		return this.findOneAndUpdate(
 			{ rid },
 			{
@@ -61,7 +60,7 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 		);
 	}
 
-	setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<ModifyResult<ILivechatInquiryRecord>> {
+	setPriorityForRoom(rid: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<null | WithId<ILivechatInquiryRecord>> {
 		return this.findOneAndUpdate(
 			{ rid },
 			{
@@ -73,7 +72,7 @@ export class LivechatInquiryRawEE extends LivechatInquiryRaw implements ILivecha
 		);
 	}
 
-	unsetPriorityForRoom(rid: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
+	unsetPriorityForRoom(rid: string): Promise<null | WithId<ILivechatInquiryRecord>> {
 		return this.findOneAndUpdate(
 			{ rid },
 			{

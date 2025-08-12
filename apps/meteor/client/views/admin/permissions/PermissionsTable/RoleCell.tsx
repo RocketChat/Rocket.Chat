@@ -1,8 +1,8 @@
 import type { IRole } from '@rocket.chat/core-typings';
 import { Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React, { useState, memo } from 'react';
+import { useState, memo } from 'react';
 
 import { AuthorizationUtils } from '../../../../../app/authorization/lib';
 import { GenericTableCell } from '../../../../components/GenericTable';
@@ -23,7 +23,7 @@ const RoleCell = ({ _id, name, description, onChange, lineHovered, permissionId,
 
 	const isRestrictedForRole = AuthorizationUtils.isPermissionRestrictedForRole(permissionId, _id);
 
-	const handleChange = useMutableCallback(async () => {
+	const handleChange = useEffectEvent(async () => {
 		setLoading(true);
 		const result = await onChange(_id, granted);
 		setGranted(result);

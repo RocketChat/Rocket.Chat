@@ -1,5 +1,5 @@
 import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useRoute, useUserSubscription, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -30,7 +30,7 @@ export const useDirectMessageAction = (user: Pick<IUser, '_id' | 'username'>, ri
 		user.username,
 	);
 
-	const openDirectMessage = useMutableCallback(
+	const openDirectMessage = useEffectEvent(
 		() =>
 			user.username &&
 			directRoute.push({

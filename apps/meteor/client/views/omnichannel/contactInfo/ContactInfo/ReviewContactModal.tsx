@@ -1,17 +1,17 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { mapLivechatContactConflicts } from '../../../../../lib/mapLivechatContactConflicts';
-import GenericModal from '../../../../components/GenericModal';
 import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../../additionalForms';
 import { useCustomFieldsMetadata } from '../../directory/hooks/useCustomFieldsMetadata';
-import { useEditContact } from '../hooks/useEditContact';
+import { useReviewContact } from '../hooks/useReviewContact';
 
 type ReviewContactModalProps = {
 	contact: Serialized<ILivechatContact>;
@@ -41,13 +41,13 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 		enabled: canViewCustomFields,
 	});
 
-	const editContact = useEditContact(['getContactById']);
+	const editContact = useReviewContact(['getContactById']);
 
 	const handleConflicts = async ({ name, contactManager, ...customFields }: HandleConflictsPayload) => {
 		const payload = {
 			name,
 			contactManager,
-			...(customFields && { ...customFields }),
+			...(customFields && { customFields }),
 			wipeConflicts: true,
 		};
 
@@ -86,7 +86,7 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 
 					return (
 						<Field key={index}>
-							<FieldLabel>{t(label as TranslationKey)}</FieldLabel>
+							<FieldLabel id={name}>{t(label as TranslationKey)}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name={name}
@@ -94,16 +94,24 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 									rules={{
 										required: isContactManagerField ? undefined : t('Required_field', { field: t(label as TranslationKey) }),
 									}}
-									render={({ field: { value, onChange } }) => <Component options={mappedOptions} value={value} onChange={onChange} />}
+									render={({ field: { value, onChange } }) => (
+										<Component
+											aria-labelledby={name}
+											aria-describedby={`${name}-hint ${name}-error`}
+											options={mappedOptions}
+											value={value}
+											onChange={onChange}
+										/>
+									)}
 								/>
 							</FieldRow>
-							<FieldHint>
+							<FieldHint id={`${name}-hint`}>
 								<Box display='flex' alignItems='center'>
 									<Box mie={4}>{t('different_values_found', { number: values.length })}</Box>
 									<Badge variant='primary' small />
 								</Box>
 							</FieldHint>
-							{errors?.[name] && <FieldError>{errors?.[name]?.message}</FieldError>}
+							{errors?.[name] && <FieldError id={`${name}-error`}>{errors?.[name]?.message}</FieldError>}
 						</Field>
 					);
 				})}

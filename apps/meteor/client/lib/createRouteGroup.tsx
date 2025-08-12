@@ -1,5 +1,5 @@
 import type { IRouterPaths, RouteName, RouterPathPattern } from '@rocket.chat/ui-contexts';
-import React, { type ElementType, type ReactNode } from 'react';
+import { type ElementType, type ReactNode } from 'react';
 
 import { appLayout } from './appLayout';
 import { router } from '../providers/RouterProvider';

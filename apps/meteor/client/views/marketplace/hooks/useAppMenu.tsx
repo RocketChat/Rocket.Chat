@@ -1,5 +1,5 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { App } from '@rocket.chat/core-typings';
+import type { App, AppPermission } from '@rocket.chat/core-typings';
 import { Box, Icon } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
@@ -11,7 +11,7 @@ import {
 	useRouter,
 } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactNode } from 'react';
-import React, { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
 import { useAppInstallationHandler } from './useAppInstallationHandler';
@@ -95,7 +95,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const marketplaceActions = useMarketplaceActions();
 
 	const installationSuccess = useCallback(
-		async (action: Actions | '', permissionsGranted) => {
+		async (action: Actions | '', permissionsGranted?: AppPermission[]) => {
 			if (action) {
 				if (action === 'request') {
 					setRequestedEndUser(true);
@@ -298,7 +298,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	]);
 
 	const incompatibleIconName = useCallback(
-		(app, action) => {
+		(app: App, action: 'subscribe' | 'install' | 'update') => {
 			if (!app.versionIncompatible) {
 				if (action === 'update') {
 					return 'refresh';
@@ -367,8 +367,14 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				},
 		];
 
-		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
-		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
+		const isPossibleToEnableApp =
+			app.installed &&
+			isAdminUser &&
+			!isAppEnabled &&
+			// If the app is migrated, it can be enabled regardless of other validations
+			// If not, and the app isEnterpriseOnly, we need to check the workspace's license
+			(app.migrated || !app.isEnterpriseOnly || isEnterpriseLicense);
+
 		const doesItReachedTheLimit =
 			!app.migrated &&
 			!appCountQuery?.data?.hasUnlimitedApps &&

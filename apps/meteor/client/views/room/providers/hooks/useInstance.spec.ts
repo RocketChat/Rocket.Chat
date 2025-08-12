@@ -22,7 +22,6 @@ describe('useInstance', () => {
 	it('should create a new instance when dependencies change', () => {
 		const { result, rerender } = renderHook(({ deps }) => useInstance(factory, deps), {
 			initialProps: { deps: ['initial-dep'] },
-			legacyRoot: true,
 		});
 
 		expect(result.current).toEqual({ instance: new MockChatMessages() });
@@ -39,7 +38,6 @@ describe('useInstance', () => {
 	it('should not create a new instance when dependencies do not change', () => {
 		const { result, rerender } = renderHook(({ deps }) => useInstance(factory, deps), {
 			initialProps: { deps: ['initial-dep'] },
-			legacyRoot: true,
 		});
 
 		expect(result.current).toEqual({ instance: new MockChatMessages() });
@@ -54,7 +52,7 @@ describe('useInstance', () => {
 	});
 
 	it('should call release function when component unmounts', () => {
-		const { unmount } = renderHook(() => useInstance(factory, ['initial-dep']), { legacyRoot: true });
+		const { unmount } = renderHook(() => useInstance(factory, ['initial-dep']));
 
 		unmount();
 

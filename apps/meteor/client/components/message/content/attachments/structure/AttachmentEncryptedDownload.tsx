@@ -1,5 +1,4 @@
 import type { ComponentProps } from 'react';
-import React from 'react';
 
 import AttachmentDownloadBase from './AttachmentDownloadBase';
 import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFromServiceWorker';

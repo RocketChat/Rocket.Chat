@@ -247,6 +247,37 @@ test.each([
     'something__ __and italic__',
     [paragraph([plain('something__ '), italic([plain('and italic')])])],
   ],
+  ['*test:*', [paragraph([bold([plain('test:')])])]],
+  [
+    '*bold ending with colon:*',
+    [paragraph([bold([plain('bold ending with colon:')])])],
+  ],
+  [
+    '*bold ending with colon:* and some more text',
+    [
+      paragraph([
+        bold([plain('bold ending with colon:')]),
+        plain(' and some more text'),
+      ]),
+    ],
+  ],
+  [
+    '*bold ending with colon :*and some more text',
+    [
+      paragraph([
+        bold([plain('bold ending with colon :')]),
+        plain('and some more text'),
+      ]),
+    ],
+  ],
+  [
+    '*bold with a kissing emoji :* *',
+    [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' *')])],
+  ],
+  [
+    '*bold with a kissing emoji :* ',
+    [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' ')])],
+  ],
 ])('parses %p', (input, output) => {
-  expect(parse(input)).toMatchObject(output);
+  expect(parse(input, { emoticons: false })).toMatchObject(output);
 });

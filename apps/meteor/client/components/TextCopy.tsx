@@ -1,6 +1,5 @@
 import { Box, Button, Scrollable } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useClipboardWithToast from '../hooks/useClipboardWithToast';
@@ -32,7 +31,7 @@ const TextCopy = ({ text, wrapper = defaultWrapperRenderer, ...props }: TextCopy
 			justifyContent='stretch'
 			alignItems='flex-start'
 			flexGrow={1}
-			padding={16}
+			pb={16}
 			backgroundColor='surface'
 			width='full'
 			{...props}

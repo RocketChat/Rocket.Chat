@@ -1,7 +1,18 @@
-import { Box, Button, ButtonGroup, Modal } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	ButtonGroup,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
@@ -42,13 +53,13 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 
 	return (
 		<Modal {...props}>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Title>{t('Workspace_registered')}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTitle>{t('Workspace_registered')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box withRichContent>
 					<span>{`${t('RegisterWorkspace_Registered_Subtitle')}: `}</span>
 					<ul>
@@ -62,14 +73,14 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 						))}
 					</ul>
 				</Box>
-			</Modal.Content>
-			<Modal.Footer>
+			</ModalContent>
+			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button icon='reload' onClick={handleSyncAction} loading={isSyncing}>
 						{t('Sync')}
 					</Button>
 				</ButtonGroup>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };

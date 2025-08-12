@@ -1,6 +1,6 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
-import React, { useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { ChatsContext, initialValues } from '../contexts/ChatsContext';
 import { useDisplayFilters } from '../hooks/useDisplayFilters';
@@ -11,7 +11,7 @@ type ChatsProviderProps = {
 
 const ChatsProvider = ({ children }: ChatsProviderProps) => {
 	const textInputRef = useRef<HTMLInputElement>(null);
-	const [filtersQuery, setFiltersQuery] = useLocalStorage('conversationsQuery', initialValues);
+	const [filtersQuery, setFiltersQuery] = useLocalStorage('newConversationsQuery', initialValues);
 	const displayFilters = useDisplayFilters(filtersQuery);
 
 	const contextValue = useMemo(

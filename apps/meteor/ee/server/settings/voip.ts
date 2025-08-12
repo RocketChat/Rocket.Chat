@@ -8,6 +8,8 @@ export function addSettings(): Promise<void> {
 				modules: ['teams-voip'],
 			},
 			async function () {
+				const enableQuery = { _id: 'VoIP_TeamCollab_Enabled', value: true };
+
 				await this.add('VoIP_TeamCollab_Enabled', false, {
 					type: 'boolean',
 					public: true,
@@ -19,30 +21,49 @@ export function addSettings(): Promise<void> {
 					type: 'string',
 					public: true,
 					invalidValue: '',
+					enableQuery,
 				});
 
 				await this.add('VoIP_TeamCollab_FreeSwitch_Port', 8021, {
 					type: 'int',
 					public: true,
 					invalidValue: 8021,
+					enableQuery,
 				});
 
 				await this.add('VoIP_TeamCollab_FreeSwitch_Password', '', {
 					type: 'password',
-					public: true,
+					secret: true,
 					invalidValue: '',
+					enableQuery,
 				});
 
 				await this.add('VoIP_TeamCollab_FreeSwitch_Timeout', 3000, {
 					type: 'int',
 					public: true,
 					invalidValue: 3000,
+					enableQuery,
 				});
 
 				await this.add('VoIP_TeamCollab_FreeSwitch_WebSocket_Path', '', {
 					type: 'string',
 					public: true,
 					invalidValue: '',
+					enableQuery,
+				});
+
+				await this.add('VoIP_TeamCollab_Ice_Servers', 'stun:stun.l.google.com:19302', {
+					type: 'string',
+					public: true,
+					invalidValue: '',
+					enableQuery,
+				});
+
+				await this.add('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000, {
+					type: 'int',
+					public: true,
+					invalidValue: 5000,
+					enableQuery,
 				});
 			},
 		);

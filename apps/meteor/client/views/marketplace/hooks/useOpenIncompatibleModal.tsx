@@ -1,5 +1,6 @@
+import type { App } from '@rocket.chat/core-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import IframeModal from '../IframeModal';
 import { useAppsOrchestration } from './useAppsOrchestration';
@@ -15,7 +16,7 @@ export const useOpenIncompatibleModal = () => {
 	}
 
 	return useCallback(
-		async (app, actionName, cancelAction) => {
+		async (app: App, actionName: string, cancelAction: () => void) => {
 			const handleCancel = () => {
 				setModal(null);
 				cancelAction();

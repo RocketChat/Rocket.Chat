@@ -7,6 +7,7 @@ import {
 	StatesIcon,
 	StatesTitle,
 	Accordion,
+	AccordionItem,
 	Field,
 	FieldGroup,
 	FieldLabel,
@@ -19,7 +20,7 @@ import { usePreferenceFeaturePreviewList } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import React, { useEffect, Fragment } from 'react';
+import { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
@@ -56,8 +57,9 @@ const AccountFeaturePreviewPage = () => {
 	const { featuresPreview } = watch();
 
 	const handleSave = async () => {
+		const featuresToBeSaved = featuresPreview.map((feature) => ({ name: feature.name, value: feature.value }));
 		try {
-			await setUserPreferences({ data: { featuresPreview } });
+			await setUserPreferences({ data: { featuresPreview: featuresToBeSaved } });
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -94,7 +96,7 @@ const AccountFeaturePreviewPage = () => {
 							</Box>
 							<Accordion>
 								{grouppedFeaturesPreview?.map(([group, features], index) => (
-									<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+									<AccordionItem defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
 										<FieldGroup>
 											{features.map((feature) => (
 												<Fragment key={feature.name}>
@@ -115,7 +117,7 @@ const AccountFeaturePreviewPage = () => {
 												</Fragment>
 											))}
 										</FieldGroup>
-									</Accordion.Item>
+									</AccordionItem>
 								))}
 							</Accordion>
 						</>

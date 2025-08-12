@@ -4,7 +4,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 import type { ReactNode, ComponentProps, ComponentType, UIEvent } from 'react';
 
-type RenderToolboxItemParams = RoomToolboxActionConfig & {
+export type RenderToolboxItemParams = RoomToolboxActionConfig & {
 	className?: ComponentProps<typeof Box>['className'];
 	index: number;
 	toolbox: RoomToolboxContextValue;

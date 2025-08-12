@@ -5,6 +5,7 @@ import type { IPermission } from '@rocket.chat/apps-engine/definition/permission
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import type {
+	AppCategory,
 	AppScreenshot,
 	App,
 	FeaturedAppsSection,
@@ -14,6 +15,13 @@ import type {
 	PaginatedAppRequests,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
+
+import type { AppLogsExportProps } from './appLogsExportProps';
+import type { AppLogsProps } from './appLogsProps';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
+
+export * from './appLogsExportProps';
+export * from './appLogsProps';
 
 export type AppsEndpoints = {
 	'/apps/count': {
@@ -58,6 +66,12 @@ export type AppsEndpoints = {
 		};
 	};
 
+	'/apps/logs': {
+		GET: (params: AppLogsProps) => PaginatedResult<{
+			logs: ILogItem[];
+		}>;
+	};
+
 	'/apps/public/:appId/get-sidebar-icon': {
 		GET: (params: { icon: string }) => unknown;
 	};
@@ -84,21 +98,22 @@ export type AppsEndpoints = {
 
 	'/apps/:id/languages': {
 		GET: () => {
-			languages: {
-				[key: string]: {
-					Params: string;
-					Description: string;
-					Setting_Name: string;
-					Setting_Description: string;
-				};
-			};
+			languages: { [language: string]: { [key: string]: string } };
 		};
 	};
 
 	'/apps/:id/logs': {
-		GET: () => {
+		GET: (params: Omit<AppLogsProps, 'appId'>) => PaginatedResult<{
 			logs: ILogItem[];
-		};
+		}>;
+	};
+
+	'/apps/:id/logs/distinctValues': {
+		GET: () => { success: boolean; instanceIds: string[]; methods: string[] };
+	};
+
+	'/apps/:id/export-logs': {
+		GET: (params: AppLogsExportProps) => Buffer;
 	};
 
 	'/apps/:id/apis': {
@@ -122,6 +137,7 @@ export type AppsEndpoints = {
 	'/apps/:id/status': {
 		GET: () => {
 			status: string;
+			clusterStatus: App['clusterStatus'];
 		};
 		POST: (params: { status: AppStatus }) => {
 			status: AppStatus;
@@ -162,13 +178,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/categories': {
-		GET: () => {
-			createdDate: Date;
-			description: string;
-			id: string;
-			modifiedDate: Date;
-			title: string;
-		}[];
+		GET: () => AppCategory[];
 	};
 
 	'/apps/buildExternalUrl': {
@@ -178,7 +188,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/installed': {
-		GET: () => { apps: App[] };
+		GET: (params: { includeClusterStatus?: 'true' | 'false' }) => { success: true; apps: App[] } | { success: false; error: string };
 	};
 
 	'/apps/buildExternalAppRequest': {

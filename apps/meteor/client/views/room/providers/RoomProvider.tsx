@@ -1,27 +1,25 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
-import React, { useMemo, memo, useEffect, useCallback } from 'react';
+import { useMemo, memo, useEffect, useCallback } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
 import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
-import { useRoomQuery } from './hooks/useRoomQuery';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
-import { Subscriptions } from '../../../../app/models/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
-import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
+import { omit } from '../../../../lib/utils/omit';
+import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useSidePanelNavigation } from '../../../hooks/useSidePanelNavigation';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
+import { Rooms, Subscriptions } from '../../../stores';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
-import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 import { RoomContext } from '../contexts/RoomContext';
 
@@ -31,39 +29,27 @@ type RoomProviderProps = {
 };
 
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
-	useRoomRolesManagement(rid);
-
 	const resultFromServer = useRoomInfoEndpoint(rid);
 
-	const resultFromLocal = useRoomQuery(rid);
+	const room = Rooms.use((state) => state.get(rid));
+	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
 
-	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
-	const router = useRouter();
-	useEffect(() => {
-		if (resultFromLocal.isSuccess && !resultFromLocal.data) {
-			router.navigate('/home');
-		}
-	}, [resultFromLocal.data, resultFromLocal.isSuccess, resultFromServer, router]);
-
-	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => Subscriptions.findOne({ rid }) ?? null);
-
-	useRedirectOnSettingsChanged(subscriptionQuery.data);
+	useRedirectOnSettingsChanged(subscritionFromLocal);
 
 	useUsersNameChanged();
 
 	const pseudoRoom: IRoomWithFederationOriginalName | null = useMemo(() => {
-		const room = resultFromLocal.data;
 		if (!room) {
 			return null;
 		}
 
 		return {
-			...subscriptionQuery.data,
+			...subscritionFromLocal,
 			...room,
 			name: roomCoordinator.getRoomName(room.t, room),
 			federationOriginalName: room.name,
 		};
-	}, [resultFromLocal.data, subscriptionQuery.data]);
+	}, [room, subscritionFromLocal]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
 		useCallback(() => {
@@ -85,14 +71,22 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		return {
 			rid,
 			room: pseudoRoom,
-			subscription: subscriptionQuery.data ?? undefined,
+			subscription: subscritionFromLocal ?? undefined,
 			hasMorePreviousMessages,
 			hasMoreNextMessages,
 			isLoadingMoreMessages,
 		};
-	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
+	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscritionFromLocal]);
 
 	const isSidepanelFeatureEnabled = useSidePanelNavigation();
+
+	const { mutate: fireRoomOpenedEvent } = useFireGlobalEvent('room-opened', rid);
+
+	useEffect(() => {
+		if (room) {
+			fireRoomOpenedEvent(omit(room, 'usernames'));
+		}
+	}, [rid, room, fireRoomOpenedEvent]);
 
 	useEffect(() => {
 		if (isSidepanelFeatureEnabled) {
@@ -156,7 +150,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		resultFromServer.data,
 	]);
 
-	const subscribed = !!subscriptionQuery.data;
+	const subscribed = !!subscritionFromLocal;
 
 	useEffect(() => {
 		if (!subscribed) {
@@ -167,7 +161,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return resultFromLocal.isSuccess && !resultFromLocal.data ? <RoomNotFound /> : <RoomSkeleton />;
+		return !room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (

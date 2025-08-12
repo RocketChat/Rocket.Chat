@@ -1,4 +1,4 @@
 export interface IVideoConferenceOptions {
-    mic?: boolean;
-    cam?: boolean;
+	mic?: boolean;
+	cam?: boolean;
 }

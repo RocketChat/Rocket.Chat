@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	useToastMessageDispatch,
 	useSessionDispatch,
@@ -9,14 +9,14 @@ import {
 	useEndpoint,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
 import type { ReactElement, ContextType } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
 import { useInvalidateLicense } from '../../../hooks/useLicense';
-import { queryClient } from '../../../lib/queryClient';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
@@ -49,14 +49,14 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const registerUser = useMethod('registerUser');
-	const defineUsername = useMethod('setUsername');
+	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
-	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
+	const goToStep = useCallback((step: number) => setCurrentStep(() => step), [setCurrentStep]);
 
 	const _validateEmail = useCallback(
 		(email: string): true | string => {
@@ -70,7 +70,17 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	);
 
 	const registerAdminUser = useCallback(
-		async ({ fullname, username, email, password }): Promise<void> => {
+		async ({
+			fullname,
+			username,
+			email,
+			password,
+		}: {
+			fullname: string;
+			username: string;
+			email: string;
+			password: string;
+		}): Promise<void> => {
 			await registerUser({ name: fullname, username, email, pass: password });
 			void callbacks.run('userRegistered', {});
 
@@ -89,15 +99,15 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 			setForceLogin(false);
 
-			await defineUsername(username);
+			await setBasicInfo({ data: { username } });
 			await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
 			void callbacks.run('usernameSet', {});
 		},
-		[registerUser, setForceLogin, defineUsername, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
+		[registerUser, setForceLogin, setBasicInfo, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
 	);
 
 	const saveAgreementData = useCallback(
-		async (agreement): Promise<void> => {
+		async (agreement: boolean): Promise<void> => {
 			await dispatchSettings([
 				{
 					_id: 'Cloud_Service_Agree_PrivacyTerms',
@@ -152,25 +162,29 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		[dispatchSettings],
 	);
 
-	const registerServer: HandleRegisterServer = useMutableCallback(async ({ email, resend = false }): Promise<void> => {
-		try {
-			const { intentData } = await createRegistrationIntent({ resend, email });
-			invalidateLicenseQuery(100);
-			queryClient.invalidateQueries(['getRegistrationStatus']);
+	const queryClient = useQueryClient();
 
-			setSetupWizardData((prevState) => ({
-				...prevState,
-				registrationData: { ...intentData, cloudEmail: email },
-			}));
+	const registerServer: HandleRegisterServer = useEffectEvent(
+		async ({ email, resend = false }: { email: string; resend?: boolean }): Promise<void> => {
+			try {
+				const { intentData } = await createRegistrationIntent({ resend, email });
+				invalidateLicenseQuery(100);
+				queryClient.invalidateQueries({ queryKey: ['getRegistrationStatus'] });
 
-			goToStep(4);
-			setShowSetupWizard('in_progress');
-		} catch (e) {
-			dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
-		}
-	});
+				setSetupWizardData((prevState) => ({
+					...prevState,
+					registrationData: { ...intentData, cloudEmail: email },
+				}));
 
-	const completeSetupWizard = useMutableCallback(async (): Promise<void> => {
+				goToStep(4);
+				setShowSetupWizard('in_progress');
+			} catch (e) {
+				dispatchToastMessage({ type: 'error', message: t('Cloud_register_error') });
+			}
+		},
+	);
+
+	const completeSetupWizard = useEffectEvent(async (): Promise<void> => {
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 		return setShowSetupWizard('completed');
 	});

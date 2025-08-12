@@ -1,21 +1,21 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useRouter } from '@rocket.chat/ui-contexts';
 
-import { Subscriptions } from '../../../../app/models/client';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import { Subscriptions } from '../../../stores';
 
 export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((rid: IRoom['_id']) => void) => {
 	const getRoomById = useMethod('getRoomById');
 	const router = useRouter();
 
 	// TODO: remove params recycling
-	return useMutableCallback(async (rid) => {
+	return useEffectEvent(async (rid: IRoom['_id']) => {
 		if (!rid) {
 			return;
 		}
 
-		const subscription: ISubscription | undefined = Subscriptions.findOne({ rid });
+		const subscription: ISubscription | undefined = Subscriptions.state.find((record) => record.rid === rid);
 
 		if (subscription) {
 			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters(), { replace });

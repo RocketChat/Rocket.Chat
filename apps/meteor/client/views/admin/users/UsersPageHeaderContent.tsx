@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SeatsCapUsage from './SeatsCapUsage';

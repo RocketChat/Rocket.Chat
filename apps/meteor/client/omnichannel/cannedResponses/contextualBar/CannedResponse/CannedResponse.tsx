@@ -1,16 +1,17 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
 import type { MouseEventHandler } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarAction,
 	ContextualbarContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
+	ContextualbarClose,
 } from '../../../../components/Contextualbar';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
@@ -27,6 +28,7 @@ type CannedResponseProps = {
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickEdit: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: MouseEventHandler<HTMLOrSVGElement>;
+	onClose: () => void;
 };
 
 const CannedResponse = ({
@@ -36,15 +38,17 @@ const CannedResponse = ({
 	onClickBack,
 	onClickEdit,
 	onClickUse,
+	onClose,
 }: CannedResponseProps) => {
 	const { t } = useTranslation();
 	const scope = useScopeDict(dataScope, departmentName);
 
 	return (
-		<Contextualbar color='default' display='flex' flexDirection='column' width='full' overflow='hidden' zIndex={100} insetBlock={0}>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
-				{onClickBack && <ContextualbarAction onClick={onClickBack} title={t('Back_to_threads')} name='arrow-back' />}
+				{onClickBack && <ContextualbarAction onClick={onClickBack} title={t('Back_to_canned_responses')} name='arrow-back' />}
 				<ContextualbarTitle>!{shortcut}</ContextualbarTitle>
+				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 			<ContextualbarContent>
 				<Box pb='24px'>
@@ -100,7 +104,7 @@ const CannedResponse = ({
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</ContextualbarDialog>
 	);
 };
 

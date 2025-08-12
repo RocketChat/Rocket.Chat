@@ -1,5 +1,14 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import {
+	Button,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
@@ -57,25 +66,25 @@ const AppInstallationModal = ({
 	return (
 		<>
 			<Modal>
-				<Modal.Header>
-					<Modal.HeaderText>
-						<Modal.Title data-qa-id='confirm-app-upload-modal-title'>{getTitle()}</Modal.Title>
-					</Modal.HeaderText>
-					<Modal.Close onClick={handleClose} />
-				</Modal.Header>
+				<ModalHeader>
+					<ModalHeaderText>
+						<ModalTitle data-qa-id='confirm-app-upload-modal-title'>{getTitle()}</ModalTitle>
+					</ModalHeaderText>
+					<ModalClose onClick={handleClose} />
+				</ModalHeader>
 
-				<Modal.Content>
+				<ModalContent>
 					<MarkdownText content={getContent()} />
-				</Modal.Content>
+				</ModalContent>
 
-				<Modal.Footer>
-					<Modal.FooterControllers>
+				<ModalFooter>
+					<ModalFooterControllers>
 						<Button onClick={handleEnableUnlimitedApps}>{t('Enable_unlimited_apps')}</Button>
 						<Button {...(enabled < limit && { primary: true })} onClick={handleConfirm}>
 							{enabled < limit ? t('Next') : confirmButtonOverLimitLabel}
 						</Button>
-					</Modal.FooterControllers>
-				</Modal.Footer>
+					</ModalFooterControllers>
+				</ModalFooter>
 			</Modal>
 		</>
 	);

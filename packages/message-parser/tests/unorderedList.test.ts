@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { unorderedList, plain, listItem, bold } from '../src/utils';
+import { unorderedList, plain, listItem, bold, emoji } from '../src/utils';
 
 test.each([
   [
@@ -8,6 +8,7 @@ test.each([
 - Second item
 - Third item
 - *Fourth item*
+- :smile:
 `.trim(),
     [
       unorderedList([
@@ -15,6 +16,7 @@ test.each([
         listItem([plain('Second item')]),
         listItem([plain('Third item')]),
         listItem([bold([plain('Fourth item')])]),
+        listItem([emoji('smile')]),
       ]),
     ],
   ],

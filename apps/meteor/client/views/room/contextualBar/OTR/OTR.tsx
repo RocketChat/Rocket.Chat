@@ -1,7 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Throbber } from '@rocket.chat/fuselage';
 import type { MouseEventHandler, ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OTREstablished from './components/OTREstablished';
@@ -13,6 +12,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { useRoom } from '../../contexts/RoomContext';
 
@@ -96,7 +96,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 	};
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='stopwatch' />
 				<ContextualbarTitle>{t('OTR')}</ContextualbarTitle>
@@ -106,7 +106,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				<Box fontScale='h4'>{t('Off_the_record_conversation')}</Box>
 				{renderOTRBody()}
 			</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

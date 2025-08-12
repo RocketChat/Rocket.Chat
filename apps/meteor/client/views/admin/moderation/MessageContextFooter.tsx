@@ -1,6 +1,5 @@
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useDeactivateUserAction from './hooks/useDeactivateUserAction';

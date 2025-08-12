@@ -59,7 +59,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -68,7 +68,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -77,7 +77,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -126,7 +126,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                     type="button"
                   >
                     <i
@@ -147,54 +147,17 @@ exports[`renders CallEnded without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-1eogw2f"
                   >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-sta2rp"
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-4pvxx3"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
-                      >
-                        <figure
-                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
-                        >
-                          <img
-                            alt=""
-                            class="rcx-avatar__element rcx-avatar__element--x28"
-                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          />
-                        </figure>
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
-                      >
-                        <figure
-                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
-                        >
-                          <img
-                            alt=""
-                            class="rcx-avatar__element rcx-avatar__element--x28"
-                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          />
-                        </figure>
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
-                      >
-                        <figure
-                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
-                        >
-                          <img
-                            alt=""
-                            class="rcx-avatar__element rcx-avatar__element--x28"
-                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          />
-                        </figure>
-                      </div>
-                    </div>
+                      
+                    </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-1mzu52s"
+                    class="rcx-box rcx-box--full rcx-css-weo5d9"
                   >
-                    Joined
+                    joined
                   </p>
                 </div>
               </div>
@@ -266,7 +229,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -275,7 +238,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -284,7 +247,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -333,7 +296,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                     type="button"
                   >
                     <i
@@ -362,7 +325,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                     </span>
                   </button>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-1mzu52s"
+                    class="rcx-box rcx-box--full rcx-css-weo5d9"
                   >
                     Call was not answered
                   </p>
@@ -436,7 +399,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -445,7 +408,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -454,7 +417,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -503,7 +466,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                     type="button"
                   >
                     <i
@@ -534,54 +497,17 @@ exports[`renders CallOngoing without crashing 1`] = `
                   <div
                     class="rcx-box rcx-box--full rcx-css-1eogw2f"
                   >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-sta2rp"
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-4pvxx3"
                     >
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
-                      >
-                        <figure
-                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
-                        >
-                          <img
-                            alt=""
-                            class="rcx-avatar__element rcx-avatar__element--x28"
-                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          />
-                        </figure>
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
-                      >
-                        <figure
-                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
-                        >
-                          <img
-                            alt=""
-                            class="rcx-avatar__element rcx-avatar__element--x28"
-                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          />
-                        </figure>
-                      </div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-wcp0mp"
-                      >
-                        <figure
-                          class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
-                        >
-                          <img
-                            alt=""
-                            class="rcx-avatar__element rcx-avatar__element--x28"
-                            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
-                          />
-                        </figure>
-                      </div>
-                    </div>
+                      
+                    </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-1mzu52s"
+                    class="rcx-box rcx-box--full rcx-css-weo5d9"
                   >
-                    Joined
+                    joined
                   </p>
                 </div>
               </div>
@@ -653,7 +579,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -662,7 +588,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -671,7 +597,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -720,7 +646,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 >
                   <button
                     aria-label="info"
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button  rcx-button-group__item"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
                     type="button"
                   >
                     <i
@@ -749,7 +675,7 @@ exports[`renders CallingDM without crashing 1`] = `
                     </span>
                   </button>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-1mzu52s"
+                    class="rcx-box rcx-box--full rcx-css-weo5d9"
                   >
                     Waiting for answer
                   </p>
@@ -823,7 +749,7 @@ exports[`renders Loading without crashing 1`] = `
                 @haylie.george
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -832,7 +758,7 @@ exports[`renders Loading without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -841,7 +767,7 @@ exports[`renders Loading without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="rcx-box rcx-box--full  rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
               >
                 <span
                   class="rcx-tag__inner"
@@ -866,15 +792,196 @@ exports[`renders Loading without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-css-1s5wk2a"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-skeleton--text rcx-skeleton rcx-css-el6yni"
+                  class="rcx-skeleton rcx-skeleton--text rcx-css-el6yni"
                 />
               </div>
               <div
                 class="rcx-box rcx-box--full rcx-css-i71qf8"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-skeleton--text rcx-skeleton rcx-css-el6yni"
+                  class="rcx-skeleton rcx-skeleton--text rcx-css-el6yni"
                 />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders NoAvatars without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full"
+    >
+      <div
+        class="rcx-message-divider"
+        role="separator"
+      >
+        <div
+          class="rcx-message-divider__bar"
+        />
+        <div
+          class="rcx-message-divider__wrapper"
+        >
+          May, 24, 2020
+        </div>
+         
+        <div
+          class="rcx-message-divider__bar"
+        />
+      </div>
+      <div
+        class="rcx-message customclass"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+        >
+          <figure
+            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+          >
+            <img
+              alt=""
+              class="rcx-avatar__element rcx-avatar__element--x36"
+              src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
+            />
+          </figure>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-message-container"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-message-header"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-message-header__wrapper"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-message-header__name"
+              >
+                Haylie George
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-message-header__username"
+              >
+                @haylie.george
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+              >
+                <span
+                  class="rcx-tag__inner"
+                >
+                  Admin
+                </span>
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+              >
+                <span
+                  class="rcx-tag__inner"
+                >
+                  User
+                </span>
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+              >
+                <span
+                  class="rcx-tag__inner"
+                >
+                  Owner
+                </span>
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-message-header__time"
+              >
+                12:00 PM
+              </span>
+            </div>
+          </div>
+          <div
+            class="rcx-message-body"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-videoconf-message-block rcx-css-1mp6r02"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1s5wk2a"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-127j9mz"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-1sy2p0c"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1otjdv8"
+                    >
+                      
+                    </i>
+                  </div>
+                  <p
+                    class="rcx-box rcx-box--full rcx-css-hmgb4y"
+                  >
+                    Call ongoing
+                  </p>
+                </div>
+                <div
+                  class="rcx-button-group rcx-button-group--align-end"
+                  role="group"
+                >
+                  <button
+                    aria-label="info"
+                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                    type="button"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-4pvxx3"
+                    >
+                      
+                    </i>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-i71qf8"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-1gj3xb"
+                >
+                  <button
+                    class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button rcx-css-1eogw2f"
+                    type="button"
+                  >
+                    <span
+                      class="rcx-button--content"
+                    >
+                      Join
+                    </span>
+                  </button>
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-1eogw2f"
+                  >
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-4pvxx3"
+                    >
+                      
+                    </i>
+                  </div>
+                  <p
+                    class="rcx-box rcx-box--full rcx-css-weo5d9"
+                  >
+                    10
+                     joined
+                  </p>
+                </div>
               </div>
             </div>
           </div>

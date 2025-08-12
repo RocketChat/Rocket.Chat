@@ -14,7 +14,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	'livechat:getTagsList'() {
-		methodDeprecationLogger.method('livechat:getTagsList', '7.0.0');
+		methodDeprecationLogger.method('livechat:getTagsList', '7.0.0', 'This functionality is no longer supported');
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'livechat:getTagsList',

@@ -307,7 +307,7 @@ export async function onServerVersionChange(cb: () => Promise<void>): Promise<vo
 		},
 	);
 
-	if (result.value?.hash === Info.commit.hash) {
+	if (result?.hash === Info.commit.hash) {
 		return;
 	}
 

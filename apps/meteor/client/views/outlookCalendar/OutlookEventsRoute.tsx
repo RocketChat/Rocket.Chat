@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import OutlookEventsList from './OutlookEventsList';
 import OutlookSettingsList from './OutlookSettingsList';

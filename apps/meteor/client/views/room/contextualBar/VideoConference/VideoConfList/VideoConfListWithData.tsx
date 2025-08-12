@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import VideoConfList from './VideoConfList';
 import { useVideoConfList } from './useVideoConfList';

@@ -1,6 +1,5 @@
 import { Avatar } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IGame } from './GameCenter';
@@ -10,10 +9,11 @@ import {
 	ContextualbarBack,
 	ContextualbarContent,
 	ContextualbarClose,
+	ContextualbarDialog,
 } from '../../components/Contextualbar';
 
 interface IGameCenterContainerProps {
-	handleClose: (e: any) => void;
+	handleClose: () => void;
 	handleBack: (e: any) => void;
 	game: IGame;
 }
@@ -22,7 +22,7 @@ const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterConta
 	const { t } = useTranslation();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{handleBack && <ContextualbarBack onClick={handleBack} />}
 				<ContextualbarTitle>
@@ -31,9 +31,9 @@ const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterConta
 				{handleClose && <ContextualbarClose onClick={handleClose} />}
 			</ContextualbarHeader>
 			<ContextualbarContent pb={16}>
-				<iframe title={t('Apps_Game_Center')} style={{ position: 'absolute', width: '95%', height: '80%' }} src={game.url}></iframe>
+				<iframe title={t('Apps_Game_Center')} style={{ position: 'absolute', width: '95%', height: '80%' }} src={game.url} />
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

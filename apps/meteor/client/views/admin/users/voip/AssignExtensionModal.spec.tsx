@@ -4,7 +4,6 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 
 import AssignExtensionModal from './AssignExtensionModal';
 
@@ -47,7 +46,6 @@ it.todo('should load with default extension');
 
 it('should only enable "Available extensions" field if username is informed', async () => {
 	render(<AssignExtensionModal onClose={() => undefined} />, {
-		legacyRoot: true,
 		wrapper: appRoot.build(),
 	});
 
@@ -64,7 +62,6 @@ it('should only enable "Available extensions" field if username is informed', as
 
 it('should only enable "Associate" button both username and extension is informed', async () => {
 	render(<AssignExtensionModal onClose={() => undefined} />, {
-		legacyRoot: true,
 		wrapper: appRoot.build(),
 	});
 
@@ -87,7 +84,6 @@ it('should only enable "Associate" button both username and extension is informe
 it('should call onClose when extension is associated', async () => {
 	const closeFn = jest.fn();
 	render(<AssignExtensionModal onClose={closeFn} />, {
-		legacyRoot: true,
 		wrapper: appRoot.build(),
 	});
 
@@ -109,7 +105,6 @@ it('should call onClose when extension is associated', async () => {
 it('should call onClose when cancel button is clicked', () => {
 	const closeFn = jest.fn();
 	render(<AssignExtensionModal onClose={closeFn} />, {
-		legacyRoot: true,
 		wrapper: appRoot.build(),
 	});
 
@@ -120,7 +115,6 @@ it('should call onClose when cancel button is clicked', () => {
 it('should call onClose when cancel button is clicked', () => {
 	const closeFn = jest.fn();
 	render(<AssignExtensionModal onClose={closeFn} />, {
-		legacyRoot: true,
 		wrapper: appRoot.build(),
 	});
 

@@ -1,7 +1,7 @@
 import type { VoIpCallerInfo } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {

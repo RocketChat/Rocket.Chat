@@ -1,6 +1,6 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React, { forwardRef, useContext } from 'react';
+import { forwardRef, useContext } from 'react';
 
 import PageBlock from './PageBlock';
 import PageContext from './PageContext';

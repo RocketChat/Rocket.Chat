@@ -16,7 +16,7 @@ describe('with window.RocketChatDesktop set', () => {
 	});
 
 	it('should pass to videoConfOpenCall the url', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { legacyRoot: true, wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper: mockAppRoot().build() });
 
 		const url = faker.internet.url();
 
@@ -28,7 +28,7 @@ describe('with window.RocketChatDesktop set', () => {
 	});
 
 	it('should pass to videoConfOpenCall the url and the providerName', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { legacyRoot: true, wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper: mockAppRoot().build() });
 
 		const url = faker.internet.url();
 		const providerName = faker.lorem.word();
@@ -54,7 +54,6 @@ describe('without window.RocketChatDesktop set', () => {
 		window.open = jest.fn(() => ({}) as Window);
 
 		const { result } = renderHook(() => useVideoConfOpenCall(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		});
 
@@ -71,7 +70,6 @@ describe('without window.RocketChatDesktop set', () => {
 		window.open = jest.fn(() => null);
 
 		const { result } = renderHook(() => useVideoConfOpenCall(), {
-			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		});
 

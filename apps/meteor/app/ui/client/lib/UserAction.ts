@@ -1,8 +1,9 @@
-import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
+import type { IExtras, IRoomActivity, IUser } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { debounce } from 'lodash';
 import { Meteor } from 'meteor/meteor';
-import { ReactiveDict } from 'meteor/reactive-dict';
 
+import { Users } from '../../../../client/stores';
 import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
@@ -24,7 +25,8 @@ const continuingIntervals = new Map();
 const roomActivities = new Map<string, Set<string>>();
 const rooms = new Map<string, (username: string, activityType: string[], extras?: object | undefined) => void>();
 
-const performingUsers = new ReactiveDict<IActionsObject>();
+const performingUsers = new Map<string, IRoomActivity>();
+const performingUsersEmitter = new Emitter<{ changed: void }>();
 
 const shownName = function (user: IUser | null | undefined): string | undefined {
 	if (!user) {
@@ -63,6 +65,7 @@ function handleStreamAction(rid: string, username: string, activityTypes: string
 	}
 
 	performingUsers.set(rid, roomActivities);
+	performingUsersEmitter.emit('changed');
 }
 export const UserAction = new (class {
 	addStream(rid: string): () => void {
@@ -71,9 +74,9 @@ export const UserAction = new (class {
 		}
 
 		const handler = function (username: string, activityType: string[], extras?: object): void {
-			const user = Meteor.users.findOne(Meteor.userId() || undefined, {
-				fields: { name: 1, username: 1 },
-			}) as IUser;
+			const uid = Meteor.userId();
+			const user = uid ? Users.state.get(uid) : undefined;
+
 			if (username === shownName(user)) {
 				return;
 			}
@@ -167,5 +170,9 @@ export const UserAction = new (class {
 
 	get(roomId: string): IRoomActivity | undefined {
 		return performingUsers.get(roomId);
+	}
+
+	subscribe(onChanged: () => void): () => void {
+		return performingUsersEmitter.on('changed', onChanged);
 	}
 })();

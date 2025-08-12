@@ -1,16 +1,15 @@
-import { Box, Margins, ButtonGroup, ContextualbarSkeleton } from '@rocket.chat/fuselage';
+import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { HTMLAttributes } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-	Contextualbar,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
+	ContextualbarSkeletonBody,
 } from '../../../components/Contextualbar';
 import { InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
 import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
@@ -27,14 +26,16 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
-	const { data, isLoading, isError } = useQuery(['livechat-getAgentInfoById', uid], async () => getAgentById(), {
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['livechat-getAgentInfoById', uid],
+		queryFn: async () => getAgentById(),
 		refetchOnWindowFocus: false,
 	});
 
 	const handleDelete = useRemoveAgent(uid);
 
-	if (isLoading) {
-		return <ContextualbarSkeleton />;
+	if (isPending) {
+		return <ContextualbarSkeletonBody />;
 	}
 
 	if (isError) {
@@ -44,7 +45,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { username, statusLivechat, status: userStatus } = data?.user;
 
 	return (
-		<Contextualbar data-qa-id='agent-info-contextual-bar'>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/agents')} />
@@ -78,7 +79,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
 				</Margins>
 			</ContextualbarScrollableContent>
-		</Contextualbar>
+		</>
 	);
 };
 

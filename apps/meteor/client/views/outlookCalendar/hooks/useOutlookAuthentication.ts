@@ -9,9 +9,10 @@ export const useOutlookAuthentication = () => {
 		data: authEnabled,
 		isError,
 		error,
-	} = useQuery(
-		['outlook', 'auth'],
-		async () => {
+	} = useQuery({
+		queryKey: ['outlook', 'auth'],
+
+		queryFn: async () => {
 			const desktopApp = window.RocketChatDesktop;
 			if (!desktopApp?.hasOutlookCredentials) {
 				throw new NotOnDesktopError();
@@ -19,12 +20,7 @@ export const useOutlookAuthentication = () => {
 
 			return Boolean(await desktopApp?.hasOutlookCredentials?.()) || false;
 		},
-		{
-			onError: (error) => {
-				console.error(error);
-			},
-		},
-	);
+	});
 
 	return { authEnabled: Boolean(authEnabled), isError, error };
 };
@@ -33,7 +29,9 @@ export const useOutlookAuthenticationMutation = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: async () => {
-			await queryClient.invalidateQueries(['outlook', 'auth']);
+			await queryClient.invalidateQueries({
+				queryKey: ['outlook', 'auth'],
+			});
 		},
 	});
 };

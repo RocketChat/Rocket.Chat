@@ -1,14 +1,13 @@
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useId } from 'react';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 export const PreferencesGeneral = (): ReactElement => {
 	const { t } = useTranslation();
 	const { register } = useFormContext();
-	const omnichannelHideAfterClosing = useUniqueId();
+	const omnichannelHideAfterClosing = useId();
 
 	return (
 		<FieldGroup marginBlockEnd='1.5rem' paddingInline='0.5rem'>

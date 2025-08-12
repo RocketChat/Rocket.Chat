@@ -1,8 +1,7 @@
 import { Box, FieldError, FieldLabel, FieldRow, PasswordInput, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useId } from 'react';
 import type { Control, FieldErrors } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -28,9 +27,9 @@ const AdminUserSetRandomPasswordContent = ({
 }: AdminUserSetRandomPasswordContentProps) => {
 	const { t } = useTranslation();
 
-	const passwordConfirmationId = useUniqueId();
-	const requirePasswordChangeId = useUniqueId();
-	const passwordVerifierId = useUniqueId();
+	const passwordConfirmationId = useId();
+	const requirePasswordChangeId = useId();
+	const passwordVerifierId = useId();
 
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation', true);
 	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');

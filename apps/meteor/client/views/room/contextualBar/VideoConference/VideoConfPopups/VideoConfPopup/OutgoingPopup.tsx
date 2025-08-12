@@ -10,13 +10,14 @@ import {
 	VideoConfPopupFooterButtons,
 	VideoConfPopupTitle,
 	VideoConfPopupHeader,
+	useVideoConfCapabilities,
+	useVideoConfPreferences,
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
-import { useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
+import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 type OutgoingPopupProps = {
 	id: string;
@@ -29,12 +30,13 @@ const OutgoingPopup = ({ room, onClose, id }: OutgoingPopupProps): ReactElement 
 	const videoConfPreferences = useVideoConfPreferences();
 	const { controllersConfig } = useVideoConfControllers(videoConfPreferences);
 	const capabilities = useVideoConfCapabilities();
+	const roomName = useVideoConfRoomName(room);
 
 	const showCam = !!capabilities.cam;
 	const showMic = !!capabilities.mic;
 
 	return (
-		<VideoConfPopup>
+		<VideoConfPopup aria-label={t('Calling__roomName__', { roomName })}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Calling')} counter />
 				{(showCam || showMic) && (

@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { Livechat as LivechatTS } from '../lib/LivechatTyped';
+import { setUserStatusLivechat, allowAgentChangeServiceStatus } from '../lib/utils';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
-		methodDeprecationLogger.method('livechat:changeLivechatStatus', '7.0.0');
+		methodDeprecationLogger.method('livechat:changeLivechatStatus', '7.0.0', '/v1/livechat/agent.status');
 
 		const uid = Meteor.userId();
 
@@ -59,15 +59,15 @@ Meteor.methods<ServerMethods>({
 					method: 'livechat:changeLivechatStatus',
 				});
 			}
-			return LivechatTS.setUserStatusLivechat(agentId, newStatus);
+			return setUserStatusLivechat(agentId, newStatus);
 		}
 
-		if (!(await LivechatTS.allowAgentChangeServiceStatus(newStatus, agentId))) {
+		if (!(await allowAgentChangeServiceStatus(newStatus, agentId))) {
 			throw new Meteor.Error('error-business-hours-are-closed', 'Not allowed', {
 				method: 'livechat:changeLivechatStatus',
 			});
 		}
 
-		return LivechatTS.setUserStatusLivechat(agentId, newStatus);
+		return setUserStatusLivechat(agentId, newStatus);
 	},
 });

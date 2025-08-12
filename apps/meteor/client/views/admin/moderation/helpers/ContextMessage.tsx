@@ -2,8 +2,8 @@ import type { IMessage, MessageReport, MessageAttachment } from '@rocket.chat/co
 import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Message, MessageName, MessageToolbarItem, MessageToolbarWrapper, MessageUsername } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReportReasonCollapsible from './ReportReasonCollapsible';
@@ -13,7 +13,6 @@ import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessage
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
-import { useUserDisplayName } from '../../../../hooks/useUserDisplayName';
 import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 import { useDismissMessageAction } from '../hooks/useDismissMessageAction';

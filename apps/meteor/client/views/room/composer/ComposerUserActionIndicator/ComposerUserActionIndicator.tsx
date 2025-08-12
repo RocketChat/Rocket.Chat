@@ -1,22 +1,21 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useCallback, Fragment } from 'react';
+import { useCallback, Fragment, useSyncExternalStore, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UserAction } from '../../../../../app/ui/client/lib/UserAction';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
 const maxUsernames = 5;
 
 const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
 	const { t } = useTranslation();
-	const actions = useReactiveValue(
-		useCallback(() => {
-			const roomAction = UserAction.get(tmid || rid) || {};
-
-			const activities = Object.entries(roomAction);
-
-			return activities
+	const roomAction = useSyncExternalStore(
+		UserAction.subscribe,
+		useCallback(() => UserAction.get(tmid || rid), [rid, tmid]),
+	);
+	const actions = useMemo(
+		() =>
+			Object.entries(roomAction ?? {})
 				.map(([key, _users]) => {
 					const action = key.split('-')[1];
 
@@ -33,9 +32,10 @@ const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string
 				.filter(Boolean) as {
 				action: 'typing' | 'recording' | 'uploading' | 'playing';
 				users: string[];
-			}[];
-		}, [rid, tmid]),
+			}[],
+		[roomAction],
 	);
+
 	return (
 		<Box
 			h='x20'

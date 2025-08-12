@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
@@ -40,7 +40,7 @@ export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps =
 		}
 	};
 
-	const handleDenyVideo = useMutableCallback((isDenied) => {
+	const handleDenyVideo = useEffectEvent((isDenied: boolean) => {
 		if (isDenied) {
 			chat?.composer?.setRecordingVideo(false);
 		}
@@ -55,7 +55,7 @@ export const useVideoMessageAction = (disabled: boolean): GenericMenuItemProps =
 	return {
 		id: 'video-message',
 		content: getMediaActionTitle,
-		icon: 'video',
+		icon: 'video-message',
 		disabled: !isAllowed || Boolean(disabled),
 		onClick: handleOpenVideoMessage,
 	};

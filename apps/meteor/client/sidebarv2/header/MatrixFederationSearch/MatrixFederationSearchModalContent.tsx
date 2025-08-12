@@ -3,7 +3,7 @@ import { Box, Select, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-import React, { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FederatedRoomList from './FederatedRoomList';

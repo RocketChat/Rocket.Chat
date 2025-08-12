@@ -2,24 +2,24 @@ import {
 	type IOmnichannelAgent,
 	type OmichannelRoutingConfig,
 	OmnichannelSortingMechanismSettingType,
-	type ILivechatInquiryRecord,
 	LivechatInquiryStatus,
 } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
+import { createComparatorFromSort } from '@rocket.chat/mongo-adapter';
+import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream, useCustomSound } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
+import { useState, useEffect, useMemo, memo, useRef } from 'react';
+import { useShallow } from 'zustand/shallow';
 
-import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatInquiry';
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
-import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
-import { useReactiveValue } from '../hooks/useReactiveValue';
+import { useLivechatInquiryStore } from '../hooks/useLivechatInquiryStore';
+import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 
 const emptyContextValue: OmnichannelContextValue = {
@@ -51,6 +51,8 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		OmnichannelSortingMechanismSettingType.Timestamp,
 	);
 
+	const lastQueueSize = useRef(0);
+
 	const loggerRef = useRef(new ClientLogger('OmnichannelProvider'));
 	const hasAccess = usePermission('view-l-room');
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
@@ -62,7 +64,6 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
 
 	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
-	const [queueNotification, setQueueNotification] = useState(new Set());
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
@@ -74,11 +75,15 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const isPrioritiesEnabled = isEnterprise && accessible;
 	const enabled = accessible && !!user && !!routeConfig;
 
+	const { notificationSounds } = useCustomSound();
+
 	const {
 		data: { priorities = [] } = {},
-		isInitialLoading: isLoadingPriorities,
+		isLoading: isLoadingPriorities,
 		isError: isErrorPriorities,
-	} = useQuery(['/v1/livechat/priorities'], () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }), {
+	} = useQuery({
+		queryKey: ['/v1/livechat/priorities'],
+		queryFn: () => getPriorities({ sort: JSON.stringify({ sortItem: 1 }) }),
 		staleTime: Infinity,
 		enabled: isPrioritiesEnabled,
 	});
@@ -91,7 +96,9 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		}
 
 		return subscribe('omnichannel.priority-changed', () => {
-			queryClient.invalidateQueries(['/v1/livechat/priorities']);
+			queryClient.invalidateQueries({
+				queryKey: ['/v1/livechat/priorities'],
+			});
 		});
 	}, [isPrioritiesEnabled, queryClient, subscribe]);
 
@@ -134,29 +141,31 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		return streamNotifyUser(`${user._id}/departmentAgentData`, handleDepartmentAgentData);
 	}, [manuallySelected, streamNotifyUser, user?._id]);
 
-	const queue = useReactiveValue<ILivechatInquiryRecord[] | undefined>(
-		useCallback(() => {
+	const queue = useLivechatInquiryStore(
+		useShallow((state) => {
 			if (!manuallySelected) {
 				return undefined;
 			}
 
-			return LivechatInquiry.find(
-				{ status: LivechatInquiryStatus.QUEUED },
-				{
-					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
-					limit: omnichannelPoolMaxIncoming,
-				},
-			).fetch();
-		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism]),
+			return state.records
+				.filter((inquiry) => inquiry.status === LivechatInquiryStatus.QUEUED)
+				.sort(createComparatorFromSort(getOmniChatSortQuery(omnichannelSortingMechanism)))
+				.slice(...(omnichannelPoolMaxIncoming > 0 ? [0, omnichannelPoolMaxIncoming] : []));
+		}),
 	);
 
-	queue?.map(({ rid }) => {
-		if (queueNotification.has(rid)) {
-			return;
+	useEffect(() => {
+		if (lastQueueSize.current < (queue?.length ?? 0)) {
+			notificationSounds.playNewRoom();
 		}
-		setQueueNotification((prev) => new Set([...prev, rid]));
-		return KonchatNotification.newRoom(rid);
-	});
+		lastQueueSize.current = queue?.length ?? 0;
+
+		return () => {
+			notificationSounds.stopNewRoom();
+		};
+	}, [notificationSounds, queue?.length]);
+
+	useOmnichannelContinuousSoundNotification(queue ?? []);
 
 	const contextValue = useMemo<OmnichannelContextValue>(() => {
 		if (!enabled) {

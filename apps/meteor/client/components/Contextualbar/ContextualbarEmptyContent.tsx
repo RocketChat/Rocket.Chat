@@ -1,7 +1,7 @@
 import { ContextualbarV2EmptyContent, ContextualbarEmptyContent as ContextualbarEmptyContentComponent } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
-import React, { forwardRef, memo } from 'react';
+import { forwardRef, memo } from 'react';
 
 const ContextualbarEmptyContent = forwardRef<HTMLElement, ComponentProps<typeof ContextualbarEmptyContentComponent>>(
 	function ContextualbarEmptyContent(props, ref) {

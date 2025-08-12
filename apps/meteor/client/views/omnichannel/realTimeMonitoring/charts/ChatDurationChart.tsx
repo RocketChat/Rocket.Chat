@@ -1,9 +1,11 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
-import type { OperationParams } from '@rocket.chat/rest-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
-import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Chart from './Chart';
@@ -12,8 +14,7 @@ import { getMomentCurrentLabel } from './getMomentCurrentLabel';
 import { useUpdateChartData } from './useUpdateChartData';
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {
@@ -39,11 +40,11 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'line'> | undefi
 	});
 
 type ChatDurationChartProps = {
-	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/timings'>;
-	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
-} & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;
+	departmentId: ILivechatDepartment['_id'];
+	dateRange: { start: string; end: string };
+} & ComponentPropsWithoutRef<typeof Box>;
 
-const ChatDurationChart = ({ params, reloadRef, ...props }: ChatDurationChartProps) => {
+const ChatDurationChart = ({ departmentId, dateRange, ...props }: ChatDurationChartProps) => {
 	const { t } = useTranslation();
 
 	const canvas = useRef<HTMLCanvasElement | null>(null);
@@ -56,9 +57,11 @@ const ChatDurationChart = ({ params, reloadRef, ...props }: ChatDurationChartPro
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/timings', { params });
-
-	reloadRef.current.chatDurationChart = reload;
+	const getTimings = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/timings');
+	const { isSuccess, data } = useQuery({
+		queryKey: omnichannelQueryKeys.analytics.timings(departmentId, dateRange),
+		queryFn: () => getTimings({ departmentId, ...dateRange }),
+	});
 
 	const {
 		chatDuration: { avg, longest },
@@ -81,11 +84,11 @@ const ChatDurationChart = ({ params, reloadRef, ...props }: ChatDurationChartPro
 	}, [t]);
 
 	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED) {
-			const label = getMomentCurrentLabel();
-			updateChartData(label, [avg, longest]);
-		}
-	}, [avg, longest, state, t, updateChartData]);
+		if (!isSuccess) return;
+
+		const label = getMomentCurrentLabel();
+		updateChartData(label, [avg, longest]);
+	}, [avg, longest, isSuccess, t, updateChartData]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };

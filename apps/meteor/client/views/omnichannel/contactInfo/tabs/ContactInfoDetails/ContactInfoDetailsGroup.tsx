@@ -1,11 +1,11 @@
+import type { ValidOutboundProvider } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import ContactInfoDetailsEntry from './ContactInfoDetailsEntry';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 
 type ContactInfoDetailsGroupProps = {
-	type: 'phone' | 'email';
+	type: ValidOutboundProvider;
 	label: string;
 	values: string[];
 };

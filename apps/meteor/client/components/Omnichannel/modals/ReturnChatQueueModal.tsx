@@ -1,5 +1,14 @@
-import { Button, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import {
+	Button,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 type ReturnChatQueueModalProps = {
@@ -12,20 +21,20 @@ const ReturnChatQueueModal = ({ onCancel, onMoveChat, ...props }: ReturnChatQueu
 
 	return (
 		<Modal {...props} data-qa-id='return-to-queue-modal'>
-			<Modal.Header>
-				<Modal.Icon name='burger-arrow-left' />
-				<Modal.Title>{t('Return_to_the_queue')}</Modal.Title>
-				<Modal.Close onClick={onCancel} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>{t('Would_you_like_to_return_the_queue')}</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			<ModalHeader>
+				<ModalIcon name='burger-arrow-left' />
+				<ModalTitle>{t('Return_to_the_queue')}</ModalTitle>
+				<ModalClose onClick={onCancel} />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>{t('Would_you_like_to_return_the_queue')}</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					<Button primary onClick={onMoveChat}>
 						{t('Confirm')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

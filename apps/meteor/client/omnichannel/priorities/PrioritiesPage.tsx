@@ -1,9 +1,9 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PrioritiesResetModal } from './PrioritiesResetModal';
@@ -42,7 +42,10 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 				setModal(null);
 
 				await resetPriorities();
-				await queryClient.invalidateQueries(['/v1/livechat/priorities'], { exact: true });
+				await queryClient.invalidateQueries({
+					queryKey: ['/v1/livechat/priorities'],
+					exact: true,
+				});
 
 				prioritiesRoute.push({});
 				dispatchToastMessage({ type: 'success', message: t('Priorities_restored') });
@@ -56,7 +59,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 		setModal(<PrioritiesResetModal onReset={onReset} onCancel={(): void => setModal(null)} />);
 	};
 
-	const onRowClick = useMutableCallback((id: string): void => {
+	const onRowClick = useEffectEvent((id: string): void => {
 		prioritiesRoute.push({ context: 'edit', id });
 	});
 
@@ -66,10 +69,15 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 
 	const onSavePriority = async ({ reset, ...payload }: PriorityFormData): Promise<void> => {
 		await savePriority(reset ? { reset } : payload);
-		await queryClient.invalidateQueries(['/v1/livechat/priorities']);
+		await queryClient.invalidateQueries({
+			queryKey: ['/v1/livechat/priorities'],
+		});
 
 		dispatchToastMessage({ type: 'success', message: t('Priority_saved') });
-		await queryClient.invalidateQueries(['/v1/livechat/priorities'], { exact: true });
+		await queryClient.invalidateQueries({
+			queryKey: ['/v1/livechat/priorities'],
+			exact: true,
+		});
 		prioritiesRoute.push({});
 	};
 

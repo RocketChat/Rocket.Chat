@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
 	Field,
 	FieldGroup,
@@ -12,7 +13,6 @@ import {
 	Icon,
 	Button,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
@@ -20,11 +20,11 @@ import {
 	useTranslation,
 	useEndpoint,
 	useUser,
-	useMethod,
+	useLayout,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
-import React, { useCallback } from 'react';
+import { useId, useCallback } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
@@ -40,6 +40,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	const t = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const { isMobile } = useLayout();
 
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
@@ -64,7 +65,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
-	const { email, avatar, username } = watch();
+	const { email, avatar, username, name: userFullName } = watch();
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 	const previousUsername = user?.username || '';
@@ -103,16 +104,15 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	// FIXME: replace to endpoint
-	const updateOwnBasicInfo = useMethod('saveUserProfile');
+	const updateOwnBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
 	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
 		try {
-			await updateOwnBasicInfo(
-				{
-					realname: name,
+			await updateOwnBasicInfo({
+				data: {
+					name,
 					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
 					username,
 					statusText,
@@ -121,7 +121,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					bio,
 				},
 				customFields,
-			);
+			});
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
@@ -132,12 +132,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		}
 	};
 
-	const nameId = useUniqueId();
-	const usernameId = useUniqueId();
-	const nicknameId = useUniqueId();
-	const statusTextId = useUniqueId();
-	const bioId = useUniqueId();
-	const emailId = useUniqueId();
+	const nameId = useId();
+	const usernameId = useId();
+	const nicknameId = useId();
+	const statusTextId = useId();
+	const bioId = useId();
+	const emailId = useId();
 
 	return (
 		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
@@ -150,6 +150,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							<UserAvatarEditor
 								etag={user?.avatarETag}
 								currentUsername={user?.username}
+								name={userFullName}
 								username={username}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
@@ -157,8 +158,18 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 					/>
 				</Field>
-				<Box display='flex' flexDirection='row' justifyContent='space-between'>
-					<Field mie={8} flexShrink={1}>
+				<Box
+					display='flex'
+					flexDirection={isMobile ? 'column' : 'row'}
+					alignItems='stretch'
+					justifyContent='space-between'
+					className={[
+						css`
+							gap: 16px;
+						`,
+					]}
+				>
+					<Field flexShrink={1}>
 						<FieldLabel required htmlFor={nameId}>
 							{t('Name')}
 						</FieldLabel>
@@ -189,7 +200,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 						{!allowRealNameChange && <FieldHint id={`${nameId}-hint`}>{t('RealName_Change_Disabled')}</FieldHint>}
 					</Field>
-					<Field mis={8} flexShrink={1}>
+					<Field flexShrink={1}>
 						<FieldLabel required htmlFor={usernameId}>
 							{t('Username')}
 						</FieldLabel>
@@ -303,7 +314,15 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<FieldLabel required htmlFor={emailId}>
 						{t('Email')}
 					</FieldLabel>
-					<FieldRow display='flex' flexDirection='row' justifyContent='space-between'>
+					<FieldRow
+						display='flex'
+						flexDirection={isMobile ? 'column' : 'row'}
+						alignItems='stretch'
+						justifyContent='space-between'
+						className={css`
+							gap: 8px;
+						`}
+					>
 						<Controller
 							control={control}
 							name='email'
@@ -326,7 +345,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							)}
 						/>
 						{!isUserVerified && (
-							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail} mis={24}>
+							<Button disabled={email !== previousEmail} onClick={handleSendConfirmationEmail}>
 								{t('Resend_verification_email')}
 							</Button>
 						)}

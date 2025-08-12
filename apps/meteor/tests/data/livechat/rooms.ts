@@ -121,7 +121,7 @@ export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> =>
 };
 
 export const createDepartment = (
-	agents?: { agentId: string }[],
+	agents?: { agentId: string; count?: number }[],
 	name?: string,
 	enabled = true,
 	opts: Record<string, any> = {},
@@ -226,6 +226,14 @@ export const createManager = (overrideUsername?: string): Promise<ILivechatAgent
 				resolve(res.body.user);
 			});
 	});
+
+export const switchLivechatStatus = async (status: 'available' | 'not-available', overrideCredentials?: Credentials): Promise<void> => {
+	await request
+		.post(api('livechat/agent.status'))
+		.set(overrideCredentials || credentials)
+		.send({ status })
+		.expect(200);
+};
 
 export const makeAgentAvailable = async (overrideCredentials?: Credentials): Promise<Response> => {
 	await restorePermissionToRoles('view-l-room');

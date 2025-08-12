@@ -25,12 +25,13 @@ export const useAgentsSection = () => {
 	const {
 		data: { data, total = 0, unspecified = 0 } = { data: [], total: 0 },
 		refetch,
-		isLoading,
+		isPending,
 		isError,
 		isSuccess,
-	} = useQuery(
-		['omnichannel-reports', 'conversations-by-agent', period, sortBy, sortDirection],
-		async () => {
+	} = useQuery({
+		queryKey: ['omnichannel-reports', 'conversations-by-agent', period, sortBy, sortDirection],
+
+		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
 			const response = await getConversationsByAgent({
 				start: start.toISOString(),
@@ -39,10 +40,9 @@ export const useAgentsSection = () => {
 			});
 			return { ...response, data: formatChartData(response.data) };
 		},
-		{
-			refetchInterval: 5 * 60 * 1000,
-		},
-	);
+
+		refetchInterval: 5 * 60 * 1000,
+	});
 
 	const title = t('Conversations_by_agents');
 
@@ -65,7 +65,7 @@ export const useAgentsSection = () => {
 			emptyStateSubtitle,
 			data,
 			total,
-			isLoading,
+			isPending,
 			isError,
 			isDataFound: isSuccess && data.length > 0,
 			periodSelectorProps,
@@ -82,7 +82,7 @@ export const useAgentsSection = () => {
 			emptyStateSubtitle,
 			data,
 			total,
-			isLoading,
+			isPending,
 			isError,
 			isSuccess,
 			periodSelectorProps,

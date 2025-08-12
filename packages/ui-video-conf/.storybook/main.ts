@@ -2,7 +2,7 @@ import { dirname, join, resolve } from 'path';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
 
-export default {
+const config: StorybookConfig = {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
 	addons: [
 		getAbsolutePath('@storybook/addon-essentials'),
@@ -31,8 +31,10 @@ export default {
 
 		return config;
 	},
-} satisfies StorybookConfig;
+};
 
 function getAbsolutePath(value: any): string {
 	return dirname(require.resolve(join(value, 'package.json')));
 }
+
+export default config;

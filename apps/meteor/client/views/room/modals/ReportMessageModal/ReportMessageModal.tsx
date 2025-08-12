@@ -1,12 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import GenericModal from '../../../../components/GenericModal';
 import MarkdownText from '../../../../components/MarkdownText';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 

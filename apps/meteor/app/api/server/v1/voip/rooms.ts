@@ -1,5 +1,5 @@
 import { LivechatVoip } from '@rocket.chat/core-services';
-import type { ILivechatAgent, IVoipRoom } from '@rocket.chat/core-typings';
+import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { VoipRoom, LivechatVisitors, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isVoipRoomProps, isVoipRoomsProps, isVoipRoomCloseProps } from '@rocket.chat/rest-typings';
@@ -128,7 +128,7 @@ API.v1.addRoute(
 					return API.v1.failure('agent-not-found');
 				}
 
-				const agentObj: ILivechatAgent = await Users.findOneAgentById(agentId, {
+				const agentObj = await Users.findOneAgentById(agentId, {
 					projection: { username: 1 },
 				});
 				if (!agentObj?.username) {
@@ -171,7 +171,7 @@ API.v1.addRoute(
 			const hasAgentAccess =
 				(await hasPermissionAsync(this.userId, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
 			if (!hasAdminAccess && !hasAgentAccess) {
-				return API.v1.unauthorized();
+				return API.v1.forbidden();
 			}
 
 			const createdAt = parseAndValidate('createdAt', createdAtParam);

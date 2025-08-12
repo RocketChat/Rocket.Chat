@@ -1,13 +1,12 @@
 import { render, waitFor, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { MutableRefObject } from 'react';
-import React from 'react';
 
 import NotFoundPage from './NotFoundPage';
 import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 
 it('should look good', async () => {
-	render(<NotFoundPage />, { legacyRoot: true });
+	render(<NotFoundPage />);
 
 	await expect(screen.findByRole('heading')).resolves.toHaveTextContent('Page_not_found');
 
@@ -15,7 +14,7 @@ it('should look good', async () => {
 });
 
 it('should have correct tab order', async () => {
-	render(<NotFoundPage />, { legacyRoot: true });
+	render(<NotFoundPage />);
 
 	expect(document.body).toHaveFocus();
 
@@ -37,7 +36,6 @@ describe('"Return to home" button', () => {
 				<RouterContextMock currentPath={currentPath}>
 					<NotFoundPage />
 				</RouterContextMock>,
-				{ legacyRoot: true },
 			);
 			const button = screen.getByRole('button', { name: 'Homepage' });
 

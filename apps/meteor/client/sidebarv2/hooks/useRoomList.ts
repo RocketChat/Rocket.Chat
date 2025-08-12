@@ -1,10 +1,10 @@
-import type { ILivechatInquiryRecord, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
+import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
@@ -28,7 +28,7 @@ const order = [
 ] as const;
 
 type useRoomListReturnType = {
-	roomList: Array<ISubscription & IRoom>;
+	roomList: Array<SubscriptionWithRoom>;
 	groupsCount: number[];
 	groupsList: TranslationKey[];
 	groupedUnreadInfo: Pick<

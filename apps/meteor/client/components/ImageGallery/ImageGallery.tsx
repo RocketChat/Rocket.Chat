@@ -1,7 +1,7 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
-import React, { useRef, useState } from 'react';
+import { Box, ButtonGroup, IconButton, Palette, PaletteStyleTag, Throbber, padding } from '@rocket.chat/fuselage';
+import { useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -32,10 +32,8 @@ const swiperStyle = css`
 		background-color: var(--rcx-color-surface-overlay, rgba(0, 0, 0, 0.6));
 	}
 
-	.rcx-swiper-close-button,
-	.rcx-swiper-prev-button,
-	.rcx-swiper-next-button {
-		color: var(--rcx-color-font-pure-white, #ffffff) !important;
+	.swiper-slide {
+		padding: ${padding('x144')} ${padding('x60')} ${padding('x96')};
 	}
 
 	.rcx-swiper-prev-button,
@@ -96,11 +94,7 @@ const swiperStyle = css`
 		width: 100%;
 		display: flex;
 		justify-content: flex-end;
-		transition: background-color 0.2s;
-		&:hover {
-			background-color: ${Palette.surface['surface-overlay']};
-			transition: background-color 0.2s;
-		}
+		background-color: ${Palette.surface['surface-sidebar']};
 	}
 `;
 
@@ -126,77 +120,97 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 	const preventPropagation = usePreventPropagation();
 
 	return createPortal(
-		<FocusScope contain autoFocus>
-			<Box role='dialog' aria-modal='true' aria-label={t('Image_gallery')} className={swiperStyle}>
-				<div role='presentation' className='swiper-container' onClick={onClose}>
-					<ButtonGroup role='toolbar' className='rcx-swiper-controls' onClick={preventPropagation}>
-						{zoomScale !== 1 && (
-							<IconButton name='resize' small icon='arrow-collapse' title={t('Resize')} rcx-swiper-zoom-out onClick={handleResize} />
-						)}
+		<>
+			<PaletteStyleTag theme='dark' selector='.swiper-container.image-gallery' tagId='image-gallery-palette' />
+			<FocusScope contain autoFocus>
+				<Box role='dialog' aria-modal='true' aria-label={t('Image_gallery')} className={swiperStyle}>
+					<div role='presentation' className='swiper-container image-gallery' onClick={onClose}>
+						<ButtonGroup role='toolbar' className='rcx-swiper-controls' onClick={preventPropagation}>
+							{zoomScale !== 1 && (
+								<IconButton
+									name='resize'
+									small
+									icon='arrow-collapse'
+									title={t('Resize')}
+									rcx-swiper-zoom-out
+									secondary
+									onClick={handleResize}
+								/>
+							)}
+							<IconButton
+								name='zoom-out'
+								small
+								icon='h-bar'
+								title={t('Zoom_out')}
+								rcx-swiper-zoom-out
+								onClick={handleZoomOut}
+								secondary
+								disabled={zoomScale === 1}
+							/>
+							<IconButton name='zoom-in' small icon='plus' title={t('Zoom_in')} rcx-swiper-zoom-in secondary onClick={handleZoomIn} />
+							<IconButton
+								name='close'
+								small
+								icon='cross'
+								aria-label={t('Close_gallery')}
+								className='rcx-swiper-close-button'
+								secondary
+								onClick={onClose}
+							/>
+						</ButtonGroup>
 						<IconButton
-							name='zoom-out'
-							small
-							icon='h-bar'
-							title={t('Zoom_out')}
-							rcx-swiper-zoom-out
-							onClick={handleZoomOut}
-							disabled={zoomScale === 1}
+							icon='chevron-right'
+							aria-label={t('Next_image')}
+							className='rcx-swiper-prev-button'
+							secondary
+							onClick={preventPropagation}
 						/>
-						<IconButton name='zoom-in' small icon='plus' title={t('Zoom_in')} rcx-swiper-zoom-in onClick={handleZoomIn} />
 						<IconButton
-							name='close'
-							small
-							icon='cross'
-							aria-label={t('Close_gallery')}
-							className='rcx-swiper-close-button'
-							onClick={onClose}
+							icon='chevron-left'
+							aria-label={t('Previous_image')}
+							className='rcx-swiper-next-button'
+							secondary
+							onClick={preventPropagation}
 						/>
-					</ButtonGroup>
-					<IconButton icon='chevron-right' aria-label={t('Next_image')} className='rcx-swiper-prev-button' onClick={preventPropagation} />
-					<IconButton
-						icon='chevron-left'
-						aria-label={t('Previous_image')}
-						className='rcx-swiper-next-button'
-						onClick={preventPropagation}
-					/>
-					<Swiper
-						ref={swiperRef}
-						navigation={{
-							nextEl: '.rcx-swiper-next-button',
-							prevEl: '.rcx-swiper-prev-button',
-						}}
-						keyboard
-						zoom={{ toggle: false }}
-						lazyPreloaderClass='rcx-lazy-preloader'
-						runCallbacksOnInit
-						onKeyPress={(_: SwiperClass, keyCode: string) => String(keyCode) === '27' && onClose()}
-						modules={[Navigation, Zoom, Keyboard, A11y]}
-						onInit={(swiper: SwiperClass) => setSwiperInst(swiper)}
-						onSlidesGridLengthChange={(swiper: SwiperClass) => {
-							swiper.slideTo(images.length - gridSize, 0);
-							setGridSize(images.length);
-						}}
-						onReachBeginning={loadMore}
-						initialSlide={images.length - 1}
-					>
-						{[...images].reverse().map(({ _id, path, url }) => (
-							<SwiperSlide key={_id}>
-								<div className='swiper-zoom-container'>
-									{/* eslint-disable-next-line
-										jsx-a11y/no-noninteractive-element-interactions,
-										jsx-a11y/click-events-have-key-events
-									*/}
-									<img src={path || url} loading='lazy' alt='' data-qa-zoom-scale={zoomScale} onClick={preventPropagation} />
-									<div className='rcx-lazy-preloader'>
-										<Throbber inheritColor />
+						<Swiper
+							ref={swiperRef}
+							navigation={{
+								nextEl: '.rcx-swiper-next-button',
+								prevEl: '.rcx-swiper-prev-button',
+							}}
+							keyboard
+							zoom={{ toggle: false }}
+							lazyPreloaderClass='rcx-lazy-preloader'
+							runCallbacksOnInit
+							onKeyPress={(_: SwiperClass, keyCode: string) => String(keyCode) === '27' && onClose()}
+							modules={[Navigation, Zoom, Keyboard, A11y]}
+							onInit={(swiper: SwiperClass) => setSwiperInst(swiper)}
+							onSlidesGridLengthChange={(swiper: SwiperClass) => {
+								swiper.slideTo(images.length - gridSize, 0);
+								setGridSize(images.length);
+							}}
+							onReachBeginning={loadMore}
+							initialSlide={images.length - 1}
+						>
+							{[...images].reverse().map(({ _id, path, url }) => (
+								<SwiperSlide key={_id}>
+									<div className='swiper-zoom-container'>
+										{/* eslint-disable-next-line
+											jsx-a11y/no-noninteractive-element-interactions,
+											jsx-a11y/click-events-have-key-events
+										*/}
+										<img src={path || url} loading='lazy' alt='' data-qa-zoom-scale={zoomScale} onClick={preventPropagation} />
+										<div className='rcx-lazy-preloader'>
+											<Throbber inheritColor />
+										</div>
 									</div>
-								</div>
-							</SwiperSlide>
-						))}
-					</Swiper>
-				</div>
-			</Box>
-		</FocusScope>,
+								</SwiperSlide>
+							))}
+						</Swiper>
+					</div>
+				</Box>
+			</FocusScope>
+		</>,
 		document.body,
 	);
 };

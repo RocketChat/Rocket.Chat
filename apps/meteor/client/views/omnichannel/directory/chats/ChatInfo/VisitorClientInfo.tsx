@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import UAParser from 'ua-parser-js';
 
-import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../../lib/asyncState';
+import { omnichannelQueryKeys } from '../../../../../lib/queryKeys';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
@@ -15,27 +15,34 @@ type VisitorClientInfoProps = {
 
 const VisitorClientInfo = ({ uid }: VisitorClientInfoProps) => {
 	const { t } = useTranslation();
+	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 	const {
-		value: userData,
-		phase: state,
-		error,
-	} = useEndpointData('/v1/livechat/visitors.info', { params: useMemo(() => ({ visitorId: uid }), [uid]) });
+		isPending,
+		isError,
+		data: visitor,
+	} = useQuery({
+		queryKey: omnichannelQueryKeys.visitorInfo(uid),
+		queryFn: async () => {
+			const { visitor } = await getVisitorInfo({ visitorId: uid });
+			return visitor;
+		},
+	});
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isPending) {
 		return <FormSkeleton />;
 	}
 
-	if (error || !userData || !userData.visitor.userAgent) {
+	if (isError || !visitor.userAgent) {
 		return null;
 	}
 
 	const ua = new UAParser();
-	ua.setUA(userData.visitor.userAgent);
+	ua.setUA(visitor.userAgent);
 	const clientData = {
 		os: `${ua.getOS().name} ${ua.getOS().version}`,
 		browser: `${ua.getBrowser().name} ${ua.getBrowser().version}`,
-		host: userData.visitor.host,
-		ip: userData.visitor.ip,
+		host: visitor.host,
+		ip: visitor.ip,
 	};
 
 	return (

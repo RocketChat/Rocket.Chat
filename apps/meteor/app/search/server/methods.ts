@@ -55,8 +55,13 @@ Meteor.methods<ServerMethods>({
 
 		SearchLogger.debug({ msg: 'search', text, context, payload });
 
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Error('User not logged in');
+		}
+
 		return new Promise<IRawSearchResult>((resolve, reject) => {
-			searchProviderService.activeProvider?.search(text, context, payload, (error, data) => {
+			void searchProviderService.activeProvider?.search(userId, text, context, payload, (error, data) => {
 				if (error) {
 					return reject(error);
 				}

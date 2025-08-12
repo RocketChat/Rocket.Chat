@@ -1,6 +1,5 @@
 import { Box, Skeleton, TableRow, TableCell } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 export const GenericTableLoadingRow = ({ cols }: { cols: number }): ReactElement => (
 	<TableRow>

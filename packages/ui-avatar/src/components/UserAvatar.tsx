@@ -31,7 +31,8 @@ const UserAvatar = ({ username, userId, etag, ...rest }: UserAvatarProps) => {
 		return <BaseAvatar url={url} data-username={username} title={username} {...props} />;
 	}
 
-	throw new Error('ui-avatar(UserAvatar) - Either username or userId must be provided');
+	// TODO: We should throw an Error after fixing the issue in Composer passing the username undefined
+	return null;
 };
 
 export default memo(UserAvatar);

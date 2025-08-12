@@ -1,11 +1,9 @@
-import { ContextualbarContent } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 import ContactInfoError from './ContactInfoError';
 import EditContactInfo from './EditContactInfo';
-import { FormSkeleton } from '../directory/components/FormSkeleton';
+import { ContextualbarSkeleton } from '../../../components/Contextualbar';
 
 type EditContactInfoWithDataProps = {
 	id: string;
@@ -15,14 +13,13 @@ type EditContactInfoWithDataProps = {
 
 const EditContactInfoWithData = ({ id, onClose, onCancel }: EditContactInfoWithDataProps) => {
 	const getContactEndpoint = useEndpoint('GET', '/v1/omnichannel/contacts.get');
-	const { data, isLoading, isError } = useQuery(['getContactById', id], async () => getContactEndpoint({ contactId: id }));
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['getContactById', id],
+		queryFn: async () => getContactEndpoint({ contactId: id }),
+	});
 
-	if (isLoading) {
-		return (
-			<ContextualbarContent>
-				<FormSkeleton />
-			</ContextualbarContent>
-		);
+	if (isPending) {
+		return <ContextualbarSkeleton onClose={onClose} />;
 	}
 
 	if (isError) {

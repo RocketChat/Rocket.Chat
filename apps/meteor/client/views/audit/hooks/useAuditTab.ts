@@ -1,5 +1,5 @@
 import type { IAuditLog } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { SetStateAction } from 'react';
 import { useMemo } from 'react';
@@ -19,7 +19,7 @@ export const useAuditTab = () => {
 
 	const auditRoute = useRoute('audit-home');
 
-	const setType = useMutableCallback((newType: SetStateAction<IAuditLog['fields']['type']>) => {
+	const setType = useEffectEvent((newType: SetStateAction<IAuditLog['fields']['type']>) => {
 		auditRoute.replace({ tab: typeToTabMap[typeof newType === 'function' ? newType(type) : newType] ?? 'rooms' });
 	});
 

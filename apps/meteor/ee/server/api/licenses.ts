@@ -6,6 +6,7 @@ import { check } from 'meteor/check';
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
+import { settings } from '../../../app/settings/server';
 import { updateAuditedByUser } from '../../../server/settings/lib/auditedSettingUpdates';
 
 API.v1.addRoute(
@@ -16,9 +17,27 @@ API.v1.addRoute(
 			const unrestrictedAccess = await hasPermissionAsync(this.userId, 'view-privileged-setting');
 			const loadCurrentValues = unrestrictedAccess && Boolean(this.queryParams.loadValues);
 
-			const license = await License.getInfo({ limits: unrestrictedAccess, license: unrestrictedAccess, currentValues: loadCurrentValues });
+			const license = await License.getInfo({
+				limits: unrestrictedAccess,
+				license: unrestrictedAccess,
+				currentValues: loadCurrentValues,
+			});
 
-			return API.v1.success({ license });
+			try {
+				// TODO: Remove this logic after setting type object is implemented.
+				const cloudSyncAnnouncement = JSON.parse(settings.get('Cloud_Sync_Announcement_Payload') ?? null);
+				const canManageCloud = await hasPermissionAsync(this.userId, 'manage-cloud');
+				return API.v1.success({
+					license,
+					...(canManageCloud && cloudSyncAnnouncement && { cloudSyncAnnouncement }),
+				});
+			} catch (error) {
+				console.error('Unable to parse Cloud_Sync_Announcement_Payload');
+			}
+
+			return API.v1.success({
+				license,
+			});
 		},
 	},
 );
@@ -41,7 +60,7 @@ API.v1.addRoute(
 				_id: this.userId,
 				username: this.user.username!,
 				ip: this.requestIp,
-				useragent: this.request.headers['user-agent'] || '',
+				useragent: this.request.headers.get('user-agent') || '',
 			});
 
 			(await auditSettingOperation(Settings.updateValueById, 'Enterprise_License', license)).modifiedCount &&

@@ -3,6 +3,8 @@ import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import webpack from 'webpack';
+
+import { supportedLocales } from './src/supportedLocales';
 import 'webpack-dev-server';
 
 // Helper to use absolute paths in the webpack config
@@ -14,9 +16,11 @@ const common = (args: webpack.WebpackOptionsNormalized): Partial<webpack.Configu
 	devtool: args.mode === 'production' ? 'source-map' : 'eval',
 	resolve: {
 		extensions: ['.js', '.jsx', '.ts', '.tsx'],
+		symlinks: false,
 		alias: {
 			'react': 'preact/compat',
 			'react-dom': 'preact/compat',
+			'date-fns': path.dirname(require.resolve('date-fns/package.json')),
 		},
 	},
 	optimization: {
@@ -134,6 +138,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 				chunks: ['polyfills', 'vendor', 'bundle'],
 				chunksSortMode: 'manual',
 			}),
+			new webpack.ContextReplacementPlugin(/date-fns[/\\]locale/, new RegExp(`(${supportedLocales.join('|')})\\.js$`)),
 		],
 		devServer: {
 			hot: true,

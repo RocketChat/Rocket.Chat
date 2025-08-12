@@ -1,10 +1,9 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
-import { useSetModal } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { Fragment } from 'react';
+import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -15,16 +14,16 @@ import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { validateEmail } from '../../../../lib/emailValidator';
 import {
 	ContextualbarScrollableContent,
-	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
+	ContextualbarDialog,
+	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../additionalForms';
-import { FormSkeleton } from '../directory/components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
 
 type ContactNewEditProps = {
@@ -76,10 +75,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const editContact = useEditContact(['current-contacts']);
 	const createContact = useCreateContact(['current-contacts']);
+	const checkExistenceEndpoint = useEndpoint('GET', '/v1/omnichannel/contacts.checkExistence');
 
 	const handleOpenUpSellModal = () => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 
-	const { data: customFieldsMetadata = [], isInitialLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
+	const { data: customFieldsMetadata = [], isLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
 		scope: 'visitor',
 		enabled: canViewCustomFields,
 	});
@@ -118,21 +118,47 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const { emails, phones } = watch();
 
 	const validateEmailFormat = async (emailValue: string) => {
+		if (!emails) {
+			return true;
+		}
+
 		const currentEmails = emails.map(({ address }) => address);
-		const isDuplicated = currentEmails.filter((email) => email === emailValue).length > 1;
 
 		if (!validateEmail(emailValue)) {
 			return t('error-invalid-email-address');
 		}
 
-		return !isDuplicated ? true : t('Email_already_exists');
+		if (currentEmails.filter((email) => email === emailValue).length > 1) {
+			return t('Email_already_exists');
+		}
+
+		const initialEmails = initialValue.emails.map(({ address }) => address);
+
+		if (!initialEmails.includes(emailValue) && (await checkExistenceEndpoint({ email: emailValue })).exists) {
+			return t('Email_already_exists');
+		}
+
+		return true;
 	};
 
 	const validatePhone = async (phoneValue: string) => {
-		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
-		const isDuplicated = currentPhones.filter((phone) => phone === phoneValue).length > 1;
+		if (!phones) {
+			return true;
+		}
 
-		return !isDuplicated ? true : t('Phone_already_exists');
+		const currentPhones = phones.map(({ phoneNumber }) => phoneNumber);
+
+		if (currentPhones.filter((phone) => phone === phoneValue).length > 1) {
+			return t('Phone_already_exists');
+		}
+
+		const initialPhones = initialValue.phones.map(({ phoneNumber }) => phoneNumber);
+
+		if (!initialPhones.includes(phoneValue) && (await checkExistenceEndpoint({ phone: phoneValue })).exists) {
+			return t('Phone_already_exists');
+		}
+
+		return true;
 	};
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
@@ -155,24 +181,23 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 		return createContact.mutate(payload);
 	};
 
-	const nameField = useUniqueId();
+	const formId = useId();
+	const nameField = useId();
+	const emailField = useId();
+	const phoneField = useId();
 
 	if (isLoadingCustomFields) {
-		return (
-			<ContextualbarContent>
-				<FormSkeleton />
-			</ContextualbarContent>
-		);
+		return <ContextualbarSkeleton onClose={onClose} />;
 	}
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name={contactData ? 'pencil' : 'user'} />
 				<ContextualbarTitle>{contactData ? t('Edit_Contact_Profile') : t('New_contact')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
+			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
 					<FieldLabel htmlFor={nameField} required>
 						{t('Name')}
@@ -182,13 +207,25 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 							name='name'
 							control={control}
 							rules={{ validate: validateName }}
-							render={({ field }) => <TextInput id={nameField} {...field} error={errors.name?.message} />}
+							render={({ field }) => (
+								<TextInput
+									id={nameField}
+									{...field}
+									error={errors.name?.message}
+									aria-invalid={errors.name ? 'true' : 'false'}
+									aria-describedby={`${nameField}-error`}
+								/>
+							)}
 						/>
 					</FieldRow>
-					{errors.name && <FieldError>{errors.name.message}</FieldError>}
+					{errors.name && (
+						<FieldError id={`${nameField}-error`} role='alert'>
+							{errors.name.message}
+						</FieldError>
+					)}
 				</Field>
 				<Field>
-					<FieldLabel>{t('Email')}</FieldLabel>
+					<FieldLabel id={emailField}>{t('Email')}</FieldLabel>
 					{emailFields.map((field, index) => (
 						<Fragment key={field.id}>
 							<FieldRow>
@@ -199,11 +236,24 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 										required: t('Required_field', { field: t('Email') }),
 										validate: validateEmailFormat,
 									}}
-									render={({ field }) => <TextInput {...field} error={errors.emails?.[index]?.address?.message} />}
+									render={({ field }) => (
+										<TextInput
+											{...field}
+											aria-labelledby={emailField}
+											error={errors.emails?.[index]?.address?.message}
+											aria-invalid={errors.emails?.[index]?.address ? 'true' : 'false'}
+											aria-describedby={`${emailField + index}-error`}
+											aria-required='true'
+										/>
+									)}
 								/>
-								<IconButton small onClick={() => removeEmail(index)} mis={8} icon='trash' />
+								<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} mis={8} icon='trash' />
 							</FieldRow>
-							{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
+							{errors.emails?.[index]?.address && (
+								<FieldError id={`${emailField + index}-error`} role='alert'>
+									{errors.emails?.[index]?.address?.message}
+								</FieldError>
+							)}
 						</Fragment>
 					))}
 					<Button
@@ -214,7 +264,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 					</Button>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Phone')}</FieldLabel>
+					<FieldLabel id={phoneField}>{t('Phone')}</FieldLabel>
 					{phoneFields.map((field, index) => (
 						<Fragment key={field.id}>
 							<FieldRow>
@@ -225,12 +275,24 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 										required: t('Required_field', { field: t('Phone') }),
 										validate: validatePhone,
 									}}
-									render={({ field }) => <TextInput {...field} error={errors.phones?.[index]?.message} />}
+									render={({ field }) => (
+										<TextInput
+											{...field}
+											aria-labelledby={phoneField}
+											error={errors.phones?.[index]?.phoneNumber?.message}
+											aria-invalid={errors.phones?.[index]?.phoneNumber ? 'true' : 'false'}
+											aria-describedby={`${phoneField + index}-error`}
+											aria-required='true'
+										/>
+									)}
 								/>
-								<IconButton small onClick={() => removePhone(index)} mis={8} icon='trash' />
+								<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} mis={8} icon='trash' />
 							</FieldRow>
-							{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}
-							<FieldError>{errors.phones?.[index]?.message}</FieldError>
+							{errors.phones?.[index]?.phoneNumber && (
+								<FieldError id={`${phoneField + index}-error`} role='alert'>
+									{errors.phones?.[index]?.phoneNumber?.message}
+								</FieldError>
+							)}
 						</Fragment>
 					))}
 					<Button
@@ -258,12 +320,12 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button onClick={handleSubmit(handleSave)} loading={isSubmitting} primary>
+					<Button type='submit' form={formId} loading={isSubmitting} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

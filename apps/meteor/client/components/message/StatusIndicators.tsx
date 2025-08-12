@@ -3,7 +3,6 @@ import { isEditedMessage, isE2EEMessage, isOTRMessage, isOTRAckMessage, isE2EEPi
 import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMessageDateFormatter, useShowStarred, useShowTranslated, useShowFollowing } from './list/MessageListContext';

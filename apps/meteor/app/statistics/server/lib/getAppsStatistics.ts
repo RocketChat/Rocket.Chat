@@ -6,7 +6,7 @@ import mem from 'mem';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { Info } from '../../../utils/rocketchat.info';
 
-export type AppsStatistics = {
+type AppsStatistics = {
 	engineVersion: string;
 	totalInstalled: number | false;
 	totalActive: number | false;
@@ -41,7 +41,7 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 				totalInstalled++;
 
 				const status = await app.getStatus();
-				const storageItem = await app.getStorageItem();
+				const storageItem = app.getStorageItem();
 
 				if (storageItem.installationSource === AppInstallationSource.PRIVATE) {
 					totalPrivateApps++;
@@ -51,12 +51,10 @@ async function _getAppsStatistics(): Promise<AppsStatistics> {
 					}
 				}
 
-				if (status === AppStatus.MANUALLY_DISABLED) {
-					totalFailed++;
-				}
-
 				if (AppStatusUtils.isEnabled(status)) {
 					totalActive++;
+				} else if (status !== AppStatus.MANUALLY_DISABLED) {
+					totalFailed++;
 				}
 			}),
 		);

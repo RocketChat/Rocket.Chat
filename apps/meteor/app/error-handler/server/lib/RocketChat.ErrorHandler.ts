@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 
 const incException = throttledCounter((counter) => {
 	Settings.incrementValueById('Uncaught_Exceptions_Count', counter, { returnDocument: 'after' })
-		.then(({ value }) => {
+		.then((value) => {
 			if (value) {
 				settings.set(value);
 			}

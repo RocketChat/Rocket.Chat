@@ -1,9 +1,9 @@
+import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useRoute, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import ConferencePageError from './ConferencePageError';
-import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { useVideoConfOpenCall } from '../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import PageLoading from '../root/PageLoading';
 

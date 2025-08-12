@@ -3,14 +3,14 @@ import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useVoipAPI, useVoipState } from '@rocket.chat/ui-voip';
 import { useMutation } from '@tanstack/react-query';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undefined => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { clientError, isEnabled, isReady, isRegistered } = useVoipState();
+	const { clientError, isEnabled, isReady, isRegistered, isReconnecting } = useVoipState();
 	const { register, unregister, onRegisteredOnce, onUnregisteredOnce } = useVoipAPI();
 
 	const toggleVoip = useMutation({
@@ -40,12 +40,16 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 			return t(clientError.message);
 		}
 
-		if (!isReady || toggleVoip.isLoading) {
+		if (!isReady || toggleVoip.isPending) {
 			return t('Loading');
 		}
 
+		if (isReconnecting) {
+			return t('Reconnecting');
+		}
+
 		return '';
-	}, [clientError, isReady, toggleVoip.isLoading, t]);
+	}, [clientError, isReady, toggleVoip.isPending, t, isReconnecting]);
 
 	return useMemo(() => {
 		if (!isEnabled) {
@@ -57,7 +61,7 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 				{
 					id: 'toggle-voip',
 					icon: isRegistered ? 'phone-disabled' : 'phone',
-					disabled: !isReady || toggleVoip.isLoading,
+					disabled: !isReady || toggleVoip.isPending || isReconnecting,
 					onClick: () => toggleVoip.mutate(),
 					content: (
 						<Box is='span' title={tooltip}>
@@ -67,5 +71,5 @@ export const useVoipItemsSection = (): { items: GenericMenuItemProps[] } | undef
 				},
 			],
 		};
-	}, [isEnabled, isRegistered, isReady, tooltip, t, toggleVoip]);
+	}, [isEnabled, isRegistered, isReady, tooltip, t, toggleVoip, isReconnecting]);
 };

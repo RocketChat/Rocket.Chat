@@ -1,5 +1,10 @@
 import { api } from '@rocket.chat/core-services';
-import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, InquiryWithAgentInfo } from '@rocket.chat/core-typings';
+import type {
+	ILivechatDepartment,
+	IOmnichannelRoom,
+	IOmnichannelServiceLevelAgreements,
+	InquiryWithAgentInfo,
+} from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import {
 	Rooms as RoomRaw,
@@ -16,6 +21,7 @@ import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
 import { updateInquiryQueueSla } from './SlaHelper';
 import { memoizeDebounce } from './debounceByParams';
 import { logger } from './logger';
+import { getOmniChatSortQuery } from '../../../../../app/livechat/lib/inquiries';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -32,24 +38,118 @@ type QueueInfo = {
 	numberMostRecentChats: number;
 };
 
-export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }: { agentId?: string; departmentId?: string }) => {
+export const isAgentWithinChatLimits = async ({
+	agentId,
+	departmentId,
+	totalChats,
+	departmentChats,
+}: {
+	agentId: string;
+	departmentId?: string;
+	totalChats: number;
+	departmentChats: number;
+}): Promise<boolean> => {
+	let agentLimit = 0;
+	let globalLimit = 0;
+
+	const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
+	const rawAgentLimit = user?.livechat?.maxNumberSimultaneousChat;
+
+	if (rawAgentLimit !== undefined && rawAgentLimit !== null) {
+		const numericAgentLimit = Number(rawAgentLimit);
+		if (numericAgentLimit > 0) {
+			agentLimit = numericAgentLimit;
+		}
+	}
+
+	if (agentLimit === 0) {
+		const settingLimit = settings.get<number>('Livechat_maximum_chats_per_agent');
+		if (settingLimit > 0) {
+			globalLimit = settingLimit;
+		}
+	}
+
 	if (departmentId) {
-		const department = await LivechatDepartmentRaw.findOneById(departmentId);
-		const { maxNumberSimultaneousChat = 0 } = department || { maxNumberSimultaneousChat: 0 };
-		if (maxNumberSimultaneousChat > 0) {
-			return maxNumberSimultaneousChat;
+		const department = await LivechatDepartmentRaw.findOneById<Pick<ILivechatDepartment, 'maxNumberSimultaneousChat'>>(departmentId, {
+			projection: { maxNumberSimultaneousChat: 1 },
+		});
+		let departmentLimit = 0;
+
+		if (department?.maxNumberSimultaneousChat !== undefined && department.maxNumberSimultaneousChat !== null) {
+			const numericDeptLimit = Number(department.maxNumberSimultaneousChat);
+			if (numericDeptLimit > 0) {
+				departmentLimit = numericDeptLimit;
+			}
+		}
+
+		if (departmentLimit > 0) {
+			if (agentLimit > 0) {
+				logger.debug({
+					msg: 'Applying chat limits',
+					departmentId,
+					agentId,
+					limits: ['department', 'agent'],
+					totalChats,
+					departmentChats,
+					agentLimit,
+					departmentLimit,
+				});
+				return departmentChats < departmentLimit && totalChats < agentLimit;
+			}
+
+			if (globalLimit > 0) {
+				logger.debug({
+					msg: 'Applying chat limits',
+					departmentId,
+					agentId,
+					limits: ['department', 'global'],
+					totalChats,
+					departmentChats,
+					globalLimit,
+					departmentLimit,
+				});
+				return departmentChats < departmentLimit && totalChats < globalLimit;
+			}
+
+			logger.debug({
+				msg: 'Applying chat limits',
+				departmentId,
+				agentId,
+				limits: ['department'],
+				totalChats,
+				departmentChats,
+				departmentLimit,
+			});
+			return departmentChats < departmentLimit;
 		}
 	}
 
-	if (agentId) {
-		const user = await Users.getAgentInfo(agentId, settings.get('Livechat_show_agent_info'));
-		const { livechat: { maxNumberSimultaneousChat = 0 } = {} } = user || {};
-		if (maxNumberSimultaneousChat > 0) {
-			return maxNumberSimultaneousChat;
-		}
+	if (agentLimit > 0) {
+		logger.debug({
+			msg: 'Applying chat limits',
+			departmentId,
+			agentId,
+			limits: ['agent'],
+			totalChats,
+			agentLimit,
+		});
+		return totalChats < agentLimit;
 	}
 
-	return settings.get<number>('Livechat_maximum_chats_per_agent');
+	if (globalLimit > 0) {
+		logger.debug({
+			msg: 'Applying chat limits',
+			departmentId,
+			agentId,
+			limits: ['global'],
+			totalChats,
+			globalLimit,
+		});
+		return totalChats < globalLimit;
+	}
+
+	logger.debug({ msg: 'No applicable limit found for user', agentId });
+	return true;
 };
 
 const getWaitingQueueMessage = async (departmentId?: string) => {
@@ -123,7 +223,7 @@ const dispatchWaitingQueueStatus = async (department?: string) => {
 
 	const queue = await LivechatInquiry.getCurrentSortedQueueAsync({
 		department,
-		queueSortBy: getInquirySortMechanismSetting(),
+		queueSortBy: getOmniChatSortQuery(getInquirySortMechanismSetting()),
 	});
 
 	if (!queue.length) {
@@ -204,14 +304,17 @@ export const updateQueueInactivityTimeout = async () => {
 	});
 };
 
-export const updateSLAInquiries = async (sla?: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>) => {
+export const updateSLAInquiries = async (
+	executedBy: string,
+	sla?: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
+) => {
 	if (!sla) {
 		return;
 	}
 
 	const { _id: slaId } = sla;
 	const promises: Promise<void>[] = [];
-	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+	const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: executedBy });
 	await LivechatRooms.findOpenBySlaId(slaId, {}, extraQuery).forEach((room) => {
 		promises.push(updateInquiryQueueSla(room._id, sla));
 	});
@@ -262,7 +365,7 @@ export const getLivechatQueueInfo = async (room?: IOmnichannelRoom) => {
 	const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
 		inquiryId: _id,
 		department,
-		queueSortBy: getInquirySortMechanismSetting(),
+		queueSortBy: getOmniChatSortQuery(getInquirySortMechanismSetting()),
 	});
 
 	if (!inq) {

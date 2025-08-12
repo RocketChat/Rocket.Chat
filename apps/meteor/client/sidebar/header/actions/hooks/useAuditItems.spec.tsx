@@ -5,7 +5,6 @@ import { useAuditItems } from './useAuditItems';
 
 it('should return an empty array if doesn`t have license', async () => {
 	const { result } = renderHook(() => useAuditItems(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				// @ts-expect-error: just for testing
@@ -24,7 +23,6 @@ it('should return an empty array if doesn`t have license', async () => {
 
 it('should return an empty array if have license and not have permissions', async () => {
 	const { result } = renderHook(() => useAuditItems(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				license: {
@@ -46,7 +44,6 @@ it('should return an empty array if have license and not have permissions', asyn
 
 it('should return auditItems if have license and permissions', async () => {
 	const { result } = renderHook(() => useAuditItems(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				license: {
@@ -81,7 +78,6 @@ it('should return auditItems if have license and permissions', async () => {
 
 it('should return auditMessages item if have license and can-audit permission', async () => {
 	const { result } = renderHook(() => useAuditItems(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				license: {
@@ -109,7 +105,6 @@ it('should return auditMessages item if have license and can-audit permission', 
 
 it('should return audiLogs item if have license and can-audit-log permission', async () => {
 	const { result } = renderHook(() => useAuditItems(), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				license: {

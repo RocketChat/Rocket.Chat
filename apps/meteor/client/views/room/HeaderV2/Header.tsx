@@ -2,10 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isVoipRoom } from '@rocket.chat/core-typings';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { lazy, memo, useMemo } from 'react';
-
-import { HeaderToolbar } from '../../../components/Header';
-import SidebarToggler from '../../../components/SidebarToggler';
+import { lazy, memo } from 'react';
 
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
 const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
@@ -17,39 +14,28 @@ type HeaderProps = {
 };
 
 const Header = ({ room }: HeaderProps): ReactElement | null => {
-	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
+	const { isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	const encrypted = Boolean(room.encrypted);
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages', false);
 	const shouldDisplayE2EESetup = encrypted && !unencryptedMessagesAllowed;
-
-	const slots = useMemo(
-		() => ({
-			start: isMobile && (
-				<HeaderToolbar>
-					<SidebarToggler />
-				</HeaderToolbar>
-			),
-		}),
-		[isMobile],
-	);
 
 	if (isEmbedded && !showTopNavbarEmbeddedLayout) {
 		return null;
 	}
 
 	if (room.t === 'l') {
-		return <OmnichannelRoomHeader slots={slots} />;
+		return <OmnichannelRoomHeader />;
 	}
 
 	if (isVoipRoom(room)) {
-		return <VoipRoomHeader slots={slots} room={room} />;
+		return <VoipRoomHeader room={room} />;
 	}
 
 	if (shouldDisplayE2EESetup) {
-		return <RoomHeaderE2EESetup room={room} slots={slots} />;
+		return <RoomHeaderE2EESetup room={room} />;
 	}
 
-	return <RoomHeader slots={slots} room={room} />;
+	return <RoomHeader room={room} />;
 };
 
 export default memo(Header);

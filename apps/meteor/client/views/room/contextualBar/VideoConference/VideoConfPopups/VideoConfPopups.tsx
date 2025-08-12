@@ -1,16 +1,20 @@
 import { useCustomSound } from '@rocket.chat/ui-contexts';
-import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
+import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
+import {
+	VideoConfPopupBackdrop,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+	useVideoConfIncomingCalls,
+} from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { FocusScope } from 'react-aria';
 
 import VideoConfPopup from './VideoConfPopup';
-import type { VideoConfPopupPayload } from '../../../../../contexts/VideoConfContext';
-import { useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfIncomingCalls } from '../../../../../contexts/VideoConfContext';
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 
 const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): ReactElement => {
-	const customSound = useCustomSound();
+	const { callSounds } = useCustomSound();
 	const incomingCalls = useVideoConfIncomingCalls();
 	const isRinging = useVideoConfIsRinging();
 	const isCalling = useVideoConfIsCalling();
@@ -25,18 +29,18 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 
 	useEffect(() => {
 		if (isRinging) {
-			customSound.play('ringtone', { loop: true });
+			callSounds.playRinger();
 		}
 
 		if (isCalling) {
-			customSound.play('dialtone', { loop: true });
+			callSounds.playDialer();
 		}
 
 		return (): void => {
-			customSound.stop('ringtone');
-			customSound.stop('dialtone');
+			callSounds.stopRinger();
+			callSounds.stopDialer();
 		};
-	}, [customSound, isRinging, isCalling]);
+	}, [isRinging, isCalling, callSounds]);
 
 	return (
 		<>

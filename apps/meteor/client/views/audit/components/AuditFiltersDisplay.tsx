@@ -1,7 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDate } from '../../../hooks/useFormatDate';

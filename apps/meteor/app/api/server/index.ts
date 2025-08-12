@@ -1,3 +1,4 @@
+import './ajv';
 import './helpers/composeRoomWithLastMessage';
 import './helpers/getLoggedInUser';
 import './helpers/getPaginationItems';
@@ -49,4 +50,7 @@ import './v1/voip';
 import './v1/federation';
 import './v1/moderation';
 
-export { API, APIClass, defaultRateLimiterOptions } from './api';
+// This has to come last so all endpoints are registered before generating the OpenAPI documentation
+import './default/openApi';
+
+export { API, defaultRateLimiterOptions } from './api';

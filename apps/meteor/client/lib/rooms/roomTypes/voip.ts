@@ -1,11 +1,11 @@
 import type { AtLeast } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../../app/authorization/client';
-import { Rooms } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { getVoipRoomType } from '../../../../lib/rooms/roomTypes/voip';
+import { Rooms } from '../../../stores';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const VoipRoomType = getVoipRoomType(roomCoordinator);
@@ -29,14 +29,14 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			return Rooms.findOne({ _id: identifier });
+			return Rooms.state.get(identifier);
 		},
 
-		canSendMessage(_rid) {
+		canSendMessage() {
 			return false;
 		},
 
-		readOnly(_rid, _user) {
+		readOnly() {
 			return true;
 		},
 

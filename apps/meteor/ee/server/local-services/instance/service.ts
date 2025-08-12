@@ -1,7 +1,9 @@
 import os from 'os';
 
-import { License, ServiceClassInternal } from '@rocket.chat/core-services';
-import { InstanceStatus } from '@rocket.chat/instance-status';
+import type { AppStatusReport } from '@rocket.chat/core-services';
+import { Apps, License, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IInstanceStatus } from '@rocket.chat/core-typings';
+import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import EJSON from 'ejson';
 import type { BrokerNode } from 'moleculer';
@@ -9,7 +11,9 @@ import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
 const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
@@ -33,36 +37,12 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	private transporter: Transporters.TCP | Transporters.NATS;
 
-	private isTransporterTCP = true;
-
 	private broker: ServiceBroker;
 
 	private troubleshootDisableInstanceBroadcast = false;
 
 	constructor() {
 		super();
-
-		const tx = getTransporter({ transporter: process.env.TRANSPORTER, port: process.env.TCP_PORT, extra: process.env.TRANSPORTER_EXTRA });
-		if (typeof tx === 'string') {
-			this.transporter = new Transporters.NATS({ url: tx });
-			this.isTransporterTCP = false;
-		} else {
-			this.transporter = new Transporters.TCP(tx);
-		}
-
-		if (this.isTransporterTCP) {
-			this.onEvent('watch.instanceStatus', async ({ clientAction, data }): Promise<void> => {
-				if (clientAction === 'removed') {
-					(this.broker.transit?.tx as any).nodes.disconnected(data?._id, false);
-					(this.broker.transit?.tx as any).nodes.nodes.delete(data?._id);
-					return;
-				}
-
-				if (clientAction === 'inserted' && data?.extraInformation?.tcpPort) {
-					this.connectNode(data);
-				}
-			});
-		}
 
 		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
@@ -93,16 +73,24 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	}
 
 	async created() {
+		const transporter = getTransporter({
+			transporter: process.env.TRANSPORTER,
+			port: process.env.TCP_PORT,
+			extra: process.env.TRANSPORTER_EXTRA,
+		});
+
+		const isTransporterTCP = typeof transporter !== 'string';
+
+		this.transporter = isTransporterTCP ? new Transporters.TCP(transporter) : new Transporters.NATS({ url: transporter });
+
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
 			transporter: this.transporter,
 			serializer: new EJSONSerializer(),
+			heartbeatInterval: defaultPingInterval,
+			heartbeatTimeout: indexExpire,
 			...getLogger(process.env),
 		});
-
-		if ((this.broker.transit?.tx as any)?.nodes?.localNode) {
-			(this.broker.transit?.tx as any).nodes.localNode.ipList = [hostIP];
-		}
 
 		this.broker.createService({
 			name: 'matrix',
@@ -130,7 +118,48 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 					}
 				},
 			},
+			actions: {
+				getAppsStatus(_ctx) {
+					return Apps.getAppsStatusLocal();
+				},
+			},
 		});
+
+		if (isTransporterTCP) {
+			const changeStream = InstanceStatusRaw.watchActiveInstances();
+
+			changeStream
+				.on('change', (change) => {
+					if (change.operationType === 'update') {
+						return;
+					}
+					if (change.operationType === 'insert' && change.fullDocument?.extraInformation?.tcpPort) {
+						this.connectNode(change.fullDocument);
+						return;
+					}
+					if (change.operationType === 'delete') {
+						this.disconnectNode(change.documentKey._id);
+					}
+				})
+				.once('error', (err) => {
+					SystemLogger.error({ msg: 'Error in InstanceStatus change stream:', err });
+				});
+		}
+	}
+
+	private connectNode(record: IInstanceStatus) {
+		if (record._id === InstanceStatus.id()) {
+			return;
+		}
+
+		const { host, tcpPort } = record.extraInformation;
+
+		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
+	}
+
+	private disconnectNode(nodeId: string) {
+		(this.broker.transit?.tx as any).nodes.disconnected(nodeId, false);
+		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
 	}
 
 	async started() {
@@ -176,31 +205,6 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		this.broadcastStarted = true;
 
 		StreamerCentral.on('broadcast', this.sendBroadcast.bind(this));
-
-		if (this.isTransporterTCP) {
-			await InstanceStatusRaw.find(
-				{
-					'extraInformation.tcpPort': {
-						$exists: true,
-					},
-				},
-				{
-					sort: {
-						_createdAt: -1,
-					},
-				},
-			).forEach(this.connectNode.bind(this));
-		}
-	}
-
-	private connectNode(record: any) {
-		if (record._id === InstanceStatus.id()) {
-			return;
-		}
-
-		const { host, tcpPort } = record.extraInformation;
-
-		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
 	}
 
 	private sendBroadcast(streamName: string, eventName: string, args: unknown[]) {
@@ -213,5 +217,46 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	async getInstances(): Promise<BrokerNode[]> {
 		return this.broker.call('$node.list', { onlyAvailable: true });
+	}
+
+	async getAppsStatusInInstances(): Promise<AppStatusReport> {
+		const instances = await this.getInstances();
+
+		if (instances.length < 2) {
+			throw new AppsEngineNoNodesFoundError();
+		}
+
+		const control: Promise<void>[] = [];
+		const statusByApp: AppStatusReport = {};
+
+		instances.forEach((instance) => {
+			const { id: instanceId } = instance;
+
+			control.push(
+				(async () => {
+					const appsStatus = await this.broker.call<Awaited<ReturnType<(typeof Apps)['getAppsStatusLocal']>>, null>(
+						'matrix.getAppsStatus',
+						null,
+						{ nodeID: instanceId },
+					);
+
+					if (!appsStatus) {
+						throw new Error(`Failed to get apps status from instance ${instanceId}`);
+					}
+
+					appsStatus.forEach(({ status, appId }) => {
+						if (!statusByApp[appId]) {
+							statusByApp[appId] = [];
+						}
+
+						statusByApp[appId].push({ instanceId, isLocal: instance.local, status });
+					});
+				})(),
+			);
+		});
+
+		await Promise.all(control);
+
+		return statusByApp;
 	}
 }

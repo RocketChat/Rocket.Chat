@@ -2,7 +2,6 @@ import { Box, Skeleton } from '@rocket.chat/fuselage';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CounterSet from '../../../components/dataView/CounterSet';
@@ -10,11 +9,13 @@ import CounterSet from '../../../components/dataView/CounterSet';
 const useOverviewData = (): [eventCount: ReactNode, userCount: ReactNode, serverCount: ReactNode] => {
 	const getFederationOverviewData = useMethod('federation:getOverviewData');
 
-	const result = useQuery(['admin/federation-dashboard/overview'], async () => getFederationOverviewData(), {
+	const result = useQuery({
+		queryKey: ['admin/federation-dashboard/overview'],
+		queryFn: async () => getFederationOverviewData(),
 		refetchInterval: 10_000,
 	});
 
-	if (result.isLoading) {
+	if (result.isPending) {
 		return [
 			<Skeleton key='event-count' variant='text' />,
 			<Skeleton key='user-count' variant='text' />,

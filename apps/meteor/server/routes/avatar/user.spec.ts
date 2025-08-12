@@ -169,7 +169,9 @@ describe('#userAvatarById()', () => {
 		await userAvatarById(request, response, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
-		expect(mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'Doe', req: request, res: response })).to.be.true;
+		expect(
+			mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'Doe', req: request, res: response, useAllInitials: true }),
+		).to.be.true;
 	});
 });
 
@@ -234,13 +236,42 @@ describe('#userAvatarByUsername()', () => {
 		expect(pipe.calledWith(response)).to.be.true;
 	});
 
-	it(`should serve svg if requestUsername starts with @`, async () => {
-		const request = { url: '/@jon' };
+	describe('should serve svg if requestUsername starts with @', () => {
+		it('should serve SVG and useAllInitials should be false', async () => {
+			const request = { url: '/@jon' };
 
-		await userAvatarByUsername(request, response, next);
+			mocks.settingsGet.returns(false);
 
-		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
-		expect(mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'jon', req: request, res: response })).to.be.true;
+			await userAvatarByUsername(request, response, next);
+
+			expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
+			expect(
+				mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({
+					nameOrUsername: 'jon',
+					req: request,
+					res: response,
+					useAllInitials: false,
+				}),
+			).to.be.true;
+		});
+
+		it('should serve SVG and useAllInitials should be true', async () => {
+			const request = { url: '/@baba yaga' };
+
+			mocks.settingsGet.withArgs('UI_Use_Name_Avatar').returns(true);
+
+			await userAvatarByUsername(request, response, next);
+
+			expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
+			expect(
+				mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({
+					nameOrUsername: 'baba yaga',
+					req: request,
+					res: response,
+					useAllInitials: true,
+				}),
+			).to.be.true;
+		});
 	});
 
 	it(`should serve avatar file if found`, async () => {
@@ -286,6 +317,8 @@ describe('#userAvatarByUsername()', () => {
 		await userAvatarByUsername(request, response, next);
 
 		expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response)).to.be.true;
-		expect(mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'Doe', req: request, res: response })).to.be.true;
+		expect(
+			mocks.utils.serveSvgAvatarInRequestedFormat.calledWith({ nameOrUsername: 'Doe', req: request, res: response, useAllInitials: true }),
+		).to.be.true;
 	});
 });

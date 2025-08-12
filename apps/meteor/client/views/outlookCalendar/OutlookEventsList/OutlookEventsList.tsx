@@ -1,8 +1,7 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
@@ -13,9 +12,9 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarFooter,
-	ContextualbarSkeleton,
+	ContextualbarDialog,
 } from '../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
@@ -28,7 +27,7 @@ type OutlookEventsListProps = {
 
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
-	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url', '');
+	const user = useUser();
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
@@ -41,101 +40,70 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 		debounceDelay: 200,
 	});
 
-	if (calendarListResult.isLoading) {
-		return <ContextualbarSkeleton />;
-	}
-
 	const calendarEvents = calendarListResult.data;
 	const total = calendarEvents?.length || 0;
 
+	const outlookUrl = user?.settings?.calendar?.outlook?.Outlook_Url;
+
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='calendar' />
 				<ContextualbarTitle>{t('Outlook_calendar')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-
-			{hasOutlookMethods && !authEnabled && total === 0 && (
-				<>
-					<ContextualbarContent paddingInline={0} ref={ref} color='default'>
-						<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
-							<States>
-								<StatesIcon name='user' />
-								<StatesTitle>{t('Log_in_to_sync')}</StatesTitle>
-							</States>
-						</Box>
-					</ContextualbarContent>
-					<ContextualbarFooter>
-						<Box mbs={8}>
-							<ButtonGroup stretch>
-								<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
-									{t('Login')}
-								</Button>
-							</ButtonGroup>
-						</Box>
-					</ContextualbarFooter>
-				</>
-			)}
-
-			{(authEnabled || !hasOutlookMethods) && (
-				<>
-					<ContextualbarContent paddingInline={0} ref={ref} color='default'>
-						{(total === 0 || calendarListResult.isError) && (
-							<Box display='flex' flexDirection='column' justifyContent='center' height='100%'>
-								{calendarListResult.isError && (
-									<States>
-										<StatesIcon name='circle-exclamation' variation='danger' />
-										<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-										<StatesSubtitle>{getErrorMessage(calendarListResult.error)}</StatesSubtitle>
-									</States>
-								)}
-								{!calendarListResult.isError && total === 0 && (
-									<States>
-										<StatesIcon name='calendar' />
-										<StatesTitle>{t('No_history')}</StatesTitle>
-									</States>
-								)}
-							</Box>
-						)}
-						{calendarListResult.isSuccess && calendarListResult.data.length > 0 && (
-							<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-								<Virtuoso
-									style={{
-										height: blockSize,
-										width: inlineSize,
-									}}
-									totalCount={total}
-									overscan={25}
-									data={calendarEvents}
-									components={{ Scroller: VirtuosoScrollbars }}
-									itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
-								/>
-							</Box>
-						)}
-					</ContextualbarContent>
-					<ContextualbarFooter>
+			<ContextualbarContent paddingInline={0} color='default'>
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' justifyContent='center' ref={ref}>
+					{calendarListResult.isPending && <Throbber size='x12' />}
+					{calendarListResult.isError && (
+						<States>
+							<StatesIcon name='circle-exclamation' variation='danger' />
+							<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+							<StatesSubtitle>{getErrorMessage(calendarListResult.error)}</StatesSubtitle>
+						</States>
+					)}
+					{!calendarListResult.isPending && total === 0 && (
+						<States>
+							<StatesIcon name='calendar' />
+							<StatesTitle>{t('No_history')}</StatesTitle>
+						</States>
+					)}
+					{calendarListResult.isSuccess && calendarListResult.data.length > 0 && (
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{
+									height: blockSize,
+									width: inlineSize,
+								}}
+								totalCount={total}
+								overscan={25}
+								data={calendarEvents}
+								itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
+							/>
+						</VirtualizedScrollbars>
+					)}
+				</Box>
+			</ContextualbarContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
+					{outlookUrl && (
+						<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
+							{t('Open_Outlook')}
+						</Button>
+					)}
+				</ButtonGroup>
+				{hasOutlookMethods && (
+					<Box mbs={8}>
 						<ButtonGroup stretch>
-							{authEnabled && <Button onClick={changeRoute}>{t('Calendar_settings')}</Button>}
-							{outlookUrl && (
-								<Button icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
-									{t('Open_Outlook')}
-								</Button>
-							)}
+							<Button primary loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
+								{authEnabled ? t('Sync') : t('Log_in_to_sync')}
+							</Button>
 						</ButtonGroup>
-						{hasOutlookMethods && (
-							<Box mbs={8}>
-								<ButtonGroup stretch>
-									<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
-										{t('Sync')}
-									</Button>
-								</ButtonGroup>
-							</Box>
-						)}
-					</ContextualbarFooter>
-				</>
-			)}
-		</>
+					</Box>
+				)}
+			</ContextualbarFooter>
+		</ContextualbarDialog>
 	);
 };
 

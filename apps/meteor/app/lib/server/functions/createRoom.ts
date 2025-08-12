@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Federation, FederationEE, License, Message, Team } from '@rocket.chat/core-services';
@@ -10,7 +9,9 @@ import { Meteor } from 'meteor/meteor';
 import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
+import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
+import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
@@ -48,6 +49,7 @@ async function createUsersSubscriptions({
 		};
 
 		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, owner, extra);
+		await syncRoomRolePriorityForUserAndRoom(owner._id, room._id, ['owner']);
 
 		if (insertedId) {
 			await notifyOnRoomChanged(room, 'inserted');
@@ -59,6 +61,8 @@ async function createUsersSubscriptions({
 	const subs = [];
 
 	const memberIds = [];
+
+	const memberIdAndRolePriorityMap: Record<IUser['_id'], number> = {};
 
 	const membersCursor = Users.findUsersByUsernames<Pick<IUser, '_id' | 'username' | 'settings' | 'federated' | 'roles'>>(members, {
 		projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
@@ -74,9 +78,7 @@ async function createUsersSubscriptions({
 
 		memberIds.push(member._id);
 
-		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-
-		extra.open = true;
+		const extra: Partial<ISubscriptionExtraData> = { open: true, ...options?.subscriptionExtra };
 
 		if (room.prid) {
 			extra.prid = room.prid;
@@ -94,8 +96,13 @@ async function createUsersSubscriptions({
 			extraData: {
 				...extra,
 				...autoTranslateConfig,
+				...getDefaultSubscriptionPref(member),
 			},
 		});
+
+		if (extra.roles) {
+			memberIdAndRolePriorityMap[member._id] = calculateRoomRolePriorityFromRoles(extra.roles);
+		}
 	}
 
 	if (!['d', 'l'].includes(room.t)) {
@@ -103,6 +110,7 @@ async function createUsersSubscriptions({
 	}
 
 	const { insertedIds } = await Subscriptions.createWithRoomAndManyUsers(room, subs);
+	await Users.assignRoomRolePrioritiesByUserIdPriorityMap(memberIdAndRolePriorityMap, room._id);
 
 	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
 
@@ -194,7 +202,7 @@ export const createRoom = async <T extends RoomType>(
 		},
 		ts: now,
 		ro: readOnly === true,
-		sidepanel,
+		...(sidepanel && { sidepanel }),
 	};
 
 	if (teamId) {

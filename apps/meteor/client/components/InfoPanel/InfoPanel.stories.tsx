@@ -1,6 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ComponentType } from 'react';
-import React from 'react';
 
 import {
 	InfoPanel,
@@ -21,12 +20,12 @@ export default {
 	component: InfoPanel,
 	subcomponents: {
 		InfoPanelAction: InfoPanelAction as ComponentType<any>,
-		InfoPanelActionGroup,
-		InfoPanelAvatar,
-		InfoPanelField,
-		InfoPanelLabel,
-		InfoPanelSection,
-		InfoPanelText,
+		InfoPanelActionGroup: InfoPanelActionGroup as ComponentType<any>,
+		InfoPanelAvatar: InfoPanelAvatar as ComponentType<any>,
+		InfoPanelField: InfoPanelField as ComponentType<any>,
+		InfoPanelLabel: InfoPanelLabel as ComponentType<any>,
+		InfoPanelSection: InfoPanelSection as ComponentType<any>,
+		InfoPanelText: InfoPanelText as ComponentType<any>,
 		InfoPanelTitle: InfoPanelTitle as ComponentType<any>,
 		RetentionPolicyCallout: RetentionPolicyCallout as ComponentType<any>,
 	},

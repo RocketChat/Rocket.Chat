@@ -7,6 +7,71 @@ import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
+test.describe('teams-management-permissions', () => {
+	let poHomeTeam: HomeTeam;
+
+	test.beforeEach(async ({ page }) => {
+		poHomeTeam = new HomeTeam(page);
+
+		await page.goto('/home');
+	});
+
+	test.afterEach(async ({ api }) => {
+		await api.post('/permissions.update', {
+			permissions: [
+				{ _id: 'create-p', roles: ['admin', 'owner', 'moderator'] },
+				{ _id: 'create-c', roles: ['admin', 'owner', 'moderator'] },
+			],
+		});
+	});
+
+	test('should not allow to create public team if user does not have the create-c permission', async ({ api }) => {
+		expect(
+			(
+				await api.post('/permissions.update', {
+					permissions: [{ _id: 'create-c', roles: [] }],
+				})
+			).status(),
+		).toBe(200);
+
+		await poHomeTeam.sidenav.openNewByLabel('Team');
+
+		await expect(poHomeTeam.textPrivate).toBeDisabled();
+		await expect(poHomeTeam.textPrivate).toBeChecked();
+	});
+
+	test('should not allow to create private team if user does not have the create-p permission', async ({ api }) => {
+		expect(
+			(
+				await api.post('/permissions.update', {
+					permissions: [{ _id: 'create-p', roles: [] }],
+				})
+			).status(),
+		).toBe(200);
+
+		await poHomeTeam.sidenav.openNewByLabel('Team');
+
+		await expect(poHomeTeam.textPrivate).toBeDisabled();
+		await expect(poHomeTeam.textPrivate).not.toBeChecked();
+	});
+
+	test('should not allow to create team if user does not have both create-p and create-c permissions', async ({ api, page }) => {
+		expect(
+			(
+				await api.post('/permissions.update', {
+					permissions: [
+						{ _id: 'create-p', roles: [] },
+						{ _id: 'create-c', roles: [] },
+					],
+				})
+			).status(),
+		).toBe(200);
+
+		await poHomeTeam.sidenav.btnCreateNew.click();
+		await expect(page.locator(`role=menuitem[name="Team"]`)).not.toBeVisible();
+	});
+});
+
 test.describe.serial('teams-management', () => {
 	let poHomeTeam: HomeTeam;
 	let targetChannel: string;
@@ -26,6 +91,8 @@ test.describe.serial('teams-management', () => {
 				{ _id: 'move-room-to-team', roles: ['admin', 'owner', 'moderator'] },
 				{ _id: 'create-team-channel', roles: ['admin', 'owner', 'moderator'] },
 				{ _id: 'create-team-group', roles: ['admin', 'owner', 'moderator'] },
+				{ _id: 'create-c', roles: ['admin', 'owner', 'moderator'] },
+				{ _id: 'create-p', roles: ['admin', 'owner', 'moderator'] },
 				{ _id: 'delete-team-channel', roles: ['admin', 'owner', 'moderator'] },
 				{ _id: 'delete-team-group', roles: ['admin', 'owner', 'moderator'] },
 			],
@@ -378,12 +445,13 @@ test.describe.serial('teams-management', () => {
 	test('should delete targetTeamNonPrivate', async () => {
 		await poHomeTeam.sidenav.openChat(targetTeamNonPrivate);
 		await poHomeTeam.tabs.btnRoomInfo.click();
-		await poHomeTeam.tabs.room.btnDelete.click();
+		await poHomeTeam.tabs.room.btnMore.click();
+		await poHomeTeam.tabs.room.getMoreOption('Delete').click();
 		await expect(poHomeTeam.tabs.room.confirmDeleteTeamModal).toBeVisible();
 
 		await poHomeTeam.tabs.room.confirmDeleteTeam();
 		await poHomeTeam.sidenav.searchRoom(targetTeamNonPrivate);
-		await expect(poHomeTeam.sidenav.getSearchRoomByName(targetTeamNonPrivate)).not.toBeVisible();
+		await expect(poHomeTeam.sidenav.getSearchItemByName(targetTeamNonPrivate)).not.toBeVisible();
 	});
 
 	test('should user1 leave from targetTeam', async ({ browser }) => {
@@ -406,11 +474,11 @@ test.describe.serial('teams-management', () => {
 		await expect(poHomeTeam.tabs.members.memberOption('user1')).not.toBeVisible();
 	});
 
-	test('should convert team into a channel', async ({ page }) => {
+	test('should convert team into a channel', async () => {
 		await poHomeTeam.sidenav.openChat(targetTeam);
 		await poHomeTeam.tabs.btnRoomInfo.click();
 		await poHomeTeam.tabs.room.btnMore.click();
-		await page.getByRole('listbox', { exact: true }).getByRole('option', { name: 'Convert to Channel' }).click();
+		await poHomeTeam.tabs.room.getMoreOption('Convert to Channel').click();
 		await expect(poHomeTeam.tabs.room.confirmConvertModal).toBeVisible();
 
 		await poHomeTeam.tabs.room.confirmConvert();

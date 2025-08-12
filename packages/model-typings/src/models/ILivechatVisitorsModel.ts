@@ -8,7 +8,7 @@ import type {
 	Document,
 	UpdateFilter,
 	FindOneAndUpdateOptions,
-	ModifyResult,
+	WithId,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -42,6 +42,8 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
 
+	updateAllLivechatDataByToken(token: string, livechatDataToUpdate: Record<string, string>): Promise<UpdateResult>;
+
 	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<UpdateResult | Document | boolean>;
 
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;
@@ -56,13 +58,9 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult>;
 
-	updateOneByIdOrToken(update: UpdateFilter<ILivechatVisitor>, options?: FindOneAndUpdateOptions): Promise<ModifyResult<ILivechatVisitor>>;
+	updateOneByIdOrToken(update: UpdateFilter<ILivechatVisitor>, options?: FindOneAndUpdateOptions): Promise<null | WithId<ILivechatVisitor>>;
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void>;
-
-	isVisitorActiveOnPeriod(visitorId: string, period: string): Promise<boolean>;
-
-	markVisitorActiveForPeriod(visitorId: string, period: string): Promise<UpdateResult>;
 
 	findOneEnabledById<T extends Document = ILivechatVisitor>(_id: string, options?: FindOptions<ILivechatVisitor>): Promise<T | null>;
 
@@ -70,11 +68,11 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	findEnabled(query: Filter<ILivechatVisitor>, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
 
-	countVisitorsOnPeriod(period: string): Promise<number>;
 	saveGuestById(
 		_id: string,
 		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
 	): Promise<UpdateResult | Document | boolean>;
 	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult>;
 	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number>;
+	updateDepartmentById(_id: string, department: string): Promise<null | WithId<ILivechatVisitor>>;
 }

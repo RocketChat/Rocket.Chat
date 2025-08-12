@@ -1,5 +1,4 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import UnitsPage from './UnitsPage';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';

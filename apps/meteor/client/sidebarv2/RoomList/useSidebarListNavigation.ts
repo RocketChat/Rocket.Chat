@@ -1,5 +1,5 @@
-import { useFocusManager } from '@react-aria/focus';
 import { useCallback } from 'react';
+import { useFocusManager } from 'react-aria';
 
 const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-item');
 const isCollapseGroup = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-collapse-group__bar');
@@ -7,7 +7,7 @@ const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.co
 
 /**
  * Custom hook to provide the sidebar navigation by keyboard.
- * @param ref - A ref to the message list DOM element.
+ * @returns ref - A ref to the message list DOM element.
  */
 export const useSidebarListNavigation = () => {
 	const sidebarListFocusManager = useFocusManager();
@@ -34,15 +34,15 @@ export const useSidebarListNavigation = () => {
 					e.stopPropagation();
 
 					if (e.shiftKey) {
-						sidebarListFocusManager.focusPrevious({
+						sidebarListFocusManager?.focusPrevious({
 							accept: (node) => !isListItem(node) && !isListItemMenu(node) && !isCollapseGroup(node),
 						});
 					} else if (isListItemMenu(e.target)) {
-						sidebarListFocusManager.focusNext({
+						sidebarListFocusManager?.focusNext({
 							accept: (node) => !isListItem(node) && !isListItemMenu(node) && !isCollapseGroup(node),
 						});
 					} else {
-						sidebarListFocusManager.focusNext({
+						sidebarListFocusManager?.focusNext({
 							accept: (node) => !isListItem(node) && !isCollapseGroup(node),
 						});
 					}
@@ -53,11 +53,11 @@ export const useSidebarListNavigation = () => {
 					e.stopPropagation();
 
 					if (e.key === 'ArrowUp') {
-						sidebarListFocusManager.focusPrevious({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
+						sidebarListFocusManager?.focusPrevious({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
 					}
 
 					if (e.key === 'ArrowDown') {
-						sidebarListFocusManager.focusNext({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
+						sidebarListFocusManager?.focusNext({ accept: (node) => isListItem(node) || isCollapseGroup(node) });
 					}
 
 					lastItemFocused = document.activeElement as HTMLElement;

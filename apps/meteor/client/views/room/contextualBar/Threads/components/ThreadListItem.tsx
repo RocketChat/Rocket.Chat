@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Palette } from '@rocket.chat/fuselage';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
-import React, { useCallback, memo } from 'react';
+import { useCallback, memo } from 'react';
 
 import ThreadListMessage from './ThreadListMessage';
 import { useDecryptedMessage } from '../../../../../hooks/useDecryptedMessage';

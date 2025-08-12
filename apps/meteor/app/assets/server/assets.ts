@@ -396,8 +396,6 @@ void (async () => {
 	}
 })();
 
-settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
-
 Meteor.startup(() => {
 	setTimeout(() => {
 		process.emit('message', {
@@ -434,7 +432,8 @@ const listener = (req: IncomingMessage, res: ServerResponse, next: NextHandleFun
 
 	if (asset && Array.isArray(asset.constraints.extensions) && !asset.constraints.extensions.includes(format)) {
 		res.writeHead(403);
-		return res.end();
+		res.end();
+		return;
 	}
 	if (!file) {
 		const defaultUrl = asset?.defaultUrl;

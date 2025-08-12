@@ -1,12 +1,12 @@
 import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../../app/authorization/client';
-import { Rooms, Subscriptions } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
+import { Rooms, Subscriptions } from '../../../stores';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const LivechatRoomType = getLivechatRoomType(roomCoordinator);
@@ -39,7 +39,7 @@ roomCoordinator.add(
 				case UiTextContext.HIDE_WARNING:
 					return 'Hide_Livechat_Warning';
 				case UiTextContext.LEAVE_WARNING:
-					return 'Hide_Livechat_Warning';
+					return 'Leave_Livechat_Warning';
 				default:
 					return '';
 			}
@@ -54,25 +54,23 @@ roomCoordinator.add(
 		},
 
 		findRoom(identifier) {
-			return Rooms.findOne({ _id: identifier });
+			return Rooms.state.get(identifier);
 		},
 
 		isLivechatRoom() {
 			return true;
 		},
 
-		canSendMessage(rid) {
-			const room = Rooms.findOne({ _id: rid }, { fields: { open: 1 } });
+		canSendMessage(room) {
 			return Boolean(room?.open);
 		},
 
-		readOnly(rid, _user) {
-			const room = Rooms.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
+		readOnly(room) {
 			if (!room?.open) {
 				return true;
 			}
 
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.state.find((record) => record.rid === room._id);
 			return !subscription;
 		},
 

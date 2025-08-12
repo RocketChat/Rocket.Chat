@@ -1,7 +1,6 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';

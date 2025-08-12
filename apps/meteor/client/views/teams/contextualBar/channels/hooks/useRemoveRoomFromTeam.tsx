@@ -1,9 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, usePermission, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
 export const useRemoveRoomFromTeam = (room: IRoom, { reload }: { reload?: () => void }) => {

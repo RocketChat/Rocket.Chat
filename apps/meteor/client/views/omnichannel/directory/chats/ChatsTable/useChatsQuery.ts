@@ -1,22 +1,14 @@
-import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useUserId } from '@rocket.chat/ui-contexts';
-import moment from 'moment';
+import { parse, endOfDay, startOfDay } from 'date-fns';
 import { useCallback } from 'react';
 
 import type { ChatsFiltersQuery } from '../../contexts/ChatsContext';
-
-type useQueryType = (
-	debouncedParams: ChatsFiltersQuery,
-	[column, direction]: [string, 'asc' | 'desc'],
-	current: number,
-	itemsPerPage: 25 | 50 | 100,
-) => GETLivechatRoomsParams;
 
 type CurrentChatQuery = {
 	agents?: string[];
 	offset?: number;
 	roomName?: string;
-	departmentId?: string;
+	departmentId?: string[];
 	open?: boolean;
 	createdAt?: string;
 	closedAt?: string;
@@ -26,6 +18,7 @@ type CurrentChatQuery = {
 	sort: string;
 	count?: number;
 	queued?: boolean;
+	units?: string[];
 };
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
@@ -34,8 +27,13 @@ export const useChatsQuery = () => {
 	const userIdLoggedIn = useUserId();
 	const canViewLivechatRooms = usePermission('view-livechat-rooms');
 
-	const chatsQuery: useQueryType = useCallback(
-		({ guest, servedBy, department, status, from, to, tags, ...customFields }, [column, direction], current, itemsPerPage) => {
+	return useCallback(
+		(
+			{ guest, servedBy, department, status, from, to, tags, units, ...customFields }: ChatsFiltersQuery,
+			[column, direction]: [string, 'asc' | 'desc'],
+			current: number,
+			itemsPerPage: 25 | 50 | 100,
+		) => {
 			const query: CurrentChatQuery = {
 				...(guest && { roomName: guest }),
 				sort: JSON.stringify({
@@ -49,10 +47,10 @@ export const useChatsQuery = () => {
 			if (from || to) {
 				query.createdAt = JSON.stringify({
 					...(from && {
-						start: moment(new Date(from)).set({ hour: 0, minutes: 0, seconds: 0 }).toISOString(),
+						start: startOfDay(parse(from, 'yyyy-MM-dd', new Date())).toISOString(),
 					}),
 					...(to && {
-						end: moment(new Date(to)).set({ hour: 23, minutes: 59, seconds: 59 }).toISOString(),
+						end: endOfDay(parse(to, 'yyyy-MM-dd', new Date())).toISOString(),
 					}),
 				});
 			}
@@ -67,16 +65,20 @@ export const useChatsQuery = () => {
 				query.agents = userIdLoggedIn ? [userIdLoggedIn] : [];
 			}
 
-			if (canViewLivechatRooms && servedBy && servedBy !== 'all') {
-				query.agents = [servedBy];
+			if (canViewLivechatRooms && servedBy?.length) {
+				query.agents = servedBy.map((s) => s.value as string);
 			}
 
-			if (department && department !== 'all') {
-				query.departmentId = department;
+			if (department?.length) {
+				query.departmentId = department.map((d) => d.value as string);
 			}
 
 			if (tags && tags.length > 0) {
 				query.tags = tags.map((tag) => tag.value);
+			}
+
+			if (units?.length) {
+				query.units = units.map((u) => u.value as string);
 			}
 
 			if (customFields && Object.keys(customFields).length > 0) {
@@ -92,6 +94,4 @@ export const useChatsQuery = () => {
 		},
 		[canViewLivechatRooms, userIdLoggedIn],
 	);
-
-	return chatsQuery;
 };

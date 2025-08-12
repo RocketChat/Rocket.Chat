@@ -1,7 +1,7 @@
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo, useState, useMemo } from 'react';
+import { memo, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericGroupPage from './GenericGroupPage';

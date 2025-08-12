@@ -22,9 +22,7 @@ const livechatStub = {
 const hasPermissionStub = sinon.stub();
 
 const { closeLivechatRoom } = proxyquire.noCallThru().load('../../../../../../app/lib/server/functions/closeLivechatRoom.ts', {
-	'../../../livechat/server/lib/LivechatTyped': {
-		Livechat: livechatStub,
-	},
+	'../../../livechat/server/lib/closeRoom': livechatStub,
 	'../../../authorization/server/functions/hasPermission': {
 		hasPermissionAsync: hasPermissionStub,
 	},
@@ -57,57 +55,6 @@ describe('closeLivechatRoom', () => {
 		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
 		expect(subscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.be.true;
 		expect(subscriptionsStub.removeByRoomId.notCalled).to.be.true;
-	});
-
-	it('should not perform any operation when a non-livechat room is provided', async () => {
-		livechatRoomsStub.findOneById.resolves({ ...room, t: 'c' });
-		subscriptionsStub.findOneByRoomIdAndUserId.resolves(subscription);
-		hasPermissionStub.resolves(true);
-
-		await expect(closeLivechatRoom(user, room._id, {})).to.be.rejectedWith('error-invalid-room');
-		expect(livechatStub.closeRoom.notCalled).to.be.true;
-		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
-		expect(subscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.be.true;
-		expect(subscriptionsStub.removeByRoomId.notCalled).to.be.true;
-	});
-
-	it('should not perform any operation when a closed room with no subscriptions is provided and the caller is not subscribed to it', async () => {
-		livechatRoomsStub.findOneById.resolves({ ...room, open: false });
-		subscriptionsStub.removeByRoomId.resolves({ deletedCount: 0 });
-		subscriptionsStub.findOneByRoomIdAndUserId.resolves(null);
-		hasPermissionStub.resolves(true);
-
-		await expect(closeLivechatRoom(user, room._id, {})).to.be.rejectedWith('error-room-already-closed');
-		expect(livechatStub.closeRoom.notCalled).to.be.true;
-		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
-		expect(subscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.be.true;
-		expect(subscriptionsStub.removeByRoomId.calledOnceWith(room._id)).to.be.true;
-	});
-
-	it('should remove dangling subscription when a closed room with subscriptions is provided and the caller is not subscribed to it', async () => {
-		livechatRoomsStub.findOneById.resolves({ ...room, open: false });
-		subscriptionsStub.removeByRoomId.resolves({ deletedCount: 1 });
-		subscriptionsStub.findOneByRoomIdAndUserId.resolves(null);
-		hasPermissionStub.resolves(true);
-
-		await closeLivechatRoom(user, room._id, {});
-		expect(livechatStub.closeRoom.notCalled).to.be.true;
-		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
-		expect(subscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.be.true;
-		expect(subscriptionsStub.removeByRoomId.calledOnceWith(room._id)).to.be.true;
-	});
-
-	it('should remove dangling subscription when a closed room is provided but the user is still subscribed to it', async () => {
-		livechatRoomsStub.findOneById.resolves({ ...room, open: false });
-		subscriptionsStub.findOneByRoomIdAndUserId.resolves(subscription);
-		subscriptionsStub.removeByRoomId.resolves({ deletedCount: 1 });
-		hasPermissionStub.resolves(true);
-
-		await closeLivechatRoom(user, room._id, {});
-		expect(livechatStub.closeRoom.notCalled).to.be.true;
-		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
-		expect(subscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.be.true;
-		expect(subscriptionsStub.removeByRoomId.calledOnceWith(room._id)).to.be.true;
 	});
 
 	it('should not perform any operation when the caller is not subscribed to an open room and does not have the permission to close others rooms', async () => {
@@ -144,5 +91,33 @@ describe('closeLivechatRoom', () => {
 		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
 		expect(subscriptionsStub.findOneByRoomIdAndUserId.calledOnceWith(room._id, user._id)).to.be.true;
 		expect(subscriptionsStub.removeByRoomId.notCalled).to.be.true;
+	});
+
+	it('should call Livechat.closeRoom directly when forceClose is true even if room is in invalid state', async () => {
+		// Here we're using `open: false` as a way to simulate an invalid state. This should not happen in production. A room like this is effectively a "bad egg"
+		livechatRoomsStub.findOneById.resolves({ ...room, open: false });
+		subscriptionsStub.findOneByRoomIdAndUserId.resolves(subscription);
+		hasPermissionStub.resolves(true);
+
+		await closeLivechatRoom(user, room._id, { forceClose: true });
+
+		expect(
+			livechatStub.closeRoom.calledOnceWith(
+				sinon.match({ room: { ...room, open: false }, user, options: sinon.match({ clientAction: true }), forceClose: true }),
+			),
+		).to.be.true;
+		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
+		expect(subscriptionsStub.findOneByRoomIdAndUserId.calledOnceWith(room._id, user._id)).to.be.true;
+	});
+
+	it('should throw an error if forceClose is false and room is already closed', async () => {
+		livechatRoomsStub.findOneById.resolves({ ...room, open: false });
+		subscriptionsStub.findOneByRoomIdAndUserId.resolves(subscription);
+		hasPermissionStub.resolves(true);
+
+		await expect(closeLivechatRoom(user, room._id, { forceClose: false })).to.be.rejectedWith('error-room-already-closed');
+		expect(livechatStub.closeRoom.notCalled).to.be.true;
+		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
+		expect(subscriptionsStub.findOneByRoomIdAndUserId.calledOnceWith(room._id, user._id)).to.be.true;
 	});
 });

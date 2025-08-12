@@ -1,7 +1,6 @@
 import { Box, CardGroup } from '@rocket.chat/fuselage';
 import { useAtLeastOnePermission, useSetting, useTranslation, useRole, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import HomePageHeader from './HomePageHeader';
 import AddUsersCard from './cards/AddUsersCard';

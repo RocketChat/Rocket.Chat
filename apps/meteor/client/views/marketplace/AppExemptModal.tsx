@@ -1,8 +1,7 @@
-import { Box, Modal } from '@rocket.chat/fuselage';
-import React from 'react';
+import { Box, ModalFooterAnnotation } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../components/GenericModal';
 import { useExternalLink } from '../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../admin/subscription/hooks/useCheckoutUrl';
 import { PRICING_LINK } from '../admin/subscription/utils/links';
@@ -28,11 +27,11 @@ const AppExemptModal = ({ onCancel, appName }: AppExemptModalProps) => {
 			title={t('Apps_Cannot_Be_Updated')}
 			onClose={onCancel}
 			dontAskAgain={
-				<Modal.FooterAnnotation>
+				<ModalFooterAnnotation>
 					<a target='_blank' rel='noopener noreferrer' href={PRICING_LINK}>
 						{t('Compare_plans')}
 					</a>
-				</Modal.FooterAnnotation>
+				</ModalFooterAnnotation>
 			}
 			variant='warning'
 			cancelText={t('Cancel')}

@@ -1,7 +1,6 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
 import { AudioPlayer } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';

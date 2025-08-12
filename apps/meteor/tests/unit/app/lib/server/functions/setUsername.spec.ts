@@ -46,6 +46,7 @@ describe('setUsername', () => {
 	const { setUsernameWithValidation, _setUsername } = proxyquire
 		.noCallThru()
 		.load('../../../../../../app/lib/server/functions/setUsername', {
+			'../../../../server/database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 			'meteor/meteor': { Meteor: { Error } },
 			'@rocket.chat/core-services': { api: stubs.api },
 			'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites },

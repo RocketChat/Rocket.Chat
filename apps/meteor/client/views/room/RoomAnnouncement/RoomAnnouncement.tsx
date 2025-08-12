@@ -1,24 +1,37 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { AnnouncementBanner, GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { MouseEvent } from 'react';
-import React from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import AnnouncementComponent from './AnnouncementComponent';
-import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';
 
 type RoomAnnouncementParams = {
 	announcement: string;
-	announcementDetails?: () => void;
 };
 
-const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncementParams) => {
+const RoomAnnouncement = ({ announcement }: RoomAnnouncementParams) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal(null));
-	const handleClick = (e: MouseEvent<HTMLAnchorElement>): void => {
+
+	const handleOpenAnnouncement = useEffectEvent(() => {
+		setModal(
+			<GenericModal
+				icon={null}
+				title={t('Announcement')}
+				confirmText={t('Close')}
+				onConfirm={() => setModal(null)}
+				onClose={() => setModal(null)}
+			>
+				<Box>
+					<MarkdownText content={announcement} parseEmoji />
+				</Box>
+			</GenericModal>,
+		);
+	});
+
+	const handleClick = (e: MouseEvent) => {
 		if ((e.target as HTMLAnchorElement).href) {
 			return;
 		}
@@ -27,21 +40,24 @@ const RoomAnnouncement = ({ announcement, announcementDetails }: RoomAnnouncemen
 			return;
 		}
 
-		announcementDetails
-			? announcementDetails()
-			: setModal(
-					<GenericModal icon={null} title={t('Announcement')} confirmText={t('Close')} onConfirm={closeModal} onClose={closeModal}>
-						<Box>
-							<MarkdownText content={announcement} parseEmoji />
-						</Box>
-					</GenericModal>,
-				);
+		handleOpenAnnouncement();
+	};
+
+	const handleKeyDown = (e: KeyboardEvent) => {
+		if ((e.target as HTMLAnchorElement).href) {
+			return;
+		}
+
+		if (e.code === 'Enter' || e.code === 'Space') {
+			e.preventDefault();
+			handleOpenAnnouncement();
+		}
 	};
 
 	return announcement ? (
-		<AnnouncementComponent onClickOpen={handleClick}>
+		<AnnouncementBanner onClick={handleClick} onKeyDown={handleKeyDown}>
 			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
-		</AnnouncementComponent>
+		</AnnouncementBanner>
 	) : null;
 };
 

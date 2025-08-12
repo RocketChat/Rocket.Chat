@@ -14,22 +14,26 @@ export const useE2EEResetRoomKey = (
 ): UseMutationResult<void, Error, UseE2EEResetRoomKeyVariables> => {
 	const resetRoomKey = useEndpoint('POST', '/v1/e2e.resetRoomKey');
 
-	return useMutation(async ({ roomId }) => {
-		const e2eRoom = await e2e.getInstanceByRoomId(roomId);
-		if (!e2eRoom) {
-			throw new Error('Cannot reset room key');
-		}
+	return useMutation({
+		mutationFn: async ({ roomId }) => {
+			const e2eRoom = await e2e.getInstanceByRoomId(roomId);
+			if (!e2eRoom) {
+				throw new Error('Cannot reset room key');
+			}
 
-		const { e2eKey, e2eKeyId } = (await e2eRoom.resetRoomKey()) ?? {};
+			const { e2eKey, e2eKeyId } = (await e2eRoom.resetRoomKey()) ?? {};
 
-		if (!e2eKey || !e2eKeyId) {
-			throw new Error('Cannot reset room key');
-		}
+			if (!e2eKey || !e2eKeyId) {
+				throw new Error('Cannot reset room key');
+			}
 
-		try {
-			await resetRoomKey({ rid: roomId, e2eKeyId, e2eKey });
-		} catch (error) {
-			throw error;
-		}
-	}, options);
+			try {
+				await resetRoomKey({ rid: roomId, e2eKeyId, e2eKey });
+			} catch (error) {
+				throw error;
+			}
+		},
+
+		...options,
+	});
 };

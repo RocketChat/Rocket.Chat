@@ -1,10 +1,14 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName, useSetting, usePermission } from '@rocket.chat/ui-contexts';
+import {
+	useVideoConfDispatchOutgoing,
+	useVideoConfIsCalling,
+	useVideoConfIsRinging,
+	useVideoConfLoadCapabilities,
+} from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
-import { VideoConfManager } from '../../../../../lib/VideoConfManager';
 import { useUserCard } from '../../../contexts/UserCardContext';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { UserInfoAction } from '../useUserInfoActions';
@@ -15,6 +19,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 	const room = useUserRoom(usernameSubscription?.rid || '');
 	const { closeUserCard } = useUserCard();
 
+	const loadCapabilities = useVideoConfLoadCapabilities();
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 	const isCalling = useVideoConfIsCalling();
@@ -31,7 +36,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 			}
 
 			try {
-				await VideoConfManager.loadCapabilities();
+				await loadCapabilities();
 				closeUserCard();
 				dispatchPopup({ rid: room._id });
 			} catch (error: any) {
@@ -62,6 +67,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 		dispatchPopup,
 		dispatchWarning,
 		closeUserCard,
+		loadCapabilities,
 	]);
 
 	return videoCallOption;

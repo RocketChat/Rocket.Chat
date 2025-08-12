@@ -10,10 +10,9 @@ import {
 	Tag,
 	type SelectOption,
 } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useId, useMemo } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +36,7 @@ const PREMIUM_ACTIONS = ['use-external-service'];
 export const ActionForm = ({ control, trigger, index, ...props }: SendMessageFormType) => {
 	const { t } = useTranslation();
 
-	const actionFieldId = useUniqueId();
+	const actionFieldId = useId();
 	const actionFieldName = `actions.${index}.name` as const;
 	const actionFieldValue = useWatch({ control, name: actionFieldName });
 

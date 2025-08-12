@@ -8,156 +8,190 @@ import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '
 import { require } from '../../../lib/require.ts';
 
 const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.js') as {
-    RocketChatAssociationModel: typeof _RocketChatAssociationModel;
+	RocketChatAssociationModel: typeof _RocketChatAssociationModel;
 };
 
 export class RoomBuilder implements IRoomBuilder {
-    public kind: _RocketChatAssociationModel.ROOM | _RocketChatAssociationModel.DISCUSSION;
+	public kind: _RocketChatAssociationModel.ROOM | _RocketChatAssociationModel.DISCUSSION;
 
-    protected room: IRoom;
+	protected room: IRoom;
 
-    private members: Array<string>;
+	private members: Array<string>;
 
-    constructor(data?: Partial<IRoom>) {
-        this.kind = RocketChatAssociationModel.ROOM;
-        this.room = (data || { customFields: {} }) as IRoom;
-        this.members = [];
-    }
+	private changes: Partial<IRoom> = {};
+	private customFieldsChanged = false;
 
-    public setData(data: Partial<IRoom>): IRoomBuilder {
-        delete data.id;
-        this.room = data as IRoom;
+	constructor(data?: Partial<IRoom>) {
+		this.kind = RocketChatAssociationModel.ROOM;
+		this.room = (data || { customFields: {} }) as IRoom;
+		this.members = [];
+	}
 
-        return this;
-    }
+	public setData(data: Partial<IRoom>): IRoomBuilder {
+		delete data.id;
+		this.room = data as IRoom;
 
-    public setDisplayName(name: string): IRoomBuilder {
-        this.room.displayName = name;
-        return this;
-    }
+		this.changes = structuredClone(this.room);
 
-    public getDisplayName(): string {
-        return this.room.displayName!;
-    }
+		return this;
+	}
 
-    public setSlugifiedName(name: string): IRoomBuilder {
-        this.room.slugifiedName = name;
-        return this;
-    }
+	public setDisplayName(name: string): IRoomBuilder {
+		this.room.displayName = name;
+		this.changes.displayName = name;
 
-    public getSlugifiedName(): string {
-        return this.room.slugifiedName;
-    }
+		return this;
+	}
 
-    public setType(type: RoomType): IRoomBuilder {
-        this.room.type = type;
-        return this;
-    }
+	public getDisplayName(): string {
+		return this.room.displayName!;
+	}
 
-    public getType(): RoomType {
-        return this.room.type;
-    }
+	public setSlugifiedName(name: string): IRoomBuilder {
+		this.room.slugifiedName = name;
+		this.changes.slugifiedName = name;
 
-    public setCreator(creator: IUser): IRoomBuilder {
-        this.room.creator = creator;
-        return this;
-    }
+		return this;
+	}
 
-    public getCreator(): IUser {
-        return this.room.creator;
-    }
+	public getSlugifiedName(): string {
+		return this.room.slugifiedName;
+	}
 
-    /**
-     * @deprecated
-     */
-    public addUsername(username: string): IRoomBuilder {
-        this.addMemberToBeAddedByUsername(username);
-        return this;
-    }
+	public setType(type: RoomType): IRoomBuilder {
+		this.room.type = type;
+		this.changes.type = type;
 
-    /**
-     * @deprecated
-     */
-    public setUsernames(usernames: Array<string>): IRoomBuilder {
-        this.setMembersToBeAddedByUsernames(usernames);
-        return this;
-    }
+		return this;
+	}
 
-    /**
-     * @deprecated
-     */
-    public getUsernames(): Array<string> {
-        const usernames = this.getMembersToBeAddedUsernames();
-        if (usernames && usernames.length > 0) {
-            return usernames;
-        }
-        return this.room.usernames || [];
-    }
+	public getType(): RoomType {
+		return this.room.type;
+	}
 
-    public addMemberToBeAddedByUsername(username: string): IRoomBuilder {
-        this.members.push(username);
-        return this;
-    }
+	public setCreator(creator: IUser): IRoomBuilder {
+		this.room.creator = creator;
+		this.changes.creator = creator;
 
-    public setMembersToBeAddedByUsernames(usernames: Array<string>): IRoomBuilder {
-        this.members = usernames;
-        return this;
-    }
+		return this;
+	}
 
-    public getMembersToBeAddedUsernames(): Array<string> {
-        return this.members;
-    }
+	public getCreator(): IUser {
+		return this.room.creator;
+	}
 
-    public setDefault(isDefault: boolean): IRoomBuilder {
-        this.room.isDefault = isDefault;
-        return this;
-    }
+	/**
+	 * @deprecated
+	 */
+	public addUsername(username: string): IRoomBuilder {
+		this.addMemberToBeAddedByUsername(username);
+		return this;
+	}
 
-    public getIsDefault(): boolean {
-        return this.room.isDefault!;
-    }
+	/**
+	 * @deprecated
+	 */
+	public setUsernames(usernames: Array<string>): IRoomBuilder {
+		this.setMembersToBeAddedByUsernames(usernames);
+		return this;
+	}
 
-    public setReadOnly(isReadOnly: boolean): IRoomBuilder {
-        this.room.isReadOnly = isReadOnly;
-        return this;
-    }
+	/**
+	 * @deprecated
+	 */
+	public getUsernames(): Array<string> {
+		const usernames = this.getMembersToBeAddedUsernames();
+		if (usernames && usernames.length > 0) {
+			return usernames;
+		}
+		return this.room.usernames || [];
+	}
 
-    public getIsReadOnly(): boolean {
-        return this.room.isReadOnly!;
-    }
+	public addMemberToBeAddedByUsername(username: string): IRoomBuilder {
+		this.members.push(username);
+		return this;
+	}
 
-    public setDisplayingOfSystemMessages(displaySystemMessages: boolean): IRoomBuilder {
-        this.room.displaySystemMessages = displaySystemMessages;
-        return this;
-    }
+	public setMembersToBeAddedByUsernames(usernames: Array<string>): IRoomBuilder {
+		this.members = usernames;
+		return this;
+	}
 
-    public getDisplayingOfSystemMessages(): boolean {
-        return this.room.displaySystemMessages!;
-    }
+	public getMembersToBeAddedUsernames(): Array<string> {
+		return this.members;
+	}
 
-    public addCustomField(key: string, value: object): IRoomBuilder {
-        if (typeof this.room.customFields !== 'object') {
-            this.room.customFields = {};
-        }
+	public setDefault(isDefault: boolean): IRoomBuilder {
+		this.room.isDefault = isDefault;
+		this.changes.isDefault = isDefault;
 
-        this.room.customFields[key] = value;
-        return this;
-    }
+		return this;
+	}
 
-    public setCustomFields(fields: { [key: string]: object }): IRoomBuilder {
-        this.room.customFields = fields;
-        return this;
-    }
+	public getIsDefault(): boolean {
+		return this.room.isDefault!;
+	}
 
-    public getCustomFields(): { [key: string]: object } {
-        return this.room.customFields!;
-    }
+	public setReadOnly(isReadOnly: boolean): IRoomBuilder {
+		this.room.isReadOnly = isReadOnly;
+		this.changes.isReadOnly = isReadOnly;
 
-    public getUserIds(): Array<string> {
-        return this.room.userIds!;
-    }
+		return this;
+	}
 
-    public getRoom(): IRoom {
-        return this.room;
-    }
+	public getIsReadOnly(): boolean {
+		return this.room.isReadOnly!;
+	}
+
+	public setDisplayingOfSystemMessages(displaySystemMessages: boolean): IRoomBuilder {
+		this.room.displaySystemMessages = displaySystemMessages;
+		this.changes.displaySystemMessages = displaySystemMessages;
+
+		return this;
+	}
+
+	public getDisplayingOfSystemMessages(): boolean {
+		return this.room.displaySystemMessages!;
+	}
+
+	public addCustomField(key: string, value: object): IRoomBuilder {
+		if (typeof this.room.customFields !== 'object') {
+			this.room.customFields = {};
+		}
+
+		this.room.customFields[key] = value;
+
+		this.customFieldsChanged = true;
+
+		return this;
+	}
+
+	public setCustomFields(fields: { [key: string]: object }): IRoomBuilder {
+		this.room.customFields = fields;
+		this.customFieldsChanged = true;
+
+		return this;
+	}
+
+	public getCustomFields(): { [key: string]: object } {
+		return this.room.customFields!;
+	}
+
+	public getUserIds(): Array<string> {
+		return this.room.userIds!;
+	}
+
+	public getRoom(): IRoom {
+		return this.room;
+	}
+
+	public getChanges() {
+		const changes: Partial<IRoom> = structuredClone(this.changes);
+
+		if (this.customFieldsChanged) {
+			changes.customFields = structuredClone(this.room.customFields);
+		}
+
+		return changes;
+	}
 }

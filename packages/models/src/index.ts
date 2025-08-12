@@ -1,4 +1,11 @@
 import type {
+	ILivechatDepartmentAgents,
+	ILivechatInquiryRecord,
+	ISetting,
+	ISubscription,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
+import type {
 	IAnalyticsModel,
 	IAvatarsModel,
 	IBannersDismissModel,
@@ -13,6 +20,8 @@ import type {
 	IExportOperationsModel,
 	IFederationKeysModel,
 	IFederationServersModel,
+	IFreeSwitchChannelModel,
+	IFreeSwitchChannelEventModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -80,14 +89,49 @@ import type {
 	IMigrationsModel,
 	IModerationReportsModel,
 	IWorkspaceCredentialsModel,
+	IFreeSwitchChannelEventDeltaModel,
 } from '@rocket.chat/model-typings';
+import type { Collection, Db } from 'mongodb';
 
-import { proxify } from './proxify';
+import {
+	TeamMemberRaw,
+	MessagesRaw,
+	LivechatInquiryRaw,
+	LivechatDepartmentAgentsRaw,
+	PermissionsRaw,
+	LoginServiceConfigurationRaw,
+	InstanceStatusRaw,
+	IntegrationHistoryRaw,
+	IntegrationsRaw,
+	EmailInboxRaw,
+	PbxEventsRaw,
+	LivechatRoomsRaw,
+	LivechatPriorityRaw,
+	UploadsRaw,
+	LivechatVisitorsRaw,
+	RolesRaw,
+	RoomsRaw,
+	SettingsRaw,
+	SubscriptionsRaw,
+	TeamRaw,
+	UsersRaw,
+	UsersSessionsRaw,
+} from './modelClasses';
+import { proxify, registerModel } from './proxify';
 
 const prefix = 'rocketchat_';
 export function getCollectionName(name: string): string {
 	return `${prefix}${name}`;
 }
+
+const disabledEnvVar = String(process.env.DISABLE_DB_WATCHERS).toLowerCase();
+
+export const dbWatchersDisabled = !['no', 'false'].includes(disabledEnvVar);
+
+export * from './modelClasses';
+export * from './DatabaseWatcher';
+
+export * from './dummy/ReadReceipts';
 
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
@@ -111,6 +155,9 @@ export const ExportOperations = proxify<IExportOperationsModel>('IExportOperatio
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
+export const FreeSwitchChannel = proxify<IFreeSwitchChannelModel>('IFreeSwitchChannelModel');
+export const FreeSwitchChannelEvent = proxify<IFreeSwitchChannelEventModel>('IFreeSwitchChannelEventModel');
+export const FreeSwitchChannelEventDelta = proxify<IFreeSwitchChannelEventDeltaModel>('IFreeSwitchChannelEventDeltaModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
@@ -175,3 +222,44 @@ export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
+
+export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecordDeleted<any>>): void {
+	registerModel('ISettingsModel', () => new SettingsRaw(db, trash as Collection<RocketChatRecordDeleted<ISetting>>));
+	registerModel('IUsersSessionsModel', () => new UsersSessionsRaw(db));
+	registerModel('IUsersModel', () => new UsersRaw(db));
+
+	registerModel('IRolesModel', () => new RolesRaw(db));
+	registerModel('IRoomsModel', () => new RoomsRaw(db));
+	registerModel('ISubscriptionsModel', () => new SubscriptionsRaw(db, trash as Collection<RocketChatRecordDeleted<ISubscription>>));
+	registerModel('ITeamModel', () => new TeamRaw(db));
+	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
+
+	registerModel('IMessagesModel', () => new MessagesRaw(db));
+
+	registerModel(
+		'ILivechatInquiryModel',
+		() => new LivechatInquiryRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>),
+	);
+	registerModel(
+		'ILivechatDepartmentAgentsModel',
+		() => new LivechatDepartmentAgentsRaw(db, trash as Collection<RocketChatRecordDeleted<ILivechatDepartmentAgents>>),
+	);
+
+	registerModel('IPermissionsModel', () => new PermissionsRaw(db));
+	registerModel('ILoginServiceConfigurationModel', () => new LoginServiceConfigurationRaw(db));
+	registerModel('IInstanceStatusModel', () => new InstanceStatusRaw(db));
+	registerModel('IIntegrationHistoryModel', () => new IntegrationHistoryRaw(db));
+	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
+	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
+	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
+	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
+	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
+	registerModel('IUploadsModel', () => new UploadsRaw(db));
+	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
+}
+
+if (!dbWatchersDisabled) {
+	console.warn(
+		`Database watchers is enabled and this is not the default option.\nRocket.Chat deprecated the usage of \`oplog/change streams\` and are going to remove it the next major version (8.0.0).`,
+	);
+}

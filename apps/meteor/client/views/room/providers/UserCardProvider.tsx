@@ -1,7 +1,7 @@
 import { Popover } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { ComponentProps, ReactNode } from 'react';
-import React, { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
+import type { ComponentProps, ReactNode, UIEvent } from 'react';
+import { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
 import { useOverlayTrigger } from 'react-aria';
 import { useOverlayTriggerState } from 'react-stately';
 
@@ -15,7 +15,7 @@ const UserCardProvider = ({ children }: { children: ReactNode }) => {
 	const room = useRoom();
 	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
 
-	const triggerRef = useRef(null);
+	const triggerRef = useRef<Element | null>(null);
 	const state = useOverlayTriggerState({});
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
 	delete triggerProps.onPress;
@@ -43,8 +43,8 @@ const UserCardProvider = ({ children }: { children: ReactNode }) => {
 	});
 
 	const handleSetUserCard = useCallback(
-		(e, username) => {
-			triggerRef.current = e.target;
+		(e: UIEvent, username: string) => {
+			triggerRef.current = e.target as Element | null;
 			state.open();
 			setUserCardData({
 				username,

@@ -1,7 +1,7 @@
 import type { Dimensions } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
-import React, { memo, useState, useMemo } from 'react';
+import { memo, useState, useMemo } from 'react';
 
 import ImageBox from './image/ImageBox';
 import Load from './image/Load';

@@ -1,9 +1,8 @@
-import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { Suspense, lazy, useCallback, useMemo } from 'react';
+import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { Suspense, lazy, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useIsVoipEnterprise } from '../contexts/CallContext';
-import { dispatchToastMessage } from '../lib/toast';
 
 const DialPadModal = lazy(() => import('../voip/modal/DialPad/DialPadModal'));
 
@@ -19,8 +18,9 @@ type DialModalControls = {
 
 export const useDialModal = (): DialModalControls => {
 	const setModal = useSetModal();
-	const isEnterprise = useIsVoipEnterprise();
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const isEnterprise = useIsVoipEnterprise();
 
 	const closeDialModal = useCallback(() => setModal(null), [setModal]);
 
@@ -39,7 +39,7 @@ export const useDialModal = (): DialModalControls => {
 				</Suspense>,
 			);
 		},
-		[setModal, isEnterprise, t, closeDialModal],
+		[isEnterprise, setModal, closeDialModal, dispatchToastMessage, t],
 	);
 
 	return useMemo(

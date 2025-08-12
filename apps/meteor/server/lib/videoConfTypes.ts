@@ -1,4 +1,11 @@
-import type { AtLeast, IRoom, VideoConferenceCreateData, VideoConferenceType } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	ExternalVideoConference,
+	IRoom,
+	VideoConference,
+	VideoConferenceCreateData,
+	VideoConferenceType,
+} from '@rocket.chat/core-typings';
 
 type RoomRequiredFields = AtLeast<IRoom, '_id' | 't'>;
 type VideoConferenceTypeCondition = (room: RoomRequiredFields, allowRinging: boolean) => Promise<boolean>;
@@ -34,6 +41,11 @@ export const videoConfTypes = {
 
 		return { type: 'videoconference' };
 	},
+
+	isCallManagedByApp(call: VideoConference): call is ExternalVideoConference {
+		return call.type !== 'voip';
+	},
 };
 
+videoConfTypes.registerVideoConferenceType('voip', async () => false);
 videoConfTypes.registerVideoConferenceType({ type: 'livechat' }, async ({ t }) => t === 'l');

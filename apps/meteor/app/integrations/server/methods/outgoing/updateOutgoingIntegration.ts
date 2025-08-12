@@ -19,6 +19,103 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+export const updateOutgoingIntegration = async (
+	userId: string,
+	integrationId: string,
+	_integration: INewOutgoingIntegration | IUpdateOutgoingIntegration,
+): Promise<IIntegration | null> => {
+	const integration = await validateOutgoingIntegration(_integration, userId);
+
+	if (!integration.token || integration.token.trim() === '') {
+		throw new Meteor.Error('error-invalid-token', 'Invalid token', {
+			method: 'updateOutgoingIntegration',
+		});
+	}
+
+	let currentIntegration: IIntegration | null;
+
+	if (await hasPermissionAsync(userId, 'manage-outgoing-integrations')) {
+		currentIntegration = await Integrations.findOneById(integrationId);
+	} else if (await hasPermissionAsync(userId, 'manage-own-outgoing-integrations')) {
+		currentIntegration = await Integrations.findOne({
+			'_id': integrationId,
+			'_createdBy._id': userId,
+		});
+	} else {
+		throw new Meteor.Error('not_authorized', 'Unauthorized', {
+			method: 'updateOutgoingIntegration',
+		});
+	}
+
+	if (!currentIntegration) {
+		throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
+	}
+
+	const oldScriptEngine = currentIntegration.scriptEngine;
+	const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
+	if (
+		integration.script?.trim() &&
+		(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
+	) {
+		wrapExceptions(() => validateScriptEngine(scriptEngine)).catch((e) => {
+			throw new Meteor.Error(e.message);
+		});
+	}
+
+	const isFrozen = isScriptEngineFrozen(scriptEngine);
+
+	const updatedIntegration = await Integrations.findOneAndUpdate(
+		{ _id: integrationId },
+		{
+			$set: {
+				event: integration.event,
+				enabled: integration.enabled,
+				name: integration.name,
+				avatar: integration.avatar,
+				emoji: integration.emoji,
+				alias: integration.alias,
+				channel: typeof integration.channel === 'string' ? [integration.channel] : integration.channel,
+				targetRoom: integration.targetRoom,
+				impersonateUser: integration.impersonateUser,
+				username: integration.username,
+				userId: integration.userId,
+				urls: integration.urls,
+				token: integration.token,
+				...(isFrozen
+					? {}
+					: {
+							script: integration.script,
+							scriptEnabled: integration.scriptEnabled,
+							scriptEngine,
+							...(integration.scriptCompiled ? { scriptCompiled: integration.scriptCompiled } : { scriptError: integration.scriptError }),
+						}),
+				triggerWords: integration.triggerWords,
+				retryFailedCalls: integration.retryFailedCalls,
+				retryCount: integration.retryCount,
+				retryDelay: integration.retryDelay,
+				triggerWordAnywhere: integration.triggerWordAnywhere,
+				runOnEdits: integration.runOnEdits,
+				_updatedAt: new Date(),
+				_updatedBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
+			},
+			...(isFrozen
+				? {}
+				: {
+						$unset: {
+							...(integration.scriptCompiled ? { scriptError: 1 as const } : { scriptCompiled: 1 as const }),
+						},
+					}),
+		},
+		{ returnDocument: 'after' },
+	);
+
+	if (updatedIntegration) {
+		await notifyOnIntegrationChanged(updatedIntegration);
+	}
+
+	return updatedIntegration;
+};
+
 Meteor.methods<ServerMethods>({
 	async updateOutgoingIntegration(integrationId, _integration) {
 		if (!this.userId) {
@@ -27,94 +124,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const integration = await validateOutgoingIntegration(_integration, this.userId);
-
-		if (!integration.token || integration.token.trim() === '') {
-			throw new Meteor.Error('error-invalid-token', 'Invalid token', {
-				method: 'updateOutgoingIntegration',
-			});
-		}
-
-		let currentIntegration: IIntegration | null;
-
-		if (await hasPermissionAsync(this.userId, 'manage-outgoing-integrations')) {
-			currentIntegration = await Integrations.findOneById(integrationId);
-		} else if (await hasPermissionAsync(this.userId, 'manage-own-outgoing-integrations')) {
-			currentIntegration = await Integrations.findOne({
-				'_id': integrationId,
-				'_createdBy._id': this.userId,
-			});
-		} else {
-			throw new Meteor.Error('not_authorized', 'Unauthorized', {
-				method: 'updateOutgoingIntegration',
-			});
-		}
-
-		if (!currentIntegration) {
-			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
-		}
-
-		const oldScriptEngine = currentIntegration.scriptEngine;
-		const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
-		if (
-			integration.script?.trim() &&
-			(scriptEngine !== oldScriptEngine || integration.script?.trim() !== currentIntegration.script?.trim())
-		) {
-			wrapExceptions(() => validateScriptEngine(scriptEngine)).catch((e) => {
-				throw new Meteor.Error(e.message);
-			});
-		}
-
-		const isFrozen = isScriptEngineFrozen(scriptEngine);
-
-		const updatedIntegration = await Integrations.findOneAndUpdate(
-			{ _id: integrationId },
-			{
-				$set: {
-					event: integration.event,
-					enabled: integration.enabled,
-					name: integration.name,
-					avatar: integration.avatar,
-					emoji: integration.emoji,
-					alias: integration.alias,
-					channel: typeof integration.channel === 'string' ? [integration.channel] : integration.channel,
-					targetRoom: integration.targetRoom,
-					impersonateUser: integration.impersonateUser,
-					username: integration.username,
-					userId: integration.userId,
-					urls: integration.urls,
-					token: integration.token,
-					...(isFrozen
-						? {}
-						: {
-								script: integration.script,
-								scriptEnabled: integration.scriptEnabled,
-								scriptEngine,
-								...(integration.scriptCompiled ? { scriptCompiled: integration.scriptCompiled } : { scriptError: integration.scriptError }),
-							}),
-					triggerWords: integration.triggerWords,
-					retryFailedCalls: integration.retryFailedCalls,
-					retryCount: integration.retryCount,
-					retryDelay: integration.retryDelay,
-					triggerWordAnywhere: integration.triggerWordAnywhere,
-					runOnEdits: integration.runOnEdits,
-					_updatedAt: new Date(),
-					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
-				},
-				...(isFrozen
-					? {}
-					: {
-							$unset: {
-								...(integration.scriptCompiled ? { scriptError: 1 as const } : { scriptCompiled: 1 as const }),
-							},
-						}),
-			},
-		);
-
-		if (updatedIntegration.value) {
-			await notifyOnIntegrationChanged(updatedIntegration.value);
-		}
-
-		return updatedIntegration.value;
+		return updateOutgoingIntegration(this.userId, integrationId, _integration);
 	},
 });

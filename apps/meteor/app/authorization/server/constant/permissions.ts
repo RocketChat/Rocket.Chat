@@ -67,6 +67,8 @@ export const permissions = [
 	{ _id: 'set-owner', roles: ['admin', 'owner'] },
 	{ _id: 'send-many-messages', roles: ['admin', 'bot', 'app'] },
 	{ _id: 'set-leader', roles: ['admin', 'owner'] },
+	{ _id: 'start-discussion', roles: ['admin', 'user', 'guest', 'app'] },
+	{ _id: 'start-discussion-other-user', roles: ['admin', 'user', 'owner', 'app'] },
 	{ _id: 'unarchive-room', roles: ['admin'] },
 	{ _id: 'view-c-room', roles: ['admin', 'user', 'bot', 'app', 'anonymous'] },
 	{ _id: 'user-generate-access-token', roles: ['admin'] },
@@ -248,4 +250,5 @@ export const permissions = [
 	{ _id: 'view-moderation-console', roles: ['admin'] },
 	{ _id: 'manage-moderation-actions', roles: ['admin'] },
 	{ _id: 'bypass-time-limit-edit-and-delete', roles: ['bot', 'app'] },
+	{ _id: 'export-messages-as-pdf', roles: ['admin', 'user'] },
 ];

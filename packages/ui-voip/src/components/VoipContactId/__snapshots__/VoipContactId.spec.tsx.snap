@@ -10,10 +10,10 @@ exports[`renders Loading without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1d60bfv"
       >
         <span
-          class="rcx-box rcx-box--full rcx-skeleton--rect rcx-skeleton rcx-css-1ad23aw"
+          class="rcx-skeleton rcx-skeleton--rect rcx-css-1ad23aw"
         />
         <span
-          class="rcx-box rcx-box--full rcx-skeleton--text rcx-skeleton rcx-css-fuw2gp"
+          class="rcx-skeleton rcx-skeleton--text rcx-css-fuw2gp"
         />
       </div>
     </div>
@@ -85,6 +85,7 @@ exports[`renders WithTransfer without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
             >
               <img
+                alt=""
                 aria-hidden="true"
                 class="rcx-avatar__element rcx-avatar__element--x24"
                 data-username="john.doe"
@@ -125,6 +126,7 @@ exports[`renders WithUsername without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
             >
               <img
+                alt=""
                 aria-hidden="true"
                 class="rcx-avatar__element rcx-avatar__element--x24"
                 data-username="john.doe"

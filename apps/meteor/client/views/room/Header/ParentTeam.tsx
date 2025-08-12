@@ -1,12 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '../../../components/Header';
+import { useTeamInfoQuery } from '../../../hooks/useTeamInfoQuery';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import { useUserTeamsQuery } from '../hooks/useUserTeamsQuery';
 
 type APIErrorResult = { success: boolean; error: string };
 
@@ -22,25 +23,19 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		throw new Error('invalid uid');
 	}
 
-	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
-	const userTeamsListEndpoint = useEndpoint('GET', '/v1/users.listTeams');
-
 	const {
-		data: teamInfoData,
+		data: teamInfo,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
-		keepPreviousData: true,
-		retry: (_, error) => (error as APIErrorResult)?.error === 'unauthorized' && false,
-	});
+	} = useTeamInfoQuery(teamId, { retry: (_, error) => (error as unknown as APIErrorResult)?.error !== 'unauthorized' });
 
-	const { data: userTeams, isLoading: userTeamsLoading } = useQuery(['userId', userId], async () => userTeamsListEndpoint({ userId }));
+	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeamsQuery(userId);
 
-	const userBelongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
-	const isTeamPublic = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;
+	const userBelongsToTeam = userTeams?.find((team) => team._id === teamId) || false;
+	const isTeamPublic = teamInfo?.type === TEAM_TYPE.PUBLIC;
 
 	const redirectToMainRoom = (): void => {
-		const rid = teamInfoData?.teamInfo.roomId;
+		const rid = teamInfo?.roomId;
 		if (!rid) {
 			return;
 		}
@@ -52,6 +47,8 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 		goToRoomById(rid);
 	};
 
+	const buttonProps = useButtonPattern(redirectToMainRoom);
+
 	if (teamInfoLoading || userTeamsLoading) {
 		return <HeaderTagSkeleton />;
 	}
@@ -61,14 +58,9 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 	}
 
 	return (
-		<HeaderTag
-			role='button'
-			tabIndex={0}
-			onKeyDown={(e) => (e.code === 'Space' || e.code === 'Enter') && redirectToMainRoom()}
-			onClick={redirectToMainRoom}
-		>
+		<HeaderTag {...buttonProps}>
 			<HeaderTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-			{teamInfoData?.teamInfo.name}
+			{teamInfo?.name}
 		</HeaderTag>
 	);
 };

@@ -1,14 +1,15 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Messages } from '../../../../../app/models/client';
-import { LegacyRoomManager, RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { useOpenedRoomUnreadSince } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
+import { Messages } from '../../../../stores';
 import { useChat } from '../../contexts/ChatContext';
 
 interface IUnreadMessages {
@@ -22,7 +23,7 @@ const useUnreadMessages = (room: IRoom): readonly [data: IUnreadMessages | undef
 
 	const count = useMemo(() => notLoadedCount + loadedCount, [notLoadedCount, loadedCount]);
 
-	const since = useReactiveValue(useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.unreadSince.get(), [room._id]));
+	const since = useOpenedRoomUnreadSince();
 
 	return useMemo(() => {
 		if (count && since) {
@@ -38,7 +39,7 @@ export const useHandleUnread = (
 	subscription?: ISubscription,
 ): {
 	innerRef: (wrapper: HTMLDivElement | null) => void;
-	wrapperRef: React.MutableRefObject<HTMLDivElement | null>;
+	wrapperRef: MutableRefObject<HTMLDivElement | null>;
 	handleUnreadBarJumpToButtonClick: () => void;
 	handleMarkAsReadButtonClick: () => void;
 	counter: readonly [number, Date | undefined];
@@ -52,6 +53,10 @@ export const useHandleUnread = (
 
 	const chat = useChat();
 
+	const getMessage = Messages.use((state) => state.get);
+	const findFirstMessage = Messages.use((state) => state.findFirst);
+	const filterMessages = Messages.use((state) => state.filter);
+
 	if (!chat) {
 		throw new Error('No ChatContext provided');
 	}
@@ -60,14 +65,18 @@ export const useHandleUnread = (
 		const { firstUnread } = RoomHistoryManager.getRoom(rid);
 		let message = firstUnread?.get();
 		if (!message) {
-			message = Messages.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
+			message = findFirstMessage(
+				(record) => record.rid === rid && record.ts.getTime() > (unread?.since.getTime() ?? -Infinity),
+				(a, b) => a.ts.getTime() - b.ts.getTime(),
+			);
 		}
 		if (!message) {
 			return;
 		}
 		setMessageJumpQueryStringParameter(message?._id);
+		chat.readStateManager.markAsRead();
 		setUnreadCount(0);
-	}, [room._id, unread?.since, setUnreadCount]);
+	}, [room._id, setUnreadCount, findFirstMessage, unread?.since, chat.readStateManager]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
 		chat.readStateManager.markAsRead();
@@ -80,13 +89,16 @@ export const useHandleUnread = (
 			return;
 		}
 
-		const count = Messages.find({
-			rid: room._id,
-			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
-		}).count();
+		const count = filterMessages(
+			(record) =>
+				record.rid === room._id &&
+				!!lastMessageDate &&
+				record.ts.getTime() <= lastMessageDate?.getTime() &&
+				record.ts.getTime() > (subscription?.ls?.getTime() ?? -Infinity),
+		).length;
 
 		setUnreadCount(count);
-	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
+	}, [filterMessages, lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	const router = useRouter();
 
@@ -110,8 +122,14 @@ export const useHandleUnread = (
 
 				debouncedReadMessageRead();
 			}),
-		[debouncedReadMessageRead, room._id, router, subscribed, subscription?.alert, subscription?.unread],
+		[debouncedReadMessageRead, router],
 	);
+
+	useEffect(() => {
+		if (subscription?.alert || subscription?.unread || subscribed) {
+			debouncedReadMessageRead();
+		}
+	}, [debouncedReadMessageRead, subscription?.alert, subscription?.unread, subscribed]);
 
 	useEffect(() => {
 		if (!unread?.count) {
@@ -158,7 +176,7 @@ export const useHandleUnread = (
 							return;
 						}
 
-						const lastMessage = Messages.findOne(lastInvisibleMessageOnScreen.id);
+						const lastMessage = getMessage(lastInvisibleMessageOnScreen.id);
 						if (!lastMessage) {
 							setUnreadCount(0);
 							return;
@@ -169,7 +187,7 @@ export const useHandleUnread = (
 				}),
 			);
 		},
-		[setUnreadCount],
+		[getMessage, setUnreadCount],
 	);
 
 	return {

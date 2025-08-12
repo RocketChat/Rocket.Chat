@@ -1,10 +1,9 @@
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form } from '@rocket.chat/layout';
 import { useLogout, useRoute } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useId, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import CurrentUserDisplay from './CurrentUserDisplay';
@@ -20,7 +19,7 @@ type AuthorizationFormPageProps = {
 const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFormPageProps) => {
 	const token = useMemo(() => Accounts.storageLocation.getItem(Accounts.LOGIN_TOKEN_KEY) ?? undefined, []);
 
-	const formLabelId = useUniqueId();
+	const formLabelId = useId();
 
 	const { t } = useTranslation();
 
@@ -60,8 +59,8 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 						<CurrentUserDisplay user={user} />
 
 						<p>
-							<Trans i18nKey='core.OAuth_Full_Access_Warning' t={t}>
-								<strong>{{ appName: oauthApp.name }}</strong>
+							<Trans i18nKey='core.OAuth_Full_Access_Warning' t={t} values={{ appName: oauthApp.name }}>
+								<strong>{oauthApp.name}</strong>
 							</Trans>
 						</p>
 					</Box>

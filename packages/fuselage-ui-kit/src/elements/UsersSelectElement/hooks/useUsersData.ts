@@ -1,32 +1,34 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import type { UserAutoCompleteOptionType } from '../UsersSelectElement';
 
 type useUsersDataProps = {
-  filter: string;
+	filter: string;
 };
 
 export const useUsersData = ({ filter }: useUsersDataProps) => {
-  const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
+	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
-  const { data } = useQuery(
-    ['users.autoComplete', filter],
-    async () => {
-      const users = await getUsers({
-        selector: JSON.stringify({ term: filter }),
-      });
-      const options = users.items.map(
-        (item): UserAutoCompleteOptionType => ({
-          value: item.username,
-          label: item.name || item.username,
-        }),
-      );
+	const { data } = useQuery({
+		queryKey: ['users.autoComplete', filter],
 
-      return options || [];
-    },
-    { keepPreviousData: true },
-  );
+		queryFn: async () => {
+			const users = await getUsers({
+				selector: JSON.stringify({ term: filter }),
+			});
+			const options = users.items.map(
+				(item): UserAutoCompleteOptionType => ({
+					value: item.username,
+					label: item.name || item.username,
+				}),
+			);
 
-  return data;
+			return options || [];
+		},
+
+		placeholderData: keepPreviousData,
+	});
+
+	return data;
 };

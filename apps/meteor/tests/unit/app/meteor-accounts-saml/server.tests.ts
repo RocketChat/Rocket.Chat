@@ -52,29 +52,35 @@ describe('SAML', () => {
 	describe('[AuthorizeRequest]', () => {
 		describe('AuthorizeRequest.generate', () => {
 			it('should use the custom templates to generate the request', () => {
-				const authorizeRequest = AuthorizeRequest.generate(serviceProviderOptions);
+				const credentialToken = '__credentialToken__';
+				const authorizeRequest = AuthorizeRequest.generate(serviceProviderOptions, credentialToken);
+				expect(authorizeRequest.id).to.be.equal(credentialToken);
 				expect(authorizeRequest.request).to.be.equal(
 					'<authRequest><NameID IdentifierFormat="email"/> <authnContext Comparison="Whatever">Password</authnContext> </authRequest>',
 				);
 			});
 
 			it('should include the unique ID on the request', () => {
+				const credentialToken = '__credentialToken__';
 				const customOptions = {
 					...serviceProviderOptions,
 					authRequestTemplate: '__newId__',
 				};
 
-				const authorizeRequest = AuthorizeRequest.generate(customOptions);
+				const authorizeRequest = AuthorizeRequest.generate(customOptions, credentialToken);
+				expect(authorizeRequest.id).to.be.equal(credentialToken);
 				expect(authorizeRequest.request).to.be.equal(authorizeRequest.id);
 			});
 
 			it('should include the custom options on the request', () => {
+				const credentialToken = '__credentialToken__';
 				const customOptions = {
 					...serviceProviderOptions,
 					authRequestTemplate: '__callbackUrl__ __entryPoint__ __issuer__',
 				};
 
-				const authorizeRequest = AuthorizeRequest.generate(customOptions);
+				const authorizeRequest = AuthorizeRequest.generate(customOptions, credentialToken);
+				expect(authorizeRequest.id).to.be.equal(credentialToken);
 				expect(authorizeRequest.request).to.be.equal('[callback-url] [entry-point] [issuer]');
 			});
 		});

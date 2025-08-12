@@ -2,7 +2,6 @@ import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import { Box, Card, CardBody, Icon, Skeleton } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import PlanCardHeader from './PlanCardHeader';

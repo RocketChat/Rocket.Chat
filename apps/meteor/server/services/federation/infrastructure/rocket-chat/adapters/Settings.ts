@@ -160,6 +160,7 @@ export class RocketChatSettingsAdapter {
 				'sender_localpart': registrationFile.botName,
 				'namespaces': registrationFile.listenTo,
 				'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
+				'use_appservice_legacy_authorization': true,
 			}),
 		);
 	}
@@ -294,6 +295,7 @@ export class RocketChatSettingsAdapter {
 			i18nLabel: 'Federation_Matrix_max_size_of_public_rooms_users',
 			i18nDescription: 'Federation_Matrix_max_size_of_public_rooms_users_desc',
 			alert: 'Federation_Matrix_max_size_of_public_rooms_users_Alert',
+			modules: ['federation'],
 			public: true,
 			enterprise: true,
 			invalidValue: false,

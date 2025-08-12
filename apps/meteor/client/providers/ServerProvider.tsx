@@ -13,7 +13,6 @@ import { ServerContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { Info as info } from '../../app/utils/rocketchat.info';
@@ -76,6 +75,8 @@ const contextValue = {
 	callEndpoint,
 	uploadToEndpoint,
 	getStream,
+	disconnect: () => Meteor.disconnect(),
+	reconnect: () => Meteor.reconnect(),
 };
 
 type ServerProviderProps = { children?: ReactNode };

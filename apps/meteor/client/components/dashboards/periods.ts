@@ -1,73 +1,80 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { DurationInputArg1, DurationInputArg2 } from 'moment';
 import moment from 'moment';
 
 const label = (translationKey: TranslationKey): readonly [translationKey: TranslationKey] => [translationKey];
 
-const lastNDays =
-	(
-		n: number,
-	): ((utc: boolean) => {
+export const getClosedPeriod =
+	({
+		startOf,
+		subtract,
+	}: {
+		startOf: 'day' | 'year' | 'month' | 'week';
+		subtract?: { amount: DurationInputArg1; unit: DurationInputArg2 };
+	}): ((utc: boolean) => {
 		start: Date;
 		end: Date;
 	}) =>
 	(utc): { start: Date; end: Date } => {
-		const date = new Date();
-		const offsetForMoment = -(date.getTimezoneOffset() / 60);
+		const start = utc ? moment().utc() : moment();
+		const end = utc ? moment().utc() : moment();
 
-		const start = utc
-			? moment.utc().startOf('day').subtract(n, 'days').toDate()
-			: moment().subtract(n, 'days').startOf('day').utcOffset(offsetForMoment).toDate();
+		if (subtract) {
+			const { amount, unit } = subtract;
+			start.subtract(amount, unit);
+		}
 
-		const end = utc ? moment.utc().endOf('day').toDate() : moment().endOf('day').utcOffset(offsetForMoment).toDate();
-
-		return { start, end };
+		return {
+			start: start.startOf(startOf).toDate(),
+			end: end.endOf('day').toDate(),
+		};
 	};
 
 const periods = [
 	{
 		key: 'today',
 		label: label('Today'),
-		range: lastNDays(0),
+		range: getClosedPeriod({ startOf: 'day' }),
 	},
 	{
 		key: 'this week',
 		label: label('This_week'),
-		range: lastNDays(7),
+		range: getClosedPeriod({ startOf: 'week' }),
 	},
 	{
 		key: 'last 7 days',
 		label: label('Last_7_days'),
-		range: lastNDays(7),
+		range: getClosedPeriod({ startOf: 'day', subtract: { amount: 7, unit: 'days' } }),
 	},
 	{
 		key: 'last 15 days',
 		label: label('Last_15_days'),
-		range: lastNDays(15),
+		range: getClosedPeriod({ startOf: 'day', subtract: { amount: 15, unit: 'days' } }),
 	},
 	{
 		key: 'this month',
 		label: label('This_month'),
-		range: lastNDays(30),
+		range: getClosedPeriod({ startOf: 'month' }),
 	},
 	{
 		key: 'last 30 days',
 		label: label('Last_30_days'),
-		range: lastNDays(30),
+		range: getClosedPeriod({ startOf: 'day', subtract: { amount: 30, unit: 'days' } }),
 	},
 	{
 		key: 'last 90 days',
 		label: label('Last_90_days'),
-		range: lastNDays(90),
+		range: getClosedPeriod({ startOf: 'day', subtract: { amount: 90, unit: 'days' } }),
 	},
 	{
 		key: 'last 6 months',
 		label: label('Last_6_months'),
-		range: lastNDays(180),
+		range: getClosedPeriod({ startOf: 'month', subtract: { amount: 6, unit: 'months' } }),
 	},
 	{
-		key: 'last year',
-		label: label('Last_year'),
-		range: lastNDays(365),
+		key: 'this year',
+		label: label('This_year'),
+		range: getClosedPeriod({ startOf: 'year' }),
 	},
 ] as const;
 
@@ -77,7 +84,7 @@ export const getPeriod = (key: (typeof periods)[number]['key']): Period => {
 	const period = periods.find((period) => period.key === key);
 
 	if (!period) {
-		throw new Error(`"${key}" is not a valid period key`);
+		return periods[0];
 	}
 
 	return period;
@@ -93,7 +100,7 @@ export const getPeriodRange = (
 	const period = periods.find((period) => period.key === key);
 
 	if (!period) {
-		throw new Error(`"${key}" is not a valid period key`);
+		return periods[0].range(utc);
 	}
 
 	return period.range(utc);

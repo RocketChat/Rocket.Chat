@@ -1,12 +1,13 @@
 import { HeroLayout, HeroLayoutTitle } from '@rocket.chat/layout';
 import { useRouteParameter, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LoginPage from '../root/MainLayout/LoginPage';
 import PageLoading from '../root/PageLoading';
 import { useInviteTokenMutation } from './hooks/useInviteTokenMutation';
+import { useSamlInviteToken } from './hooks/useSamlInviteToken';
 import { useValidateInviteQuery } from './hooks/useValidateInviteQuery';
 
 const InvitePage = (): ReactElement => {
@@ -14,21 +15,29 @@ const InvitePage = (): ReactElement => {
 
 	const token = useRouteParameter('hash');
 	const userId = useUserId();
-	const { isLoading, data: isValidInvite } = useValidateInviteQuery(userId, token);
+	const validateInvite = useValidateInviteQuery(token);
+	const [, setToken] = useSamlInviteToken();
+	const tokenRef = useRef('');
 
 	const getInviteRoomMutation = useInviteTokenMutation();
 
 	useEffect(() => {
-		if (userId && token) {
-			getInviteRoomMutation(token);
-		}
-	}, [getInviteRoomMutation, token, userId]);
+		// TODO: this is so hacky, get from the url and set the storage
+		setToken(token || null);
+	}, [setToken, token]);
 
-	if (isLoading) {
+	useEffect(() => {
+		if (userId && token && !getInviteRoomMutation.submittedAt && tokenRef.current !== token) {
+			tokenRef.current = token;
+			getInviteRoomMutation.mutate(token);
+		}
+	}, [getInviteRoomMutation, setToken, token, userId]);
+
+	if (validateInvite.isPending) {
 		return <PageLoading />;
 	}
 
-	if (isValidInvite) {
+	if (validateInvite.isSuccess && validateInvite.data) {
 		return <LoginPage />;
 	}
 

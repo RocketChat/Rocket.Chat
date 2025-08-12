@@ -2,7 +2,7 @@ import Bugsnag from '@bugsnag/js';
 import type { BugsnagErrorBoundary as BugsnagErrorBoundaryComponent } from '@bugsnag/plugin-react';
 import BugsnagPluginReact from '@bugsnag/plugin-react';
 import type { ReactNode } from 'react';
-import React from 'react';
+import * as React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import AppErrorPage from './AppErrorPage';

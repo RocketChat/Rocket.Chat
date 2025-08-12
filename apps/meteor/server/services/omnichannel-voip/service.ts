@@ -15,7 +15,7 @@ import { isILivechatVisitor, OmnichannelSourceType, isVoipRoom, VoipClientEvents
 import { Logger } from '@rocket.chat/logger';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { FindOptions } from 'mongodb';
+import type { FindOptions, SortDirection } from 'mongodb';
 import _ from 'underscore';
 
 import type { IOmniRoomClosingMessage } from './internalTypes';
@@ -183,7 +183,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 
 	private async getAllocatedExtesionAllocationData(projection: Partial<{ [P in keyof IUser]: number }>): Promise<IUser[]> {
 		const roles: string[] = ['livechat-agent', 'livechat-manager', 'admin'];
-		const options = {
+		const options: FindOptions<IUser> = {
 			sort: {
 				username: 1,
 			},
@@ -458,9 +458,9 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		text?: string,
 		count?: number,
 		offset?: number,
-		sort?: Record<string, unknown>,
+		sort?: Record<string, SortDirection>,
 	): Promise<{ agents: ILivechatAgent[]; total: number }> {
-		const { cursor, totalCount } = Users.getAvailableAgentsIncludingExt(includeExtension, text, { count, skip: offset, sort });
+		const { cursor, totalCount } = Users.getAvailableAgentsIncludingExt(includeExtension, text, { limit: count, skip: offset, sort });
 
 		const [agents, total] = await Promise.all([cursor.toArray(), totalCount]);
 

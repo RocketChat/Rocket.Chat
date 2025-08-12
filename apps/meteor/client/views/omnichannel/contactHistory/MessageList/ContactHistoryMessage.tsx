@@ -19,10 +19,10 @@ import {
 	Bubble,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import React, { memo } from 'react';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import StatusIndicators from '../../../../components/message/StatusIndicators';
 import Attachments from '../../../../components/message/content/Attachments';
@@ -44,6 +44,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
+	const displayName = useUserDisplayName(message.u);
 
 	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
 
@@ -106,7 +107,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 					{!sequential && (
 						<MessageHeaderTemplate>
 							<MessageName title={`@${message.u.username}`} data-username={message.u.username}>
-								{message.alias || getUserDisplayName(message.u.name, message.u.username, false)}
+								{message.alias || displayName}
 							</MessageName>
 							<MessageUsername data-username={message.u.username} data-qa-type='username'>
 								@{message.u.username}

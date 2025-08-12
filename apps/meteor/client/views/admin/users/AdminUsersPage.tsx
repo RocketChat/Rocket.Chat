@@ -1,12 +1,12 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Callout, ContextualbarIcon, Icon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 
 import AdminInviteUsers from './AdminInviteUsers';
@@ -20,13 +20,7 @@ import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
 import usePendingUsersCount from './hooks/usePendingUsersCount';
 import { useSeatsCap } from './useSeatsCap';
-import {
-	Contextualbar,
-	ContextualbarHeader,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarDialog,
-} from '../../../components/Contextualbar';
+import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
@@ -59,7 +53,10 @@ const AdminUsersPage = (): ReactElement => {
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const getRoles = useEndpoint('GET', '/v1/roles.list');
-	const { data, error } = useQuery(['roles'], async () => getRoles());
+	const { data, error } = useQuery({
+		queryKey: ['roles'],
+		queryFn: async () => getRoles(),
+	});
 
 	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOption>('name');
@@ -93,6 +90,8 @@ const AdminUsersPage = (): ReactElement => {
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
+	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/admin/users'));
+
 	useEffect(() => {
 		prevSearchTerm.current = searchTerm;
 	}, [searchTerm]);
@@ -112,8 +111,12 @@ const AdminUsersPage = (): ReactElement => {
 				</PageHeader>
 				{preventAction?.includes('activeUsers') && (
 					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
-						<Trans i18nKey='subscription.callout.description.limitsExceeded' count={preventAction.length}>
-							Your workspace exceeded the <>{{ val: preventAction.map(toTranslationKey) }}</> license limit.
+						<Trans
+							i18nKey='subscription.callout.description.limitsExceeded'
+							count={preventAction.length}
+							values={{ val: preventAction.map(toTranslationKey) }}
+						>
+							Your workspace exceeded the <>{preventAction.map(toTranslationKey)}</> license limit.
 							<ExternalLink
 								to={manageSubscriptionUrl({
 									target: 'callout',
@@ -157,33 +160,27 @@ const AdminUsersPage = (): ReactElement => {
 				</PageContent>
 			</Page>
 			{context && (
-				<ContextualbarDialog>
-					<Contextualbar>
-						<ContextualbarHeader>
-							{context === 'upgrade' && <ContextualbarIcon name='user-plus' />}
-							<ContextualbarTitle>
-								{context === 'info' && t('User_Info')}
-								{context === 'edit' && t('Edit_User')}
-								{(context === 'new' || context === 'created') && (
-									<>
-										<Icon name='user-plus' size={20} /> {t('New_user')}
-									</>
-								)}
-								{context === 'invite' && t('Invite_Users')}
-							</ContextualbarTitle>
-							<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
-						</ContextualbarHeader>
-						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
-						{context === 'edit' && id && (
-							<AdminUserFormWithData uid={id} onReload={handleReload} context={context} roleData={data} roleError={error} />
-						)}
-						{!isRoutePrevented && context === 'new' && (
-							<AdminUserForm onReload={handleReload} context={context} roleData={data} roleError={error} />
-						)}
-						{!isRoutePrevented && context === 'created' && id && <AdminUserCreated uid={id} />}
-						{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
-						{isRoutePrevented && <AdminUserUpgrade />}
-					</Contextualbar>
+				<ContextualbarDialog onClose={handleCloseContextualbar}>
+					<ContextualbarHeader>
+						{['new', 'created', 'upgrade'].includes(context) && <ContextualbarIcon name='user-plus' />}
+						<ContextualbarTitle>
+							{context === 'info' && t('User_Info')}
+							{context === 'edit' && t('Edit_User')}
+							{(context === 'new' || context === 'created') && t('New_user')}
+							{context === 'invite' && t('Invite_Users')}
+						</ContextualbarTitle>
+						<ContextualbarClose onClick={handleCloseContextualbar} />
+					</ContextualbarHeader>
+					{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
+					{context === 'edit' && id && (
+						<AdminUserFormWithData uid={id} onReload={handleReload} context={context} roleData={data} roleError={error} />
+					)}
+					{!isRoutePrevented && context === 'new' && (
+						<AdminUserForm onReload={handleReload} context={context} roleData={data} roleError={error} />
+					)}
+					{!isRoutePrevented && context === 'created' && id && <AdminUserCreated uid={id} />}
+					{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
+					{isRoutePrevented && <AdminUserUpgrade />}
 				</ContextualbarDialog>
 			)}
 		</Page>

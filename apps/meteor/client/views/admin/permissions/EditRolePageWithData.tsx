@@ -2,7 +2,6 @@ import type { IRole } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EditRolePage from './EditRolePage';

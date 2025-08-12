@@ -1,6 +1,6 @@
 import { useUserId, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import PasswordChangeCheck from './PasswordChangeCheck';
 import RegisterUsername from './RegisterUsername';

@@ -366,6 +366,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		await Rooms.setTeamByIds(rids, teamId);
+		void notifyOnRoomChangedById(rids, 'updated');
 		return validRooms;
 	}
 
@@ -408,6 +409,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		delete room.teamId;
 		delete room.teamDefault;
 		await Rooms.unsetTeamById(room._id);
+		void notifyOnRoomChangedById(room._id, 'updated');
 
 		if (room.t === 'c') {
 			await Message.saveSystemMessage('user-removed-room-from-team', team.roomId, room.name || '', user);

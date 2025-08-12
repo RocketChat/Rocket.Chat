@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Field, FieldLabel, FieldRow, Select, Button } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +17,8 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 		formState: { isDirty, isSubmitting },
 		control,
 	} = useForm({ defaultValues: { days: daysAndMaxUses.days, maxUses: daysAndMaxUses.maxUses } });
+	const expirationId = useId();
+	const maxUsesId = useId();
 
 	const daysOptions: SelectOption[] = useMemo(
 		() => [
@@ -44,25 +46,29 @@ const EditInviteLink = ({ daysAndMaxUses, onClickNewLink }: EditInviteLinkProps)
 	return (
 		<>
 			<Field>
-				<FieldLabel flexGrow={0}>{t('Expiration_(Days)')}</FieldLabel>
+				<FieldLabel htmlFor={expirationId} flexGrow={0}>
+					{t('Expiration_(Days)')}
+				</FieldLabel>
 				<FieldRow>
 					<Controller
 						name='days'
 						control={control}
 						render={({ field: { onChange, value, name } }): ReactElement => (
-							<Select name={name} value={value} onChange={onChange} options={daysOptions} />
+							<Select id={expirationId} name={name} value={value} onChange={onChange} options={daysOptions} />
 						)}
 					/>
 				</FieldRow>
 			</Field>
 			<Field>
-				<FieldLabel flexGrow={0}>{t('Max_number_of_uses')}</FieldLabel>
+				<FieldLabel htmlFor={maxUsesId} flexGrow={0}>
+					{t('Max_number_of_uses')}
+				</FieldLabel>
 				<FieldRow>
 					<Controller
 						name='maxUses'
 						control={control}
 						render={({ field: { onChange, value, name } }): ReactElement => (
-							<Select name={name} value={value} onChange={onChange} options={maxUsesOptions} />
+							<Select id={maxUsesId} name={name} value={value} onChange={onChange} options={maxUsesOptions} />
 						)}
 					/>
 				</FieldRow>

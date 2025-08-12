@@ -3,7 +3,8 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
 import { normalizeLanguage } from '@rocket.chat/tools';
 import { type TranslationLanguage, useSetting, useLoadLanguage, useLanguage, useLanguages } from '@rocket.chat/ui-contexts';
-import { type ReactElement, type UIEvent, useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
+import type { ReactElement, UIEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 const useSuggestedLanguages = ({
@@ -59,16 +60,20 @@ const LoginSwitchLanguageFooter = ({
 
 	return (
 		<HorizontalWizardLayoutCaption>
-			{suggestions.map((suggestion) => (
-				<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
-					<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }}>
-						Change to{' '}
-						<strong>
-							<>{{ name: suggestion.ogName }}</>
-						</strong>
-					</Trans>
-				</Button>
-			))}
+			{suggestions.map((suggestion) => {
+				// If suggestion is "Default", skip it
+				if (!suggestion.key) {
+					return;
+				}
+
+				return (
+					<Button secondary small mie={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+						<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }} values={{ name: suggestion.ogName }}>
+							Change to <strong>{suggestion.ogName}</strong>
+						</Trans>
+					</Button>
+				);
+			})}
 		</HorizontalWizardLayoutCaption>
 	);
 };

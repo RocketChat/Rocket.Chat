@@ -1,9 +1,23 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Modal, Button, FieldGroup, Field, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import {
+	Box,
+	Modal,
+	Button,
+	FieldGroup,
+	Field,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import React, { memo } from 'react';
+import { useId, memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
@@ -12,7 +26,7 @@ import { goToRoomById } from '../../lib/utils/goToRoomById';
 const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
-	const membersFieldId = useUniqueId();
+	const membersFieldId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const createDirectAction = useEndpoint('POST', '/v1/dm.create');
@@ -42,11 +56,11 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 
 	return (
 		<Modal data-qa='create-direct-modal' wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Create_direct_message')}</Modal.Title>
-				<Modal.Close tabIndex={-1} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content mbe={2}>
+			<ModalHeader>
+				<ModalTitle>{t('Create_direct_message')}</ModalTitle>
+				<ModalClose tabIndex={-1} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
 				<FieldGroup>
 					<Field>
 						<Box htmlFor={membersFieldId}>{t('Direct_message_creation_description')}</Box>
@@ -83,15 +97,15 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 						<FieldHint id={`${membersFieldId}-hint`}>{t('Direct_message_creation_description_hint')}</FieldHint>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button loading={isSubmitting || isValidating} type='submit' primary>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

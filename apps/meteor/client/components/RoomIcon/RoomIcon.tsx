@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { isValidElement } from 'react';
+import { isValidElement } from 'react';
 
 import { OmnichannelRoomIcon } from './OmnichannelRoomIcon';
 import { useRoomIcon } from '../../hooks/useRoomIcon';

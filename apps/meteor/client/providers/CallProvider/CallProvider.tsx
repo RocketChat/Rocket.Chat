@@ -9,7 +9,7 @@ import {
 	isVoipEventCallAbandoned,
 	UserState,
 } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
 import type { Device } from '@rocket.chat/ui-contexts';
 import {
@@ -22,13 +22,13 @@ import {
 	useSetInputMediaDevice,
 	useSetModal,
 	useTranslation,
+	useCustomSound,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
+import { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
-import { useVoipSounds } from './hooks/useVoipSounds';
 import type { CallContextValue } from '../../contexts/CallContext';
 import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
@@ -73,10 +73,15 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 
 	const { openDialModal } = useDialModal();
 
-	const voipSounds = useVoipSounds();
+	const { voipSounds } = useCustomSound();
 
 	const closeRoom = useCallback(
-		async (data = {}): Promise<void> => {
+		async (
+			data: {
+				comment?: string;
+				tags?: string[];
+			} = {},
+		): Promise<void> => {
 			roomInfo &&
 				(await voipCloseRoomEndpoint({
 					rid: roomInfo.rid,
@@ -94,15 +99,15 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 	);
 
 	const openWrapUpModal = useCallback((): void => {
-		setModal(() => <WrapUpCallModal closeRoom={closeRoom} />);
+		setModal(<WrapUpCallModal closeRoom={closeRoom} />);
 	}, [closeRoom, setModal]);
 
-	const changeAudioOutputDevice = useMutableCallback((selectedAudioDevice: Device): void => {
+	const changeAudioOutputDevice = useEffectEvent((selectedAudioDevice: Device): void => {
 		remoteAudioMediaRef?.current &&
 			setOutputMediaDevice({ outputDevice: selectedAudioDevice, HTMLAudioElement: remoteAudioMediaRef.current });
 	});
 
-	const changeAudioInputDevice = useMutableCallback((selectedAudioDevice: Device): void => {
+	const changeAudioInputDevice = useEffectEvent((selectedAudioDevice: Device): void => {
 		if (!result.voipClient) {
 			return;
 		}
@@ -331,7 +336,9 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 			if (!callDetails.callInfo) {
 				return;
 			}
+
 			voipSounds.stopAll();
+
 			if (callDetails.userState !== UserState.UAC) {
 				return;
 			}
@@ -372,15 +379,15 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 		};
 
 		const onRinging = (): void => {
-			voipSounds.play('outbound-call-ringing');
+			voipSounds.playDialer();
 		};
 
 		const onIncomingCallRinging = (): void => {
-			voipSounds.play('telephone');
+			voipSounds.playRinger();
 		};
 
 		const onCallTerminated = (): void => {
-			voipSounds.play('call-ended', false);
+			voipSounds.playCallEnded();
 			voipSounds.stopAll();
 		};
 

@@ -2,7 +2,6 @@ import { Box } from '@rocket.chat/fuselage';
 import { VerticalWizardLayout } from '@rocket.chat/layout';
 import { useAssetWithDarkModePath, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import React from 'react';
 
 type LayoutProps = {
 	children?: ReactNode;

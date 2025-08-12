@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { GenericMenu, HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UiKitTriggerTimeoutError } from '../../../app/ui-message/client/UiKitTriggerTimeoutError';
@@ -24,7 +24,6 @@ export const useAppsRoomStarActions = () => {
 		if (!result.data) {
 			return undefined;
 		}
-
 		const filteredActions = result.data.filter(applyButtonFilters);
 
 		if (filteredActions.length === 0) {
@@ -37,6 +36,7 @@ export const useAppsRoomStarActions = () => {
 			icon: 'stars',
 			groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
 			featured: true,
+			order: 3,
 			renderToolboxItem: ({ id, icon, title, disabled, className }) => (
 				<GenericMenu
 					button={<HeaderToolbarAction />}

@@ -1,5 +1,4 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
 import CallsContextualBarDirectory from './CallsContextualBarDirectory';
 import ChatsContextualBar from './ChatsContextualBar';

@@ -1,12 +1,12 @@
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRouter, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import React from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../components/GenericModal';
+import { useTeamInfoQuery } from '../../../hooks/useTeamInfoQuery';
 import DeleteTeamModal from '../../teams/contextualBar/info/DeleteTeam';
 
 export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { reload }: { reload?: () => void } = {}) => {
@@ -20,17 +20,12 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 
 	const deleteRoomEndpoint = useEndpoint('POST', '/v1/rooms.delete');
 	const deleteTeamEndpoint = useEndpoint('POST', '/v1/teams.delete');
-	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
 
 	const teamId = room.teamId || '';
-	const { data: teamInfoData } = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
-		keepPreviousData: true,
-		retry: false,
-		enabled: room.teamId !== '',
-	});
+	const { data: teamInfo } = useTeamInfoQuery(teamId);
 
 	const hasPermissionToDeleteRoom = usePermission(`delete-${room.t}`, room._id);
-	const hasPermissionToDeleteTeamRoom = usePermission(`delete-team-${room.t === 'c' ? 'channel' : 'group'}`, teamInfoData?.teamInfo.roomId);
+	const hasPermissionToDeleteTeamRoom = usePermission(`delete-team-${room.t === 'c' ? 'channel' : 'group'}`, teamInfo?.roomId);
 	const isTeamRoom = room.teamId;
 	const canDeleteRoom = isRoomFederated(room) ? false : hasPermissionToDeleteRoom && (!isTeamRoom || hasPermissionToDeleteTeamRoom);
 
@@ -72,9 +67,9 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 		},
 	});
 
-	const isDeleting = deleteTeamMutation.isLoading || deleteRoomMutation.isLoading;
+	const isDeleting = deleteTeamMutation.isPending || deleteRoomMutation.isPending;
 
-	const handleDelete = useMutableCallback(() => {
+	const handleDelete = useEffectEvent(() => {
 		const handleDeleteTeam = async (roomsToRemove: IRoom['_id'][]) => {
 			if (!room.teamId) {
 				return;

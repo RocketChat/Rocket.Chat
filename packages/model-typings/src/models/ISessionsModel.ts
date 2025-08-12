@@ -7,7 +7,7 @@ import type {
 	DeviceManagementPopulatedSession,
 	DeviceManagementSession,
 } from '@rocket.chat/core-typings';
-import type { BulkWriteResult, Document, UpdateResult, FindCursor, OptionalId } from 'mongodb';
+import type { BulkWriteResult, Document, FindOptions, UpdateResult, FindCursor, OptionalId } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -127,10 +127,10 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 	logoutByInstanceIdAndSessionIdAndUserId(instanceId: string, sessionId: string, userId: string): Promise<UpdateResult>;
 
 	logoutBySessionIdAndUserId({
-		sessionId,
+		loginToken,
 		userId,
 	}: {
-		sessionId: ISession['sessionId'];
+		loginToken: ISession['loginToken'];
 		userId: IUser['_id'];
 	}): Promise<UpdateResult | Document>;
 
@@ -149,4 +149,10 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 	updateDailySessionById(_id: ISession['_id'], record: Partial<ISession>): Promise<UpdateResult>;
 
 	updateAllSessionsByDateToComputed({ start, end }: DestructuredRange): Promise<UpdateResult | Document>;
+
+	getLoggedInByUserIdAndSessionId<T extends Document = ISession>(
+		userId: string,
+		sessionId: string,
+		options?: FindOptions<T>,
+	): Promise<T | null>;
 }

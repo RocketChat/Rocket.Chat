@@ -6,13 +6,16 @@ import sinon from 'sinon';
 import type { CreateContactParams } from './createContact';
 
 const getContactManagerIdByUsername = sinon.stub();
+const getAllowedCustomFields = sinon.stub();
 
 const { mapVisitorToContact } = proxyquire.noCallThru().load('./mapVisitorToContact', {
 	'./getContactManagerIdByUsername': {
 		getContactManagerIdByUsername,
 	},
+	'./getAllowedCustomFields': { getAllowedCustomFields },
 });
 
+const testDate = new Date();
 const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactParams][] = [
 	[
 		{
@@ -50,6 +53,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				},
 			],
 			customFields: undefined,
+			shouldValidateCustomFields: false,
 			contactManager: 'manager1',
 		},
 	],
@@ -84,6 +88,97 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 				},
 			],
 			customFields: undefined,
+			shouldValidateCustomFields: false,
+			contactManager: undefined,
+		},
+	],
+
+	[
+		{
+			_id: 'visitor1',
+			username: 'Username',
+			activity: ['2024-11'],
+			lastChat: {
+				_id: 'last-chat-id',
+				ts: testDate,
+			},
+		},
+		{
+			type: OmnichannelSourceType.WIDGET,
+		},
+		{
+			name: 'Username',
+			emails: undefined,
+			phones: undefined,
+			unknown: false,
+			channels: [
+				{
+					name: 'sms',
+					visitor: {
+						visitorId: 'visitor1',
+						source: {
+							type: OmnichannelSourceType.WIDGET,
+						},
+					},
+					blocked: false,
+					verified: false,
+					details: {
+						type: OmnichannelSourceType.WIDGET,
+					},
+					lastChat: {
+						_id: 'last-chat-id',
+						ts: testDate,
+					},
+				},
+			],
+			customFields: undefined,
+			shouldValidateCustomFields: false,
+			lastChat: {
+				_id: 'last-chat-id',
+				ts: testDate,
+			},
+			contactManager: undefined,
+		},
+	],
+
+	[
+		{
+			_id: 'visitor1',
+			username: 'Username',
+			livechatData: {
+				customFieldId: 'customFieldValue',
+				invalidCustomFieldId: 'invalidCustomFieldValue',
+			},
+			activity: [],
+		},
+		{
+			type: OmnichannelSourceType.WIDGET,
+		},
+		{
+			name: 'Username',
+			emails: undefined,
+			phones: undefined,
+			unknown: true,
+			channels: [
+				{
+					name: 'sms',
+					visitor: {
+						visitorId: 'visitor1',
+						source: {
+							type: OmnichannelSourceType.WIDGET,
+						},
+					},
+					blocked: false,
+					verified: false,
+					details: {
+						type: OmnichannelSourceType.WIDGET,
+					},
+				},
+			],
+			customFields: {
+				customFieldId: 'customFieldValue',
+			},
+			shouldValidateCustomFields: false,
 			contactManager: undefined,
 		},
 	],
@@ -99,6 +194,7 @@ describe('mapVisitorToContact', () => {
 
 			return undefined;
 		});
+		getAllowedCustomFields.resolves([{ _id: 'customFieldId', label: 'custom-field-label' }]);
 	});
 
 	const index = 0;

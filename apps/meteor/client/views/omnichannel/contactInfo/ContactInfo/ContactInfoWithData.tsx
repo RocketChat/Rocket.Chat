@@ -1,6 +1,5 @@
 import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
 
 import { ContextualbarSkeleton } from '../../../../components/Contextualbar';
 import ContactInfoError from '../ContactInfoError';
@@ -15,12 +14,14 @@ const ContactInfoWithData = ({ id: contactId, onClose }: ContactInfoWithDataProp
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 
 	const getContact = useEndpoint('GET', '/v1/omnichannel/contacts.get');
-	const { data, isLoading, isError } = useQuery(['getContactById', contactId], () => getContact({ contactId }), {
+	const { data, isPending, isError } = useQuery({
+		queryKey: ['getContactById', contactId],
+		queryFn: () => getContact({ contactId }),
 		enabled: canViewCustomFields && !!contactId,
 	});
 
-	if (isLoading) {
-		return <ContextualbarSkeleton />;
+	if (isPending) {
+		return <ContextualbarSkeleton onClose={onClose} />;
 	}
 
 	if (isError || !data?.contact) {

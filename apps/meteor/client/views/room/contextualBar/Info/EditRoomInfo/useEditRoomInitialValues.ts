@@ -1,4 +1,4 @@
-import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import type { IRoomWithRetentionPolicy, RoomType, MessageTypesValues } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -6,7 +6,32 @@ import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
-export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
+export type EditRoomInfoFormData = {
+	roomName: string;
+	roomTopic: string;
+	roomAnnouncement: string;
+	roomDescription: string;
+	roomType: RoomType;
+	roomAvatar?: string;
+	readOnly: boolean;
+	reactWhenReadOnly: boolean;
+	archived: boolean;
+	joinCodeRequired: boolean;
+	hideSysMes: boolean;
+	encrypted: boolean;
+	retentionEnabled: boolean;
+	retentionOverrideGlobal: boolean;
+	retentionMaxAge: number;
+	retentionExcludePinned: boolean;
+	retentionFilesOnly: boolean;
+	retentionIgnoreThreads: boolean;
+	showChannels: boolean;
+	showDiscussions: boolean;
+	joinCode: string;
+	systemMessages: MessageTypesValues[];
+};
+
+export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy): Partial<EditRoomInfoFormData> => {
 	const retentionPolicy = useRetentionPolicy(room);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 
@@ -26,7 +51,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 	} = room;
 
 	return useMemo(
-		() => ({
+		(): Partial<EditRoomInfoFormData> => ({
 			roomName: t === 'd' && room.usernames ? room.usernames.join(' x ') : roomCoordinator.getRoomName(t, room),
 			roomType: t,
 			readOnly: !!ro,

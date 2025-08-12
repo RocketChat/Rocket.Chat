@@ -2,6 +2,7 @@ import { Component } from 'preact';
 import { route } from 'preact-router';
 import { withTranslation } from 'react-i18next';
 
+import Chat from './component';
 import { Livechat } from '../../api';
 import { ModalManager } from '../../components/Modal';
 import { getAvatarUrl } from '../../helpers/baseUrl';
@@ -22,9 +23,8 @@ import constants from '../../lib/constants';
 import { getLastReadMessage, loadConfig, processUnread, shouldMarkAsUnread } from '../../lib/main';
 import { parentCall, runCallbackEventEmitter } from '../../lib/parentCall';
 import { createToken } from '../../lib/random';
-import { initRoom, closeChat, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
+import { initRoom, loadMessages, loadMoreMessages, defaultRoomParams, getGreetingMessages } from '../../lib/room';
 import store from '../../store';
-import Chat from './component';
 
 const ChatWrapper = ({ children, rid }) => {
 	useRoomMessagesSubscription(rid);
@@ -254,7 +254,6 @@ class ChatContainer extends Component {
 			await dispatch({ alerts: (alerts.push(alert), alerts) });
 		} finally {
 			await dispatch({ loading: false });
-			await closeChat();
 		}
 	};
 

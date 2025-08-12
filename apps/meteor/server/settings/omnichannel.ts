@@ -173,6 +173,15 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		await this.add('Omnichannel_allow_force_close_conversations', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			section: 'API',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+			alert: 'Omnichannel_allow_force_close_conversations_alert',
+		});
+
 		await this.add('Livechat_conversation_finished_message', '', {
 			type: 'string',
 			group: 'Omnichannel',
@@ -220,13 +229,6 @@ export const createOmniSettings = () =>
 		});
 
 		await this.add('Livechat_guest_count', 1, { type: 'int', group: 'Omnichannel', hidden: true });
-
-		await this.add('Livechat_Room_Count', 1, {
-			type: 'int',
-			group: 'Omnichannel',
-			i18nLabel: 'Livechat_room_count',
-			hidden: true,
-		});
 
 		await this.add('Livechat_enabled_when_agent_idle', true, {
 			type: 'boolean',
@@ -663,6 +665,14 @@ export const createOmniSettings = () =>
 			i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
 			i18nLabel: 'Call_provider',
 			enableQuery: omnichannelEnabledQuery,
+		});
+
+		await this.add('Omnichannel_Metrics_Ignore_Automatic_Messages', false, {
+			type: 'boolean',
+			public: true,
+			group: 'Omnichannel',
+			section: 'Analytics',
+			i18nLabel: 'Omnichannel_Ignore_automatic_responses_for_performance_metrics',
 		});
 	});
 await settingsRegistry.addGroup('SMS', async function () {

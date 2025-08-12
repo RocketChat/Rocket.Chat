@@ -1,7 +1,8 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useTooltipClose, useTooltipOpen } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { useRef, useContext } from 'react';
+import { useRef, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReactionTooltip from './ReactionTooltip';
@@ -15,9 +16,10 @@ type ReactionProps = {
 	name: string;
 	names: string[];
 	messageId: string;
+	onClick: () => void;
 } & ComponentProps<typeof MessageReactionTemplate>;
 
-const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: ReactionProps): ReactElement => {
+const Reaction = ({ hasReacted, counter, name, names, messageId, onClick, ...props }: ReactionProps): ReactElement => {
 	const { t } = useTranslation();
 	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
@@ -27,6 +29,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: Rea
 	const mine = hasReacted(name);
 
 	const emojiProps = getEmojiClassNameAndDataTitle(name);
+	const buttonProps = useButtonPattern(onClick);
 
 	return (
 		<MessageReactionTemplate
@@ -56,6 +59,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: Rea
 			onMouseLeave={(): void => {
 				closeTooltip();
 			}}
+			{...buttonProps}
 			{...props}
 		>
 			<MessageReactionEmoji {...emojiProps} />

@@ -1,5 +1,4 @@
 import { Skeleton } from '@rocket.chat/fuselage';
-import React from 'react';
 
 import { Header, HeaderAvatar, HeaderContent, HeaderContentRow } from '../../../components/Header';
 

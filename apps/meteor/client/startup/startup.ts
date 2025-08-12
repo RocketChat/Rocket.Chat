@@ -1,22 +1,17 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { UserPresence } from 'meteor/rocketchat:user-presence';
-import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
-import { register } from '../../app/markdown/lib/hljs';
-import { settings } from '../../app/settings/client';
 import { getUserPreference } from '../../app/utils/client';
-import 'hljs9/styles/github.css';
+import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 Meteor.startup(() => {
 	fireGlobalEvent('startup', true);
-
-	Session.setDefault('AvatarRandom', 0);
 
 	window.lastMessageWindow = {};
 	window.lastMessageWindowHistory = {};
@@ -61,13 +56,5 @@ Meteor.startup(() => {
 			status = user.status;
 			fireGlobalEvent('status-changed', status);
 		}
-	});
-});
-Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const code = settings.get('Message_Code_highlight') as string | undefined;
-		code?.split(',').forEach((language: string) => {
-			language.trim() && register(language.trim());
-		});
 	});
 });

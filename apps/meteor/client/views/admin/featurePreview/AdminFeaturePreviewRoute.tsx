@@ -1,6 +1,6 @@
 import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import AdminFeaturePreviewPage from './AdminFeaturePreviewPage';
 import SettingsProvider from '../../../providers/SettingsProvider';
@@ -15,7 +15,7 @@ const AdminFeaturePreviewRoute = (): ReactElement => {
 	}
 
 	return (
-		<SettingsProvider privileged>
+		<SettingsProvider>
 			<EditableSettingsProvider>
 				<AdminFeaturePreviewPage />
 			</EditableSettingsProvider>

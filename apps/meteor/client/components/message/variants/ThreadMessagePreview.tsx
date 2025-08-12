@@ -1,4 +1,4 @@
-import type { IThreadMessage } from '@rocket.chat/core-typings';
+import { isOTRAckMessage, isOTRMessage, type IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage,
@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -45,12 +45,14 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const { t } = useTranslation();
 
 	const isSelecting = useIsSelecting();
+	const isOTRMsg = isOTRMessage(message) || isOTRAckMessage(message);
+
 	const toggleSelected = useToggleSelect(message._id);
-	const isSelected = useIsSelectedMessage(message._id);
+	const isSelected = useIsSelectedMessage(message._id, isOTRMsg);
 	useCountSelected();
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
-	const messageBody = useMessageBody(parentMessage.data, message.rid);
+	const messageBody = useMessageBody(parentMessage.data);
 
 	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
 
@@ -65,13 +67,17 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			return goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id });
 		}
 
+		if (isOTRMsg) {
+			return;
+		}
+
 		return toggleSelected();
 	};
 
 	return (
 		<ThreadMessage
 			role='link'
-			aria-roledescription='thread message preview'
+			aria-roledescription={isOTRMsg ? t('OTR_thread_message_preview') : t('thread_message_preview')}
 			tabIndex={0}
 			onClick={handleThreadClick}
 			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
@@ -117,7 +123,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							size='x18'
 						/>
 					)}
-					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
+					{isSelecting && <CheckBox disabled={isOTRMsg} checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>

@@ -1,9 +1,8 @@
-import { Button, ButtonGroup, ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
+import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarEmptyContent } from '../../../components/Contextualbar';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 

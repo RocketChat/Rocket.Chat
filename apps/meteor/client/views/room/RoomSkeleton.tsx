@@ -1,6 +1,5 @@
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import HeaderSkeleton from './Header/HeaderSkeleton';
 import HeaderSkeletonV2 from './HeaderV2/HeaderSkeleton';

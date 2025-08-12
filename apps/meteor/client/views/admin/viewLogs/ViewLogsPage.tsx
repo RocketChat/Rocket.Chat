@@ -1,6 +1,6 @@
 import { Margins, Tabs } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AnalyticsReports from './AnalyticsReports';

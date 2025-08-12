@@ -1,12 +1,12 @@
 import { Box, MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { Fragment, memo, useState } from 'react';
+import { Fragment, memo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 import RoomMessage from '../../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -41,47 +41,48 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 						<MessageListErrorBoundary>
 							<MessageListProvider>
 								<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
-									<Virtuoso
-										totalCount={messageSearchQuery.data.length}
-										overscan={25}
-										data={messageSearchQuery.data}
-										components={{ Scroller: VirtuosoScrollbars }}
-										itemContent={(index, message) => {
-											const previous = messageSearchQuery.data[index - 1];
+									<VirtualizedScrollbars>
+										<Virtuoso
+											totalCount={messageSearchQuery.data.length}
+											overscan={25}
+											data={messageSearchQuery.data}
+											itemContent={(index, message) => {
+												const previous = messageSearchQuery.data[index - 1];
 
-											const newDay = isMessageNewDay(message, previous);
+												const newDay = isMessageNewDay(message, previous);
 
-											const system = MessageTypes.isSystemMessage(message);
+												const system = MessageTypes.isSystemMessage(message);
 
-											const unread = subscription?.tunread?.includes(message._id) ?? false;
-											const mention = subscription?.tunreadUser?.includes(message._id) ?? false;
-											const all = subscription?.tunreadGroup?.includes(message._id) ?? false;
+												const unread = subscription?.tunread?.includes(message._id) ?? false;
+												const mention = subscription?.tunreadUser?.includes(message._id) ?? false;
+												const all = subscription?.tunreadGroup?.includes(message._id) ?? false;
 
-											return (
-												<Fragment key={message._id}>
-													{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
+												return (
+													<Fragment key={message._id}>
+														{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
-													{system ? (
-														<SystemMessage message={message} showUserAvatar={showUserAvatar} />
-													) : (
-														<RoomMessage
-															message={message}
-															sequential={false}
-															unread={unread}
-															mention={mention}
-															all={all}
-															context='search'
-															searchText={searchText}
-															showUserAvatar={showUserAvatar}
-														/>
-													)}
-												</Fragment>
-											);
-										}}
-										endReached={() => {
-											setLimit((limit) => limit + pageSize);
-										}}
-									/>
+														{system ? (
+															<SystemMessage message={message} showUserAvatar={showUserAvatar} />
+														) : (
+															<RoomMessage
+																message={message}
+																sequential={false}
+																unread={unread}
+																mention={mention}
+																all={all}
+																context='search'
+																searchText={searchText}
+																showUserAvatar={showUserAvatar}
+															/>
+														)}
+													</Fragment>
+												);
+											}}
+											endReached={() => {
+												setLimit((limit) => limit + pageSize);
+											}}
+										/>
+									</VirtualizedScrollbars>
 								</Box>
 							</MessageListProvider>
 						</MessageListErrorBoundary>

@@ -39,7 +39,7 @@ export const useWebDAVAccountIntegrationsQuery = ({ enabled = true, ...options }
 		return subscribeToNotifyUser(`${uid}/webdav`, ({ type, account }) => {
 			switch (type) {
 				case 'changed':
-					queryClient.invalidateQueries(queryKey);
+					queryClient.invalidateQueries({ queryKey });
 					break;
 
 				case 'removed':

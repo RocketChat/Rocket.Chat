@@ -1,9 +1,9 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { ReactElement } from 'react';
-import React, { useState, memo } from 'react';
+import { useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoleCell from './RoleCell';
@@ -39,8 +39,8 @@ const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRo
 	const [hovered, setHovered] = useState(false);
 	const changeRole = useChangeRole({ onGrant, onRemove, permissionId: _id });
 
-	const onMouseEnter = useMutableCallback(() => setHovered(true));
-	const onMouseLeave = useMutableCallback(() => setHovered(false));
+	const onMouseEnter = useEffectEvent(() => setHovered(true));
+	const onMouseLeave = useEffectEvent(() => setHovered(false));
 
 	return (
 		<GenericTableRow key={_id} role='link' action tabIndex={0} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>

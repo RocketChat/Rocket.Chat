@@ -2,7 +2,6 @@ import type { VideoConference } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -14,8 +13,9 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarEmptyContent,
+	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../../../lib/errorHandling';
 
 type VideoConfListProps = {
@@ -36,7 +36,7 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 	});
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='phone' />
 				<ContextualbarTitle>{t('Calls')}</ContextualbarTitle>
@@ -69,28 +69,29 @@ const VideoConfList = ({ onClose, total, videoConfs, loading, error, reload, loa
 				)}
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{videoConfs.length > 0 && (
-						<Virtuoso
-							style={{
-								height: blockSize,
-								width: inlineSize,
-							}}
-							totalCount={total}
-							endReached={
-								loading
-									? (): void => undefined
-									: (start) => {
-											loadMoreItems(start, Math.min(50, total - start));
-										}
-							}
-							overscan={25}
-							data={videoConfs}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{
+									height: blockSize,
+									width: inlineSize,
+								}}
+								totalCount={total}
+								endReached={
+									loading
+										? (): void => undefined
+										: (start) => {
+												loadMoreItems(start, Math.min(50, total - start));
+											}
+								}
+								overscan={25}
+								data={videoConfs}
+								itemContent={(_index, data): ReactElement => <VideoConfListItem videoConfData={data} reload={reload} />}
+							/>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 
