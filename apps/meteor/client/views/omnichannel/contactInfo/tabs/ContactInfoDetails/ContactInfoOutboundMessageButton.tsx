@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import type OutboundMessageModal from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
 import { useOutboundMessageModal } from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
+import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 
 type ContactInfoOutboundMessageButtonProps = {
 	defaultValues?: ComponentProps<typeof OutboundMessageModal>['defaultValues'];
@@ -11,10 +12,11 @@ type ContactInfoOutboundMessageButtonProps = {
 
 const ContactInfoOutboundMessageButton = ({ defaultValues }: ContactInfoOutboundMessageButtonProps) => {
 	const { t } = useTranslation();
-	const isOutboundMessageEnabled = true;
 	const outboundMessageModal = useOutboundMessageModal();
 
-	if (!isOutboundMessageEnabled) {
+	const hasLicense = useHasLicenseModule('livechat-enterprise') === true;
+
+	if (!hasLicense) {
 		return null;
 	}
 
