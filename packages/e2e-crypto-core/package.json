@@ -1,0 +1,35 @@
+{
+  "name": "@rocket.chat/e2e-crypto-core",
+  "version": "0.1.0",
+  "description": "Runtime-agnostic, sans-IO end-to-end encryption core for Rocket.Chat (Double Ratchet, key management, message formats)",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && tsc -p tsconfig.build.json --module commonjs --outDir dist-cjs && node ./scripts/postbuild.cjs",
+    "clean": "rimraf dist dist-cjs",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "lint": "eslint 'src/**/*.ts'",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "rimraf": "^5.0.5",
+    "eslint": "^9.10.0",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {},
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
