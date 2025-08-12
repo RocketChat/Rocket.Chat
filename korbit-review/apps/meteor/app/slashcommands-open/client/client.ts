@@ -1,0 +1,50 @@
+import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+
+import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
+import { router } from '../../../client/providers/RouterProvider';
+import { Subscriptions } from '../../../client/stores';
+import { sdk } from '../../utils/client/lib/SDKClient';
+import { slashCommands } from '../../utils/client/slashCommand';
+
+slashCommands.add({
+	command: 'open',
+	callback: async function Open({ params }: SlashCommandCallbackParams<'open'>): Promise<void> {
+		const dict: Record<string, RoomType[]> = {
+			'#': ['c', 'p'],
+			'@': ['d'],
+		};
+
+		const room = params.trim().replace(/#|@/, '');
+		const type = dict[params.trim()[0]] || [];
+
+		const predicate = ({ name, t }: ISubscription) => {
+			return name === room && (type.length ? type.includes(t) : true);
+		};
+
+		const subscription = Subscriptions.state.find(predicate);
+
+		if (subscription) {
+			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
+		}
+
+		if (type && type.indexOf('d') === -1) {
+			return;
+		}
+		try {
+			await sdk.call('createDirectMessage', room);
+			const subscription = Subscriptions.state.find(predicate);
+			if (!subscription) {
+				return;
+			}
+			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
+		} catch (err: unknown) {
+			// noop
+		}
+	},
+	options: {
+		description: 'Opens_a_channel_group_or_direct_message',
+		params: 'room_name',
+		clientOnly: true,
+		permission: ['view-c-room', 'view-c-room', 'view-d-room', 'view-joined-room', 'create-d'],
+	},
+});
