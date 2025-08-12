@@ -211,6 +211,7 @@ API.v1.addRoute(
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
 				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+				details.size = fileBuffer.length;
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
@@ -289,6 +290,7 @@ API.v1.addRoute(
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
 				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+				details.size = fileBuffer.length;
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
