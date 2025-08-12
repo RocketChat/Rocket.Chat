@@ -1,32 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import { check } from 'meteor/check';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
-import { debounce } from './utils';
+import { withDebouncing } from '../../lib/utils/highOrderFunctions';
+import { Users } from '../stores';
 
-let timer;
-let status;
+let timer: ReturnType<typeof setTimeout> | undefined;
+let status: UserStatus | undefined;
 
 export const UserPresence = {
-	awayTime: 60000, // 1 minute
+	awayTime: 60000 as number | undefined, // 1 minute
 	awayOnWindowBlur: false,
-	callbacks: [],
 	connected: true,
 	started: false,
-	userId: null,
-
-	/**
-	 * The callback will receive the following parameters: user, status
-	 */
-	onSetUserStatus(callback) {
-		this.callbacks.push(callback);
-	},
-
-	runCallbacks(user, status) {
-		this.callbacks.forEach(function (callback) {
-			callback.call(null, user, status);
-		});
-	},
+	userId: null as IUser['_id'] | null | undefined,
 
 	startTimer() {
 		UserPresence.stopTimer();
@@ -38,14 +24,9 @@ export const UserPresence = {
 	stopTimer() {
 		clearTimeout(timer);
 	},
-	restartTimer() {
-		UserPresence.startTimer();
-	},
-	// eslint-disable-next-line no-use-before-define
-	setAway: () => setUserPresence('away'),
-	// eslint-disable-next-line no-use-before-define
-	setOnline: () => setUserPresence('online'),
-	start(userId) {
+	setAway: () => setUserPresence(UserStatus.AWAY),
+	setOnline: () => setUserPresence(UserStatus.ONLINE),
+	start(userId?: IUser['_id']) {
 		// after first call overwrite start function to only call startTimer
 		this.start = () => {
 			this.startTimer();
@@ -58,11 +39,11 @@ export const UserPresence = {
 			this.connected = connected;
 			if (connected) {
 				this.startTimer();
-				status = 'online';
+				status = UserStatus.ONLINE;
 				return;
 			}
 			this.stopTimer();
-			status = 'offline';
+			status = UserStatus.OFFLINE;
 		});
 
 		['mousemove', 'mousedown', 'touchend', 'keydown'].forEach((key) => document.addEventListener(key, this.setOnline));
@@ -75,7 +56,7 @@ export const UserPresence = {
 	},
 };
 
-const setUserPresence = debounce(async (newStatus) => {
+const setUserPresence = withDebouncing({ wait: 1000 })(async (newStatus: UserStatus) => {
 	if (!UserPresence.connected || newStatus === status) {
 		UserPresence.startTimer();
 		return;
@@ -92,22 +73,32 @@ const setUserPresence = debounce(async (newStatus) => {
 			return;
 	}
 	status = newStatus;
-}, 1000);
+});
 
 Meteor.methods({
-	async 'UserPresence:setDefaultStatus'(status) {
-		check(status, String);
-		await Meteor.users.updateAsync({ _id: Meteor.userId() }, { $set: { status, statusDefault: status } });
+	'UserPresence:setDefaultStatus'(status: UserStatus) {
+		const uid = Meteor.userId();
+		if (!uid) return;
+		const user = Users.state.get(uid);
+		if (!user) return;
+
+		Users.state.store({
+			...user,
+			status,
+			statusDefault: status,
+		});
 	},
 	async 'UserPresence:online'() {
-		const user = await Meteor.userAsync();
-		if (user && user.status !== 'online' && user.statusDefault === 'online') {
-			await Meteor.users.updateAsync({ _id: Meteor.userId() }, { $set: { status: 'online' } });
+		const uid = Meteor.userId();
+		if (!uid) return;
+		const user = Users.state.get(uid);
+		if (!user) return;
+
+		if (user.status !== UserStatus.ONLINE && user.statusDefault === UserStatus.ONLINE) {
+			Users.state.store({
+				...user,
+				status: UserStatus.ONLINE,
+			});
 		}
-		UserPresence.runCallbacks(user, 'online');
-	},
-	async 'UserPresence:away'() {
-		const user = await Meteor.userAsync();
-		UserPresence.runCallbacks(user, 'away');
 	},
 });
