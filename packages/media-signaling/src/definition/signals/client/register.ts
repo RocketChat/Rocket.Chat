@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-// Client is reporting a brand new session
+/** Client is reporting a brand new session */
 export type ClientMediaSignalRegister = {
 	type: 'register';
 	contractId: string;

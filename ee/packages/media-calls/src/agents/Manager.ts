@@ -109,7 +109,6 @@ class MediaCallAgentManager {
 		}
 
 		// We send a signal to rocket.chat users involved on the call without instantiating a full agent
-		// Once a sip agent is implemented, we may review if it is worth sending them some form of notification here too.
 
 		if (call.callee.type === 'user') {
 			gateway.sendSignal(call.callee.id, {
