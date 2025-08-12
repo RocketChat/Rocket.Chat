@@ -2277,18 +2277,9 @@ describe('/teams.updateRoom', () => {
 
 		beforeEach(async () => {
 			const timestamp = Date.now();
-			const createTeamPromise = createTeam(credentials, `test-team-name${timestamp}`, 0);
-			const createRoomPromise = createRoom({ name: `test-room-name${timestamp}`, type: 'c' });
-			const createAdditionalRoomPromise = createRoom({ name: `additional-room-name${timestamp}`, type: 'c' });
-			const [testTeamCreationResult, testRoomCreationResult, additionalRoomCreationResult] = await Promise.all([
-				createTeamPromise,
-				createRoomPromise,
-				createAdditionalRoomPromise,
-			]);
-
-			testTeam = testTeamCreationResult;
-			createdRoom = testRoomCreationResult.body.channel;
-			additionalRoom = additionalRoomCreationResult.body.channel;
+			testTeam = await createTeam(credentials, `test-team-name${timestamp}`, 0);
+			createdRoom = (await createRoom({ name: `test-room-name${timestamp}`, type: 'c' })).body.channel;
+			additionalRoom = (await createRoom({ name: `additional-room-name${timestamp}`, type: 'c' })).body.channel;
 
 			await request
 				.post(api('teams.addRooms'))
