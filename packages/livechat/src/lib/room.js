@@ -29,7 +29,12 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		await store.setState(initial);
 	}
 
-	await loadConfig();
+	try {
+		await loadConfig();
+	} catch (error) {
+		// Ultatel: When Configuration in not available, reload the page
+		location.reload()
+	}
 	parentCall('callback', 'chat-ended');
 	route('/chat-finished');
 };
