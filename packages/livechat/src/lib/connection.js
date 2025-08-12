@@ -63,7 +63,8 @@ const Connection = {
 
 	async displayAlert(alert = {}) {
 		const { alerts } = store.state;
-		await store.setState({ alerts: (alerts.push({...alert,timeout:alertTimeOut}), alerts) });
+		// Ultatel: Fix Alert Addition
+		await store.setState({ alerts: [...alerts, { ...alert, timeout: alertTimeOut }] });
 	},
 
 	async handleConnected() {
