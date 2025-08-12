@@ -33,9 +33,6 @@ export class UserAgentSignalProcessor {
 			case 'local-sdp':
 				await this.saveLocalDescription(params, signal.sdp);
 				break;
-			case 'error':
-				// #ToDo
-				break;
 			case 'answer':
 				await this.processAnswer(params, signal.answer);
 				break;
@@ -65,8 +62,8 @@ export class UserAgentSignalProcessor {
 			case 'accept':
 				return agentManager.acceptCall(this.agent);
 			case 'unavailable':
-				// return processUnavailable(call, channel);
-				break;
+				// We don't do anything on unavailable responses from clients, as a different client may still answer
+				return;
 			case 'reject':
 				return this.processReject(call);
 		}
@@ -113,7 +110,6 @@ export class UserAgentSignalProcessor {
 			return;
 		}
 
-		// #ToDo: Monitor other states as well
 		if (signal.clientState === 'active') {
 			if (channel.state === 'active' || channel.activeAt) {
 				return;

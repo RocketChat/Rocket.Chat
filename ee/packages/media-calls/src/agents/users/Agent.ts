@@ -59,7 +59,6 @@ export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implemen
 	public async requestOffer(params: { iceRestart?: boolean }): Promise<void> {
 		logger.debug({ msg: 'UserMediaCallAgent.requestOffer', params, actor: this.actor, contractState: this.contractState });
 
-		// #ToDo: this function may be called multiple times for the same call until an offer is provided; maybe consider the channel state before sending the offer
 		await this.sendSignal({
 			callId: this.callId,
 			toContractId: this.contractId,

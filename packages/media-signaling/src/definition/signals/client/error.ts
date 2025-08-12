@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-// Client is reporting an error
+/** Client is reporting an error */
 export type ClientMediaSignalError = {
 	callId: string;
 	contractId: string;

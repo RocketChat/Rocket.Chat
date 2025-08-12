@@ -95,8 +95,8 @@ class MediaCallAgentManager {
 
 		agent.notify(agent.callId, 'hangup');
 		const otherAgent = await this.getAnyOppositeAgent(agent);
-		// #ToDo: log something if the otherAgent is not found
 		if (otherAgent) {
+			logger.warn({ msg: 'oppositeAgent not found on hangup', reason });
 			otherAgent.notify(agent.callId, 'hangup');
 		}
 	}
@@ -160,13 +160,11 @@ class MediaCallAgentManager {
 		const stateResult = await MediaCalls.acceptCallById(agent.callId, agent.contractId, MediaCallMonitor.getNewExpirationTime());
 		// If nothing changed, the call was no longer ringing
 		if (!stateResult.modifiedCount) {
-			// Notify something?
 			return;
 		}
 
 		agent.sign();
 
-		// #ToDo: notify client if this throws any error
 		return this.processAcceptedCall(agent);
 	}
 
@@ -208,7 +206,7 @@ class MediaCallAgentManager {
 		}
 	}
 
-	// This will only return an agent if a contract for the other role has already been signed
+	/** This will only return an agent if a contract for the other role has already been signed */
 	private async getOppositeAgent(agent: IMediaCallAgent): Promise<IMediaCallAgent | null> {
 		logger.debug({ msg: 'AgentManager.getOppositeAgent', actor: agent.actor });
 		const call = await MediaCalls.findOneById(agent.callId);
@@ -275,7 +273,6 @@ class MediaCallAgentManager {
 			return;
 		}
 
-		// #ToDo: handle cases where an actor's service role doesn't match the call role
 		if (offer.type !== 'offer') {
 			logger.warn({ msg: 'caller sdp is not an offer', local: offer });
 			throw new Error('unexpected-state');

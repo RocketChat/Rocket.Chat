@@ -707,9 +707,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (!this.acceptedLocally) {
-			// #ToDo: test this situation; remove exception, read this response on the server
 			this.config.transporter.sendError(this.callId, 'not-accepted');
-			this.throwError('Trying to activate a call that was not yet accepted locally.');
+			this.config.logger?.error('Trying to activate a call that was not yet accepted locally.');
+			return;
 		}
 
 		if (this.contractState === 'proposed') {
@@ -825,7 +825,6 @@ export class ClientMediaCall implements IClientMediaCall {
 					}
 					break;
 				case 'disconnected':
-					// #ToDo: Attempt to reconnect when possible
 					if (this.state === 'active') {
 						this.hangup('service-error');
 					}

@@ -6,8 +6,10 @@ import { logger } from '../logger';
 import type { ISignalGateway, ServerSignalTransport } from './ISignalGateway';
 import { GlobalSignalProcessor } from './SignalProcessor';
 
-// Class used as gateway to send and receive signals to/from clients
-// The actual function used to send the signals needs to be set by the server
+/**
+ * Class used as gateway to send and receive signals to/from clients
+ * The actual function used to send the signals needs to be set by the server
+ */
 export class SignalGateway extends GlobalSignalProcessor implements ISignalGateway {
 	private handler: ServerSignalTransport | null = null;
 

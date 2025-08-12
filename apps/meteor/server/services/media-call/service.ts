@@ -69,7 +69,6 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	public async callUser(caller: { uid: IUser['_id']; contractId: string }, userId: IUser['_id']): Promise<IMediaCall> {
-		// For now every call is between two users
 		return this.createInternalCall(caller, { uid: userId });
 	}
 

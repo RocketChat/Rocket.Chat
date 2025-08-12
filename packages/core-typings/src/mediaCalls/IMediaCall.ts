@@ -20,9 +20,6 @@ export type MediaCallContactInformation = {
 	displayName?: string;
 	username?: string;
 	sipExtension?: string;
-
-	// avatarUrl?: string;
-	// host?: string;
 };
 
 export type MediaCallContact<T extends MediaCallActor = MediaCallActor> = T & MediaCallContactInformation;

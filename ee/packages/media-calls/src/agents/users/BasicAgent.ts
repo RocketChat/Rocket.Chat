@@ -29,8 +29,6 @@ export class UserBasicAgent<T extends IMediaCallBasicAgent = INewMediaCallAgent>
 			username,
 			displayName,
 			sipExtension,
-			// avatarUrl,
-			// host
 		};
 	}
 
