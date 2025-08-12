@@ -2837,6 +2837,92 @@ describe('[Channels]', () => {
 		});
 	});
 
+	describe('auto-join default channels', () => {
+		let defaultChannel1: IRoom;
+		let defaultChannel2: IRoom;
+		let nonDefaultChannel: IRoom;
+		let userWithJoin: TestUser<IUser>;
+		let userForNonDefault: TestUser<IUser>;
+		let userWithoutJoin: TestUser<IUser>;
+		let userWithJoinCredentials: Credentials;
+		let userForNonDefaultCredentials: Credentials;
+		let userWithoutJoinCredentials: Credentials;
+
+		before(async () => {
+			const timestamp = Date.now();
+			defaultChannel1 = (await createRoom({ type: 'c', name: `auto-join-default-1-${timestamp}` })).body.channel;
+			defaultChannel2 = (await createRoom({ type: 'c', name: `auto-join-default-2-${timestamp}` })).body.channel;
+			nonDefaultChannel = (await createRoom({ type: 'c', name: `auto-join-non-default-${timestamp}` })).body.channel;
+
+			await Promise.all([
+				request.post(api('channels.setDefault')).set(credentials).send({ roomId: defaultChannel1._id, default: true }).expect(200),
+				request.post(api('channels.setDefault')).set(credentials).send({ roomId: defaultChannel2._id, default: true }).expect(200),
+			]);
+
+			[userWithJoin, userForNonDefault, userWithoutJoin] = await Promise.all([
+				createUser({ joinDefaultChannels: true }),
+				createUser({ joinDefaultChannels: true }),
+				createUser({ joinDefaultChannels: false }),
+			]);
+
+			[userWithJoinCredentials, userForNonDefaultCredentials, userWithoutJoinCredentials] = await Promise.all([
+				login(userWithJoin.username, password),
+				login(userForNonDefault.username, password),
+				login(userWithoutJoin.username, password),
+			]);
+		});
+
+		after(async () => {
+			await Promise.all([
+				deleteUser(userWithJoin),
+				deleteUser(userForNonDefault),
+				deleteUser(userWithoutJoin),
+				deleteRoom({ type: 'c', roomId: defaultChannel1._id }),
+				deleteRoom({ type: 'c', roomId: defaultChannel2._id }),
+				deleteRoom({ type: 'c', roomId: nonDefaultChannel._id }),
+			]);
+		});
+
+		it('should automatically join new users to default channels when joinDefaultChannels is true', async () => {
+			const [subscription1Response, subscription2Response] = await Promise.all([
+				request.get(api('subscriptions.getOne')).set(userWithJoinCredentials).query({ roomId: defaultChannel1._id }).expect(200),
+				request.get(api('subscriptions.getOne')).set(userWithJoinCredentials).query({ roomId: defaultChannel2._id }).expect(200),
+			]);
+
+			expect(subscription1Response.body).to.have.property('success', true);
+			expect(subscription1Response.body).to.have.property('subscription').that.is.an('object');
+			expect(subscription1Response.body.subscription).to.have.property('rid', defaultChannel1._id);
+
+			expect(subscription2Response.body).to.have.property('success', true);
+			expect(subscription2Response.body).to.have.property('subscription').that.is.an('object');
+			expect(subscription2Response.body.subscription).to.have.property('rid', defaultChannel2._id);
+		});
+
+		it('should not auto-join new users to non-default channels', async () => {
+			const subscriptionResponse = await request
+				.get(api('subscriptions.getOne'))
+				.set(userForNonDefaultCredentials)
+				.query({ roomId: nonDefaultChannel._id })
+				.expect(200);
+
+			expect(subscriptionResponse.body).to.have.property('success', true);
+			expect(subscriptionResponse.body).to.have.property('subscription').that.is.null;
+		});
+
+		it('should not auto-join users when joinDefaultChannels is false', async () => {
+			const [subscription1Response, subscription2Response] = await Promise.all([
+				request.get(api('subscriptions.getOne')).set(userWithoutJoinCredentials).query({ roomId: defaultChannel1._id }).expect(200),
+				request.get(api('subscriptions.getOne')).set(userWithoutJoinCredentials).query({ roomId: defaultChannel2._id }).expect(200),
+			]);
+
+			expect(subscription1Response.body).to.have.property('success', true);
+			expect(subscription1Response.body).to.have.property('subscription').that.is.null;
+
+			expect(subscription2Response.body).to.have.property('success', true);
+			expect(subscription2Response.body).to.have.property('subscription').that.is.null;
+		});
+	});
+
 	describe('/channels.setType', () => {
 		let testChannel: IRoom;
 		const name = `setType-${Date.now()}`;
