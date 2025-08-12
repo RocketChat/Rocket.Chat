@@ -4128,6 +4128,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@matrix-org/matrix-sdk-crypto-nodejs@npm:0.4.0-beta.1":
+  version: 0.4.0-beta.1
+  resolution: "@matrix-org/matrix-sdk-crypto-nodejs@npm:0.4.0-beta.1"
+  dependencies:
+    https-proxy-agent: "npm:^7.0.5"
+    node-downloader-helper: "npm:^2.1.9"
+  checksum: 10/a1402d18b166cd9fc8122ae40c40f179f1df225dd7c98b8c89ef7a00f94a08256e988ab923d79c2aa44c6dd050792ee4f787ecdbde3c88b276fba96558ae0f50
+  languageName: node
+  linkType: hard
+
 "@mdx-js/react@npm:^3.0.0":
   version: 3.0.1
   resolution: "@mdx-js/react@npm:3.0.1"
@@ -7733,13 +7743,17 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/emojione": "npm:^2.2.9"
     "@types/node": "npm:~22.14.0"
+    "@types/sanitize-html": "npm:^2"
+    "@vector-im/matrix-bot-sdk": "npm:^0.7.1-element.6"
     babel-jest: "npm:~30.0.0"
     emojione: "npm:^4.5.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.0"
+    marked: "npm:^16.1.2"
     mongodb: "npm:6.10.0"
     pino: "npm:8.21.0"
     reflect-metadata: "npm:^0.2.2"
+    sanitize-html: "npm:^2.17.0"
     typescript: "npm:~5.8.3"
   languageName: unknown
   linkType: soft
@@ -12846,6 +12860,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/sanitize-html@npm:^2":
+  version: 2.16.0
+  resolution: "@types/sanitize-html@npm:2.16.0"
+  dependencies:
+    htmlparser2: "npm:^8.0.0"
+  checksum: 10/988cbdecce06b858fc5c92ed5573eb984852234be4ea4001ad703a9f0a00a491d788cfb0e3002b2cc01180e2598e7c8f9e5836fbe795601740aa91df3345d564
+  languageName: node
+  linkType: hard
+
 "@types/sanitize-html@npm:^2.13.0":
   version: 2.13.0
   resolution: "@types/sanitize-html@npm:2.13.0"
@@ -13709,6 +13732,32 @@ __metadata:
     request-promise: "npm:^4.2.6"
     sanitize-html: "npm:^2.11.0"
   checksum: 10/43152e779aa42beae07e2748da2093f48b26ec85d139e4123fbcfb8b25450cfc63c1e0c52ebce0227afab4758c3a46b5f743b695bc9428b6f64908b909a8549a
+  languageName: node
+  linkType: hard
+
+"@vector-im/matrix-bot-sdk@npm:^0.7.1-element.6":
+  version: 0.7.1-element.14
+  resolution: "@vector-im/matrix-bot-sdk@npm:0.7.1-element.14"
+  dependencies:
+    "@matrix-org/matrix-sdk-crypto-nodejs": "npm:0.4.0-beta.1"
+    "@types/express": "npm:^4.17.21"
+    another-json: "npm:^0.2.0"
+    async-lock: "npm:^1.4.0"
+    chalk: "npm:4"
+    express: "npm:^4.21.2"
+    glob-to-regexp: "npm:^0.4.1"
+    hash.js: "npm:^1.1.7"
+    html-to-text: "npm:^9.0.5"
+    htmlencode: "npm:^0.0.4"
+    lowdb: "npm:1"
+    lru-cache: "npm:^10.0.1"
+    mkdirp: "npm:^3.0.1"
+    morgan: "npm:^1.10.0"
+    postgres: "npm:^3.4.1"
+    request: "npm:^2.88.2"
+    request-promise: "npm:^4.2.6"
+    sanitize-html: "npm:^2.11.0"
+  checksum: 10/2f995663ceed1cfed1d4fd3d8828293f98733915943edc2e74d4ca64ee6e92e5362e56c00a41c236c0947448e0b1e398352c8c6eb0bbcc9569dbda0a39b12c76
   languageName: node
   linkType: hard
 
@@ -27040,6 +27089,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"marked@npm:^16.1.2":
+  version: 16.1.2
+  resolution: "marked@npm:16.1.2"
+  bin:
+    marked: bin/marked.js
+  checksum: 10/190d9b206f05d87a7acac3b50ab19505878297971a0c5652a9d4fa2b022407f22d2b79e1aa1e9f23a32c0158b1f5852ad33da2e83cc12100116a8fc0afc2b17e
+  languageName: node
+  linkType: hard
+
 "marked@npm:^4.3.0":
   version: 4.3.0
   resolution: "marked@npm:4.3.0"
@@ -33157,6 +33215,20 @@ __metadata:
     parse-srcset: "npm:^1.0.2"
     postcss: "npm:^8.3.11"
   checksum: 10/8e673f09ee33768537e5bf2dab45bb445c2313f6ce3f1cf6d48cdc5f60c122c9641cff2f5679a2f67c58b28b22e78265445919078360741512a42b0f4744a3e2
+  languageName: node
+  linkType: hard
+
+"sanitize-html@npm:^2.17.0":
+  version: 2.17.0
+  resolution: "sanitize-html@npm:2.17.0"
+  dependencies:
+    deepmerge: "npm:^4.2.2"
+    escape-string-regexp: "npm:^4.0.0"
+    htmlparser2: "npm:^8.0.0"
+    is-plain-object: "npm:^5.0.0"
+    parse-srcset: "npm:^1.0.2"
+    postcss: "npm:^8.3.11"
+  checksum: 10/93a91c629b91f1ad25ede5cd000d4212f3ed495a9b8eeb2cb1b50c936807ab11e736d6c6a75d141daac28430d14e40351981809fbb05f7be7bdffb60318cfebd
   languageName: node
   linkType: hard
 
