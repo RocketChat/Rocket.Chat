@@ -4,14 +4,8 @@ import type { PresenceState } from '@hs/core';
 import { ConfigService, createFederationContainer, getAllServices } from '@hs/federation-sdk';
 import type { HomeserverEventSignatures, HomeserverServices, FederationContainerOptions } from '@hs/federation-sdk';
 import { type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import {
-	isDeletedMessage,
-	isMessageFromMatrixFederation,
-	UserStatus,
-	type IMessage,
-	type IRoom,
-	type IUser,
-} from '@rocket.chat/core-typings';
+import { isDeletedMessage, isMessageFromMatrixFederation, isQuoteAttachment, UserStatus } from '@rocket.chat/core-typings';
+import type { MessageQuoteAttachment, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
@@ -27,7 +21,9 @@ import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
+import { getMatrixLocalDomain } from './helpers/domain.builder';
 import { convertExternalUserIdToInternalUsername } from './helpers/identifiers';
+import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
@@ -159,10 +155,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return this.matrixDomain;
 		}
 
-		const port = await Settings.get<number>('Federation_Service_Matrix_Port');
-		const domain = await Settings.get<string>('Federation_Service_Matrix_Domain');
-
-		this.matrixDomain = port === 443 || port === 80 ? domain : `${domain}:${port}`;
+		this.matrixDomain = await getMatrixLocalDomain();
 
 		return this.matrixDomain;
 	}
@@ -247,8 +240,27 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			let result;
 
+			const parsedMessage = await toExternalMessageFormat({
+				message: message.msg,
+				externalRoomId: matrixRoomId,
+				homeServerDomain: await this.getMatrixDomain(),
+			});
 			if (!message.tmid) {
-				result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+				if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+					const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
+					if (!quoteMessage) {
+						throw new Error('Failed to retrieve quote message');
+					}
+					result = await this.homeserverServices.message.sendReplyToMessage(
+						matrixRoomId,
+						quoteMessage.rawMessage,
+						quoteMessage.formattedMessage,
+						quoteMessage.eventToReplyTo,
+						actualMatrixUserId,
+					);
+				} else {
+					result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
+				}
 			} else {
 				const threadRootMessage = await Messages.findOneById(message.tmid);
 				const threadRootEventId = threadRootMessage?.federation?.eventId;
@@ -264,16 +276,46 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					);
 					const latestThreadEventId = latestThreadMessage?.federation?.eventId;
 
-					result = await this.homeserverServices.message.sendThreadMessage(
-						matrixRoomId,
-						message.msg,
-						actualMatrixUserId,
-						threadRootEventId,
-						latestThreadEventId,
-					);
+					if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
+						if (!quoteMessage) {
+							throw new Error('Failed to retrieve quote message');
+						}
+						result = await this.homeserverServices.message.sendReplyToInsideThreadMessage(
+							matrixRoomId,
+							quoteMessage.rawMessage,
+							quoteMessage.formattedMessage,
+							actualMatrixUserId,
+							threadRootEventId,
+							quoteMessage.eventToReplyTo,
+						);
+					} else {
+						result = await this.homeserverServices.message.sendThreadMessage(
+							matrixRoomId,
+							message.msg,
+							parsedMessage,
+							actualMatrixUserId,
+							threadRootEventId,
+							latestThreadEventId,
+						);
+					}
 				} else {
 					this.logger.warn('Thread root event ID not found, sending as regular message');
-					result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, actualMatrixUserId);
+					if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
+						if (!quoteMessage) {
+							throw new Error('Failed to retrieve quote message');
+						}
+						result = await this.homeserverServices.message.sendReplyToMessage(
+							matrixRoomId,
+							quoteMessage.rawMessage,
+							quoteMessage.formattedMessage,
+							quoteMessage.eventToReplyTo,
+							actualMatrixUserId,
+						);
+					} else {
+						result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
+					}
 				}
 			}
 
@@ -288,6 +330,46 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			this.logger.error('Failed to send message to Matrix:', error);
 			throw error;
 		}
+	}
+
+	private async getQuoteMessage(
+		message: IMessage,
+		matrixRoomId: string,
+		matrixUserId: string,
+		matrixDomain: string,
+	): Promise<{ formattedMessage: string; rawMessage: string; eventToReplyTo: string } | undefined> {
+		if (!message.attachments) {
+			return;
+		}
+		const messageLink = (
+			message.attachments.find((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link)) as MessageQuoteAttachment
+		).message_link;
+
+		if (!messageLink) {
+			return;
+		}
+		const messageToReplyToId = messageLink.includes('msg=') && messageLink?.split('msg=').pop();
+		if (!messageToReplyToId) {
+			return;
+		}
+		const messageToReplyTo = await Messages.findOneById(messageToReplyToId);
+		if (!messageToReplyTo || !messageToReplyTo.federation?.eventId) {
+			return;
+		}
+
+		const { formattedMessage, message: rawMessage } = await toExternalQuoteMessageFormat({
+			externalRoomId: matrixRoomId,
+			eventToReplyTo: messageToReplyTo.federation?.eventId,
+			originalEventSender: matrixUserId,
+			message: message.msg,
+			homeServerDomain: matrixDomain,
+		});
+
+		return {
+			formattedMessage,
+			rawMessage,
+			eventToReplyTo: messageToReplyTo.federation.eventId,
+		};
 	}
 
 	async deleteMessage(message: IMessage): Promise<void> {
@@ -587,7 +669,18 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const eventId = await this.homeserverServices.message.updateMessage(matrixRoomId, newContent, existingMatrixUserId, matrixEventId);
+			const parsedMessage = await toExternalMessageFormat({
+				message: newContent,
+				externalRoomId: matrixRoomId,
+				homeServerDomain: await this.getMatrixDomain(),
+			});
+			const eventId = await this.homeserverServices.message.updateMessage(
+				matrixRoomId,
+				newContent,
+				parsedMessage,
+				existingMatrixUserId,
+				matrixEventId,
+			);
 
 			this.logger.debug('Message updated in Matrix successfully:', eventId);
 		} catch (error) {
