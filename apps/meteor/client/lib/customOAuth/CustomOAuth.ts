@@ -2,25 +2,19 @@ import type { OAuthConfiguration, OauthConfig } from '@rocket.chat/core-typings'
 import { Random } from '@rocket.chat/random';
 import { capitalize } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
-import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import type { IOAuthProvider } from '../../../client/definitions/IOAuthProvider';
-import { overrideLoginMethod, type LoginCallback } from '../../../client/lib/2fa/overrideLoginMethod';
-import { loginServices } from '../../../client/lib/loginServices';
-import { createOAuthTotpLoginMethod } from '../../../client/meteorOverrides/login/oauth';
 import { isURL } from '../../../lib/utils/isURL';
-
-// Request custom OAuth credentials for the user
-// @param options {optional}
-// @param credentialRequestCompleteCallback {Function} Callback function to call on
-//   completion. Takes one argument, credentialToken on success, or Error on
-//   error.
+import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
+import { createOAuthTotpLoginMethod } from '../../meteorOverrides/login/oauth';
+import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
+import { loginServices } from '../loginServices';
+import { CustomOAuthError } from './CustomOAuthError';
 
 const configuredOAuthServices = new Map<string, CustomOAuth>();
 
-export class CustomOAuth implements IOAuthProvider {
+export class CustomOAuth<TServiceName extends string = string> implements IOAuthProvider {
 	public serverURL: string;
 
 	public authorizePath: string;
@@ -30,14 +24,9 @@ export class CustomOAuth implements IOAuthProvider {
 	public responseType: string;
 
 	constructor(
-		public readonly name: string,
-		options: OauthConfig,
+		public readonly name: TServiceName,
+		options: Readonly<OauthConfig>,
 	) {
-		this.name = name;
-		if (!Match.test(this.name, String)) {
-			throw new Meteor.Error('CustomOAuth: Name is required and must be String');
-		}
-
 		this.configure(options);
 
 		Accounts.oauth.registerService(this.name);
@@ -45,26 +34,18 @@ export class CustomOAuth implements IOAuthProvider {
 		this.configureLogin();
 	}
 
-	configure(options: OauthConfig) {
-		if (!Match.test(options, Object)) {
-			throw new Meteor.Error('CustomOAuth: Options is required and must be Object');
+	configure(options: Readonly<OauthConfig>) {
+		if (typeof options !== 'object' || !options) {
+			throw new CustomOAuthError('options is required and must be object');
 		}
 
-		if (!Match.test(options.serverURL, String)) {
-			throw new Meteor.Error('CustomOAuth: Options.serverURL is required and must be String');
-		}
-
-		if (!Match.test(options.authorizePath, String)) {
-			options.authorizePath = '/oauth/authorize';
-		}
-
-		if (!Match.test(options.scope, String)) {
-			options.scope = 'openid';
+		if (typeof options.serverURL !== 'string') {
+			throw new CustomOAuthError('options.serverURL is required and must be string');
 		}
 
 		this.serverURL = options.serverURL;
-		this.authorizePath = options.authorizePath;
-		this.scope = options.scope;
+		this.authorizePath = options.authorizePath ?? '/oauth/authorize';
+		this.scope = options.scope ?? 'openid';
 		this.responseType = options.responseType || 'code';
 
 		if (!isURL(this.authorizePath)) {
@@ -73,7 +54,7 @@ export class CustomOAuth implements IOAuthProvider {
 	}
 
 	configureLogin() {
-		const loginWithService = `loginWith${capitalize(String(this.name || ''))}` as const;
+		const loginWithService = `loginWith${capitalize(this.name) as Capitalize<TServiceName>}` as const;
 
 		const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod(this);
 
@@ -125,17 +106,20 @@ export class CustomOAuth implements IOAuthProvider {
 		});
 	}
 
-	static configureOAuthService(serviceName: string, options: OauthConfig): CustomOAuth {
+	static configureOAuthService<TServiceName extends string = string>(
+		serviceName: TServiceName,
+		options: Readonly<OauthConfig>,
+	): CustomOAuth<TServiceName> {
 		const existingInstance = configuredOAuthServices.get(serviceName);
 		if (existingInstance) {
 			existingInstance.configure(options);
-			return existingInstance;
+			return existingInstance as CustomOAuth<TServiceName>;
 		}
 
 		// If we don't have a reference to the instance for this service and it was already registered on meteor,
 		// then there's nothing we can do to update it
 		if (Accounts.oauth.serviceNames().includes(serviceName)) {
-			throw new Error(`CustomOAuth service [${serviceName}] already registered, skipping new configuration.`);
+			throw new CustomOAuthError('service already registered, skipping new configuration', { service: serviceName });
 		}
 
 		const instance = new CustomOAuth(serviceName, options);
@@ -143,7 +127,10 @@ export class CustomOAuth implements IOAuthProvider {
 		return instance;
 	}
 
-	static configureCustomOAuthService(serviceName: string, options: OauthConfig): CustomOAuth | undefined {
+	static configureCustomOAuthService<TServiceName extends string = string>(
+		serviceName: TServiceName,
+		options: Readonly<OauthConfig>,
+	): CustomOAuth<TServiceName> | undefined {
 		// Custom OAuth services are configured based on the login service list, so if this ends up being called multiple times, simply ignore it
 		// Non-Custom OAuth services are configured based on code, so if configureOAuthService is called multiple times for them, it's a bug and it should throw.
 		try {
