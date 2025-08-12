@@ -9,6 +9,7 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
 		"babel-jest": "~30.0.5",
@@ -36,7 +37,6 @@
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/icons": "^0.43.0",
-		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
