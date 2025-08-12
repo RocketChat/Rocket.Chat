@@ -90,3 +90,25 @@ const ForbiddenErrorResponseSchema = {
 };
 
 export const validateForbiddenErrorResponse = ajv.compile<ForbiddenErrorResponse>(ForbiddenErrorResponseSchema);
+
+type NotFoundErrorResponse = {
+	success: false;
+	status?: string;
+	message?: string;
+	error?: string;
+	errorType?: string;
+};
+
+const NotFoundErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		status: { type: 'string' },
+		message: { type: 'string' },
+		error: { type: 'string' },
+		errorType: { type: 'string' },
+	},
+	required: ['success'],
+};
+
+export const validateNotFoundErrorResponse = ajv.compile<NotFoundErrorResponse>(NotFoundErrorResponseSchema);

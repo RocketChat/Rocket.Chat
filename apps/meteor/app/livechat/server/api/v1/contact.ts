@@ -9,10 +9,10 @@ import {
 	isGETOmnichannelContactsCheckExistenceProps,
 	isPOSTOmnichannelContactsConflictsProps,
 	isPOSTOmnichannelContactDeleteProps,
-	POSTOmnichannelContactDeleteErrorSchema,
 	POSTOmnichannelContactDeleteSuccessSchema,
-	POSTOmnichannelContactDeleteNotFoundSchema,
-	POSTOmnichannelContactDeleteUnauthorizedSchema,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { removeEmpty } from '@rocket.chat/tools';
@@ -237,9 +237,9 @@ const omnichannelContactsEndpoints = API.v1.post(
 	{
 		response: {
 			200: POSTOmnichannelContactDeleteSuccessSchema,
-			400: POSTOmnichannelContactDeleteErrorSchema,
-			401: POSTOmnichannelContactDeleteUnauthorizedSchema,
-			404: POSTOmnichannelContactDeleteNotFoundSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
 		authRequired: true,
 		permissionsRequired: ['delete-livechat-contact'],

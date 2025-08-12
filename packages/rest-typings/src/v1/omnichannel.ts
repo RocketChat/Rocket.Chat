@@ -1415,11 +1415,27 @@ const POSTOmnichannelContactDeleteError = {
 		message: {
 			type: 'string',
 		},
+		errorType: {
+			type: 'string',
+		},
+		stack: {
+			type: 'string',
+		},
+		details: {
+			type: 'object',
+			properties: {},
+		},
 	},
 	additionalProperties: true,
 };
 
-export const POSTOmnichannelContactDeleteErrorSchema = ajv.compile<{ success: false; message: string }>(POSTOmnichannelContactDeleteError);
+export const POSTOmnichannelContactDeleteErrorSchema = ajv.compile<{
+	message?: string;
+	errorType?: string;
+	stack?: string;
+	success?: boolean;
+	details?: Record<string, any> | string;
+}>(POSTOmnichannelContactDeleteError);
 
 const POSTOmnichannelContactDeleteNotFound = {
 	type: 'object',
@@ -1465,11 +1481,7 @@ export const POSTOmnichannelContactDeleteUnauthorizedSchema = ajv.compile<{
 
 const POSTOmnichannelContactDeleteSuccess = {
 	type: 'object',
-	properties: {
-		success: {
-			type: 'boolean',
-		},
-	},
+	properties: {},
 	additionalProperties: false,
 };
 
