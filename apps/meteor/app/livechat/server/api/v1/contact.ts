@@ -11,6 +11,8 @@ import {
 	isPOSTOmnichannelContactDeleteProps,
 	POSTOmnichannelContactDeleteErrorSchema,
 	POSTOmnichannelContactDeleteSuccessSchema,
+	POSTOmnichannelContactDeleteNotFoundSchema,
+	POSTOmnichannelContactDeleteUnauthorizedSchema,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { removeEmpty } from '@rocket.chat/tools';
@@ -236,8 +238,8 @@ const omnichannelContactsEndpoints = API.v1.post(
 		response: {
 			200: POSTOmnichannelContactDeleteSuccessSchema,
 			400: POSTOmnichannelContactDeleteErrorSchema,
-			401: POSTOmnichannelContactDeleteErrorSchema,
-			404: POSTOmnichannelContactDeleteErrorSchema,
+			401: POSTOmnichannelContactDeleteUnauthorizedSchema,
+			404: POSTOmnichannelContactDeleteNotFoundSchema,
 		},
 		authRequired: true,
 		permissionsRequired: ['delete-livechat-contact'],
@@ -251,12 +253,14 @@ const omnichannelContactsEndpoints = API.v1.post(
 			return API.v1.success();
 		} catch (error) {
 			if (!(error instanceof Error)) {
-				return API.v1.failure('something-went-wrong');
+				return API.v1.failure();
 			}
 
-			if (error.message === 'contact-not-found') {
+			if (error.message === 'error-contact-not-found') {
 				return API.v1.notFound(error.message);
 			}
+
+			return API.v1.failure();
 		}
 	},
 );

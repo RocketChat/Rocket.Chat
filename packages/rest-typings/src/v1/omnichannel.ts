@@ -1416,16 +1416,60 @@ const POSTOmnichannelContactDeleteError = {
 			type: 'string',
 		},
 	},
-	additionalProperties: false,
+	additionalProperties: true,
 };
 
-export const POSTOmnichannelContactDeleteErrorSchema = ajv.compile<{ success: boolean; message: string }>(
-	POSTOmnichannelContactDeleteError,
+export const POSTOmnichannelContactDeleteErrorSchema = ajv.compile<{ success: false; message: string }>(POSTOmnichannelContactDeleteError);
+
+const POSTOmnichannelContactDeleteNotFound = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+		error: {
+			type: 'string',
+		},
+	},
+	additionalProperties: true,
+};
+
+export const POSTOmnichannelContactDeleteNotFoundSchema = ajv.compile<{ success: false; error: string }>(
+	POSTOmnichannelContactDeleteNotFound,
 );
+
+const POSTOmnichannelContactDeleteUnauthorized = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+		error: {
+			type: 'string',
+		},
+		status: {
+			type: 'string',
+		},
+		message: {
+			type: 'string',
+		},
+	},
+};
+
+export const POSTOmnichannelContactDeleteUnauthorizedSchema = ajv.compile<{
+	success: false;
+	error: string;
+	status: string;
+	message: string;
+}>(POSTOmnichannelContactDeleteUnauthorized);
 
 const POSTOmnichannelContactDeleteSuccess = {
 	type: 'object',
-	properties: {},
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+	},
 	additionalProperties: false,
 };
 
