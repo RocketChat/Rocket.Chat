@@ -1,4 +1,3 @@
-import '../app/apple/client';
 import '../app/authorization/client';
 import '../app/autotranslate/client';
 import '../app/emoji/client';
@@ -7,7 +6,6 @@ import '../app/gitlab/client';
 import '../app/license/client';
 import '../app/lib/client';
 import '../app/livechat-enterprise/client';
-import '../app/nextcloud/client';
 import '../app/notifications/client';
 import '../app/otr/client';
 import '../app/slackbridge/client';

@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatInquiryRecord, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
@@ -63,6 +63,17 @@ describe('LIVECHAT - inquiries', () => {
 	});
 
 	describe('livechat/inquiries.getOne', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+		before(async () => {
+			visitor = await createVisitor();
+
+			room = await createLivechatRoom(visitor.token);
+		});
+		after(async () => {
+			await closeOmnichannelRoom(room._id);
+		});
+
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
 			await request
@@ -88,9 +99,7 @@ describe('LIVECHAT - inquiries', () => {
 
 		it('should get an inquiry by room id', async () => {
 			await createAgent();
-			const visitor = await createVisitor();
 			await makeAgentAvailable();
-			const room = await createLivechatRoom(visitor.token);
 			const inquiry = await fetchInquiry(room._id);
 			await request
 				.get(api(`livechat/inquiries.getOne`))
@@ -119,6 +128,22 @@ describe('LIVECHAT - inquiries', () => {
 	});
 
 	describe('POST livechat/inquiries.take', () => {
+		let takenRoom: IOmnichannelRoom;
+		let servedByRoom: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+		before(async () => {
+			visitor = await createVisitor();
+			const visitor2 = await createVisitor();
+
+			takenRoom = await createLivechatRoom(visitor.token);
+			servedByRoom = await createLivechatRoom(visitor2.token);
+		});
+
+		after(async () => {
+			await closeOmnichannelRoom(takenRoom._id);
+			await closeOmnichannelRoom(servedByRoom._id);
+		});
+
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
 			await request
@@ -155,10 +180,8 @@ describe('LIVECHAT - inquiries', () => {
 		it('should take an inquiry if all params are good', async () => {
 			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
 			const agent = await createAgent();
-			const visitor = await createVisitor();
 			await makeAgentAvailable();
-			const room = await createLivechatRoom(visitor.token);
-			const inquiry = await fetchInquiry(room._id);
+			const inquiry = await fetchInquiry(takenRoom._id);
 
 			await request
 				.post(api('livechat/inquiries.take'))
@@ -172,16 +195,14 @@ describe('LIVECHAT - inquiries', () => {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 				});
-			const inquiry2 = (await fetchInquiry(room._id)) as ILivechatInquiryRecord;
+			const inquiry2 = (await fetchInquiry(takenRoom._id)) as ILivechatInquiryRecord;
 			expect(inquiry2.source?.type).to.equal('api');
 			expect(inquiry2.status).to.equal('taken');
 		});
 		it('should mark a taken room as servedBy me', async () => {
 			const agent = await createAgent();
-			const visitor = await createVisitor();
 			await makeAgentAvailable();
-			const room = await createLivechatRoom(visitor.token);
-			const inquiry = await fetchInquiry(room._id);
+			const inquiry = await fetchInquiry(servedByRoom._id);
 
 			await request
 				.post(api('livechat/inquiries.take'))
@@ -196,7 +217,7 @@ describe('LIVECHAT - inquiries', () => {
 					expect(res.body).to.have.property('success', true);
 				});
 
-			const roomInfo = await getLivechatRoomInfo(room._id);
+			const roomInfo = await getLivechatRoomInfo(servedByRoom._id);
 
 			expect(roomInfo).to.have.property('servedBy').that.is.an('object');
 			expect(roomInfo.servedBy).to.have.property('_id', 'rocketchat.internal.admin.test');
@@ -399,32 +420,41 @@ describe('LIVECHAT - inquiries', () => {
 			const response = parseMethodResponse(body);
 			expect(response.error.error).to.be.equal('room-closed');
 		});
-		it('should fail if no one is serving the room', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			const { body } = await request
-				.post(methodCall('livechat:returnAsInquiry'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'livechat:returnAsInquiry',
-						params: [room._id],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+		describe('no serving', () => {
+			let room: IOmnichannelRoom;
+			before(async () => {
+				const visitor = await createVisitor();
+				room = await createLivechatRoom(visitor.token);
+			});
+			after(async () => {
+				await closeOmnichannelRoom(room._id);
+			});
+			it('should fail if no one is serving the room', async () => {
+				const { body } = await request
+					.post(methodCall('livechat:returnAsInquiry'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'livechat:returnAsInquiry',
+							params: [room._id],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
 
-			const response = parseMethodResponse(body);
-			expect(response.result).to.be.false;
+				const response = parseMethodResponse(body);
+				expect(response.result).to.be.false;
+			});
 		});
 
 		let inquiry: ILivechatInquiryRecord;
+		let room: IOmnichannelRoom;
 		(IS_EE ? it : it.skip)('should move a room back to queue', async () => {
 			const dep = await createDepartment([{ agentId: testUser.user._id }]);
 			const visitor = await createVisitor(dep._id);
-			const room = await createLivechatRoom(visitor.token);
+			room = await createLivechatRoom(visitor.token);
 			const inq = await fetchInquiry(room._id);
 			inquiry = inq;
 			await takeInquiry(inq._id, testUser.credentials);
@@ -457,6 +487,8 @@ describe('LIVECHAT - inquiries', () => {
 			const depInq = body.inquiries.filter((inq: { _id: string }) => inq._id === inquiry._id);
 
 			expect(depInq.length).to.be.equal(1);
+
+			await closeOmnichannelRoom(room._id);
 		});
 	});
 

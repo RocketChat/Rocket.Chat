@@ -49,7 +49,7 @@ declare module '@rocket.chat/ui-contexts' {
 		};
 		'omnichannel-directory': {
 			pathname: `/omnichannel-directory${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/omnichannel-directory/:tab?/:context?/:id?/';
+			pattern: '/omnichannel-directory/:tab?/:context?/:id?';
 		};
 		'livechat-queue': {
 			pathname: '/livechat-queue';
@@ -151,7 +151,7 @@ router.defineRoutes([
 		),
 	},
 	{
-		path: '/omnichannel-directory/:tab?/:context?/:id?/',
+		path: '/omnichannel-directory/:tab?/:context?/:id?',
 		id: 'omnichannel-directory',
 		element: appLayout.wrap(
 			<MainLayout>
