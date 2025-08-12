@@ -1,0 +1,26 @@
+import { definition as afterAddedToRoomDef } from '../hooks/afterAddedToRoom';
+import { definition as afterCreateDirectRoomDef } from '../hooks/afterCreateDirectRoom';
+import { definition as afterCreateRoomDef } from '../hooks/afterCreateRoom';
+import { definition as afterDeleteMessageDef } from '../hooks/afterDeleteMessage';
+import { definition as afterLeaveRoomDef } from '../hooks/afterLeaveRoom';
+import { definition as afterMuteUserDef } from '../hooks/afterMuteUser';
+import { definition as afterRemoveFromRoomDef } from '../hooks/afterRemoveFromRoom';
+import { definition as afterSaveMessageDef } from '../hooks/afterSaveMessage';
+import { definition as afterSetReactionDef } from '../hooks/afterSetReaction';
+import { definition as afterUnmuteUserDef } from '../hooks/afterUnmuteUser';
+import { definition as afterUnsetReactionDef } from '../hooks/afterUnsetReaction';
+import { definition as beforeDeleteRoomDef } from '../hooks/beforeDeleteRoom';
+import { registerCallback } from '../lib/callbacks';
+
+registerCallback(afterAddedToRoomDef);
+registerCallback(afterCreateDirectRoomDef);
+registerCallback(afterCreateRoomDef);
+registerCallback(afterDeleteMessageDef);
+registerCallback(afterLeaveRoomDef);
+registerCallback(afterMuteUserDef);
+registerCallback(beforeDeleteRoomDef);
+registerCallback(afterSaveMessageDef);
+registerCallback(afterSetReactionDef);
+registerCallback(afterUnmuteUserDef);
+registerCallback(afterUnsetReactionDef);
+registerCallback(afterRemoveFromRoomDef);

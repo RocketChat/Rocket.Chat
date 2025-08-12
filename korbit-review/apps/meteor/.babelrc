@@ -1,0 +1,32 @@
+{
+	"presets": [
+		"@babel/preset-env",
+		"@babel/preset-react",
+		[
+			"@babel/preset-typescript",
+			{
+				"allowDeclareFields": true
+			}
+		]
+	],
+	"plugins": [
+    [
+      "@babel/plugin-transform-react-jsx",
+      {
+        "runtime": "automatic"
+      }
+    ]
+  ],
+	"env": {
+		"coverage": {
+			"plugins": [
+				[
+					"istanbul",
+					{
+						"exclude": ["**/*.spec.js", "**/*.test.js"]
+					}
+				]
+			]
+		}
+	}
+}
