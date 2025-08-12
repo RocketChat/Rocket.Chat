@@ -17,17 +17,15 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && tsc -p tsconfig.build.json --module commonjs --outDir dist-cjs && node ./scripts/postbuild.cjs",
     "clean": "rimraf dist dist-cjs",
-    "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint 'src/**/*.ts'",
-    "test": "vitest run"
+    "testunit": "node --experimental-strip-types --test"
   },
   "devDependencies": {
-    "typescript": "~5.8.3",
+    "@types/node": "^24.2.1",
     "rimraf": "^5.0.5",
-    "eslint": "^9.10.0",
-    "vitest": "^2.0.0"
+    "typescript": "~5.9.2"
   },
-  "peerDependencies": {},
   "license": "MIT",
   "publishConfig": {
     "access": "public"

@@ -1,4 +1,3 @@
-import { Random } from '@rocket.chat/random';
 import ByteBuffer from 'bytebuffer';
 
 export function toString(thing: any) {
@@ -41,23 +40,23 @@ export function splitVectorAndEcryptedData(cipherText: any) {
 	return [vector, encryptedData];
 }
 
-export async function encryptRSA(key: any, data: any) {
+export async function encryptRSA(key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
-export async function encryptAES(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBufferLike>) {
+export async function encryptAES(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
 	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
-export async function encryptAESCTR(vector: any, key: any, data: any) {
-	return crypto.subtle.encrypt({ name: 'AES-CTR', counter: vector, length: 64 }, key, data);
+export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data: BufferSource) {
+	return crypto.subtle.encrypt({ name: 'AES-CTR', counter, length: 64 }, key, data);
 }
 
 export async function decryptRSA(key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
 	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
-export async function decryptAES(vector: Uint8Array<ArrayBufferLike>, key: CryptoKey, data: Uint8Array<ArrayBufferLike>) {
+export async function decryptAES(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
 	return crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
@@ -82,7 +81,7 @@ export async function generateRSAKey() {
 	);
 }
 
-export async function exportJWKKey(key: any) {
+export async function exportJWKKey(key: CryptoKey): Promise<JsonWebKey> {
 	return crypto.subtle.exportKey('jwk', key);
 }
 
@@ -105,7 +104,7 @@ export async function importAESKey(keyData: any, keyUsages: ReadonlyArray<KeyUsa
 	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC' }, true, keyUsages);
 }
 
-export async function importRawKey(keyData: any, keyUsages: ReadonlyArray<KeyUsage> = ['deriveKey']) {
+export async function importRawKey(keyData: BufferSource, keyUsages: ReadonlyArray<KeyUsage> = ['deriveKey']) {
 	return crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
 }
 
@@ -127,20 +126,6 @@ export async function readFileAsArrayBuffer(file: File) {
 		};
 		reader.readAsArrayBuffer(file);
 	});
-}
-
-export async function generateMnemonicPhrase(n: any, sep = ' ') {
-	const { default: wordList } = await import('./wordList');
-	const result = new Array(n);
-	let len = wordList.length;
-	const taken = new Array(len);
-
-	while (n--) {
-		const x = Math.floor(Random.fraction() * len);
-		result[n] = wordList[x in taken ? taken[x] : x];
-		taken[x] = --len in taken ? taken[len] : len;
-	}
-	return result.join(sep);
 }
 
 export async function createSha256HashFromText(data: any) {

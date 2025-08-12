@@ -316,7 +316,7 @@ test.describe('basic features', () => {
 	});
 });
 
-test.describe.serial('e2e-encryption', () => {
+test.describe('e2e-encryption', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.use({ storageState: Users.userE2EE.state });
@@ -472,11 +472,11 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.content.sendMessage('hello @user1');
 
-		const userMention = await page.getByRole('button', {
-			name: 'user1',
-		});
-
-		await expect(userMention).toBeVisible();
+		await expect(
+			page.getByRole('button', {
+				name: 'user1',
+			}),
+		).toBeVisible();
 	});
 
 	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
@@ -490,7 +490,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.content.sendMessage('Are you in the #general channel?');
 
-		const channelMention = await page.getByRole('button', {
+		const channelMention = page.getByRole('button', {
 			name: 'general',
 		});
 
@@ -512,16 +512,8 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.content.sendMessage('Are you in the #general channel, @user1 ?');
 
-		const channelMention = await page.getByRole('button', {
-			name: 'general',
-		});
-
-		const userMention = await page.getByRole('button', {
-			name: 'user1',
-		});
-
-		await expect(userMention).toBeVisible();
-		await expect(channelMention).toBeVisible();
+		await expect(page.getByRole('button', { name: 'user1' })).toBeVisible();
+		await expect(page.getByRole('button', { name: 'general' })).toBeVisible();
 	});
 
 	test('should encrypted field be available on edit room', async ({ page }) => {
@@ -544,7 +536,11 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.tabs.room.checkboxEncrypted).toBeVisible();
 	});
 
-	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page }) => {
+	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page, api }) => {
+		// delete direct message if it exists
+		await api.post('/im.delete', { username: 'user2' });
+		await page.reload();
+
 		await poHomeChannel.sidenav.openNewByLabel('Direct message');
 		await poHomeChannel.sidenav.inputDirectUsername.click();
 		await page.keyboard.type('user2');

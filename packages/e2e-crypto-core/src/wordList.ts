@@ -1,4 +1,4 @@
-export default [
+export const v1: string[] = [
 	'acrobat',
 	'africa',
 	'alaska',

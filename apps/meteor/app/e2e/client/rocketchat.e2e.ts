@@ -3,6 +3,7 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { E2EE, type KeyPair } from '@rocket.chat/e2e-crypto-core';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
@@ -24,7 +25,6 @@ import {
 	importRSAKey,
 	importRawKey,
 	deriveKey,
-	generateMnemonicPhrase,
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
@@ -48,11 +48,6 @@ import './events';
 
 let failedToDecodeKey = false;
 
-type KeyPair = {
-	public_key: string | null;
-	private_key: string | null;
-};
-
 const ROOM_KEY_EXCHANGE_SIZE = 10;
 const E2EEStateDependency = new Tracker.Dependency();
 
@@ -73,11 +68,14 @@ class E2E extends Emitter {
 
 	private state: E2EEState;
 
+	private e2ee: E2EE;
+
 	constructor() {
 		super();
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
+		this.e2ee = E2EE.fromWeb(Accounts.storageLocation, crypto);
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			this.log(`${prevState} -> ${nextState}`);
@@ -207,8 +205,8 @@ class E2E extends Emitter {
 		});
 	}
 
-	shouldAskForE2EEPassword() {
-		const { private_key } = this.getKeysFromLocalStorage();
+	async shouldAskForE2EEPassword() {
+		const { private_key } = await this.getKeysFromLocalStorage();
 		return this.db_private_key && !private_key;
 	}
 
@@ -333,11 +331,8 @@ class E2E extends Emitter {
 		});
 	}
 
-	getKeysFromLocalStorage(): KeyPair {
-		return {
-			public_key: Accounts.storageLocation.getItem('public_key'),
-			private_key: Accounts.storageLocation.getItem('private_key'),
-		};
+	getKeysFromLocalStorage(): Promise<KeyPair> {
+		return this.e2ee.getKeysFromLocalStorage();
 	}
 
 	initiateHandshake() {
@@ -355,7 +350,7 @@ class E2E extends Emitter {
 					imperativeModal.close();
 				},
 				onConfirm: () => {
-					Accounts.storageLocation.removeItem('e2e.randomPassword');
+					void this.e2ee.removeRandomPassword();
 					this.setState(E2EEState.READY);
 					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
 					this.closeAlert();
@@ -374,7 +369,7 @@ class E2E extends Emitter {
 
 		this.started = true;
 
-		let { public_key, private_key } = this.getKeysFromLocalStorage();
+		let { public_key, private_key } = await this.getKeysFromLocalStorage();
 
 		await this.loadKeysFromDB();
 
@@ -382,7 +377,7 @@ class E2E extends Emitter {
 			public_key = this.db_public_key;
 		}
 
-		if (this.shouldAskForE2EEPassword()) {
+		if (await this.shouldAskForE2EEPassword()) {
 			try {
 				this.setState(E2EEState.ENTER_PASSWORD);
 				private_key = await this.decodePrivateKey(this.db_private_key as string);
@@ -414,10 +409,10 @@ class E2E extends Emitter {
 
 		if (!this.db_public_key || !this.db_private_key) {
 			this.setState(E2EEState.LOADING_KEYS);
-			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
+			await this.persistKeys(await this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
-		const randomPassword = Accounts.storageLocation.getItem('e2e.randomPassword');
+		const randomPassword = await this.e2ee.getRandomPassword();
 		if (randomPassword) {
 			this.setState(E2EEState.SAVE_PASSWORD);
 			this.openAlert({
@@ -447,10 +442,10 @@ class E2E extends Emitter {
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
-		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true });
+		await this.persistKeys(await this.getKeysFromLocalStorage(), newPassword, { force: true });
 
-		if (Accounts.storageLocation.getItem('e2e.randomPassword')) {
-			Accounts.storageLocation.setItem('e2e.randomPassword', newPassword);
+		if (await this.e2ee.getRandomPassword()) {
+			await this.e2ee.storeRandomPassword(newPassword);
 		}
 	}
 
@@ -523,9 +518,7 @@ class E2E extends Emitter {
 	}
 
 	async createRandomPassword(): Promise<string> {
-		const randomPassword = await generateMnemonicPhrase(5);
-		Accounts.storageLocation.setItem('e2e.randomPassword', randomPassword);
-		return randomPassword;
+		return this.e2ee.createRandomPassword();
 	}
 
 	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
