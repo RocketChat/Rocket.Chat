@@ -1,5 +1,93 @@
 # @rocket.chat/ui-voip
 
+## 11.0.0
+
+### Patch Changes
+
+- ([#36229](https://github.com/RocketChat/Rocket.Chat/pull/36229)) Fixes VoIP widget mute action muting received audio instead of just microphone
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+- ([#36225](https://github.com/RocketChat/Rocket.Chat/pull/36225)) Fixes incoming VoIP calls playing "dial" sound when answered
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@21.0.0
+  - @rocket.chat/ui-avatar@17.0.0
+  - @rocket.chat/ui-client@21.0.0
+  </details>
+
+## 11.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@17.0.0-rc.2
+  - @rocket.chat/ui-client@21.0.0-rc.2
+  - @rocket.chat/ui-contexts@21.0.0-rc.2
+  </details>
+
+## 11.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@17.0.0-rc.1
+  - @rocket.chat/ui-client@21.0.0-rc.1
+  - @rocket.chat/ui-contexts@21.0.0-rc.1
+  </details>
+
+## 11.0.0-rc.0
+
+### Patch Changes
+
+- ([#36229](https://github.com/RocketChat/Rocket.Chat/pull/36229)) Fixes VoIP widget mute action muting received audio instead of just microphone
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+- ([#36225](https://github.com/RocketChat/Rocket.Chat/pull/36225)) Fixes incoming VoIP calls playing "dial" sound when answered
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@21.0.0-rc.0
+  - @rocket.chat/ui-avatar@17.0.0-rc.0
+  - @rocket.chat/ui-client@21.0.0-rc.0
+  </details>
+
+## 10.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@20.0.3
+  - @rocket.chat/ui-avatar@16.0.3
+  - @rocket.chat/ui-client@20.0.3
+  </details>
+
+## 10.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.2
+  - @rocket.chat/ui-avatar@16.0.2
+  - @rocket.chat/ui-client@20.0.2
+  </details>
+
+## 10.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@20.0.1
+  - @rocket.chat/ui-avatar@16.0.1
+  - @rocket.chat/ui-client@20.0.1
+  </details>
+
 ## 10.0.0
 
 ### Patch Changes

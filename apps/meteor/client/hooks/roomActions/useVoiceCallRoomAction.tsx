@@ -71,6 +71,7 @@ export const useVoiceCallRoomAction = () => {
 			featured: true,
 			action: handleOnClick,
 			groups: ['direct'] as const,
+			order: 2,
 			disabled,
 		};
 	}, [allowed, disabled, handleOnClick, tooltip]);

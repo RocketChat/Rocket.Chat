@@ -1,12 +1,12 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "20.0.0",
+	"version": "21.0.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage-hooks": "^0.36.0",
+		"@rocket.chat/fuselage-hooks": "^0.37.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
