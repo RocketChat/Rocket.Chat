@@ -20,7 +20,7 @@ const ContactInfoOutboundMessageButton = ({ defaultValues }: ContactInfoOutbound
 		return null;
 	}
 
-	return <IconButton onClick={() => outboundMessageModal.open(defaultValues)} tiny icon='send' title={t('Send_message')} />;
+	return <IconButton onClick={() => outboundMessageModal.open(defaultValues)} tiny icon='send' title={t('Outbound_message')} />;
 };
 
 export default ContactInfoOutboundMessageButton;
