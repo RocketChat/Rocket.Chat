@@ -12,7 +12,8 @@ import {
 	POSTOmnichannelContactDeleteSuccessSchema,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
-	validateNotFoundErrorResponse, validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { removeEmpty } from '@rocket.chat/tools';

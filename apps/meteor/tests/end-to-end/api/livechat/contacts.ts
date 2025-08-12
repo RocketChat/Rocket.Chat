@@ -1075,6 +1075,7 @@ describe('LIVECHAT - contacts', () => {
 
 	describe('[DELETE] omnichannel/contacts.delete', () => {
 		let contactId: string;
+		let roomId: string;
 
 		const email = faker.internet.email().toLowerCase();
 		const phone = faker.phone.number();
@@ -1096,12 +1097,11 @@ describe('LIVECHAT - contacts', () => {
 
 			const visitor = await createVisitor(undefined, contact.name, email, phone);
 
-			await createLivechatRoom(visitor.token);
+			const room = await createLivechatRoom(visitor.token);
+			roomId = room._id;
 		});
 
-		after(async () => {
-			await restorePermissionToRoles('delete-livechat-contact');
-		});
+		after(async () => Promise.all([restorePermissionToRoles('delete-livechat-contact'), closeOmnichannelRoom(roomId)]));
 
 		it('should be able to disable a contact by its id', async () => {
 			const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
