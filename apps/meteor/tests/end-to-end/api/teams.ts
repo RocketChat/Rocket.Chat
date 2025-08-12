@@ -2251,35 +2251,65 @@ describe('/teams.updateRoom', () => {
 		let createdRoom: IRoom;
 		let testUser1: TestUser<IUser>;
 		let testUser2: TestUser<IUser>;
+		let additionalRoom: IRoom;
+		let memberTestUser1: TestUser<IUser>;
+		let memberTestUser1Credentials: Credentials;
+		let testUser1Credentials: Credentials;
+		let testUser2Credentials: Credentials;
 
 		before(async () => {
-			const [testUser1Result, testUser2Result] = await Promise.all([createUser(), createUser()]);
+			const [testUser1Result, testUser2Result, memberTestUser1Result] = await Promise.all([createUser(), createUser(), createUser()]);
 
 			testUser1 = testUser1Result;
 			testUser2 = testUser2Result;
+			memberTestUser1 = memberTestUser1Result;
+
+			const [memberTestUser1CredentialsResult, testUser1CredentialsResult, testUser2CredentialsResult] = await Promise.all([
+				login(memberTestUser1.username, password),
+				login(testUser1.username, password),
+				login(testUser2.username, password),
+			]);
+
+			memberTestUser1Credentials = memberTestUser1CredentialsResult;
+			testUser1Credentials = testUser1CredentialsResult;
+			testUser2Credentials = testUser2CredentialsResult;
 		});
 
 		beforeEach(async () => {
 			const createTeamPromise = createTeam(credentials, `test-team-name${Date.now()}`, 0);
 			const createRoomPromise = createRoom({ name: `test-room-name${Date.now()}`, type: 'c' });
-			const [testTeamCreationResult, testRoomCreationResult] = await Promise.all([createTeamPromise, createRoomPromise]);
+			const createAdditionalRoomPromise = createRoom({ name: `additional-room-name${Date.now()}`, type: 'c' });
+			const [testTeamCreationResult, testRoomCreationResult, additionalRoomCreationResult] = await Promise.all([
+				createTeamPromise,
+				createRoomPromise,
+				createAdditionalRoomPromise,
+			]);
 
 			testTeam = testTeamCreationResult;
 			createdRoom = testRoomCreationResult.body.channel;
+			additionalRoom = additionalRoomCreationResult.body.channel;
 
 			await request
 				.post(api('teams.addRooms'))
 				.set(credentials)
 				.expect(200)
 				.send({
-					rooms: [createdRoom._id],
+					rooms: [createdRoom._id, additionalRoom._id],
 					teamName: testTeam.name,
 				});
 		});
 
-		afterEach(() => Promise.all([deleteTeam(credentials, testTeam.name), deleteRoom({ roomId: createdRoom._id, type: 'c' })]));
+		afterEach(() =>
+			Promise.all([
+				deleteTeam(credentials, testTeam.name),
+				deleteRoom({ roomId: createdRoom._id, type: 'c' }),
+				deleteRoom({ roomId: additionalRoom._id, type: 'c' }),
+			]),
+		);
 
-		after(() => Promise.all([updateSetting('API_User_Limit', 500), deleteUser(testUser1), deleteUser(testUser2)]));
+		after(() =>
+			Promise.all([updateSetting('API_User_Limit', 500), deleteUser(testUser1), deleteUser(testUser2), deleteUser(memberTestUser1)]),
+		);
 
 		it('should add members when the members count is less than or equal to the API_User_Limit setting', async () => {
 			await updateSetting('API_User_Limit', 2);
@@ -2315,6 +2345,243 @@ describe('/teams.updateRoom', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('room.usersCount').and.to.be.equal(2);
 				});
+		});
+
+		it('should auto-join users to auto-join channels when added to team', async () => {
+			await request
+				.post(api('teams.updateRoom'))
+				.set(credentials)
+				.send({
+					roomId: createdRoom._id,
+					isDefault: true,
+				})
+				.expect(200);
+
+			await request
+				.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamId: testTeam._id,
+					members: [{ userId: memberTestUser1._id, roles: ['member'] }],
+				})
+				.expect(200);
+
+			const subscriptionResponse = await request
+				.get(api('subscriptions.getOne'))
+				.set(memberTestUser1Credentials)
+				.query({ roomId: createdRoom._id })
+				.expect(200);
+
+			expect(subscriptionResponse.body).to.have.property('success', true);
+			expect(subscriptionResponse.body).to.have.property('subscription').that.is.an('object');
+			expect(subscriptionResponse.body.subscription).to.have.property('u').that.is.an('object');
+			expect(subscriptionResponse.body.subscription.u).to.have.property('_id', memberTestUser1._id);
+		});
+
+		it('should auto-join users to multiple auto-join channels when added to team', async () => {
+			// Set both channels as auto-join
+			await Promise.all([
+				request
+					.post(api('teams.updateRoom'))
+					.set(credentials)
+					.send({
+						roomId: createdRoom._id,
+						isDefault: true,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('room').that.is.an('object');
+						expect(res.body.room).to.have.property('teamDefault', true);
+					}),
+				request
+					.post(api('teams.updateRoom'))
+					.set(credentials)
+					.send({
+						roomId: additionalRoom._id,
+						isDefault: true,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('room').that.is.an('object');
+						expect(res.body.room).to.have.property('teamDefault', true);
+					}),
+			]);
+
+			await request
+				.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamId: testTeam._id,
+					members: [{ userId: memberTestUser1._id, roles: ['member'] }],
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			// Verify user is now a team member
+			await request
+				.get(api('teams.members'))
+				.set(credentials)
+				.query({ teamId: testTeam._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').that.is.an('array');
+					const userMember = res.body.members.find((member: any) => member.user._id === memberTestUser1._id);
+					expect(userMember).to.exist;
+					expect(userMember).to.have.property('roles').that.includes('member');
+				});
+
+			// Verify user is subscribed to both auto-join channels
+			const [subscription1Response, subscription2Response] = await Promise.all([
+				request.get(api('subscriptions.getOne')).set(memberTestUser1Credentials).query({ roomId: createdRoom._id }).expect(200),
+				request.get(api('subscriptions.getOne')).set(memberTestUser1Credentials).query({ roomId: additionalRoom._id }).expect(200),
+			]);
+
+			expect(subscription1Response.body).to.have.property('success', true);
+			expect(subscription1Response.body).to.have.property('subscription').that.is.an('object');
+			expect(subscription1Response.body.subscription.u).to.have.property('_id', memberTestUser1._id);
+
+			expect(subscription2Response.body).to.have.property('success', true);
+			expect(subscription2Response.body).to.have.property('subscription').that.is.an('object');
+			expect(subscription2Response.body.subscription.u).to.have.property('_id', memberTestUser1._id);
+		});
+
+		it('should not auto-join users to non-default team channels when added to team', async () => {
+			// Set only one team channel as auto-join, leave additionalRoom as non-auto-join
+			await request
+				.post(api('teams.updateRoom'))
+				.set(credentials)
+				.send({
+					roomId: createdRoom._id,
+					isDefault: true,
+				})
+				.expect(200);
+
+			await request
+				.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamId: testTeam._id,
+					members: [{ userId: memberTestUser1._id, roles: ['member'] }],
+				})
+				.expect(200);
+
+			// Verify user IS auto-joined to the auto-join channel (member count increases)
+			const createdRoomResponse = await request.get(api('channels.info')).set(credentials).query({ roomId: createdRoom._id }).expect(200);
+
+			expect(createdRoomResponse.body).to.have.property('success', true);
+			expect(createdRoomResponse.body.channel).to.have.property('usersCount').that.is.at.least(2); // admin + memberTestUser1
+
+			// Verify user is NOT auto-joined to the non-auto-join team channel (member count stays 1)
+			const additionalRoomResponse = await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({ roomId: additionalRoom._id })
+				.expect(200);
+
+			expect(additionalRoomResponse.body).to.have.property('success', true);
+			expect(additionalRoomResponse.body.channel).to.have.property('usersCount', 1); // Only admin, user not auto-joined
+		});
+
+		it('should add multiple users to auto-join channels when added to team', async () => {
+			await request
+				.post(api('teams.updateRoom'))
+				.set(credentials)
+				.send({
+					roomId: createdRoom._id,
+					isDefault: true,
+				})
+				.expect(200);
+
+			// Add multiple users to team at once
+			await request
+				.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamId: testTeam._id,
+					members: [
+						{ userId: testUser1._id, roles: ['member'] },
+						{ userId: testUser2._id, roles: ['member'] },
+					],
+				})
+				.expect(200);
+
+			// Verify both users are subscribed to the auto-join channel
+			const [testUser1SubscriptionResponse, testUser2SubscriptionResponse] = await Promise.all([
+				request.get(api('subscriptions.getOne')).set(testUser1Credentials).query({ roomId: createdRoom._id }).expect(200),
+				request.get(api('subscriptions.getOne')).set(testUser2Credentials).query({ roomId: createdRoom._id }).expect(200),
+			]);
+
+			expect(testUser1SubscriptionResponse.body).to.have.property('success', true);
+			expect(testUser1SubscriptionResponse.body).to.have.property('subscription').that.is.an('object');
+			expect(testUser1SubscriptionResponse.body.subscription.u).to.have.property('_id', testUser1._id);
+
+			expect(testUser2SubscriptionResponse.body).to.have.property('success', true);
+			expect(testUser2SubscriptionResponse.body).to.have.property('subscription').that.is.an('object');
+			expect(testUser2SubscriptionResponse.body.subscription.u).to.have.property('_id', testUser2._id);
+
+			// Verify the room member count reflects both new users + admin
+			const roomInfoResponse = await request.get(api('channels.info')).set(credentials).query({ roomId: createdRoom._id }).expect(200);
+
+			expect(roomInfoResponse.body).to.have.property('success', true);
+			expect(roomInfoResponse.body).to.have.property('channel').that.is.an('object');
+			expect(roomInfoResponse.body.channel).to.have.property('usersCount').that.is.at.least(3); // admin + testUser1 + testUser2
+		});
+
+		it('should not remove existing members when disabling auto-join on a channel', async () => {
+			// First, set channel as auto-join and add user to team
+			await request
+				.post(api('teams.updateRoom'))
+				.set(credentials)
+				.send({
+					roomId: createdRoom._id,
+					isDefault: true,
+				})
+				.expect(200);
+
+			await request
+				.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({
+					teamId: testTeam._id,
+					members: [{ userId: memberTestUser1._id, roles: ['member'] }],
+				})
+				.expect(200);
+
+			// Verify user is subscribed to the channel
+			const initialSubscriptionResponse = await request
+				.get(api('subscriptions.getOne'))
+				.set(memberTestUser1Credentials)
+				.query({ roomId: createdRoom._id })
+				.expect(200);
+
+			expect(initialSubscriptionResponse.body).to.have.property('success', true);
+			expect(initialSubscriptionResponse.body).to.have.property('subscription').that.is.an('object');
+
+			// Now disable auto-join on the channel
+			await request
+				.post(api('teams.updateRoom'))
+				.set(credentials)
+				.send({
+					roomId: createdRoom._id,
+					isDefault: false,
+				})
+				.expect(200);
+
+			// Verify user is still subscribed to the channel after disabling auto-join
+			const finalSubscriptionResponse = await request
+				.get(api('subscriptions.getOne'))
+				.set(memberTestUser1Credentials)
+				.query({ roomId: createdRoom._id })
+				.expect(200);
+
+			expect(finalSubscriptionResponse.body).to.have.property('success', true);
+			expect(finalSubscriptionResponse.body).to.have.property('subscription').that.is.an('object');
+			expect(finalSubscriptionResponse.body.subscription.u).to.have.property('_id', memberTestUser1._id);
 		});
 	});
 });
