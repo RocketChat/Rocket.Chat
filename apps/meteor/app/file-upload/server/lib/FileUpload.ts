@@ -66,6 +66,36 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 					return false;
 				}
 
+				if (file?.federation?.isRemote) {
+					try {
+						const federationService = FederationFactory.getService();
+
+						if (federationService && 'streamRemoteFile' in federationService) {
+							const { mxcUri } = (file as any).federation;
+							const userId = await FileUpload.getUserIdFromRequest(req);
+							const buffer = await (federationService as any).streamRemoteFile(userId || 'anonymous', mxcUri);
+
+							if (buffer) {
+								res.setHeader('content-type', file.type || 'application/octet-stream');
+								res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name || '')}"`);
+								res.setHeader('content-length', buffer.length.toString());
+								res.writeHead(200);
+								res.end(buffer);
+								return false; // Prevent default handling
+							}
+						}
+
+						res.writeHead(502);
+						res.end('Remote file temporarily unavailable');
+						return false;
+					} catch (error) {
+						SystemLogger.error('Error proxying remote Matrix file:', error);
+						res.writeHead(502);
+						res.end('Error fetching remote file');
+						return false;
+					}
+				}
+
 				res.setHeader('content-disposition', `attachment; filename="${encodeURIComponent(file.name || '')}"`);
 				return true;
 			},
@@ -435,8 +465,40 @@ export const FileUpload = {
 		await Avatars.updateFileNameById(file._id, user.username);
 	},
 
+	async getUserIdFromRequest({ headers = {}, url }: http.IncomingMessage): Promise<string | null> {
+		if (!url) {
+			return null;
+		}
+
+		const { query } = URL.parse(url, true);
+		let { rc_uid, rc_token } = query as Record<string, string | undefined>;
+
+		if (!rc_uid && headers.cookie) {
+			rc_uid = cookie.get('rc_uid', headers.cookie);
+			rc_token = cookie.get('rc_token', headers.cookie);
+		}
+
+		const uid = rc_uid || (headers['x-user-id'] as string);
+		const authToken = rc_token || (headers['x-auth-token'] as string);
+
+		if (uid && authToken) {
+			const user = await Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } });
+			if (user) {
+				return user._id;
+			}
+		}
+
+		return null;
+	},
+
 	async requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
 		if (!url || !settings.get('FileUpload_ProtectFiles')) {
+			return true;
+		}
+
+		// Allow MatrixRemote files to bypass normal access control
+		// They are handled by federation-specific logic in the onRead method
+		if (file?.store === 'MatrixRemote' && (file as any).federation?.isRemote) {
 			return true;
 		}
 
@@ -534,7 +596,20 @@ export const FileUpload = {
 		return this.handlers[handlerName];
 	},
 
-	get(file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
+	async get(file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
+		if (file.store === 'MatrixRemote') {
+			if (file.type?.startsWith('image/')) {
+				res.writeHead(302, {
+					Location: '/images/logo/logo.svg',
+				});
+				res.end();
+				return;
+			}
+			res.writeHead(200);
+			res.end('Matrix remote file placeholder');
+			return;
+		}
+
 		const store = this.getStoreByName(file.store);
 		if (store?.get) {
 			return store.get(file, req, res, next);

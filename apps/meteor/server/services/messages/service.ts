@@ -107,6 +107,37 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		});
 	}
 
+	async saveMessageWithAttachmentFromFederation({
+		fromId,
+		rid,
+		msg,
+		federation_event_id,
+		tmid,
+		file,
+		files,
+		attachments,
+	}: {
+		fromId: string;
+		rid: string;
+		msg: string;
+		federation_event_id: string;
+		tmid?: string;
+		file?: any;
+		files?: any[];
+		attachments?: any[];
+	}): Promise<IMessage> {
+		const threadParams = tmid ? { tmid, tshow: true } : {};
+		return executeSendMessage(fromId, {
+			rid,
+			msg,
+			...threadParams,
+			file,
+			files,
+			attachments,
+			federation: { eventId: federation_event_id },
+		});
+	}
+
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
 		return sendMessage(user, message, room, upsert);
 	}

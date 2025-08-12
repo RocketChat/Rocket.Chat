@@ -1,4 +1,6 @@
-import type { AtLeast, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IncomingMessage, ServerResponse } from 'http';
+
+import type { AtLeast, IMessage, IRoom, IUser, IUpload } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
 
 export interface IRouteContext {
@@ -28,4 +30,5 @@ export interface IFederationMatrixService {
 	updateRoomTopic(roomId: string, topic: string, sender: string): Promise<void>;
 	addUserRoleRoomScoped(rid: string, senderId: string, userId: string, role: 'moderator' | 'owner' | 'leader' | 'user'): Promise<void>;
 	inviteUsersToRoom(room: IRoom, usersUserName: string[], inviter: IUser): Promise<void>;
+	downloadRemoteFile(file: IUpload, req: IncomingMessage, res: ServerResponse): Promise<void>;
 }

@@ -22,6 +22,25 @@ export interface IMessageService {
 		federation_event_id: string;
 		tmid?: string;
 	}): Promise<IMessage>;
+	saveMessageWithAttachmentFromFederation({
+		fromId,
+		rid,
+		msg,
+		federation_event_id,
+		tmid,
+		file,
+		files,
+		attachments,
+	}: {
+		fromId: string;
+		rid: string;
+		msg: string;
+		federation_event_id: string;
+		tmid?: string;
+		file?: any;
+		files?: any[];
+		attachments?: any[];
+	}): Promise<IMessage>;
 	saveSystemMessageAndNotifyUser<T = IMessage>(
 		type: MessageTypesValues,
 		rid: string,
