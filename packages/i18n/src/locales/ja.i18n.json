@@ -63,7 +63,6 @@
   "API_Tokenpass_URL_Description": "例：`https://domain.com` (末尾のスラッシュを除く)",
   "API_Upper_Count_Limit": "最大レコード量",
   "API_Upper_Count_Limit_Description": "REST APIが返すレコードの最大数は何ですか（無制限でない場合）？",
-  "API_Use_REST_For_DDP_Calls": "Meteor呼び出しにWebSocketではなくRESTを使用",
   "API_User_Limit": "Channelに全ユーザーを追加するためのユーザー制限",
   "API_Wordpress_URL": "WordPress URL",
   "APIs": "API",
