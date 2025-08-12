@@ -71,11 +71,13 @@ export type UnavailableResult<T, StatusCode = 503> = {
 	};
 };
 
-export type NotFoundResult<T = string> = {
+export type NotFoundResult = {
 	statusCode: 404;
 	body: {
 		success: false;
-		error: T;
+		error?: string;
+		errorType?: string;
+		message?: string;
 	};
 };
 
@@ -320,7 +322,7 @@ type Results<TResponse extends TypedOptions['response']> = {
 					: K extends 403
 						? ForbiddenResult<InferResult<TResponse[403]>>
 						: K extends 404
-							? NotFoundResult<InferResult<TResponse[404]>>
+							? NotFoundResult
 							: K extends ErrorStatusCodes
 								? InternalError<InferResult<TResponse[500]>, K>
 								: never;

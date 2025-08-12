@@ -252,15 +252,11 @@ const omnichannelContactsEndpoints = API.v1.post(
 			await disableContactById(contactId);
 			return API.v1.success();
 		} catch (error) {
-			if (!(error instanceof Error)) {
-				return API.v1.failure();
+			if (!(error instanceof Error) || error.message !== 'error-contact-not-found') {
+				return API.v1.failure('error-invalid-contact');
 			}
 
-			if (error.message === 'error-contact-not-found') {
-				return API.v1.notFound(error.message);
-			}
-
-			return API.v1.failure();
+			return API.v1.notFound(error.message);
 		}
 	},
 );

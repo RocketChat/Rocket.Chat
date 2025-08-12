@@ -1481,7 +1481,11 @@ export const POSTOmnichannelContactDeleteUnauthorizedSchema = ajv.compile<{
 
 const POSTOmnichannelContactDeleteSuccess = {
 	type: 'object',
-	properties: {},
+	properties: {
+		success: {
+			type: 'boolean',
+		},
+	},
 	additionalProperties: false,
 };
 
