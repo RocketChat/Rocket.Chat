@@ -43,7 +43,25 @@ const NewCall = () => {
 				<ButtonGroup stretch>
 					<ActionButton label='dialpad' icon='dialpad' flexGrow={0} secondary onClick={keypad.toggleOpen} />
 					<DevicePicker secondary />
-					<Button medium name='phone' icon='phone' success flexGrow={1} onClick={() => onCall(autocomplete.value)}>
+					<Button
+						medium
+						name='phone'
+						icon='phone'
+						success
+						flexGrow={1}
+						onClick={() => {
+							if (!peerInfo) {
+								return;
+							}
+
+							if ('identifier' in peerInfo) {
+								// TODO: Fix this casting
+								onCall(peerInfo.identifier as string, 'user');
+							} else {
+								onCall(peerInfo.number, 'extension');
+							}
+						}}
+					>
 						{t('Call')}
 					</Button>
 				</ButtonGroup>

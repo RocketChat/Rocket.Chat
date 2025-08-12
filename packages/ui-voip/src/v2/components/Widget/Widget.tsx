@@ -5,6 +5,8 @@ import styled from '@rocket.chat/styled';
 // TODO: A11Y
 const Widget = styled('article')`
 	position: fixed;
+	right: 2em;
+	bottom: 10em;
 	display: flex;
 	flex-direction: column;
 	width: 248px;

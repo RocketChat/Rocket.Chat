@@ -35,7 +35,7 @@ type MediaCallContextType = {
 	// onCall and onEndCall are used to start/accept and reject/end a call
 	onEndCall: () => void;
 	// TODO: Not sure if we need to pass the peerId to the callback, or if it should be a state stored somewhere else in the context.
-	onCall: (peerId?: string) => void;
+	onCall: (peerId?: string, kind?: 'user' | 'extension') => void;
 
 	onToggleWidget: () => void;
 
@@ -116,7 +116,7 @@ export const usePeerAutocomplete = () => {
 				return {
 					name: localInfo.label,
 					avatarUrl: localInfo.avatarUrl || '',
-					identifier: localInfo.value,
+					identifier: localInfo.value || '',
 				};
 			}
 
