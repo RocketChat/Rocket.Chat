@@ -12,7 +12,7 @@ import {
 	POSTOmnichannelContactDeleteSuccessSchema,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
-	validateNotFoundErrorResponse,
+	validateNotFoundErrorResponse, validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { removeEmpty } from '@rocket.chat/tools';
@@ -239,6 +239,7 @@ const omnichannelContactsEndpoints = API.v1.post(
 			200: POSTOmnichannelContactDeleteSuccessSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 			404: validateNotFoundErrorResponse,
 		},
 		authRequired: true,
