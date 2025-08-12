@@ -38,6 +38,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
+import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateTeamModalInputs = {
@@ -76,6 +77,8 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		return new RegExp(`^${namesValidation}$`);
 	}, [allowSpecialNames, namesValidation]);
 
+	const canOnlyCreateOneType = useCreateChannelTypePermission();
+
 	const validateTeamName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
 			return;
@@ -100,7 +103,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		formState: { errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
-			isPrivate: true,
+			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 			readOnly: false,
 			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
 			broadcast: false,
@@ -244,7 +247,14 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 								control={control}
 								name='isPrivate'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch id={privateId} aria-describedby={`${privateId}-hint`} onChange={onChange} checked={value} ref={ref} />
+									<ToggleSwitch
+										id={privateId}
+										aria-describedby={`${privateId}-hint`}
+										onChange={onChange}
+										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
+										disabled={!!canOnlyCreateOneType}
+										ref={ref}
+									/>
 								)}
 							/>
 						</FieldRow>
