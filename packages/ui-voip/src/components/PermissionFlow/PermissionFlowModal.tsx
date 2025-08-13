@@ -1,5 +1,15 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Modal } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	Modal,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useAbsoluteUrl, useSetModal } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,20 +86,20 @@ const PermissionFlowModal = ({ onCancel, onConfirm, type }: PermissionFlowModalP
 
 	return (
 		<Modal aria-labelledby={modalId}>
-			<Modal.Header>
-				<Modal.Title id={modalId}>{t('VoIP_device_permission_required')}</Modal.Title>
-				<Modal.Close aria-label={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle id={modalId}>{t('VoIP_device_permission_required')}</ModalTitle>
+				<ModalClose aria-label={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box is='span' className={breakSpaces} fontScale='p2'>
 					{t('VoIP_device_permission_required_description', {
 						workspaceUrl: absoluteUrl(''),
 					})}
 				</Box>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>{getFooter(type, { onCancel, onConfirm, onClose, t })}</Modal.FooterControllers>
-			</Modal.Footer>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>{getFooter(type, { onCancel, onConfirm, onClose, t })}</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };
