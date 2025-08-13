@@ -1,22 +1,31 @@
 import { Emitter } from '@rocket.chat/emitter';
 import {
 	CallContact,
-	MediaSignal,
 	MediaSignalingSession,
 	MediaCallWebRTCProcessor,
 	MediaSignalTransport,
 	CallState,
 	CallRole,
+	ClientMediaSignal,
+	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
 import { useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback } from 'react';
 
-import { getUserMedia } from '../lib/getUserMedia';
 import type { State } from '../v2/MediaCallContext';
+
+// TODO remove this once the permission flow PR is merged
+export async function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
+	if (navigator.mediaDevices === undefined) {
+		throw new Error('Media devices not available in insecure contexts.');
+	}
+
+	return navigator.mediaDevices.getUserMedia.call(navigator.mediaDevices, constraints);
+}
 
 type SessionInfo = {
 	state: State;
-	contact: CallContact;
+	contact?: CallContact;
 
 	muted: boolean;
 	held: boolean;
@@ -25,7 +34,7 @@ type SessionInfo = {
 
 const defaultSessionInfo: SessionInfo = {
 	state: 'closed' as const,
-	contact: null,
+	contact: undefined,
 	muted: false,
 	held: false,
 	startedAt: new Date(),
@@ -45,10 +54,12 @@ type MediaSession = SessionInfo & {
 	sendTone: (tone: string) => void;
 };
 
+type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
+
 class MediaSessionStore extends Emitter<{ change: void }> {
 	private sessionInstance: MediaSignalingSession | null = null;
 
-	private sendSignalFn: MediaSignalTransport | null = null;
+	private sendSignalFn: SignalTransport | null = null;
 
 	constructor() {
 		super();
@@ -62,7 +73,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 		return this.on('change', callback);
 	}
 
-	private sendSignal(signal: MediaSignal) {
+	private sendSignal(signal: ClientMediaSignal) {
 		if (this.sendSignalFn) {
 			return this.sendSignalFn(signal);
 		}
@@ -74,7 +85,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 	private makeInstance(userId: string) {
 		this.sessionInstance = new MediaSignalingSession({
 			userId,
-			transport: (signal: MediaSignal) => this.sendSignal(signal),
+			transport: (signal: ClientMediaSignal) => this.sendSignal(signal),
 			processorFactories: {
 				webrtc: (config) => new MediaCallWebRTCProcessor(config),
 			},
@@ -99,7 +110,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 		return this.makeInstance(userId);
 	}
 
-	public setSendSignalFn(sendSignalFn: MediaSignalTransport) {
+	public setSendSignalFn(sendSignalFn: SignalTransport) {
 		this.sendSignalFn = sendSignalFn;
 		return () => {
 			this.sendSignalFn = null;
@@ -130,19 +141,21 @@ export const useMediaSessionInstance = (userId?: string) => {
 		}, [userId]),
 	);
 
-	const mediaCallsSignal = useEndpoint('POST', '/v1/media-calls.signal');
+	// const mediaCallsSignal = useEndpoint('POST', '/v1/media-calls.signal');
 	const notifyUserStream = useStream('notify-user');
 
-	useEffect(() => {
-		return mediaSession.setSendSignalFn((signal: MediaSignal) => mediaCallsSignal({ signal }));
-	}, [mediaCallsSignal]);
+	// useEffect(() => {
+	// 	return mediaSession.setSendSignalFn((signal: ClientMediaSignal) => mediaCallsSignal({ signal }));
+	// }, [mediaCallsSignal]);
 
 	useEffect(() => {
 		if (!instance) {
 			return;
 		}
 
-		const unsubNotification = notifyUserStream(`${instance.userId}/media-signal`, (signal: MediaSignal) => instance.processSignal(signal));
+		const unsubNotification = notifyUserStream(`${instance.userId}/media-signal`, (signal: ServerMediaSignal) =>
+			instance.processSignal(signal),
+		);
 
 		return () => {
 			unsubNotification();
@@ -194,7 +207,7 @@ const reducer = (
 
 export const useMediaSession = (instance?: MediaSignalingSession): MediaSession => {
 	const [mediaSession, dispatch] = useReducer<typeof reducer>(reducer, defaultSessionInfo);
-	const startCallEndpoint = useEndpoint('POST', '/v1/media-calls.start');
+	// const startCallEndpoint = useEndpoint('POST', '/v1/media-calls.start');
 
 	useEffect(() => {
 		if (!instance) {
@@ -264,13 +277,11 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 
 		const startCall = async (id?: string, kind?: 'user' | 'extension') => {
 			if (!instance) {
-				console.log('No instance');
 				return;
 			}
 
 			const call = instance.getMainCall();
 			if (call && call.state === 'ringing') {
-				console.log('Accepting call');
 				call.accept();
 				return;
 			}
@@ -280,12 +291,9 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 
 			try {
-				console.log('Starting call');
-				const { call } = await startCallEndpoint({ sessionId: instance.sessionId, identifier: id, identifierKind: kind });
-				console.log('Call started', call);
-				const { _id: callId, callee } = call;
-				instance.registerOutboundCall(callId, callee);
-				console.log('Call registered', callId, callee);
+				// const { call } = await startCallEndpoint({ sessionId: instance.sessionId, identifier: id, identifierKind: kind });
+				// const { _id: callId, callee } = call;
+				// await instance.startCall(callId, callee);
 			} catch (error) {
 				console.error(error);
 			}
@@ -313,7 +321,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			forwardCall,
 			sendTone,
 		};
-	}, [instance, startCallEndpoint]);
+	}, [instance]);
 
 	return {
 		...mediaSession,
