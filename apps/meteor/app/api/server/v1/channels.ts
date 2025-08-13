@@ -249,7 +249,7 @@ const channelsEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
 				200: ajv.compile<{
-					channel?: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
+					channel: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
 				}>({
 					type: 'object',
 					properties: {
