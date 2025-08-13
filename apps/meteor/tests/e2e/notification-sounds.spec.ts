@@ -1,0 +1,144 @@
+import { Users } from './fixtures/userStates';
+import { HomeChannel } from './page-objects';
+import { createTargetChannelAndReturnFullRoom, deleteRoom, setUserPreferences } from './utils';
+import { test, expect } from './utils/test';
+
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Window {
+		__audioCalls: { src?: string; played?: boolean };
+	}
+}
+
+test.use({ storageState: Users.admin.state });
+
+test.describe.serial('Notification Sounds', () => {
+	let targetChannel: string;
+	let targetChannelId: string;
+	let poHomeChannel: HomeChannel;
+
+	test.beforeAll(async ({ api }) => {
+		const { channel } = await createTargetChannelAndReturnFullRoom(api, {
+			members: [Users.admin.data.username, Users.user1.data.username],
+		});
+		targetChannel = channel.name as string;
+		targetChannelId = channel._id;
+	});
+
+	test.afterAll(async ({ api }) => {
+		await deleteRoom(api, targetChannel);
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+
+		await page.goto(`/channel/${targetChannel}`);
+
+		await page.evaluate(() => {
+			const OriginalAudio = window.Audio;
+			window.__audioCalls = {} as { src?: string; played?: boolean };
+
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore mock Audio constructor
+			window.Audio = function (src: string | undefined) {
+				if (!src) {
+					return new OriginalAudio();
+				}
+
+				window.__audioCalls = { src, played: false };
+				const audioObj = new OriginalAudio(src);
+				const originalPlay = audioObj.play.bind(audioObj);
+				audioObj.play = () => {
+					window.__audioCalls.played = true;
+					return originalPlay();
+				};
+				return audioObj;
+			};
+		});
+	});
+
+	test('should play default notification sounds', async ({ page, browser }) => {
+		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		await user1Page.goto(`/channel/${targetChannel}`);
+		const user1PoHomeChannel = new HomeChannel(user1Page);
+		await user1PoHomeChannel.content.waitForChannel();
+
+		await poHomeChannel.sidenav.sidebarHomeAction.click();
+
+		await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
+
+		await page.waitForTimeout(100); // wait for the sound to play
+
+		const audioCalls = await page.evaluate(() => window.__audioCalls);
+		expect(audioCalls).toHaveProperty('src');
+		expect(audioCalls.src).toContain('chime');
+		expect(audioCalls.played).toBe(true);
+
+		await user1Page.close();
+	});
+
+	test.describe('Notification sound preferences', () => {
+		test.beforeAll(async ({ api }) => {
+			await setUserPreferences(api, {
+				newMessageNotification: 'ringtone',
+			});
+		});
+
+		test.afterAll(async ({ api }) => {
+			await setUserPreferences(api, {
+				newMessageNotification: 'chime',
+			});
+		});
+
+		test('should play notification sound based on user preferences', async ({ page, browser }) => {
+			const user1Page = await browser.newPage({ storageState: Users.user1.state });
+			await user1Page.goto(`/channel/${targetChannel}`);
+			const user1PoHomeChannel = new HomeChannel(user1Page);
+			await user1PoHomeChannel.content.waitForChannel();
+
+			await poHomeChannel.sidenav.sidebarHomeAction.click();
+
+			await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
+
+			await page.waitForTimeout(100); // wait for the sound to play
+
+			const audioCalls = await page.evaluate(() => window.__audioCalls);
+			expect(audioCalls).toHaveProperty('src');
+			expect(audioCalls.src).toContain('ringtone');
+			expect(audioCalls.played).toBe(true);
+
+			await user1Page.close();
+		});
+	});
+
+	test.describe('Custom room notification preferences', () => {
+		test.beforeEach(async ({ api }) => {
+			await api.post('/rooms.saveNotification', {
+				roomId: targetChannelId,
+				notifications: {
+					audioNotificationValue: 'door',
+				},
+			});
+		});
+
+		test('should play custom room notification sound', async ({ page, browser }) => {
+			const user1Page = await browser.newPage({ storageState: Users.user1.state });
+			await user1Page.goto(`/channel/${targetChannel}`);
+			const user1PoHomeChannel = new HomeChannel(user1Page);
+			await user1PoHomeChannel.content.waitForChannel();
+
+			await poHomeChannel.sidenav.sidebarHomeAction.click();
+
+			await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
+
+			await page.waitForTimeout(100); // wait for the sound to play
+
+			const audioCalls = await page.evaluate(() => window.__audioCalls);
+			expect(audioCalls).toHaveProperty('src');
+			expect(audioCalls.src).toContain('door');
+			expect(audioCalls.played).toBe(true);
+
+			await user1Page.close();
+		});
+	});
+});
