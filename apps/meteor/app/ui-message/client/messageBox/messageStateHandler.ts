@@ -1,6 +1,7 @@
+import { parse, type Options } from '@rocket.chat/message-parser';
 import type { Dispatch, SetStateAction } from 'react';
 
-import { getCursorSelectionInfo, getSelectionRange } from './selectionRange';
+import { getCursorSelectionInfo, getSelectionRange, setSelectionRange } from './selectionRange';
 
 export type CursorHistory = {
 	undoStack: number[];
@@ -26,21 +27,44 @@ export const getTextLines = (str: string, delimiter: string): string[] => {
 	return result;
 };
 
+const parseMessage = (text: string, parseOptions: Options): Root => {
+	return parse(text, parseOptions);
+};
+
 // Resolve state of the composer during beforeInput
 export const resolveBeforeInput = (
 	event: InputEvent,
 	setMdLines: Dispatch<SetStateAction<string[]>>,
 	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
+	parseOptions: Options,
 ): void => {
 	const input = event.target as HTMLDivElement;
 
-	const selection = getSelectionRange(input);
-	const { selectionStart, selectionEnd } = selection;
+	console.log(event);
 
-	const lineInfo = getCursorSelectionInfo(input, selection);
-	const { start, end } = lineInfo;
+	if (event.inputType === 'historyUndo') {
+		console.log('Undo detected → performing programmatic undo');
+		// document.execCommand('undo');
+	} else if (event.inputType === 'historyRedo') {
+		console.log('Redo detected → performing programmatic redo');
+		// document.execCommand('redo');
+	} else {
+		// Delay so DOM reflects the change
+		setTimeout(() => {
+			// console.log('resolved data', input.innerText);
+			// document.execCommand('insertHTML', false, 'test');
+			const text = input.innerText;
 
-	console.log('event', e);
-	console.log('input', input);
-	setMdLines(getTextLines(input.innerText, '\n'));
+			const selection = getSelectionRange(input);
+			const { selectionStart, selectionEnd } = selection;
+
+			const lineInfo = getCursorSelectionInfo(input, selection);
+			const { start, end } = lineInfo;
+
+			setSelectionRange(input, 0, text.length);
+
+			const ast = parseMessage(input.innerText, parseOptions)
+			console.log(ast);
+		}, 0);
+	}
 };
