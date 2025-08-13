@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { Emitter } from '@rocket.chat/emitter';
 import { ClientMediaCall } from './Call';
 import { MediaSignalTransportWrapper } from './TransportWrapper';
-import { createRandomToken } from './utils/createRandomToken';
 const STATE_REPORT_INTERVAL = 60000;
 export class MediaSignalingSession extends Emitter {
     get sessionId() {
@@ -22,8 +21,9 @@ export class MediaSignalingSession extends Emitter {
     constructor(config) {
         super();
         this.config = config;
+        this.callCount = 0;
         this._userId = config.userId;
-        this._sessionId = createRandomToken(8);
+        this._sessionId = this.createWeakToken();
         this.recurringStateReportHandler = null;
         this.knownCalls = new Map();
         this.ignoredCalls = new Set();
@@ -104,11 +104,8 @@ export class MediaSignalingSession extends Emitter {
         });
     }
     createTemporaryCallId() {
-        const callId = createRandomToken(20);
-        if (this.knownCalls.has(callId)) {
-            return this.createTemporaryCallId();
-        }
-        return callId;
+        this.callCount++;
+        return `${this._sessionId}-${this.callCount}-${Date.now()}`;
     }
     isSignalTargetingAnotherSession(signal) {
         if (signal.type === 'new' || signal.type === 'notification') {
@@ -187,6 +184,16 @@ export class MediaSignalingSession extends Emitter {
         call.emitter.on('active', () => this.onActiveCall(call));
         call.emitter.on('ended', () => this.onEndedCall(call));
         return call;
+    }
+    createWeakToken() {
+        const base = 32;
+        const size = 8;
+        let token = '';
+        for (let i = 0; i < size; i++) {
+            const r = Math.floor(Math.random() * base);
+            token += r.toString(base);
+        }
+        return `${Date.now()}-${token}`;
     }
     onCallContactUpdate(call) {
         var _a;

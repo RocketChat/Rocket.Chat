@@ -46,6 +46,7 @@ export declare class MediaSignalingSession extends Emitter<MediaSignalingEvents>
     private ignoredCalls;
     private transporter;
     private recurringStateReportHandler;
+    private callCount;
     get sessionId(): string;
     get userId(): string;
     constructor(config: MediaSignalingSessionConfig);
@@ -65,6 +66,7 @@ export declare class MediaSignalingSession extends Emitter<MediaSignalingEvents>
     private reportState;
     private register;
     private createCall;
+    private createWeakToken;
     private onCallContactUpdate;
     private onCallStateChange;
     private onCallClientStateChange;
