@@ -9,7 +9,7 @@
 		"module": "node20",
 		"moduleDetection": "force",
 		"target": "ES2024",
-		"lib": ["ES2024.Promise", "ES2022.Error", "ES2023.Array", "ES2015"],
+		"lib": ["ES2024.Promise", "ES2022.Error", "ES2023.Array", "ES2015.Core", "ES2024", "DOM"],
 		"skipLibCheck": true,
 		"noEmit": true,
 		"erasableSyntaxOnly": true,
@@ -21,11 +21,11 @@
 		"noUncheckedSideEffectImports": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noImplicitReturns": true,
 		"libReplacement": false,
 		"isolatedDeclarations": true,
-    "types": []
+		"types": []
 	},
 	"include": ["src"],
 	"exclude": []

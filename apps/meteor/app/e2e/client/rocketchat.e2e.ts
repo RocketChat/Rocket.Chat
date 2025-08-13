@@ -82,6 +82,9 @@ class E2E extends Emitter {
 				remove: (keyName) => Promise.resolve(Accounts.storageLocation.removeItem(keyName)),
 			},
 			crypto,
+			{
+				fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
+			},
 		);
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
@@ -213,7 +216,7 @@ class E2E extends Emitter {
 	}
 
 	async shouldAskForE2EEPassword() {
-		const { private_key } = await this.getKeysFromLocalStorage();
+		const { private_key } = await this.e2ee.getKeysFromLocalStorage();
 		return this.db_private_key && !private_key;
 	}
 
@@ -305,7 +308,7 @@ class E2E extends Emitter {
 	}
 
 	private async persistKeys(
-		{ public_key, private_key }: KeyPair,
+		{ public_key, private_key }: Partial<KeyPair>,
 		password: string,
 		{ force }: { force: boolean } = { force: false },
 	): Promise<void> {
@@ -336,10 +339,6 @@ class E2E extends Emitter {
 		await sdk.rest.post('/v1/e2e.rejectSuggestedGroupKey', {
 			rid,
 		});
-	}
-
-	getKeysFromLocalStorage(): Promise<KeyPair> {
-		return this.e2ee.getKeysFromLocalStorage();
 	}
 
 	initiateHandshake() {
@@ -376,7 +375,7 @@ class E2E extends Emitter {
 
 		this.started = true;
 
-		let { public_key, private_key } = await this.getKeysFromLocalStorage();
+		let { public_key, private_key } = await this.e2ee.getKeysFromLocalStorage();
 
 		await this.loadKeysFromDB();
 
@@ -416,7 +415,7 @@ class E2E extends Emitter {
 
 		if (!this.db_public_key || !this.db_private_key) {
 			this.setState(E2EEState.LOADING_KEYS);
-			await this.persistKeys(await this.getKeysFromLocalStorage(), await this.createRandomPassword());
+			await this.persistKeys(await this.e2ee.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
 		const randomPassword = await this.e2ee.getRandomPassword();
@@ -449,7 +448,7 @@ class E2E extends Emitter {
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
-		await this.persistKeys(await this.getKeysFromLocalStorage(), newPassword, { force: true });
+		await this.persistKeys(await this.e2ee.getKeysFromLocalStorage(), newPassword, { force: true });
 
 		if (await this.e2ee.getRandomPassword()) {
 			await this.e2ee.storeRandomPassword(newPassword);
@@ -459,8 +458,7 @@ class E2E extends Emitter {
 	async loadKeysFromDB(): Promise<void> {
 		try {
 			this.setState(E2EEState.LOADING_KEYS);
-			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
-
+			const { public_key, private_key } = await this.e2ee.getKeysFromService();
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
 		} catch (error) {

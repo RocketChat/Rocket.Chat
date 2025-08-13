@@ -4,28 +4,53 @@ export interface KeyStorage {
 	remove(keyName: string): Promise<void>;
 }
 
+export interface KeyService {
+	fetchMyKeys(): Promise<KeyPair>;
+}
+
 export interface RandomGenerator {
 	getRandomValues<T extends ArrayBufferView>(array: T): T;
 }
 
+export type PrivateKey = string;
+export type PublicKey = string;
+
 export type KeyPair = {
-	public_key: string | null;
-	private_key: string | null;
+	public_key: PublicKey;
+	private_key: PrivateKey;
 };
 
 export class E2EE {
+	#service: KeyService;
 	#storage: KeyStorage;
 	#random: RandomGenerator;
 
-	constructor(storage: KeyStorage, random: RandomGenerator) {
+	constructor(storage: KeyStorage, random: RandomGenerator, service: KeyService) {
 		this.#storage = storage;
 		this.#random = random;
+		this.#service = service;
 	}
 
-	async getKeysFromLocalStorage(): Promise<KeyPair> {
+	async getKeysFromLocalStorage(): Promise<Partial<KeyPair>> {
+		const public_key = (await this.#storage.load('public_key')) ?? undefined;
+		const private_key = (await this.#storage.load('private_key')) ?? undefined;
+
 		return {
-			public_key: await this.#storage.load('public_key'),
-			private_key: await this.#storage.load('private_key'),
+			public_key,
+			private_key,
+		};
+	}
+
+	async getKeysFromService(): Promise<KeyPair> {
+		const keys = await this.#service.fetchMyKeys();
+
+		if (!keys) {
+			throw new Error('Failed to retrieve keys from service');
+		}
+
+		return {
+			public_key: keys.public_key,
+			private_key: keys.private_key,
 		};
 	}
 
