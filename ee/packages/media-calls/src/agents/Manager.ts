@@ -96,7 +96,6 @@ class MediaCallAgentManager {
 		agent.notify(agent.callId, 'hangup');
 		const otherAgent = await this.getAnyOppositeAgent(agent);
 		if (otherAgent) {
-			logger.warn({ msg: 'oppositeAgent not found on hangup', reason });
 			otherAgent.notify(agent.callId, 'hangup');
 		}
 	}
