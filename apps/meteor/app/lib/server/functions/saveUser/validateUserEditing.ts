@@ -45,7 +45,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 	if (
 		isEditingField(user.username, userData.username) &&
 		!settings.get('Accounts_AllowUsernameChange') &&
-		(!canEditOtherUserInfo || editingMyself)
+		(editingMyself ? user.username : !canEditOtherUserInfo)
 	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit username is not allowed', {
 			method: 'insertOrUpdateUser',
@@ -87,7 +87,11 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		});
 	}
 
-	if (userData.password && !settings.get('Accounts_AllowPasswordChange') && (!canEditOtherUserPassword || editingMyself)) {
+	if (
+		userData.password &&
+		!settings.get('Accounts_AllowPasswordChange') &&
+		(editingMyself ? user.services?.password || !user.requirePasswordChange : !canEditOtherUserPassword)
+	) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user password is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',

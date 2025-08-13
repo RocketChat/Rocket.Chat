@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Tracker } from 'meteor/tracker';
 
-import { Users } from '../../app/models/client/models/Users';
+import { Users } from '../stores/Users';
 
 // assertion is needed because global Mongo.Collection differs from the `meteor/mongo` package's Mongo.Collection
 Meteor.users = Users.collection as typeof Meteor.users;
