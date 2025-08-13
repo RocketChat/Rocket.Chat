@@ -1,0 +1,1 @@
+{"version":3,"file":"register.d.ts","sourceRoot":"","sources":["../../../../src/definition/signals/client/register.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,KAAK,CAAC;AAE1C,8CAA8C;AAC9C,MAAM,MAAM,yBAAyB,GAAG;IACvC,IAAI,EAAE,UAAU,CAAC;IACjB,UAAU,EAAE,MAAM,CAAC;IAEnB,aAAa,CAAC,EAAE,MAAM,CAAC;CACvB,CAAC;AAEF,eAAO,MAAM,+BAA+B,EAAE,cAAc,CAAC,yBAAyB,CAkBrF,CAAC"}
