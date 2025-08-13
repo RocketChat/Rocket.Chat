@@ -1,14 +1,14 @@
 {
 	"name": "@rocket.chat/models",
-	"version": "1.5.4",
+	"version": "1.5.12",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~29.5.14",
+		"@types/jest": "~30.0.0",
 		"@types/node-rsa": "^1.1.4",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.2",
+		"jest": "~30.0.5",
 		"typescript": "~5.8.3"
 	},
 	"dependencies": {
@@ -18,7 +18,7 @@
 		"@rocket.chat/sha256": "workspace:^",
 		"@rocket.chat/string-helpers": "^0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
-		"moment": "^2.30.1",
+		"date-fns": "~4.1.0",
 		"node-rsa": "^1.1.1"
 	},
 	"scripts": {
@@ -35,5 +35,8 @@
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
-	]
+	],
+	"volta": {
+		"extends": "../../package.json"
+	}
 }

@@ -1,13 +1,18 @@
+import type {
+	IOutboundEmailMessageProvider,
+	IOutboundPhoneMessageProvider,
+} from '@rocket.chat/apps-engine/definition/outboundComunication';
+
 export interface IOutboundProviderTemplate {
 	id: string;
 	name: string;
 	language: string;
 	type: 'whatsapp' | 'email' | string;
-	category: 'AUTHENTICATION' | 'UTILITY' | 'MARKETING' | string;
+	category: 'authentication' | 'utility' | 'marketing' | string;
 	// Note: by default, the app will filter all the templates that are not APPROVED
-	status: 'APPROVED' | 'REJECTED' | 'PENDING' | string;
+	status: 'approved' | 'rejected' | 'pending' | string;
 	qualityScore: {
-		score: 'GREEN' | 'YELLOW' | 'RED' | 'UNKNOWN' | string;
+		score: 'green' | 'yellow' | 'red' | 'unknown' | string;
 		reasons: string[] | null;
 	};
 	components: Component[];
@@ -22,16 +27,16 @@ export interface IOutboundProviderTemplate {
 	partnerId: string;
 	externalId: string;
 	updatedExternal: string; // ISO 8601 timestamp
-	rejectedReason: string | null;
+	rejectedReason: string | undefined;
 }
 
 type Component = IHeaderComponent | IBodyComponent | IFooterComponent;
 
 // If we happen to have a different structure for this (since this could be a link or idk) we are gonna update this component type
 interface IHeaderComponent {
-	type: 'HEADER';
+	type: 'header';
 	// For UI: if the format is other than TEXT, it should include a media link
-	format?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT';
+	format?: 'text' | 'image' | 'video' | 'document';
 	text?: string;
 	example?: {
 		headerText?: string[];
@@ -39,7 +44,7 @@ interface IHeaderComponent {
 }
 
 interface IBodyComponent {
-	type: 'BODY';
+	type: 'body';
 	text: string;
 	example?: {
 		bodyText: string[][];
@@ -47,7 +52,7 @@ interface IBodyComponent {
 }
 
 interface IFooterComponent {
-	type: 'FOOTER';
+	type: 'footer';
 	text: string;
 }
 
@@ -68,12 +73,12 @@ export interface IOutboundMessage {
 	};
 }
 
-type TemplateComponent = {
+export type TemplateComponent = {
 	type: 'header' | 'body' | 'footer' | 'button';
 	parameters: TemplateParameter[];
 };
 
-type TemplateParameter =
+export type TemplateParameter =
 	| {
 			type: 'text';
 			text: string;
@@ -107,10 +112,26 @@ type TemplateParameter =
 export type IOutboundProvider = {
 	providerId: string;
 	providerName: string;
-	supportsTemplates: boolean;
+	supportsTemplates?: boolean;
 	providerType: 'phone' | 'email';
 };
 
 export type IOutboundProviderMetadata = IOutboundProvider & {
 	templates: Record<string, IOutboundProviderTemplate[]>;
 };
+
+export interface IOutboundMessageProvider {
+	registerPhoneProvider(provider: IOutboundPhoneMessageProvider): void;
+	registerEmailProvider(provider: IOutboundEmailMessageProvider): void;
+	getOutboundMessageProviders(type?: ValidOutboundProvider): IOutboundProvider[];
+	unregisterProvider(appId: string, providerType: string): void;
+}
+
+export const ValidOutboundProviderList = ['phone', 'email'] as const;
+
+export type ValidOutboundProvider = (typeof ValidOutboundProviderList)[number];
+
+export interface IOutboundMessageProviderService {
+	outboundMessageProvider: IOutboundMessageProvider;
+	listOutboundProviders(type?: string): IOutboundProvider[];
+}

@@ -8,9 +8,9 @@
 		"lint:fix": "eslint --fix src"
 	},
 	"main": "dist/index.js",
-	"packageManager": "yarn@3.5.1",
+	"packageManager": "yarn@4.9.2",
 	"devDependencies": {
-		"@types/node": "~22.14.1",
+		"@types/node": "~22.16.1",
 		"typescript": "~5.8.3"
 	},
 	"dependencies": {
@@ -26,5 +26,8 @@
 		"remark-stringify": "9.0.1",
 		"semver": "^7.6.3",
 		"unified": "9.2.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

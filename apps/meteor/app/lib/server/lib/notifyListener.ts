@@ -250,17 +250,24 @@ export const notifyOnLivechatInquiryChanged = withDbWatcherCheck(
 
 export const notifyOnLivechatInquiryChangedById = withDbWatcherCheck(
 	async (
-		id: ILivechatInquiryRecord['_id'],
+		ids: ILivechatInquiryRecord['_id'] | ILivechatInquiryRecord['_id'][],
 		clientAction: ClientAction = 'updated',
 		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
 	): Promise<void> => {
-		const inquiry = clientAction === 'removed' ? await LivechatInquiry.trashFindOneById(id) : await LivechatInquiry.findOneById(id);
+		const eligibleIds = Array.isArray(ids) ? ids : [ids];
 
-		if (!inquiry) {
+		const items =
+			clientAction === 'removed'
+				? LivechatInquiry.trashFind({ _id: { $in: eligibleIds } })
+				: LivechatInquiry.find({ _id: { $in: eligibleIds } });
+
+		if (!items) {
 			return;
 		}
 
-		void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+		for await (const inquiry of items) {
+			void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+		}
 	},
 );
 
@@ -280,17 +287,24 @@ export const notifyOnLivechatInquiryChangedByVisitorIds = withDbWatcherCheck(
 
 export const notifyOnLivechatInquiryChangedByRoom = withDbWatcherCheck(
 	async (
-		rid: ILivechatInquiryRecord['rid'],
+		rids: ILivechatInquiryRecord['rid'] | ILivechatInquiryRecord['rid'][],
 		clientAction: ClientAction = 'updated',
 		diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
 	): Promise<void> => {
-		const inquiry = await LivechatInquiry.findOneByRoomId(rid, {});
+		const eligibleIds = Array.isArray(rids) ? rids : [rids];
 
-		if (!inquiry) {
+		const items =
+			clientAction === 'removed'
+				? LivechatInquiry.trashFind({ rid: { $in: eligibleIds } })
+				: LivechatInquiry.find({ rid: { $in: eligibleIds } });
+
+		if (!items) {
 			return;
 		}
 
-		void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+		for await (const inquiry of items) {
+			void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+		}
 	},
 );
 

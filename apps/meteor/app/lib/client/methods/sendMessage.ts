@@ -4,9 +4,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { Messages, Rooms } from '../../../../client/stores';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { Messages, Rooms } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { t } from '../../../utils/lib/i18n';
 
@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// If the room is federated, send the message to matrix only
-		const room = Rooms.findOne({ _id: message.rid }, { fields: { federated: 1, name: 1 } });
+		const room = Rooms.state.get(message.rid);
 		if (room?.federated) {
 			return;
 		}

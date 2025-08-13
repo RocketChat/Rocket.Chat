@@ -1,8 +1,8 @@
 import { SHA256 } from '@rocket.chat/sha256';
+import { imperativeModal } from '@rocket.chat/ui-client';
 import { Meteor } from 'meteor/meteor';
 import { lazy } from 'react';
 
-import { imperativeModal } from '../imperativeModal';
 import type { LoginCallback } from './overrideLoginMethod';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
 
@@ -92,15 +92,15 @@ export async function process2faReturn({
 	}
 }
 
-export async function process2faAsyncReturn({
+export async function process2faAsyncReturn<TResult>({
 	error,
 	onCode,
 	emailOrUsername,
 }: {
 	error: unknown;
-	onCode: (code: string, method: string) => unknown | Promise<unknown>;
+	onCode: (code: string, method: string) => TResult | Promise<TResult>;
 	emailOrUsername: string | null | undefined;
-}): Promise<unknown> {
+}): Promise<TResult> {
 	// if the promise is rejected, we need to check if it's a 2fa error
 	// if it's not a 2fa error, we reject the promise
 	if (!(isTotpRequiredError(error) || isTotpInvalidError(error)) || !hasRequiredTwoFactorMethod(error)) {
