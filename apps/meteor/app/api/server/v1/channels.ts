@@ -22,7 +22,6 @@ import {
 	isChannelsConvertToTeamProps,
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
-	isChannelsListProps,
 	isChannelsFilesListProps,
 	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
