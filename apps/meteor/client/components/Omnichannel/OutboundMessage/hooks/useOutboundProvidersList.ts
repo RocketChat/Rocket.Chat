@@ -4,6 +4,8 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+
 type OutboundProvidersResponse = Serialized<OperationResult<'GET', '/v1/omnichannel/outbound/providers'>>;
 
 type UseOutboundProvidersListProps<TData> = Partial<
@@ -11,10 +13,10 @@ type UseOutboundProvidersListProps<TData> = Partial<
 >;
 
 const useOutboundProvidersList = <TData = OutboundProvidersResponse>(options?: UseOutboundProvidersListProps<TData>) => {
-	const { queryKey, select } = options || {};
+	const { select } = options || {};
 	const getProviders = useEndpoint('GET', '/v1/omnichannel/outbound/providers');
 	return useQuery<OutboundProvidersResponse, Error, TData>({
-		queryKey: queryKey ?? ['/v1/omnichannel/outbound/providers'],
+		queryKey: omnichannelQueryKeys.outboundProviders(),
 		queryFn: () => getProviders({ type: 'phone' }),
 		select,
 	});

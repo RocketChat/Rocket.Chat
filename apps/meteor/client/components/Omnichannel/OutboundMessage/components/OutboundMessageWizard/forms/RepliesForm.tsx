@@ -8,6 +8,7 @@ import { useEffect, useId, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { omnichannelQueryKeys } from '../../../../../../lib/queryKeys';
 import AutoCompleteDepartment from '../../../../../AutoCompleteDepartment';
 import AutoCompleteAgent from '../../AutoCompleteDepartmentAgent';
 import RetryButton from '../components/RetryButton';
@@ -62,7 +63,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 		isFetching: isFetchingDepartment,
 		refetch: refetchDepartment,
 	} = useQuery({
-		queryKey: ['outbound-message', 'department', departmentId],
+		queryKey: omnichannelQueryKeys.department(departmentId),
 		queryFn: () => getDepartment({ onlyMyDepartments: 'true' }),
 		enabled: !!departmentId,
 	});
@@ -73,7 +74,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 		isFetching: isFetchingAgent,
 		refetch: refetchAgent,
 	} = useQuery({
-		queryKey: ['outbound-message', 'agent', agentId],
+		queryKey: omnichannelQueryKeys.agent(agentId),
 		queryFn: () => getAgent(),
 		enabled: !!agentId,
 		select: (data) => data.user,

@@ -22,6 +22,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { useTimeFromNow } from '../../../../../../hooks/useTimeFromNow';
 import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
+import { omnichannelQueryKeys } from '../../../../../../lib/queryKeys';
 import AutoCompleteContact from '../../../../../AutoCompleteContact';
 import { findLastChatFromChannel } from '../../../utils/findLastChatFromChannel';
 import AutoCompleteOutboundProvider from '../../AutoCompleteOutboundProvider';
@@ -90,7 +91,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 		isFetching: isFetchingProvider,
 		refetch: refetchProvider,
 	} = useQuery({
-		queryKey: ['outbound-message', 'provider', providerId],
+		queryKey: omnichannelQueryKeys.outboundProviderMetadata(providerId),
 		queryFn: () => getProvider(),
 		select: (data) => data?.metadata,
 		enabled: !!providerId,
@@ -103,7 +104,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 		isFetching: isFetchingContact,
 		refetch: refetchContact,
 	} = useQuery({
-		queryKey: ['outbound-message', 'contact', contactId],
+		queryKey: omnichannelQueryKeys.contact(contactId),
 		queryFn: () => getContact({ contactId }),
 		select: (data) => data?.contact || null,
 		enabled: !!contactId,
