@@ -14,9 +14,9 @@ const SenderSelect = ({ provider, value, onChange, ...props }: SenderSelectProps
 			return [];
 		}
 
-		const phones = Object.keys(provider.templates);
-
-		return phones.length ? phones.map((phone) => [phone, formatPhoneNumber(phone)]) : [];
+		return Object.keys(provider.templates).map((sender) => {
+			return provider.providerType === 'phone' ? [sender, formatPhoneNumber(sender)] : [sender, sender];
+		});
 	}, [provider]);
 
 	return <Select {...props} value={value} options={options} onChange={onChange} />;
