@@ -1,6 +1,7 @@
 import type { Serialized, ILivechatDepartment, ILivechatAgent } from '@rocket.chat/core-typings';
 import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -40,6 +41,7 @@ type RepliesFormProps = {
 
 const RepliesForm = (props: RepliesFormProps) => {
 	const { defaultValues, renderActions, onSubmit } = props;
+	const dispatchToastMessage = useToastBarDispatch();
 	const { t } = useTranslation();
 	const repliesFormId = useId();
 	const {
@@ -91,21 +93,30 @@ const RepliesForm = (props: RepliesFormProps) => {
 	}, [clearErrors, isErrorAgent, trigger]);
 
 	const submit = useEffectEvent(async ({ agentId, departmentId }: RepliesFormData) => {
-		// Wait if department or agent is still being fetched in background
-		const [updatedDepartment, updatedAgent] = await Promise.all([
-			departmentId && isFetchingDepartment ? refetchDepartment().then((r) => r.data?.department) : Promise.resolve(department),
-			agentId && isFetchingAgent ? refetchAgent().then((r) => r.data) : Promise.resolve(agent),
-		]);
+		try {
+			// Wait if department or agent is still being fetched in background
+			const [updatedDepartment, updatedAgent] = await Promise.all([
+				departmentId && isFetchingDepartment ? refetchDepartment().then((r) => r.data?.department) : Promise.resolve(department),
+				agentId && isFetchingAgent ? refetchAgent().then((r) => r.data) : Promise.resolve(agent),
+			]);
 
-		if (departmentId && !updatedDepartment) {
-			throw new FormFetchError('error-department-not-found');
+			if (departmentId && !updatedDepartment) {
+				throw new FormFetchError('error-department-not-found');
+			}
+
+			if (agentId && !updatedAgent) {
+				throw new FormFetchError('error-agent-not-found');
+			}
+
+			onSubmit({ departmentId, department: updatedDepartment, agentId, agent: updatedAgent });
+		} catch (error) {
+			if (error instanceof FormFetchError) {
+				trigger();
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: t('Something_went_wrong') });
 		}
-
-		if (agentId && !updatedAgent) {
-			throw new FormFetchError('error-agent-not-found');
-		}
-
-		onSubmit({ departmentId, department: updatedDepartment, agentId, agent: updatedAgent });
 	});
 
 	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
