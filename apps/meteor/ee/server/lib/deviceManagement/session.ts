@@ -71,8 +71,8 @@ export const listenSessionLogin = () => {
 		const mailData = {
 			name,
 			username,
-			browserInfo: `${browser.name} ${browser.version}`,
-			osInfo: `${os.name}`,
+			browserInfo: `${browser.name || 'Unknown Client'} ${browser.version || ''}`.trim(),
+			osInfo: `${os.name || 'Unknown OS'}`,
 			deviceInfo: `${device.type || t('Device_Management_Device_Unknown')} ${device.vendor || ''} ${device.model || ''} ${
 				cpu.architecture || ''
 			}`,
