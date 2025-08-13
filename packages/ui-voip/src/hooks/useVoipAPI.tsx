@@ -2,6 +2,7 @@ import { useContext, useMemo } from 'react';
 
 import type { VoipContextReady } from '../contexts/VoipContext';
 import { VoipContext, isVoipContextReady } from '../contexts/VoipContext';
+import MediaCallsClient from '../lib/MediaCallsClient';
 
 type VoipAPI = {
 	makeCall(calleeURI: string): void;
@@ -40,6 +41,25 @@ export const useVoipAPI = (): VoipAPI => {
 		}
 
 		const { voipClient, changeAudioInputDevice, changeAudioOutputDevice } = context;
+
+		// Workaround to use the MediaCallsClient with the VoipContext for now
+		if (voipClient && voipClient instanceof MediaCallsClient) {
+			const mediaCallsClient = voipClient as MediaCallsClient;
+
+			return {
+				makeCall: (callee) => mediaCallsClient.call({ identifier: callee, identifierKind: 'extension' }),
+				endCall: () => mediaCallsClient.endCall(),
+				register: NOOP,
+				unregister: NOOP,
+				transferCall: mediaCallsClient.transfer,
+				openDialer: () => mediaCallsClient.notifyDialer({ open: true }),
+				closeDialer: () => mediaCallsClient.notifyDialer({ open: false }),
+				changeAudioInputDevice,
+				changeAudioOutputDevice,
+				onRegisteredOnce: NOOP,
+				onUnregisteredOnce: NOOP,
+			};
+		}
 
 		return {
 			makeCall: voipClient.call,

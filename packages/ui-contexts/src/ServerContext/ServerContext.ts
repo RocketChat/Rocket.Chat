@@ -44,6 +44,7 @@ export type ServerContextValue = {
 			retransmitToSelf?: boolean | undefined;
 		},
 	) => (eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void;
+	writeStream: <N extends StreamNames>(streamName: N, ...args: unknown[]) => void;
 	disconnect: () => void;
 	reconnect: () => void;
 };
@@ -58,6 +59,9 @@ export const ServerContext = createContext<ServerContextValue>({
 		throw new Error('not implemented');
 	},
 	getStream: () => () => (): void => undefined,
+	writeStream: () => {
+		throw new Error('not implemented');
+	},
 	disconnect: () => {
 		throw new Error('not implemented');
 	},
