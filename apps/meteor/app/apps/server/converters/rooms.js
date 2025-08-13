@@ -105,7 +105,7 @@ export class AppRoomsConverter {
 		if (!contact?._id) {
 			return;
 		}
-		const contactFromDb = await LivechatContacts.findOneById(contact._id, { projection: { _id: 1 } });
+		const contactFromDb = await LivechatContacts.findOneEnabledById(contact._id, { projection: { _id: 1 } });
 		return contactFromDb?._id;
 	}
 

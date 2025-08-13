@@ -165,8 +165,8 @@ export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile<Livech
 );
 
 type LivechatDepartmentDepartmentIdAgentsPOST = {
-	upsert: { agentId: string; username: string; count?: number; order?: number }[];
-	remove: { agentId: string; username: string; count?: number; order?: number }[];
+	upsert: { agentId: string; username: string; name?: string; count?: number; order?: number }[];
+	remove: { agentId: string; username: string; name?: string; count?: number; order?: number }[];
 };
 
 const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
@@ -183,6 +183,7 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					username: {
 						type: 'string',
 					},
+					name: { type: 'string' },
 					count: {
 						type: 'number',
 					},
@@ -205,12 +206,19 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					username: {
 						type: 'string',
 					},
+					name: {
+						type: 'string',
+					},
 					count: {
 						type: 'number',
 					},
 					order: {
 						type: 'number',
 					},
+					departmentEnabled: { type: 'boolean' },
+					departmentId: { type: 'string' },
+					_id: { type: 'string' },
+					_updatedAt: { type: 'string' },
 				},
 				required: ['agentId', 'username'],
 				additionalProperties: false,
@@ -783,9 +791,6 @@ type LivechatDepartmentsByUnitIdProps = PaginatedRequest;
 const LivechatDepartmentsByUnitIdSchema = {
 	type: 'object',
 	properties: {
-		text: {
-			type: 'string',
-		},
 		count: {
 			type: 'number',
 			nullable: true,
@@ -1622,6 +1627,15 @@ const LivechatAnalyticsAgentsAverageServiceTimeSchema = {
 		end: {
 			type: 'string',
 		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
 	},
 	required: ['start', 'end'],
 	additionalProperties: false,
@@ -1692,6 +1706,15 @@ const LivechatAnalyticsAgentsTotalServiceTimeSchema = {
 		end: {
 			type: 'string',
 		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
 	},
 	required: ['start', 'end'],
 	additionalProperties: false,
@@ -1719,6 +1742,15 @@ const LivechatAnalyticsAgentsAvailableForServiceHistorySchema = {
 		fullReport: {
 			type: 'string',
 			nullable: true,
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
 		},
 	},
 	required: ['start', 'end'],
@@ -1753,6 +1785,15 @@ const LivechatAnalyticsDepartmentsAmountOfChatsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
 	},
 	required: ['start', 'end'],
 	additionalProperties: false,
@@ -1780,6 +1821,15 @@ const LivechatAnalyticsDepartmentsAverageServiceTimeSchema = {
 		departmentId: {
 			type: 'string',
 			nullable: true,
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
 		},
 	},
 	required: ['start', 'end'],
@@ -1809,6 +1859,15 @@ const LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
 	},
 	required: ['start', 'end'],
 	additionalProperties: false,
@@ -1835,6 +1894,15 @@ const LivechatAnalyticsDepartmentsTotalServiceTimeSchema = {
 		departmentId: {
 			type: 'string',
 			nullable: true,
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
 		},
 	},
 	required: ['start', 'end'],
@@ -1864,6 +1932,15 @@ const LivechatAnalyticsDepartmentsAverageWaitingTimeSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
 	},
 	required: ['start', 'end'],
 	additionalProperties: false,
@@ -1891,6 +1968,15 @@ const LivechatAnalyticsDepartmentsTotalTransferredChatsSchema = {
 		departmentId: {
 			type: 'string',
 			nullable: true,
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
 		},
 	},
 	required: ['start', 'end'],
@@ -1920,6 +2006,15 @@ const LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
 	},
 	required: ['start', 'end'],
 	additionalProperties: false,
@@ -1947,6 +2042,15 @@ const LivechatAnalyticsDepartmentsPercentageAbandonedChatsSchema = {
 		departmentId: {
 			type: 'string',
 			nullable: true,
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
 		},
 	},
 	required: ['start', 'end'],
@@ -2833,7 +2937,6 @@ const GETLivechatVisitorsSearchSchema = {
 		},
 		term: {
 			type: 'string',
-			nullable: true,
 		},
 	},
 	required: ['term'],
@@ -3979,7 +4082,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/priorities/:priorityId': {
-		GET: () => ILivechatPriority | void;
+		GET: () => ILivechatPriority;
 		PUT: (params: PUTLivechatPriority) => void;
 	};
 

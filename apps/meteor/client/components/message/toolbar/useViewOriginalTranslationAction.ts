@@ -3,9 +3,9 @@ import { useMethod, usePermission, useSetting, useUser } from '@rocket.chat/ui-c
 import { useMemo } from 'react';
 
 import { AutoTranslate } from '../../../../app/autotranslate/client';
-import { Messages } from '../../../../app/models/client';
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import { Messages } from '../../../stores';
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../../views/room/MessageList/lib/autoTranslate';
 
 export const useViewOriginalTranslationAction = (
@@ -25,6 +25,8 @@ export const useViewOriginalTranslationAction = (
 		() => hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language),
 		[message, language],
 	);
+
+	const updateMessages = Messages.use((state) => state.update);
 
 	if (!autoTranslateEnabled || !canAutoTranslate || !user) {
 		return null;
@@ -48,11 +50,19 @@ export const useViewOriginalTranslationAction = (
 		action() {
 			if (!hasTranslations) {
 				AutoTranslate.messageIdsToWait[message._id] = true;
-				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });
+				updateMessages(
+					(record) => record._id === message._id,
+					(record) => ({ ...record, autoTranslateFetching: true }),
+				);
 				void translateMessage(message, language);
 			}
-			const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
-			Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
+
+			updateMessages(
+				(record) => record._id === message._id,
+				'autoTranslateShowInverse' in message
+					? ({ autoTranslateShowInverse: _, ...record }) => record
+					: (record) => ({ ...record, autoTranslateShowInverse: true }),
+			);
 		},
 		order: 90,
 	};

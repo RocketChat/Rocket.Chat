@@ -12,6 +12,7 @@ import {
 	ContextualbarIcon,
 	ContextualbarClose,
 	ContextualbarTitle,
+	ContextualbarDialog,
 } from '../../../../../components/Contextualbar';
 import {
 	InfoPanel,
@@ -50,7 +51,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 	const { buttons, menu } = useSplitRoomActions(actions);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='info-circled' />}
 				<ContextualbarTitle>{isDiscussion ? t('Discussion_info') : t('Channel_info')}</ContextualbarTitle>
@@ -130,7 +131,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

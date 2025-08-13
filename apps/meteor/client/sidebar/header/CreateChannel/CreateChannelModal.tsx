@@ -15,21 +15,21 @@ import {
 	FieldDescription,
 	Accordion,
 	AccordionItem,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useSetting,
-	useTranslation,
-	useEndpoint,
-	usePermission,
-	useToastMessageDispatch,
-	usePermissionWithScopedRoles,
-} from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useEndpoint, useToastMessageDispatch, usePermissionWithScopedRoles } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
@@ -71,8 +71,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const federationEnabled = useSetting('Federation_Matrix_enabled', false);
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
-	const canCreateChannel = usePermission('create-c');
-	const canCreateGroup = usePermission('create-p');
 	const getEncryptedHint = useEncryptedRoomDescription('channel');
 
 	const channelNameRegex = useMemo(() => new RegExp(`^${namesValidation}$`), [namesValidation]);
@@ -83,20 +81,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
 	const createPrivateChannel = useEndpoint('POST', '/v1/groups.create');
 
-	const canCreateTeamChannel = usePermission('create-team-channel', mainRoom?._id);
-	const canCreateTeamGroup = usePermission('create-team-group', mainRoom?._id);
-
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const canOnlyCreateOneType = useMemo(() => {
-		if ((!teamId && !canCreateChannel && canCreateGroup) || (teamId && !canCreateTeamChannel && canCreateTeamGroup)) {
-			return 'p';
-		}
-		if ((!teamId && canCreateChannel && !canCreateGroup) || (teamId && canCreateTeamChannel && !canCreateTeamGroup)) {
-			return 'c';
-		}
-		return false;
-	}, [canCreateChannel, canCreateGroup, canCreateTeamChannel, canCreateTeamGroup, teamId]);
+	const canOnlyCreateOneType = useCreateChannelTypePermission(mainRoom?._id);
 
 	const {
 		register,
@@ -211,11 +198,11 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 				<Box is='form' id={createChannelFormId} onSubmit={handleSubmit(handleCreateChannel)} {...props} />
 			)}
 		>
-			<Modal.Header>
-				<Modal.Title id={`${createChannelFormId}-title`}>{t('Create_channel')}</Modal.Title>
-				<Modal.Close tabIndex={-1} title={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content mbe={2}>
+			<ModalHeader>
+				<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
+				<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
 				<FieldGroup mbe={24}>
 					<Field>
 						<FieldLabel required htmlFor={nameId}>
@@ -374,15 +361,15 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 						</FieldGroup>
 					</AccordionItem>
 				</Accordion>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button type='submit' primary data-qa-type='create-channel-confirm-button'>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

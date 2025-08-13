@@ -6,14 +6,20 @@ import type { IMessageReactionContext } from './IMessageReactionContext';
  * got removed
  */
 export interface IPostMessageReacted {
-    /**
-     * Method called *after* the message has been reacted.
-     *
-     * @param context The context of the reaction
-     * @param read An accessor to the environment
-     * @param http An accessor to the outside world
-     * @param persistence An accessor to the App's persistence
-     * @param modify An accessor to the modifier
-     */
-    executePostMessageReacted(context: IMessageReactionContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify): Promise<void>;
+	/**
+	 * Method called *after* the message has been reacted.
+	 *
+	 * @param context The context of the reaction
+	 * @param read An accessor to the environment
+	 * @param http An accessor to the outside world
+	 * @param persistence An accessor to the App's persistence
+	 * @param modify An accessor to the modifier
+	 */
+	executePostMessageReacted(
+		context: IMessageReactionContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
 }

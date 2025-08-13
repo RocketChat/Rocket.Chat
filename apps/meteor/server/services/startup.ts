@@ -25,7 +25,6 @@ import { RoomService } from './room/service';
 import { SAUMonitorService } from './sauMonitor/service';
 import { SettingsService } from './settings/service';
 import { TeamService } from './team/service';
-import { TranslationService } from './translation/service';
 import { UiKitCoreAppService } from './uikit-core-app/service';
 import { UploadService } from './upload/service';
 import { UserService } from './user/service';
@@ -57,7 +56,6 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new VideoConfService());
 	api.registerService(new UploadService());
 	api.registerService(new MessageService());
-	api.registerService(new TranslationService());
 	api.registerService(new SettingsService());
 	api.registerService(new OmnichannelIntegrationService());
 	api.registerService(new ImportService());

@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/omnichannel-transcript",
 	"private": true,
-	"version": "0.4.22-rc.0",
+	"version": "0.4.33",
 	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -28,31 +28,34 @@
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.14.0",
+		"@types/node": "~22.16.1",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
-		"gc-stats": "^1.4.1",
 		"i18next": "~23.4.9",
 		"i18next-sprintf-postprocessor": "^0.2.2",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.35",
-		"moment-timezone": "^0.5.46",
+		"moment-timezone": "^0.5.48",
 		"mongo-message-queue": "^1.1.0",
-		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
+		"mongodb": "6.10.0",
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
-		"polka": "^0.5.2"
+		"polka": "^0.5.2",
+		"prometheus-gc-stats": "^1.1.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@types/gc-stats": "^1.4.3",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/i18next-sprintf-postprocessor": "^0.2.3",
 		"@types/polka": "^0.5.7",
+		"@types/prometheus-gc-stats": "^0.6.4",
+		"@types/react": "~18.3.23",
 		"eslint": "~8.45.0",
+		"react": "~18.3.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"main": "./dist/ee/apps/omnichannel-transcript/src/service.js",
 	"files": [

@@ -39,7 +39,7 @@ test.describe.serial('OC - Contact Review', () => {
 
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/');
-		await page.locator('.main-content').waitFor();
+		await page.locator('#main-content').waitFor();
 	});
 
 	test.beforeEach(async ({ api }) => {

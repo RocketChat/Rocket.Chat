@@ -9,9 +9,11 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
+import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
-import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server/api';
+import { API, defaultRateLimiterOptions } from '../../../api/server/api';
 import type { FailureResult, PartialThis, SuccessResult, UnavailableResult } from '../../../api/server/definition';
+import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
@@ -114,7 +116,12 @@ async function removeIntegration(options: { target_url: string }, user: IUser): 
 
 async function executeIntegrationRest(
 	this: IntegrationThis,
-): Promise<SuccessResult<Record<string, string> | undefined | void> | FailureResult<string> | UnavailableResult<string>> {
+): Promise<
+	| SuccessResult<Record<string, string> | { responses: WebhookResponseItem[] } | undefined | void>
+	| FailureResult<string>
+	| FailureResult<{ responses: WebhookResponseItem[] }>
+	| UnavailableResult<string>
+> {
 	incomingLogger.info({ msg: 'Post integration:', integration: this.request.integration.name });
 	incomingLogger.debug({ urlParams: this.urlParams, bodyParams: this.bodyParams });
 
@@ -132,6 +139,7 @@ async function executeIntegrationRest(
 	const scriptEngine = getEngine(this.request.integration);
 
 	let { bodyParams } = this;
+	const separateResponse = this.bodyParams?.separateResponse === true;
 	let scriptResponse: Record<string, any> | undefined;
 
 	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
@@ -184,6 +192,11 @@ async function executeIntegrationRest(
 			}
 
 			bodyParams = result && result.content;
+
+			if (!('separateResponse' in bodyParams)) {
+				bodyParams.separateResponse = separateResponse;
+			}
+
 			scriptResponse = result.response;
 			if (result.user) {
 				this.user = result.user;
@@ -216,16 +229,23 @@ async function executeIntegrationRest(
 	bodyParams.bot = { i: this.request.integration._id };
 
 	try {
-		const message = await processWebhookMessage(bodyParams, this.user, defaultValues);
-		if (_.isEmpty(message)) {
+		const messageResponse = await processWebhookMessage(bodyParams, this.user, defaultValues);
+		if (_.isEmpty(messageResponse)) {
 			return API.v1.failure('unknown-error');
 		}
 
 		if (scriptResponse) {
 			incomingLogger.debug({ msg: 'response', response: scriptResponse });
+			return API.v1.success(scriptResponse);
 		}
-
-		return API.v1.success(scriptResponse);
+		if (bodyParams.separateResponse) {
+			const allFailed = messageResponse.every((response) => 'error' in response && response.error);
+			if (allFailed) {
+				return API.v1.failure({ responses: messageResponse });
+			}
+			return API.v1.success({ responses: messageResponse });
+		}
+		return API.v1.success();
 	} catch ({ error, message }: any) {
 		return API.v1.failure(error || message);
 	}
@@ -294,7 +314,7 @@ function integrationInfoRest(): { statusCode: number; body: { success: boolean }
 class WebHookAPI extends APIClass<'/hooks'> {
 	async authenticatedRoute(this: IntegrationThis): Promise<IUser | null> {
 		const { integrationId, token } = this.urlParams;
-		const integration = await Integrations.findOneById<IIncomingIntegration>(integrationId);
+		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, decodeURIComponent(token));
 
 		if (!integration) {
 			incomingLogger.info(`Invalid integration id ${integrationId} or token ${token}`);

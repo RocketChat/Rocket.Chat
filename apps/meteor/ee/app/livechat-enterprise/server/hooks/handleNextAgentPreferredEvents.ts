@@ -23,7 +23,9 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 	}
 
 	if (id) {
-		const agent = await Users.findOneOnlineAgentById(id, undefined, { projection: { _id: 1, username: 1 } });
+		const agent = await Users.findOneOnlineAgentById(id, settings.get<boolean>('Livechat_enabled_when_agent_idle'), {
+			projection: { _id: 1, username: 1 },
+		});
 		if (agent) {
 			return normalizeDefaultAgent(agent);
 		}
@@ -36,7 +38,13 @@ const getDefaultAgent = async ({ username, id }: { username?: string; id?: strin
 		return undefined;
 	}
 
-	return normalizeDefaultAgent(await Users.findOneOnlineAgentByUserList(username || [], { projection: { _id: 1, username: 1 } }));
+	return normalizeDefaultAgent(
+		await Users.findOneOnlineAgentByUserList(
+			username || [],
+			{ projection: { _id: 1, username: 1 } },
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		),
+	);
 };
 
 settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
@@ -87,7 +95,7 @@ checkDefaultAgentOnNewRoom.patch(async (_next, defaultAgent, { visitorId, source
 	}
 
 	const contactId = await migrateVisitorIfMissingContact(visitorId, source);
-	const contact = contactId ? await LivechatContacts.findOneById(contactId, { projection: { contactManager: 1 } }) : undefined;
+	const contact = contactId ? await LivechatContacts.findOneEnabledById(contactId, { projection: { contactManager: 1 } }) : undefined;
 
 	const contactManagerPreferred = settings.get<boolean>('Omnichannel_contact_manager_routing');
 	const guestManager = contactManagerPreferred && (await getDefaultAgent({ id: contact?.contactManager }));
@@ -119,7 +127,11 @@ checkDefaultAgentOnNewRoom.patch(async (_next, defaultAgent, { visitorId, source
 		return defaultAgent;
 	}
 	const lastRoomAgent = normalizeDefaultAgent(
-		await Users.findOneOnlineAgentByUserList(usernameByRoom, { projection: { _id: 1, username: 1 } }),
+		await Users.findOneOnlineAgentByUserList(
+			usernameByRoom,
+			{ projection: { _id: 1, username: 1 } },
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		),
 	);
 	return lastRoomAgent;
 });

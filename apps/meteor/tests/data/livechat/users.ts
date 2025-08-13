@@ -1,10 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
+import { UserStatus, type ILivechatAgent, type IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 
 import { api, credentials, request, methodCall } from '../api-data';
 import { password } from '../user';
-import { createUser, login } from '../users.helper';
+import { createUser, login, setUserAway, setUserStatus } from '../users.helper';
 import { createAgent, makeAgentAvailable, makeAgentUnavailable } from './rooms';
 
 export const createBotAgent = async (): Promise<{
@@ -45,7 +46,7 @@ export const createAnOnlineAgent = async (): Promise<{
 	credentials: Credentials;
 	user: IUser & { username: string };
 }> => {
-	const username = `user.test.${Date.now()}`;
+	const username = `user.test.${Random.id()}`;
 	const email = `${username}@rocket.chat`;
 	const { body } = await request.post(api('users.create')).set(credentials).send({ email, name: username, username, password });
 	const agent = body.user;
@@ -70,6 +71,26 @@ export const createAnOfflineAgent = async (): Promise<{
 	const createdUserCredentials = await login(agent.username, password);
 	await createAgent(agent.username);
 	await makeAgentUnavailable(createdUserCredentials);
+
+	return {
+		credentials: createdUserCredentials,
+		user: agent,
+	};
+};
+
+export const createAnAwayAgent = async (): Promise<{
+	credentials: Credentials;
+	user: IUser & { username: string };
+}> => {
+	const username = `user.test.${Date.now()}.away`;
+	const email = `${username}.offline@rocket.chat`;
+	const { body } = await request.post(api('users.create')).set(credentials).send({ email, name: username, username, password });
+	const agent = body.user;
+	const createdUserCredentials = await login(agent.username, password);
+	await createAgent(agent.username);
+	await makeAgentAvailable(createdUserCredentials);
+	await setUserStatus(createdUserCredentials, UserStatus.AWAY);
+	await setUserAway(createdUserCredentials);
 
 	return {
 		credentials: createdUserCredentials,

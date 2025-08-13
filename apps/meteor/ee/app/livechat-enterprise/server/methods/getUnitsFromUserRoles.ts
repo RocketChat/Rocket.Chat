@@ -59,7 +59,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getUnitsFromUser'(): Promise<string[] | undefined> {
-		methodDeprecationLogger.method('livechat:getUnitsFromUser', '8.0.0');
+		methodDeprecationLogger.method('livechat:getUnitsFromUser', '8.0.0', 'This functionality is no longer supported');
 		const userId = Meteor.userId();
 		if (!userId) {
 			return;

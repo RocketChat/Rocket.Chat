@@ -4,6 +4,7 @@ import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, U
 import type { ValidateFunction } from 'ajv';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
+import type { DeprecationLoggerNextPlannedVersion } from '../../lib/server/lib/deprecationWarningLogger';
 
 export type SuccessStatusCodes = Exclude<Range<208>, Range<200>>;
 
@@ -88,12 +89,14 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
-export type Options = (
+export type Options = SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
+
+export type SharedOptions<TMethod extends string> = (
 	| {
 			permissionsRequired?:
 				| string[]
-				| ({ [key in Method]?: string[] } & { '*'?: string[] })
-				| ({ [key in Method]?: { operation: TOperation; permissions: string[] } } & {
+				| ({ [key in TMethod]?: string[] } & { '*'?: string[] })
+				| ({ [key in TMethod]?: { operation: TOperation; permissions: string[] } } & {
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired?: boolean;
@@ -110,8 +113,8 @@ export type Options = (
 	| {
 			permissionsRequired?:
 				| string[]
-				| ({ [key in Method]?: string[] } & { '*'?: string[] })
-				| ({ [key in Method]?: { operation: TOperation; permissions: string[] } } & {
+				| ({ [key in TMethod]?: string[] } & { '*'?: string[] })
+				| ({ [key in TMethod]?: { operation: TOperation; permissions: string[] } } & {
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired: true;
@@ -131,11 +134,11 @@ export type Options = (
 	/**
 	 * @deprecated The `validateParams` option is deprecated. Use `query` and/OR `body` instead.
 	 */
-	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
+	validateParams?: ValidateFunction | { [key in TMethod]?: ValidateFunction };
 	authOrAnonRequired?: true;
 	deprecation?: {
-		version: string;
-		alternatives?: string[];
+		version: DeprecationLoggerNextPlannedVersion;
+		alternatives?: PathPattern[];
 	};
 };
 
@@ -153,7 +156,7 @@ export type PartialThis = {
 	readonly route: string;
 };
 
-type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	route: string;
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
@@ -268,6 +271,7 @@ type Range<N extends number, Result extends number[] = []> = Result['length'] ex
 	: Range<N, [...Result, Result['length']]>;
 
 type HTTPStatusCodes = SuccessStatusCodes | RedirectStatusCodes | AuthorizationStatusCodes | ErrorStatusCodes;
+
 export type TypedOptions = {
 	response: {
 		[K in HTTPStatusCodes]?: ValidateFunction;
@@ -277,7 +281,7 @@ export type TypedOptions = {
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];
-} & Options;
+} & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
@@ -299,6 +303,8 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
 
 	requestIp?: string;
+	route: string;
+	response: Response;
 };
 
 type PromiseOrValue<T> = T | Promise<T>;

@@ -62,6 +62,7 @@ const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeo
 						control={control}
 						render={({ field: { value, onChange, name, onBlur } }) => (
 							<AutoCompleteDepartmentMultiple
+								withCheckbox
 								value={value}
 								onChange={onChange}
 								name={name}
