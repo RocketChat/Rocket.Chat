@@ -3,11 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
 
-import { getUserPreference } from '../../app/utils/client';
 import 'highlight.js/styles/github.css';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { synchronizeUserData, removeLocalUserData } from '../lib/userData';
-import { UserPresence } from '../lib/userPresence';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 Meteor.startup(() => {
@@ -38,16 +36,6 @@ Meteor.startup(() => {
 		if (user.utcOffset !== utcOffset) {
 			sdk.call('userSetUtcOffset', utcOffset);
 		}
-
-		if (getUserPreference(user, 'enableAutoAway')) {
-			const idleTimeLimit = getUserPreference<number>(user, 'idleTimeLimit') || 300;
-			UserPresence.awayTime = idleTimeLimit * 1000;
-		} else {
-			delete UserPresence.awayTime;
-			UserPresence.stopTimer();
-		}
-
-		UserPresence.start();
 
 		if (user.status !== status) {
 			status = user.status;
