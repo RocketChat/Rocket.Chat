@@ -25,7 +25,7 @@ export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorD
 		? { success: false } & T
 		: {
 				success: false;
-				error?: string;
+				error?: T;
 				stack?: TStack;
 				errorType?: TErrorType;
 				details?: TErrorDetails;
