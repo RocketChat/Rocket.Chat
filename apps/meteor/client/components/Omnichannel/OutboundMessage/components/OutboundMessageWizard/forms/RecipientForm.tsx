@@ -12,6 +12,7 @@ import {
 	OptionDescription,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -31,6 +32,7 @@ import SenderSelect from '../../SenderSelect';
 import RetryButton from '../components/RetryButton';
 import { useFormKeyboardSubmit } from '../hooks/useFormKeyboardSubmit';
 import { cxp } from '../utils/cx';
+import { ContactNotFoundError, ProviderNotFoundError } from '../utils/errors';
 
 export type RecipientFormData = {
 	contactId: string;
@@ -58,6 +60,7 @@ type RecipientFormProps = {
 const RecipientForm = (props: RecipientFormProps) => {
 	const { defaultValues, renderActions, onDirty, onSubmit } = props;
 	const getTimeFromNow = useTimeFromNow(true);
+	const dispatchToastMessage = useToastBarDispatch();
 
 	const { trigger, control, handleSubmit, formState, clearErrors, setValue } = useForm<RecipientFormData>({
 		mode: 'onChange',
@@ -86,96 +89,113 @@ const RecipientForm = (props: RecipientFormProps) => {
 	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
 
 	const {
+		data: contact,
+		isError: isErrorContact,
+		isSuccess: isSuccessContact,
+		isFetching: isFetchingContact,
+		refetch: refetchContact,
+	} = useQuery({
+		queryKey: omnichannelQueryKeys.contact(contactId),
+		queryFn: () => getContact({ contactId }),
+		staleTime: 5 * 60 * 1000,
+		select: (data) => data?.contact || undefined,
+		enabled: !!contactId,
+	});
+
+	const {
 		data: provider,
 		isError: isErrorProvider,
+		isSuccess: isSuccessProvider,
 		isFetching: isFetchingProvider,
 		refetch: refetchProvider,
 	} = useQuery({
 		queryKey: omnichannelQueryKeys.outboundProviderMetadata(providerId),
 		queryFn: () => getProvider(),
 		select: (data) => data?.metadata,
+		staleTime: 5 * 60 * 1000,
 		enabled: !!providerId,
-		initialData: undefined,
-	});
-
-	const {
-		data: contact,
-		isError: isErrorContact,
-		isFetching: isFetchingContact,
-		refetch: refetchContact,
-	} = useQuery({
-		queryKey: omnichannelQueryKeys.contact(contactId),
-		queryFn: () => getContact({ contactId }),
-		select: (data) => data?.contact || null,
-		enabled: !!contactId,
-		initialData: null,
 	});
 
 	const providerLastChat = useMemo(() => {
 		return findLastChatFromChannel(contact?.channels, providerId);
 	}, [contact?.channels, providerId]);
 
-	const validateContactField = useEffectEvent(() => {
+	const hasRecipientOptions = !!contact && !!contact.phones?.length;
+	const hasProviderOptions = !!provider && !!Object.keys(provider.templates).length;
+	const isContactNotFound = isSuccessContact && !contact;
+	const isProviderNotFound = isSuccessProvider && !provider;
+
+	const validateContactField = useEffectEvent((shouldValidate = false) => {
 		trigger('contactId');
-		setValue('recipient', '');
+		setValue('recipient', '', { shouldValidate });
 	});
 
-	const validateProviderField = useEffectEvent(() => {
+	const validateProviderField = useEffectEvent((shouldValidate = false) => {
 		trigger('providerId');
-		setValue('sender', '');
-	});
-
-	// clear and validate recipient field when contact changes
-	const handleContactFieldChange = useEffectEvent((onChange: (value: string) => void) => {
-		return (value: string) => {
-			setValue('recipient', '', { shouldValidate: true });
-			onChange(value);
-		};
-	});
-
-	// clear validate sender field when provider changes
-	const handleProviderFieldChange = useEffectEvent((onChange: (value: string) => void) => {
-		return (value: string) => {
-			setValue('sender', '', { shouldValidate: true });
-			onChange(value);
-		};
-	});
-
-	const submit = useEffectEvent(async (values: RecipientFormData) => {
-		// Wait if contact or provider is still being fetched in background
-		const [updatedContact, updatedProvider] = await Promise.all([
-			isFetchingContact ? refetchContact().then((r) => r.data) : Promise.resolve(contact),
-			isFetchingProvider ? refetchProvider().then((r) => r.data) : Promise.resolve(provider),
-		]);
-
-		if (!updatedContact) {
-			validateContactField();
-			return;
-		}
-
-		if (!updatedProvider) {
-			validateProviderField();
-			return;
-		}
-
-		onSubmit({ ...values, provider: updatedProvider, contact: updatedContact });
+		setValue('sender', '', { shouldValidate });
 	});
 
 	useEffect(() => {
-		// if there's an error trigger validation to show the error/retry message
+		if (isSuccessContact && !hasRecipientOptions) {
+			trigger('recipient');
+		}
+
+		return () => clearErrors('recipient');
+	}, [clearErrors, trigger, hasRecipientOptions, isSuccessContact]);
+
+	useEffect(() => {
+		if (isSuccessProvider && !hasProviderOptions) {
+			trigger('sender');
+		}
+
+		return () => clearErrors('sender');
+	}, [clearErrors, trigger, hasProviderOptions, isSuccessProvider]);
+
+	useEffect(() => {
 		isErrorContact && validateContactField();
 		return () => clearErrors('contactId');
 	}, [clearErrors, isErrorContact, validateContactField]);
 
 	useEffect(() => {
-		// if there's an error trigger validation to show the error/retry message
 		isErrorProvider && validateProviderField();
 		return () => clearErrors('providerId');
 	}, [clearErrors, isErrorProvider, validateProviderField]);
 
 	useEffect(() => {
-		isDirty && onDirty?.();
+		isDirty && onDirty && onDirty();
 	}, [isDirty, onDirty]);
+
+	const submit = useEffectEvent(async (values: RecipientFormData) => {
+		try {
+			// Wait if contact or provider is still being fetched in background
+			const [updatedContact, updatedProvider] = await Promise.all([
+				isFetchingContact ? refetchContact().then((r) => r.data) : Promise.resolve(contact),
+				isFetchingProvider ? refetchProvider().then((r) => r.data) : Promise.resolve(provider),
+			]);
+
+			if (!updatedContact) {
+				throw new ContactNotFoundError();
+			}
+
+			if (!updatedProvider) {
+				throw new ProviderNotFoundError();
+			}
+
+			onSubmit({ ...values, provider: updatedProvider, contact: updatedContact });
+		} catch (error) {
+			if (error instanceof ContactNotFoundError) {
+				validateContactField(true);
+				return;
+			}
+
+			if (error instanceof ProviderNotFoundError) {
+				validateProviderField(true);
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: t('Something_went_wrong') });
+		}
+	});
 
 	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
 
@@ -191,8 +211,11 @@ const RecipientForm = (props: RecipientFormProps) => {
 							control={control}
 							name='contactId'
 							rules={{
-								required: t('Required_field', { field: t('Contact') }),
-								validate: () => (isErrorContact ? t('Error_loading__name__information', { name: t('contact') }) : true),
+								validate: {
+									fetchError: () =>
+										isErrorContact || isContactNotFound ? t('Error_loading__name__information', { name: t('contact') }) : true,
+									required: (value) => (!value ? t('Required_field', { field: t('Contact') }) : true),
+								},
 							}}
 							render={({ field }) => (
 								<AutoCompleteContact
@@ -201,7 +224,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 									aria-invalid={!!errors.contactId}
 									placeholder={t('Select_recipient')}
 									value={field.value}
-									onChange={handleContactFieldChange(field.onChange)}
+									onChange={field.onChange}
 									error={errors.contactId?.message}
 									renderItem={({ label, ...props }, { phones }) => (
 										<Option {...props} label={label} avatar={<UserAvatar title={label} username={label} size='x20' />}>
@@ -230,8 +253,11 @@ const RecipientForm = (props: RecipientFormProps) => {
 							control={control}
 							name='providerId'
 							rules={{
-								required: !!contactId && t('Required_field', { field: t('Channel') }),
-								validate: () => (isErrorProvider ? t('Error_loading__name__information', { name: t('channel') }) : true),
+								validate: {
+									fetchError: () =>
+										isErrorProvider || isProviderNotFound ? t('Error_loading__name__information', { name: t('channel') }) : true,
+									required: (value) => (!value ? t('Required_field', { field: t('Channel') }) : true),
+								},
 							}}
 							render={({ field }) => (
 								<AutoCompleteOutboundProvider
@@ -246,7 +272,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 									disabled={!contactId}
 									placeholder={t('Select_channel')}
 									value={field.value}
-									onChange={handleProviderFieldChange(field.onChange)}
+									onChange={field.onChange}
 								/>
 							)}
 						/>
@@ -273,8 +299,8 @@ const RecipientForm = (props: RecipientFormProps) => {
 							name='recipient'
 							rules={{
 								validate: {
-									noPhoneNumber: () => !contactId || !contact || !!contact.phones?.length,
-									required: (value) => (!!providerId && !value?.trim() ? t('Required_field', { field: t('To') }) : true),
+									noPhoneNumber: () => hasRecipientOptions,
+									required: (value) => (!value ? t('Required_field', { field: t('To') }) : true),
 								},
 							}}
 							render={({ field }) => (
@@ -317,9 +343,8 @@ const RecipientForm = (props: RecipientFormProps) => {
 							name='sender'
 							rules={{
 								validate: {
-									noPhoneNumber: () =>
-										!!provider && !Object.keys(provider.templates).length ? t('No_phone_number_available_for_selected_channel') : true,
-									required: (value) => (!!recipient && !value?.trim() ? t('Required_field', { field: t('From') }) : true),
+									noPhoneNumber: () => hasProviderOptions || t('No_phone_number_available_for_selected_channel'),
+									required: (value) => (!value ? t('Required_field', { field: t('From') }) : true),
 								},
 							}}
 							render={({ field }) => (
