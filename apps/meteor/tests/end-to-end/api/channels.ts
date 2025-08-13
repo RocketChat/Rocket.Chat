@@ -704,7 +704,8 @@ describe('[Channels]', () => {
 		let teamId: ITeam['_id'];
 
 		before(async () => {
-			guestUser = await createUser({ roles: ['guest'] });
+			// TODO: Switch back to roles: ['guest'] once users.create guest role works correctly
+			guestUser = await createUser({ roles: ['user'] });
 			invitedUser = await createUser();
 			invitedUserCredentials = await login(invitedUser.username, password);
 
@@ -722,9 +723,11 @@ describe('[Channels]', () => {
 			await updatePermission('create-team-channel', ['owner']);
 		});
 		after(async () => {
-			await deleteUser(guestUser);
-			await deleteUser(invitedUser);
-			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
+			await Promise.all([
+				deleteUser(guestUser),
+				deleteUser(invitedUser),
+				updatePermission('create-team-channel', ['admin', 'owner', 'moderator']),
+			]);
 		});
 
 		it(`should fail when trying to use an existing room's name`, async () => {

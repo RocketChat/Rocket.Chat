@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import type { ChannelsCreateProps, GroupsCreateProps } from '@rocket.chat/rest-typings';
+import type { GroupsCreateProps } from '@rocket.chat/rest-typings';
 
 import type { BaseTest } from './test';
+import type { ChannelsCreateProps } from '../../../app/api/server/v1/channels';
 
 /**
  * createTargetChannel:

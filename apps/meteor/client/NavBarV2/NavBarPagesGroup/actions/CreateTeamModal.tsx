@@ -142,7 +142,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		showChannels,
 		showDiscussions,
 	}: CreateTeamModalInputs): Promise<void> => {
-		const sidepanelItem = [showChannels && 'channels', showDiscussions && 'discussions'].filter(Boolean) as [SidepanelItem, SidepanelItem?];
+		const sidepanelItem = [showChannels && 'channels', showDiscussions && 'discussions'].filter(Boolean) as SidepanelItem[];
 		const params = {
 			name,
 			members,

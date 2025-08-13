@@ -3,7 +3,6 @@ export * from './channels';
 export * from './ChannelsAddAllProps';
 export * from './ChannelsArchiveProps';
 export * from './ChannelsConvertToTeamProps';
-export * from './ChannelsCreateProps';
 export * from './ChannelsDeleteProps';
 export * from './ChannelsGetAllUserMentionsByChannelProps';
 export * from './ChannelsHistoryProps';

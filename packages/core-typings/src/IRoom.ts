@@ -27,7 +27,7 @@ export interface IRoom extends IRocketChatRecord {
 	fname?: string;
 	msgs: number;
 	default?: boolean;
-	broadcast?: true;
+	broadcast?: boolean;
 	featured?: true;
 	announcement?: string;
 	joinCodeRequired?: boolean;
@@ -91,7 +91,7 @@ export interface IRoom extends IRocketChatRecord {
 	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
 
 	sidepanel?: {
-		items: [SidepanelItem, SidepanelItem?];
+		items: SidepanelItem[];
 	};
 
 	/**
