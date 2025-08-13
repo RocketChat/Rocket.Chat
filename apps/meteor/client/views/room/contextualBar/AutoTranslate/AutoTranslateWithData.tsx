@@ -1,13 +1,13 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useLanguage } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useLanguage, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, ReactElement } from 'react';
-import { useMemo, useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoTranslate from './AutoTranslate';
-import { useEndpointAction } from '../../../../hooks/useEndpointAction';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { dispatchToastMessage } from '../../../../lib/toast';
+import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
+import { miscQueryKeys } from '../../../../lib/queryKeys';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
@@ -17,18 +17,25 @@ const AutoTranslateWithData = (): ReactElement => {
 	const { closeTab } = useRoomToolbox();
 	const userLanguage = useLanguage();
 	const [currentLanguage, setCurrentLanguage] = useState(subscription?.autoTranslateLanguage ?? '');
-	const saveSettings = useEndpointAction('POST', '/v1/autotranslate.saveSettings');
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { mutateAsync: saveSettings } = useEndpointMutation('POST', '/v1/autotranslate.saveSettings');
 	const { t } = useTranslation();
 
-	const { value: translateData } = useEndpointData('/v1/autotranslate.getSupportedLanguages', {
-		params: useMemo(() => ({ targetLanguage: userLanguage }), [userLanguage]),
+	const getSupportedLanguages = useEndpoint('GET', '/v1/autotranslate.getSupportedLanguages');
+	const { data: supportedLanguages } = useQuery({
+		queryKey: miscQueryKeys.autotranslateSupportedLanguages(userLanguage),
+		queryFn: async () => {
+			const { languages } = await getSupportedLanguages({ targetLanguage: userLanguage });
+			return languages;
+		},
 	});
-	const languagesDict = translateData ? Object.fromEntries(translateData.languages.map((lang) => [lang.language, lang.name])) : {};
 
-	const handleChangeLanguage = useEffectEvent((value: string) => {
+	const languagesDict = supportedLanguages ? Object.fromEntries(supportedLanguages.map((lang) => [lang.language, lang.name])) : {};
+
+	const handleChangeLanguage = useEffectEvent(async (value: string) => {
 		setCurrentLanguage(value);
 
-		saveSettings({
+		await saveSettings({
 			roomId: room._id,
 			field: 'autoTranslateLanguage',
 			value,
@@ -39,8 +46,8 @@ const AutoTranslateWithData = (): ReactElement => {
 		});
 	});
 
-	const handleSwitch = useEffectEvent((event: ChangeEvent<HTMLInputElement>) => {
-		saveSettings({
+	const handleSwitch = useEffectEvent(async (event: ChangeEvent<HTMLInputElement>) => {
+		await saveSettings({
 			roomId: room._id,
 			field: 'autoTranslate',
 			value: event.target.checked,
@@ -72,7 +79,7 @@ const AutoTranslateWithData = (): ReactElement => {
 	return (
 		<AutoTranslate
 			language={currentLanguage}
-			languages={translateData ? translateData.languages.map((language) => [language.language, language.name]) : []}
+			languages={supportedLanguages ? supportedLanguages.map((language) => [language.language, language.name]) : []}
 			handleSwitch={handleSwitch}
 			handleChangeLanguage={handleChangeLanguage}
 			translateEnable={!!subscription?.autoTranslate}

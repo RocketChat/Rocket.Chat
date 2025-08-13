@@ -45,9 +45,10 @@ test.describe.serial('feature preview', () => {
 
 	test('should show "Message" and "Navigation" feature sections', async ({ page }) => {
 		await page.goto('/account/feature-preview');
-		await page.waitForSelector('.main-content');
+		await page.waitForSelector('#main-content');
 
-		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible();
+		// FIXME: this timeout is too high
+		await expect(page.getByRole('button', { name: 'Message' })).toBeVisible({ timeout: 10_000 });
 		await expect(page.getByRole('button', { name: 'Navigation' })).toBeVisible();
 	});
 
@@ -214,14 +215,23 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.getItemUnreadBadge(collapser)).toBeVisible();
 		});
 
-		test('should not show NavBar in embedded layout', async ({ page }) => {
+		test('embedded layout', async ({ page }) => {
 			await page.goto('/home');
 
-			await poHomeChannel.navbar.openChat(targetChannel);
-			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
-			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
-			await page.goto(embeddedLayoutURL);
-			await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
+			await test.step('should not show NavBar', async () => {
+				await poHomeChannel.navbar.openChat(targetChannel);
+				await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
+				const embeddedLayoutURL = `${page.url()}?layout=embedded`;
+				await page.goto(embeddedLayoutURL);
+				await expect(page.locator('role=navigation[name="header"]')).not.toBeVisible();
+			});
+
+			await test.step('should show burger menu', async () => {
+				await page.goto('admin/info?layout=embedded');
+				await page.setViewportSize({ width: 767, height: 510 });
+
+				await expect(poHomeChannel.content.burgerButton).toBeVisible();
+			});
 		});
 
 		test('should display the room header properly', async ({ page }) => {

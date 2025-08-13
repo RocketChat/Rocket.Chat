@@ -1,6 +1,7 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
 import type { Apps } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import type { UpdateFilter } from 'mongodb';
 
 export class AppRealStorage extends AppMetadataStorage {
@@ -18,10 +19,11 @@ export class AppRealStorage extends AppMetadataStorage {
 			throw new Error('App already exists.');
 		}
 
-		const id = (await this.db.insertOne(item)).insertedId as unknown as string;
-		item._id = id;
+		const nonEmptyItem = removeEmpty(item);
+		const id = (await this.db.insertOne(nonEmptyItem)).insertedId as unknown as string;
+		nonEmptyItem._id = id;
 
-		return item;
+		return nonEmptyItem;
 	}
 
 	public async retrieveOne(id: string): Promise<IAppStorageItem> {
@@ -46,17 +48,14 @@ export class AppRealStorage extends AppMetadataStorage {
 		return items;
 	}
 
-	public async update(item: IAppStorageItem): Promise<IAppStorageItem> {
+	public async update({ permissionsGranted, ...item }: IAppStorageItem): Promise<IAppStorageItem> {
 		const updateQuery: UpdateFilter<IAppStorageItem> = {
-			$set: item,
+			$set: { ...item, ...(permissionsGranted && { permissionsGranted }) },
+			// Note: This is really important, since we currently store the permissionsGranted as null if none are present
+			//       in the App's manifest. So, if there was a permissionGranted and it was removed, we must see the app as having
+			//       no permissionsGranted at all (which means default permissions). So we must actively unset the field.
+			...(!permissionsGranted && { $unset: { permissionsGranted: 1 } }),
 		};
-
-		// Note: This is really important, since we currently store the permissionsGranted as null if none are present
-		//       in the App's manifest. So, if there was a permissionGranted and it was removed, we must see the app as having
-		//       no permissionsGranted at all (which means default permissions). So we must actively unset the field.
-		if (!item.permissionsGranted) {
-			updateQuery.$unset = { permissionsGranted: 1 };
-		}
 
 		return this.db.findOneAndUpdate({ id: item.id, _id: item._id }, updateQuery, { returnDocument: 'after' });
 	}

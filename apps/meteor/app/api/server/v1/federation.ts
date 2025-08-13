@@ -1,7 +1,6 @@
 import { Federation, FederationEE } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
-import { isFederationVerifyMatrixIdProps } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
+import { ajv, isFederationVerifyMatrixIdProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
 

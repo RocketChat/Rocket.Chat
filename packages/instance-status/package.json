@@ -1,13 +1,14 @@
 {
 	"name": "@rocket.chat/instance-status",
-	"version": "0.1.21-rc.8",
+	"version": "0.1.33",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "~8.45.0",
-		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch",
+		"mongodb": "6.10.0",
 		"prettier": "~3.3.3",
-		"typescript": "~5.7.2"
+		"typescript": "~5.8.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -24,5 +25,8 @@
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

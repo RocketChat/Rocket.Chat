@@ -46,9 +46,9 @@
   "API_Upper_Count_Limit_Description": "Koks yra didžiausias įrašų skaičius, kurį turėtų grąžinti REST API (kai neribojamas)?",
   "API_User_Limit": "Naudotojo limitas visiems vartotojams pridėti prie kanalo",
   "API_Wordpress_URL": "WordPress URL",
-  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Naujas savininkas bus automatiškai priskirtas <span style=\"font-weight: bold;\">{{count}}</span> kambariams.",
-  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Naujas savininkas bus automatiškai priskirtas <span style=\"font-weight: bold;\">{{roomName}}</span> kambariui.",
-  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Naujas savininkas bus automatiškai priskirtas šiems <span style=\"font-weight: bold;\">{{count}}</span> kambariams:<br/> {{rooms}}.",
+  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Naujas savininkas bus automatiškai priskirtas <bold>{{count}}</bold> kambariams.",
+  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Naujas savininkas bus automatiškai priskirtas <bold>{{roomName}}</bold> kambariui.",
+  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Naujas savininkas bus automatiškai priskirtas šiems <bold>{{count}}</bold> kambariams:<br/> {{rooms}}.",
   "Accept": "Priimti",
   "Accept_incoming_livechat_requests_even_if_there_are_no_online_agents": "Priimkite gaunamus livechat prašymus, net jei nėra interneto agentų",
   "Accept_with_no_online_agents": "Priimkite be interneto agentų",
@@ -2809,7 +2809,7 @@
   "your_message": "tavo žinutė",
   "your_message_optional": "jūsų pranešimas (neprivaloma)",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} tušti kambariai bus pašalinti automatiškai.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} tušti kambariai bus pašalinti automatiškai:<br/> {{rooms}}.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> tušti kambariai bus pašalinti automatiškai:<br/> {{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} nebėra {{role}} pagal {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} buvo nustatytas {{role}} pagal {{user_by}}"
 }

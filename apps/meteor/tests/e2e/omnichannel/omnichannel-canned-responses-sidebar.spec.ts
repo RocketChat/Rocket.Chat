@@ -38,10 +38,12 @@ test.describe.serial('OC - Canned Responses Sidebar', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await api.delete('/livechat/users/manager/user1');
-		await poLiveChat.page.close();
-		await agent.page.close();
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1'),
+			api.delete('/livechat/users/manager/user1'),
+			poLiveChat.page.close(),
+			agent.page.close(),
+		]);
 	});
 
 	test('OC - Canned Responses Sidebar - Create', async ({ page }) => {

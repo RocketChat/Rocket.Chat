@@ -1,6 +1,6 @@
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -12,6 +12,7 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../lib/errorHandling';
@@ -26,7 +27,7 @@ type OutlookEventsListProps = {
 
 const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
-	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url', '');
+	const user = useUser();
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const hasOutlookMethods = !(isError && error instanceof NotOnDesktopError);
@@ -42,8 +43,10 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 	const calendarEvents = calendarListResult.data;
 	const total = calendarEvents?.length || 0;
 
+	const outlookUrl = user?.settings?.calendar?.outlook?.Outlook_Url;
+
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='calendar' />
 				<ContextualbarTitle>{t('Outlook_calendar')}</ContextualbarTitle>
@@ -100,7 +103,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 					</Box>
 				)}
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 
