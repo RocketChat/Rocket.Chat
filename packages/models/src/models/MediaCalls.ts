@@ -133,4 +133,9 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			options,
 		);
 	}
+
+	public async hasUnfinishedCalls(): Promise<boolean> {
+		const count = await this.countDocuments({ state: { $ne: 'hangup' } }, { limit: 1 });
+		return count > 0;
+	}
 }

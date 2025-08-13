@@ -3,7 +3,7 @@ import type { IUser, IMediaCall } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { gateway, MediaCallMonitor } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
-import { Users } from '@rocket.chat/models';
+import { Users, MediaCalls } from '@rocket.chat/models';
 
 const logger = new Logger('media-call service');
 
@@ -73,9 +73,13 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	public async hangupExpiredCalls(): Promise<void> {
-		MediaCallMonitor.hangupExpiredCalls().catch((error) => {
+		await MediaCallMonitor.hangupExpiredCalls().catch((error) => {
 			logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error });
 		});
+
+		if (await MediaCalls.hasUnfinishedCalls()) {
+			MediaCallMonitor.scheduleExpirationCheck();
+		}
 	}
 
 	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
