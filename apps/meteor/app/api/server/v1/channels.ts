@@ -2,6 +2,10 @@ import { Team, Room } from '@rocket.chat/core-services';
 import { TEAM_TYPE, type IRoom, type ISubscription, type IUser, type RoomType, type UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 	isChannelsAddAllProps,
 	isChannelsArchiveProps,
 	isChannelsHistoryProps,
@@ -22,7 +26,9 @@ import {
 	isChannelsFilesListProps,
 	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
+import type { ForbiddenErrorResponse, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
+import type { Filter } from 'mongodb';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
@@ -51,6 +57,7 @@ import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom'
 import { getUserMentionsByChannel } from '../../../mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -97,6 +104,443 @@ async function findChannelByIdOrName({
 
 	return room;
 }
+
+export type ChannelsCreateProps = {
+	name: string;
+	members?: string[];
+	teams?: string[];
+	readOnly?: boolean;
+	extraData?: {
+		broadcast?: boolean;
+		encrypted?: boolean;
+		teamId?: string;
+	};
+	excludeSelf?: boolean;
+};
+
+type ChannelsListProps = PaginatedRequest<{ _id?: string }>;
+
+type ChannelsListJoinedProps = PaginatedRequest<{ roomId?: string }>;
+
+type ChannelsInfoProps = { roomId: string } | { roomName: string };
+
+const channelsCreatePropsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		members: {
+			type: 'array',
+		},
+		teams: {
+			type: 'array',
+		},
+		readonly: {
+			type: 'boolean',
+		},
+		extraData: {
+			type: 'object',
+			properties: {
+				broadcast: {
+					type: 'boolean',
+				},
+				encrypted: {
+					type: 'boolean',
+				},
+				teamId: {
+					type: 'string',
+				},
+			},
+			additionalProperties: false,
+			nullable: true,
+		},
+	},
+	required: ['name'],
+	additionalProperties: false,
+};
+
+const channelsListPropsSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+		},
+		query: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+const channelsListJoinedPropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		query: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+const channelsInfoPropsSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isChannelsCreateProps = ajv.compile<ChannelsCreateProps>(channelsCreatePropsSchema);
+
+const isChannelsListProps = ajv.compile<ChannelsListProps>(channelsListPropsSchema);
+
+const isChannelsListJoinedProps = ajv.compile<ChannelsListJoinedProps>(channelsListJoinedPropsSchema);
+
+const isChannelsInfoProps = ajv.compile<ChannelsInfoProps>(channelsInfoPropsSchema);
+
+const channelsEndpoints = API.v1
+	.post(
+		'channels.create',
+		{
+			authRequired: true,
+			body: isChannelsCreateProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				200: ajv.compile<{
+					channel?: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
+				}>({
+					type: 'object',
+					properties: {
+						channel: { anyOf: [{ $ref: '#/components/schemas/IRoom' }, { type: 'null' }] },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['channel', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { userId, bodyParams } = this;
+
+			try {
+				await API.channels?.create.validate({
+					user: {
+						value: userId,
+					},
+					name: {
+						value: bodyParams.name,
+						key: 'name',
+					},
+					members: {
+						value: bodyParams.members,
+						key: 'members',
+					},
+					teams: {
+						value: bodyParams.teams,
+						key: 'teams',
+					},
+					teamId: {
+						value: bodyParams.extraData?.teamId,
+						key: 'teamId',
+					},
+				});
+			} catch (e: any) {
+				if (e.message === 'unauthorized') {
+					return API.v1.forbidden<ForbiddenErrorResponse>();
+				}
+				return API.v1.failure(e.message);
+			}
+
+			if (bodyParams.teams) {
+				const canSeeAllTeams = await hasPermissionAsync(this.userId, 'view-all-teams');
+				const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
+				const teamMembers = [];
+
+				for (const team of teams) {
+					// eslint-disable-next-line no-await-in-loop
+					const { records: members } = await Team.members(this.userId, team._id, canSeeAllTeams, {
+						offset: 0,
+						count: Number.MAX_SAFE_INTEGER,
+					});
+					const uids = members.map((member) => member.user.username);
+					teamMembers.push(...uids);
+				}
+
+				const membersToAdd = new Set([...teamMembers, ...(bodyParams.members || [])]);
+				bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
+			}
+
+			const result = await API.channels?.create.execute(userId, bodyParams);
+
+			if (!result) {
+				return API.v1.failure('Channel creation failed');
+			}
+
+			return API.v1.success(result);
+		},
+	)
+	.get(
+		'channels.list',
+		{
+			authRequired: true,
+			permissionsRequired: {
+				GET: { permissions: ['view-c-room', 'view-joined-room'], operation: 'hasAny' },
+			},
+			query: isChannelsListProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				200: ajv.compile<{
+					count: number;
+					offset: number;
+					channels: IRoom[];
+					total: number;
+				}>({
+					type: 'object',
+					properties: {
+						count: {
+							type: 'number',
+							description: 'The number of sounds returned in this response.',
+						},
+						offset: {
+							type: 'number',
+							description: 'The number of sounds that were skipped in this response.',
+						},
+						total: {
+							type: 'number',
+							description: 'The total number of sounds that match the query.',
+						},
+						channels: { type: 'array', items: { $ref: '#/components/schemas/IRoom' } },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['offset', 'count', 'total', 'channels', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
+			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
+
+			const { _id } = this.queryParams;
+
+			const ourQuery: Filter<IRoom> = {
+				...query,
+				...(_id ? { _id } : {}),
+				t: 'c',
+			};
+
+			if (!hasPermissionToSeeAllPublicChannels) {
+				const roomIds = (
+					await Subscriptions.findByUserIdAndType(this.userId, 'c', {
+						projection: { rid: 1 },
+					}).toArray()
+				).map((s) => s.rid);
+				ourQuery._id = { $in: roomIds };
+			}
+
+			// teams filter - I would love to have a way to apply this filter @ db level :(
+			const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
+				(item: Record<string, any>) => item.rid,
+			);
+
+			ourQuery.$or = [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: ids,
+					},
+				},
+			];
+
+			const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			});
+
+			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
+				count: channels.length,
+				offset,
+				total,
+			});
+		},
+	)
+	.get(
+		'channels.list.joined',
+		{
+			authRequired: true,
+			query: isChannelsListJoinedProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					count: number;
+					offset: number;
+					channels: IRoom[];
+					total: number;
+				}>({
+					type: 'object',
+					properties: {
+						count: {
+							type: 'number',
+							description: 'The number of sounds returned in this response.',
+						},
+						offset: {
+							type: 'number',
+							description: 'The number of sounds that were skipped in this response.',
+						},
+						total: {
+							type: 'number',
+							description: 'The total number of sounds that match the query.',
+						},
+						channels: { type: 'array', items: { $ref: '#/components/schemas/IRoom' } },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['offset', 'count', 'total', 'channels', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields } = await this.parseJsonQuery();
+
+			const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
+			const rids = subs.map(({ rid }) => rid).filter(Boolean);
+
+			if (rids.length === 0) {
+				return API.v1.success({
+					channels: [],
+					offset,
+					count: 0,
+					total: 0,
+				});
+			}
+
+			const { cursor, totalCount } = Rooms.findPaginatedByTypeAndIds('c', rids, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			});
+
+			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
+				offset,
+				count: channels.length,
+				total,
+			});
+		},
+	)
+	.get(
+		'channels.info',
+		{
+			authRequired: true,
+			query: isChannelsInfoProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				200: ajv.compile<{
+					channel: IRoom;
+				}>({
+					type: 'object',
+					properties: {
+						channel: { $ref: '#/components/schemas/IRoom' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['channel', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const findResult = await findChannelByIdOrName({
+				params: this.queryParams,
+				checkedArchived: false,
+				userId: this.userId,
+			});
+
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden<ForbiddenErrorResponse>();
+			}
+
+			return API.v1.success({
+				channel: findResult,
+			});
+		},
+	);
 
 API.v1.addRoute(
 	'channels.addAll',
@@ -735,73 +1179,6 @@ API.channels = {
 };
 
 API.v1.addRoute(
-	'channels.create',
-	{ authRequired: true },
-	{
-		async post() {
-			const { userId, bodyParams } = this;
-
-			let error;
-
-			try {
-				await API.channels?.create.validate({
-					user: {
-						value: userId,
-					},
-					name: {
-						value: bodyParams.name,
-						key: 'name',
-					},
-					members: {
-						value: bodyParams.members,
-						key: 'members',
-					},
-					teams: {
-						value: bodyParams.teams,
-						key: 'teams',
-					},
-					teamId: {
-						value: bodyParams.extraData?.teamId,
-						key: 'teamId',
-					},
-				});
-			} catch (e: any) {
-				if (e.message === 'unauthorized') {
-					error = API.v1.forbidden();
-				} else {
-					error = API.v1.failure(e.message);
-				}
-			}
-
-			if (error) {
-				return error;
-			}
-
-			if (bodyParams.teams) {
-				const canSeeAllTeams = await hasPermissionAsync(this.userId, 'view-all-teams');
-				const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
-				const teamMembers = [];
-
-				for (const team of teams) {
-					// eslint-disable-next-line no-await-in-loop
-					const { records: members } = await Team.members(this.userId, team._id, canSeeAllTeams, {
-						offset: 0,
-						count: Number.MAX_SAFE_INTEGER,
-					});
-					const uids = members.map((member) => member.user.username);
-					teamMembers.push(...uids);
-				}
-
-				const membersToAdd = new Set([...teamMembers, ...(bodyParams.members || [])]);
-				bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
-			}
-
-			return API.v1.success(await API.channels?.create.execute(userId, bodyParams));
-		},
-	},
-);
-
-API.v1.addRoute(
 	'channels.files',
 	{ authRequired: true, validateParams: isChannelsFilesListProps },
 	{
@@ -917,28 +1294,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'channels.info',
-	{ authRequired: true },
-	{
-		async get() {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
-				userId: this.userId,
-			});
-
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success({
-				channel: findResult,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'channels.invite',
 	{ authRequired: true },
 	{
@@ -955,117 +1310,6 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.list',
-	{
-		authRequired: true,
-		permissionsRequired: {
-			GET: { permissions: ['view-c-room', 'view-joined-room'], operation: 'hasAny' },
-		},
-		validateParams: isChannelsListProps,
-	},
-	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
-
-			const { _id } = this.queryParams;
-
-			const ourQuery = {
-				...query,
-				...(_id ? { _id } : {}),
-				t: 'c',
-			};
-
-			if (!hasPermissionToSeeAllPublicChannels) {
-				const roomIds = (
-					await Subscriptions.findByUserIdAndType(this.userId, 'c', {
-						projection: { rid: 1 },
-					}).toArray()
-				).map((s) => s.rid);
-				ourQuery._id = { $in: roomIds };
-			}
-
-			// teams filter - I would love to have a way to apply this filter @ db level :(
-			const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
-				(item: Record<string, any>) => item.rid,
-			);
-
-			ourQuery.$or = [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: ids,
-					},
-				},
-			];
-
-			const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				count: channels.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'channels.list.joined',
-	{ authRequired: true },
-	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields } = await this.parseJsonQuery();
-
-			const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
-			const rids = subs.map(({ rid }) => rid).filter(Boolean);
-
-			if (rids.length === 0) {
-				return API.v1.success({
-					channels: [],
-					offset,
-					count: 0,
-					total: 0,
-				});
-			}
-
-			const { cursor, totalCount } = Rooms.findPaginatedByTypeAndIds('c', rids, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				offset,
-				count: channels.length,
-				total,
 			});
 		},
 	},
@@ -1489,3 +1733,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type ChannelsEndpoints = ExtractRoutesFromAPI<typeof channelsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ChannelsEndpoints {}
+}
