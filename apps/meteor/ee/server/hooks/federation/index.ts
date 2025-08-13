@@ -141,6 +141,28 @@ afterRemoveFromRoomCallback.add(
 );
 
 callbacks.add(
+	'afterRoomNameChange',
+	async ({ room, name, userId }) => {
+		if (name && isRoomFederated(room)) {
+			await FederationMatrix.updateRoomName(room._id, name, userId);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-room-name-changed',
+);
+
+callbacks.add(
+	'afterRoomTopicChange',
+	async ({ room, name, userId }) => {
+		if (name && isRoomFederated(room)) {
+			await FederationMatrix.updateRoomTopic(room._id, name, userId);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-room-topic-changed',
+);
+
+callbacks.add(
 	'afterSaveMessage',
 	async (message: IMessage, { room }): Promise<IMessage> => {
 		if (!room || !isRoomFederated(room) || !message || !isMessageFromMatrixFederation(message)) {
