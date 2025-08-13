@@ -1,9 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { throwIfFederationNotEnabledOrNotReady } from '../../federation/utils';
+import { getFederationVersion, throwIfFederationNotEnabledOrNotReady } from '../../federation/utils';
 
 export class FederationActions {
 	public static blockIfRoomFederatedButServiceNotReady({ federated }: Pick<IRoom, 'federated'>) {
+		if (getFederationVersion() !== 'matrix') {
+			return;
+		}
+
 		if (!federated) {
 			return;
 		}
