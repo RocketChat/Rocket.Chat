@@ -2,6 +2,7 @@
 // TODO: CRITICAL fix the race condition between the room composer and thread composer
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import type { Options } from '@rocket.chat/message-parser';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import {
 	MessageComposerAction,
@@ -18,7 +19,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState, useEffect } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState, useEffect, useMemo } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -33,6 +34,7 @@ import { formattingButtons } from '../../../../../app/ui-message/client/messageB
 import { getTextLines, type CursorHistory } from '../../../../../app/ui-message/client/messageBox/messageStateHandler';
 import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
+import { useMessageListKatex, useMessageListShowColors } from '../../../../components/message/list/MessageListContext';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
@@ -40,6 +42,7 @@ import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
+import { useAutoLinkDomains } from '../../MessageList/hooks/useAutoLinkDomains';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom } from '../../contexts/RoomContext';
@@ -203,6 +206,27 @@ const RichTextMessageBox = ({
 		setMdLines(getTextLines(input.innerText, '\n'));
 	}, [storageID]);
 
+	// Get parse options and pass it as prop to the RichTextComposer API
+	const katex = useMessageListKatex();
+	const katexEnabled = !!katex;
+	const customDomains = useAutoLinkDomains();
+	const showColors = useMessageListShowColors();
+
+	const parseOptions = useMemo<Options>(
+		() => ({
+			colors: showColors,
+			emoticons: true,
+			customDomains,
+			...(katexEnabled && {
+				katex: {
+					dollarSyntax: katex.dollarSyntaxEnabled,
+					parenthesisSyntax: katex.parenthesisSyntaxEnabled,
+				},
+			}),
+		}),
+		[showColors, customDomains, katexEnabled, katex?.dollarSyntaxEnabled, katex?.parenthesisSyntaxEnabled],
+	);
+
 	const callbackRef = useCallback(
 		(node: HTMLDivElement) => {
 			if (node === null && chat.composer) {
@@ -212,9 +236,9 @@ const RichTextMessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createRichTextComposerAPI(node, storageID, setMdLines, setCursorHistory));
+			chat.setComposerAPI(createRichTextComposerAPI(node, storageID, setMdLines, setCursorHistory, parseOptions));
 		},
-		[chat, storageID],
+		[chat, storageID, parseOptions],
 	);
 
 	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
