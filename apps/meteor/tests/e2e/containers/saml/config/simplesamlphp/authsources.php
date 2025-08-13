@@ -57,7 +57,7 @@ $config = array(
 			'eduPersonAffiliation' => array('group7'),
 			'email' => 'samluser7@example.com',
 			'channels' => array('saml-channel-1', 'saml-channel-2'),
-    ),
+		),
 		'samlusernoname:password' => array(
 			'uid' => array('5'),
 			'cn' => 'Saml User No Username',

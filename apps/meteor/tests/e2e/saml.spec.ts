@@ -31,10 +31,10 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 			Users.userForSamlMerge2,
 			Users.samluser1,
 			Users.samluser2,
-			Users.samluser4,		
-      Users.samluser5,
-      Users.samluser6,
-      Users.samluser7,
+			Users.samluser4,
+			Users.samluser5,
+			Users.samluser6,
+			Users.samluser7,
 			Users.samlusernoname,
 			Users.samlusernoname2,
 		].map(({ data: { username } }) => username),
@@ -42,7 +42,7 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 		'custom_saml_username2',
 	];
 
-  await connection
+	await connection
 		.db()
 		.collection('users')
 		.deleteMany({
