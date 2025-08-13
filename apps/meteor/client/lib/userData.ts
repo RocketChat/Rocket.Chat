@@ -2,8 +2,8 @@ import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typing
 import { createTransformFromUpdateFilter } from '@rocket.chat/mongo-adapter';
 import { ReactiveVar } from 'meteor/reactive-var';
 
-import { Users } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { Users } from '../stores';
 
 export const isSyncReady = new ReactiveVar(false);
 

@@ -34,7 +34,7 @@ export async function generateAccessToken(callee: string, userId: string) {
 
 Meteor.methods<ServerMethods>({
 	async createToken(userId) {
-		methodDeprecationLogger.method('createToken', '8.0.0');
+		methodDeprecationLogger.method('createToken', '8.0.0', '/v1/users.createToken');
 
 		const callee = Meteor.userId();
 		if (!callee) {
