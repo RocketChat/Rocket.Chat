@@ -25,7 +25,7 @@ export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorD
 		? { success: false } & T
 		: {
 				success: false;
-				error?: T;
+				error?: string;
 				stack?: TStack;
 				errorType?: TErrorType;
 				details?: TErrorDetails;
@@ -311,19 +311,27 @@ type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
 
+type InferNon200Result<T> =
+	InferResult<T> extends {
+		success: false;
+		error?: infer TError;
+	}
+		? TError
+		: never;
+
 type Results<TResponse extends TypedOptions['response']> = {
 	[K in keyof TResponse]: K extends SuccessStatusCodes
 		? SuccessResult<InferResult<TResponse[200]>, K>
 		: K extends RedirectStatusCodes
-			? RedirectResult<InferResult<TResponse[300]>, K>
+			? RedirectResult<InferNon200Result<TResponse[300]>, K>
 			: K extends 400
 				? FailureResult<InferResult<TResponse[400]>>
 				: K extends 401
-					? UnauthorizedResult<InferResult<TResponse[401]>>
+					? UnauthorizedResult<InferNon200Result<TResponse[401]>>
 					: K extends 403
-						? ForbiddenResult<InferResult<TResponse[403]>>
+						? ForbiddenResult<InferNon200Result<TResponse[403]>>
 						: K extends 404
-							? NotFoundResult<InferResult<TResponse[404]>>
+							? NotFoundResult<InferNon200Result<TResponse[404]>>
 							: K extends ErrorStatusCodes
 								? InternalError<InferResult<TResponse[500]>, K>
 								: never;
