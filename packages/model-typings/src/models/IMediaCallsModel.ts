@@ -15,4 +15,5 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult>;
 	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<UpdateResult>;
 	findAllExpiredCalls<T extends Document = IMediaCall>(options: FindOptions<T> | undefined): FindCursor<T>;
+	hasUnfinishedCalls(): Promise<boolean>;
 }

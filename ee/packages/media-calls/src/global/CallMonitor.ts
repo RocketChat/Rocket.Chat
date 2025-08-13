@@ -4,8 +4,11 @@ import { MediaCalls } from '@rocket.chat/models';
 import { agentManager } from '../agents/Manager';
 import { logger } from '../logger';
 
-export class MediaCallMonitor {
-	public static async hangupExpiredCalls(): Promise<void> {
+const EXPIRATION_TIME = 120000;
+const EXPIRATION_CHECK_DELAY = 1000;
+
+class Monitor {
+	public async hangupExpiredCalls(): Promise<void> {
 		logger.debug('MediaCallMonitor.hangupExpiredCalls');
 
 		const result = MediaCalls.findAllExpiredCalls<Pick<IMediaCall, '_id' | 'caller' | 'callee'>>({
@@ -17,11 +20,21 @@ export class MediaCallMonitor {
 		}
 	}
 
-	public static getNewExpirationTime(): Date {
-		return new Date(Date.now() + 120000);
+	public getNewExpirationTime(): Date {
+		return new Date(Date.now() + EXPIRATION_TIME);
 	}
 
-	public static async renewCallId(callId: string): Promise<void> {
+	public async renewCallId(callId: string): Promise<void> {
 		await MediaCalls.setExpiresAtById(callId, this.getNewExpirationTime());
+		this.scheduleExpirationCheck();
+	}
+
+	public scheduleExpirationCheck(): void {
+		setTimeout(
+			() => this.hangupExpiredCalls().catch((error) => logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error })),
+			EXPIRATION_TIME + EXPIRATION_CHECK_DELAY,
+		);
 	}
 }
+
+export const MediaCallMonitor = new Monitor();
