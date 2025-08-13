@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { Wizard, useWizard, WizardContent, WizardTabs } from '@rocket.chat/ui-client';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -9,19 +10,22 @@ import OutboundMessageWizardErrorState from './components/OutboundMessageWizardE
 import type { SubmitPayload } from './forms';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
+import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
 import GenericError from '../../../../GenericError';
 import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
 import { useOutboundMessageUpsellModal } from '../../modals';
 import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
 import { useEndpointMutation } from '../../../../../hooks/useEndpointMutation';
-import { formatOutboundMessage } from '../../utils/template';
+import { formatOutboundMessagePayload, isMessageStepValid, isRecipientStepValid } from '../../utils/outbound-message';
 
 type OutboundMessageWizardProps = {
 	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId' | 'recipient' | 'sender'>>;
+	onMessageSent?(): void;
 };
 
-const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
+const OutboundMessageWizard = ({ defaultValues = {}, onMessageSent }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastBarDispatch();
 	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
 	const { contact, sender, provider, department, agent, template, templateParameters, recipient } = state;
 
@@ -68,35 +72,40 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	});
 
 	const handleSend = useEffectEvent(async () => {
-		if (!provider) {
-			throw new Error(t('Provider_not_found'));
+		try {
+			if (!isRecipientStepValid(state)) {
+				throw new Error('error-invalid-recipient-step');
+			}
+
+			if (!isMessageStepValid(state)) {
+				throw new Error('error-invalid-message-step');
+			}
+
+			const { template, sender, recipient, templateParameters } = state;
+
+			const payload = formatOutboundMessagePayload({
+				type: 'template',
+				template,
+				sender,
+				recipient,
+				templateParameters,
+			});
+
+			await sendOutboundMessage.mutateAsync(payload);
+
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Outbound_message_sent_to__name__', { name: contact?.name || formatPhoneNumber(recipient) }),
+			});
+
+			onMessageSent?.();
+		} catch (e) {
+			if (e instanceof Error) {
+				console.error(e.message);
+			}
+
+			dispatchToastMessage({ type: 'error', message: t('Outbound_message_not_sent') });
 		}
-
-		if (!template) {
-			throw new Error(t('Template_not_found'));
-		}
-
-		if (!templateParameters) {
-			throw new Error(t('Template_parameters_not_found'));
-		}
-
-		if (!sender) {
-			throw new Error(t('Sender_not_found'));
-		}
-
-		if (!recipient) {
-			throw new Error(t('Recipient_not_found'));
-		}
-
-		const payload = formatOutboundMessage({
-			type: 'template',
-			template,
-			sender,
-			recipient,
-			parameters: templateParameters,
-		});
-
-		sendOutboundMessage.mutate(payload);
 	});
 
 	const handleDirtyStep = useEffectEvent(() => {
