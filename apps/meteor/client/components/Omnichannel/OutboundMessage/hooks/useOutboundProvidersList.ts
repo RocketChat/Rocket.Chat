@@ -1,4 +1,4 @@
-import type { Serialized } from '@rocket.chat/core-typings';
+import type { IOutboundProvider, Serialized } from '@rocket.chat/core-typings';
 import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -8,16 +8,17 @@ import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 type OutboundProvidersResponse = Serialized<OperationResult<'GET', '/v1/omnichannel/outbound/providers'>>;
 
-type UseOutboundProvidersListProps<TData> = Partial<
-	Pick<UseQueryOptions<OutboundProvidersResponse, Error, TData, unknown[]>, 'queryKey' | 'select'>
->;
+type UseOutboundProvidersListProps<TData> = {
+	type?: IOutboundProvider['providerType'];
+	select?: UseQueryOptions<OutboundProvidersResponse, Error, TData, unknown[]>['select'];
+};
 
 const useOutboundProvidersList = <TData = OutboundProvidersResponse>(options?: UseOutboundProvidersListProps<TData>) => {
-	const { select } = options || {};
+	const { type = 'phone', select } = options || {};
 	const getProviders = useEndpoint('GET', '/v1/omnichannel/outbound/providers');
 	return useQuery<OutboundProvidersResponse, Error, TData>({
 		queryKey: omnichannelQueryKeys.outboundProviders(),
-		queryFn: () => getProviders({ type: 'phone' }),
+		queryFn: () => getProviders({ type }),
 		select,
 	});
 };
