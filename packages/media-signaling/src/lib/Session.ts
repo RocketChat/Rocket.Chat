@@ -34,6 +34,7 @@ export type MediaSignalingSessionConfig = {
 };
 
 const STATE_REPORT_INTERVAL = 60000;
+let sessionCount = 0;
 
 export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private _userId: string;
@@ -60,8 +61,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	constructor(private config: MediaSignalingSessionConfig) {
 		super();
+		sessionCount++;
 		this._userId = config.userId;
-		this._sessionId = this.createWeakToken();
+		this._sessionId = `${sessionCount}-${Date.now().toString()}`;
 		this.recurringStateReportHandler = null;
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
@@ -154,7 +156,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private createTemporaryCallId(): string {
 		this.callCount++;
-		return `${this._sessionId}-${this.callCount}-${Date.now()}`;
+		return `${this._sessionId}-${this.callCount}-${Date.now().toString()}`;
 	}
 
 	private isSignalTargetingAnotherSession(signal: ServerMediaSignal): boolean {
@@ -253,18 +255,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('ended', () => this.onEndedCall(call));
 
 		return call;
-	}
-
-	private createWeakToken(): string {
-		const base = 32;
-		const size = 8;
-
-		let token = '';
-		for (let i = 0; i < size; i++) {
-			const r: number = Math.floor(Math.random() * base);
-			token += r.toString(base);
-		}
-		return `${Date.now()}-${token}`;
 	}
 
 	private onCallContactUpdate(call: ClientMediaCall): void {
