@@ -22,19 +22,6 @@ export class E2EE {
 		this.#random = random;
 	}
 
-	static fromWeb(storage: Storage, crypto: Crypto): E2EE {
-		return new E2EE(
-			{
-				load: (keyName) => Promise.resolve(storage.getItem(keyName)),
-				store: (keyName, value) => Promise.resolve(storage.setItem(keyName, value)),
-				remove: (keyName) => Promise.resolve(storage.removeItem(keyName)),
-			},
-			{
-				getRandomValues: (array) => crypto.getRandomValues(array),
-			},
-		);
-	}
-
 	async getKeysFromLocalStorage(): Promise<KeyPair> {
 		return {
 			public_key: await this.#storage.load('public_key'),

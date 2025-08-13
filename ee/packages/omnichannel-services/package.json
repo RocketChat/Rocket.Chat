@@ -9,7 +9,7 @@
 		"@types/jest": "~30.0.0",
 		"eslint": "~8.45.0",
 		"jest": "~30.0.5",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
@@ -23,7 +23,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.5",
 		"date-fns": "~4.1.0",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",

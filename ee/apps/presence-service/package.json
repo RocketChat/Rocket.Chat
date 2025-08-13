@@ -25,7 +25,7 @@
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.5",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
 		"eventemitter3": "^5.0.1",
@@ -44,7 +44,7 @@
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"main": "./dist/ee/apps/presence-service/src/service.js",
 	"files": [

@@ -3,7 +3,7 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import { E2EE, type KeyPair } from '@rocket.chat/e2e-crypto-core';
+import { E2EE, type KeyPair } from '@rocket.chat/e2ee';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
@@ -75,7 +75,14 @@ class E2E extends Emitter {
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
-		this.e2ee = E2EE.fromWeb(Accounts.storageLocation, crypto);
+		this.e2ee = new E2EE(
+			{
+				load: (keyName) => Promise.resolve(Accounts.storageLocation.getItem(keyName)),
+				store: (keyName, value) => Promise.resolve(Accounts.storageLocation.setItem(keyName, value)),
+				remove: (keyName) => Promise.resolve(Accounts.storageLocation.removeItem(keyName)),
+			},
+			crypto,
+		);
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			this.log(`${prevState} -> ${nextState}`);

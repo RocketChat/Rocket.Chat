@@ -131,7 +131,7 @@
 		"@types/meteor-collection-hooks": "^0.8.9",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "github:whitecolor/mocha-types",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.5",
 		"@types/node-rsa": "^1.1.4",
 		"@types/nodemailer": "^6.4.17",
 		"@types/oauth2-server": "^3.0.18",
@@ -217,7 +217,7 @@
 		"supports-color": "~7.2.0",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.8.3",
+		"typescript": "~5.9.2",
 		"webpack": "~5.99.9"
 	},
 	"dependencies": {
@@ -249,7 +249,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/cron": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/e2e-crypto-core": "workspace:^",
+		"@rocket.chat/e2ee": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/freeswitch": "workspace:^",

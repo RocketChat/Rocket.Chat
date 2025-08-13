@@ -263,7 +263,7 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
-	async encryptText(data: string | Uint8Array): Promise<string> {
+	async encryptText(data: string | Uint8Array<ArrayBuffer>): Promise<string> {
 		if (typeof data === 'string') {
 			data = new TextEncoder().encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
@@ -304,7 +304,7 @@ export class OTRRoom implements IOTRRoom {
 		try {
 			if (!this._sessionKey) throw new Error('Session Key not available.');
 
-			const cipherText: Uint8Array = EJSON.parse(message);
+			const cipherText: Uint8Array<ArrayBuffer> = EJSON.parse(message);
 			const data = await decryptAES(cipherText, this._sessionKey);
 			const msgDecoded: IOTRDecrypt = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
 			if (msgDecoded && typeof msgDecoded === 'object') {

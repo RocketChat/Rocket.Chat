@@ -48,7 +48,7 @@
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.2",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.5",
 		"@types/polka": "^0.5.7",
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/underscore": "^1.13.0",
@@ -57,7 +57,7 @@
 		"eslint": "~8.45.0",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"main": "./dist/service.js",
 	"files": [

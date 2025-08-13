@@ -28,7 +28,7 @@
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
-		"@types/node": "~22.16.1",
+		"@types/node": "~22.16.5",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"event-loop-stats": "^1.4.1",
@@ -55,7 +55,7 @@
 		"eslint": "~8.45.0",
 		"react": "~18.3.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"main": "./dist/ee/apps/omnichannel-transcript/src/service.js",
 	"files": [

@@ -1,0 +1,32 @@
+{
+	"compilerOptions": {
+		"rootDir": "src",
+		"outDir": "dist",
+		"declaration": true,
+		"declarationMap": true,
+		"composite": false,
+		"strict": true,
+		"module": "node20",
+		"moduleDetection": "force",
+		"target": "ES2024",
+		"lib": ["ES2024.Promise", "ES2022.Error", "ES2023.Array", "ES2015"],
+		"skipLibCheck": true,
+		"noEmit": true,
+		"erasableSyntaxOnly": true,
+		"allowImportingTsExtensions": true,
+		"rewriteRelativeImportExtensions": true,
+		"noImplicitAny": true,
+		"noImplicitOverride": true,
+		"noUncheckedIndexedAccess": true,
+		"noUncheckedSideEffectImports": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+		"libReplacement": false,
+		"isolatedDeclarations": true,
+    "types": []
+	},
+	"include": ["src"],
+	"exclude": []
+}

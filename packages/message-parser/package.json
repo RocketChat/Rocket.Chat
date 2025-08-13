@@ -56,7 +56,7 @@
     "@rocket.chat/peggy-loader": "workspace:~",
     "@rocket.chat/prettier-config": "~0.31.25",
     "@types/jest": "~30.0.0",
-    "@types/node": "~22.16.1",
+    "@types/node": "~22.16.5",
     "@typescript-eslint/parser": "~5.58.0",
     "babel-loader": "~9.2.1",
     "eslint": "~8.45.0",
@@ -68,7 +68,7 @@
     "rimraf": "^6.0.1",
     "ts-loader": "~9.5.2",
     "typedoc": "~0.28.5",
-    "typescript": "~5.8.3",
+    "typescript": "~5.9.2",
     "webpack": "~5.99.9",
     "webpack-cli": "~5.1.4"
   },
