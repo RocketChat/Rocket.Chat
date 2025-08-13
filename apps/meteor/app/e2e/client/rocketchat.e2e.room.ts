@@ -622,7 +622,7 @@ export class E2ERoom extends Emitter {
 	async encryptMessageContent(
 		contentToBeEncrypted: Pick<IMessage, 'attachments' | 'files' | 'file'> & Optional<Pick<IMessage, 'msg'>, 'msg'>,
 	) {
-		const data = new TextEncoder().encode(EJSON.stringify(contentToBeEncrypted)) as Uint8Array<ArrayBuffer>;
+		const data = new TextEncoder().encode(EJSON.stringify(contentToBeEncrypted));
 
 		return {
 			algorithm: 'rc.v1.aes-sha2',
@@ -665,7 +665,7 @@ export class E2ERoom extends Emitter {
 				userId: this.userId,
 				ts,
 			}),
-		) as Uint8Array<ArrayBuffer>;
+		);
 
 		return this.encryptText(data);
 	}
