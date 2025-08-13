@@ -2,6 +2,8 @@ export interface IOutboundMessage {
 	to: string;
 	type: 'template';
 	templateProviderPhoneNumber: string;
+	agentId?: string;
+	departmentId?: string;
 	template: {
 		name: string;
 		language: {

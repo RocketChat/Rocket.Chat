@@ -61,6 +61,8 @@ export interface IOutboundMessage {
 	to: string;
 	type: 'template';
 	templateProviderPhoneNumber: string;
+	departmentId?: string;
+	agentId?: string;
 	template: {
 		name: string;
 		language: {
