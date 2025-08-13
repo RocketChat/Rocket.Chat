@@ -12,6 +12,7 @@ import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { createDirectMessage } from '../../methods/createDirectMessage';
+import { saveRoomName } from '../../../app/channel-settings/server';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -141,5 +142,13 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async beforeTopicChange(room: IRoom): Promise<void> {
 		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+	}
+
+	async saveRoomName(roomId: string, userId: string, name: string) {
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('User not found');
+		}
+		await saveRoomName(roomId, name, user);
 	}
 }
