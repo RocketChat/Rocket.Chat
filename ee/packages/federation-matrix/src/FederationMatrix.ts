@@ -688,4 +688,43 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw error;
 		}
 	}
+
+	async updateRoomName(rid: string, displayName: string, senderId: string): Promise<void> {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping room name update');
+			return;
+		}
+
+		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
+		if (!matrixRoomId) {
+			throw new Error(`No Matrix room mapping found for room ${rid}`);
+		}
+
+		const userId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
+		if (!userId) {
+			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
+		}
+
+		await this.homeserverServices.room.updateRoomName(matrixRoomId, displayName, userId);
+	}
+
+	async updateRoomTopic(rid: string, topic: string, senderId: string): Promise<void> {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping room topic update');
+
+			return;
+		}
+
+		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
+		if (!matrixRoomId) {
+			throw new Error(`No Matrix room mapping found for room ${rid}`);
+		}
+
+		const userId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
+		if (!userId) {
+			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
+		}
+
+		await this.homeserverServices.room.setRoomTopic(matrixRoomId, userId, topic);
+	}
 }
