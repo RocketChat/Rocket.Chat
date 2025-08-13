@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.3.8",
+	"version": "0.3.12",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -37,12 +37,12 @@
 		"@testing-library/dom": "~10.4.0",
 		"@testing-library/react": "~16.0.1",
 		"@types/emojione": "^2.2.9",
-		"@types/jest": "~29.5.14",
+		"@types/jest": "~30.0.0",
 		"@types/react": "~18.3.23",
 		"@types/react-dom": "~18.3.7",
 		"buffer": "~6.0.3",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.2",
+		"jest": "~30.0.5",
 		"react-dom": "~18.3.1",
 		"storybook": "^8.6.14",
 		"typescript": "~5.8.3"

@@ -1,9 +1,11 @@
-import { Box, Button, Icon, IconButton, Label, Palette, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton, Label } from '@rocket.chat/fuselage';
 import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import CompactFilterOptions from './AppsLogsFilterOptionsCompact';
+import AppsLogsFilterOptions from './AppLogsFilterOptions';
+import CompactFilterOptions from './CompactFilterOptions';
+import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
@@ -12,11 +14,15 @@ import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 import { ExportLogsModal } from './ExportLogsModal';
 
 type AppsLogsFilterProps = {
-	isLoading?: boolean;
+	appId: string;
+	expandAll: () => void;
+	collapseAll: () => void;
+	refetchLogs: () => void;
+	isLoading: boolean;
 	noResults?: boolean;
 };
 
-export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogsFilterProps) => {
+export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLoading, noResults = false }: AppsLogsFilterProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues } = useAppLogsFilterFormContext();
@@ -35,8 +41,18 @@ export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogs
 		);
 	};
 
+	const openAllLogs = () => expandAll();
+
+	const refreshLogs = () => {
+		refetchLogs();
+	};
+
+	const onExportConfirm = (url: string) => {
+		window.open(url, '_blank', 'noopener noreferrer');
+	};
+
 	const openExportModal = () => {
-		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} />);
+		setModal(<ExportLogsModal onClose={() => setModal(null)} filterValues={getValues()} onConfirm={onExportConfirm} />);
 	};
 
 	const compactMode = useCompactMode();
@@ -44,17 +60,13 @@ export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogs
 	return (
 		<Box display='flex' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
 			<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-				<Label htmlFor='eventFilter'>{t('Event')}</Label>
+				<Label id='eventFilterLabel' htmlFor='eventFilter'>
+					{t('Event')}
+				</Label>
 				<Controller
 					control={control}
 					name='event'
-					render={({ field }) => (
-						<TextInput
-							addon={<Icon color={Palette.text['font-secondary-info']} name='magnifier' size={20} />}
-							id='eventFilter'
-							{...field}
-						/>
-					)}
+					render={({ field }) => <EventFilterSelect appId={appId} aria-labelledby='eventFilterLabel' id='eventFilter' {...field} />}
 				/>
 			</Box>
 			{!compactMode && (
@@ -73,7 +85,9 @@ export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogs
 					<Controller
 						control={control}
 						name='instance'
-						render={({ field }) => <InstanceFilterSelect aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />}
+						render={({ field }) => (
+							<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
+						)}
 					/>
 				</Box>
 			)}
@@ -82,6 +96,17 @@ export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogs
 					<Label>{t('Severity')}</Label>
 					<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
 				</Box>
+			)}
+			{!compactMode && (
+				<IconButton
+					title={isLoading ? t('Loading') : t('Refresh_logs')}
+					alignSelf='flex-end'
+					disabled={isLoading}
+					icon='refresh'
+					secondary
+					mie={10}
+					onClick={() => refreshLogs()}
+				/>
 			)}
 			{!compactMode && (
 				<IconButton
@@ -101,7 +126,16 @@ export const AppLogsFilter = ({ isLoading = false, noResults = false }: AppsLogs
 					{t('Filters')}
 				</Button>
 			)}
-			{compactMode && <CompactFilterOptions isLoading={isLoading} handleExportLogs={openExportModal} />}
+			{!compactMode && <AppsLogsFilterOptions onExpandAll={openAllLogs} onCollapseAll={collapseAll} />}
+			{compactMode && (
+				<CompactFilterOptions
+					isLoading={isLoading}
+					onExportLogs={openExportModal}
+					onExpandAll={openAllLogs}
+					onCollapseAll={collapseAll}
+					onRefreshLogs={refreshLogs}
+				/>
+			)}
 		</Box>
 	);
 };

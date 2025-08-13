@@ -15,7 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	insertOrUpdateUser: twoFactorRequired(async (userData) => {
-		methodDeprecationLogger.method('insertOrUpdateUser', '8.0.0');
+		methodDeprecationLogger.method('insertOrUpdateUser', '8.0.0', '/v1/users.create');
 
 		check(userData, Object);
 

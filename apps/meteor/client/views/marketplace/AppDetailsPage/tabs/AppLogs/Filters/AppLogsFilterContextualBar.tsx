@@ -1,4 +1,4 @@
-import { Box, Label } from '@rocket.chat/fuselage';
+import { Box, Button, Label } from '@rocket.chat/fuselage';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -13,17 +13,19 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
+	ContextualbarFooter,
 } from '../../../../../../components/Contextualbar';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 
 type AppLogsFilterContextualBarProps = {
+	appId: string;
 	onClose: () => void;
 };
 
-export const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLogsFilterContextualBarProps) => {
+export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }: AppLogsFilterContextualBarProps) => {
 	const { t } = useTranslation();
 
-	const { control } = useAppLogsFilterFormContext();
+	const { control, reset } = useAppLogsFilterFormContext();
 
 	return (
 		<ContextualbarDialog onClose={onClose}>
@@ -54,7 +56,9 @@ export const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLog
 					<Controller
 						control={control}
 						name='instance'
-						render={({ field }) => <InstanceFilterSelect aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />}
+						render={({ field }) => (
+							<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
+						)}
 					/>
 				</Box>
 				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
@@ -68,6 +72,11 @@ export const AppLogsFilterContextualBar = ({ onClose = () => undefined }: AppLog
 					/>
 				</Box>
 			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<Button secondary w='full' aria-label={t('Clear_filters')} onClick={() => reset()}>
+					{t('Clear_filters')}
+				</Button>
+			</ContextualbarFooter>
 		</ContextualbarDialog>
 	);
 };
