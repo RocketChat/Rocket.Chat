@@ -50,8 +50,15 @@ export const Default: Story = {
 		sender: '+1234567890',
 		recipient: '+0987654321',
 		templateParameters: {
-			HEADER: ['Dentist'],
-			BODY: ['John Doe', 'tomorrow', '10:00 AM', '14:00 PM', 'slot', 'John Doe'],
+			header: [{ type: 'text', format: 'text', value: 'Dentist' }],
+			body: [
+				{ type: 'text', format: 'text', value: 'John Doe' },
+				{ type: 'text', format: 'text', value: 'tomorrow' },
+				{ type: 'text', format: 'text', value: '10:00 AM' },
+				{ type: 'text', format: 'text', value: '14:00 PM' },
+				{ type: 'text', format: 'text', value: 'slot' },
+				{ type: 'text', format: 'text', value: 'John Doe' },
+			],
 		},
 		template: createFakeOutboundTemplate(),
 		onSend: () => Promise.resolve(),

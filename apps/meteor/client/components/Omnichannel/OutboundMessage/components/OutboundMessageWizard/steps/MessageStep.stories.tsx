@@ -59,8 +59,15 @@ export const WithDefaultValues: Story = {
 		defaultValues: {
 			templateId: 'template-1',
 			templateParameters: {
-				HEADER: ['Dentist'],
-				BODY: ['John Doe', 'tomorrow', '10:00 AM', '14:00 PM', 'slot', 'John Doe'],
+				header: [{ type: 'text', format: 'text', value: 'Dentist' }],
+				body: [
+					{ type: 'text', format: 'text', value: 'John Doe' },
+					{ type: 'text', format: 'text', value: 'tomorrow' },
+					{ type: 'text', format: 'text', value: '10:00 AM' },
+					{ type: 'text', format: 'text', value: '14:00 PM' },
+					{ type: 'text', format: 'text', value: 'slot' },
+					{ type: 'text', format: 'text', value: 'John Doe' },
+				],
 			},
 		},
 	},

@@ -13,8 +13,8 @@ jest.mock('tinykeys', () => ({
 }));
 
 const component = {
-	header: { type: 'HEADER', text: 'New {{1}} appointment' },
-	body: { type: 'BODY', text: 'Hello {{1}}' },
+	header: { type: 'header', text: 'New {{1}} appointment' },
+	body: { type: 'body', text: 'Hello {{1}}' },
 } as const;
 
 const template1 = createFakeOutboundTemplate({

@@ -1,13 +1,12 @@
 import type { IOutboundProviderTemplate, ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, FieldGroup, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { capitalize } from '@rocket.chat/string-helpers';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
 import TemplatePlaceholderInput from './TemplatePlaceholderSelector';
 import TemplatePreview from './TemplatePreview';
-import type { PlaceholderMetadata, TemplateParameters } from '../definitions/template';
-import { processTemplatePlaceholders } from '../utils/template';
+import type { TemplateParameterMetadata, TemplateParameters } from '../definitions/template';
+import { extractParameterMetadata, updateTemplateParameters } from '../utils/template';
 
 type TemplateEditorProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 	parameters: TemplateParameters;
@@ -17,40 +16,39 @@ type TemplateEditorProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 };
 
 const TemplateEditor = ({ parameters, template, contact, onChange, ...props }: TemplateEditorProps) => {
-	const placeholdersMetadata = useMemo<PlaceholderMetadata[]>(() => {
-		return processTemplatePlaceholders(template);
-	}, [template]);
+	const { components } = template;
 
-	const handleChange = (componentType: keyof TemplateParameters, index: number, value: string) => {
-		const params = parameters?.[componentType] || [];
-		params[index] = value;
+	const parameterMetadata = useMemo(() => extractParameterMetadata(components), [components]);
 
-		onChange({
-			...parameters,
-			[componentType]: params,
-		});
+	const handleChange = (value: string, metadata: TemplateParameterMetadata) => {
+		const updatedParameters = updateTemplateParameters(parameters, metadata, value);
+
+		onChange(updatedParameters);
 	};
 
 	return (
 		<Box {...props}>
 			<FieldGroup>
-				{placeholdersMetadata.map(({ componentType, format, value, raw, index }) => (
-					<Field key={`${componentType}.${value}`}>
-						<FieldLabel htmlFor={`${componentType}.${value}`}>
-							{capitalize(componentType.toLowerCase())} {raw}
-						</FieldLabel>
-						<FieldRow>
-							<TemplatePlaceholderInput
-								id={`${componentType}.${value}`}
-								format={format}
-								name={`templateParameters.${componentType}.${index}`}
-								contact={contact}
-								value={parameters?.[componentType]?.[index] ?? ''}
-								onChange={(val: string) => handleChange(componentType, index, val)}
-							/>
-						</FieldRow>
-					</Field>
-				))}
+				{parameterMetadata.map((parameter) => {
+					const { index, id, type, name, componentType } = parameter;
+					const value = parameters[componentType]?.[index]?.value;
+
+					return (
+						<Field key={id}>
+							<FieldLabel htmlFor={id}>{name}</FieldLabel>
+							<FieldRow>
+								<TemplatePlaceholderInput
+									id={id}
+									type={type}
+									name={`templateParameters.${componentType}.${index}`}
+									contact={contact}
+									value={value || ''}
+									onChange={(value: string) => handleChange(value, parameter)}
+								/>
+							</FieldRow>
+						</Field>
+					);
+				})}
 			</FieldGroup>
 
 			<TemplatePreview template={template} parameters={parameters} />

@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import PreviewItem from './PreviewItem';
 import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
+import type { TemplateParameters } from '../../definitions/template';
 import TemplatePreview from '../TemplatePreview';
 
 type OutboundMessagePreviewProps = {
@@ -23,7 +24,7 @@ type OutboundMessagePreviewProps = {
 	agentUsername?: ILivechatAgent['username'];
 	sender?: string;
 	recipient?: string;
-	templateParameters?: Record<string, string[]>;
+	templateParameters?: TemplateParameters;
 };
 
 const formatContact = (rawValue?: string, providerType?: IOutboundProviderMetadata['providerType']) => {

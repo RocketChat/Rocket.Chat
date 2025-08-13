@@ -6,10 +6,10 @@ import { useMemo } from 'react';
 import { formatPhoneNumber } from '../../../../lib/formatPhoneNumber';
 
 type RecipientSelectProps = Omit<ComponentProps<typeof Select>, 'options' | 'onChange' | 'value'> & {
+	type: 'phone' | 'email';
 	contact: Serialized<ILivechatContact> | null;
 	value: string;
 	onChange: (value: Key) => void;
-	type: 'phone' | 'email';
 };
 
 const RecipientSelect = ({ contact, type, value, disabled, onChange, ...props }: RecipientSelectProps): ReactElement => {
