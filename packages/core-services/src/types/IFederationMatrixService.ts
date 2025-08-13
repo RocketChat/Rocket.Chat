@@ -24,4 +24,6 @@ export interface IFederationMatrixService {
 	leaveRoom(roomId: string, user: IUser): Promise<void>;
 	kickUser(roomId: string, removedUser: IUser, userWhoRemoved: IUser): Promise<void>;
 	updateMessage(messageId: string, newContent: string, sender: AtLeast<IUser, '_id' | 'username'>): Promise<void>;
+	updateRoomName(roomId: string, name: string, sender: string): Promise<void>;
+	updateRoomTopic(roomId: string, topic: string, sender: string): Promise<void>;
 }
