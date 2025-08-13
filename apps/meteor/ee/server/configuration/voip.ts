@@ -7,5 +7,6 @@ import { addSettings } from '../settings/voip';
 License.onValidateLicense(async () => {
 	await addSettings();
 
+	// Run every minute
 	await cronJobs.add('expire-media-calls', '* * * * *', () => MediaCall.hangupExpiredCalls());
 });
