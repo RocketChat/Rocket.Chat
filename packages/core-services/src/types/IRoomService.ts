@@ -58,4 +58,5 @@ export interface IRoomService {
 	beforeUserRemoved(room: IRoom): Promise<void>;
 	beforeNameChange(room: IRoom): Promise<void>;
 	beforeTopicChange(room: IRoom): Promise<void>;
+	saveRoomName(roomId: string, userId: string, name: string): Promise<void>;
 }

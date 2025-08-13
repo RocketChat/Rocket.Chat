@@ -7,6 +7,7 @@ import { member } from './member';
 import { message } from './message';
 import { ping } from './ping';
 import { reaction } from './reaction';
+import { room } from './room';
 
 export function registerEvents(emitter: Emitter<HomeserverEventSignatures>) {
 	ping(emitter);
@@ -15,4 +16,5 @@ export function registerEvents(emitter: Emitter<HomeserverEventSignatures>) {
 	reaction(emitter);
 	member(emitter);
 	edus(emitter);
+	room(emitter);
 }
