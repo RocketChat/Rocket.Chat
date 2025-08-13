@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import type { Options } from '@rocket.chat/message-parser';
 import { Accounts } from 'meteor/accounts-base';
 import type { Dispatch, SetStateAction } from 'react';
 
@@ -16,6 +17,7 @@ export const createRichTextComposerAPI = (
 	storageID: string,
 	setMdLines: Dispatch<SetStateAction<string[]>>,
 	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
+	parseOptions: Options,
 ): ComposerAPI => {
 	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
@@ -60,7 +62,7 @@ export const createRichTextComposerAPI = (
 
 	input.addEventListener('input', persist);
 	input.addEventListener('beforeinput', (e: InputEvent) => {
-		resolveBeforeInput(e, setMdLines, setCursorHistory);
+		resolveBeforeInput(e, setMdLines, setCursorHistory, parseOptions);
 	});
 	document.addEventListener('selectionchange', printSelection);
 
@@ -233,7 +235,7 @@ export const createRichTextComposerAPI = (
 	const release = (): void => {
 		input.removeEventListener('input', persist);
 		input.removeEventListener('beforeinput', (e: InputEvent) => {
-			resolveBeforeInput(e, setMdLines, setCursorHistory);
+			resolveBeforeInput(e, setMdLines, setCursorHistory, parseOptions);
 		});
 		document.removeEventListener('selectionchange', printSelection);
 		stopFormatterTracker.stop();
