@@ -35,6 +35,14 @@ export * from './ChannelsFilesListProps';
 export * from './ChannelsOnlineProps';
 
 export type ChannelsEndpoints = {
+	// TODO: Remove the duplicate `channels.info` from ChannelsEndpoints
+	// once the backend declares its endpoints outside of /apps/meteor,
+	// allowing ddp-client to access them.
+	'/v1/channels.info': {
+		GET: (params: { roomId: string } | { roomName: string }) => {
+			channel: IRoom;
+		};
+	};
 	'/v1/channels.files': {
 		GET: (params: ChannelsFilesListProps) => PaginatedResult<{
 			files: IUploadWithUser[];
