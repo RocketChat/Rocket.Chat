@@ -58,8 +58,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			this.restartIce();
 		}
 
-		// #ToDo: direction changes
-
 		const offer = await this.peer.createOffer();
 		await this.peer.setLocalDescription(offer);
 
@@ -74,7 +72,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		await this.initializeLocalMediaStream();
 
-		// #ToDo: direction changes
 		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
 			this.peer.setRemoteDescription(sdp);
 		}
@@ -89,7 +86,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.setRemoteDescription');
 		await this.initializeLocalMediaStream();
 
-		// #ToDo: validate this.peer.signalingState ?
 		this.peer.setRemoteDescription(sdp);
 	}
 
@@ -126,6 +122,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await this.waitForIceGathering();
 
 		// always wait a little extra to ensure all relevant events have been fired
+		// 30ms is low enough that it won't be noticeable by users, but is also enough time to process a full `host` candidate
 		await new Promise((resolve) => setTimeout(resolve, 30));
 
 		const sdp = this.peer.localDescription;
@@ -216,7 +213,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onNegotiationNeeded');
-		// #ToDo negotiation needed
 	}
 
 	private onTrack(peer: RTCPeerConnection, event: RTCTrackEvent): void {

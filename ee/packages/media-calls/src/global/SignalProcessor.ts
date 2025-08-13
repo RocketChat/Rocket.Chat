@@ -149,7 +149,7 @@ export abstract class GlobalSignalProcessor {
 	}
 
 	private async processRegisterSignal(_uid: IUser['_id'], _signal: ClientMediaSignalRegister): Promise<void> {
-		// #ToDo: client registration
+		// #TODO: client registration
 		// 1. Re-send signals for any pending calls involving this actor;
 		// 2. Hangup active calls involving the oldContractId if it's different from the new one.
 	}

@@ -3,7 +3,7 @@ import type { JSONSchemaType } from 'ajv';
 import type { CallState } from '../../call';
 import type { ClientContractState, ClientState } from '../../client';
 
-// Client is sending their local call state
+/** Client is sending their local call state */
 export type ClientMediaSignalLocalState = {
 	callId: string;
 	contractId: string;

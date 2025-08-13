@@ -1,4 +1,4 @@
-// Server is requesting a webrtc offer
+/** Server is requesting a webrtc offer */
 export type ServerMediaSignalRequestOffer = {
 	callId: string;
 	toContractId: string;
