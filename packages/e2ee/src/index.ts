@@ -1,4 +1,6 @@
-export { KeyCodec } from './keyCodec.ts';
+import type { BaseKeyCodec } from './keyCodec.ts';
+
+export { BaseKeyCodec } from './keyCodec.ts';
 
 export interface KeyStorage {
 	load(keyName: string): Promise<string | null>;
@@ -10,10 +12,6 @@ export interface KeyService {
 	fetchMyKeys(): Promise<KeyPair>;
 }
 
-export interface CryptoProvider {
-	getRandomValues(array: Uint32Array<ArrayBuffer>): Uint32Array<ArrayBuffer>;
-}
-
 export type PrivateKey = string;
 export type PublicKey = string;
 export type KeyPair = {
@@ -21,12 +19,12 @@ export type KeyPair = {
 	private_key: PrivateKey;
 };
 
-export abstract class E2EEBase {
+export abstract class BaseE2EE {
 	#service: KeyService;
 	#storage: KeyStorage;
-	#crypto: CryptoProvider;
+	#crypto: BaseKeyCodec;
 
-	constructor(crypto: CryptoProvider, storage: KeyStorage, service: KeyService) {
+	constructor(crypto: BaseKeyCodec, storage: KeyStorage, service: KeyService) {
 		this.#storage = storage;
 		this.#service = service;
 		this.#crypto = crypto;
@@ -51,17 +49,6 @@ export abstract class E2EEBase {
 		return keys;
 	}
 
-	async #generateMnemonicPhrase(n: number, sep = ' '): Promise<string> {
-		const wordList = await import('./wordList.ts');
-		const result = new Array(n);
-		const randomBuffer = new Uint32Array(n);
-		this.#crypto.getRandomValues(randomBuffer);
-		for (let i = 0; i < n; i++) {
-			result[i] = wordList.v1[randomBuffer[i]! % wordList.v1.length]!;
-		}
-		return result.join(sep);
-	}
-
 	async storeRandomPassword(randomPassword: string): Promise<void> {
 		await this.#storage.store('e2e.random_password', randomPassword);
 	}
@@ -75,7 +62,7 @@ export abstract class E2EEBase {
 	}
 
 	async createRandomPassword(): Promise<string> {
-		const randomPassword = await this.#generateMnemonicPhrase(5);
+		const randomPassword = await this.#crypto.generateMnemonicPhrase(5);
 		this.storeRandomPassword(randomPassword);
 		return randomPassword;
 	}

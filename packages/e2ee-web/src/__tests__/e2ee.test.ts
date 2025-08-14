@@ -1,6 +1,6 @@
-import { test } from 'node:test';
-import * as assert from 'node:assert/strict';
-import { NodeE2EE } from '../index.ts';
+import { test, assert } from 'vitest';
+
+import { WebE2EE } from '../index.ts';
 import type { KeyPair, KeyService } from '@rocket.chat/e2ee';
 
 class MockedKeyService implements KeyService {
@@ -17,7 +17,7 @@ test('E2EE createRandomPassword deterministic generation with 5 words', async ()
 	// Instead, we monkey patch global import for wordList path using dynamic import map isn't trivial here.
 	// So we skip testing exact phrase (depends on wordList) and just assert shape.
 	const mockedKeyService = new MockedKeyService();
-	const e2ee = NodeE2EE.withMemoryStorage(mockedKeyService);
+	const e2ee = WebE2EE.withMemoryStorage(mockedKeyService);
 	const pwd = await e2ee.createRandomPassword();
 	assert.equal(pwd.split(' ').length, 5);
 	assert.equal(await e2ee.getRandomPassword(), pwd);
