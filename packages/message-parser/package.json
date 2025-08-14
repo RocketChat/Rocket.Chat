@@ -67,7 +67,7 @@
     "prettier-plugin-pegjs": "~0.5.4",
     "rimraf": "^6.0.1",
     "ts-loader": "~9.5.2",
-    "typedoc": "~0.28.5",
+    "typedoc": "~0.28.9",
     "typescript": "~5.9.2",
     "webpack": "~5.99.9",
     "webpack-cli": "~5.1.4"
