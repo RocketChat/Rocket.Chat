@@ -9,7 +9,7 @@
 		"@types/express": "^4.17.23",
 		"eslint": "~8.45.0",
 		"mongodb": "6.10.0",
-		"npm-run-all": "~4.1.5",
+		"npm-run-all": "^4.1.5",
 		"prettier": "~3.3.3",
 		"rimraf": "^6.0.1",
 		"ts-patch": "^3.3.0",

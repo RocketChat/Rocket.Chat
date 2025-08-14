@@ -6,9 +6,9 @@
 	"dependencies": {
 		"cron": "~1.8.2",
 		"date.js": "~0.3.3",
-		"debug": "~4.3.7",
+		"debug": "~4.4.1",
 		"human-interval": "^2.0.1",
-		"moment-timezone": "~0.5.48",
+		"moment-timezone": "~0.6.0",
 		"mongodb": "6.10.0"
 	},
 	"devDependencies": {

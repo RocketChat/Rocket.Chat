@@ -17,7 +17,7 @@
 		"eslint": "~8.45.0",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
-		"eslint-plugin-storybook": "~0.11.6",
+		"eslint-plugin-storybook": "^0.11.6",
 		"eslint-plugin-testing-library": "~6.4.0",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
