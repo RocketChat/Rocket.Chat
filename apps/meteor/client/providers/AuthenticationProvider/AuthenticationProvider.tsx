@@ -104,6 +104,10 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 							resolve();
 						});
 					} catch (error) {
+						// TODO fzh075
+						if (error?.name === 'AbortError') {
+							return;
+						}
 						reject(error);
 					}
 				});

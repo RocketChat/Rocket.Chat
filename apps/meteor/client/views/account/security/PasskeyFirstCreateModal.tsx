@@ -1,9 +1,8 @@
-import { TextInput, Button, ButtonGroup, Field, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
+import { TextInput, Button, ButtonGroup, Field, FieldLabel, FieldRow, Box, Margins } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { GenericModal } from '@rocket.chat/ui-contexts';
 
 type PasskeyModalProps = {
 	onConfirm: (name: string) => void;
@@ -22,7 +21,7 @@ const PasskeyFirstCreateModal = ({ onConfirm, onClose, onDontAskAgain }: Passkey
 	};
 
 	return (
-		<GenericModal title={t('Add_a_passkey')} onConfirm={handleConfirm} onClose={onClose} confirmText={t('Add_passkey')}>
+		<GenericModal title={t('Add_a_passkey')} onClose={onClose}>
 			<Box mb='x8'>
 				{t(
 					'Your_device_supports_passkeys,_a_password_replacement_that_validates_your_identity_using_touch,_facial_recognition,_a_device_password,_or_a_PIN.',
@@ -38,13 +37,21 @@ const PasskeyFirstCreateModal = ({ onConfirm, onClose, onDontAskAgain }: Passkey
 						value={name}
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.currentTarget.value)}
 						placeholder={t('Enter_a_name_for_this_passkey')}
+						mb='x16'
 					/>
 				</FieldRow>
 			</Field>
 
-			<ButtonGroup stretch>
-				<Button onClick={onClose}>{t('Ask_me_later')}</Button>
-				<Button onClick={onDontAskAgain}>{t("Don't_ask_again_for_this_browser")}</Button>
+			<ButtonGroup vertical>
+				<Button primary onClick={handleConfirm} mb='x8'>
+					{t('Add_a_passkey')}
+				</Button>
+				<Button small onClick={onClose} mb='x8'>
+					{t('Ask_me_later')}
+				</Button>
+				<Button small onClick={onDontAskAgain}>
+					{t("Don't_ask_again_for_this_browser")}
+				</Button>
 			</ButtonGroup>
 		</GenericModal>
 	);

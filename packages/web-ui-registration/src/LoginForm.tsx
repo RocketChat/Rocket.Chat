@@ -82,6 +82,9 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	const usernameOrEmailPlaceholder = useSetting('Accounts_EmailOrUsernamePlaceholder', '');
 	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
 
+	const dispatchToastMessage = useToastMessageDispatch();
+	const loginWithPasskey = useLoginWithPasskey();
+
 	useDocumentTitle(t('registration.component.login'), false);
 
 	const loginMutation = useMutation({
@@ -136,67 +139,33 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		return null;
 	};
 
+	// const loginWithPasskeyMutation = useMutation({
+	// 	mutationFn: () => {
+	// 		return loginWithPasskey();
+	// 	},
+	// 	onError: (error) => {
+	// 		if (error) {
+	// 			dispatchToastMessage({ type: 'error', message: error });
+	// 			return;
+	// 		}
+	// 		dispatchToastMessage({ type: 'success', message: t('Login_successfully') });
+	// 	},
+	// });
+
+	useEffect(() => {
+		loginWithPasskey()
+			.then(() => {
+				dispatchToastMessage({ type: 'error', message: t('Login_successfully') });
+			})
+			.catch((error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			});
+		// loginWithPasskeyMutation.mutate();
+	}, [loginWithPasskey, dispatchToastMessage, t]);
+
 	if (errors.usernameOrEmail?.type === 'invalid-email') {
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('usernameOrEmail')} email={getValues('usernameOrEmail')} />;
 	}
-
-	const dispatchToastMessage = useToastMessageDispatch();
-	const loginWithPasskey = useLoginWithPasskey();
-	const loginWithPasskeyMutation = useMutation({
-		mutationFn: () => {
-			return loginWithPasskey();
-		},
-		onError: (error) => {
-			if (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-				return
-			}
-			dispatchToastMessage({ type: 'success', message: t('Login_successfully') });
-		},
-	});
-
-	// // const user = useUser();
-	//
-	// // const isEnabled = user?.services?.email2fa?.enabled;
-	//
-	// // const generateAuthenticationOptionsFn = useMethod('passkey:generateAuthenticationOptions');
-	// const generateAuthenticationOptionsAction = useEndpointAction('GET', '/v1/users.generateAuthenticationOptions' as PathPattern);
-	//
-	// const handleLoginWithPasskey = useCallback(async () => {
-	// 	try {
-	// 		// @ts-ignore
-	// 		const { id, options } = await generateAuthenticationOptionsAction();
-	//
-	// 		const authenticationResponse = await startAuthentication({ optionsJSON: options, useBrowserAutofill: true });
-	//
-	// 		// await verifyAuthenticationResponseFn(id, authenticationResponse)
-	//
-	// 		console.log(authenticationResponse);
-	//
-	// 		Accounts.callLoginMethod({
-	// 			methodArguments: [{
-	// 				'id': id,
-	// 				'authenticationResponse': authenticationResponse,
-	// 			}],
-	// 			userCallback(error) {
-	// 				if (error) {
-	// 					console.log(error);
-	// 					dispatchToastMessage({ type: 'error', message: error });
-	// 					return
-	// 				}
-	// 				dispatchToastMessage({ type: 'success', message: t('Login_successfully') });
-	// 			},
-	// 		});
-	// 	} catch (error) {
-	// 		console.log(error);
-	// 		dispatchToastMessage({ type: 'error', message: error });
-	// 	}
-	// }, [generateAuthenticationOptionsAction]);
-	//
-	useEffect(() => {
-		// handleLoginWithPasskey().then()
-		loginWithPasskeyMutation.mutate()
-	}, []);
 
 	return (
 		<Form
@@ -227,7 +196,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 										aria-invalid={errors.usernameOrEmail || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										id={usernameId}
-										autoComplete="username webauthn"
+										autoComplete='username webauthn'
 									/>
 								</FieldRow>
 								{errors.usernameOrEmail && (
@@ -279,9 +248,9 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
-							<Button loading={loginMutation.isPending} onClick={() => loginWithPasskeyMutation.mutate()}>
-								{t('registration.component.loginWithPasskey')}
-							</Button>
+							{/*<Button loading={loginMutation.isPending} onClick={() => loginWithPasskeyMutation.mutate()}>*/}
+							{/*	{t('registration.component.loginWithPasskey')}*/}
+							{/*</Button>*/}
 						</ButtonGroup>
 						<p>
 							<Trans i18nKey='registration.page.login.register'>

@@ -108,7 +108,6 @@ class Passkey {
 		} catch (error) {
 			throw new Meteor.Error('verification error', error.message);
 		}
-
 		if (!verification.verified) {
 			throw new Meteor.Error('verification failed');
 		}
@@ -118,7 +117,11 @@ class Passkey {
 		passkey.sync = !!registrationResponse.clientExtensionResults.credProps?.be;
 		passkey.platform = connection.httpHeaders['sec-ch-ua-platform'];
 
-		const passkeys = await Users.findPasskeysByUserId(userId);
+		const { passkeys } = await Users.findOneById(userId, {
+			projection: {
+				passkeys: 1,
+			},
+		});
 		const existingCredential = passkeys?.find((key) => key.id === passkey.id);
 		if (existingCredential) {
 			return;

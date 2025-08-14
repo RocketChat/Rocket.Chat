@@ -25,6 +25,7 @@ import { useAnalytics } from '../../hooks/useAnalytics';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from '../../hooks/useAutoupdate';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
+import { usePasskeyGuide } from '../../hooks/usePasskeyGuide';
 import { appLayout } from '../../lib/appLayout';
 import { useCustomOAuth } from '../../sidebar/hooks/useCustomOAuth';
 import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
@@ -63,6 +64,7 @@ const AppLayout = () => {
 	useCodeHighlight();
 	useLoginViaQuery();
 	useLoadMissedMessages();
+	usePasskeyGuide();
 
 	const layout = useSyncExternalStore(appLayout.subscribe, appLayout.getSnapshot);
 

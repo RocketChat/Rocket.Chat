@@ -20,7 +20,7 @@ const container = createContainer();
 const root = createRoot(container);
 
 root.render(
-	<StrictMode>
-		<AppRoot />
-	</StrictMode>,
+	// <StrictMode>
+	<AppRoot />,
+	// </StrictMode>,
 );
