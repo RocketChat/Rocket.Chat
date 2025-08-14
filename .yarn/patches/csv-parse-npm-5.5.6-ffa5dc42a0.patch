@@ -1,0 +1,21 @@
+diff --git a/package.json b/package.json
+index 809c836d1a6cd72f6c96ce031c9a4d24fda57d17..2aa8b8cb5a0c08475416593007237cfc0db3d91c 100644
+--- a/package.json
++++ b/package.json
+@@ -59,6 +59,16 @@
+     "./browser/esm/sync": {
+       "types": "./dist/esm/sync.d.ts",
+       "default": "./dist/esm/sync.js"
++    },
++    "./lib/sync": {
++      "import": {
++        "types": "./lib/sync.d.ts",
++        "default": "./lib/sync.js"
++      },
++      "require": {
++        "types": "./lib/sync.d.ts",
++        "default": "./lib/sync.js"
++      }
+     }
+   },
+   "devDependencies": {
