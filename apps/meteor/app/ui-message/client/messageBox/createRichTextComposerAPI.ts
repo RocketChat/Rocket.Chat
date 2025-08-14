@@ -7,7 +7,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { CursorHistory } from './messageStateHandler';
-import { resolveBeforeInput } from './messageStateHandler';
+import { resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange, getCursorSelectionInfo } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
@@ -62,7 +62,7 @@ export const createRichTextComposerAPI = (
 
 	input.addEventListener('input', persist);
 	input.addEventListener('beforeinput', (e: InputEvent) => {
-		resolveBeforeInput(e, setMdLines, setCursorHistory, parseOptions);
+		resolveComposerBox(e, setMdLines, setCursorHistory, parseOptions);
 	});
 	document.addEventListener('selectionchange', printSelection);
 
@@ -235,7 +235,7 @@ export const createRichTextComposerAPI = (
 	const release = (): void => {
 		input.removeEventListener('input', persist);
 		input.removeEventListener('beforeinput', (e: InputEvent) => {
-			resolveBeforeInput(e, setMdLines, setCursorHistory, parseOptions);
+			resolveComposerBox(e, setMdLines, setCursorHistory, parseOptions);
 		});
 		document.removeEventListener('selectionchange', printSelection);
 		stopFormatterTracker.stop();
