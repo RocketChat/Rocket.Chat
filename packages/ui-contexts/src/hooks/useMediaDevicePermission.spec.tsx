@@ -10,12 +10,12 @@ const states = [
 ];
 
 const getWrapper =
-	(state: PermissionState | undefined, availableAudioInputDevices: any[] = []) =>
+	(state: PermissionState | undefined, availableAudioInputDevices: any[] = [], enabled = true) =>
 	({ children }: { children: any }) => {
 		return (
 			<DeviceContext.Provider
 				value={{
-					enabled: true,
+					enabled,
 					selectedAudioOutputDevice: undefined,
 					selectedAudioInputDevice: undefined,
 					availableAudioOutputDevices: [],
@@ -31,6 +31,14 @@ const getWrapper =
 	};
 
 describe('useMediaDeviceMicrophonePermission', () => {
+	it('Should return permission state denied and requestDevice is undefined if context is disabled', async () => {
+		const { result } = renderHook(() => useMediaDeviceMicrophonePermission(), {
+			wrapper: getWrapper(undefined, ['device1', 'device2'], false),
+		});
+
+		expect(result.current.state).toBe('granted');
+		expect(typeof result.current.requestDevice).toBe('function');
+	});
 	it.each(states)('Should return permission state $state and requestDevice is $requestDevice', async ({ state, requestDevice }) => {
 		const { result } = renderHook(() => useMediaDeviceMicrophonePermission(), {
 			wrapper: getWrapper(state as PermissionState),
