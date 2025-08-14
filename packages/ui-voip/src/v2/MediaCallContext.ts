@@ -35,7 +35,7 @@ type MediaCallContextType = {
 	// onCall and onEndCall are used to start/accept and reject/end a call
 	onEndCall: () => void;
 	// TODO: Not sure if we need to pass the peerId to the callback, or if it should be a state stored somewhere else in the context.
-	onCall: (peerId?: string, kind?: 'user' | 'extension') => void;
+	onCall: (peerId?: string, kind?: 'user' | 'sip') => Promise<void>;
 
 	onToggleWidget: () => void;
 
@@ -59,7 +59,7 @@ const MediaCallContext = createContext<MediaCallContextType>({
 	onTone: () => undefined,
 
 	onEndCall: () => undefined,
-	onCall: () => undefined,
+	onCall: () => Promise.resolve(undefined),
 
 	onToggleWidget: () => undefined,
 

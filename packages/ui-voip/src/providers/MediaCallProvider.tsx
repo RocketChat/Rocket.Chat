@@ -86,8 +86,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		});
 	};
 
-	const onCall = async (_id?: string, kind?: 'user' | 'extension') => {
-		// TODO: User can call extension, room, or another user.
+	const onCall = async (_id?: string, kind?: 'user' | 'sip') => {
 		console.log('onCall', _id, kind);
 		session.startCall(_id, kind || 'user');
 	};

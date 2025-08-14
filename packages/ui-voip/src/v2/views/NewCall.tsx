@@ -58,7 +58,7 @@ const NewCall = () => {
 								// TODO: Fix this casting
 								onCall(peerInfo.identifier as string, 'user');
 							} else {
-								onCall(peerInfo.number, 'extension');
+								onCall(peerInfo.number, 'sip');
 							}
 						}}
 					>
