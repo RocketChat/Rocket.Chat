@@ -18,7 +18,8 @@ export const extractParameterMetadata = (components: IOutboundProviderTemplate['
 };
 
 const formatParameterName = (componentType: ComponentType, sufix: string) => {
-	return `${t(capitalize(componentType))} ${sufix}`;
+	const prefix = capitalize(componentType);
+	return `${t(prefix) || prefix} ${sufix}`;
 };
 
 export const parseComponentText = (
