@@ -10,23 +10,16 @@ const modelsMock = {
 	},
 };
 
-const settingsMock = {
-	get: sinon.stub(),
-};
-
 const { disableContactById } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/contacts/disableContact.ts', {
 	'@rocket.chat/models': modelsMock,
-	'../../../../settings/server': settingsMock,
 });
 
 describe('disableContact', () => {
 	beforeEach(() => {
-		settingsMock.get.reset();
 		modelsMock.LivechatContacts.disableByContactId.reset();
 	});
 
 	it('should disable the contact', async () => {
-		settingsMock.get.withArgs('Omnichannel_enable_contact_removal').returns(true);
 		modelsMock.LivechatContacts.disableByContactId.resolves({ _id: 'contactId' } as ILivechatContact);
 
 		await disableContactById('contactId');
