@@ -2,9 +2,25 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { E2EE } from '../index.ts';
-import { MemoryStorage } from '../storage/memoryStorage.ts';
+import { E2EE, type KeyPair, type KeyService, type KeyStorage } from '../index.ts';
 import { webcrypto } from 'node:crypto';
+
+class MemoryStorage implements KeyStorage {
+	private map = new Map<string, string>();
+
+	load(keyName: string): Promise<string | null> {
+		return Promise.resolve(this.map.get(keyName) ?? null);
+	}
+	store(keyName: string, value: string): Promise<void> {
+		this.map.set(keyName, value);
+		return Promise.resolve();
+	}
+	remove(keyName: string): Promise<void> {
+		this.map.delete(keyName);
+		return Promise.resolve();
+	}
+}
+
 class DeterministicCrypto implements webcrypto.Crypto {
 	private seq: number[];
 	private idx = 0;
@@ -38,13 +54,14 @@ class DeterministicCrypto implements webcrypto.Crypto {
 	}
 }
 
-const fromLocalStorage = (storage: Pick<(typeof globalThis)['localStorage'], 'getItem' | 'setItem' | 'removeItem'>) => {
-	return {
-		load: (keyName: string) => Promise.resolve(storage.getItem(keyName)),
-		store: (keyName: string, value: string) => Promise.resolve(storage.setItem(keyName, value)),
-		remove: (keyName: string) => Promise.resolve(storage.removeItem(keyName)),
-	};
-};
+class MockedKeyService implements KeyService {
+	fetchMyKeys(): Promise<KeyPair> {
+		return Promise.resolve({
+			public_key: 'mocked_public_key',
+			private_key: 'mocked_private_key',
+		});
+	}
+}
 
 test('E2EE createRandomPassword deterministic generation with 5 words', async () => {
 	const storage = new MemoryStorage();
@@ -52,7 +69,8 @@ test('E2EE createRandomPassword deterministic generation with 5 words', async ()
 	// Instead, we monkey patch global import for wordList path using dynamic import map isn't trivial here.
 	// So we skip testing exact phrase (depends on wordList) and just assert shape.
 	const deterministicCrypto = new DeterministicCrypto([1, 2, 3, 4, 5], webcrypto.subtle, webcrypto.CryptoKey);
-	const e2ee = new E2EE(fromLocalStorage(storage), deterministicCrypto);
+	const mockedKeyService = new MockedKeyService();
+	const e2ee = new E2EE(storage, deterministicCrypto, mockedKeyService);
 	const pwd = await e2ee.createRandomPassword();
 	assert.equal(pwd.split(' ').length, 5);
 	assert.equal(await e2ee.getRandomPassword(), pwd);
