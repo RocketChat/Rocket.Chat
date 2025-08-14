@@ -255,13 +255,6 @@ blockquote {
 	}
 }
 
-@media (width <= 767px) {
-	.main-content {
-		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
-		will-change: transform;
-	}
-}
-
 @keyframes zoom-in {
 	0% {
 		transform: scale3d(0.9, 0.9, 0.9);

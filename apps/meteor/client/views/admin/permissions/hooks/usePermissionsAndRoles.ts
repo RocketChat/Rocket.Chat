@@ -1,45 +1,35 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { useFilteredPermissions } from './useFilteredPermissions';
 import { CONSTANTS } from '../../../../../app/authorization/lib';
-import { Permissions, Roles } from '../../../../../app/models/client';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { pipe } from '../../../../lib/cachedStores';
+import { Permissions, Roles } from '../../../../stores';
 
 export const usePermissionsAndRoles = (
 	type = 'permissions',
 	filter = '',
 	limit = 25,
 	skip = 0,
-): { permissions: IPermission[]; total: number; roleList: IRole[]; reload: () => void } => {
+): { permissions: IPermission[]; total: number; roleList: IRole[] } => {
 	const filteredIds = useFilteredPermissions({ filter });
 
-	const selector = useMemo(() => {
-		return {
-			level: type === 'permissions' ? { $ne: CONSTANTS.SETTINGS_LEVEL } : CONSTANTS.SETTINGS_LEVEL,
-			_id: { $in: filteredIds },
-		};
-	}, [filteredIds, type]);
-
-	const getPermissions = useCallback(
-		() =>
-			Permissions.find(selector, {
-				sort: {
-					_id: 1,
-				},
-				skip,
-				limit,
-			}),
-		[selector, skip, limit],
+	const predicate = useCallback(
+		(record: IPermission): boolean => {
+			if (type === 'permissions') {
+				return record.level !== CONSTANTS.SETTINGS_LEVEL && filteredIds.includes(record._id);
+			}
+			return record.level === CONSTANTS.SETTINGS_LEVEL && filteredIds.includes(record._id);
+		},
+		[filteredIds, type],
 	);
 
-	const getTotalPermissions = useCallback(() => Permissions.find(selector).count(), [selector]);
+	const { apply: transform } = pipe<IPermission>().sortByField('_id', 1).slice(skip, limit);
+	const permissions = Permissions.use(useShallow((state) => transform(state.filter(predicate))));
+	const permissionsTotal = Permissions.use(useShallow((state) => state.count(predicate)));
 
-	const permissions = useReactiveValue(getPermissions);
-	const permissionsTotal = useReactiveValue(getTotalPermissions);
-	const getRoles = useEffectEvent(() => Roles.find().fetch());
-	const roles = useReactiveValue(getRoles);
+	const roleList = Roles.use(useShallow((state) => Array.from(state.records.values())));
 
-	return { permissions: permissions.fetch(), total: permissionsTotal, roleList: roles, reload: getRoles };
+	return { permissions, total: permissionsTotal, roleList };
 };

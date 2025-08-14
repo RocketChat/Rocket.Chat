@@ -1,5 +1,5 @@
 import { UserStatus as Status } from '@rocket.chat/core-typings';
-import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -8,9 +8,9 @@ import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Roles } from '../../../../../app/models/client/models/Roles';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
+import { Roles } from '../../../../stores';
 import type { AdminUsersTab } from '../AdminUsersPage';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
@@ -78,10 +78,12 @@ const UsersTableRow = ({
 		}
 	}, [active, lastLogin, t, type, federated]);
 
-	const roleNames = (roles || [])
-		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
-		.filter((roleName): roleName is string => !!roleName)
-		.join(', ');
+	const roleNames = Roles.use((state) => {
+		return roles
+			?.map((roleId) => state.get(roleId)?.name)
+			.filter((roleName): roleName is string => !!roleName)
+			.join(', ');
+	});
 
 	const userId = user._id;
 	const isAdmin = user.roles?.includes('admin');

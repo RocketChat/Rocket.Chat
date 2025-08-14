@@ -14,16 +14,16 @@ import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { validateEmail } from '../../../../lib/emailValidator';
 import {
 	ContextualbarScrollableContent,
-	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
+	ContextualbarDialog,
+	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { ContactManagerInput } from '../additionalForms';
-import { FormSkeleton } from '../directory/components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
 
 type ContactNewEditProps = {
@@ -187,15 +187,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const phoneField = useId();
 
 	if (isLoadingCustomFields) {
-		return (
-			<ContextualbarContent>
-				<FormSkeleton />
-			</ContextualbarContent>
-		);
+		return <ContextualbarSkeleton onClose={onClose} />;
 	}
 
 	return (
-		<>
+		<ContextualbarDialog onClose={onClose}>
 			<ContextualbarHeader>
 				<ContextualbarIcon name={contactData ? 'pencil' : 'user'} />
 				<ContextualbarTitle>{contactData ? t('Edit_Contact_Profile') : t('New_contact')}</ContextualbarTitle>
@@ -329,7 +325,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

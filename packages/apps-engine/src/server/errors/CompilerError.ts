@@ -1,9 +1,9 @@
 export class CompilerError implements Error {
-    public name = 'CompilerError';
+	public name = 'CompilerError';
 
-    public message: string;
+	public message: string;
 
-    constructor(detail: string) {
-        this.message = `An error occured while compiling an App: ${detail}`;
-    }
+	constructor(detail: string) {
+		this.message = `An error occured while compiling an App: ${detail}`;
+	}
 }

@@ -2,6 +2,7 @@ import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent, Se
 
 import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechatInquiryStore';
 import { queryClient } from '../../../../../client/lib/queryClient';
+import { roomsQueryKeys } from '../../../../../client/lib/queryKeys';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { mapMessageFromApi } from '../../../../../client/lib/utils/mapMessageFromApi';
 import { settings } from '../../../../settings/client';
@@ -44,9 +45,11 @@ const processInquiryEvent = async (args: unknown): Promise<void> => {
 };
 
 const invalidateRoomQueries = async (rid: string) => {
-	await queryClient.invalidateQueries({ queryKey: ['rooms', { reference: rid, type: 'l' }] });
-	queryClient.removeQueries({ queryKey: ['rooms', rid] });
-	queryClient.removeQueries({ queryKey: ['/v1/rooms.info', rid] });
+	await Promise.all([
+		queryClient.invalidateQueries({ queryKey: ['rooms', { reference: rid, type: 'l' }] }),
+		queryClient.invalidateQueries({ queryKey: roomsQueryKeys.room(rid) }),
+		queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(rid) }),
+	]);
 };
 
 const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {

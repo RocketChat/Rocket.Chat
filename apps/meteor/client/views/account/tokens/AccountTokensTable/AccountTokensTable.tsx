@@ -1,5 +1,7 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import DOMPurify from 'dompurify';
 import type { ReactElement, RefObject } from 'react';
 import { useMemo, useCallback } from 'react';
@@ -7,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 
 import AccountTokensRow from './AccountTokensRow';
 import AddToken from './AddToken';
-import GenericModal from '../../../../components/GenericModal';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -17,9 +18,8 @@ import {
 	GenericTableHeaderCell,
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
+import { miscQueryKeys } from '../../../../lib/queryKeys';
 
 const AccountTokensTable = (): ReactElement => {
 	const { t } = useTranslation();
@@ -29,7 +29,14 @@ const AccountTokensTable = (): ReactElement => {
 
 	const regenerateToken = useMethod('personalAccessTokens:regenerateToken');
 	const removeToken = useMethod('personalAccessTokens:removeToken');
-	const { value: data, phase, error, reload } = useEndpointData('/v1/users.getPersonalAccessTokens');
+
+	const getPersonalAccessTokens = useEndpoint('GET', '/v1/users.getPersonalAccessTokens');
+	const { isPending, isSuccess, data, isError, error } = useQuery({
+		queryKey: miscQueryKeys.personalAccessTokens,
+		queryFn: () => getPersonalAccessTokens(),
+	});
+
+	const queryClient = useQueryClient();
 
 	const [ref, isMedium] = useResizeInlineBreakpoint([600], 200) as [RefObject<HTMLElement>, boolean];
 
@@ -80,7 +87,7 @@ const AccountTokensTable = (): ReactElement => {
 						</GenericModal>,
 					);
 
-					reload();
+					queryClient.invalidateQueries({ queryKey: miscQueryKeys.personalAccessTokens });
 				} catch (error) {
 					setModal(null);
 					dispatchToastMessage({ type: 'error', message: error });
@@ -99,7 +106,7 @@ const AccountTokensTable = (): ReactElement => {
 				</GenericModal>,
 			);
 		},
-		[closeModal, dispatchToastMessage, regenerateToken, reload, setModal, t, userId],
+		[closeModal, dispatchToastMessage, queryClient, regenerateToken, setModal, t, userId],
 	);
 
 	const handleRemove = useCallback(
@@ -108,7 +115,7 @@ const AccountTokensTable = (): ReactElement => {
 				try {
 					await removeToken({ tokenName: name });
 					dispatchToastMessage({ type: 'success', message: t('Token_has_been_removed') });
-					reload();
+					queryClient.invalidateQueries({ queryKey: miscQueryKeys.personalAccessTokens });
 					closeModal();
 				} catch (error) {
 					dispatchToastMessage({ type: 'error', message: error });
@@ -121,10 +128,10 @@ const AccountTokensTable = (): ReactElement => {
 				</GenericModal>,
 			);
 		},
-		[closeModal, dispatchToastMessage, reload, removeToken, setModal, t],
+		[closeModal, dispatchToastMessage, queryClient, removeToken, setModal, t],
 	);
 
-	if (phase === AsyncStatePhase.REJECTED) {
+	if (isError) {
 		return (
 			<Box display='flex' justifyContent='center' alignItems='center' height='100%'>
 				<States>
@@ -133,7 +140,9 @@ const AccountTokensTable = (): ReactElement => {
 					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
 					<StatesSubtitle>{error?.message}</StatesSubtitle>
 					<StatesActions>
-						<StatesAction onClick={reload}>{t('Retry')}</StatesAction>
+						<StatesAction onClick={() => queryClient.invalidateQueries({ queryKey: miscQueryKeys.personalAccessTokens })}>
+							{t('Retry')}
+						</StatesAction>
 					</StatesActions>
 				</States>
 			</Box>
@@ -142,19 +151,21 @@ const AccountTokensTable = (): ReactElement => {
 
 	return (
 		<>
-			<AddToken reload={reload} />
-			{phase === AsyncStatePhase.LOADING && (
+			<AddToken reload={() => queryClient.invalidateQueries({ queryKey: miscQueryKeys.personalAccessTokens })} />
+			{isPending && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={5} />
+					</GenericTableBody>
 				</GenericTable>
 			)}
-			{filteredTokens && filteredTokens?.length > 0 && phase === AsyncStatePhase.RESOLVED && (
+			{filteredTokens && filteredTokens?.length > 0 && isSuccess && (
 				<>
 					<GenericTable ref={ref}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{phase === AsyncStatePhase.RESOLVED &&
+							{isSuccess &&
 								filteredTokens &&
 								filteredTokens.map((filteredToken) => (
 									<AccountTokensRow
@@ -178,7 +189,7 @@ const AccountTokensTable = (): ReactElement => {
 					/>
 				</>
 			)}
-			{phase === AsyncStatePhase.RESOLVED && filteredTokens?.length === 0 && <GenericNoResults />}
+			{isSuccess && filteredTokens?.length === 0 && <GenericNoResults />}
 		</>
 	);
 };

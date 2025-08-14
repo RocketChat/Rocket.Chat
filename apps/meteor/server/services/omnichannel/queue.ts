@@ -1,10 +1,11 @@
 import { ServiceStarter } from '@rocket.chat/core-services';
-import { type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus, type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 
 import { queueLogger } from './logger';
+import { notifyOnLivechatInquiryChangedByRoom } from '../../../app/lib/server/lib/notifyListener';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
@@ -26,6 +27,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	private running = false;
+
+	private errorDelay = 10 * 1000; // 10 seconds
 
 	private delay() {
 		const timeout = settings.get<number>('Omnichannel_queue_delay_timeout') ?? 5;
@@ -79,28 +82,38 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 	}
 
 	private async execute() {
-		if (!this.running) {
-			queueLogger.debug('Queue stopped. Cannot execute');
-			return;
-		}
+		try {
+			if (!this.running) {
+				queueLogger.debug('Queue stopped. Cannot execute');
+				return;
+			}
 
-		if (await License.shouldPreventAction('monthlyActiveContacts', 1)) {
-			queueLogger.debug('MAC limit reached. Queue wont execute');
-			this.running = false;
-			return;
-		}
+			if (await License.shouldPreventAction('monthlyActiveContacts', 1)) {
+				queueLogger.debug('MAC limit reached. Queue wont execute');
+				this.running = false;
+				return;
+			}
 
-		// We still go 1 by 1, but we go with every queue every cycle instead of just 1 queue per cycle
-		// And we get tracing :)
-		const queues = await this.getActiveQueues();
-		for await (const queue of queues) {
-			await tracerSpan(
-				'omnichannel.queue',
-				{ attributes: { workerTime: new Date().toISOString(), queue: queue || 'Public' }, root: true },
-				() => this.checkQueue(queue),
-			);
+			// We still go 1 by 1, but we go with every queue every cycle instead of just 1 queue per cycle
+			// And we get tracing :)
+			const queues = await this.getActiveQueues();
+			for await (const queue of queues) {
+				await tracerSpan(
+					'omnichannel.queue',
+					{ attributes: { workerTime: new Date().toISOString(), queue: queue || 'Public' }, root: true },
+					() => this.checkQueue(queue),
+				);
+			}
+
+			this.scheduleExecution();
+		} catch (e) {
+			queueLogger.error({
+				msg: 'Queue Worker Error. Rescheduling with extra delay',
+				extraDelay: this.errorDelay,
+				err: e,
+			});
+			this.scheduleExecution(this.errorDelay);
 		}
-		this.scheduleExecution();
 	}
 
 	private async checkQueue(queue: string | null) {
@@ -136,15 +149,18 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		}
 	}
 
-	private scheduleExecution(): void {
+	private scheduleExecution(extraDelay?: number): void {
 		if (this.timeoutHandler !== null) {
 			return;
 		}
 
-		this.timeoutHandler = setTimeout(() => {
-			this.timeoutHandler = null;
-			return this.execute();
-		}, this.delay());
+		this.timeoutHandler = setTimeout(
+			() => {
+				this.timeoutHandler = null;
+				return this.execute();
+			},
+			this.delay() + (extraDelay || 0),
+		);
 	}
 
 	async shouldStart() {
@@ -173,6 +189,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 					step: 'reconciliation',
 				});
 				await LivechatInquiry.removeByRoomId(roomId);
+				void notifyOnLivechatInquiryChangedByRoom(roomId, 'removed');
 				break;
 			}
 			case 'taken': {
@@ -184,6 +201,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				});
 				// Reconciliate served inquiries, by updating their status to taken after queue tried to pick and failed
 				await LivechatInquiry.takeInquiry(inquiryId);
+				void notifyOnLivechatInquiryChangedByRoom(roomId, 'updated', { status: LivechatInquiryStatus.TAKEN, takenAt: new Date() });
 				break;
 			}
 			case 'missing': {
@@ -194,6 +212,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 					step: 'reconciliation',
 				});
 				await LivechatInquiry.removeByRoomId(roomId);
+				void notifyOnLivechatInquiryChangedByRoom(roomId, 'removed');
 				break;
 			}
 			default: {

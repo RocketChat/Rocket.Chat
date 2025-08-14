@@ -7,24 +7,18 @@ import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
 
 export default {
-  title: 'Surfaces/Message',
-  argTypes: {
-    blocks: { control: 'object' },
-  },
+	title: 'Surfaces/Message',
+	argTypes: {
+		blocks: { control: 'object' },
+	},
 };
 
 const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
-  const story = ({
-    blocks,
-    errors,
-  }: {
-    blocks: readonly UiKit.LayoutBlock[];
-    errors: Record<string, string>;
-  }) => (
-    <Message clickable>
-      <Message.LeftContainer>
-        <Avatar
-          url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
+	const story = ({ blocks, errors }: { blocks: readonly UiKit.LayoutBlock[]; errors: Record<string, string> }) => (
+		<Message clickable>
+			<Message.LeftContainer>
+				<Avatar
+					url='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
               4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
               IyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAA
               AAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAg
@@ -35,47 +29,47 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
               6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkB
               SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z'
-          size='x36'
-        />
-      </Message.LeftContainer>
-      <Message.Container>
-        <Message.Header>
-          <Message.NameContainer>
-            <Message.Name>Haylie George</Message.Name>
-            <Message.Username>@haylie.george</Message.Username>
-          </Message.NameContainer>
-          <Message.Role>Admin</Message.Role>
-          <Message.Role>User</Message.Role>
-          <Message.Role>Owner</Message.Role>
-          <Message.Timestamp>12:00 PM</Message.Timestamp>
-        </Message.Header>
-        <Message.Body>
-          <UiKitContext.Provider
-            value={{
-              action: action('action'),
-              updateState: action('updateState'),
-              values: {},
-              errors,
-            }}
-          >
-            {UiKitMessage(blocks)}
-          </UiKitContext.Provider>
-        </Message.Body>
-      </Message.Container>
-      <Message.Toolbar.Wrapper>
-        <Message.Toolbar>
-          <Message.Toolbar.Item icon='quote' />
-          <Message.Toolbar.Item icon='clock' />
-          <Message.Toolbar.Item icon='thread' />
-        </Message.Toolbar>
-      </Message.Toolbar.Wrapper>
-    </Message>
-  );
-  story.args = {
-    blocks,
-  };
+					size='x36'
+				/>
+			</Message.LeftContainer>
+			<Message.Container>
+				<Message.Header>
+					<Message.NameContainer>
+						<Message.Name>Haylie George</Message.Name>
+						<Message.Username>@haylie.george</Message.Username>
+					</Message.NameContainer>
+					<Message.Role>Admin</Message.Role>
+					<Message.Role>User</Message.Role>
+					<Message.Role>Owner</Message.Role>
+					<Message.Timestamp>12:00 PM</Message.Timestamp>
+				</Message.Header>
+				<Message.Body>
+					<UiKitContext.Provider
+						value={{
+							action: action('action'),
+							updateState: action('updateState'),
+							values: {},
+							errors,
+						}}
+					>
+						{UiKitMessage(blocks)}
+					</UiKitContext.Provider>
+				</Message.Body>
+			</Message.Container>
+			<Message.Toolbar.Wrapper>
+				<Message.Toolbar>
+					<Message.Toolbar.Item icon='quote' />
+					<Message.Toolbar.Item icon='clock' />
+					<Message.Toolbar.Item icon='thread' />
+				</Message.Toolbar>
+			</Message.Toolbar.Wrapper>
+		</Message>
+	);
+	story.args = {
+		blocks,
+	};
 
-  return story;
+	return story;
 };
 
 export const Divider = createStory(payloads.divider);
@@ -84,63 +78,39 @@ export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
 
-export const SectionWithTextFields = createStory(
-  payloads.sectionWithTextFields,
-);
+export const SectionWithTextFields = createStory(payloads.sectionWithTextFields);
 
-export const SectionWithButtonAccessory = createStory(
-  payloads.sectionWithButtonAccessory,
-);
+export const SectionWithButtonAccessory = createStory(payloads.sectionWithButtonAccessory);
 
-export const SectionWithImageAccessory = createStory(
-  payloads.sectionWithImageAccessory,
-);
+export const SectionWithImageAccessory = createStory(payloads.sectionWithImageAccessory);
 
-export const SectionWithOverflowMenuAccessory = createStory(
-  payloads.sectionWithOverflowMenuAccessory,
-);
+export const SectionWithOverflowMenuAccessory = createStory(payloads.sectionWithOverflowMenuAccessory);
 
-export const SectionWithDatePickerAccessory = createStory(
-  payloads.sectionWithDatePickerAccessory,
-);
+export const SectionWithDatePickerAccessory = createStory(payloads.sectionWithDatePickerAccessory);
 
 export const ImageWithTitle = createStory(payloads.imageWithTitle);
 
 export const ImageWithoutTitle = createStory(payloads.imageWithoutTitle);
 
-export const ActionsWithAllSelects = createStory(
-  payloads.actionsWithAllSelects,
-);
+export const ActionsWithAllSelects = createStory(payloads.actionsWithAllSelects);
 
-export const ActionsWithFilteredConversationsSelect = createStory(
-  payloads.actionsWithFilteredConversationsSelect,
-);
+export const ActionsWithFilteredConversationsSelect = createStory(payloads.actionsWithFilteredConversationsSelect);
 
-export const ActionsWithInitializedSelects = createStory(
-  payloads.actionsWithInitializedSelects,
-);
+export const ActionsWithInitializedSelects = createStory(payloads.actionsWithInitializedSelects);
 
 export const ActionsWithButton = createStory(payloads.actionsWithButton);
 
-export const ActionsWithButtonAsLink = createStory(
-  payloads.actionsWithButtonAsLink,
-);
+export const ActionsWithButtonAsLink = createStory(payloads.actionsWithButtonAsLink);
 
-export const ActionsWithDatePicker = createStory(
-  payloads.actionsWithDatePicker,
-);
+export const ActionsWithDatePicker = createStory(payloads.actionsWithDatePicker);
 
 export const ContextWithPlainText = createStory(payloads.contextWithPlainText);
 
 export const ContextWithMrkdwn = createStory(payloads.contextWithMrkdwn);
 
-export const ContextWithTextAndImages = createStory(
-  payloads.contextWithTextAndImages,
-);
+export const ContextWithTextAndImages = createStory(payloads.contextWithTextAndImages);
 
 export const Conditional = createStory(payloads.conditional);
 
 export const Preview = createStory(payloads.preview);
-export const PreviewWithExternalUrl = createStory(
-  payloads.previewWithExternalUrl,
-);
+export const PreviewWithExternalUrl = createStory(payloads.previewWithExternalUrl);

@@ -25,6 +25,7 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	): Promise<ILivechatContact['_id']>;
 	updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact>;
 	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult>;
+	updateContactCustomFields(contactId: string, data: Partial<ILivechatContact>, options?: UpdateOptions): Promise<ILivechatContact | null>;
 	addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void>;
 	findPaginatedContacts(
 		search: { searchText?: string; unknown?: boolean },
@@ -69,4 +70,8 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	countContactsWithoutChannels(): Promise<number>;
 	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }>;
 	updateByVisitorId(visitorId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<UpdateResult>;
+	disableByVisitorId(visitorId: string): Promise<UpdateResult | Document>;
+	findOneEnabledById(_id: ILivechatContact['_id'], options?: FindOptions<ILivechatContact>): Promise<ILivechatContact | null>;
+	findOneEnabledById<P extends Document = ILivechatContact>(_id: P['_id'], options?: FindOptions<P>): Promise<P | null>;
+	findOneEnabledById(_id: ILivechatContact['_id'], options?: any): Promise<ILivechatContact | null>;
 }

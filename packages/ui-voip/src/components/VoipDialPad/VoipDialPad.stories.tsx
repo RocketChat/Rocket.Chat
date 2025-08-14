@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import VoipDialPad from './VoipDialPad';
 
@@ -8,7 +7,7 @@ export default {
 	title: 'Components/VoipDialPad',
 	component: VoipDialPad,
 	decorators: [
-		(Story): ReactElement => (
+		(Story) => (
 			<Box maxWidth={248}>
 				<Story />
 			</Box>

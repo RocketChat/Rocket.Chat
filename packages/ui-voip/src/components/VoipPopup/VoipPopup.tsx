@@ -1,38 +1,47 @@
+import { forwardRef, Ref } from 'react';
+
 import { isVoipErrorSession, isVoipIncomingSession, isVoipOngoingSession, isVoipOutgoingSession } from '../../definitions';
-import { useVoipDialer } from '../../hooks/useVoipDialer';
-import { useVoipSession } from '../../hooks/useVoipSession';
 import type { PositionOffsets } from './components/VoipPopupContainer';
 import DialerView from './views/VoipDialerView';
 import ErrorView from './views/VoipErrorView';
 import IncomingView from './views/VoipIncomingView';
 import OngoingView from './views/VoipOngoingView';
 import OutgoingView from './views/VoipOutgoingView';
+import { useVoipDialer } from '../../hooks/useVoipDialer';
+import { useVoipSession } from '../../hooks/useVoipSession';
 
-const VoipPopup = ({ position }: { position?: PositionOffsets }) => {
+type VoipPopupProps = {
+	position?: PositionOffsets;
+	dragHandleRef?: Ref<HTMLElement>;
+};
+
+const VoipPopup = forwardRef<HTMLDivElement, VoipPopupProps>(({ position, ...props }, ref) => {
 	const session = useVoipSession();
 	const { open: isDialerOpen } = useVoipDialer();
 
 	if (isVoipIncomingSession(session)) {
-		return <IncomingView session={session} position={position} />;
+		return <IncomingView ref={ref} session={session} position={position} {...props} />;
 	}
 
 	if (isVoipOngoingSession(session)) {
-		return <OngoingView session={session} position={position} />;
+		return <OngoingView ref={ref} session={session} position={position} {...props} />;
 	}
 
 	if (isVoipOutgoingSession(session)) {
-		return <OutgoingView session={session} position={position} />;
+		return <OutgoingView ref={ref} session={session} position={position} {...props} />;
 	}
 
 	if (isVoipErrorSession(session)) {
-		return <ErrorView session={session} position={position} />;
+		return <ErrorView ref={ref} session={session} position={position} {...props} />;
 	}
 
 	if (isDialerOpen) {
-		return <DialerView position={position} />;
+		return <DialerView ref={ref} position={position} {...props} />;
 	}
 
 	return null;
-};
+});
+
+VoipPopup.displayName = 'VoipPopup';
 
 export default VoipPopup;

@@ -1,19 +1,21 @@
 import type { IUser, IRole, IRoom } from '@rocket.chat/core-typings';
 
-import { Roles } from '../../models/client';
+import { watch } from '../../../client/lib/cachedStores';
+import { Roles, Subscriptions, Users } from '../../../client/stores';
 
-export const hasRole = (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id'], ignoreSubscriptions = false): boolean => {
-	if (Array.isArray(roleId)) {
-		throw new Error('error-invalid-arguments');
+export const hasRole = (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id']): boolean => {
+	const roleScope = watch(Roles.use, (state) => state.get(roleId)?.scope ?? 'Users');
+
+	switch (roleScope) {
+		case 'Subscriptions':
+			if (!scope) return false;
+
+			return watch(Subscriptions.use, (state) => state.find((record) => record.rid === scope)?.roles?.includes(roleId) ?? false);
+
+		case 'Users':
+			return watch(Users.use, (state) => state.get(userId)?.roles?.includes(roleId) ?? false);
+
+		default:
+			return false;
 	}
-
-	return Roles.isUserInRoles(userId, [roleId], scope, ignoreSubscriptions);
-};
-
-export const hasAnyRole = (userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id'], ignoreSubscriptions = false): boolean => {
-	if (!Array.isArray(roleIds)) {
-		throw new Error('error-invalid-arguments');
-	}
-
-	return Roles.isUserInRoles(userId, roleIds, scope, ignoreSubscriptions);
 };

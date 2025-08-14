@@ -63,6 +63,14 @@
 						"leadingUnderscore": "require"
 					},
 					{
+						"selector": "parameter",
+						"format": null,
+						"filter": {
+							"regex": "^Story$",
+							"match": true
+						}
+					},
+					{
 						"selector": ["interface"],
 						"format": ["PascalCase"],
 						"custom": {

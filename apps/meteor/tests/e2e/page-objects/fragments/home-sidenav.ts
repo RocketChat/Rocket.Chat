@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { ToastMessages } from './toast-messages';
 import { expect } from '../../utils/test';
 
 export class HomeSidenav {
@@ -45,8 +46,16 @@ export class HomeSidenav {
 		return this.page.locator('role=search >> role=searchbox').first();
 	}
 
-	get userProfileMenu(): Locator {
+	get btnUserProfileMenu(): Locator {
 		return this.page.getByRole('button', { name: 'User menu', exact: true });
+	}
+
+	get userProfileMenu(): Locator {
+		return this.page.getByRole('menu', { name: 'User menu' });
+	}
+
+	getUserProfileMenuOption(name: string): Locator {
+		return this.userProfileMenu.getByRole('menuitemcheckbox', { name });
 	}
 
 	get sidebarChannelsList(): Locator {
@@ -75,8 +84,8 @@ export class HomeSidenav {
 
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
 		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.sidebarToolbar.click();
+		await this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.page.keyboard.press('Escape');
 	}
 
 	// Note: this is different from openChat because queued chats are not searchable
@@ -151,12 +160,12 @@ export class HomeSidenav {
 	}
 
 	async logout(): Promise<void> {
-		await this.userProfileMenu.click();
+		await this.btnUserProfileMenu.click();
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
-		await this.userProfileMenu.click();
+		await this.btnUserProfileMenu.click();
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
 
@@ -211,10 +220,14 @@ export class HomeSidenav {
 	}
 
 	async createEncryptedChannel(name: string) {
+		const toastMessages = new ToastMessages(this.page);
+
 		await this.openNewByLabel('Channel');
 		await this.inputChannelName.fill(name);
 		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
+
+		await toastMessages.dismissToast('success');
 	}
 }

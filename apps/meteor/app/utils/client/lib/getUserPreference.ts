@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { Users } from '../../../models/client';
+import { Users } from '../../../../client/stores';
 import { settings } from '../../../settings/client';
 
 /**
@@ -42,7 +42,6 @@ export function getUserPreference<TValue>(
 	key: string,
 	defaultValue?: TValue,
 ): TValue {
-	const user =
-		typeof userIdOrUser === 'string' ? Users.findOne(userIdOrUser, { fields: { [`settings.preferences.${key}`]: 1 } }) : userIdOrUser;
+	const user = typeof userIdOrUser === 'string' ? Users.state.get(userIdOrUser) : userIdOrUser;
 	return user?.settings?.preferences?.[key] ?? defaultValue ?? settings.get(`Accounts_Default_User_Preferences_${key}`);
 }

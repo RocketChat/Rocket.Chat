@@ -1,4 +1,5 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { OffCallbackHandler } from '@rocket.chat/emitter';
 import type { ObjectId, Filter, FindOptions as MongoFindOptions, Document } from 'mongodb';
 import { createContext } from 'react';
 
@@ -23,6 +24,8 @@ export type Sort<TSchema extends Document = Document> = Exclude<MongoFindOptions
 export type FindOptions<TSchema extends Document = Document> = {
 	fields?: Fields<TSchema>;
 	sort?: Sort<TSchema>;
+	skip?: number;
+	limit?: number;
 };
 
 export type UserContextValue = {
@@ -34,8 +37,6 @@ export type UserContextValue = {
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T | undefined];
 	querySubscription: (
 		query: Filter<Pick<ISubscription, 'rid' | 'name'>>,
-		fields?: MongoFindOptions<ISubscription>['projection'],
-		sort?: MongoFindOptions<ISubscription>['sort'],
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISubscription | undefined];
 	queryRoom: (
 		query: Filter<Pick<IRoom, '_id'>>,
@@ -47,6 +48,7 @@ export type UserContextValue = {
 		options?: FindOptions,
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => SubscriptionWithRoom[]];
 	logout: () => Promise<void>;
+	onLogout: (callback: () => void) => OffCallbackHandler;
 };
 
 export const UserContext = createContext<UserContextValue>({
@@ -57,4 +59,5 @@ export const UserContext = createContext<UserContextValue>({
 	queryRoom: () => [() => (): void => undefined, (): undefined => undefined],
 	querySubscriptions: () => [() => (): void => undefined, (): [] => []],
 	logout: () => Promise.resolve(),
+	onLogout: () => (): void => undefined,
 });

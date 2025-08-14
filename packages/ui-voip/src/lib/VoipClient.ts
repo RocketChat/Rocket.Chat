@@ -50,6 +50,8 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private reconnecting = false;
 
+	private contactName: string | null = null;
+
 	constructor(private readonly config: VoIPUserConfiguration) {
 		super();
 
@@ -74,6 +76,8 @@ class VoipClient extends Emitter<VoipEvents> {
 		const debug = Boolean(searchParams.get('debug') || searchParams.get('debug-voip'));
 
 		this.userAgent = new UserAgent({
+			contactName: this.getContactName(),
+			viaHost: this.getContactHostName(),
 			authorizationPassword: authPassword,
 			authorizationUsername: authUserName,
 			uri: UserAgent.makeURI(`sip:${authUserName}@${sipRegistrarHostnameOrIP}`),
@@ -264,7 +268,10 @@ class VoipClient extends Emitter<VoipEvents> {
 			case SessionState.Established:
 				return this.session.bye();
 			case SessionState.Terminating:
+				console.warn('Trying to end a call that is already Terminating.');
+				break;
 			case SessionState.Terminated:
+				console.warn('Trying to end a call that is already Terminated.');
 				break;
 			default:
 				throw new Error('Unknown state');
@@ -288,35 +295,10 @@ class VoipClient extends Emitter<VoipEvents> {
 			throw new Error('Peer connection closed.');
 		}
 
-		try {
-			const options: SessionInviteOptions = {
-				requestDelegate: {
-					onAccept: (): void => {
-						this.muted = mute;
-						this.toggleMediaStreamTracks('sender', !this.muted);
-						this.toggleMediaStreamTracks('receiver', !this.muted);
-						this.emit('stateChanged');
-					},
-					onReject: (): void => {
-						this.toggleMediaStreamTracks('sender', !this.muted);
-						this.toggleMediaStreamTracks('receiver', !this.muted);
-						this.emit('muteerror');
-					},
-				},
-			};
-
-			await this.session.invite(options);
-
-			this.toggleMediaStreamTracks('sender', !this.muted);
-			this.toggleMediaStreamTracks('receiver', !this.muted);
-		} catch (error) {
-			if (error instanceof RequestPendingError) {
-				console.error(`[${this.session?.id}] A mute request is already in progress.`);
-			}
-
-			this.emit('muteerror');
-			throw error;
-		}
+		const enableTracks = !mute;
+		this.toggleMediaStreamTracks('sender', enableTracks);
+		this.muted = mute;
+		this.emit('stateChanged');
 	};
 
 	public setHold = async (hold: boolean): Promise<void> => {
@@ -936,6 +918,33 @@ class VoipClient extends Emitter<VoipEvents> {
 		this.networkEmitter.emit('localnetworkoffline');
 		this.emit('stateChanged');
 	};
+
+	private getContactHostName(): string | undefined {
+		try {
+			const url = new URL(this.config.siteUrl);
+			return url.hostname;
+		} catch {
+			return undefined;
+		}
+	}
+
+	private createRandomToken(size: number): string {
+		let token = '';
+		for (let i = 0; i < size; i++) {
+			const r = Math.floor(Math.random() * 32);
+			token += r.toString(32);
+		}
+		return token;
+	}
+
+	private getContactName(): string {
+		if (!this.contactName) {
+			const randomName = this.createRandomToken(8);
+			this.contactName = `${this.config.authUserName}-${this.config.userId}-${randomName}`;
+		}
+
+		return this.contactName;
+	}
 }
 
 export default VoipClient;

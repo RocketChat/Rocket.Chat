@@ -77,7 +77,7 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 	return (
 		<Page>
 			<PageHeader
-				title={cannedResponseData?._id ? t('Edit_CannedResponse') : t('New_CannedResponse')}
+				title={cannedResponseData?._id ? t('Edit_Canned_Response') : t('New_CannedResponse')}
 				onClickBack={() => router.navigate('/omnichannel/canned-responses')}
 			>
 				{cannedResponseData?._id && (

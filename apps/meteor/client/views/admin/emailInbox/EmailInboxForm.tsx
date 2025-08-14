@@ -19,6 +19,7 @@ import {
 	FieldHint,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId, useCallback } from 'react';
@@ -27,7 +28,6 @@ import { useTranslation } from 'react-i18next';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import GenericModal from '../../../components/GenericModal';
 import { PageScrollableContentWithShadow } from '../../../components/Page';
 
 type EmailInboxFormData = {

@@ -2,10 +2,10 @@ import { lazy, useMemo } from 'react';
 
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
-const ChatsContextualBar = lazy(() => import('../../views/omnichannel/directory/chats/ChatInfo/ChatInfoRouter'));
+const ChatsContextualBar = lazy(() => import('../../views/omnichannel/directory/chats/ChatInfo/ChatsContextualBar'));
 
-export const useRoomInfoRoomAction = () => {
-	return useMemo(
+export const useRoomInfoRoomAction = () =>
+	useMemo(
 		(): RoomToolboxActionConfig => ({
 			id: 'room-info',
 			groups: ['live'],
@@ -16,4 +16,3 @@ export const useRoomInfoRoomAction = () => {
 		}),
 		[],
 	);
-};

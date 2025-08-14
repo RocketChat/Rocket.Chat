@@ -2,8 +2,18 @@ import fs from 'fs';
 import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IMessage, IRole, IRoom, ITeam, IUpload, IUser, ImageAttachmentProps, SettingValue } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRole,
+	IRoom,
+	ITeam,
+	IUpload,
+	IUser,
+	ImageAttachmentProps,
+	MessageAttachment,
+	SettingValue,
+} from '@rocket.chat/core-typings';
+import { isFileAttachment, isQuoteAttachment, TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
@@ -1176,6 +1186,116 @@ describe('[Rooms]', () => {
 				})
 				.end(done);
 		});
+
+		it('should remove only files and file attachments when filesOnly is set to true', async () => {
+			const message1Response = await sendSimpleMessage({ roomId: publicChannel._id });
+
+			const mediaUploadResponse = await request
+				.post(api(`rooms.media/${publicChannel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect(200);
+
+			const message2Response = await request
+				.post(api(`rooms.mediaConfirm/${publicChannel._id}/${mediaUploadResponse.body.file._id}`))
+				.set(credentials)
+				.send({ msg: 'message with file only' })
+				.expect(200);
+
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					filesOnly: true,
+				})
+				.expect(200);
+
+			const res = await request.get(api('channels.messages')).set(credentials).query({ roomId: publicChannel._id }).expect(200);
+
+			expect(res.body.messages).to.be.an('array');
+			const messageIds = res.body.messages.map((m: IMessage) => m._id);
+			expect(messageIds).to.contain(message1Response.body.message._id);
+			expect(messageIds).to.contain(message2Response.body.message._id);
+			const cleanedMessage = res.body.messages.find((m: { _id: any }) => m._id === message2Response.body.message._id);
+			expect(cleanedMessage).to.exist;
+			expect(cleanedMessage.file).to.be.undefined;
+			expect(cleanedMessage.files?.length ?? 0).to.equal(0);
+			expect((cleanedMessage.attachments ?? []).find((a: MessageAttachment) => isFileAttachment(a))).to.be.undefined;
+
+			await request
+				.get(api('channels.files'))
+				.set(credentials)
+				.query({
+					roomId: publicChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array');
+					expect(res.body.files).to.have.lengthOf(0);
+				});
+		});
+
+		it('should not remove quote attachments when filesOnly is set to true', async () => {
+			const siteUrl = await getSettingValueById('Site_Url');
+			const message1Response = await sendSimpleMessage({ roomId: publicChannel._id });
+			const mediaResponse = await request
+				.post(api(`rooms.media/${publicChannel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const message2Response = await request
+				.post(api(`rooms.mediaConfirm/${publicChannel._id}/${mediaResponse.body.file._id}`))
+				.set(credentials)
+				.send({
+					msg: new URL(`/${publicChannel.fname}?msg=${message1Response.body.message._id}`, siteUrl as string).toString(),
+				})
+				.expect(200);
+
+			await request
+				.post(api('rooms.cleanHistory'))
+				.set(credentials)
+				.send({
+					roomId: publicChannel._id,
+					latest: '9999-12-31T23:59:59.000Z',
+					oldest: '0001-01-01T00:00:00.000Z',
+					filesOnly: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: publicChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					const message = (res.body.messages.find((m: { _id: any }) => m._id === message2Response.body.message._id) as IMessage) || null;
+					expect(message).not.to.be.null;
+					expect(message).to.have.property('attachments');
+					const fileAttachment = message.attachments?.find((f) => isFileAttachment(f)) || null;
+					expect(fileAttachment, 'Expected file attachments to be removed').to.be.null;
+					const quoteAttachment = message.attachments?.find((f) => isQuoteAttachment(f)) || null;
+					expect(quoteAttachment, 'Expected quote attachments to be present').not.to.be.null;
+					expect(message.file).to.be.undefined;
+					expect(message.files).to.satisfy((files: IMessage['files']) => files === undefined || files.length === 0);
+				});
+		});
+
 		it('should return success when send a valid private channel', (done) => {
 			void request
 				.post(api('rooms.cleanHistory'))
@@ -4309,6 +4429,29 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
+		});
+	});
+
+	describe('/rooms.roles', () => {
+		let testChannel: IRoom;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` })).body.channel;
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+		it('should get room roles', async () => {
+			const response = await request.get(api('rooms.roles')).set(credentials).query({ rid: testChannel._id }).expect(200);
+			expect(response.body.success).to.be.true;
+			// the schema is already validated in the server on TEST mode
+			expect(response.body.roles).to.be.an('array');
+			// it should have the user roles
+			expect(response.body.roles).to.have.lengthOf(1);
+			expect(response.body.roles[0].rid).to.equal(testChannel._id);
+			expect(response.body.roles[0].roles).to.be.an('array');
+			// it should contain owner role
+			expect(response.body.roles[0].roles).to.include('owner');
 		});
 	});
 });

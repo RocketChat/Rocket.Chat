@@ -1,7 +1,7 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps } from '@rocket.chat/rest-typings';
+import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
@@ -301,7 +301,7 @@ API.v1.addRoute(
 			if (access || joined) {
 				msgs = room.msgs;
 				latest = lm;
-				members = room.usersCount;
+				members = await Users.countActiveUsersInNonDMRoom(room._id);
 			}
 
 			return API.v1.success({
@@ -389,11 +389,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.files',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsFilesProps },
 	{
 		async get() {
+			const { typeGroup, name, roomId, roomName } = this.queryParams;
+
 			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
+				params: roomId ? { roomId } : { roomName },
 				userId: this.userId,
 				checkedArchived: false,
 			});
@@ -401,9 +403,14 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult.rid });
+			const filter = {
+				...query,
+				rid: findResult.rid,
+				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...(typeGroup ? { typeGroup } : {}),
+			};
 
-			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(ourQuery, {
+			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
@@ -1208,11 +1215,11 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			const moderators = (
-				await Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
-					projection: { u: 1 },
-				}).toArray()
-			).map((sub: any) => sub.u);
+			const moderators = await Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
+				projection: { u: 1, _id: 0 },
+			})
+				.map((sub) => sub.u)
+				.toArray();
 
 			return API.v1.success({
 				moderators,

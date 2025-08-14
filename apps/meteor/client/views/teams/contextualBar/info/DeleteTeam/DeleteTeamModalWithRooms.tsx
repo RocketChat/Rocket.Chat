@@ -1,11 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { GenericModalSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import DeleteTeamModal from './DeleteTeamModal';
-import GenericModalSkeleton from '../../../../../components/GenericModal/GenericModalSkeleton';
 
 type DeleteTeamModalWithRoomsProps = {
 	teamId: string;

@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 
 import VoipContactId from './VoipContactId';
 
@@ -9,7 +8,7 @@ export default {
 	title: 'Components/VoipContactId',
 	component: VoipContactId,
 	decorators: [
-		(Story): ReactElement => (
+		(Story) => (
 			<QueryClientProvider client={new QueryClient()}>
 				<Box maxWidth={200}>
 					<Story />

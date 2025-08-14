@@ -1,10 +1,19 @@
-import type { ISetting } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { deleteVisitor } from '../../../data/livechat/rooms';
+import {
+	closeOmnichannelRoom,
+	createAgent,
+	createLivechatRoom,
+	createVisitor,
+	deleteVisitor,
+	getLivechatRoomInfo,
+	startANewLivechatRoomAndTakeIt,
+} from '../../../data/livechat/rooms';
+import { sleep } from '../../../data/livechat/utils';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - Integrations', () => {
@@ -63,16 +72,14 @@ describe('LIVECHAT - Integrations', () => {
 			return Promise.all(visitorTokens.map((token) => deleteVisitor(token)));
 		});
 
+		// Twilio sends the body as a x-www-form-urlencoded, the tests should do the same
 		describe('POST livechat/sms-incoming/:service', () => {
 			it('should throw an error if SMS is disabled', async () => {
 				await updateSetting('SMS_Enabled', false);
 				await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send({
-						from: '+123456789',
-						body: 'Hello',
-					})
+					.send('from=%2B123456789&body=Hello')
 					.expect('Content-Type', 'application/json')
 					.expect(400);
 			});
@@ -82,11 +89,7 @@ describe('LIVECHAT - Integrations', () => {
 				await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send({
-						From: '+123456789',
-						To: '+123456789',
-						Body: 'Hello',
-					})
+					.send('From=%2B123456789&To=%2B123456789&Body=Hello')
 					.expect('Content-Type', 'application/json')
 					.expect(400);
 			});
@@ -97,11 +100,7 @@ describe('LIVECHAT - Integrations', () => {
 				await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send({
-						From: '+123456789',
-						To: '+123456789',
-						Body: 'Hello',
-					})
+					.send('From=%2B123456789&To=%2B123456789&Body=Hello')
 					.expect('Content-Type', 'application/json')
 					.expect(400);
 			});
@@ -113,11 +112,7 @@ describe('LIVECHAT - Integrations', () => {
 				await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send({
-						From: '+123456789',
-						To: '+123456789',
-						Body: 'Hello',
-					})
+					.send('From=%2B123456789&To=%2B123456789&Body=Hello')
 					.expect('Content-Type', 'text/xml')
 					.expect(200)
 					.expect((res: Response) => {
@@ -152,7 +147,86 @@ describe('LIVECHAT - Integrations', () => {
 				await request.post(api('livechat/webhook.test')).set(credentials).expect(400);
 			});
 		});
+
+		describe('Webhook notifications', () => {
+			before(async () => {
+				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/anything`);
+				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+				await createAgent();
+			});
+			after(async () => {
+				await updateSetting('Livechat_webhookUrl', '');
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+				await updateSetting('Livechat_webhook_on_start', false);
+				await updateSetting('Livechat_webhook_on_close', false);
+				await updateSetting('Livechat_webhook_on_chat_taken', false);
+				await updateSetting('Livechat_webhook_on_chat_queued', false);
+			});
+
+			it('should send a notification on chat start', async () => {
+				await updateSetting('Livechat_webhook_on_start', true);
+
+				const { room } = await startANewLivechatRoomAndTakeIt();
+				await sleep(1000);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+
+				expect(roomInfo.crmData).to.be.an('string');
+				expect(JSON.parse(roomInfo.crmData as string))
+					.to.have.property('json')
+					.that.has.property('type', 'LivechatSessionStart');
+				await updateSetting('Livechat_webhook_on_start', false);
+				await closeOmnichannelRoom(room._id);
+			});
+			it('should send a notification on chat taken', async () => {
+				await updateSetting('Livechat_webhook_on_chat_taken', true);
+
+				const { room } = await startANewLivechatRoomAndTakeIt();
+				await sleep(1000);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+
+				expect(roomInfo.crmData).to.be.an('string');
+				expect(JSON.parse(roomInfo.crmData as string))
+					.to.have.property('json')
+					.that.has.property('type', 'LivechatSessionTaken');
+				await updateSetting('Livechat_webhook_on_chat_taken', false);
+				await closeOmnichannelRoom(room._id);
+			});
+			let room: IOmnichannelRoom;
+			it('should send a notification on chat queued', async () => {
+				await updateSetting('Livechat_webhook_on_chat_queued', true);
+
+				const visitor = await createVisitor();
+				room = await createLivechatRoom(visitor.token);
+				await sleep(1000);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+
+				expect(roomInfo.crmData).to.be.an('string');
+				expect(JSON.parse(roomInfo.crmData as string))
+					.to.have.property('json')
+					.that.has.property('type', 'LivechatSessionQueued');
+				await updateSetting('Livechat_webhook_on_chat_queued', false);
+			});
+			it('should send a notification on chat close', async () => {
+				await updateSetting('Livechat_webhook_on_close', true);
+
+				await closeOmnichannelRoom(room._id);
+
+				await sleep(1000);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+
+				expect(roomInfo.crmData).to.be.an('string');
+				expect(JSON.parse(roomInfo.crmData as string))
+					.to.have.property('json')
+					.that.has.property('type', 'LivechatSession');
+				await updateSetting('Livechat_webhook_on_close', false);
+			});
+		});
 	});
+
 	describe('omnichannel/integrations', () => {
 		describe('POST', () => {
 			it('should update the integration settings if the required parameters are provided', async () => {

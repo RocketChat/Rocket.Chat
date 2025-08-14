@@ -7,9 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 import _ from 'underscore';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { settings } from '../../../settings/server';
-import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
@@ -20,6 +17,7 @@ import { validateUsername } from './validateUsername';
 import { callbacks } from '../../../../lib/callbacks';
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
 import { notifyOnUserChange } from '../lib/notifyListener';
 
 export const setUsernameWithValidation = async (userId: string, username: string, joinDefaultChannelsSilenced?: boolean): Promise<void> => {
@@ -151,10 +149,3 @@ export const _setUsername = async function (
 
 	return user;
 };
-
-export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
-	async 0() {
-		const userId = Meteor.userId();
-		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
-	},
-});

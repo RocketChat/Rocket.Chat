@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:getFirstRoomMessage'({ rid }) {
 		const uid = Meteor.userId();
-		methodDeprecationLogger.method('livechat:getFirsRoomMessage', '7.0.0');
+		methodDeprecationLogger.method('livechat:getFirsRoomMessage', '7.0.0', 'This functionality is no longer supported');
 		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:getFirstRoomMessage',

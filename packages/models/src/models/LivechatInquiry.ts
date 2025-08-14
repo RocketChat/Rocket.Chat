@@ -133,6 +133,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
 
+	findIdsByVisitorId(_id: ILivechatInquiryRecord['v']['_id']): FindCursor<ILivechatInquiryRecord> {
+		return this.find({ 'v._id': _id }, { projection: { _id: 1 } });
+	}
+
 	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]> {
 		return this.col
 			.aggregate<{ _id: string | null }>(
@@ -369,7 +373,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async changeDepartmentIdByRoomId(rid: string, department: string): Promise<void> {
+	async changeDepartmentIdByRoomId(rid: string, department: string): Promise<UpdateResult> {
 		const query = {
 			rid,
 		};
@@ -379,7 +383,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 		};
 
-		await this.updateOne(query, updateObj);
+		return this.updateOne(query, updateObj);
 	}
 
 	async getStatus(inquiryId: string): Promise<ILivechatInquiryRecord['status'] | undefined> {

@@ -1,7 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../../../../components/GenericModal';
 
 type BlockChannelModalProps = {
 	onCancel: () => void;

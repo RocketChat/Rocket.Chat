@@ -195,7 +195,7 @@ export interface IMessage extends IRocketChatRecord {
 	attachments?: MessageAttachment[];
 
 	reactions?: {
-		[key: string]: { names?: (string | undefined)[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
+		[key: string]: { names?: string[]; usernames: string[]; federationReactionEventIds?: Record<string, string> };
 	};
 
 	private?: boolean;

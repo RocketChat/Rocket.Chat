@@ -11,5 +11,3 @@ export type IExtras = {
 export type IActivity = Record<string, NodeJS.Timeout>;
 
 export type IRoomActivity = Record<string, IActivity>;
-
-export type IActionsObject = Record<string, IRoomActivity>;

@@ -1,10 +1,7 @@
-import {
-  FuselageSurfaceRenderer,
-  renderTextObject,
-} from './FuselageSurfaceRenderer';
+import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer';
 
 export class BannerSurfaceRenderer extends FuselageSurfaceRenderer {
-  plain_text = renderTextObject;
+	plain_text = renderTextObject;
 
-  mrkdwn = renderTextObject;
+	mrkdwn = renderTextObject;
 }

@@ -10,59 +10,48 @@ import type { BlockProps } from '../../utils/BlockProps';
 
 type MultiChannelsSelectProps = BlockProps<UiKit.MultiChannelsSelectElement>;
 
-const MultiChannelsSelectElement = ({
-  block,
-  context,
-}: MultiChannelsSelectProps) => {
-  const [{ value, loading }, action] = useUiKitState(block, context);
+const MultiChannelsSelectElement = ({ block, context }: MultiChannelsSelectProps) => {
+	const [{ value, loading }, action] = useUiKitState(block, context);
 
-  const [filter, setFilter] = useState('');
-  const filterDebounced = useDebouncedValue(filter, 300);
+	const [filter, setFilter] = useState('');
+	const filterDebounced = useDebouncedValue(filter, 300);
 
-  const options = useChannelsData({ filter: filterDebounced });
+	const options = useChannelsData({ filter: filterDebounced });
 
-  const handleChange = useCallback(
-    (value: string | string[]) => {
-      if (Array.isArray(value)) action({ target: { value } });
-    },
-    [action],
-  );
+	const handleChange = useCallback(
+		(value: string | string[]) => {
+			if (Array.isArray(value)) action({ target: { value } });
+		},
+		[action],
+	);
 
-  return (
-    <AutoComplete
-      value={value || []}
-      disabled={loading}
-      onChange={handleChange}
-      filter={filter}
-      setFilter={setFilter}
-      multiple
-      renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
-        <Chip key={value} {...props} value={value} onClick={onRemove}>
-          <RoomAvatar
-            size='x20'
-            room={{ type: label?.type || 'c', _id: value, ...label }}
-          />
-          <Box is='span' margin='none' mis={4}>
-            {label?.name}
-          </Box>
-        </Chip>
-      )}
-      renderItem={({ value, label, ...props }) => (
-        <Option
-          key={value}
-          {...props}
-          label={label.name}
-          avatar={
-            <RoomAvatar
-              size='x20'
-              room={{ type: label?.type || 'c', _id: value, ...label }}
-            />
-          }
-        />
-      )}
-      options={options}
-    />
-  );
+	return (
+		<AutoComplete
+			value={value || []}
+			disabled={loading}
+			onChange={handleChange}
+			filter={filter}
+			setFilter={setFilter}
+			multiple
+			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
+				<Chip key={value} {...props} value={value} onClick={onRemove}>
+					<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />
+					<Box is='span' margin='none' mis={4}>
+						{label?.name}
+					</Box>
+				</Chip>
+			)}
+			renderItem={({ value, label, ...props }) => (
+				<Option
+					key={value}
+					{...props}
+					label={label.name}
+					avatar={<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />}
+				/>
+			)}
+			options={options}
+		/>
+	);
 };
 
 export default memo(MultiChannelsSelectElement);

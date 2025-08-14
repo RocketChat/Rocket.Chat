@@ -1,5 +1,20 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Box, Modal, Button, FieldGroup, Field, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Modal,
+	Button,
+	FieldGroup,
+	Field,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, memo } from 'react';
@@ -41,11 +56,11 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 
 	return (
 		<Modal data-qa='create-direct-modal' wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}>
-			<Modal.Header>
-				<Modal.Title>{t('Create_direct_message')}</Modal.Title>
-				<Modal.Close tabIndex={-1} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content mbe={2}>
+			<ModalHeader>
+				<ModalTitle>{t('Create_direct_message')}</ModalTitle>
+				<ModalClose tabIndex={-1} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
 				<FieldGroup>
 					<Field>
 						<Box htmlFor={membersFieldId}>{t('Direct_message_creation_description')}</Box>
@@ -82,15 +97,15 @@ const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
 						<FieldHint id={`${membersFieldId}-hint`}>{t('Direct_message_creation_description_hint')}</FieldHint>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button loading={isSubmitting || isValidating} type='submit' primary>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

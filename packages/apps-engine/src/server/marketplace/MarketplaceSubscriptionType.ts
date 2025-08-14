@@ -1,4 +1,4 @@
 export enum MarketplaceSubscriptionType {
-    SubscriptionTypeApp = 'app',
-    SubscriptionTypeService = 'service',
+	SubscriptionTypeApp = 'app',
+	SubscriptionTypeService = 'service',
 }

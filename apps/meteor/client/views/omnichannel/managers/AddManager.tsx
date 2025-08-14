@@ -2,30 +2,33 @@ import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage'
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
+const AddManager = (): ReactElement => {
 	const { t } = useTranslation();
 	const [username, setUsername] = useState('');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const usernameFieldId = useId();
 
-	const saveAction = useEndpointAction('POST', '/v1/livechat/users/manager');
+	const queryClient = useQueryClient();
+
+	const { mutateAsync: saveAction } = useEndpointMutation('POST', '/v1/livechat/users/manager', {
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.managers() });
+			setUsername('');
+			dispatchToastMessage({ type: 'success', message: t('Manager_added') });
+		},
+	});
 
 	const handleSave = useEffectEvent(async () => {
-		try {
-			await saveAction({ username });
-			dispatchToastMessage({ type: 'success', message: t('Manager_added') });
-			reload();
-			setUsername('');
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
+		await saveAction({ username });
 	});
 
 	const handleChange = (value: unknown): void => {

@@ -1,13 +1,13 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Button, Box, TextInput, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BaseGroupPage from './BaseGroupPage';
-import GenericModal from '../../../../components/GenericModal';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useEditableSettings } from '../../EditableSettingsContext';
 

@@ -14,6 +14,7 @@ import ContextualbarInnerContent from './ContextualbarInnerContent';
 import ContextualbarScrollableContent from './ContextualbarScrollableContent';
 import ContextualbarSection from './ContextualbarSection';
 import ContextualbarSkeleton from './ContextualbarSkeleton';
+import ContextualbarSkeletonBody from './ContextualbarSkeletonBody';
 import ContextualbarTitle from './ContextualbarTitle';
 
 export {
@@ -34,4 +35,5 @@ export {
 	ContextualbarScrollableContent,
 	ContextualbarInnerContent,
 	ContextualbarSection,
+	ContextualbarSkeletonBody,
 };

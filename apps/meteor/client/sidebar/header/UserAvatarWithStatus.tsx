@@ -18,6 +18,8 @@ const UserAvatarWithStatus = () => {
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
 
+	const effectiveStatus = presenceDisabled ? 'disabled' : status;
+
 	return (
 		<Box
 			position='relative'
@@ -44,7 +46,7 @@ const UserAvatarWithStatus = () => {
 				mie='neg-x2'
 				mbe='neg-x2'
 			>
-				<UserStatus small status={presenceDisabled ? 'disabled' : status} />
+				<UserStatus role='status' aria-label={effectiveStatus} small status={effectiveStatus} />
 			</Box>
 		</Box>
 	);

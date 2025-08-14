@@ -5,7 +5,7 @@ import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../../app/emoji/client';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
-import EmojiPicker from '../../views/composer/EmojiPicker/EmojiPicker';
+import EmojiPicker from '../../views/composer/EmojiPicker';
 
 const DEFAULT_ITEMS_LIMIT = 90;
 

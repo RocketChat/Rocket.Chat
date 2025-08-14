@@ -65,6 +65,14 @@ module.exports = {
 					},
 					{
 						selector: 'parameter',
+						format: null,
+						filter: {
+							regex: '^Story$',
+							match: true,
+						},
+					},
+					{
+						selector: 'parameter',
 						format: ['camelCase'],
 						modifiers: ['unused'],
 						leadingUnderscore: 'require',

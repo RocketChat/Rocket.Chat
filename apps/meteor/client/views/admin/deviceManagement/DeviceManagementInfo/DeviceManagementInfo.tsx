@@ -7,7 +7,6 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
-	Contextualbar,
 	ContextualbarHeader,
 	ContextualbarClose,
 	ContextualbarScrollableContent,
@@ -18,11 +17,9 @@ import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
-type DeviceManagementInfoProps = DeviceManagementPopulatedSession & {
-	onReload: () => void;
-};
+type DeviceManagementInfoProps = DeviceManagementPopulatedSession;
 
-const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, onReload }: DeviceManagementInfoProps): ReactElement => {
+const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }: DeviceManagementInfoProps): ReactElement => {
 	const { t } = useTranslation();
 	const deviceManagementRouter = useRoute('device-management');
 	const formatDateAndTime = useFormatDateAndTime();
@@ -36,7 +33,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 	const handleCloseContextualBar = useCallback((): void => deviceManagementRouter.push({}), [deviceManagementRouter]);
 
 	return (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Device_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={handleCloseContextualBar} />
@@ -92,12 +89,12 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user, o
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={(): void => handleDeviceLogout(onReload)}>
+					<Button primary onClick={() => handleDeviceLogout()}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

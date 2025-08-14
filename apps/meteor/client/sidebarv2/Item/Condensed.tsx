@@ -1,20 +1,19 @@
 import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
-import type { Keys as IconName } from '@rocket.chat/icons';
-import type { HTMLAttributes, ReactElement } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { memo, useState } from 'react';
 
 type CondensedProps = {
-	title: string;
-	titleIcon?: ReactElement;
-	avatar: ReactElement | boolean;
-	icon?: IconName;
-	actions?: ReactElement;
+	title: ReactNode;
+	titleIcon?: ReactNode;
+	avatar: ReactNode;
+	icon?: ReactNode;
+	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
-	menu?: () => ReactElement;
+	menu?: () => ReactNode;
 	menuOptions?: any;
 	selected?: boolean;
-	badges?: ReactElement;
+	badges?: ReactNode;
 	clickable?: boolean;
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
@@ -27,10 +26,10 @@ const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...prop
 	return (
 		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
-			{icon && icon}
+			{icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
-			{badges && badges}
-			{actions && actions}
+			{badges}
+			{actions}
 			{menu && (
 				<SidebarV2ItemMenu>
 					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}

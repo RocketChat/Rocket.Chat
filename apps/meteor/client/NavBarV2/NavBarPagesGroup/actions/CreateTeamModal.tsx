@@ -16,6 +16,12 @@ import {
 	Accordion,
 	AccordionItem,
 	Divider,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import {
@@ -32,6 +38,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
+import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateTeamModalInputs = {
@@ -70,6 +77,8 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		return new RegExp(`^${namesValidation}$`);
 	}, [allowSpecialNames, namesValidation]);
 
+	const canOnlyCreateOneType = useCreateChannelTypePermission();
+
 	const validateTeamName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
 			return;
@@ -94,7 +103,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		formState: { errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
-			isPrivate: true,
+			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 			readOnly: false,
 			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
 			broadcast: false,
@@ -178,11 +187,11 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 				<Box is='form' id={createTeamFormId} onSubmit={handleSubmit(handleCreateTeam)} {...props} />
 			)}
 		>
-			<Modal.Header>
-				<Modal.Title id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
-			</Modal.Header>
-			<Modal.Content mbe={2}>
+			<ModalHeader>
+				<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>
+				<ModalClose title={t('Close')} onClick={onClose} tabIndex={-1} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
 				<Box fontScale='p2' mbe={16}>
 					{t('Teams_new_description')}
 				</Box>
@@ -238,7 +247,14 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 								control={control}
 								name='isPrivate'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch id={privateId} aria-describedby={`${privateId}-hint`} onChange={onChange} checked={value} ref={ref} />
+									<ToggleSwitch
+										id={privateId}
+										aria-describedby={`${privateId}-hint`}
+										onChange={onChange}
+										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
+										disabled={!!canOnlyCreateOneType}
+										ref={ref}
+									/>
 								)}
 							/>
 						</FieldRow>
@@ -367,15 +383,15 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 						</FieldGroup>
 					</AccordionItem>
 				</Accordion>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!canCreateTeam} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

@@ -6,8 +6,8 @@ import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NotSubscribedRoom from './NotSubscribedRoom';
+import RoomSidepanel from './RoomSidepanel';
 import RoomSkeleton from './RoomSkeleton';
-import RoomSidepanel from './Sidepanel/RoomSidepanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
 import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePreviewSidePanelNavigation';
 import { Header } from '../../components/Header';

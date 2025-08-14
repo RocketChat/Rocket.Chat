@@ -1,10 +1,10 @@
 import { memo, useCallback } from 'preact/compat';
 
+import styles from './styles.scss';
 import { createClassName } from '../../../helpers/createClassName';
 import { triggerAction, UIKitIncomingInteractionType, UIKitIncomingInteractionContainerType } from '../../../lib/uiKit';
 import { renderMessageBlocks } from '../../uiKit';
 import Surface from '../../uiKit/message/Surface';
-import styles from './styles.scss';
 
 type MessageBlocksProps = {
 	blocks?: unknown[];

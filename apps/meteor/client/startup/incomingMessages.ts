@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
+import { Messages } from '../stores';
 
 Meteor.startup(() => {
 	onLoggedIn(() => {
@@ -13,25 +13,20 @@ Meteor.startup(() => {
 			msg.u = msg.u || { username: 'rocket.cat' };
 			msg.private = true;
 
-			return Messages.upsert({ _id: msg._id }, msg);
+			return Messages.state.store(msg);
 		});
 	});
 
 	onLoggedIn(() => {
 		return sdk.stream('notify-user', [`${Meteor.userId()}/subscriptions-changed`], (_action, sub) => {
-			Messages.update(
-				{
-					rid: sub.rid,
-					...('ignored' in sub && sub.ignored ? { 'u._id': { $nin: sub.ignored } } : { ignored: { $exists: true } }),
-				},
-				{ $unset: { ignored: true } },
-				{ multi: true },
+			Messages.state.update(
+				(record) => record.rid === sub.rid && ('ignored' in sub && sub.ignored ? !sub.ignored.includes(record.u._id) : 'ignored' in record),
+				({ ignored: _, ...record }) => record,
 			);
 			if ('ignored' in sub && sub.ignored) {
-				Messages.update(
-					{ 'rid': sub.rid, 't': { $ne: 'command' }, 'u._id': { $in: sub.ignored } },
-					{ $set: { ignored: true } },
-					{ multi: true },
+				Messages.state.update(
+					(record) => record.rid === sub.rid && record.t !== 'command' && (sub.ignored?.includes(record.u._id) ?? false),
+					(record) => ({ ...record, ignored: true }),
 				);
 			}
 		});

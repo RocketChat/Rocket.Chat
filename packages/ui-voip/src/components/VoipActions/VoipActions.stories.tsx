@@ -1,5 +1,4 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import VoipActions from './VoipActions';
 
@@ -8,7 +7,6 @@ const noop = () => undefined;
 export default {
 	title: 'Components/VoipActions',
 	component: VoipActions,
-	decorators: [(Story): ReactElement => <Story />],
 } satisfies Meta<typeof VoipActions>;
 
 export const IncomingActions: StoryFn<typeof VoipActions> = () => {

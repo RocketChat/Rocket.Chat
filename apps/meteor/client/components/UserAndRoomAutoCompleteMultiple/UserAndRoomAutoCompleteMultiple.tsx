@@ -4,49 +4,64 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RoomAvatar, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { Rooms } from '../../stores';
 
-type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & { limit?: number };
 
-const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndRoomAutoCompleteMultipleProps): ReactElement => {
+const UserAndRoomAutoCompleteMultiple = ({ value, onChange, limit, ...props }: UserAndRoomAutoCompleteMultipleProps) => {
 	const user = useUser();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 
 	const rooms = useUserSubscriptions(
-		useMemo(
-			() => ({
-				open: { $ne: false },
-				$or: [
-					{ lowerCaseFName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
-					{ lowerCaseName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
-				],
-			}),
+		...useMemo<Parameters<typeof useUserSubscriptions>>(
+			() => [
+				{
+					open: { $ne: false },
+					$or: [
+						{ lowerCaseFName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
+						{ lowerCaseName: new RegExp(escapeRegExp(debouncedFilter), 'i') },
+					],
+				},
+				// We are using a higher limit here to take advantage of the amount that
+				// will be filtered below into a smaller set respecting the limit prop.
+				{ limit: 100 },
+			],
 			[debouncedFilter],
 		),
-	).filter((room) => {
-		if (!user) {
-			return;
-		}
-
-		if (isDirectMessageRoom(room) && (room.blocked || room.blocker)) {
-			return;
-		}
-
-		return !roomCoordinator.readOnly(room.rid, user);
-	});
-
-	const options = useMemo(
-		() =>
-			rooms.map(({ rid, fname, name, avatarETag, t }) => ({
-				value: rid,
-				label: { name: fname || name, avatarETag, type: t },
-			})),
-		[rooms],
 	);
+
+	const options = useMemo(() => {
+		if (!user) {
+			return [];
+		}
+
+		return rooms.reduce<Exclude<UserAndRoomAutoCompleteMultipleProps['options'], undefined>>((acc, room) => {
+			if (acc.length === limit) return acc;
+
+			if (isDirectMessageRoom(room) && (room.blocked || room.blocker)) {
+				return acc;
+			}
+
+			if (roomCoordinator.readOnly(Rooms.state.get(room.rid), user)) return acc;
+
+			return [
+				...acc,
+				{
+					value: room.rid,
+					label: {
+						name: room.fname || room.name,
+						avatarETag: room.avatarETag,
+						type: room.t,
+					},
+				},
+			];
+		}, []);
+	}, [limit, rooms, user]);
 
 	return (
 		<AutoComplete
@@ -56,7 +71,7 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndR
 			filter={filter}
 			setFilter={setFilter}
 			multiple
-			renderSelected={({ selected: { value, label }, onRemove, ...props }): ReactElement => (
+			renderSelected={({ selected: { value, label }, onRemove, ...props }) => (
 				<Chip {...props} height='x20' value={value} onClick={onRemove} mie={4}>
 					{label.t === 'd' ? (
 						<UserAvatar size='x20' username={value} />
@@ -68,7 +83,7 @@ const UserAndRoomAutoCompleteMultiple = ({ value, onChange, ...props }: UserAndR
 					</Box>
 				</Chip>
 			)}
-			renderItem={({ value, label, ...props }): ReactElement => (
+			renderItem={({ value, label, ...props }) => (
 				<Option key={value} {...props}>
 					<OptionAvatar>
 						{label.t === 'd' ? (

@@ -51,7 +51,11 @@ import { API } from '../api';
  */
 API.v1.addRoute(
 	'banners.getNew',
-	{ authRequired: true, validateParams: isBannersGetNewProps, deprecation: { version: '8.0.0', alternatives: ['banners/:id', 'banners'] } },
+	{
+		authRequired: true,
+		validateParams: isBannersGetNewProps,
+		deprecation: { version: '8.0.0', alternatives: ['/v1/banners/:id', '/v1/banners'] },
+	},
 	{
 		// deprecated
 		async get() {

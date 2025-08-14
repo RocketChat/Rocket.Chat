@@ -7,6 +7,8 @@ import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
+const FILE_CLEANUP_BATCH_SIZE = 1000;
+
 export async function cleanRoomHistory({
 	rid = '',
 	latest = new Date(),
@@ -44,6 +46,28 @@ export async function cleanRoomHistory({
 		limit,
 	});
 
+	const targetMessageIdsForAttachmentRemoval = new Set<string>();
+	const pruneMessageAttachment = { color: '#FD745E', text };
+
+	async function performFileAttachmentCleanupBatch() {
+		if (targetMessageIdsForAttachmentRemoval.size === 0) return;
+
+		const ids = [...targetMessageIdsForAttachmentRemoval];
+		await Messages.removeFileAttachmentsByMessageIds(ids, pruneMessageAttachment);
+		await Messages.clearFilesByMessageIds(ids);
+		void api.broadcast('notify.deleteMessageBulk', rid, {
+			rid,
+			excludePinned,
+			ignoreDiscussion,
+			ts,
+			users: fromUsers,
+			ids,
+			filesOnly: true,
+			replaceFileAttachmentsWith: pruneMessageAttachment,
+		});
+		targetMessageIdsForAttachmentRemoval.clear();
+	}
+
 	for await (const document of cursor) {
 		const uploadsStore = FileUpload.getStore('Uploads');
 
@@ -51,8 +75,16 @@ export async function cleanRoomHistory({
 
 		fileCount++;
 		if (filesOnly) {
-			await Messages.updateOne({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
+			targetMessageIdsForAttachmentRemoval.add(document._id);
 		}
+
+		if (targetMessageIdsForAttachmentRemoval.size >= FILE_CLEANUP_BATCH_SIZE) {
+			await performFileAttachmentCleanupBatch();
+		}
+	}
+
+	if (targetMessageIdsForAttachmentRemoval.size > 0) {
+		await performFileAttachmentCleanupBatch();
 	}
 
 	if (filesOnly) {

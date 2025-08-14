@@ -286,8 +286,9 @@ describe('[OAuthApps]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf [invalid-params]');
+					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf');
 				});
 		});
 
@@ -311,8 +312,9 @@ describe('[OAuthApps]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf [invalid-params]');
+					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf');
 				});
 		});
 
@@ -336,8 +338,9 @@ describe('[OAuthApps]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error');
-					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf [invalid-params]');
+					expect(res.body.error).to.include('must be string').and.include('must match exactly one schema in oneOf');
 				});
 		});
 

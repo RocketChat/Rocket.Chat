@@ -1,6 +1,5 @@
 import type { IOmnichannelSystemMessage, MessageTypesValues } from '@rocket.chat/core-typings';
-import { escapeHTML } from '@rocket.chat/string-helpers';
-import formatDistance from 'date-fns/formatDistance';
+import { formatDistance } from 'date-fns/formatDistance';
 import moment from 'moment';
 
 const livechatSystemMessagesMap = new Map<
@@ -152,7 +151,7 @@ addType('livechat_webrtc_video_call', {
 			};
 		}
 		return {
-			message: escapeHTML(message.msg),
+			message: message.msg,
 		};
 	},
 });
