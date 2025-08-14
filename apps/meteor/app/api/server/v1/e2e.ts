@@ -59,16 +59,11 @@ const e2eEndpoints = API.v1.post(
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			200: ajv.compile<void>({
-				allOf: [
-					{ anyOf: [{ $ref: '#/components/schemas/IOAuthApps' }, { type: 'null' }] },
-					{
-						type: 'object',
-						properties: {
-							success: { type: 'boolean', enum: [true] },
-						},
-						required: ['success'],
-					},
-				],
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
 			}),
 		},
 	},
