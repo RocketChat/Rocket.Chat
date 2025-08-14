@@ -90,7 +90,10 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 		switchSidePanelTab(SIDE_BAR_GROUPS.CHANNELS, { parentRid: room.rid });
 	}, [room, switchSidePanelTab]);
 
-	const buttonProps = useButtonPattern(handleClick);
+	const buttonProps = useButtonPattern((e) => {
+		e.preventDefault();
+		handleClick();
+	});
 
 	return (
 		<SidebarItem

@@ -23,7 +23,10 @@ const RoomListFiltersItem = ({ group, icon }: SidebarFiltersItemProps) => {
 	const switchSidePanelTab = useSwitchSidePanelTab();
 
 	const unreadGroupCount = useUnreadGroupData(group);
-	const buttonProps = useButtonPattern(() => switchSidePanelTab(group));
+	const buttonProps = useButtonPattern((e) => {
+		e.preventDefault();
+		switchSidePanelTab(group);
+	});
 	const [currentTab] = useSidePanelFilter();
 	const roomTitle = sidePanelFiltersConfig[group].title;
 	const { unreadTitle, unreadVariant, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(unreadGroupCount);
