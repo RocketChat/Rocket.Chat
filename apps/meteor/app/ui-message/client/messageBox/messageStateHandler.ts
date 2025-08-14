@@ -64,6 +64,9 @@ export const resolveComposerBox = (
 		}
 	}
 
+	// Get state of the text before any updation
+	const beforeText = input.innerText;
+
 	// Delay so DOM reflects the change
 	setTimeout(() => {
 		// console.log('resolved data', input.innerText);
@@ -78,9 +81,13 @@ export const resolveComposerBox = (
 
 		// setSelectionRange(input, 0, text.length);
 
-		const ast = parseMessage(input.innerText, parseOptions);
-
-		console.log(text);
-		console.log(ast);
+		// Check if the event is a focus type event on the editor
+		// If it is, check whether the text state has updated
+		// Then resolve the state update by parsing the message into Markup
+		if (!(eventOrInput instanceof FocusEvent) || beforeText !== text) {
+			const ast = parseMessage(text, parseOptions);
+			console.log(text);
+			console.log(ast);
+		}
 	}, 0);
 };
