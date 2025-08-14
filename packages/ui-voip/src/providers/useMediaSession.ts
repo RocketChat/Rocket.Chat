@@ -9,7 +9,7 @@ import {
 	ClientMediaSignal,
 	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
-import { useStream } from '@rocket.chat/ui-contexts';
+import { useStream, useWriteStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback } from 'react';
 
 import { useCallSounds } from './useCallSounds';
@@ -48,7 +48,7 @@ type MediaSession = SessionInfo & {
 	toggleWidget: () => void;
 
 	endCall: () => void;
-	startCall: (id?: string, kind?: 'user' | 'extension') => void;
+	startCall: (id?: string, kind?: 'user' | 'sip') => Promise<void>;
 
 	changeDevice: (device: string) => void;
 	forwardCall: () => void;
@@ -142,12 +142,13 @@ export const useMediaSessionInstance = (userId?: string) => {
 		}, [userId]),
 	);
 
-	// const mediaCallsSignal = useEndpoint('POST', '/v1/media-calls.signal');
 	const notifyUserStream = useStream('notify-user');
+	const writeStream = useWriteStream('notify-user');
 
-	// useEffect(() => {
-	// 	return mediaSession.setSendSignalFn((signal: ClientMediaSignal) => mediaCallsSignal({ signal }));
-	// }, [mediaCallsSignal]);
+	useEffect(() => {
+		// TODO: This stream is not typed.
+		return mediaSession.setSendSignalFn((signal: ClientMediaSignal) => writeStream(`${userId}/media-calls` as any, JSON.stringify(signal)));
+	}, [writeStream, userId]);
 
 	useEffect(() => {
 		if (!instance) {
@@ -207,8 +208,7 @@ const reducer = (
 
 export const useMediaSession = (instance?: MediaSignalingSession): MediaSession => {
 	const [mediaSession, dispatch] = useReducer<typeof reducer>(reducer, defaultSessionInfo);
-	// const startCallEndpoint = useEndpoint('POST', '/v1/media-calls.start');
-
+	console.log('useMediaSession', mediaSession);
 	useEffect(() => {
 		if (!instance) {
 			dispatch({ type: 'reset' });
@@ -288,13 +288,16 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			mainCall.reject();
 		};
 
-		const startCall = async (id?: string, kind?: 'user' | 'extension') => {
+		const startCall = async (id?: string, kind?: 'user' | 'sip') => {
+			console.log('startCall', id, kind, instance);
 			if (!instance) {
 				return;
 			}
 
 			const call = instance.getMainCall();
+			console.log({ ...call });
 			if (call && call.state === 'ringing') {
+				console.log('accepting call');
 				call.accept();
 				return;
 			}
@@ -304,9 +307,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 
 			try {
-				// const { call } = await startCallEndpoint({ sessionId: instance.sessionId, identifier: id, identifierKind: kind });
-				// const { _id: callId, callee } = call;
-				// await instance.startCall(callId, callee);
+				await instance.startCall(kind, id);
 			} catch (error) {
 				console.error(error);
 			}
