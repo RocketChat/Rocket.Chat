@@ -1,4 +1,4 @@
-import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import { validateForbiddenErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
@@ -77,12 +77,7 @@ const outboundCommsEndpoints = API.v1
 		},
 		async function action() {
 			const { id } = this.urlParams;
-			const { departmentId } = this.bodyParams;
-			let { agentId } = this.bodyParams;
-
-			if (agentId && !departmentId) {
-				throw new Error('error-department-required');
-			}
+			const { departmentId, agentId } = this.bodyParams;
 
 			// Case 1: Check department and check if agent is in department
 			if (departmentId) {
@@ -95,19 +90,36 @@ const outboundCommsEndpoints = API.v1
 					throw new Error('error-invalid-department');
 				}
 
+				// Case 2: Agent & department: if agent is present, agent must be in department
 				if (agentId) {
 					if (agentId !== this.userId && !(await hasPermissionAsync(this.userId, 'outbound.can-assign-any-agent'))) {
 						if (await hasPermissionAsync(this.userId, 'outbound.can-assign-self-only')) {
-							agentId = this.userId;
+							// Override agentId when user has permission to assign self only
+							this.bodyParams.agentId = this.userId;
 						} else {
 							return API.v1.forbidden();
 						}
 					}
 
-					const agent = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
+					// On here, we take a shortcut: if the user is here, we assume it's an agent (and we assume the collection is kept up to date :) )
+					const agent = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(this.bodyParams.agentId!, departmentId);
 					if (!agent) {
 						throw new Error('error-agent-not-in-department');
 					}
+				}
+				// Case 3: Agent & no department: if agent is present and there's no department, agent must be an agent
+			} else if (agentId) {
+				if (agentId !== this.userId && !(await hasPermissionAsync(this.userId, 'outbound.can-assign-any-agent'))) {
+					if (await hasPermissionAsync(this.userId, 'outbound.can-assign-self-only')) {
+						this.bodyParams.agentId = this.userId;
+					} else {
+						return API.v1.forbidden();
+					}
+				}
+
+				const agent = await Users.findOneAgentById(this.bodyParams.agentId!, { projection: { _id: 1 } });
+				if (!agent) {
+					throw new Error('error-agent-not-in-department');
 				}
 			}
 
