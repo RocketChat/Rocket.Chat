@@ -3,27 +3,27 @@ import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, FormEvent, FormEventHandler } from 'react';
 
 import PlaceholderSelector from './TemplatePlaceholderSelector';
-import type { PlaceholderMetadata } from '../../definitions/template';
+import type { TemplateParameter } from '../../definitions/template';
 
 type TemplatePlaceholderInputProps = Omit<ComponentProps<typeof TextInput>, 'value' | 'onChange'> & {
-	contact?: Serialized<ILivechatContact>;
+	type?: TemplateParameter['type'];
 	value: string;
-	format?: PlaceholderMetadata['format'];
+	contact?: Serialized<ILivechatContact>;
 	onChange(value: string): void;
 };
 
-const TemplatePlaceholderInput = ({ contact, value = '', format, onChange, ...props }: TemplatePlaceholderInputProps) => {
+const TemplatePlaceholderInput = ({ contact, value = '', type, onChange, ...props }: TemplatePlaceholderInputProps) => {
 	const handleChange = (event: FormEvent<HTMLInputElement> | string) => {
 		onChange(typeof event === 'string' ? event : event.currentTarget.value);
 	};
 
-	const addon = format !== 'TEXT' ? <Icon name='link' /> : undefined;
+	const addon = type === 'media' ? <Icon name='link' /> : undefined;
 
 	return (
 		<Box display='flex' width='100%'>
 			<TextInput {...props} value={value} addon={addon} onChange={handleChange as FormEventHandler<HTMLElement>} />
 
-			<PlaceholderSelector disabled={format !== 'TEXT'} mis={12} contact={contact} onSelect={handleChange} />
+			<PlaceholderSelector disabled={type !== 'text'} mis={12} contact={contact} onSelect={handleChange} />
 		</Box>
 	);
 };

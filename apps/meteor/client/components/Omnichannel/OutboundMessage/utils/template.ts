@@ -1,25 +1,40 @@
 import type { IOutboundProviderTemplate } from '@rocket.chat/core-typings';
+import { capitalize } from '@rocket.chat/string-helpers';
 
-import type { TemplateParameters } from '../definitions/template';
+import type { ComponentType, TemplateParameterMetadata, TemplateParameter, TemplateParameters } from '../definitions/template';
 
 const placeholderPattern = new RegExp('{{(.*?)}}', 'g'); // e.g {{1}} or {{text}}
 
-export const processTemplatePlaceholders = (template: IOutboundProviderTemplate | undefined) => {
-	if (!template) {
+export const extractParameterMetadata = (components: IOutboundProviderTemplate['components']) => {
+	if (!components.length) {
 		return [];
 	}
 
-	return template.components.flatMap((component) => {
-		const format = component.type === 'HEADER' ? component.format : 'TEXT';
-		return processPlaceholderText(component.text, component.type, format);
+	return components.flatMap((component) => {
+		const format = component.type === 'header' ? component.format : 'text';
+		return parseComponentText(component.type, component.text, format);
 	});
 };
 
-export const processPlaceholderText = (
+export const parseComponentText = (
+	componentType: ComponentType,
 	text: string | undefined,
-	componentType: IOutboundProviderTemplate['components'][0]['type'],
-	format: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT' = 'TEXT',
-) => {
+	format: TemplateParameter['format'] = 'text',
+): TemplateParameterMetadata[] => {
+	if (format !== 'text') {
+		return [
+			{
+				id: `${componentType}.mediaUrl`,
+				placeholder: '',
+				name: 'Media_URL',
+				type: 'media',
+				componentType,
+				format,
+				index: 0,
+			},
+		];
+	}
+
 	if (!text) {
 		return [];
 	}
@@ -27,9 +42,11 @@ export const processPlaceholderText = (
 	const matches = text.match(placeholderPattern) || [];
 	const placeholders = new Set(matches);
 
-	return Array.from(placeholders).map((raw, index) => ({
-		raw,
-		value: raw.slice(2, -2),
+	return Array.from(placeholders).map((placeholder, index) => ({
+		id: `${componentType}.${placeholder}`,
+		placeholder,
+		name: capitalize(componentType),
+		type: 'text',
 		componentType,
 		format,
 		index,
@@ -40,33 +57,45 @@ export const replacePlaceholders = (text = '', replacer: (substring: string, ind
 	return text.replace(placeholderPattern, replacer);
 };
 
-export const processComponent = (
-	type: 'HEADER' | 'BODY' | 'FOOTER',
-	template: IOutboundProviderTemplate,
-	parameters?: TemplateParameters,
-) => {
-	const { components } = template;
+const replaceLineBreaks = (text: string) => {
+	return text.replace(/([^\n])\n(?!\n)/g, '$1  \n');
+};
 
-	if (!components.length) {
-		return;
+export const processTemplatePreviewText = (text: string, parameters: TemplateParameter[] = []): string => {
+	if (!text) {
+		return text;
 	}
 
-	const component = components.find((component) => component.type === type);
+	const processedText = replaceLineBreaks(text);
 
-	if (!component) {
-		return;
+	if (!parameters?.length) {
+		return processedText;
 	}
 
-	const componentParams = parameters?.[type];
+	return replacePlaceholders(processedText, (placeholder, index) => {
+		const parameter = parameters[index - 1];
+		return parameter ? parameter.value : placeholder;
+	});
+};
 
-	if (!componentParams?.length) {
-		return component;
+export const convertMetadataToParameter = (metadata: TemplateParameterMetadata, value: string): TemplateParameter => {
+	switch (metadata.type) {
+		case 'media':
+			return { type: 'media', value, format: metadata.format };
+		default:
+			return { type: 'text', value, format: metadata.format };
 	}
+};
+
+export const updateTemplateParameters = (parameters: TemplateParameters, metadata: TemplateParameterMetadata, value: string) => {
+	const { componentType, index } = metadata;
+
+	const componentParameters = [...(parameters[componentType] || [])];
+
+	componentParameters[index] = convertMetadataToParameter(metadata, value);
 
 	return {
-		...component,
-		text: replacePlaceholders(component.text, (placeholder, index) => {
-			return componentParams[index - 1] || placeholder;
-		}),
+		...parameters,
+		[componentType]: componentParameters,
 	};
 };
