@@ -280,7 +280,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 
 			const { role } = mainCall;
 
-			if (role === 'caller') {
+			if (role === 'caller' || mainCall.state !== 'ringing') {
 				mainCall.hangup();
 				return;
 			}
