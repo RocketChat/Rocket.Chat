@@ -7250,11 +7250,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/e2ee-node@workspace:packages/e2ee-node":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/e2ee-node@workspace:packages/e2ee-node"
+  dependencies:
+    "@rocket.chat/e2ee": "workspace:^"
+    "@types/node": "npm:~22.16.5"
+    typescript: "npm:~5.9.2"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/e2ee@workspace:^, @rocket.chat/e2ee@workspace:packages/e2ee":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/e2ee@workspace:packages/e2ee"
   dependencies:
-    "@types/node": "npm:~22.16.5"
     typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
@@ -11950,6 +11959,15 @@ __metadata:
   version: 14.18.63
   resolution: "@types/node@npm:14.18.63"
   checksum: 10/82a7775898c2ea6db0b610a463512206fb2c7adc1af482c7eb44b99d94375fff51c74f67ae75a63c5532971159f30c866a4d308000624ef02fd9a7175e277019
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:~22.16.5":
+  version: 22.16.5
+  resolution: "@types/node@npm:22.16.5"
+  dependencies:
+    undici-types: "npm:~6.21.0"
+  checksum: 10/ba45b5c9113cbc5edb12960fcfe7e80db2c998af5c1931264240695b27d756570d92462150b95781bd67a03aa82111cc970ab0f4504eb99213edff8bf425354e
   languageName: node
   linkType: hard
 
@@ -31650,13 +31668,9 @@ __metadata:
   resolution: "rocket.chat@workspace:."
   dependencies:
     "@changesets/cli": "npm:^2.27.11"
-    "@types/chart.js": "npm:^2.9.41"
-    "@types/js-yaml": "npm:^4.0.9"
-    "@types/node": "npm:~22.16.1"
     "@types/stream-buffers": "npm:^3.0.7"
     node-gyp: "npm:^10.2.0"
     turbo: "npm:~2.5.5"
-    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 

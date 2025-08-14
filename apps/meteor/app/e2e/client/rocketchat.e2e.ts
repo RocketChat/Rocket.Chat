@@ -3,7 +3,7 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import { E2EE, type KeyPair } from '@rocket.chat/e2ee';
+import { E2EEBase, type KeyPair } from '@rocket.chat/e2ee';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
@@ -68,20 +68,20 @@ class E2E extends Emitter {
 
 	private state: E2EEState;
 
-	private e2ee: E2EE;
+	private e2ee: E2EEBase;
 
 	constructor() {
 		super();
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
-		this.e2ee = new E2EE(
+		this.e2ee = new E2EEBase(
+			crypto,
 			{
 				load: (keyName) => Promise.resolve(Accounts.storageLocation.getItem(keyName)),
 				store: (keyName, value) => Promise.resolve(Accounts.storageLocation.setItem(keyName, value)),
 				remove: (keyName) => Promise.resolve(Accounts.storageLocation.removeItem(keyName)),
 			},
-			crypto,
 			{
 				fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
 			},
@@ -459,6 +459,7 @@ class E2E extends Emitter {
 		try {
 			this.setState(E2EEState.LOADING_KEYS);
 			const { public_key, private_key } = await this.e2ee.getKeysFromService();
+
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
 		} catch (error) {

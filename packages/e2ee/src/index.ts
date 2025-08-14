@@ -1,3 +1,5 @@
+export { KeyCodec } from './keyCodec.ts';
+
 export interface KeyStorage {
 	load(keyName: string): Promise<string | null>;
 	store(keyName: string, value: string): Promise<void>;
@@ -8,36 +10,34 @@ export interface KeyService {
 	fetchMyKeys(): Promise<KeyPair>;
 }
 
-export interface RandomGenerator {
-	getRandomValues<T extends ArrayBufferView>(array: T): T;
+export interface CryptoProvider {
+	getRandomValues(array: Uint32Array<ArrayBuffer>): Uint32Array<ArrayBuffer>;
 }
 
 export type PrivateKey = string;
 export type PublicKey = string;
-
 export type KeyPair = {
 	public_key: PublicKey;
 	private_key: PrivateKey;
 };
 
-export class E2EE {
+export abstract class E2EEBase {
 	#service: KeyService;
 	#storage: KeyStorage;
-	#random: RandomGenerator;
+	#crypto: CryptoProvider;
 
-	constructor(storage: KeyStorage, random: RandomGenerator, service: KeyService) {
+	constructor(crypto: CryptoProvider, storage: KeyStorage, service: KeyService) {
 		this.#storage = storage;
-		this.#random = random;
 		this.#service = service;
+		this.#crypto = crypto;
 	}
 
 	async getKeysFromLocalStorage(): Promise<Partial<KeyPair>> {
 		const public_key = (await this.#storage.load('public_key')) ?? undefined;
 		const private_key = (await this.#storage.load('private_key')) ?? undefined;
-
 		return {
-			public_key,
-			private_key,
+			...(public_key ? { public_key } : {}),
+			...(private_key ? { private_key } : {}),
 		};
 	}
 
@@ -48,17 +48,14 @@ export class E2EE {
 			throw new Error('Failed to retrieve keys from service');
 		}
 
-		return {
-			public_key: keys.public_key,
-			private_key: keys.private_key,
-		};
+		return keys;
 	}
 
 	async #generateMnemonicPhrase(n: number, sep = ' '): Promise<string> {
 		const wordList = await import('./wordList.ts');
 		const result = new Array(n);
 		const randomBuffer = new Uint32Array(n);
-		this.#random.getRandomValues(randomBuffer);
+		this.#crypto.getRandomValues(randomBuffer);
 		for (let i = 0; i < n; i++) {
 			result[i] = wordList.v1[randomBuffer[i]! % wordList.v1.length]!;
 		}

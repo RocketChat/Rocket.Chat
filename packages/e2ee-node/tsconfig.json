@@ -1,21 +1,19 @@
 {
 	"compilerOptions": {
-		"composite": false,
-		"module": "es2022",
-		"target": "ES2024",
-		"types": [],
-		"typeRoots": [],
-
-		/** Modules */
 		"rootDir": "src",
-		"allowImportingTsExtensions": true,
-		"rewriteRelativeImportExtensions": true,
-
-		/** Emit */
-		"noEmit": true,
 		"outDir": "dist",
 		"declaration": true,
 		"declarationMap": true,
+		"composite": false,
+		"module": "node20",
+
+		"target": "ES2024",
+		"types": ["node"],
+
+		/** Emit */
+		"noEmit": true,
+		"allowImportingTsExtensions": true,
+		"rewriteRelativeImportExtensions": true,
 		"verbatimModuleSyntax": true,
 		"moduleDetection": "force",
 
@@ -36,15 +34,13 @@
 		"noUncheckedSideEffectImports": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
+
 		"isolatedModules": true,
 		"isolatedDeclarations": true,
+
 		"allowJs": false,
 		"esModuleInterop": false,
 		"skipLibCheck": false
-	},
-	"typeAcquisition": {
-		"enable": false,
-		"disableFilenameBasedTypeAcquisition": true
 	},
 	"include": ["src"],
 	"exclude": []
