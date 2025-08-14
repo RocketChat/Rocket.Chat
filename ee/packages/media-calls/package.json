@@ -27,6 +27,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/media-signaling": "workspace:^",
-		"@rocket.chat/models": "workspace:^"
+		"@rocket.chat/models": "workspace:^",
+		"drachtio-srf": "^5.0.10"
 	}
 }

@@ -93,7 +93,7 @@ export abstract class GlobalSignalProcessor {
 		logger.error({ msg: 'Unrecognized media signal', signal });
 	}
 
-	protected async mutateCallee(callee: { type: CallActorType; id: string }): Promise<{ type: CallActorType; id: string }> {
+	public async mutateCallee(callee: { type: CallActorType; id: string }): Promise<{ type: CallActorType; id: string }> {
 		if (callee.type !== 'sip') {
 			return callee;
 		}
