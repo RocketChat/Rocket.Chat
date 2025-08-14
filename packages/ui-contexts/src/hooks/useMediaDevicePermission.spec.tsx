@@ -36,8 +36,8 @@ describe('useMediaDeviceMicrophonePermission', () => {
 			wrapper: getWrapper(undefined, ['device1', 'device2'], false),
 		});
 
-		expect(result.current.state).toBe('granted');
-		expect(typeof result.current.requestDevice).toBe('function');
+		expect(result.current.state).toBe('denied');
+		expect(result.current.requestDevice).toBeUndefined();
 	});
 	it.each(states)('Should return permission state $state and requestDevice is $requestDevice', async ({ state, requestDevice }) => {
 		const { result } = renderHook(() => useMediaDeviceMicrophonePermission(), {
