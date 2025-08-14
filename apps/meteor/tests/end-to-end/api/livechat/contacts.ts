@@ -1073,7 +1073,7 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
-	describe('[DELETE] omnichannel/contacts.delete', () => {
+	describe('[POST] omnichannel/contacts.delete', () => {
 		let contactId: string;
 		let roomId: string;
 

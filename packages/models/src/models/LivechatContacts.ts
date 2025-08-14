@@ -331,7 +331,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		);
 	}
 
-	disableByContactId(contactId: string): Promise<UpdateResult | Document> {
+	disableByContactId(contactId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{ _id: contactId },
 			{

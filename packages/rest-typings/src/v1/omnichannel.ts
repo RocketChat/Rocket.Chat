@@ -1411,6 +1411,7 @@ const POSTOmnichannelContactDeleteSuccess = {
 	properties: {
 		success: {
 			type: 'boolean',
+			enum: [true],
 		},
 	},
 	additionalProperties: false,
