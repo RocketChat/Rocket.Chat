@@ -8,10 +8,10 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 	const isRecovering = useRef(false);
 	const firstRecoveryAttempted = useRef(false);
 
-	const getURLInfo = useCallback(async (url: string): Promise<{ redirectUrl: string | false; expires: number | null }> => {
+	const getRedirectURLInfo = useCallback(async (url: string): Promise<{ redirectUrl: string | false; expires: number | null }> => {
 		const [path, query] = url.split('?');
 		const params = new URLSearchParams(query);
-		params.set('info', 'true');
+		params.set('replyWithRedirectUrl', 'true');
 		const response = await fetch(`${path}?${params.toString()}`, {
 			credentials: 'same-origin',
 		});
@@ -82,7 +82,7 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 		const { currentTime } = node;
 
 		try {
-			const { redirectUrl: newUrl, expires: newExpiresAt } = await getURLInfo(url);
+			const { redirectUrl: newUrl, expires: newExpiresAt } = await getRedirectURLInfo(url);
 			setExpiresAt(newExpiresAt);
 			node.src = newUrl || url;
 

@@ -4,8 +4,9 @@ import { Uploads } from '@rocket.chat/models';
 import { WebApp } from 'meteor/webapp';
 
 import { FileUpload } from './FileUpload';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const hasInfoParam = (req: IncomingMessage) => {
+const hasReplyWithRedirectUrlParam = (req: IncomingMessage) => {
 	if (!req.url) {
 		return false;
 	}
@@ -14,8 +15,8 @@ const hasInfoParam = (req: IncomingMessage) => {
 		return false;
 	}
 	const searchParams = new URLSearchParams(params);
-	const infoParam = searchParams.get('info');
-	return infoParam === 'true' || infoParam === '1';
+	const replyWithRedirectUrl = searchParams.get('replyWithRedirectUrl');
+	return replyWithRedirectUrl === 'true' || replyWithRedirectUrl === '1';
 };
 
 WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
@@ -31,20 +32,21 @@ WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
 				return;
 			}
 
-			if (hasInfoParam(req)) {
+			if (hasReplyWithRedirectUrlParam(req)) {
 				if (!file.store) {
 					res.writeHead(404);
 					res.end();
 					return;
 				}
 				const store = FileUpload.getStoreByName(file.store);
-				let url: string | false;
+				let url: string | false = false;
+				let expiryTimespan: number | null = null;
 				try {
 					url = await store.getStore().getRedirectURL(file, false);
-				} catch {
-					url = false;
+					expiryTimespan = await store.getStore().getUrlExpiryTimeSpan();
+				} catch (e) {
+					SystemLogger.warn(e);
 				}
-				const expiryTimespan = await store.getStore().getUrlExpiryTimeSpan();
 				return FileUpload.respondWithRedirectUrlInfo(url, file, req, res, expiryTimespan);
 			}
 

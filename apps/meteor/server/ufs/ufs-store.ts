@@ -370,6 +370,6 @@ export class Store {
 	}
 
 	async getUrlExpiryTimeSpan(): Promise<number | null> {
-		return null;
+		throw new Error('getUrlExpiryTimeSpan is not implemented');
 	}
 }
