@@ -12,7 +12,6 @@ import {
 	POSTOmnichannelContactDeleteSuccessSchema,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
-	validateNotFoundErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -241,7 +240,6 @@ const omnichannelContactsEndpoints = API.v1.post(
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
-			404: validateNotFoundErrorResponse,
 		},
 		authRequired: true,
 		permissionsRequired: ['delete-livechat-contact'],
@@ -258,7 +256,7 @@ const omnichannelContactsEndpoints = API.v1.post(
 				return API.v1.failure('error-invalid-contact');
 			}
 
-			return API.v1.notFound(error.message);
+			return API.v1.failure(error.message);
 		}
 	},
 );
