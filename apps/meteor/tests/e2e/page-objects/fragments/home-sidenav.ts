@@ -46,8 +46,16 @@ export class HomeSidenav {
 		return this.page.locator('role=search >> role=searchbox').first();
 	}
 
-	get userProfileMenu(): Locator {
+	get btnUserProfileMenu(): Locator {
 		return this.page.getByRole('button', { name: 'User menu', exact: true });
+	}
+
+	get userProfileMenu(): Locator {
+		return this.page.getByRole('menu', { name: 'User menu' });
+	}
+
+	getUserProfileMenuOption(name: string): Locator {
+		return this.userProfileMenu.getByRole('menuitemcheckbox', { name });
 	}
 
 	get sidebarChannelsList(): Locator {
@@ -152,12 +160,12 @@ export class HomeSidenav {
 	}
 
 	async logout(): Promise<void> {
-		await this.userProfileMenu.click();
+		await this.btnUserProfileMenu.click();
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
-		await this.userProfileMenu.click();
+		await this.btnUserProfileMenu.click();
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
 

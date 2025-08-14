@@ -168,24 +168,18 @@ export async function findDepartmentsToAutocomplete({
 export async function findDepartmentAgents({
 	departmentId,
 	pagination: { offset, count, sort },
-}: FindDepartmentAgentsParams): Promise<
-	PaginatedResult<{ agents: (ILivechatDepartmentAgents & { user: { _id: string; username: string; name: string } })[] }>
-> {
-	const cursor = LivechatDepartmentAgents.findAgentsByDepartmentId(departmentId, {
+}: FindDepartmentAgentsParams): Promise<PaginatedResult<{ agents: ILivechatDepartmentAgents[] }>> {
+	const { cursor, totalCount } = LivechatDepartmentAgents.findAgentsByDepartmentId<ILivechatDepartmentAgents>(departmentId, {
 		sort: sort || { username: 1 },
 		skip: offset,
 		limit: count,
 	});
-	const [
-		{
-			result,
-			totalCount: [{ total } = { total: 0 }],
-		},
-	] = await cursor.toArray();
+
+	const [agents, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
-		agents: result,
-		count: result.length,
+		agents,
+		count: agents.length,
 		offset,
 		total,
 	};

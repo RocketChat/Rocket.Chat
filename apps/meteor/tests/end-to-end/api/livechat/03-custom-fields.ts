@@ -126,6 +126,7 @@ describe('LIVECHAT - custom fields', () => {
 		let visitorRoom: IOmnichannelRoom;
 
 		before(async () => {
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
 			await createCustomField({
 				searchable: true,
 				field: customFieldName,
@@ -173,6 +174,7 @@ describe('LIVECHAT - custom fields', () => {
 				deleteCustomField(customFieldName3),
 				deleteCustomField(roomCustomField),
 				closeOmnichannelRoom(visitorRoom._id),
+				updateSetting('Livechat_accept_chats_with_no_agents', false),
 			]);
 		});
 		it('should fail when token is not on body params', async () => {
@@ -209,7 +211,6 @@ describe('LIVECHAT - custom fields', () => {
 				.expect(400);
 		});
 		it('should fail when customFields.key is invalid', async () => {
-			const visitor = await createVisitor();
 			await request
 				.post(api('livechat/custom.fields'))
 				.send({
@@ -351,67 +352,68 @@ describe('LIVECHAT - custom fields', () => {
 					});
 				});
 		});
-		it('should save both room & vistor custom fields on one call', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
 
-			await request
-				.post(api('livechat/custom.fields'))
-				.send({
-					token: visitor.token,
-					customFields: [
-						{ key: customFieldName, value: 'test_address', overwrite: true },
-						{ key: roomCustomField, value: 'test_address2', overwrite: true },
-						{ key: customFieldName3, value: 'test_address3', overwrite: true },
-					],
-				})
-				.expect(200);
+		describe('with a room', () => {
+			let visitor: ILivechatVisitor;
+			let room: IOmnichannelRoom;
+			before(async () => {
+				visitor = await createVisitor();
+				room = await createLivechatRoom(visitor.token);
+			});
+			after(async () => {
+				await deleteVisitor(visitor._id);
+				await closeOmnichannelRoom(room._id);
+			});
 
-			await request
-				.get(api(`omnichannel/contacts.get`))
-				.set(credentials)
-				.query({ contactId: visitorRoom.contactId })
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('contact');
-					expect(res.body.contact).to.have.property('customFields');
-					expect(res.body.contact.customFields).to.have.property(customFieldName, 'test_address');
-					expect(res.body.contact.customFields).to.have.property(customFieldName3, 'test_address3');
-				});
+			it('should save both room & vistor custom fields on one call', async () => {
+				await request
+					.post(api('livechat/custom.fields'))
+					.send({
+						token: visitor.token,
+						customFields: [
+							{ key: customFieldName, value: 'test_address', overwrite: true },
+							{ key: roomCustomField, value: 'test_address2', overwrite: true },
+							{ key: customFieldName3, value: 'test_address3', overwrite: true },
+						],
+					})
+					.expect(200);
 
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo).to.have.property('livechatData').that.is.an('object');
-			expect(roomInfo.livechatData).to.have.property(roomCustomField, 'test_address2');
-		});
-		it('should ignore a room custom field when room already has a value for it and overwrite is false', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
+				await request
+					.get(api(`omnichannel/contacts.get`))
+					.set(credentials)
+					.query({ contactId: visitorRoom.contactId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact).to.have.property('customFields');
+						expect(res.body.contact.customFields).to.have.property(customFieldName, 'test_address');
+						expect(res.body.contact.customFields).to.have.property(customFieldName3, 'test_address3');
+					});
 
-			await request
-				.post(api('livechat/custom.fields'))
-				.send({
-					token: visitor.token,
-					customFields: [{ key: roomCustomField, value: 'test_address2', overwrite: true }],
-				})
-				.expect(200);
+				const roomInfo = await getLivechatRoomInfo(room._id);
+				expect(roomInfo).to.have.property('livechatData').that.is.an('object');
+				expect(roomInfo.livechatData).to.have.property(roomCustomField, 'test_address2');
+			});
+			it('should ignore a room custom field when room already has a value for it and overwrite is false', async () => {
+				await request
+					.post(api('livechat/custom.fields'))
+					.send({
+						token: visitor.token,
+						customFields: [{ key: roomCustomField, value: 'test_value_overriden', overwrite: false }],
+					})
+					.expect(200);
 
-			await request
-				.post(api('livechat/custom.fields'))
-				.send({
-					token: visitor.token,
-					customFields: [{ key: roomCustomField, value: 'test_value_overriden', overwrite: false }],
-				})
-				.expect(200);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo).to.have.property('livechatData').that.is.an('object');
-			expect(roomInfo.livechatData).to.have.property(roomCustomField, 'test_address2');
+				const roomInfo = await getLivechatRoomInfo(room._id);
+				expect(roomInfo).to.have.property('livechatData').that.is.an('object');
+				expect(roomInfo.livechatData).to.have.property(roomCustomField, 'test_address2');
+			});
 		});
 	});
 
 	describe('livechat/custom.field [with Contacts]', () => {
 		let visitor: ILivechatVisitor;
 		let contactId: string;
+		let room: IOmnichannelRoom;
 
 		const customFieldName = `custom_field_${Date.now()}`;
 		const customFieldValue = 'custom-field-value';
@@ -419,6 +421,7 @@ describe('LIVECHAT - custom fields', () => {
 		before(async () => {
 			await updatePermission('create-livechat-contact', ['admin']);
 			await updatePermission('view-livechat-contact', ['admin']);
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
 
 			// Create a Visitor
 			visitor = await createVisitor();
@@ -440,7 +443,7 @@ describe('LIVECHAT - custom fields', () => {
 					contactId = res.body.contactId;
 				});
 
-			await request.get(api('livechat/room')).query({ token: visitor.token });
+			room = await createLivechatRoom(visitor.token);
 
 			// Create Custom Field
 			await createCustomField({
@@ -471,6 +474,8 @@ describe('LIVECHAT - custom fields', () => {
 				deleteCustomField(`${customFieldName}_2`),
 				deleteCustomField(`${customFieldName}_3`),
 				deleteVisitor(visitor.token),
+				closeOmnichannelRoom(room._id),
+				updateSetting('Livechat_accept_chats_with_no_agents', false),
 			]);
 		});
 
@@ -645,110 +650,87 @@ describe('LIVECHAT - custom fields', () => {
 				});
 		});
 
-		it('should not save contact conflictingFields as nullish if not modified', async () => {
-			// Create a Visitor
-			const visitor2 = await createVisitor();
+		describe('conflictingField not nullish', () => {
+			let room: IOmnichannelRoom;
+			let visitor: ILivechatVisitor;
 			let contactId2: string | undefined;
 
-			// Create a Contact and store id on var
-			await request
-				.post(api('omnichannel/contacts'))
-				.set(credentials)
-				.send({
-					name: visitor2.name,
-					emails: [visitor2.visitorEmails?.[0].address],
-					phones: [visitor2.phone?.[0].phoneNumber],
-				})
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('contactId');
+			before(async () => {
+				visitor = await createVisitor();
+				await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: visitor.name,
+						emails: [visitor.visitorEmails?.[0].address],
+						phones: [visitor.phone?.[0].phoneNumber],
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('contactId');
 
-					contactId2 = res.body.contactId;
-				});
+						contactId2 = res.body.contactId;
+					});
+				room = await createLivechatRoom(visitor.token);
+			});
+			after(async () => {
+				await closeOmnichannelRoom(room._id);
+			});
 
-			await request.get(api('livechat/room')).query({ token: visitor2.token });
+			it('should not save contact conflictingFields as nullish if not modified', async () => {
+				await request
+					.post(api('livechat/custom.field'))
+					.send({ token: visitor.token, key: `${customFieldName}`, value: customFieldValue, overwrite: true })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
 
-			// Save the custom field on Contact
-			await request
-				.post(api('livechat/custom.field'))
-				.send({ token: visitor2.token, key: `${customFieldName}`, value: customFieldValue, overwrite: true })
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-				});
+				// Fetch the visitor's contact to validate custom fields are properly set.
+				await request
+					.get(api(`omnichannel/contacts.get`))
+					.set(credentials)
+					.query({ contactId: contactId2 })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact).to.have.property('customFields');
+						expect(res.body.contact.customFields).to.have.property(`${customFieldName}`, customFieldValue);
 
-			// Fetch the visitor's contact to validate custom fields are properly set.
-			await request
-				.get(api(`omnichannel/contacts.get`))
-				.set(credentials)
-				.query({ contactId: contactId2 })
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('contact');
-					expect(res.body.contact).to.have.property('customFields');
-					expect(res.body.contact.customFields).to.have.property(`${customFieldName}`, customFieldValue);
+						// Validate conflictingFields was not saved as null
+						expect(res.body.contact).to.not.have.property('conflictingFields');
+					});
+			});
 
-					// Validate conflictingFields was not saved as null
-					expect(res.body.contact).to.not.have.property('conflictingFields');
-				});
+			it('should not save contact conflictingFields as nullish if not modified (through visitor update)', async () => {
+				await request
+					.post(api('livechat/visitor'))
+					.set(credentials)
+					.send({
+						visitor: {
+							token: visitor.token,
+							customFields: [{ key: `${customFieldName}`, value: customFieldValue, overwrite: true }],
+						},
+					});
 
-			await deleteVisitor(visitor2.token);
-		});
+				// Fetch the visitor's contact to validate custom fields are properly set.
+				await request
+					.get(api(`omnichannel/contacts.get`))
+					.set(credentials)
+					.query({ contactId: contactId2 })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('contact');
+						expect(res.body.contact).to.have.property('customFields');
+						expect(res.body.contact.customFields).to.have.property(`${customFieldName}`, customFieldValue);
 
-		it('should not save contact conflictingFields as nullish if not modified (through visitor update)', async () => {
-			// Create a Visitor
-			const visitor2 = await createVisitor();
-			let contactId2: string | undefined;
-
-			// Create a Contact and store id on var
-			await request
-				.post(api('omnichannel/contacts'))
-				.set(credentials)
-				.send({
-					name: visitor2.name,
-					emails: [visitor2.visitorEmails?.[0].address],
-					phones: [visitor2.phone?.[0].phoneNumber],
-				})
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('contactId');
-
-					contactId2 = res.body.contactId;
-				});
-
-			await request.get(api('livechat/room')).query({ token: visitor2.token });
-
-			// Save the custom field on Contact
-			await request
-				.post(api('livechat/visitor'))
-				.set(credentials)
-				.send({
-					visitor: {
-						token: visitor2.token,
-						customFields: [{ key: `${customFieldName}`, value: customFieldValue, overwrite: true }],
-					},
-				});
-
-			// Fetch the visitor's contact to validate custom fields are properly set.
-			await request
-				.get(api(`omnichannel/contacts.get`))
-				.set(credentials)
-				.query({ contactId: contactId2 })
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('contact');
-					expect(res.body.contact).to.have.property('customFields');
-					expect(res.body.contact.customFields).to.have.property(`${customFieldName}`, customFieldValue);
-
-					// Validate conflictingFields was not saved as null
-					expect(res.body.contact).to.not.have.property('conflictingFields');
-				});
-
-			await deleteVisitor(visitor2.token);
+						// Validate conflictingFields was not saved as null
+						expect(res.body.contact).to.not.have.property('conflictingFields');
+					});
+			});
 		});
 	});
 });
