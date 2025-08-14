@@ -67,7 +67,6 @@ export class MockedAppRootBuilder {
 		status: 'connected',
 		retryTime: undefined,
 		reconnect: () => undefined,
-		isLoggingIn: false,
 	};
 
 	private server: ContextType<typeof ServerContext> = {
@@ -201,6 +200,7 @@ export class MockedAppRootBuilder {
 	private authServices: LoginService[] = [];
 
 	private authentication: ContextType<typeof AuthenticationContext> = {
+		isLoggingIn: false,
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),

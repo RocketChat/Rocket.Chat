@@ -8,7 +8,6 @@ import { useReactiveValue } from '../hooks/useReactiveValue';
 const getValue = (): ConnectionStatusContextValue => ({
 	...Meteor.status(),
 	reconnect: Meteor.reconnect,
-	isLoggingIn: Meteor.loggingIn(),
 });
 
 type ConnectionStatusProviderProps = {

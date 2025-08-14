@@ -33,6 +33,7 @@ export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
 export { useGoToRoom } from './hooks/useGoToRoom';
 export type { EndpointFunction } from './hooks/useEndpoint';
+export { useIsLoggingIn } from './hooks/useIsLoggingIn';
 export { useIsPrivilegedSettingsContext } from './hooks/useIsPrivilegedSettingsContext';
 export { useLanguage } from './hooks/useLanguage';
 export { useLanguages } from './hooks/useLanguages';
