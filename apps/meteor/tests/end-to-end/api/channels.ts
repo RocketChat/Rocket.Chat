@@ -31,32 +31,13 @@ function getRoomInfo(roomId: IRoom['_id']) {
 }
 
 describe('[Channels]', () => {
-	let channel: Pick<IRoom, '_id' | 'name'>;
+	let channel: IRoom;
 	const apiPublicChannelName = `api-channel-test-${Date.now()}`;
 
 	before((done) => getCredentials(done));
 
-	before('Creating channel', (done) => {
-		void request
-			.post(api('channels.create'))
-			.set(credentials)
-			.send({
-				name: apiPublicChannelName,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.nested.property('channel._id');
-				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
-				expect(res.body).to.have.nested.property('channel.t', 'c');
-				expect(res.body).to.have.nested.property('channel.msgs', 0);
-				channel = {
-					_id: res.body.channel._id,
-					name: res.body.channel.name,
-				};
-			})
-			.end(done);
+	before('Creating channel', async () => {
+		channel = (await createRoom({ type: 'c', name: apiPublicChannelName })).body.channel;
 	});
 
 	after(async () => {
@@ -65,7 +46,6 @@ describe('[Channels]', () => {
 
 	it('/channels.invite', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
-
 		return request
 			.post(api('channels.invite'))
 			.set(credentials)
@@ -210,7 +190,6 @@ describe('[Channels]', () => {
 
 	it('/channels.kick', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
-
 		return request
 			.post(api('channels.kick'))
 			.set(credentials)
@@ -820,7 +799,7 @@ describe('[Channels]', () => {
 					name: `team-channel-${Date.now()}`,
 					extraData: { teamId },
 				})
-				.expect(403)
+				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'unauthorized');
@@ -2592,24 +2571,28 @@ describe('[Channels]', () => {
 		let withCFChannel: IRoom;
 		let withoutCFChannel: IRoom;
 
+		const customFields = { field0: 'value0' };
+
 		after(async () => {
-			await deleteRoom({ type: 'c', roomId: withCFChannel._id });
+			await Promise.all([deleteRoom({ type: 'c', roomId: withCFChannel._id }), deleteRoom({ type: 'c', roomId: withoutCFChannel._id })]);
 		});
 
-		it('create channel with customFields', (done) => {
-			const customFields = { field0: 'value0' };
-			void request
-				.post(api('channels.create'))
-				.set(credentials)
-				.send({
-					name: `channel.cf.${Date.now()}`,
+		before(async () => {
+			const [withCFChannelResponse, withoutCFChannelResponse] = await Promise.all([
+				createRoom({
+					type: 'c',
+					name: `channels.setCustomFields.${Date.now()}`,
 					customFields,
-				})
-				.end((_err, res) => {
-					withCFChannel = res.body.channel;
-					done();
-				});
+				}),
+				createRoom({
+					type: 'c',
+					name: `channels.setWithoutCustomFields.${Date.now()}`,
+				}),
+			]);
+			withCFChannel = withCFChannelResponse.body.channel;
+			withoutCFChannel = withoutCFChannelResponse.body.channel;
 		});
+
 		it('get customFields using channels.info', (done) => {
 			void request
 				.get(api('channels.info'))
@@ -2625,6 +2608,7 @@ describe('[Channels]', () => {
 				})
 				.end(done);
 		});
+
 		it('change customFields', async () => {
 			const customFields = { field9: 'value9' };
 			return request
@@ -2645,6 +2629,7 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.not.nested.property('channel.customFields.field0', 'value0');
 				});
 		});
+
 		it('get customFields using channels.info', (done) => {
 			void request
 				.get(api('channels.info'))
@@ -2660,6 +2645,7 @@ describe('[Channels]', () => {
 				})
 				.end(done);
 		});
+
 		it('delete channels with customFields', (done) => {
 			void request
 				.post(api('channels.delete'))
@@ -2674,6 +2660,7 @@ describe('[Channels]', () => {
 				})
 				.end(done);
 		});
+
 		it('create channel without customFields', (done) => {
 			void request
 				.post(api('channels.create'))
@@ -2686,6 +2673,7 @@ describe('[Channels]', () => {
 					done();
 				});
 		});
+
 		it('set customFields with one nested field', async () => {
 			const customFields = { field1: 'value1' };
 			return request
@@ -2705,6 +2693,7 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.nested.property('channel.customFields.field1', 'value1');
 				});
 		});
+
 		it('set customFields with multiple nested fields', async () => {
 			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
@@ -2728,6 +2717,7 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.not.nested.property('channel.customFields.field1', 'value1');
 				});
 		});
+
 		it('set customFields to empty object', (done) => {
 			const customFields = {};
 
@@ -2751,6 +2741,7 @@ describe('[Channels]', () => {
 				})
 				.end(done);
 		});
+
 		it('set customFields as a string -> should return 400', (done) => {
 			const customFields = '';
 
@@ -2768,6 +2759,7 @@ describe('[Channels]', () => {
 				})
 				.end(done);
 		});
+
 		it('delete channel with empty customFields', (done) => {
 			void request
 				.post(api('channels.delete'))

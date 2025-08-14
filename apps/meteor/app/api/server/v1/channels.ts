@@ -25,7 +25,7 @@ import {
 	isChannelsFilesListProps,
 	isChannelsOnlineProps,
 } from '@rocket.chat/rest-typings';
-import type { ForbiddenErrorResponse, PaginatedRequest } from '@rocket.chat/rest-typings';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
@@ -115,6 +115,10 @@ export type ChannelsCreateProps = {
 		teamId?: string;
 	};
 	excludeSelf?: boolean;
+	/**
+	 * @deprecated Using `customFields` is deprecated.
+	 */
+	customFields?: Record<string, any>;
 };
 
 type ChannelsListProps = PaginatedRequest<{ _id?: string }>;
@@ -154,6 +158,8 @@ const channelsCreatePropsSchema = {
 			additionalProperties: false,
 			nullable: true,
 		},
+		customFields: { type: 'object' },
+		excludeSelf: { type: 'boolean' },
 	},
 	required: ['name'],
 	additionalProperties: false,
@@ -247,7 +253,6 @@ const channelsEndpoints = API.v1
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
-				403: validateForbiddenErrorResponse,
 				200: ajv.compile<{
 					channel: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
 				}>({
@@ -266,7 +271,7 @@ const channelsEndpoints = API.v1
 		},
 		async function action() {
 			const { userId, bodyParams } = this;
-
+			// TODO : missing validation for excludeSelf, customFields
 			try {
 				await API.channels?.create.validate({
 					user: {
@@ -291,7 +296,7 @@ const channelsEndpoints = API.v1
 				});
 			} catch (e: any) {
 				if (e.message === 'unauthorized') {
-					return API.v1.forbidden<ForbiddenErrorResponse>();
+					return API.v1.unauthorized();
 				}
 				return API.v1.failure(e.message);
 			}
@@ -371,7 +376,7 @@ const channelsEndpoints = API.v1
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
-
+			console.log('hasPermissionToSeeAllPublicChannels: ', hasPermissionToSeeAllPublicChannels);
 			const { _id } = this.queryParams;
 
 			const ourQuery: Filter<IRoom> = {
@@ -530,9 +535,9 @@ const channelsEndpoints = API.v1
 				checkedArchived: false,
 				userId: this.userId,
 			});
-
+			console.log(await canAccessRoomAsync(findResult, { _id: this.userId }));
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden<ForbiddenErrorResponse>();
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success({
