@@ -7,6 +7,7 @@ import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
 	MessageComposerInput,
+	RichTextComposerInput,
 	MessageComposerToolbar,
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
@@ -21,25 +22,28 @@ export default {
 
 const MessageToolbarActions = () => (
 	<MessageComposerToolbarActions>
-		<MessageComposerAction title='emoji' icon='emoji' />
+		<MessageComposerAction icon='emoji' />
 		<MessageComposerActionsDivider />
-		<MessageComposerAction title='bold' icon='bold' />
-		<MessageComposerAction title='italic' icon='italic' />
-		<MessageComposerAction title='underline' icon='underline' />
-		<MessageComposerAction title='strike' icon='strike' />
-		<MessageComposerAction title='code' icon='code' />
-		<MessageComposerAction title='multiline' icon='multiline' />
-		<MessageComposerAction title='link' icon='link' />
-		<MessageComposerAction title='katex' icon='katex' />
+		<MessageComposerAction icon='bold' />
+		<MessageComposerAction icon='italic' />
+		<MessageComposerAction icon='underline' />
+		<MessageComposerAction icon='strike' />
+		<MessageComposerAction icon='code' />
+		<MessageComposerAction icon='multiline' />
+		<MessageComposerAction icon='link' />
+		<MessageComposerAction icon='katex' />
+		<MessageComposerAction icon='arrow-return' />
 		<MessageComposerActionsDivider />
-		<MessageComposerAction title='mic' icon='mic' />
-		<MessageComposerAction title='video' icon='video' />
-		<MessageComposerAction title='attachment' icon='clip' />
-		<MessageComposerAction title='more' icon='plus' />
+		<MessageComposerAction icon='mic' />
+		<MessageComposerAction icon='video' />
+		<MessageComposerAction icon='clip' />
+		<MessageComposerAction icon='plus' />
 	</MessageComposerToolbarActions>
 );
 
-export const Default: StoryFn<typeof MessageComposer> = () => (
+export const MessageToolberActions: StoryFn<typeof MessageComposerToolbarActions> = () => <MessageToolbarActions />;
+
+export const _MessageComposer: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
@@ -48,9 +52,25 @@ export const Default: StoryFn<typeof MessageComposer> = () => (
 	</MessageComposer>
 );
 
-export const ToolbarActions: StoryFn<typeof MessageComposerToolbarActions> = () => <MessageToolbarActions />;
+export const _MessageComposerNew: StoryFn<typeof MessageComposer> = (args) => (
+	<MessageComposer>
+		<MessageComposerInput placeholder={args.placeholder || 'Placeholder text'} />
+		<RichTextComposerInput placeholder='RealTimeEditor' />
+		<MessageComposerToolbar>
+			<MessageToolbarActions />
+			<MessageComposerToolbarSubmit>
+				<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
+			</MessageComposerToolbarSubmit>
+		</MessageComposerToolbar>
+	</MessageComposer>
+);
 
-export const WithHints: StoryFn<typeof MessageComposer> = () => (
+_MessageComposerNew.args = {
+	// Define the props (args) you want to control
+	placeholder: 'Type a message...',
+};
+
+export const MessageComposerWithHints: StoryFn<typeof MessageComposer> = () => (
 	<>
 		<MessageComposerHint
 			icon='pencil'
@@ -63,7 +83,7 @@ export const WithHints: StoryFn<typeof MessageComposer> = () => (
 			Editing message
 		</MessageComposerHint>
 		<MessageComposer>
-			<MessageComposerInput placeholder='Text' />
+			<MessageComposerInput placeholder='Text' value='Lorem ipsum dolor' />
 			<MessageComposerToolbar>
 				<MessageToolbarActions />
 				<MessageComposerToolbarSubmit>
@@ -74,7 +94,7 @@ export const WithHints: StoryFn<typeof MessageComposer> = () => (
 	</>
 );
 
-export const WithSubmit: StoryFn<typeof MessageComposer> = () => (
+export const MessageComposerWithSubmitActions: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
@@ -89,4 +109,4 @@ export const WithSubmit: StoryFn<typeof MessageComposer> = () => (
 	</MessageComposer>
 );
 
-export const Loading: StoryFn<typeof MessageComposer> = () => <MessageComposerSkeleton />;
+export const MessageComposerLoading: StoryFn<typeof MessageComposer> = () => <MessageComposerSkeleton />;

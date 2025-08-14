@@ -2,14 +2,14 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
 
-import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
+import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string, quoteChainLimit: number): ComposerAPI => {
-	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
+export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: string): ComposerAPI => {
+	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
 		const tracker = (input as any)._valueTracker;
@@ -31,8 +31,8 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 	let _quotedMessages: IMessage[] = [];
 
 	const persist = withDebouncing({ wait: 300 })(() => {
-		if (input.value) {
-			Accounts.storageLocation.setItem(storageID, input.value);
+		if (input.innerText) {
+			Accounts.storageLocation.setItem(storageID, input.innerText);
 			return;
 		}
 
@@ -59,8 +59,8 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 	): void => {
 		!skipFocus && focus();
 
-		const { selectionStart, selectionEnd } = input;
-		const textAreaTxt = input.value;
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+		const textAreaTxt = input.innerText;
 
 		if (typeof selection === 'function') {
 			selection = selection({ start: selectionStart, end: selectionEnd });
@@ -68,14 +68,14 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 
 		if (selection) {
 			if (!document.execCommand?.('insertText', false, text)) {
-				input.value = textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart);
+				input.innerText = textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart);
 				!skipFocus && focus();
 			}
-			input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
+			setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
 		}
 
 		if (!selection) {
-			input.value = text;
+			input.innerText = text;
 		}
 
 		triggerEvent(input, 'input');
@@ -103,13 +103,13 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 
 	const replyWith = async (text: string): Promise<void> => {
 		if (input) {
-			input.value = text;
+			input.innerText = text;
 			input.focus();
 		}
 	};
 
 	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), limitQuoteChain(message, quoteChainLimit)];
+		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
 		notifyQuotedMessagesUpdate();
 		input.focus();
 	};
@@ -216,31 +216,44 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 	};
 
 	const wrapSelection = (pattern: string): void => {
-		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
-		const initText = input.value.slice(0, selectionStart);
-		const selectedText = input.value.slice(selectionStart, selectionEnd);
-		const finalText = input.value.slice(selectionEnd, input.value.length);
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
+		const initText = input.innerText.slice(0, selectionStart);
+		const selectedText = input.innerText.slice(selectionStart, selectionEnd);
+		const finalText = input.innerText.slice(selectionEnd, input.innerText.length);
 
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
+		const startPatternFound = [...startPattern]
+			.reverse()
+			.every((char, index) => input.innerText.slice(selectionStart - index - 1, 1) === char);
 
 		if (startPatternFound) {
 			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
+			const endPatternFound = [...endPattern].every((char, index) => input.innerText.slice(selectionEnd + index, 1) === char);
 
 			if (endPatternFound) {
 				insertText(selectedText);
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = selectionEnd + endPattern.length;
+
+				/* Get current selection range */
+				const { selectionStart } = getSelectionRange(input);
+
+				/* This code is redundant! Probably ... */
+				/* input.selectionStart = selectionStart - startPattern.length;
+				input.selectionEnd = selectionEnd + endPattern.length; */
 
 				if (!document.execCommand?.('insertText', false, selectedText)) {
-					input.value = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
+					input.innerText = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
 				}
 
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = input.selectionStart + selectedText.length;
+				/* input.selectionStart = selectionStart - startPattern.length;
+				input.selectionEnd = input.selectionStart + selectedText.length; */
+
+				const newStart = selectionStart - startPattern.length;
+				const newEnd = newStart + selectedText.length;
+
+				setSelectionRange(input, newStart, newEnd);
+
 				triggerEvent(input, 'input');
 				triggerEvent(input, 'change');
 
@@ -250,15 +263,18 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 		}
 
 		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
-			input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
+			input.innerText = initText + pattern.replace('{{text}}', selectedText) + finalText;
 		}
 
-		input.selectionStart = selectionStart + pattern.indexOf('{{text}}');
-		input.selectionEnd = input.selectionStart + selectedText.length;
+		focus();
+
+		const newStart = selectionStart + pattern.indexOf('{{text}}');
+		const newEnd = newStart + selectedText.length;
+
+		setSelectionRange(input, newStart, newEnd);
+
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
-
-		focus();
 	};
 
 	const insertNewLine = (): void => insertText('\n');
@@ -269,26 +285,43 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
-		const { selectionStart, selectionEnd } = input;
+		const { selectionStart, selectionEnd } = getSelectionRange(input);
 
 		// Selects the text that is connected to the cursor
-		input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
-		const textAreaTxt = input.value;
+		setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
+		const textAreaTxt = input.innerText;
 
 		if (!document.execCommand?.('insertText', false, text)) {
-			input.value = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
+			input.innerText = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
 
-		input.selectionStart = selectionStart + text.length;
-		input.selectionEnd = selectionStart + text.length;
+		// focus();
+
+		// const newStart = selectionStart + pattern.indexOf('{{text}}');
+		// const newEnd = newStart + selectedText.length;
+
+		// const range = document.createRange();
+		// const selection = window.getSelection();
+
+		// range.setStart(input.firstChild || input, newStart);
+		// range.setEnd(input.firstChild || input, newEnd);
+
+		// selection?.removeAllRanges();
+		// selection?.addRange(range);
+
+		focus();
+
+		const newStart = selectionStart + text.length;
+		const newEnd = selectionStart + text.length;
+
 		if (selectionStart !== selectionEnd) {
-			input.selectionStart = selectionStart;
+			setSelectionRange(input, selectionStart, selectionStart);
+		} else {
+			setSelectionRange(input, newStart, newEnd);
 		}
 
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
-
-		focus();
 	};
 
 	return {
@@ -297,31 +330,31 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 		blur: () => input.blur(),
 
 		substring: (start: number, end?: number) => {
-			return input.value.substring(start, end);
+			return input.innerText.substring(start, end);
 		},
 
 		getCursorPosition: () => {
-			return input.selectionStart;
+			return getSelectionRange(input).selectionStart;
 		},
 		setCursorToEnd: () => {
-			input.selectionEnd = input.value.length;
-			input.selectionStart = input.selectionEnd;
+			const end = input.innerText.length;
 			focus();
+			setSelectionRange(input, end, end);
 		},
 		setCursorToStart: () => {
-			input.selectionStart = 0;
-			input.selectionEnd = input.selectionStart;
 			focus();
+			setSelectionRange(input, 0, 0);
 		},
 		release,
 		wrapSelection,
 		get text(): string {
-			return input.value;
+			return input.innerText;
 		},
 		get selection(): { start: number; end: number } {
+			const { selectionStart, selectionEnd } = getSelectionRange(input);
 			return {
-				start: input.selectionStart,
-				end: input.selectionEnd,
+				start: selectionStart,
+				end: selectionEnd,
 			};
 		},
 		originalText:'',

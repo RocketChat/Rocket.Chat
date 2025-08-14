@@ -8,6 +8,7 @@ import { LegacyRoomManager } from '../../../../app/ui-utils/client';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom } from '../contexts/RoomContext';
 import MessageBox from './messageBox/MessageBox';
+import RichTextMessageBox from './messageBox/RichTextMessageBox';
 
 export type ComposerMessageProps = {
 	tmid?: IMessage['_id'];
@@ -25,6 +26,9 @@ export type ComposerMessageProps = {
 };
 
 const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): ReactElement => {
+	// true: enables contenteditable <div>; false: uses classic <textarea> composer
+	const featurePreviewComposer = true;
+
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -90,7 +94,11 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 		return <ComposerSkeleton />;
 	}
 
-	return <MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />;
+	return featurePreviewComposer ? (
+		<RichTextMessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+	) : (
+		<MessageBox key={room._id} tmid={tmid} {...composerProps} showFormattingTips={true} {...props} />
+	);
 };
 
 export default memo(ComposerMessage);
