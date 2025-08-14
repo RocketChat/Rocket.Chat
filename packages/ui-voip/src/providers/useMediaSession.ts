@@ -9,9 +9,10 @@ import {
 	ClientMediaSignal,
 	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
-import { useEndpoint, useStream } from '@rocket.chat/ui-contexts';
+import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback } from 'react';
 
+import { useCallSounds } from './useCallSounds';
 import type { State } from '../v2/MediaCallContext';
 
 // TODO remove this once the permission flow PR is merged
@@ -169,7 +170,6 @@ const reducer = (
 	reducerState: SessionInfo,
 	action: { type: 'mute' | 'hold' | 'toggleWidget' | 'instance_updated' | 'reset'; payload?: Partial<SessionInfo> },
 ): SessionInfo => {
-	console.log({ action, prevState: reducerState });
 	if (action.type === 'mute') {
 		return {
 			...reducerState,
@@ -241,6 +241,19 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			offCbs.forEach((off) => off());
 		};
 	}, [instance]);
+
+	useCallSounds(
+		mediaSession.state,
+		useCallback(
+			(callback) => {
+				if (!instance) {
+					return;
+				}
+				return instance.on('endedCall', () => callback());
+			},
+			[instance],
+		),
+	);
 
 	const cbs = useMemo(() => {
 		const toggleWidget = () => {
