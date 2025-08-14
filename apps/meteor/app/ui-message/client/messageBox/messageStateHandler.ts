@@ -33,7 +33,7 @@ const parseMessage = (text: string, parseOptions: Options): Root => {
 
 // Resolve state of the composer during text composition
 export const resolveComposerBox = (
-	event: InputEvent | KeyboardEvent,
+	event: InputEvent | KeyboardEvent | React.FocusEvent<HTMLElement>,
 	setMdLines: Dispatch<SetStateAction<string[]>>,
 	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
 	parseOptions: Options,

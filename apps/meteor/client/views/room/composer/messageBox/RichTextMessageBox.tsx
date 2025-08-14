@@ -107,6 +107,8 @@ const handleFormattingShortcut = (
 	// Prevent Ctrl+B from creating <b></b> and Ctrl+I from creating <i></i>
 	event.preventDefault();
 	composer.wrapSelection(formatter.pattern);
+
+	// Use the resolver function after the keyboard formatter shortcut
 	resolveComposerBox(event, setMdLines, setCursorHistory, parseOptions);
 	return true;
 };
@@ -175,6 +177,10 @@ const RichTextMessageBox = ({
 		}
 	>();
 
+	// This state will update every time the input is updated
+	const [, setMdLines] = useState<string[]>([]);
+	const [, setCursorHistory] = useState<CursorHistory>({ undoStack: [], redoStack: [] });
+
 	const setLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
 		const node = e.currentTarget as HTMLDivElement;
 		cursorMap.set(node, getSelectionRange(node));
@@ -192,12 +198,11 @@ const RichTextMessageBox = ({
 		// Retrieve the value onFocus
 		setSelectionRange(node, savedPosition.selectionStart, savedPosition.selectionEnd);
 
+		// Use the resolver function after the editor receives focus
+		resolveComposerBox(e, setMdLines, setCursorHistory, parseOptions);
+
 		console.log('Restored cursor position for:', node);
 	};
-
-	// This state will update every time the input is updated
-	const [, setMdLines] = useState<string[]>([]);
-	const [, setCursorHistory] = useState<CursorHistory>({ undoStack: [], redoStack: [] });
 
 	/* const textareaRef = useRef<HTMLTextAreaElement>(null); */
 
@@ -334,7 +339,10 @@ const RichTextMessageBox = ({
 			return false;
 		}
 
-		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer, setMdLines, setCursorHistory, parseOptions)) {
+		if (
+			chat.composer &&
+			handleFormattingShortcut(event, [...formattingButtons], chat.composer, setMdLines, setCursorHistory, parseOptions)
+		) {
 			return;
 		}
 
