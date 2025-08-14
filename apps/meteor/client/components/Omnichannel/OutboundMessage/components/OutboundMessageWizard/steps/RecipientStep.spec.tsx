@@ -87,10 +87,15 @@ describe('RecipientStep', () => {
 	});
 
 	it('should call onSubmit with form values when form submits successfully', async () => {
-		const expectedPayload = {
+		const expectedPayload: MessageFormSubmitPayload = {
 			templateId: 'template-id',
 			template: createFakeOutboundTemplate(),
-			templateParameters: { BODY: ['param1', 'param2'] },
+			templateParameters: {
+				body: [
+					{ type: 'text', format: 'text', value: 'param1' },
+					{ type: 'text', format: 'text', value: 'param2' },
+				],
+			},
 		};
 
 		const onSubmit = jest.fn();
