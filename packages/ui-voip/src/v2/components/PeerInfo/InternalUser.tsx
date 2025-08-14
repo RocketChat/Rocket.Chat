@@ -13,7 +13,7 @@ const InternalUser = ({ name, avatarUrl, identifier }: InternalUserProps) => {
 				<Avatar url={avatarUrl} size='x20' />
 			</Box>
 			<Box display='flex' flexDirection='column'>
-				<Box display='flex' flexDirection='column' fontScale='p2b'>
+				<Box display='flex' flexDirection='column' fontScale='p2b' color='default'>
 					{name}
 				</Box>
 				<Box fontScale='c1' color='secondary-info'>
