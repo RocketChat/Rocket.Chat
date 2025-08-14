@@ -1,4 +1,4 @@
-import { parse, type Options } from '@rocket.chat/message-parser';
+import { parse, type Options, type Root } from '@rocket.chat/message-parser';
 import type { Dispatch, SetStateAction } from 'react';
 
 import { getCursorSelectionInfo, getSelectionRange, setSelectionRange } from './selectionRange';
@@ -31,9 +31,9 @@ const parseMessage = (text: string, parseOptions: Options): Root => {
 	return parse(text, parseOptions);
 };
 
-// Resolve state of the composer during beforeInput
-export const resolveBeforeInput = (
-	event: InputEvent,
+// Resolve state of the composer during text composition
+export const resolveComposerBox = (
+	event: InputEvent | KeyboardEvent,
 	setMdLines: Dispatch<SetStateAction<string[]>>,
 	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
 	parseOptions: Options,
@@ -42,29 +42,37 @@ export const resolveBeforeInput = (
 
 	console.log(event);
 
-	if (event.inputType === 'historyUndo') {
-		console.log('Undo detected → performing programmatic undo');
-		// document.execCommand('undo');
-	} else if (event.inputType === 'historyRedo') {
-		console.log('Redo detected → performing programmatic redo');
-		// document.execCommand('redo');
-	} else {
-		// Delay so DOM reflects the change
-		setTimeout(() => {
-			// console.log('resolved data', input.innerText);
-			// document.execCommand('insertHTML', false, 'test');
-			const text = input.innerText;
+	if ('inputType' in event) {
+		if (event.inputType === 'historyUndo') {
+			console.log('Undo detected → performing programmatic undo');
+			// document.execCommand('undo');
+			return;
+		}
 
-			const selection = getSelectionRange(input);
-			const { selectionStart, selectionEnd } = selection;
-
-			const lineInfo = getCursorSelectionInfo(input, selection);
-			const { start, end } = lineInfo;
-
-			setSelectionRange(input, 0, text.length);
-
-			const ast = parseMessage(input.innerText, parseOptions)
-			console.log(ast);
-		}, 0);
+		if (event.inputType === 'historyRedo') {
+			console.log('Redo detected → performing programmatic redo');
+			// document.execCommand('redo');
+			return;
+		}
 	}
+
+	// Delay so DOM reflects the change
+	setTimeout(() => {
+		// console.log('resolved data', input.innerText);
+		// document.execCommand('insertHTML', false, 'test');
+		const text = input.innerText;
+
+		const selection = getSelectionRange(input);
+		const { selectionStart, selectionEnd } = selection;
+
+		const lineInfo = getCursorSelectionInfo(input, selection);
+		const { start, end } = lineInfo;
+
+		// setSelectionRange(input, 0, text.length);
+
+		const ast = parseMessage(input.innerText, parseOptions);
+
+		console.log(text);
+		console.log(ast);
+	}, 0);
 };

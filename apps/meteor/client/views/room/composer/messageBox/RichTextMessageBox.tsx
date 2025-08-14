@@ -31,7 +31,7 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { getTextLines, type CursorHistory } from '../../../../../app/ui-message/client/messageBox/messageStateHandler';
+import { getTextLines, resolveComposerBox, type CursorHistory } from '../../../../../app/ui-message/client/messageBox/messageStateHandler';
 import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useMessageListKatex, useMessageListShowColors } from '../../../../components/message/list/MessageListContext';
@@ -319,6 +319,7 @@ const RichTextMessageBox = ({
 			event.preventDefault();
 			if (!isSending) {
 				chat.composer?.insertNewLine();
+				resolveComposerBox(event, setMdLines, setCursorHistory, parseOptions);
 				return false;
 			}
 			handleSendMessage();
