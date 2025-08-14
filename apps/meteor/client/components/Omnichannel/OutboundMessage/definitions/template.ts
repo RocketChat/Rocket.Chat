@@ -9,19 +9,19 @@ export type TemplateComponent = {
 
 export type TemplateParameters = Partial<Record<ComponentType, TemplateParameter[]>>;
 
-type TextParameter = {
+export type TemplateTextParameter = {
 	type: 'text';
 	value: string;
 	format: 'text';
 };
 
-type MediaParameter = {
+export type TemplateMediaParameter = {
 	type: 'media';
 	value: string;
 	format: 'image' | 'video' | 'document';
 };
 
-export type TemplateParameter = TextParameter | MediaParameter;
+export type TemplateParameter = TemplateTextParameter | TemplateMediaParameter;
 
 type WithMetadata<T extends TemplateParameter> = Omit<T, 'value'> & {
 	componentType: ComponentType;
@@ -31,4 +31,4 @@ type WithMetadata<T extends TemplateParameter> = Omit<T, 'value'> & {
 	placeholder: string;
 };
 
-export type TemplateParameterMetadata = WithMetadata<TextParameter> | WithMetadata<MediaParameter>;
+export type TemplateParameterMetadata = WithMetadata<TemplateTextParameter> | WithMetadata<TemplateMediaParameter>;
