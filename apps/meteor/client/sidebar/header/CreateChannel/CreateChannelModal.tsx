@@ -109,23 +109,23 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
 
 	useEffect(() => {
-		if (!isPrivate) {
-			setValue('encrypted', false);
-		}
-
-		if (broadcast) {
-			setValue('encrypted', false);
-		}
-
 		if (federated) {
 			// if room is federated, it cannot be encrypted or broadcast or readOnly
 			setValue('encrypted', false);
 			setValue('broadcast', false);
 			setValue('readOnly', false);
 		}
+	}, [federated, setValue]);
 
+	useEffect(() => {
+		if (!isPrivate) {
+			setValue('encrypted', false);
+		}
+	}, [isPrivate, setValue]);
+
+	useEffect(() => {
 		setValue('readOnly', broadcast);
-	}, [federated, setValue, broadcast, isPrivate]);
+	}, [broadcast, setValue]);
 
 	const validateChannelName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
@@ -175,10 +175,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		}
 	};
 
-	const e2eDisabled = useMemo<boolean>(
-		() => !isPrivate || broadcast || Boolean(!e2eEnabled) || Boolean(e2eEnabledForPrivateByDefault),
-		[e2eEnabled, e2eEnabledForPrivateByDefault, broadcast, isPrivate],
-	);
+	const e2eDisabled = useMemo<boolean>(() => !isPrivate || Boolean(!e2eEnabled), [e2eEnabled, isPrivate]);
 
 	const createChannelFormId = useId();
 	const nameId = useId();
