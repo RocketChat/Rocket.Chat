@@ -1,5 +1,5 @@
-import { test } from 'node:test';
-import * as assert from 'node:assert/strict';
+import { test, assert } from 'vitest';
+
 import { NodeE2EE } from '../index.ts';
 import type { KeyPair, KeyService } from '@rocket.chat/e2ee';
 

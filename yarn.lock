@@ -7264,6 +7264,7 @@ __metadata:
     "@rocket.chat/e2ee": "workspace:^"
     "@types/node": "npm:~22.16.5"
     typescript: "npm:~5.9.2"
+    vitest: "npm:4.0.0-beta.8"
   languageName: unknown
   linkType: soft
 

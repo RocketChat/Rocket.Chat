@@ -1,5 +1,4 @@
-import { test } from 'node:test';
-import * as assert from 'node:assert/strict';
+import { test, expect } from 'vitest';
 import { NodeKeyCodec } from '../keyCodec.ts';
 
 const createKeyCodec = () => new NodeKeyCodec();
@@ -10,7 +9,7 @@ test('KeyCodec roundtrip (v1 structured encoding)', async () => {
 	const masterKey = await codec.deriveMasterKey('pass123', new TextEncoder().encode('salt-user-1'));
 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
 	const dec = await codec.decodePrivateKey(enc, masterKey);
-	assert.equal(dec, privateJWK);
+	expect(dec).toBe(privateJWK);
 });
 
 test('KeyCodec wrong password fails', async () => {
@@ -20,17 +19,18 @@ test('KeyCodec wrong password fails', async () => {
 	const masterKey = await codec.deriveMasterKey('correct', salt1);
 	const masterKey2 = await codec.deriveMasterKey('incorrect', salt1);
 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
-	await assert.rejects(() => codec.decodePrivateKey(enc, masterKey2));
+	await expect(codec.decodePrivateKey(enc, masterKey2)).rejects.toThrow();
 });
 
 test('KeyCodec tamper detection (ciphertext)', async () => {
 	const codec = createKeyCodec();
 	const { privateJWK } = await codec.generateRSAKeyPair();
+	// const privStr = JSON.stringify(privateJWK);
 	const masterKey = await codec.deriveMasterKey('pw', new TextEncoder().encode('salt'));
 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
 	// Tamper with ctB64
 	const mutated = { ...enc, ctB64: enc.ctB64.slice(0, -2) + 'AA' };
-	await assert.rejects(() => codec.decodePrivateKey(mutated, masterKey));
+	await expect(codec.decodePrivateKey(mutated, masterKey)).rejects.toThrow();
 });
 
 test('KeyCodec legacy roundtrip', async () => {
@@ -39,5 +39,5 @@ test('KeyCodec legacy roundtrip', async () => {
 	const privStr = JSON.stringify(privateJWK);
 	const blob = await codec.legacyEncrypt(privStr, 'pw', 'salt');
 	const dec = await codec.legacyDecrypt(blob, 'pw', 'salt');
-	assert.equal(dec, privStr);
+	expect(dec).toBe(privateJWK);
 });

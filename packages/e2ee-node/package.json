@@ -20,14 +20,15 @@
     "postbuild": "node --experimental-strip-types ./scripts/postbuild.ts",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint 'src/**/*.ts'",
-    "testunit": "node --experimental-strip-types --test"
+    "testunit": "vitest run"
   },
   "dependencies": {
     "@rocket.chat/e2ee": "workspace:^"
   },
   "devDependencies": {
     "@types/node": "~22.16.5",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": "4.0.0-beta.8"
   },
   "license": "MIT",
   "publishConfig": {

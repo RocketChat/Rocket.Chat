@@ -4,6 +4,7 @@ export default defineConfig({
 	test: {
 		browser: {
 			fileParallelism: false,
+			screenshotFailures: false,
 			enabled: true,
 			provider: 'playwright',
 			headless: true,
