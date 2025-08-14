@@ -18,7 +18,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
+import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent, SetStateAction, Dispatch } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState, useEffect, useMemo } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -81,7 +81,14 @@ const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): TypingState => {
 	};
 };
 
-const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: FormattingButton[], composer: ComposerAPI) => {
+const handleFormattingShortcut = (
+	event: KeyboardEvent,
+	formattingButtons: FormattingButton[],
+	composer: ComposerAPI,
+	setMdLines: Dispatch<SetStateAction<string[]>>,
+	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
+	parseOptions: Options,
+) => {
 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
 	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 
@@ -100,6 +107,7 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 	// Prevent Ctrl+B from creating <b></b> and Ctrl+I from creating <i></i>
 	event.preventDefault();
 	composer.wrapSelection(formatter.pattern);
+	resolveComposerBox(event, setMdLines, setCursorHistory, parseOptions);
 	return true;
 };
 
@@ -326,7 +334,7 @@ const RichTextMessageBox = ({
 			return false;
 		}
 
-		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
+		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer, setMdLines, setCursorHistory, parseOptions)) {
 			return;
 		}
 
