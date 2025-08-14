@@ -2,6 +2,7 @@ import type { IOutboundProviderTemplate, ILivechatContact, Serialized } from '@r
 import { Box, FieldGroup, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import TemplatePlaceholderInput from './TemplatePlaceholderSelector';
 import TemplatePreview from './TemplatePreview';
@@ -16,6 +17,7 @@ type TemplateEditorProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 };
 
 const TemplateEditor = ({ parameters, template, contact, onChange, ...props }: TemplateEditorProps) => {
+	const { t } = useTranslation();
 	const { components } = template;
 
 	const parameterMetadata = useMemo(() => extractParameterMetadata(components), [components]);
@@ -30,12 +32,14 @@ const TemplateEditor = ({ parameters, template, contact, onChange, ...props }: T
 		<Box {...props}>
 			<FieldGroup>
 				{parameterMetadata.map((parameter) => {
-					const { index, id, type, name, componentType } = parameter;
+					const { index, id, type, name, placeholder, componentType } = parameter;
 					const value = parameters[componentType]?.[index]?.value;
 
 					return (
 						<Field key={id}>
-							<FieldLabel htmlFor={id}>{name}</FieldLabel>
+							<FieldLabel htmlFor={id}>
+								{t(name)} {placeholder}
+							</FieldLabel>
 							<FieldRow>
 								<TemplatePlaceholderInput
 									id={id}

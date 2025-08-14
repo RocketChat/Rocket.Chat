@@ -1,7 +1,6 @@
 import type { IOutboundProviderTemplate } from '@rocket.chat/core-typings';
 import { capitalize } from '@rocket.chat/string-helpers';
 
-import { t } from '../../../../../app/utils/lib/i18n';
 import type { ComponentType, TemplateParameterMetadata, TemplateParameter, TemplateParameters } from '../definitions/template';
 
 const placeholderPattern = new RegExp('{{(.*?)}}', 'g'); // e.g {{1}} or {{text}}
@@ -17,11 +16,6 @@ export const extractParameterMetadata = (components: IOutboundProviderTemplate['
 	});
 };
 
-const formatParameterName = (componentType: ComponentType, sufix: string) => {
-	const prefix = capitalize(componentType);
-	return `${t(prefix) || prefix} ${sufix}`;
-};
-
 export const parseComponentText = (
 	componentType: ComponentType,
 	text: string | undefined,
@@ -32,7 +26,7 @@ export const parseComponentText = (
 			{
 				id: `${componentType}.mediaUrl`,
 				placeholder: '',
-				name: t('Media_URL'),
+				name: 'Media_URL',
 				type: 'media',
 				componentType,
 				format,
@@ -51,7 +45,7 @@ export const parseComponentText = (
 	return Array.from(placeholders).map((placeholder, index) => ({
 		id: `${componentType}.${placeholder}`,
 		placeholder,
-		name: formatParameterName(componentType, placeholder),
+		name: capitalize(componentType),
 		type: 'text',
 		componentType,
 		format,
