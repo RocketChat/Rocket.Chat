@@ -178,7 +178,7 @@ const POSTOutboundMessageSchema = {
 			},
 			additionalProperties: false,
 		},
-		// agentId should only be required if departmentId is provided
+		// departmentId should only be required if agentId is provided
 		agentId: { type: 'string' },
 		departmentId: { type: 'string' },
 	},
