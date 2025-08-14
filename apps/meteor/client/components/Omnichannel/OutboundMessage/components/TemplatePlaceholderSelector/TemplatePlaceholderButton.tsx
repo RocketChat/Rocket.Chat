@@ -8,7 +8,7 @@ type TemplatePlaceholderButtonProps = Omit<ComponentProps<typeof IconButton>, 'c
 };
 
 const TemplatePlaceholderButton = forwardRef<HTMLButtonElement, TemplatePlaceholderButtonProps>(
-	({ icon: _icon, pressed: _pressed, ...props }, ref) => {
+	({ icon: _icon, pressed: _pressed, small: _small, ...props }, ref) => {
 		const { t } = useTranslation();
 		return (
 			<Button ref={ref} {...props}>

@@ -35,16 +35,16 @@ export const createFakeOutboundTemplate = (overrides: Partial<IOutboundProviderT
 	},
 	components: [
 		{
-			type: 'HEADER',
-			format: 'VIDEO',
+			type: 'header',
+			format: 'text',
 			text: 'New {{1}} appointment',
 		},
 		{
-			type: 'BODY',
+			type: 'body',
 			text: '**Hi {{1}}** Your _appointment_ for {{2}} is scheduled for {{3}} and can be rescheduled to {{4}} if {{5}} becomes available. {{6}} what do you choose?',
 		},
 		{
-			type: 'FOOTER',
+			type: 'footer',
 			text: 'Need to reschedule? Tap below to reply',
 		},
 	],
