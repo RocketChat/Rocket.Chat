@@ -4,10 +4,12 @@ import type { ReactNode } from 'react';
 import { memo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
+import { NAVIGATION_REGION_ID } from '../../lib/constants';
+
 type SidebarPortalProps = { children?: ReactNode };
 
 const SidebarPortal = ({ children }: SidebarPortalProps) => {
-	const sidebarRoot = document.getElementById('navigation-region');
+	const sidebarRoot = document.getElementById(NAVIGATION_REGION_ID);
 	const { sidebar } = useLayout();
 
 	useEffect(() => {

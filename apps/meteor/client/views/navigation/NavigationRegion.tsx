@@ -5,6 +5,7 @@ import { memo } from 'react';
 import { FocusScope } from 'react-aria';
 
 import SidePanel from './sidepanel';
+import { NAVIGATION_REGION_ID } from '../../lib/constants';
 import Sidebar from '../../sidebarv2';
 
 const NavigationRegion = () => {
@@ -88,7 +89,7 @@ const NavigationRegion = () => {
 
 	return (
 		<>
-			<Box id='navigation-region' className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && navMobileStyle].filter(Boolean)}>
+			<Box id={NAVIGATION_REGION_ID} className={[navRegionStyle, isSidebarOpen && 'opened', isTablet && navMobileStyle].filter(Boolean)}>
 				{showSideBar && (
 					<Box className={[sidebarWrapStyle, sidebar.overlayed && !isSidebarOpen && 'collapsed hidden-visibility']}>
 						<FocusScope>
