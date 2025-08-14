@@ -61,7 +61,6 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 };
 
 const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModalProps) => {
-	console.log('CreateChannelModal2');
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');
