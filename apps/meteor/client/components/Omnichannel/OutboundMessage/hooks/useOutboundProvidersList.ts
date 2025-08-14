@@ -19,6 +19,7 @@ const useOutboundProvidersList = <TData = OutboundProvidersResponse>(options?: U
 	return useQuery<OutboundProvidersResponse, Error, TData>({
 		queryKey: omnichannelQueryKeys.outboundProviders(),
 		queryFn: () => getProviders({ type }),
+		retry: 3,
 		select,
 	});
 };
