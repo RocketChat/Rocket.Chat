@@ -8,6 +8,7 @@ import type {
 import type { SubmitPayload } from '../components/OutboundMessageWizard/forms';
 import type { MessageFormSubmitPayload } from '../components/OutboundMessageWizard/forms/MessageForm';
 import type { RecipientFormSubmitPayload } from '../components/OutboundMessageWizard/forms/RecipientForm';
+import type { RepliesFormSubmitPayload } from '../components/OutboundMessageWizard/forms/RepliesForm';
 import type { TemplateParameter, TemplateParameters } from '../definitions/template';
 
 export const isRecipientStepValid = (data: Partial<SubmitPayload>): data is Required<RecipientFormSubmitPayload> => {
@@ -16,6 +17,10 @@ export const isRecipientStepValid = (data: Partial<SubmitPayload>): data is Requ
 
 export const isMessageStepValid = (data: Partial<SubmitPayload>): data is Required<MessageFormSubmitPayload> => {
 	return !!(data.templateId && data.template && data.templateParameters);
+};
+
+export const isRepliesStepValid = (data: Partial<SubmitPayload>): data is RepliesFormSubmitPayload => {
+	return (!data.departmentId || !!data.department) && (!data.agentId || (!!data.agent && !!data.departmentId));
 };
 
 const formatParameterForOutboundMessage = (parameter: TemplateParameter): CoreTemplateParameter => {
@@ -46,17 +51,23 @@ export const formatOutboundMessagePayload = ({
 	template,
 	type = 'template',
 	templateParameters,
+	departmentId,
+	agentId,
 }: {
 	type: IOutboundMessage['type'];
 	recipient: string;
 	sender: string;
 	template: IOutboundProviderTemplate;
 	templateParameters: TemplateParameters;
+	departmentId?: string;
+	agentId?: string;
 }): IOutboundMessage => {
 	return {
 		to: recipient,
 		type,
 		templateProviderPhoneNumber: sender,
+		departmentId,
+		agentId,
 		template: {
 			name: template.name,
 			language: {

@@ -16,7 +16,7 @@ import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
 import { useOutboundMessageUpsellModal } from '../../modals';
 import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
 import { useEndpointMutation } from '../../../../../hooks/useEndpointMutation';
-import { formatOutboundMessagePayload, isMessageStepValid, isRecipientStepValid } from '../../utils/outbound-message';
+import { formatOutboundMessagePayload, isMessageStepValid, isRecipientStepValid, isRepliesStepValid } from '../../utils/outbound-message';
 
 type OutboundMessageWizardProps = {
 	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId' | 'recipient' | 'sender'>>;
@@ -81,7 +81,11 @@ const OutboundMessageWizard = ({ defaultValues = {}, onMessageSent }: OutboundMe
 				throw new Error('error-invalid-message-step');
 			}
 
-			const { template, sender, recipient, templateParameters } = state;
+			if (!isRepliesStepValid(state)) {
+				throw new Error('error-invalid-replies-step');
+			}
+
+			const { template, sender, recipient, templateParameters, departmentId, agentId } = state;
 
 			const payload = formatOutboundMessagePayload({
 				type: 'template',
@@ -89,6 +93,8 @@ const OutboundMessageWizard = ({ defaultValues = {}, onMessageSent }: OutboundMe
 				sender,
 				recipient,
 				templateParameters,
+				departmentId,
+				agentId,
 			});
 
 			await sendOutboundMessage.mutateAsync(payload);
