@@ -9068,11 +9068,10 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/tools": "workspace:~"
-    "@types/jest": "npm:~29.5.14"
+    "@types/jest": "npm:~30.0.0"
     "@types/react": "npm:~18.3.23"
     "@types/react-dom": "npm:~18.3.7"
     eslint: "npm:~8.45.0"
@@ -24627,7 +24626,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:~30.0.5":
+"jest@npm:~30.0.2, jest@npm:~30.0.5":
   version: 30.0.5
   resolution: "jest@npm:30.0.5"
   dependencies:
