@@ -35,25 +35,13 @@ test.describe.serial('Notification Sounds', () => {
 		await page.goto(`/channel/${targetChannel}`);
 
 		await page.evaluate(() => {
-			const OriginalAudio = window.Audio;
-			window.__audioCalls = {} as { src?: string; played?: boolean };
-
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore mock Audio constructor
-			window.Audio = function (src: string | undefined) {
-				if (!src) {
-					return new OriginalAudio();
-				}
-
-				window.__audioCalls = { src, played: false };
-				const audioObj = new OriginalAudio(src);
-				const originalPlay = audioObj.play.bind(audioObj);
-				audioObj.play = () => {
+			Audio.prototype.play = ((fn) =>
+				function (this: HTMLAudioElement, ...args: unknown[]) {
+					window.__audioCalls = { src: this.src, played: false };
+					const ret = fn.call(this, ...args);
 					window.__audioCalls.played = true;
-					return originalPlay();
-				};
-				return audioObj;
-			};
+					return ret;
+				})(Audio.prototype.play);
 		});
 	});
 
