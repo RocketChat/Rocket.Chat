@@ -33,26 +33,34 @@ const parseMessage = (text: string, parseOptions: Options): Root => {
 
 // Resolve state of the composer during text composition
 export const resolveComposerBox = (
-	event: InputEvent | KeyboardEvent | React.FocusEvent<HTMLElement>,
+	eventOrInput: InputEvent | KeyboardEvent | React.FocusEvent<HTMLElement> | HTMLDivElement,
 	setMdLines: Dispatch<SetStateAction<string[]>>,
 	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
 	parseOptions: Options,
 ): void => {
-	const input = event.target as HTMLDivElement;
+	// Determine whether first arg is an event or an input node
+	let input: HTMLDivElement;
+	if (eventOrInput instanceof HTMLElement) {
+		// Called programmatically
+		input = eventOrInput as HTMLDivElement;
+	} else {
+		// Called from event
+		const event = eventOrInput;
+		input = event.target as HTMLDivElement;
 
-	console.log(event);
+		// Handle undo/redo for InputEvents
+		if ('inputType' in event) {
+			if (event.inputType === 'historyUndo') {
+				console.log('Undo detected → performing programmatic undo');
+				// document.execCommand("undo");
+				return;
+			}
 
-	if ('inputType' in event) {
-		if (event.inputType === 'historyUndo') {
-			console.log('Undo detected → performing programmatic undo');
-			// document.execCommand('undo');
-			return;
-		}
-
-		if (event.inputType === 'historyRedo') {
-			console.log('Redo detected → performing programmatic redo');
-			// document.execCommand('redo');
-			return;
+			if (event.inputType === 'historyRedo') {
+				console.log('Redo detected → performing programmatic redo');
+				// document.execCommand("redo");
+				return;
+			}
 		}
 	}
 

@@ -510,6 +510,11 @@ const RichTextMessageBox = ({
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
 
+	useEffect(() => {
+		const input = contentEditableRef.current as HTMLDivElement;
+		resolveComposerBox(input, setMdLines, setCursorHistory, parseOptions);
+	}, [shouldPopupPreview, parseOptions]);
+
 	return (
 		<>
 			{chat.composer?.quotedMessages && <MessageBoxReplies />}
