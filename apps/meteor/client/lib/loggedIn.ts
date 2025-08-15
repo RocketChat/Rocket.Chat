@@ -1,9 +1,7 @@
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+import { accounts } from '../meteor/facade/accounts';
 
 const isLoggedIn = () => {
-	const uid = Tracker.nonreactive(() => Meteor.userId());
+	const uid = accounts.getUserId();
 	return uid !== null;
 };
 
@@ -13,8 +11,8 @@ export const whenLoggedIn = () => {
 	}
 
 	return new Promise<void>((resolve) => {
-		const subscription = Accounts.onLogin(() => {
-			subscription.stop();
+		const unsubscribe = accounts.onLogin(() => {
+			unsubscribe();
 			resolve();
 		});
 	});
@@ -30,11 +28,11 @@ export const onLoggedIn = (cb: (() => () => void) | (() => Promise<() => void>) 
 		}
 	};
 
-	const subscription = Accounts.onLogin(handler);
+	const unsubscribe = accounts.onLogin(handler);
 	if (isLoggedIn()) handler();
 
 	return () => {
-		subscription.stop();
+		unsubscribe();
 		cleanup?.();
 	};
 };

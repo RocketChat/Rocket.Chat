@@ -2,8 +2,9 @@ import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/client';
-import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
+import { settings } from '../../../../app/settings/client';
+import { type LoginCallback, callLoginMethod, handleLogin } from '../../../lib/2fa/overrideLoginMethod';
+import { accounts } from '../../facade/accounts';
 
 declare module 'meteor/meteor' {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -61,7 +62,7 @@ Meteor.logout = async function (...args) {
 	if (provider && settings.get('SAML_Custom_Default_idp_slo_redirect_url')) {
 		console.info('SAML session terminated via SLO');
 
-		const { sdk } = await import('../../../app/utils/client/lib/SDKClient');
+		const { sdk } = await import('../../../../app/utils/client/lib/SDKClient');
 		sdk
 			.call('samlLogout', provider)
 			.then((result) => {
@@ -72,7 +73,7 @@ Meteor.logout = async function (...args) {
 
 				// Remove the userId from the client to prevent calls to the server while the logout is processed.
 				// If the logout fails, the userId will be reloaded on the resume call
-				Accounts.storageLocation.removeItem(Accounts.USER_ID_KEY);
+				accounts.deleteStoredUserId();
 
 				// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
 				window.location.replace(Meteor.absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));

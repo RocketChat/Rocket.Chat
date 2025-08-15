@@ -10,6 +10,7 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { waitForElement } from '../../../../client/lib/utils/waitForElement';
+import { accounts } from '../../../../client/meteor/facade/accounts';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
 
@@ -138,7 +139,7 @@ class RoomHistoryManagerClass extends Emitter {
 				({ ls } = subscription);
 			}
 
-			const showThreadsInMainChannel = getUserPreference(Meteor.userId(), 'showThreadsInMainChannel', false);
+			const showThreadsInMainChannel = getUserPreference(accounts.getUserId(), 'showThreadsInMainChannel', false);
 			const result = await callWithErrorHandling(
 				'loadHistory',
 				rid,

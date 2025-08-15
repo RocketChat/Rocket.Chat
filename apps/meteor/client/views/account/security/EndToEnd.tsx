@@ -1,20 +1,20 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button, Divider } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
-import { Accounts } from 'meteor/accounts-base';
 import type { ComponentProps, ReactElement } from 'react';
 import { useId, useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { e2e } from '../../../../app/e2e/client/rocketchat.e2e';
+import { accounts } from '../../../meteor/facade/accounts';
 
 const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const logout = useLogout();
 
-	const publicKey = Accounts.storageLocation.getItem('public_key');
-	const privateKey = Accounts.storageLocation.getItem('private_key');
+	const publicKey = accounts.getStorage().getItem(e2e.PUBLIC_KEY);
+	const privateKey = accounts.getStorage().getItem(e2e.PRIVATE_KEY);
 
 	const resetE2eKey = useMethod('e2e.resetOwnE2EKey');
 

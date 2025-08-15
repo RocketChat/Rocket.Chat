@@ -1,9 +1,10 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
+import { accounts } from '../../../../client/meteor/facade/accounts';
 import { Messages, Rooms } from '../../../../client/stores';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -12,7 +13,7 @@ import { t } from '../../../utils/lib/i18n';
 
 Meteor.methods<ServerMethods>({
 	async sendMessage(message) {
-		const uid = Meteor.userId();
+		const uid = accounts.getUserId();
 		if (!uid || trim(message.msg) === '') {
 			return false;
 		}
@@ -20,7 +21,7 @@ Meteor.methods<ServerMethods>({
 		if (messageAlreadyExists) {
 			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
-		const user = Meteor.user() as IUser | null;
+		const user = accounts.getUser();
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendMessage' });
 		}

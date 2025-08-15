@@ -3,7 +3,7 @@ import { useConnectionStatus, useSetting } from '@rocket.chat/ui-contexts';
 
 import { useIdleActiveEvents } from './useIdleActiveEvents';
 
-export const useIdleConnection = (uid: string | null) => {
+export const useIdleConnection = (uid: string | undefined) => {
 	const { status } = useConnectionStatus();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const { disconnect: disconnectServer, reconnect: reconnectServer } = useConnectionStatus();

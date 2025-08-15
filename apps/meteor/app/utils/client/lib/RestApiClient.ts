@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { RestClient } from '@rocket.chat/api-client';
-import { Accounts } from 'meteor/accounts-base';
 
 import { invokeTwoFactorModal } from '../../../../client/lib/2fa/process2faReturn';
 import { baseURI } from '../../../../client/lib/baseURI';
+import { accounts } from '../../../../client/meteor/facade/accounts';
 
 class RestApiClient extends RestClient {
 	getCredentials():
@@ -12,10 +12,7 @@ class RestApiClient extends RestClient {
 				'X-Auth-Token': string;
 		  }
 		| undefined {
-		const [uid, token] = [
-			Accounts.storageLocation.getItem(Accounts.USER_ID_KEY),
-			Accounts.storageLocation.getItem(Accounts.LOGIN_TOKEN_KEY),
-		];
+		const [uid, token] = [accounts.getStoredUserId(), accounts.getStoredLoginToken()];
 
 		if (!uid || !token) {
 			return;

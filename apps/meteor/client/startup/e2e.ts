@@ -10,12 +10,13 @@ import { settings } from '../../app/settings/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';
+import { accounts } from '../meteor/facade/accounts';
 import { router } from '../providers/RouterProvider';
 import { Rooms } from '../stores';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		if (!Meteor.userId()) {
+		if (!accounts.watchUserId()) {
 			e2e.log('Not logged in');
 			return;
 		}

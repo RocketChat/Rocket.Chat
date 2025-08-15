@@ -1,11 +1,11 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
 
 import { LegacyRoomManager } from '../../../app/ui-utils/client/lib/LegacyRoomManager';
 import { RoomHistoryManager } from '../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { accounts } from '../../meteor/facade/accounts';
 import { Messages } from '../../stores';
 
 export class ReadStateManager extends Emitter {
@@ -76,7 +76,9 @@ export class ReadStateManager extends Emitter {
 
 		const firstUnreadRecord = Messages.state.findFirst(
 			(record) =>
-				record.rid === this.subscription?.rid && record.ts.getTime() > this.subscription.ls.getTime() && record.u._id !== Meteor.userId(),
+				record.rid === this.subscription?.rid &&
+				record.ts.getTime() > this.subscription.ls.getTime() &&
+				record.u._id !== accounts.getUserId(),
 			(a, b) => a.ts.getTime() - b.ts.getTime(),
 		);
 

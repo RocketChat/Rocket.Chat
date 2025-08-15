@@ -1,7 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Tracker } from 'meteor/tracker';
 
-import { Users } from '../stores/Users';
+import { Users } from '../../stores/Users';
+import { accounts } from '../facade/accounts';
 
 // assertion is needed because global Mongo.Collection differs from the `meteor/mongo` package's Mongo.Collection
 Meteor.users = Users.collection as typeof Meteor.users;
@@ -9,9 +10,9 @@ Meteor.users = Users.collection as typeof Meteor.users;
 const dep = new Tracker.Dependency();
 let currentUser: IUser | undefined;
 
-// Watch Meteor.userId() changes
+// Watch user ID changes
 Tracker.autorun(() => {
-	const uid = Meteor.userId();
+	const uid = accounts.watchUserId();
 
 	// This will only run when the current user has changed; there is no need to validate by referential equality
 	currentUser = uid ? Users.state.get(uid) : undefined;
@@ -22,7 +23,7 @@ Tracker.autorun(() => {
 Users.use.subscribe((state) => {
 	// Tracker.nonreactive is used here just to highlight that this is not a reactive computation.
 	// At the module level, there is almost zero chance of Tracker.active being set.
-	const uid = Tracker.nonreactive(() => Meteor.userId());
+	const uid = accounts.getUserId();
 
 	// This lookup is fast enough to be called whenever the user store changes
 	const user = uid ? state.get(uid) : undefined;

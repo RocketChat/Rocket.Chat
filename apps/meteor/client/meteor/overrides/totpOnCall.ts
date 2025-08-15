@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 
-import { t } from '../../app/utils/lib/i18n';
-import type { LoginCallback } from '../lib/2fa/overrideLoginMethod';
-import { process2faReturn, process2faAsyncReturn } from '../lib/2fa/process2faReturn';
-import { isTotpInvalidError } from '../lib/2fa/utils';
+import { t } from '../../../app/utils/lib/i18n';
+import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { process2faReturn, process2faAsyncReturn } from '../../lib/2fa/process2faReturn';
+import { isTotpInvalidError } from '../../lib/2fa/utils';
 
 const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 	const callWithTotp =

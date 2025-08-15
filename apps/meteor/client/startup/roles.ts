@@ -4,6 +4,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onLoggedIn } from '../lib/loggedIn';
+import { accounts } from '../meteor/facade/accounts';
 import { Roles } from '../stores';
 
 Meteor.startup(() => {
@@ -26,7 +27,7 @@ Meteor.startup(() => {
 	};
 
 	Tracker.autorun((c) => {
-		if (!Meteor.userId()) {
+		if (!accounts.watchUserId()) {
 			return;
 		}
 

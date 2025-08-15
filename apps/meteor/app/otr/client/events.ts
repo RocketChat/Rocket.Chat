@@ -1,7 +1,6 @@
-import { Accounts } from 'meteor/accounts-base';
-
 import OTR from './OTR';
+import { accounts } from '../../../client/meteor/facade/accounts';
 
-Accounts.onLogout(() => {
+accounts.onLogout(() => {
 	OTR.closeAllInstances();
 });

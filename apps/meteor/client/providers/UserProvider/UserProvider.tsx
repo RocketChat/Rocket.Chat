@@ -1,12 +1,10 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useEndpoint, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
@@ -25,26 +23,22 @@ import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { applyQueryOptions } from '../../lib/cachedStores';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
+import { accounts } from '../../meteor/facade/accounts';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
-
-const getUser = (): IUser | null => Meteor.user() as IUser | null;
-
-const getUserId = (): string | null => Meteor.userId();
 
 type UserProviderProps = {
 	children: ReactNode;
 };
 
 const ee = new Emitter();
-Accounts.onLogout(() => ee.emit('logout'));
+
+accounts.onLogout(() => ee.emit('logout'));
 
 ee.on('logout', async () => {
-	const user = getUser();
+	const user = accounts.getUser();
 
-	if (!user) {
-		return;
-	}
+	if (!user) return;
 	await afterLogoutCleanUpCallback.run(user);
 	await sdk.call('logoutCleanUp', user);
 });
@@ -69,7 +63,7 @@ const queryRoom = (
 };
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
-	const userId = useReactiveValue(getUserId);
+	const userId = useReactiveValue(accounts.watchUserId);
 	const user = Users.use((state) => {
 		if (!userId) return null;
 		return state.get(userId) ?? null;
@@ -142,7 +136,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
-			userId,
+			userId: userId ?? null,
 			user,
 			queryPreference: createReactiveSubscriptionFactory(
 				<T,>(key: string, defaultValue?: T) => getUserPreference(userId, key, defaultValue) as T,
@@ -150,7 +144,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			querySubscription,
 			queryRoom,
 			querySubscriptions,
-			logout: async () => Meteor.logout(),
+			logout: accounts.logout,
 			onLogout: (cb) => {
 				return ee.on('logout', cb);
 			},

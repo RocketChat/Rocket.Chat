@@ -10,6 +10,7 @@ import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutClean
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
 import { loginServices } from '../lib/loginServices';
+import { accounts } from '../meteor/facade/accounts';
 import { router } from '../providers/RouterProvider';
 
 const commands = {
@@ -77,15 +78,15 @@ const commands = {
 	},
 
 	async 'logout'() {
-		const user = Meteor.user();
-		Meteor.logout(() => {
-			if (!user) {
-				return;
-			}
+		const user = accounts.getUser();
+		if (!user) return;
+		try {
+			await accounts.logout();
+		} finally {
 			void afterLogoutCleanUpCallback.run(user);
 			sdk.call('logoutCleanUp', user as unknown as IUser);
-			return router.navigate('/home');
-		});
+			router.navigate('/home');
+		}
 	},
 } as const;
 

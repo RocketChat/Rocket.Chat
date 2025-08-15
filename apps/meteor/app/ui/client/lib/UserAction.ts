@@ -3,6 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { debounce } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 
+import { accounts } from '../../../../client/meteor/facade/accounts';
 import { Users } from '../../../../client/stores';
 import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
@@ -74,7 +75,7 @@ export const UserAction = new (class {
 		}
 
 		const handler = function (username: string, activityType: string[], extras?: object): void {
-			const uid = Meteor.userId();
+			const uid = accounts.getUserId();
 			const user = uid ? Users.state.get(uid) : undefined;
 
 			if (username === shownName(user)) {

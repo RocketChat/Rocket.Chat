@@ -11,6 +11,7 @@ import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { accounts } from '../../../../client/meteor/facade/accounts';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import {
 	hasTranslationLanguageInAttachments,
@@ -102,7 +103,7 @@ export const AutoTranslate = {
 		}
 
 		Tracker.autorun(async (c) => {
-			const uid = Meteor.userId();
+			const uid = accounts.watchUserId();
 			if (!settings.get('AutoTranslate_Enabled') || !uid || !hasPermission('auto-translate')) {
 				return;
 			}
@@ -132,7 +133,7 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 	AutoTranslate.init();
 
 	return (message: ITranslatedMessage): void => {
-		if (message.u && message.u._id !== Meteor.userId()) {
+		if (message.u && message.u._id !== accounts.getUserId()) {
 			const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
 			const language = AutoTranslate.getLanguage(message.rid);
 			if (

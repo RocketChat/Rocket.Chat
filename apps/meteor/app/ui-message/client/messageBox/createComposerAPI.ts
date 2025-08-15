@@ -1,11 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Accounts } from 'meteor/accounts-base';
 
 import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { accounts } from '../../../../client/meteor/facade/accounts';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string, quoteChainLimit: number): ComposerAPI => {
@@ -32,11 +32,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 
 	const persist = withDebouncing({ wait: 300 })(() => {
 		if (input.value) {
-			Accounts.storageLocation.setItem(storageID, input.value);
+			accounts.getStorage().setItem(storageID, input.value);
 			return;
 		}
 
-		Accounts.storageLocation.removeItem(storageID);
+		accounts.getStorage().removeItem(storageID);
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {
@@ -263,7 +263,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
+	setText(accounts.getStorage().getItem(storageID) ?? '', {
 		skipFocus: true,
 	});
 

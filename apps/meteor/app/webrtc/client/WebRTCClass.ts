@@ -2,11 +2,11 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
-import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChromeScreenShare } from './screenShare';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
+import { accounts } from '../../../client/meteor/facade/accounts';
 import { Subscriptions, Users } from '../../../client/stores';
 import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
@@ -1054,7 +1054,7 @@ const WebRTC = new (class {
 			return;
 		}
 		if (this.instancesByRoomId[rid] == null) {
-			let uid = Meteor.userId()!;
+			let uid = accounts.getUserId()!;
 			let autoAccept = false;
 			if (visitorId) {
 				uid = visitorId;
