@@ -45,7 +45,7 @@ export async function encryptRSA(key: any, data: any) {
 	return crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
-export async function encryptAES(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBufferLike>) {
+export async function encryptAES(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
 	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
@@ -57,7 +57,7 @@ export async function decryptRSA(key: CryptoKey, data: Uint8Array<ArrayBuffer>) 
 	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
-export async function decryptAES(vector: Uint8Array<ArrayBufferLike>, key: CryptoKey, data: Uint8Array<ArrayBufferLike>) {
+export async function decryptAES(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
 	return crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 

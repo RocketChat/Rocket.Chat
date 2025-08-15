@@ -17,6 +17,10 @@ export type UploadResult = {
 };
 
 export type ServerContextValue = {
+	connected: boolean;
+	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
+	retryCount: number;
+	retryTime?: number | undefined;
 	info?: IServerInfo;
 	absoluteUrl: (path: string) => string;
 	callMethod?: <MethodName extends ServerMethodName>(
@@ -49,6 +53,9 @@ export type ServerContextValue = {
 };
 
 export const ServerContext = createContext<ServerContextValue>({
+	connected: true,
+	status: 'connected',
+	retryCount: 0,
 	info: undefined,
 	absoluteUrl: (path) => path,
 	callEndpoint: () => {
