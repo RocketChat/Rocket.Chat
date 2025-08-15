@@ -1,14 +1,14 @@
 import { isE2EEPinnedMessage, type IRoom, type IMessage } from '@rocket.chat/core-typings';
 import { useUserId, useSetting, useRouter, useLayout, useUser } from '@rocket.chat/ui-contexts';
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { e2e } from '../../../../../app/e2e/client';
 import { E2EEState } from '../../../../../app/e2e/client/E2EEState';
 import { MentionsParser } from '../../../../../app/mentions/lib/MentionsParser';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
 import { Rooms } from '../../../../stores';
+import { useE2EEState } from '../../../room/hooks/useE2EEState';
 
 export const useE2EEncryption = () => {
 	const userId = useUserId();
@@ -38,7 +38,8 @@ export const useE2EEncryption = () => {
 		}
 	}, [adminEmbedded, enabled, userId]);
 
-	const ready = useReactiveValue(useCallback(() => e2e.isReady(), []));
+	const state = useE2EEState();
+	const ready = state === E2EEState.READY || state === E2EEState.SAVE_PASSWORD;
 	const listenersAttachedRef = useRef(false);
 
 	const mentionsEnabled = useSetting('E2E_Enabled_Mentions', true);

@@ -9,7 +9,6 @@ import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 
 import { E2EEState } from './E2EEState';
 import {
@@ -54,7 +53,6 @@ type KeyPair = {
 };
 
 const ROOM_KEY_EXCHANGE_SIZE = 10;
-const E2EEStateDependency = new Tracker.Dependency();
 
 class E2E extends Emitter {
 	private started: boolean;
@@ -123,8 +121,6 @@ class E2E extends Emitter {
 	}
 
 	isReady(): boolean {
-		E2EEStateDependency.depend();
-
 		// Save_Password state is also a ready state for E2EE
 		return this.state === E2EEState.READY || this.state === E2EEState.SAVE_PASSWORD;
 	}
@@ -216,8 +212,6 @@ class E2E extends Emitter {
 		const prevState = this.state;
 
 		this.state = nextState;
-
-		E2EEStateDependency.changed();
 
 		this.emit('E2E_STATE_CHANGED', { prevState, nextState });
 
