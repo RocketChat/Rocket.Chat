@@ -1,5 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
+import { getEmojiClassNameAndDataTitle } from '../../../../client/lib/utils/renderEmoji';
+
 export const escapeHTML = (str: string): string =>
 	str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 
@@ -45,22 +47,40 @@ const renderInline = (tokens: (MessageParser.Inlines | { fallback: MessageParser
 					return `\`<code class="code-colors inline">${escapeHTML(token.value.value)}</code>\``;
 
 				case 'EMOJI':
-					return 'shortCode' in token ? `:${escapeHTML(token.shortCode)}:` : escapeHTML(token.unicode || '');
+					if ('shortCode' in token) {
+						const emoji = getEmojiClassNameAndDataTitle(`:${escapeHTML(token.shortCode)}:`);
+
+						// Checking emojione to replace the shortCode with Unicode emoji
+						if (emoji.className?.includes('emojione')) {
+							return emoji.children ?? '';
+						}
+
+						// Changing the shortcode to display rendition of the custom uploaded
+						if (emoji.image) {
+							const rawUrl = emoji.image.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+							return (
+								`<span style="font-size:0.1px">` +
+								`<img src="${rawUrl}" style="width:1.5rem;height:1.5rem;vertical-align:middle"/>` +
+								`:${token.shortCode}:</span>`
+							);
+						}
+					} else return escapeHTML(token.unicode || '');
 
 				// case 'COLOR':
 				// 	return `<span style="color: ${escapeHTML(token.value.color)}">${renderInline(token.value.value)}</span>`;
 
-				case 'IMAGE':
-					return `<img src="${escapeHTML(token.value.src.value)}" alt="${escapeHTML(token.value.label.value as string)}" />`;
+				// case 'IMAGE':
+				// 	return `<img src="${escapeHTML(token.value.src.value)}" alt="${escapeHTML(token.value.label.value as string)}" />`;
 
-				case 'TIMESTAMP':
-					return `<time data-timestamp="${escapeHTML(token.value.timestamp.toString())}">${escapeHTML(
-						token.value.timestamp.toString(),
-					)}</time>`;
+				// case 'TIMESTAMP':
+				// 	return `<time data-timestamp="${escapeHTML(token.value.timestamp.toString())}">${escapeHTML(
+				// 		token.value.timestamp.toString(),
+				// 	)}</time>`;
 
-				case 'INLINE_KATEX':
-					return `<span class="katex">${escapeHTML(token.value)}</span>`;
+				// case 'INLINE_KATEX':
+				// 	return `<span class="katex">${escapeHTML(token.value)}</span>`;
 
+				// eslint-disable-next-line no-fallthrough
 				default:
 					return '';
 			}
@@ -72,7 +92,7 @@ export const parseAST = (tokens: MessageParser.Root): string => {
 		.map((block) => {
 			switch (block.type) {
 				case 'BIG_EMOJI':
-					return `<p><span>${renderInline(block.value)}</span></p>`;
+					return `<p>${renderInline(block.value)}</p>`;
 
 				case 'PARAGRAPH':
 					return `<p>${renderInline(block.value)}</p>`;
