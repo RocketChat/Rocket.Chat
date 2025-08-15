@@ -18,18 +18,6 @@ class OmnichannelReportsSection {
 		return this.section.locator('button', { has: this.page.locator('select[name="periodSelector"]') });
 	}
 
-	get txtTitle() {
-		return this.section.locator('');
-	}
-
-	get txtDescription() {
-		return this.section.locator('');
-	}
-
-	get chart() {
-		return this.section.locator('');
-	}
-
 	get txtStateTitle() {
 		return this.section.locator('.rcx-states__title');
 	}
@@ -44,10 +32,6 @@ class OmnichannelReportsSection {
 
 	get txtSummary() {
 		return this.section.locator('[data-qa="report-summary"]');
-	}
-
-	get loadingSkeleton() {
-		return this.section.locator('.rcx-skeleton');
 	}
 
 	findRowByName(name: string) {

@@ -61,10 +61,6 @@ export class HomeOmnichannel {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
-	get btnContextualbarClose(): Locator {
-		return this.page.locator('[data-qa="ContextualbarActionClose"]');
-	}
-
 	get btnContactInfo(): Locator {
 		return this.page.getByRole('button', { name: 'Contact Information' });
 	}
