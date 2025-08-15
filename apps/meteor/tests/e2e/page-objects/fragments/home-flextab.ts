@@ -4,7 +4,6 @@ import { ExportMessagesTab } from './export-messages-tab';
 import { HomeFlextabChannels } from './home-flextab-channels';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
-import { HomeFlextabOtr } from './home-flextab-otr';
 import { HomeFlextabPruneMessages } from './home-flextab-pruneMessages';
 import { HomeFlextabRoom } from './home-flextab-room';
 
@@ -19,8 +18,6 @@ export class HomeFlextab {
 
 	readonly notificationPreferences: HomeFlextabNotificationPreferences;
 
-	readonly otr: HomeFlextabOtr;
-
 	readonly exportMessages: ExportMessagesTab;
 
 	readonly pruneMessages: HomeFlextabPruneMessages;
@@ -31,7 +28,6 @@ export class HomeFlextab {
 		this.room = new HomeFlextabRoom(page);
 		this.channels = new HomeFlextabChannels(page);
 		this.notificationPreferences = new HomeFlextabNotificationPreferences(page);
-		this.otr = new HomeFlextabOtr(page);
 		this.exportMessages = new ExportMessagesTab(page);
 		this.pruneMessages = new HomeFlextabPruneMessages(page);
 	}
@@ -82,10 +78,6 @@ export class HomeFlextab {
 
 	get btnEnableE2E(): Locator {
 		return this.page.locator('role=menuitem[name="Enable E2E"]');
-	}
-
-	get btnEnableOTR(): Locator {
-		return this.page.locator('role=menuitem[name="OTR"]');
 	}
 
 	get flexTabViewThreadMessage(): Locator {

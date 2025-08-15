@@ -12,7 +12,6 @@ import { useTwoFactorAuthSetupCheck } from '../../../hooks/useTwoFactorAuthSetup
 import { useUnread } from '../../../hooks/useUnread';
 import { useForceLogout } from '../hooks/useForceLogout';
 import { useLogoutCleanup } from '../hooks/useLogoutCleanup';
-import { useOTRMessaging } from '../hooks/useOTRMessaging';
 import { useStoreCookiesOnLogin } from '../hooks/useStoreCookiesOnLogin';
 import { useUpdateVideoConfUser } from '../hooks/useUpdateVideoConfUser';
 import { useWebRTC } from '../hooks/useWebRTC';
@@ -29,7 +28,6 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
 	useWebRTC(user._id);
-	useOTRMessaging(user._id);
 	useNotificationUserCalendar(user);
 	useForceLogout(user._id);
 	useStoreCookiesOnLogin(user._id);

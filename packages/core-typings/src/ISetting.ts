@@ -181,7 +181,6 @@ export interface ISettingStatistics {
 	allowBadWordsFilter?: boolean;
 	readReceiptEnabled?: boolean;
 	readReceiptStoreUsers?: boolean;
-	otrEnable?: boolean;
 	pushEnable?: boolean;
 	globalSearchEnabled?: boolean;
 	threadsEnabled?: boolean;
@@ -235,9 +234,6 @@ export interface ISettingStatisticsObject {
 		allowBadWordsFilter?: boolean;
 		readReceiptEnabled?: boolean;
 		readReceiptStoreUsers?: boolean;
-	};
-	otr?: {
-		otrEnable?: boolean;
 	};
 	push?: {
 		pushEnable?: boolean;
