@@ -79,10 +79,18 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
+			const { name } = this.queryParams;
 
 			return API.v1.success(
 				await findEmojisCustom({
-					query,
+					query: name
+						? {
+								name: {
+									$regex: name,
+									$options: 'i',
+								},
+							}
+						: query,
 					pagination: {
 						offset,
 						count,

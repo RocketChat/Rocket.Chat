@@ -25,7 +25,7 @@ const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiProps): 
 	return (
 		<>
 			{descriptors?.map(({ name, className, image, content }, i) => (
-				<span key={i} title={name}>
+				<span data-testid={name.replace(/:/g, '')} key={i} title={name}>
 					{preview ? (
 						<ThreadMessageEmoji className={className} name={name} image={image}>
 							{content}
@@ -37,7 +37,11 @@ const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiProps): 
 					)}
 				</span>
 			)) ?? (
-				<span role='img' aria-label={sanitizedFallback.charAt(0) === ':' ? sanitizedFallback : undefined}>
+				<span
+					data-testid={sanitizedFallback.replace(/:/g, '')}
+					role='img'
+					aria-label={sanitizedFallback.charAt(0) === ':' ? sanitizedFallback : undefined}
+				>
 					{sanitizedFallback}
 				</span>
 			)}
