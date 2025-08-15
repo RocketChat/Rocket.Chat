@@ -2,13 +2,13 @@ import { isE2EEPinnedMessage, type IRoom, type IMessage } from '@rocket.chat/cor
 import { useUserId, useSetting, useRouter, useLayout, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect, useCallback, useRef } from 'react';
 
-import { e2e } from '../../../../app/e2e/client';
-import { E2EEState } from '../../../../app/e2e/client/E2EEState';
-import { MentionsParser } from '../../../../app/mentions/lib/MentionsParser';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import { onClientBeforeSendMessage } from '../../../lib/onClientBeforeSendMessage';
-import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
-import { Rooms } from '../../../stores';
+import { e2e } from '../../../../../app/e2e/client';
+import { E2EEState } from '../../../../../app/e2e/client/E2EEState';
+import { MentionsParser } from '../../../../../app/mentions/lib/MentionsParser';
+import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
+import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
+import { Rooms } from '../../../../stores';
 
 export const useE2EEncryption = () => {
 	const userId = useUserId();
