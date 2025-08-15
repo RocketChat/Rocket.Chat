@@ -26,16 +26,19 @@ export default class NodeKeyCodec extends BaseKeyCodec {
 			},
 			decodeUtf8: (input) => new TextDecoder().decode(input),
 			deriveKeyWithPbkdf2: (salt, baseKey) => {
+				// The BaseKeyCodec expects an AES-CBC key with 256-bit length and ITERATIONS = 1000 for
+				// encode/decode operations. Previous implementation derived an AES-GCM key with 100000 iterations,
+				// which caused InvalidAccessError when using the key for AES-CBC encryption in tests.
 				return crypto.subtle.deriveKey(
 					{
 						name: 'PBKDF2',
 						salt,
-						iterations: 100000,
+						iterations: 1000,
 						hash: 'SHA-256',
 					},
 					baseKey,
 					{
-						name: 'AES-GCM',
+						name: 'AES-CBC',
 						length: 256,
 					},
 					false,

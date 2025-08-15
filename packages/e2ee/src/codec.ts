@@ -119,6 +119,10 @@ const ITERATIONS = 1000; // mirrors legacy implementation
 export abstract class BaseKeyCodec {
 	#crypto: CryptoProvider;
 
+	get crypto(): CryptoProvider {
+		return this.#crypto;
+	}
+
 	constructor(crypto: CryptoProvider) {
 		this.#crypto = crypto;
 	}
@@ -159,7 +163,7 @@ export abstract class BaseKeyCodec {
 		const ct = this.#crypto.decodeBase64(encoded.ctB64);
 		try {
 			const plain = await this.#crypto.decryptAesCbc(masterKey, iv, ct);
-			return JSON.parse(this.#crypto.decodeUtf8(plain));
+			return JSON.parse(this.#crypto.decodeUtf8(plain)) as JsonWebKey;
 		} catch {
 			throw new Error('Failed to decrypt private key');
 		}
@@ -178,8 +182,17 @@ export abstract class BaseKeyCodec {
 			throw new Error('Password is required');
 		}
 		const { encodeUtf8, deriveKeyWithPbkdf2, importRawKey } = this.#crypto;
-		const baseKey = await importRawKey(encodeUtf8(password));
-		return deriveKeyWithPbkdf2(salt.buffer, baseKey);
+
+		try {
+			const baseKey = await importRawKey(encodeUtf8(password));
+			return deriveKeyWithPbkdf2(salt.buffer, baseKey);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new TypeError(`Invalid password: ${error.message}`);
+			} else {
+				throw error;
+			}
+		}
 	}
 
 	// Legacy helpers replicate existing Rocket.Chat behavior (vector + ciphertext joined) for staged migration.
@@ -198,7 +211,7 @@ export abstract class BaseKeyCodec {
 		return out;
 	}
 
-	async legacyDecrypt(bytes: Uint8Array<ArrayBuffer>, password: string, saltStr: string): Promise<string> {
+	async legacyDecrypt(bytes: Uint8Array<ArrayBuffer>, password: string, saltStr: string): Promise<JsonWebKey> {
 		const LEGACY_IV_START = 0;
 		const LEGACY_IV_LENGTH = 16;
 		if (bytes.length <= LEGACY_IV_LENGTH) {
@@ -213,7 +226,7 @@ export abstract class BaseKeyCodec {
 		const masterKey = await this.deriveMasterKey(salt, password);
 		try {
 			const plain = await this.#crypto.decryptAesCbc(masterKey, iv, ct);
-			return decodeUtf8(plain);
+			return JSON.parse(decodeUtf8(plain)) as JsonWebKey;
 		} catch {
 			throw new Error('Failed to decrypt legacy private key');
 		}

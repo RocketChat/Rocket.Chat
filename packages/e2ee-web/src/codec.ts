@@ -36,16 +36,18 @@ export default class WebKeyCodec extends BaseKeyCodec {
 			encodeUtf8: (input) => new TextEncoder().encode(input),
 			decodeUtf8: (input) => new TextDecoder().decode(input),
 			deriveKeyWithPbkdf2: (salt, baseKey) => {
+				// Align with BaseKeyCodec expectations: derive an AES-CBC 256-bit key with 1000 iterations (legacy compatibility)
+				// Previous version derived AES-GCM with 100000 iterations, causing algorithm mismatch errors in tests.
 				return crypto.subtle.deriveKey(
 					{
 						name: 'PBKDF2',
 						salt,
-						iterations: 100000,
+						iterations: 1000,
 						hash: 'SHA-256',
 					},
 					baseKey,
 					{
-						name: 'AES-GCM',
+						name: 'AES-CBC',
 						length: 256,
 					},
 					false,

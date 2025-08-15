@@ -24,12 +24,16 @@ export interface KeyPair {
 export abstract class BaseE2EE {
 	#service: KeyService;
 	#storage: KeyStorage;
-	#crypto: BaseKeyCodec;
+	#codec: BaseKeyCodec;
 
-	constructor(crypto: BaseKeyCodec, storage: KeyStorage, service: KeyService) {
+	get codec(): BaseKeyCodec {
+		return this.#codec;
+	}
+
+	constructor(codec: BaseKeyCodec, storage: KeyStorage, service: KeyService) {
 		this.#storage = storage;
 		this.#service = service;
-		this.#crypto = crypto;
+		this.#codec = codec;
 	}
 
 	async getKeysFromLocalStorage(): Promise<Optional<KeyPair>> {
@@ -63,7 +67,7 @@ export abstract class BaseE2EE {
 		return this.#storage.remove('e2e.random_password');
 	}
 	async createRandomPassword(length: number): Promise<string> {
-		const randomPassword = await this.#crypto.generateMnemonicPhrase(length);
+		const randomPassword = await this.#codec.generateMnemonicPhrase(length);
 		this.storeRandomPassword(randomPassword);
 		return randomPassword;
 	}

@@ -6,12 +6,11 @@ const createKeyCodec = () => new KeyCodec();
 test('KeyCodec roundtrip (v1 structured encoding)', async () => {
 	const codec = createKeyCodec();
 	const { privateJWK } = await codec.generateRSAKeyPair();
-
 	const saltBuffer = codec.encodeSalt('salt-user-1');
 	const masterKey = await codec.deriveMasterKey(saltBuffer, 'pass123');
 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
 	const dec = await codec.decodePrivateKey(enc, masterKey);
-	expect(dec).toBe(privateJWK);
+	expect(dec).toStrictEqual(privateJWK);
 });
 
 test('KeyCodec wrong password fails', async () => {
@@ -41,6 +40,7 @@ test('KeyCodec legacy roundtrip', async () => {
 	const { privateJWK } = await codec.generateRSAKeyPair();
 	const privStr = JSON.stringify(privateJWK);
 	const blob = await codec.legacyEncrypt(privStr, 'pw', 'salt');
-	const dec = await codec.legacyDecrypt(blob, 'pw', 'salt');
-	expect(dec).toBe(privateJWK);
+	const decAny = await codec.legacyDecrypt(blob, 'pw', 'salt');
+	const dec = typeof decAny === 'string' ? (JSON.parse(decAny) as any) : decAny;
+	expect(dec).toStrictEqual(privateJWK);
 });
