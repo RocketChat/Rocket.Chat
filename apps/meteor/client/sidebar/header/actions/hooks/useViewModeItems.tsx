@@ -12,8 +12,8 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 	const useHandleChange = (value: 'medium' | 'extended' | 'condensed'): (() => void) =>
 		useCallback(() => saveUserPreferences({ data: { sidebarViewMode: value } }), [value]);
 
-	const sidebarViewMode = useUserPreference<'medium' | 'extended' | 'condensed'>('sidebarViewMode', 'extended');
-	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', false);
+	const sidebarViewMode = useUserPreference<'medium' | 'extended' | 'condensed'>('sidebarViewMode', 'medium');
+	const sidebarDisplayAvatar = useUserPreference('sidebarDisplayAvatar', true);
 
 	const setToExtended = useHandleChange('extended');
 	const setToMedium = useHandleChange('medium');
