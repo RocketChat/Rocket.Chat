@@ -9,5 +9,9 @@ export const shouldHideSystemMessage = (messageType: MessageTypesValues, hideSys
 		return false;
 	}
 
+	if (messageType === 'rm') {
+		return false;
+	}
+
 	return hideSystemMessage.includes(messageType) || (isMutedUnmuted(messageType) && hideSystemMessage.includes('mute_unmute'));
 };

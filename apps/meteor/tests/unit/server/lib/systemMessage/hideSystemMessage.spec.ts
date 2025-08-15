@@ -40,6 +40,11 @@ describe('hideSystemMessage', () => {
 			expect(result).to.be.false;
 		});
 
+		it('should return false if message type is of deleted message', async () => {
+			const result = shouldHideSystemMessage('user-muted', undefined);
+			expect(result).to.be.false;
+		});
+
 		it('should return false if hidden system messages are undefined', async () => {
 			const result = shouldHideSystemMessage('user-muted', undefined);
 			expect(result).to.be.false;
