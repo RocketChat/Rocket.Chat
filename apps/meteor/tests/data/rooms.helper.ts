@@ -13,6 +13,10 @@ type CreateRoomParams = {
 	credentials?: Credentials;
 	extraData?: Record<string, any>;
 	voipCallDirection?: 'inbound' | 'outbound';
+	/**
+	 * @deprecated Using `customFields` is deprecated.
+	 */
+	customFields?: Record<string, any>;
 };
 
 export const createRoom = ({
@@ -24,6 +28,7 @@ export const createRoom = ({
 	members,
 	credentials: customCredentials,
 	extraData,
+	customFields,
 	voipCallDirection = 'inbound',
 }: CreateRoomParams) => {
 	if (!type) {
@@ -65,6 +70,7 @@ export const createRoom = ({
 			...params,
 			...(members && { members }),
 			...(extraData && { extraData }),
+			...(customFields && { customFields }),
 		});
 };
 
