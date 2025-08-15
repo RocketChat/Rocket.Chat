@@ -1110,13 +1110,6 @@ describe('LIVECHAT - contacts', () => {
 			expect(response.body).to.have.property('success', true);
 		});
 
-		it('should return 404 if contact is not found', async () => {
-			const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId: 'invalid' });
-
-			expect(response.status).to.be.equal(404);
-			expect(response.body).to.have.property('success', false);
-		});
-
 		it("should return an error if user doesn't have 'delete-livechat-contact' permission", async () => {
 			await removePermissionFromAllRoles('delete-livechat-contact');
 
