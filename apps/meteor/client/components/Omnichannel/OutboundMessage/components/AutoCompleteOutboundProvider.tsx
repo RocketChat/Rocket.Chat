@@ -30,7 +30,6 @@ const AutoCompleteOutboundProvider = ({
 	const getTimeFromNow = useTimeFromNow(true);
 
 	const { data: options = [], isPending } = useOutboundProvidersList({
-		queryKey: ['/v1/omnichannel/outbound/providers'],
 		select: ({ providers = [] }) => {
 			return providers.map((prov) => ({
 				label: prov.providerName,

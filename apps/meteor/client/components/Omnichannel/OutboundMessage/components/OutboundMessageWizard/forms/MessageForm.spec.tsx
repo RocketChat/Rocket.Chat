@@ -93,6 +93,8 @@ describe('MessageForm', () => {
 		await userEvent.click(screen.getByLabelText('Template*'));
 		await userEvent.click(await screen.findByRole('option', { name: 'Template One' }));
 
+		await userEvent.type(screen.getByLabelText('Body {{1}}'), 'Hello World');
+
 		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
 		await waitFor(() => {
@@ -100,7 +102,7 @@ describe('MessageForm', () => {
 				expect.objectContaining({
 					templateId: 'template-1',
 					template: template1,
-					templateParameters: {},
+					templateParameters: { body: [{ type: 'text', format: 'text', value: 'Hello World' }] },
 				}),
 			);
 		});
@@ -146,5 +148,20 @@ describe('MessageForm', () => {
 		expect(screen.getByRole('button', { name: 'Custom Action' })).toBeInTheDocument();
 		expect(screen.queryByRole('button', { name: 'Submit' })).not.toBeInTheDocument();
 		expect(renderActions).toHaveBeenCalledWith({ isSubmitting: false });
+	});
+
+	it('should clear parameters field when template changes', async () => {
+		const defaultValues = { templateId: 'template-1' };
+
+		render(<MessageForm {...defaultProps} templates={[template1, template2]} defaultValues={defaultValues} onSubmit={jest.fn()} />, {
+			wrapper: appRoot.build(),
+		});
+
+		await userEvent.type(screen.getByLabelText('Body {{1}}'), 'Hello World');
+
+		await userEvent.click(screen.getByLabelText('Template*'));
+		await userEvent.click(await screen.findByRole('option', { name: 'Template Two' }));
+
+		expect(screen.getByLabelText('Body {{1}}')).toHaveValue('');
 	});
 });

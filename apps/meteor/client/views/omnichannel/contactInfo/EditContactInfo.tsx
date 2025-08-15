@@ -2,6 +2,7 @@ import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
 import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -23,6 +24,7 @@ import {
 	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { ContactManagerInput } from '../additionalForms';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
 
@@ -76,7 +78,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const editContact = useEditContact(['current-contacts']);
 	const createContact = useCreateContact(['current-contacts']);
 	const checkExistenceEndpoint = useEndpoint('GET', '/v1/omnichannel/contacts.checkExistence');
-
+	const queryClient = useQueryClient();
 	const handleOpenUpSellModal = () => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 
 	const { data: customFieldsMetadata = [], isLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
@@ -175,10 +177,13 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 		};
 
 		if (contactData) {
-			return editContact.mutate({ contactId: contactData?._id, ...payload });
+			editContact.mutate({ contactId: contactData?._id, ...payload });
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contact(contactData?._id) });
+			return;
 		}
 
-		return createContact.mutate(payload);
+		createContact.mutate(payload);
+		queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contact() });
 	};
 
 	const formId = useId();

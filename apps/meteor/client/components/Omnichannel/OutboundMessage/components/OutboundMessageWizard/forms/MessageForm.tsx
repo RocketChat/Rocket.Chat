@@ -1,6 +1,7 @@
 import type { IOutboundProviderTemplate, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
 import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import type { ReactNode } from 'react';
 import { useId, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
@@ -36,6 +37,7 @@ type MessageFormProps = {
 
 const MessageForm = (props: MessageFormProps) => {
 	const { defaultValues, templates, contact, renderActions, onSubmit } = props;
+	const dispatchToastMessage = useToastBarDispatch();
 	const { t } = useTranslation();
 	const messageFormId = useId();
 
@@ -43,6 +45,7 @@ const MessageForm = (props: MessageFormProps) => {
 		control,
 		formState: { errors, isSubmitting },
 		handleSubmit,
+		setValue,
 	} = useForm<MessageFormData>({
 		mode: 'onChange',
 		reValidateMode: 'onChange',
@@ -58,16 +61,27 @@ const MessageForm = (props: MessageFormProps) => {
 
 	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
 
+	const handleTemplateChange = useEffectEvent((onChange: (value: string) => void) => {
+		return (value: string) => {
+			setValue('templateParameters', {});
+			onChange(value);
+		};
+	});
+
 	const submit = useEffectEvent(async (values: MessageFormData) => {
-		const { templateId, templateParameters } = values;
+		try {
+			const { templateId, templateParameters } = values;
 
-		// It shouldn't be possible to get here without a template due to form validations.
-		// Adding this to be safe and ts compliant
-		if (!template) {
-			throw new FormFetchError('error-template-not-found');
+			// It shouldn't be possible to get here without a template due to form validations.
+			// Adding this to be safe and ts compliant
+			if (!template) {
+				throw new FormFetchError('error-template-not-found');
+			}
+
+			onSubmit({ templateId, templateParameters, template });
+		} catch {
+			dispatchToastMessage({ type: 'error', message: t('Something_went_wrong') });
 		}
-
-		onSubmit({ templateId, templateParameters, template });
 	});
 
 	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);
@@ -99,7 +113,7 @@ const MessageForm = (props: MessageFormProps) => {
 									error={errors.templateId?.message}
 									templates={templates || []}
 									value={field.value}
-									onChange={field.onChange}
+									onChange={handleTemplateChange(field.onChange)}
 								/>
 							)}
 						/>
