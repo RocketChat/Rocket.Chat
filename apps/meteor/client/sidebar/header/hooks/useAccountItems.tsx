@@ -17,6 +17,9 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 	const handlePreferences = useEffectEvent(() => {
 		router.navigate('/account/preferences');
 	});
+	const handleScheduledMessages = useEffectEvent(() => {
+		router.navigate('/account/scheduled-messages');
+	});
 	const handleFeaturePreview = useEffectEvent(() => {
 		router.navigate('/account/feature-preview');
 	});
@@ -50,6 +53,12 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 			icon: 'customize',
 			content: t('Preferences'),
 			onClick: handlePreferences,
+		},
+		{
+			id: 'scheduled_messages',
+			icon: 'clock',
+			content: t('Scheduled_Messages'),
+			onClick: handleScheduledMessages,
 		},
 		{
 			id: 'accessibility',

@@ -343,5 +343,5 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
-	};
+	} as ComposerAPI;
 };
