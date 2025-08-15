@@ -1,4 +1,12 @@
-import { isDirectMessageRoom, isDiscussion, isOmnichannelRoom, isPrivateRoom, isPublicRoom, isTeamRoom } from '@rocket.chat/core-typings';
+import {
+	isDirectMessageRoom,
+	isDiscussion,
+	isLivechatInquiryRecord,
+	isOmnichannelRoom,
+	isPrivateRoom,
+	isPublicRoom,
+	isTeamRoom,
+} from '@rocket.chat/core-typings';
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -31,7 +39,7 @@ const updateGroupUnreadInfo = (
 	room: SubscriptionWithRoom | ILivechatInquiryRecord,
 	current: GroupedUnreadInfoData,
 ): GroupedUnreadInfoData => {
-	if ('status' in room) {
+	if (isLivechatInquiryRecord(room)) {
 		return getEmptyUnreadInfo();
 	}
 
