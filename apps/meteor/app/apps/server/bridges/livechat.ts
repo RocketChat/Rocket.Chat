@@ -7,13 +7,13 @@ import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/Livechat
 import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, IMessage, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
+import { registerGuest } from '@rocket.chat/omni-core';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { closeRoom } from '../../../livechat/server/lib/closeRoom';
 import { setCustomFields } from '../../../livechat/server/lib/custom-fields';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
-import { registerGuest } from '../../../livechat/server/lib/guests';
 import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
 import { updateMessage, sendMessage } from '../../../livechat/server/lib/messages';
 import { createRoom } from '../../../livechat/server/lib/rooms';
@@ -207,8 +207,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			name: visitor.name,
 			token: visitor.token,
 			email: '',
-			connectionData: undefined,
 			id: visitor.id,
+			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
@@ -231,8 +231,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			name: visitor.name,
 			token: visitor.token,
 			email: '',
-			connectionData: undefined,
 			id: visitor.id,
+			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};

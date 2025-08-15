@@ -7,6 +7,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
+import { registerGuest } from '@rocket.chat/omni-core';
 import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
 import { stripHtml } from 'string-strip-html';
@@ -16,7 +17,6 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { setDepartmentForGuest } from '../../../app/livechat/server/lib/departmentsLib';
-import { registerGuest } from '../../../app/livechat/server/lib/guests';
 import { sendMessage } from '../../../app/livechat/server/lib/messages';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
@@ -46,6 +46,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		name: name || email,
 		email,
 		department,
+		shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 	});
 
 	if (!livechatVisitor) {
