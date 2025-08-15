@@ -8,7 +8,7 @@ import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { businessHourLogger } from '../lib/logger';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
-	async openBusinessHoursByDayAndHour(): Promise<void> {
+	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
 		return openBusinessHourDefault();
 	}
 
