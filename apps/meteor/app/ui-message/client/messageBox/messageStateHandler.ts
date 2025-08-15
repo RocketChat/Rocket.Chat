@@ -1,6 +1,7 @@
 import { parse, type Options, type Root } from '@rocket.chat/message-parser';
 import type { Dispatch, SetStateAction } from 'react';
 
+import { parseAST } from './messageParser';
 import { getCursorSelectionInfo, getSelectionRange, setSelectionRange } from './selectionRange';
 
 export type CursorHistory = {
@@ -34,8 +35,8 @@ const parseMessage = (text: string, parseOptions: Options): Root => {
 // Resolve state of the composer during text composition
 export const resolveComposerBox = (
 	eventOrInput: InputEvent | KeyboardEvent | React.FocusEvent<HTMLElement> | HTMLDivElement,
-	setMdLines: Dispatch<SetStateAction<string[]>>,
-	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
+	_setMdLines: Dispatch<SetStateAction<string[]>>,
+	_setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
 	parseOptions: Options,
 ): void => {
 	// Determine whether first arg is an event or an input node
@@ -46,7 +47,11 @@ export const resolveComposerBox = (
 	} else {
 		// Called from event
 		const event = eventOrInput;
-		input = event.target as HTMLDivElement;
+		const node = event.target as HTMLElement;
+		// Always ensure input is the contenteditable
+		// This resolves an issue where pasting inside an empty composer
+		// removes the <br> tag which the paste event targets
+		input = node.closest('[contenteditable="true"]') as HTMLDivElement;
 
 		// Handle undo/redo for InputEvents
 		if ('inputType' in event) {
@@ -85,9 +90,10 @@ export const resolveComposerBox = (
 		// If it is, check whether the text state has updated
 		// Then resolve the state update by parsing the message into Markup
 		if (!(eventOrInput instanceof FocusEvent) || beforeText !== text) {
-			const ast = parseMessage(text, parseOptions);
+			const ast = parseMessage(text === '' ? '\n' : text, parseOptions);
 			console.log(text);
 			console.log(ast);
+			console.log(parseAST(ast));
 		}
 	}, 0);
 };
