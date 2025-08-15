@@ -1,4 +1,4 @@
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import { isLivechatInquiryRecord, type ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { Box, IconButton, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useLayout, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo, useId, useRef } from 'react';
@@ -36,7 +36,7 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: S
 	usePreventDefault(ref);
 
 	return (
-		<Sidepanel role='tabpanel' aria-label='sidepanel'>
+		<Sidepanel role='tabpanel' aria-label={t('Side_panel')}>
 			<SidepanelHeader role='heading' aria-label={title}>
 				<Box withTruncatedText display='flex' alignItems='center'>
 					{isTablet && <IconButton mie={8} icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
@@ -59,7 +59,7 @@ const SidePanel = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: S
 						data={rooms}
 						components={{ Item: SidepanelListItem, List: SidepanelListWrapper }}
 						itemContent={(_, room) => {
-							if ('status' in room) {
+							if (isLivechatInquiryRecord(room)) {
 								return <InquireSidePanelItem openedRoom={openedRoom} room={room} />;
 							}
 

@@ -8,7 +8,7 @@ export class Sidepanel {
 	}
 
 	get sidepanel(): Locator {
-		return this.page.getByRole('tabpanel', { name: 'sidepanel' });
+		return this.page.getByRole('tabpanel', { name: 'Side panel' });
 	}
 
 	get sidepanelList(): Locator {
