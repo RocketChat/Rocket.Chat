@@ -49,10 +49,10 @@ import { useRoom } from '../../contexts/RoomContext';
 import ComposerBoxPopup from '../ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../ComposerBoxPopupPreview';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
+import { useAIEnhancement } from '../hooks/useAIEnhancement';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
-import { useAIEnhancement } from '../hooks/useAIEnhancement';
 
 // The first boolean will be used to enable/disable the send button
 // The second boolean will be used to show/hide the placeholder

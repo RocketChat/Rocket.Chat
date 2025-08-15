@@ -59,11 +59,11 @@ const protectLinks = (text: string): { output: string; matches: string[] } => {
 	});
 
 	return { output, matches };
-}
+};
 
 const restoreLinks = (html: string, matches: string[]): string => {
 	return html.replace(/\[\[\[LINK_(\d+)\]\]\]/g, (_, i) => matches[parseInt(i, 10)] || '');
-}
+};
 
 // Resolve state of the composer during text composition
 export const resolveComposerBox = (

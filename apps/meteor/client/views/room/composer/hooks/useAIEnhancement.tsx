@@ -3,8 +3,6 @@ import { useCallback, useEffect, useState } from 'react';
 // import { useTranslation } from 'react-i18next';
 import type { RefObject, ReactElement } from 'react';
 
-
-
 const PULSE_ANIMATION_STYLE = `
 @keyframes aiBackgroundPulse {
   0% { background-color: var(--pulse-color-start); }
@@ -156,12 +154,12 @@ const PULSE_ANIMATION_STYLE = `
 let styleElement: HTMLStyleElement | null = null;
 
 const ensureStylesInjected = () => {
-  if (styleElement) {
-    return;
-  }
-  styleElement = document.createElement('style');
-  styleElement.innerHTML = PULSE_ANIMATION_STYLE;
-  document.head.appendChild(styleElement);
+	if (styleElement) {
+		return;
+	}
+	styleElement = document.createElement('style');
+	styleElement.innerHTML = PULSE_ANIMATION_STYLE;
+	document.head.appendChild(styleElement);
 };
 
 type PopupState = { x: number; y: number } | null;
@@ -169,172 +167,171 @@ type PopupState = { x: number; y: number } | null;
 type AIAction = 'summary' | 'emoji' | 'translation';
 
 export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactElement | null => {
-  // const { t } = useTranslation();
-  const [popup, setPopup] = useState<PopupState>(null);
+	// const { t } = useTranslation();
+	const [popup, setPopup] = useState<PopupState>(null);
 
-  // Ensure CSS is available exactly once.
-  useEffect(() => {
-    ensureStylesInjected();
-  }, []);
+	// Ensure CSS is available exactly once.
+	useEffect(() => {
+		ensureStylesInjected();
+	}, []);
 
-  const clearPopup = useCallback(() => setPopup(null), []);
+	const clearPopup = useCallback(() => setPopup(null), []);
 
-  // Detect selection via mouse.
-  useEffect(() => {
-    const refNode = contentRef.current;
-    if (!refNode) {
-      return;
-    }
+	// Detect selection via mouse.
+	useEffect(() => {
+		const refNode = contentRef.current;
+		if (!refNode) {
+			return;
+		}
 
-  
-      const handleMouseUp = (event: MouseEvent) => {
-        const selection = window.getSelection();
-        if (!selection || selection.isCollapsed) {
-          setPopup(null);
-          return;
-        }
-        // Ensure the selection is inside the composer.
-        const range = selection.getRangeAt(0);
-        if (!refNode.contains(range.commonAncestorContainer)) {
-          setPopup(null);
-          return;
-        }
-        // Use event.clientX and event.clientY for cursor position
-        const cursorPosition = { x: event.clientX, y: event.clientY};
-        setPopup(cursorPosition);
-      };
+		const handleMouseUp = (event: MouseEvent) => {
+			const selection = window.getSelection();
+			if (!selection || selection.isCollapsed) {
+				setPopup(null);
+				return;
+			}
+			// Ensure the selection is inside the composer.
+			const range = selection.getRangeAt(0);
+			if (!refNode.contains(range.commonAncestorContainer)) {
+				setPopup(null);
+				return;
+			}
+			// Use event.clientX and event.clientY for cursor position
+			const cursorPosition = { x: event.clientX, y: event.clientY };
+			setPopup(cursorPosition);
+		};
 
-    refNode.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      refNode.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [contentRef]);
+		refNode.addEventListener('mouseup', handleMouseUp);
+		return () => {
+			refNode.removeEventListener('mouseup', handleMouseUp);
+		};
+	}, [contentRef]);
 
-  const runAIAction = useCallback(
-    async (type: AIAction) => {
-      const selection = window.getSelection();
-      if (!selection || selection.isCollapsed) {
-        clearPopup();
-        return;
-      }
-      const range = selection.getRangeAt(0);
-      const selectedText = range.toString();
+	const runAIAction = useCallback(
+		async (type: AIAction) => {
+			const selection = window.getSelection();
+			if (!selection || selection.isCollapsed) {
+				clearPopup();
+				return;
+			}
+			const range = selection.getRangeAt(0);
+			const selectedText = range.toString();
 
-      // Wrap selected text into a span for visual feedback.
-      const span = document.createElement('span');
-      span.className = `ai-enhancement-transform ai-enhancement-${type}`;
-      span.textContent = selectedText;
-      span.dataset.originalText = selectedText;
+			// Wrap selected text into a span for visual feedback.
+			const span = document.createElement('span');
+			span.className = `ai-enhancement-transform ai-enhancement-${type}`;
+			span.textContent = selectedText;
+			span.dataset.originalText = selectedText;
 
-      // Replace range with span.
-      range.deleteContents();
-      range.insertNode(span);
+			// Replace range with span.
+			range.deleteContents();
+			range.insertNode(span);
 
-      // Clear user selection and popup.
-      selection.removeAllRanges();
-      clearPopup();
+			// Clear user selection and popup.
+			selection.removeAllRanges();
+			clearPopup();
 
-      // Disable user interaction with the span while processing.
-      span.setAttribute('contenteditable', 'false');
+			// Disable user interaction with the span while processing.
+			span.setAttribute('contenteditable', 'false');
 
-      // Simulate API call.
-      const result = await new Promise<string>((resolve) => {
-        setTimeout(() => {
-          switch (type) {
-            case 'summary':
-              resolve(`----------- Summary -----------`);
-              break;
-            case 'emoji':
-              resolve(`-----------😊 "${selectedText}" 🤗-----------`);
-              break;
-            case 'translation':
-            default:
-              resolve(`----------- Selected text : "${selectedText}" is translated -----------`);
-          }
-        }, 5000);
-      });
+			// Simulate API call.
+			const result = await new Promise<string>((resolve) => {
+				setTimeout(() => {
+					switch (type) {
+						case 'summary':
+							resolve(`----------- Summary -----------`);
+							break;
+						case 'emoji':
+							resolve(`-----------😊 "${selectedText}" 🤗-----------`);
+							break;
+						case 'translation':
+						default:
+							resolve(`----------- Selected text : "${selectedText}" is translated -----------`);
+					}
+				}, 5000);
+			});
 
-      await new Promise<void>((resolveTyping) => {
-        const chars = result.split('');
-        let idx = 0;
-        span.classList.remove('ai-enhancement-transform', `ai-enhancement-${type}`);
-        const interval = setInterval(() => {
-          span.textContent = result.slice(0, idx + 1);
-          idx += 1;
-          if (idx === chars.length) {
-            clearInterval(interval);
-            resolveTyping();
-          }
-        }, 30);
-      });
+			await new Promise<void>((resolveTyping) => {
+				const chars = result.split('');
+				let idx = 0;
+				span.classList.remove('ai-enhancement-transform', `ai-enhancement-${type}`);
+				const interval = setInterval(() => {
+					span.textContent = result.slice(0, idx + 1);
+					idx += 1;
+					if (idx === chars.length) {
+						clearInterval(interval);
+						resolveTyping();
+					}
+				}, 30);
+			});
 
-      const finalTransformedText = span.textContent;
+			const finalTransformedText = span.textContent;
 
-      span.removeAttribute('contenteditable');
-      span.className = `ai-enhancement-suggestion ai-suggestion-${type}`;
+			span.removeAttribute('contenteditable');
+			span.className = `ai-enhancement-suggestion ai-suggestion-${type}`;
 
-      const actions = document.createElement('div');
-      actions.className = 'ai-suggestion-actions';
-      actions.setAttribute('contenteditable', 'false');
+			const actions = document.createElement('div');
+			actions.className = 'ai-suggestion-actions';
+			actions.setAttribute('contenteditable', 'false');
 
-      const acceptBtn = document.createElement('button');
-      acceptBtn.textContent = '✓';
-      acceptBtn.className = 'accept';
-      acceptBtn.setAttribute('type', 'button');
-      acceptBtn.onclick = () => {
-        if (span.parentNode) {
-          const textNode = document.createTextNode(finalTransformedText || '');
-          span.parentNode.replaceChild(textNode, span);
-        }
-      };
+			const acceptBtn = document.createElement('button');
+			acceptBtn.textContent = '✓';
+			acceptBtn.className = 'accept';
+			acceptBtn.setAttribute('type', 'button');
+			acceptBtn.onclick = () => {
+				if (span.parentNode) {
+					const textNode = document.createTextNode(finalTransformedText || '');
+					span.parentNode.replaceChild(textNode, span);
+				}
+			};
 
-      const rejectBtn = document.createElement('button');
-      rejectBtn.textContent = '✗';
-      rejectBtn.className = 'reject';
-      rejectBtn.setAttribute('type', 'button');
-      rejectBtn.onclick = () => {
-        if (span.parentNode) {
-          const textNode = document.createTextNode(span.dataset.originalText || '');
-          span.parentNode.replaceChild(textNode, span);
-        }
-      };
+			const rejectBtn = document.createElement('button');
+			rejectBtn.textContent = '✗';
+			rejectBtn.className = 'reject';
+			rejectBtn.setAttribute('type', 'button');
+			rejectBtn.onclick = () => {
+				if (span.parentNode) {
+					const textNode = document.createTextNode(span.dataset.originalText || '');
+					span.parentNode.replaceChild(textNode, span);
+				}
+			};
 
-      actions.appendChild(acceptBtn);
-      actions.appendChild(rejectBtn);
+			actions.appendChild(acceptBtn);
+			actions.appendChild(rejectBtn);
 
-      let tooltipText = '';
-      switch (type) {
-        case 'summary':
-          tooltipText = 'AI Summary';
-          break;
-        case 'emoji':
-          tooltipText = 'AI Emojify';
-          break;
-        case 'translation':
-          tooltipText = 'AI Translation';
-          break;
-      }
-      span.classList.add('with-tooltip');
-      span.dataset.tooltip = tooltipText;
+			let tooltipText = '';
+			switch (type) {
+				case 'summary':
+					tooltipText = 'AI Summary';
+					break;
+				case 'emoji':
+					tooltipText = 'AI Emojify';
+					break;
+				case 'translation':
+					tooltipText = 'AI Translation';
+					break;
+			}
+			span.classList.add('with-tooltip');
+			span.dataset.tooltip = tooltipText;
 
-      span.appendChild(actions);
-    },
-    [clearPopup],
-  );
+			span.appendChild(actions);
+		},
+		[clearPopup],
+	);
 
-  if (!popup) {
-    return null;
-  }
+	if (!popup) {
+		return null;
+	}
 
-  return (
-    <div
-      className='ai-enhancement-popup'
-      style={{ position: 'fixed', top: popup.y, left: popup.x }}
-      onMouseDown={(e) => e.preventDefault()} // Prevent focus loss.
-    >
-      <Button small onClick={() => runAIAction('summary')} icon='keyboard' data-tooltip={('AI summarize')} />
-      <Button small onClick={() => runAIAction('emoji')} icon='emoji' data-tooltip={('AI emojify')} />
-      <Button small onClick={() => runAIAction('translation')} icon='language' data-tooltip={('AI translate')} />
-    </div>
-  );
-}; 
+	return (
+		<div
+			className='ai-enhancement-popup'
+			style={{ position: 'fixed', top: popup.y, left: popup.x }}
+			onMouseDown={(e) => e.preventDefault()} // Prevent focus loss.
+		>
+			<Button small onClick={() => runAIAction('summary')} icon='keyboard' data-tooltip='AI summarize' />
+			<Button small onClick={() => runAIAction('emoji')} icon='emoji' data-tooltip='AI emojify' />
+			<Button small onClick={() => runAIAction('translation')} icon='language' data-tooltip='AI translate' />
+		</div>
+	);
+};
