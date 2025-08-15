@@ -26,12 +26,12 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { e2e } from './rocketchat.e2e';
-import { RoomManager } from '../../../client/lib/RoomManager';
-import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
-import { Messages, Rooms, Subscriptions } from '../../../client/stores';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../app/utils/lib/i18n';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
-import { sdk } from '../../utils/client/lib/SDKClient';
-import { t } from '../../utils/lib/i18n';
+import { Messages, Rooms, Subscriptions } from '../../stores';
+import { RoomManager } from '../RoomManager';
+import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');

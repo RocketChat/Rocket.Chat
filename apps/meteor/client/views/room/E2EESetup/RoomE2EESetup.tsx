@@ -4,9 +4,9 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomE2EENotAllowed from './RoomE2EENotAllowed';
-import { e2e } from '../../../../app/e2e/client';
-import { E2EEState } from '../../../../app/e2e/client/E2EEState';
-import { E2ERoomState } from '../../../../app/e2e/client/E2ERoomState';
+import { e2e } from '../../../lib/e2ee';
+import { E2EEState } from '../../../lib/e2ee/E2EEState';
+import { E2ERoomState } from '../../../lib/e2ee/E2ERoomState';
 import RoomBody from '../body/RoomBody';
 import RoomBodyV2 from '../body/RoomBodyV2';
 import { useRoom } from '../contexts/RoomContext';

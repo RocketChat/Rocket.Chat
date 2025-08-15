@@ -1,8 +1,8 @@
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { useRequire2faSetup } from '../views/hooks/useRequire2faSetup';
-import TwoFactorRequiredModal from '../views/root/MainLayout/TwoFactorRequiredModal';
+import { useRequire2faSetup } from '../../../hooks/useRequire2faSetup';
+import TwoFactorRequiredModal from '../../MainLayout/TwoFactorRequiredModal';
 
 export const useTwoFactorAuthSetupCheck = () => {
 	const setModal = useSetModal();

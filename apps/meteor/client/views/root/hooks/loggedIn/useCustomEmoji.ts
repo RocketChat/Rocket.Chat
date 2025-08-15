@@ -2,8 +2,8 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { emoji } from '../../../app/emoji/client';
-import { customRender } from '../../lib/customEmoji';
+import { emoji } from '../../../../../app/emoji/client';
+import { customRender } from '../../../../lib/customEmoji';
 
 export const useCustomEmoji = () => {
 	const getCustomEmojis = useEndpoint('GET', '/v1/emoji-custom.list');

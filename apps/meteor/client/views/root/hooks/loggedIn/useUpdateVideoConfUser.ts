@@ -1,7 +1,7 @@
 import { useConnectionStatus, useIsLoggingIn } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { VideoConfManager } from '../../../lib/VideoConfManager';
+import { VideoConfManager } from '../../../../lib/VideoConfManager';
 
 export const useUpdateVideoConfUser = (userId: string) => {
 	const { connected } = useConnectionStatus();

@@ -3,7 +3,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 
-import { e2e } from '../../../../app/e2e/client';
+import { e2e } from '../../../lib/e2ee';
 
 type UseE2EEResetRoomKeyVariables = {
 	roomId: RoomID;

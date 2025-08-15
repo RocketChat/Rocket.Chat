@@ -1,9 +1,9 @@
 import { useOnLogout, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { closeAllRooms } from './closeAllRooms';
-import { purgeAllDrafts } from './purgeAllDrafts';
-import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
+import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
+import { closeAllRooms } from '../closeAllRooms';
+import { purgeAllDrafts } from '../purgeAllDrafts';
 
 export const useLogoutCleanup = () => {
 	const onLogout = useOnLogout();

@@ -1,9 +1,9 @@
 import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import type { CandidateData, DescriptionData, JoinData } from '../../../../app/webrtc/client/WebRTCClass';
-import { WebRTC } from '../../../../app/webrtc/client/WebRTCClass';
-import { WEB_RTC_EVENTS } from '../../../../app/webrtc/lib/constants';
+import type { CandidateData, DescriptionData, JoinData } from '../../../../../app/webrtc/client/WebRTCClass';
+import { WebRTC } from '../../../../../app/webrtc/client/WebRTCClass';
+import { WEB_RTC_EVENTS } from '../../../../../app/webrtc/lib/constants';
 
 export const useWebRTC = (uid: string) => {
 	const notifyUser = useStream('notify-user');
