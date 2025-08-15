@@ -1,13 +1,23 @@
-import type { FieldErrors, FieldValues } from 'react-hook-form';
-
-export class FormValidationError<FormData extends FieldValues = FieldValues> extends Error {
-	constructor(message: string, { cause }: { cause?: FieldErrors<FormData> }) {
-		super(message, { cause });
+export class FormValidationError extends Error {
+	constructor(message: string) {
+		super(message);
 	}
 }
 
 export class FormFetchError extends Error {
 	constructor(message: string) {
 		super(message);
+	}
+}
+
+export class ContactNotFoundError extends FormFetchError {
+	constructor() {
+		super('error-contact-not-found');
+	}
+}
+
+export class ProviderNotFoundError extends FormFetchError {
+	constructor() {
+		super('error-provider-not-found');
 	}
 }
