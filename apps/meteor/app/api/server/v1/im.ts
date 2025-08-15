@@ -17,6 +17,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
+import { wildcardToRegex } from '../../../../lib/utils/stringUtils';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
@@ -279,26 +280,29 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { typeGroup, name, roomId, username } = this.queryParams;
-
+			const typeGroup = typeof this.queryParams.typeGroup === 'string' ? this.queryParams.typeGroup : undefined;
+			const name = typeof this.queryParams.name === 'string' ? decodeURIComponent(this.queryParams.name) : undefined;
+			const roomId = typeof this.queryParams.roomId === 'string' ? this.queryParams.roomId : undefined;
+			const username = typeof this.queryParams.username === 'string' ? this.queryParams.username : undefined;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const { room } = await findDirectMessageRoom(roomId ? { roomId } : { username }, this.userId);
 
 			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
+
 			if (!canAccess) {
 				return API.v1.forbidden();
 			}
 
-			const filter = {
-				...query,
+			const ourQuery = {
 				rid: room._id,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+				...query,
+				...(name ? { name: { $regex: name.includes('*') || name.includes('?') ? wildcardToRegex(name) : name, $options: 'iu' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 			};
 
-			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(filter, {
+			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,
