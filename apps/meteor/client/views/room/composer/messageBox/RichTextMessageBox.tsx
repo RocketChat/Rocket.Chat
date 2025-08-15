@@ -369,6 +369,7 @@ const RichTextMessageBox = ({
 					if (event.altKey) {
 						setSelectionRange(input, 0, 0);
 					}
+					resolveComposerBox(input, setMdLines, setCursorHistory, parseOptions);
 				}
 
 				return;
@@ -386,6 +387,7 @@ const RichTextMessageBox = ({
 					if (event.altKey) {
 						setSelectionRange(input, input.innerText.length, input.innerText.length);
 					}
+					resolveComposerBox(input, setMdLines, setCursorHistory, parseOptions);
 				}
 			}
 		}
@@ -510,6 +512,7 @@ const RichTextMessageBox = ({
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
 
+	// This useEffect resolves the Composer after an option is selected from the popup
 	useEffect(() => {
 		const input = contentEditableRef.current as HTMLDivElement;
 		resolveComposerBox(input, setMdLines, setCursorHistory, parseOptions);
