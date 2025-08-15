@@ -49,6 +49,8 @@ export async function scheduleMessagesCron(): Promise<void> {
 							value: [{ type: 'PLAIN_TEXT', value: message.msg }],
 						},
 					],
+					...(message.tmid && { tmid: message.tmid }),
+					...(message.tmid && message.tshow && { tshow: message.tshow }),
 				};
 
 				console.log(`Sending message to room ${message.rid} with original scheduled _id ${message._id}`);
