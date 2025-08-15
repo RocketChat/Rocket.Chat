@@ -48,7 +48,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore turbo build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: turbo-build
           path: .turbo/cache
