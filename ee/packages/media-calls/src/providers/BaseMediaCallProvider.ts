@@ -74,6 +74,8 @@ export abstract class BaseMediaCallProvider {
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 		};
 
+		console.log('creating call', call);
+
 		const insertResult = await MediaCalls.insertOne(call);
 		if (!insertResult.insertedId) {
 			throw new InternalServerError('failed-to-create-call');

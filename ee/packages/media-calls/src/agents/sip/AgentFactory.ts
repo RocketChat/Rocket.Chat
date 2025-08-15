@@ -54,7 +54,7 @@ export class SipAgentFactory {
 					return null;
 				}
 
-				const role = agentManager.getRoleForCallActor(call, { type: 'user', id: sipId });
+				const role = agentManager.getRoleForCallActor(call, { type: 'sip', id: sipId });
 				if (!role) {
 					logger.debug({ msg: 'no role', method: 'SipAgentFactory.getCallAgent', sipId, contractId, callId });
 					return null;

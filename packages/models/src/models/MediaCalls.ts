@@ -25,9 +25,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			{ key: { state: 1, expiresAt: 1 }, unique: false },
 			{
 				key: { 'caller.type': 1, 'caller.id': 1, 'callerRequestedId': 1 },
-				unique: true,
 				sparse: true,
-				partialFilterExpression: { callerRequestedId: { $exists: 1 } },
 			},
 		];
 	}

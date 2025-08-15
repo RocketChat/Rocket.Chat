@@ -8,6 +8,7 @@ import type { IMediaCallAgent, IMediaCallAgentFactory, IMediaCallBasicAgent, INe
 import { UserAgentFactory } from './users/AgentFactory';
 import { MediaCallMonitor } from '../global/CallMonitor';
 import { gateway } from '../global/SignalGateway';
+import { SipAgentFactory } from './sip/AgentFactory';
 
 type FactoryFn = () => Promise<IMediaCallAgentFactory | null>;
 
@@ -19,7 +20,7 @@ class MediaCallAgentManager {
 		}
 
 		if (actor.type === 'sip') {
-			return null;
+			return SipAgentFactory.getAgentFactoryForActor(actor);
 		}
 
 		return null;
