@@ -9,7 +9,7 @@ describe('EmojiPickerLoadMore', () => {
 		expect(screen.getByRole('button', { name: /load more emojis/i })).toBeInTheDocument();
 	});
 
-	it('shopuld call onClick when button is clicked', async () => {
+	it('should call onClick when button is clicked', async () => {
 		const handleClick = jest.fn();
 
 		render(<EmojiPickerLoadMore onClick={handleClick}>Load More</EmojiPickerLoadMore>);
