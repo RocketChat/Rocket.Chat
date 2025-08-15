@@ -12,7 +12,11 @@ type ChannelFunctionParams = {
 };
 
 export class UserAgentSignalProcessor {
-	constructor(private readonly agent: UserMediaCallAgent) {}
+	private channelId: string | null;
+
+	constructor(private readonly agent: UserMediaCallAgent) {
+		this.channelId = null;
+	}
 
 	public async processSignal(signal: ClientMediaSignal, call: IMediaCall): Promise<void> {
 		logger.debug({ msg: 'UserAgentSignalProcessor.processSignal', call, signal });
@@ -21,6 +25,8 @@ export class UserAgentSignalProcessor {
 		if (!channel) {
 			throw new Error('invalid-call');
 		}
+
+		this.channelId = channel._id;
 
 		// The code will only reach this point if one of the three following conditions are true:
 		// 1. the signal came from the exact user session where the caller initiated the call
@@ -31,7 +37,7 @@ export class UserAgentSignalProcessor {
 
 		switch (signal.type) {
 			case 'local-sdp':
-				await this.saveLocalDescription(params, signal.sdp);
+				await this.saveLocalDescription(signal.sdp);
 				break;
 			case 'answer':
 				await this.processAnswer(params, signal.answer);
@@ -45,9 +51,25 @@ export class UserAgentSignalProcessor {
 		}
 	}
 
-	private async saveLocalDescription({ channel }: ChannelFunctionParams, sdp: RTCSessionDescriptionInit): Promise<void> {
+	public async getChannelId(): Promise<string> {
+		if (this.channelId) {
+			return this.channelId;
+		}
+
+		const channel = await agentManager.getOrCreateContract(this.agent.callId, this.agent);
+		if (!channel) {
+			throw new Error('invalid-channel');
+		}
+
+		this.channelId = channel._id;
+		return this.channelId;
+	}
+
+	private async saveLocalDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
 		logger.debug({ msg: 'UserAgentSignalProcessor.saveLocalDescription', sdp });
-		await MediaCallChannels.setLocalDescription(channel._id, sdp);
+		const channelId = await this.getChannelId();
+
+		await MediaCallChannels.setLocalDescription(channelId, sdp);
 
 		await agentManager.setLocalDescription(this.agent, sdp);
 	}

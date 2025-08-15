@@ -75,4 +75,8 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 	public async setLocalDescription(_id: string, localDescription: RTCSessionDescriptionInit): Promise<UpdateResult> {
 		return this.updateOneById(_id, { $set: { localDescription } });
 	}
+
+	public async setRemoteDescription(_id: string, remoteDescription: RTCSessionDescriptionInit): Promise<UpdateResult> {
+		return this.updateOneById(_id, { $set: { remoteDescription } });
+	}
 }

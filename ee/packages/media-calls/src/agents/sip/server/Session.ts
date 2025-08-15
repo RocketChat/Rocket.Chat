@@ -1,9 +1,10 @@
-import type { MediaCallActor, MediaCallSignedActor } from '@rocket.chat/core-typings';
+import type { MediaCallActor, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
 
+import { SipErrorCodes } from './errorCodes';
 import { gateway } from '../../../global/SignalGateway';
-
-let sessionCount = 0;
+import { SipIncomingMediaCallProvider } from '../../../providers/sip/SipIncomingMediaCallProvider';
 
 export class SipServerSession {
 	private readonly _sessionId: string;
@@ -11,8 +12,7 @@ export class SipServerSession {
 	private srf: Srf;
 
 	constructor() {
-		sessionCount++;
-		this._sessionId = `${sessionCount}-${Date.now().toString()}`;
+		this._sessionId = Random.id();
 		this.srf = new Srf();
 		this.initializeDrachtio();
 	}
@@ -51,7 +51,7 @@ export class SipServerSession {
 		this.srf.invite((req, res) => {
 			console.log('received call on drachtio');
 
-			this.processInvite(req, res).catch((error) => {
+			void this.processInvite(req, res).catch((error) => {
 				console.error(error);
 			});
 
@@ -113,24 +113,98 @@ export class SipServerSession {
 		});
 	}
 
-	private async processInvite(req: SrfRequest, _res: SrfResponse): Promise<void> {
-		const callee = await gateway.mutateCallee(await this.getCalleeFromInvite(req));
+	private async processInvite(req: SrfRequest, res: SrfResponse): Promise<void> {
+		if (!req.isNewInvite) {
+			res.send(SipErrorCodes.NOT_IMPLEMENTED);
+			return;
+		}
 
-		const caller: MediaCallSignedActor = {
+		const originalCalle = this.getCalleeFromInvite(req);
+		if (!originalCalle) {
+			res.send(SipErrorCodes.NOT_FOUND);
+			return;
+		}
+
+		const callee = await gateway.mutateCallee(originalCalle);
+		// If the call is coming in through SIP, the callee must be a rocket.chat user, otherwise, why is it even here?
+		// but if we couldn't identify an user as a callee, the extension might simply not be assigned to anyone, so respond with a generic unavailable
+		if (callee?.type !== 'user') {
+			res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+			return;
+		}
+
+		const caller = this.getCallerContactFromInvite(req);
+		const localDescription = { type: 'offer', sdp: req.body } as const;
+
+		const provider = new SipIncomingMediaCallProvider(caller, localDescription);
+
+		const call = await provider.createCall(callee);
+		console.log(call);
+
+		// #ToDo: wait for an event that signals the call was accepted
+
+		// const calleeAgent = await agentManager.getNewAgentForActor(callee, 'callee');
+		// if (!calleeAgent) {
+		// 	res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+		// 	return;
+		// }
+
+		// const factory = await SipAgentFactory.getAgentFactoryForExtension(
+		// 	{ id: req.callingNumber, sipExtension: req.callingNumber },
+		// 	this._sessionId,
+		// );
+
+		// if (!factory) {
+		// 	res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+		// 	return;
+		// }
+
+		// const agent = factory.getNewAgent('caller');
+		// agent.setDataFromInvite({
+		// 	localDescription: { type: 'offer', sdp: req.body },
+		// });
+
+		// const caller: MediaCallSignedActor = {
+		// 	type: 'sip',
+		// 	id: req.callingNumber,
+		// 	contractId: this._sessionId,
+		// };
+
+		// const requestedCallId = Random.id();
+
+		// const call = await gateway.createCall({
+		// 	callee,
+		// 	caller,
+		// 	requestedCallId,
+		// 	callerAgent: agent,
+		// });
+		// console.log(call);
+
+		// const callAgent = factory.getCallAgent(call);
+		// // This shouldn't be possible
+		// if (!callAgent) {
+		// 	logger.error('Could not create the SIP caller agent.');
+		// 	res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
+		// 	calleeAgent.notify(call._id, 'hangup');
+		// 	return;
+		// }
+		// console.log(callAgent);
+	}
+
+	private getCallerContactFromInvite(req: SrfRequest): MediaCallSignedContact<'sip'> {
+		const displayName = req.has('X-RocketChat-Caller-Name') && req.get('X-RocketChat-Caller-Name');
+
+		return {
 			type: 'sip',
 			id: req.callingNumber,
 			contractId: this._sessionId,
+			username: req.from || req.callingNumber,
+			sipExtension: req.callingNumber,
+			displayName: displayName || req.callingNumber,
 		};
-
-		const call = await gateway.createCall({
-			callee,
-			caller,
-		});
-
-		console.log(call);
 	}
 
-	private async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallActor> {
+	private getCalleeFromInvite(req: SrfRequest): MediaCallActor | null {
 		if (req.has('X-RocketChat-To-Uid')) {
 			const userId = req.get('X-RocketChat-To-Uid');
 			if (userId && typeof userId === 'string') {
@@ -148,6 +222,6 @@ export class SipServerSession {
 			};
 		}
 
-		throw new Error('unrecognized-callee');
+		return null;
 	}
 }

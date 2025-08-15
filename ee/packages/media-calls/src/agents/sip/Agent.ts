@@ -1,22 +1,18 @@
-import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { ClientMediaSignal, CallRole, CallNotification } from '@rocket.chat/media-signaling';
-import { MediaCallChannels } from '@rocket.chat/models';
+import type { MediaCallActor, MediaCallContact } from '@rocket.chat/core-typings';
+import type { CallRole, CallNotification } from '@rocket.chat/media-signaling';
 
-import { UserBasicAgent, type MinimalUserData } from './BasicAgent';
-import { UserAgentSignalProcessor } from './SignalProcessor';
+import { SipBasicAgent } from './BasicAgent';
 import { logger } from '../../logger';
 import { agentManager } from '../Manager';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { AgentContractState } from '../definition/common';
 
-export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implements IMediaCallAgent {
+export class SipMediaCallAgent extends SipBasicAgent<IMediaCallAgent> implements IMediaCallAgent {
 	public readonly callId: string;
 
 	public readonly contractId: string;
 
 	protected contractState: AgentContractState;
-
-	protected signalProcessor: UserAgentSignalProcessor;
 
 	public get signed(): boolean {
 		return this.contractState === 'signed';
@@ -26,53 +22,45 @@ export class UserMediaCallAgent extends UserBasicAgent<IMediaCallAgent> implemen
 		return this.contractState === 'ignored';
 	}
 
-	constructor(user: MinimalUserData, data: { role: CallRole; callId: string; contractId: string; contractState?: AgentContractState }) {
+	constructor(
+		contact: MediaCallContact<MediaCallActor<'sip'>>,
+		data: { role: CallRole; callId: string; contractId: string; contractState?: AgentContractState },
+	) {
 		const { callId, contractState, ...params } = data;
-		super(user, params);
+		super(contact, params);
 		this.contractId = data.contractId;
 		this.callId = callId;
 		this.contractState = (this.contractId && contractState) || 'proposed';
-
-		this.signalProcessor = new UserAgentSignalProcessor(this);
-	}
-
-	public async processSignal(signal: ClientMediaSignal, call: IMediaCall): Promise<void> {
-		return this.signalProcessor.processSignal(signal, call);
 	}
 
 	public async setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
-		logger.debug({ msg: 'UserMediaCallAgent.setRemoteDescription', sdp });
-		await this.sendSignal({
-			callId: this.callId,
-			toContractId: this.contractId,
-			type: 'remote-sdp',
-			sdp,
-		});
+		logger.debug({ msg: 'SipMediaCallAgent.setRemoteDescription', sdp });
 
-		try {
-			const channelId = await this.signalProcessor.getChannelId();
-			await MediaCallChannels.setRemoteDescription(channelId, sdp);
-		} catch (error) {
-			logger.error('Failed to save remote SDP on call channel.');
-		}
+		// #ToDo: save sdp on channels collection and trigger an event to signal that the call was accepted
+
+		// await this.sendSignal({
+		// 	callId: this.callId,
+		// 	toContractId: this.contractId,
+		// 	type: 'remote-sdp',
+		// 	sdp,
+		// });
 	}
 
 	public async getLocalDescription(): Promise<RTCSessionDescriptionInit | null> {
-		logger.debug({ msg: 'UserMediaCallAgent.getRemoteDescription' });
+		logger.debug({ msg: 'SipMediaCallAgent.getRemoteDescription' });
+		if (this.localDescription) {
+			return this.localDescription;
+		}
+
 		const channel = await agentManager.getOrCreateContract(this.callId, this);
 
 		return channel?.localDescription ?? null;
 	}
 
 	public async requestOffer(params: { iceRestart?: boolean }): Promise<void> {
-		logger.debug({ msg: 'UserMediaCallAgent.requestOffer', params, actor: this.actor, contractState: this.contractState });
+		logger.debug({ msg: 'SipMediaCallAgent.requestOffer', params, actor: this.actor, contractState: this.contractState });
 
-		await this.sendSignal({
-			callId: this.callId,
-			toContractId: this.contractId,
-			type: 'request-offer',
-			...params,
-		});
+		// We can't make offer requests over SIP without restarting the call, so just ignore this and wait for the offer to come naturally.
 	}
 
 	public async notify(callId: string, notification: CallNotification, signedContractId?: string): Promise<void> {

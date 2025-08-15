@@ -9,4 +9,5 @@ export interface IMediaCallChannelsModel extends IBaseModel<IMediaCallChannel> {
 	setState(_id: string, state: IMediaCallChannel['state']): Promise<UpdateResult>;
 	setActiveById(_id: string): Promise<UpdateResult>;
 	setLocalDescription(_id: string, localDescription: RTCSessionDescriptionInit): Promise<UpdateResult>;
+	setRemoteDescription(_id: string, remoteDescription: RTCSessionDescriptionInit): Promise<UpdateResult>;
 }

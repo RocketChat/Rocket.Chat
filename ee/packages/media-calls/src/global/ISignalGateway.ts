@@ -1,12 +1,7 @@
-import type { IMediaCall, IUser, MediaCallActor, MediaCallSignedActor } from '@rocket.chat/core-typings';
-import type { CallService, ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
+import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
+import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
-export type CreateCallParams = {
-	caller: MediaCallSignedActor;
-	callee: MediaCallActor;
-	requestedCallId?: string;
-	requestedService?: CallService;
-};
+import type { CreateCallParams } from '../providers/BaseMediaCallProvider';
 
 export type ServerSignalTransport = (uid: IUser['_id'], signal: ServerMediaSignal) => void;
 

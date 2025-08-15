@@ -1,4 +1,4 @@
-import type { IMediaCall, MediaCallActor } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser, MediaCallActor } from '@rocket.chat/core-typings';
 import type { CallRole } from '@rocket.chat/media-signaling';
 import { Users } from '@rocket.chat/models';
 
@@ -18,12 +18,13 @@ export interface IUserAgentFactory extends IMediaCallAgentFactory {
 
 // Agent that handles all 'user' actors
 export class UserAgentFactory {
-	public static async getAgentFactoryForUser(userId: string, contractId?: string): Promise<IUserAgentFactory | null> {
-		const user = await Users.findOneActiveById(userId, {
-			projection: { username: 1, name: 1, freeSwitchExtension: 1 },
-		});
+	public static async getAgentFactoryForUser(
+		user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>,
+		contractId?: string,
+	): Promise<IUserAgentFactory | null> {
+		const { _id: userId } = user;
 
-		if (!user?.username) {
+		if (!user.username) {
 			logger.debug({ msg: 'invalid user or no username', method: 'UserAgentFactory.getAgentFactoryForUser', userId, contractId });
 			return null;
 		}
@@ -71,11 +72,24 @@ export class UserAgentFactory {
 		};
 	}
 
+	public static async getAgentFactoryForUserId(userId: string, contractId?: string): Promise<IUserAgentFactory | null> {
+		const user = await Users.findOneActiveById(userId, {
+			projection: { username: 1, name: 1, freeSwitchExtension: 1 },
+		});
+
+		if (!user?.username) {
+			logger.debug({ msg: 'invalid user or no username', method: 'UserAgentFactory.getAgentFactoryForUserId', userId, contractId });
+			return null;
+		}
+
+		return this.getAgentFactoryForUser(user, contractId);
+	}
+
 	public static async getAgentFactoryForActor(actor: MediaCallActor): Promise<IUserAgentFactory | null> {
 		if (actor.type !== 'user') {
 			return null;
 		}
 
-		return this.getAgentFactoryForUser(actor.id, actor.contractId);
+		return this.getAgentFactoryForUserId(actor.id, actor.contractId);
 	}
 }
