@@ -53,6 +53,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const room = useUserRoom(rid);
 	const { _id: uid, username } = user;
 	const userCanSetOwner = usePermission('set-owner', rid);
+	const hasManageRemotely = usePermission('manage-room-members-remotely');
 	const isOwner = useUserHasRoomRole(uid, rid, 'owner');
 	const userSubscription = useUserSubscription(rid);
 	const setModal = useSetModal();
@@ -60,8 +61,9 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const loggedUserIsOwner = useUserHasRoomRole(loggedUserId, rid, 'owner');
 	const dispatchToastMessage = useToastMessageDispatch();
 
+	// If room is not yet available (admin modal initial render), do not throw; simply hide action
 	if (!room) {
-		throw Error('Room not provided');
+		return undefined;
 	}
 
 	const { roomCanSetOwner } = getRoomDirectives({ room, showingUserId: uid, userSubscription });
@@ -72,7 +74,6 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 	const toggleOwnerMutation = useMutation({
 		mutationFn: async ({ roomId, userId }: { roomId: string; userId: string }) => {
 			await toggleOwnerEndpoint({ roomId, userId });
-
 			return t(isOwner ? 'User__username__removed_from__room_name__owners' : 'User__username__is_now_an_owner_of__room_name_', {
 				username,
 				room_name: roomName,
@@ -133,7 +134,8 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 
 	const changeOwnerOption = useMemo(
 		() =>
-			(isRoomFederated(room) && roomCanSetOwner) || (!isRoomFederated(room) && roomCanSetOwner && userCanSetOwner)
+			(isRoomFederated(room) && roomCanSetOwner) ||
+			(!isRoomFederated(room) && (roomCanSetOwner || hasManageRemotely) && (userCanSetOwner || hasManageRemotely))
 				? {
 						content: t(isOwner ? 'Remove_as_owner' : 'Set_as_owner'),
 						icon: 'shield-check' as const,
@@ -141,7 +143,7 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 						type: 'privileges' as UserInfoActionType,
 					}
 				: undefined,
-		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, isOwner, t, room],
+		[changeOwnerAction, roomCanSetOwner, userCanSetOwner, hasManageRemotely, isOwner, t, room],
 	);
 
 	return changeOwnerOption;

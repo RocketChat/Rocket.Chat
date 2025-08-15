@@ -44,6 +44,7 @@ type RoomMembersProps = {
 	loadMoreItems: () => void;
 	renderRow?: ElementType<ComponentProps<typeof RoomMembersRow>>;
 	reload: () => void;
+	adminView?: boolean;
 };
 
 const RoomMembers = ({
@@ -65,10 +66,11 @@ const RoomMembers = ({
 	isTeam,
 	isDirect,
 	reload,
+	adminView,
 }: RoomMembersProps): ReactElement => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
-	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
+	const itemData = useMemo(() => ({ onClickView, rid, adminView }), [onClickView, rid, adminView]);
 
 	const options: SelectOption[] = useMemo(
 		() => [
