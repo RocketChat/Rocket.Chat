@@ -56,6 +56,7 @@ const AdminUsersPage = (): ReactElement => {
 	const { data, error } = useQuery({
 		queryKey: ['roles'],
 		queryFn: async () => getRoles(),
+		select: (data) => ({ ...data, roles: data.roles.filter((r) => r.scope === 'Users') }),
 	});
 
 	const paginationData = usePagination();
