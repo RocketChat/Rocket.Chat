@@ -32,6 +32,39 @@ const parseMessage = (text: string, parseOptions: Options): Root => {
 	return parse(text, parseOptions);
 };
 
+// TODO: Investigate an issue where Slack style links are not working properly
+// This might have to do with the symbols < and > not resolving into websafe characters
+const protectLinks = (text: string): { output: string; matches: string[] } => {
+	const matches: string[] = [];
+	let idx = 0;
+
+	// 1. Regex for all your link formats
+	const patterns = [
+		// Markdown reference links
+		/\[([^\]]*)\]\((https?:\/\/[^\)]+)\)/g,
+		// Slack-style links
+		/<([^>|]+)\|([^>]+)>/g,
+		// Bare domain
+		/\b[a-z0-9-]+\.(?:[a-z]{2,})(?:\/[^\s]*)?/gi,
+	];
+
+	let output = text;
+
+	patterns.forEach((regex) => {
+		output = output.replace(regex, (full) => {
+			const placeholder = `[[[LINK_${idx}]]]`;
+			matches[idx++] = full;
+			return placeholder;
+		});
+	});
+
+	return { output, matches };
+}
+
+const restoreLinks = (html: string, matches: string[]): string => {
+	return html.replace(/\[\[\[LINK_(\d+)\]\]\]/g, (_, i) => matches[parseInt(i, 10)] || '');
+}
+
 // Resolve state of the composer during text composition
 export const resolveComposerBox = (
 	eventOrInput: InputEvent | KeyboardEvent | React.FocusEvent<HTMLElement> | HTMLDivElement,
@@ -90,10 +123,18 @@ export const resolveComposerBox = (
 		// If it is, check whether the text state has updated
 		// Then resolve the state update by parsing the message into Markup
 		if (!(eventOrInput instanceof FocusEvent) || beforeText !== text) {
-			const ast = parseMessage(text === '' ? '\n' : text, parseOptions);
-			console.log(text);
-			console.log(ast);
-			console.log(parseAST(ast));
+			// Extract the URL and substitue with a safe template
+			const { output: safeText, matches } = protectLinks(text === '' ? '\n' : text);
+
+			// Parse the safetext
+			const ast = parseMessage(safeText, parseOptions);
+
+			// Parse the AST
+			const html = parseAST(ast);
+
+			// Restore the substituted links
+			const finalHtml = restoreLinks(html, matches);
+			console.log(finalHtml);
 		}
 	}, 0);
 };
