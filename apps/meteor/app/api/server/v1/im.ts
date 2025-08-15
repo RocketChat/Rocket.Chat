@@ -7,12 +7,14 @@ import {
 	ajv,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	isDmFileProps,
 	isDmMemberProps,
 	isDmMessagesProps,
 	isDmCreateProps,
 	isDmHistoryProps,
 } from '@rocket.chat/rest-typings';
+import type { ForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
@@ -99,6 +101,10 @@ type DmDeleteProps =
 			username: string;
 	  };
 
+type DmCloseProps = {
+	roomId: string;
+};
+
 const isDmDeleteProps = ajv.compile<DmDeleteProps>({
 	oneOf: [
 		{
@@ -124,12 +130,46 @@ const isDmDeleteProps = ajv.compile<DmDeleteProps>({
 	],
 });
 
+const DmClosePropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+const isDmCloseProps = ajv.compile<DmCloseProps>(DmClosePropsSchema);
+
 const dmDeleteEndpointsProps = {
 	authRequired: true,
 	body: isDmDeleteProps,
 	response: {
 		400: validateBadRequestErrorResponse,
 		401: validateUnauthorizedErrorResponse,
+		200: ajv.compile<void>({
+			type: 'object',
+			properties: {
+				success: {
+					type: 'boolean',
+					enum: [true],
+				},
+			},
+			required: ['success'],
+			additionalProperties: false,
+		}),
+	},
+} as const;
+
+const dmCloseEndpointsProps = {
+	authRequired: true,
+	body: isDmCloseProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
 		200: ajv.compile<void>({
 			type: 'object',
 			properties: {
@@ -160,51 +200,48 @@ const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 		return API.v1.success();
 	};
 
+const dmCloseAction = <Path extends string>(_path: Path): TypedAction<typeof dmCloseEndpointsProps, Path> =>
+	async function action() {
+		const { roomId } = this.bodyParams;
+		if (!roomId) {
+			throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+		}
+
+		let subscription;
+
+		const roomExists = !!(await Rooms.findOneById(roomId));
+		if (!roomExists) {
+			// even if the room doesn't exist, we should allow the user to close the subscription anyways
+			subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+		} else {
+			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
+			if (!canAccess) {
+				return API.v1.forbidden<ForbiddenErrorResponse>();
+			}
+
+			const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
+
+			subscription = subs;
+		}
+
+		if (!subscription) {
+			return API.v1.failure(`The user is not subscribed to the room`);
+		}
+
+		if (!subscription.open) {
+			return API.v1.failure(`The direct message room, is already closed to the sender`);
+		}
+
+		await hideRoomMethod(this.userId, roomId);
+
+		return API.v1.success();
+	};
+
 const dmEndpoints = API.v1
 	.post('im.delete', dmDeleteEndpointsProps, dmDeleteAction('im.delete'))
-	.post('dm.delete', dmDeleteEndpointsProps, dmDeleteAction('dm.delete'));
-
-API.v1.addRoute(
-	['dm.close', 'im.close'],
-	{ authRequired: true },
-	{
-		async post() {
-			const { roomId } = this.bodyParams;
-			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
-			}
-
-			let subscription;
-
-			const roomExists = !!(await Rooms.findOneById(roomId));
-			if (!roomExists) {
-				// even if the room doesn't exist, we should allow the user to close the subscription anyways
-				subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
-			} else {
-				const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
-				if (!canAccess) {
-					return API.v1.forbidden();
-				}
-
-				const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
-
-				subscription = subs;
-			}
-
-			if (!subscription) {
-				return API.v1.failure(`The user is not subscribed to the room`);
-			}
-
-			if (!subscription.open) {
-				return API.v1.failure(`The direct message room, is already closed to the sender`);
-			}
-
-			await hideRoomMethod(this.userId, roomId);
-
-			return API.v1.success();
-		},
-	},
-);
+	.post('dm.delete', dmDeleteEndpointsProps, dmDeleteAction('dm.delete'))
+	.post('dm.close', dmCloseEndpointsProps, dmCloseAction('dm.close'))
+	.post('im.close', dmCloseEndpointsProps, dmCloseAction('im.close'));
 
 // https://github.com/RocketChat/Rocket.Chat/pull/9679 as reference
 API.v1.addRoute(

@@ -68,7 +68,7 @@ const UnauthorizedErrorResponseSchema = {
 
 export const validateUnauthorizedErrorResponse = ajv.compile<UnauthorizedErrorResponse>(UnauthorizedErrorResponseSchema);
 
-type ForbiddenErrorResponse = {
+export type ForbiddenErrorResponse = {
 	success: false;
 	status?: string;
 	message?: string;
