@@ -3,6 +3,7 @@ import type {
 	DirectCallData,
 	IRoom,
 	ISetting,
+	ISubscription,
 	IUser,
 	ProviderCapabilities,
 	Serialized,
@@ -111,7 +112,7 @@ export class MockedAppRootBuilder {
 		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
-		querySubscription: () => [() => () => undefined, () => undefined],
+		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
 		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
 		user: null,
 		userId: null,
