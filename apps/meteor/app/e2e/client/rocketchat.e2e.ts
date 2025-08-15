@@ -5,7 +5,7 @@ import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUs
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { KeyPair } from '@rocket.chat/e2ee';
 import type { Optional } from '@rocket.chat/e2ee/dist/utils';
-import E2EE from '@rocket.chat/e2ee-node';
+import E2EE from '@rocket.chat/e2ee-web';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';

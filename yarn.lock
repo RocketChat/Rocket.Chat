@@ -7382,7 +7382,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/e2ee-web@workspace:packages/e2ee-web":
+"@rocket.chat/e2ee-web@workspace:^, @rocket.chat/e2ee-web@workspace:packages/e2ee-web":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/e2ee-web@workspace:packages/e2ee-web"
   dependencies:
@@ -8042,6 +8042,7 @@ __metadata:
     "@rocket.chat/cron": "workspace:^"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/e2ee": "workspace:^"
+    "@rocket.chat/e2ee-web": "workspace:^"
     "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/favicon": "workspace:^"
