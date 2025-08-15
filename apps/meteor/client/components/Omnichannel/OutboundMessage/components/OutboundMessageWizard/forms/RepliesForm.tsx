@@ -1,6 +1,7 @@
 import type { Serialized, ILivechatDepartment, ILivechatAgent } from '@rocket.chat/core-typings';
 import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -8,6 +9,7 @@ import { useEffect, useId, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { omnichannelQueryKeys } from '../../../../../../lib/queryKeys';
 import AutoCompleteDepartment from '../../../../../AutoCompleteDepartment';
 import AutoCompleteAgent from '../../AutoCompleteDepartmentAgent';
 import RetryButton from '../components/RetryButton';
@@ -39,6 +41,7 @@ type RepliesFormProps = {
 
 const RepliesForm = (props: RepliesFormProps) => {
 	const { defaultValues, renderActions, onSubmit } = props;
+	const dispatchToastMessage = useToastBarDispatch();
 	const { t } = useTranslation();
 	const repliesFormId = useId();
 	const {
@@ -62,7 +65,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 		isFetching: isFetchingDepartment,
 		refetch: refetchDepartment,
 	} = useQuery({
-		queryKey: ['outbound-message', 'department', departmentId],
+		queryKey: omnichannelQueryKeys.department(departmentId),
 		queryFn: () => getDepartment({ onlyMyDepartments: 'true' }),
 		enabled: !!departmentId,
 	});
@@ -73,7 +76,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 		isFetching: isFetchingAgent,
 		refetch: refetchAgent,
 	} = useQuery({
-		queryKey: ['outbound-message', 'agent', agentId],
+		queryKey: omnichannelQueryKeys.agent(agentId),
 		queryFn: () => getAgent(),
 		enabled: !!agentId,
 		select: (data) => data.user,
@@ -90,21 +93,30 @@ const RepliesForm = (props: RepliesFormProps) => {
 	}, [clearErrors, isErrorAgent, trigger]);
 
 	const submit = useEffectEvent(async ({ agentId, departmentId }: RepliesFormData) => {
-		// Wait if department or agent is still being fetched in background
-		const [updatedDepartment, updatedAgent] = await Promise.all([
-			departmentId && isFetchingDepartment ? refetchDepartment().then((r) => r.data?.department) : Promise.resolve(department),
-			agentId && isFetchingAgent ? refetchAgent().then((r) => r.data) : Promise.resolve(agent),
-		]);
+		try {
+			// Wait if department or agent is still being fetched in background
+			const [updatedDepartment, updatedAgent] = await Promise.all([
+				departmentId && isFetchingDepartment ? refetchDepartment().then((r) => r.data?.department) : Promise.resolve(department),
+				agentId && isFetchingAgent ? refetchAgent().then((r) => r.data) : Promise.resolve(agent),
+			]);
 
-		if (departmentId && !updatedDepartment) {
-			throw new FormFetchError('error-department-not-found');
+			if (departmentId && !updatedDepartment) {
+				throw new FormFetchError('error-department-not-found');
+			}
+
+			if (agentId && !updatedAgent) {
+				throw new FormFetchError('error-agent-not-found');
+			}
+
+			onSubmit({ departmentId, department: updatedDepartment, agentId, agent: updatedAgent });
+		} catch (error) {
+			if (error instanceof FormFetchError) {
+				trigger();
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: t('Something_went_wrong') });
 		}
-
-		if (agentId && !updatedAgent) {
-			throw new FormFetchError('error-agent-not-found');
-		}
-
-		onSubmit({ departmentId, department: updatedDepartment, agentId, agent: updatedAgent });
 	});
 
 	const formRef = useFormKeyboardSubmit(() => handleSubmit(submit)(), [submit, handleSubmit]);

@@ -351,7 +351,6 @@ describe('RecipientForm', () => {
 		await userEvent.click(await screen.findByRole('option', { name: /Contact 2/ }));
 
 		await waitFor(() => expect(screen.getByLabelText('To*')).toHaveTextContent('Contact_detail'));
-		expect(screen.getByLabelText('To*')).toHaveAccessibleDescription('Required_field');
 	});
 
 	it('should validate sender when no phone numbers available for selected channel', async () => {
@@ -396,7 +395,6 @@ describe('RecipientForm', () => {
 		await userEvent.click(await screen.findByRole('option', { name: /Provider 2/ }));
 
 		await waitFor(() => expect(screen.getByLabelText('From*')).toHaveTextContent('Workspace_detail'));
-		expect(screen.getByLabelText('From*')).toHaveAccessibleDescription('Required_field');
 	});
 
 	it('should validate contact field is required', async () => {

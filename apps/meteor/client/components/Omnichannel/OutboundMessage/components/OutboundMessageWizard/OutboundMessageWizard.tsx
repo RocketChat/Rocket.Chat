@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
+import OutboundMessageWizardErrorState from './components/OutboundMessageWizardErrorState';
 import type { SubmitPayload } from './forms';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
@@ -27,7 +28,12 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	const hasModule = useHasLicenseModule('outbound-messaging');
 	const isLoadingModule = hasModule === 'loading';
 
-	const { data: hasProviders = false, isLoading: isLoadingProviders } = useOutboundProvidersList<boolean>({
+	const {
+		data: hasProviders = false,
+		isLoading: isLoadingProviders,
+		isError: isErrorProviders,
+		refetch: refetchProviders,
+	} = useOutboundProvidersList<boolean>({
 		select: ({ providers = [] }) => providers.length > 0,
 	});
 
@@ -65,6 +71,10 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 
 	if (isLoadingModule || isLoadingProviders) {
 		return <OutboubdMessageWizardSkeleton />;
+	}
+
+	if (isErrorProviders) {
+		return <OutboundMessageWizardErrorState onRetry={refetchProviders} />;
 	}
 
 	return (
