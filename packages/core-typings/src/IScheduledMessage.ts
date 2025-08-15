@@ -11,5 +11,6 @@ export interface IScheduledMessage extends IRocketChatRecord {
 	ts: Date;
 	scheduledAt: Date;
 	tmid?: string;
+	tshow?: boolean;
 	_updatedAt: Date;
 }
