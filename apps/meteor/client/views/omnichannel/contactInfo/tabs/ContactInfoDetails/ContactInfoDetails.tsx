@@ -12,7 +12,6 @@ import Info from '../../../components/Info';
 import Label from '../../../components/Label';
 
 type ContactInfoDetailsProps = {
-	channels: Serialized<ILivechatContactChannel>[];
 	contactId: string;
 	emails?: string[];
 	phones?: string[];
@@ -21,15 +20,7 @@ type ContactInfoDetailsProps = {
 	contactManager?: string;
 };
 
-const ContactInfoDetails = ({
-	contactId,
-	channels,
-	emails,
-	phones,
-	createdAt,
-	customFieldEntries,
-	contactManager,
-}: ContactInfoDetailsProps) => {
+const ContactInfoDetails = ({ contactId, emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
 	const { t } = useTranslation();
 	const formatDate = useFormatDate();
 

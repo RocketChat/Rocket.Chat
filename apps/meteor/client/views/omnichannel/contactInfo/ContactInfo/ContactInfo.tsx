@@ -44,7 +44,6 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 		lastChat,
 		contactManager,
 		customFields: userCustomFields,
-		channels,
 	} = contact;
 
 	const hasConflicts = conflictingFields && conflictingFields?.length > 0;
@@ -107,7 +106,6 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 			</Tabs>
 			{context === 'details' && (
 				<ContactInfoDetails
-					channels={channels}
 					contactId={contactId}
 					createdAt={createdAt}
 					contactManager={contactManager}
