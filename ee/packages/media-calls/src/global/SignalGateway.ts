@@ -1,10 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
 import { logger } from '../logger';
-import type { ISignalGateway, ServerSignalTransport } from './ISignalGateway';
+import type { ISignalGateway, ServerSignalTransport, SignalGatewayEvents } from './ISignalGateway';
 import { GlobalSignalProcessor } from './SignalProcessor';
+import { SipServerSession } from '../agents/sip/server/Session';
 
 /**
  * Class used as gateway to send and receive signals to/from clients
@@ -12,6 +14,16 @@ import { GlobalSignalProcessor } from './SignalProcessor';
  */
 export class SignalGateway extends GlobalSignalProcessor implements ISignalGateway {
 	private handler: ServerSignalTransport | null = null;
+
+	private session: SipServerSession;
+
+	public emitter: Emitter<SignalGatewayEvents>;
+
+	constructor() {
+		super();
+		this.emitter = new Emitter();
+		this.session = new SipServerSession();
+	}
 
 	public setSignalHandler(handlerFn: ServerSignalTransport): void {
 		this.handler = handlerFn;
@@ -43,6 +55,10 @@ export class SignalGateway extends GlobalSignalProcessor implements ISignalGatew
 		} catch (error) {
 			this.debugError(`SignalGateway's handler threw an exception`, { toUid, signal }, { error });
 		}
+	}
+
+	public reactToCallUpdate(callId: string): void {
+		this.session.reactToCallUpdate(callId);
 	}
 
 	private debugError(msg: string, debugInfo: Record<string, unknown>, errorInfo?: Record<string, unknown>): void {

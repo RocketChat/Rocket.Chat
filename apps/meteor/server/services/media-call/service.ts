@@ -13,6 +13,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	constructor() {
 		super();
 		gateway.setSignalHandler(this.sendSignal.bind(this));
+		gateway.emitter.on('callUpdated', (callId) => api.broadcast('media-call.updated', callId));
+		this.onEvent('media-call.updated', (callId) => gateway.reactToCallUpdate(callId));
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {

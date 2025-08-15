@@ -7815,12 +7815,14 @@ __metadata:
   resolution: "@rocket.chat/media-calls@workspace:ee/packages/media-calls"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/emitter": "npm:~0.31.25"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
+    drachtio-srf: "npm:^5.0.10"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     typescript: "npm:~5.8.3"
@@ -13798,6 +13800,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"any-base@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "any-base@npm:1.1.0"
+  checksum: 10/c1fd040de52e710e2de7d9ae4df52bac589f35622adb24686c98ce21c7b824859a8db9614bc119ed8614f42fd08918b2612e6a6c385480462b3100a1af59289d
+  languageName: node
+  linkType: hard
+
 "anymatch@npm:^3.0.3, anymatch@npm:^3.1.3, anymatch@npm:~3.1.2":
   version: 3.1.3
   resolution: "anymatch@npm:3.1.3"
@@ -17901,6 +17910,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"delegates@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "delegates@npm:0.1.0"
+  checksum: 10/bc38da38c08aa1cd889ab2058077bc54a4171a5250ab18f9789ab9fc69af47e8d0c1e21d94e0daf25590ed2861b9aacd5fa7ba417dce77df1ee836427e81b980
+  languageName: node
+  linkType: hard
+
 "delegates@npm:^1.0.0":
   version: 1.0.0
   resolution: "delegates@npm:1.0.0"
@@ -18431,6 +18447,24 @@ __metadata:
     p-event: "npm:^2.1.0"
     pify: "npm:^3.0.0"
   checksum: 10/158feb3dab42f3429f4242a7bd6610e6890ab72e6da9bd5a7bee3d0f56b7df2786eefccd4c0d3cfb7f03e77997950e41ca0a2dcdbb76098cedaeb6c594aa0f3f
+  languageName: node
+  linkType: hard
+
+"drachtio-srf@npm:^5.0.10":
+  version: 5.0.10
+  resolution: "drachtio-srf@npm:5.0.10"
+  dependencies:
+    debug: "npm:^3.2.7"
+    delegates: "npm:^0.1.0"
+    node-noop: "npm:^0.0.1"
+    only: "npm:^0.0.2"
+    sdp-transform: "npm:^2.15.0"
+    short-uuid: "npm:^4.2.2"
+    sip-methods: "npm:^0.3.0"
+    sip-status: "npm:^0.1.0"
+    utils-merge: "npm:^1.0.0"
+    uuid-random: "npm:^1.3.2"
+  checksum: 10/a31206c519a32a0221a247ff07a6d94557717930689b60da6bf00c083b4c05e61cea7c49ad8d3576646d07593dc47c4afe0b5783c9792d6312a23b403e67298a
   languageName: node
   linkType: hard
 
@@ -27355,6 +27389,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-noop@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "node-noop@npm:0.0.1"
+  checksum: 10/5941634e802f8b7c6924f0f8389d7922350b07390186fecbe393119ad8d84926685aedb7e18b44413d0a87aef1c1ce89169ec2b93d7da8d0a00a7d087503c3ea
+  languageName: node
+  linkType: hard
+
 "node-preload@npm:^0.2.1":
   version: 0.2.1
   resolution: "node-preload@npm:0.2.1"
@@ -27862,6 +27903,13 @@ __metadata:
   dependencies:
     mimic-fn: "npm:^2.1.0"
   checksum: 10/e9fd0695a01cf226652f0385bf16b7a24153dbbb2039f764c8ba6d2306a8506b0e4ce570de6ad99c7a6eb49520743afdb66edd95ee979c1a342554ed49a9aadd
+  languageName: node
+  linkType: hard
+
+"only@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "only@npm:0.0.2"
+  checksum: 10/e2ad03e486534dc6bfb983393be83125a4669052b4a19a353eb00475b46971fb238a18223f2b609fe0d1bcb61ff8373964ccac64d05cbf970865299f655ed0ba
   languageName: node
   linkType: hard
 
@@ -32082,6 +32130,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sdp-transform@npm:^2.15.0":
+  version: 2.15.0
+  resolution: "sdp-transform@npm:2.15.0"
+  bin:
+    sdp-verify: checker.js
+  checksum: 10/20506388f86a52c8cd86cb855ce2b3dc13bff74d702ed8519cb9994c39f921dad0e47d726330206a4afdd6c491c26b70c17b72955ba2f4ac26b9859f97626faa
+  languageName: node
+  linkType: hard
+
 "secure-json-parse@npm:^2.4.0":
   version: 2.4.0
   resolution: "secure-json-parse@npm:2.4.0"
@@ -32485,6 +32542,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"short-uuid@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "short-uuid@npm:4.2.2"
+  dependencies:
+    any-base: "npm:^1.1.0"
+    uuid: "npm:^8.3.2"
+  checksum: 10/fcd0cef08c5f3f4c1e5d1f716a9a92efbadf8131a22ba6e399f7cf9257e7f18084995e6dc3e950cc705bcdee4c4e982a752872caf1305314713fc86357d68480
+  languageName: node
+  linkType: hard
+
 "side-channel-list@npm:^1.0.0":
   version: 1.0.0
   resolution: "side-channel-list@npm:1.0.0"
@@ -32585,6 +32652,20 @@ __metadata:
     nise: "npm:^6.1.1"
     supports-color: "npm:^7.2.0"
   checksum: 10/046b44260d9ebf01d9fb742bbee70d5504d2596c07bf3241f817dc2434df0afb6be4c34ec4f1b9ccc4fb8d85b16035b79f60fa3c289bfc8810231653e2ca06f4
+  languageName: node
+  linkType: hard
+
+"sip-methods@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "sip-methods@npm:0.3.0"
+  checksum: 10/3aee24e1c583171e2fbda0339f8096908a92dfc22074a1d6ee3cfcc09c2d36bcad2c18fa2050815a0e3efe358e713cae1457f660f72793c1db6a813e916b7608
+  languageName: node
+  linkType: hard
+
+"sip-status@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "sip-status@npm:0.1.0"
+  checksum: 10/6f63c78d9df22f3b3039a885a77cc23b8443eabb4b2a371e7c6b1230b17e2bbef00520b6ed36f96140d2bfa435cbcdbe82069fc2ef99a1b498bd75133339baa5
   languageName: node
   linkType: hard
 
@@ -35664,10 +35745,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"utils-merge@npm:1.0.1":
+"utils-merge@npm:1.0.1, utils-merge@npm:^1.0.0":
   version: 1.0.1
   resolution: "utils-merge@npm:1.0.1"
   checksum: 10/5d6949693d58cb2e636a84f3ee1c6e7b2f9c16cb1d42d0ecb386d8c025c69e327205aa1c69e2868cc06a01e5e20681fbba55a4e0ed0cce913d60334024eae798
+  languageName: node
+  linkType: hard
+
+"uuid-random@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "uuid-random@npm:1.3.2"
+  checksum: 10/9070c876651e1893f9255dddab2edc177ba34196660065be074050e4143405382b7f0f5fb922b666ebfd0794a6ef7b9f6acb627865df7b2978edb0da6b448f1d
   languageName: node
   linkType: hard
 

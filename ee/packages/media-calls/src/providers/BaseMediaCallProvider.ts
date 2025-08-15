@@ -5,6 +5,7 @@ import { MediaCalls } from '@rocket.chat/models';
 import { agentManager } from '../agents/Manager';
 import { MediaCallMonitor } from '../global/CallMonitor';
 import { logger } from '../logger';
+import { InternalServerError, InvalidParamsError } from './common';
 
 export type CreateCallParams = {
 	caller: MediaCallSignedActor;
@@ -46,14 +47,14 @@ export abstract class BaseMediaCallProvider {
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
-			throw new Error('invalid-caller');
+			throw new InvalidParamsError('invalid-caller');
 		}
 
 		const service = requestedService || 'webrtc';
 
 		// webrtc is our only known service right now, but if the call was requested by a client that doesn't also implement it, we don't need to even create a call
 		if (service !== 'webrtc') {
-			throw new Error('invalid-call-service');
+			throw new InvalidParamsError('invalid-call-service');
 		}
 
 		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
@@ -75,12 +76,12 @@ export abstract class BaseMediaCallProvider {
 
 		const insertResult = await MediaCalls.insertOne(call);
 		if (!insertResult.insertedId) {
-			throw new Error('failed-to-create-call');
+			throw new InternalServerError('failed-to-create-call');
 		}
 
 		const newCall = await MediaCalls.findOneById(insertResult.insertedId);
 		if (!newCall) {
-			throw new Error('failed-to-create-call');
+			throw new InternalServerError('failed-to-retrieve-call');
 		}
 
 		return newCall;
@@ -94,11 +95,12 @@ export abstract class BaseMediaCallProvider {
 
 		const userAgent = await agentManager.getNewAgentForActor(callParams[actorRole], actorRole);
 		if (!userAgent) {
-			throw new Error(`invalid-${actorRole}`);
+			throw new InvalidParamsError(`invalid-${actorRole}`);
 		}
 
 		const call = await this.createCallBetweenActors(callParams);
 
+		console.log('calling userAgent.onNewCall', actorRole);
 		await userAgent.onNewCall(call, oppositeContact);
 
 		return call;

@@ -25,6 +25,7 @@
 	],
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/media-signaling": "workspace:^",
 		"@rocket.chat/models": "workspace:^",

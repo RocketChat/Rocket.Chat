@@ -4,6 +4,7 @@ import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
 
 import { SipErrorCodes } from './errorCodes';
 import { gateway } from '../../../global/SignalGateway';
+import { logger } from '../../../logger';
 import { SipIncomingMediaCallProvider } from '../../../providers/sip/SipIncomingMediaCallProvider';
 
 export class SipServerSession {
@@ -11,18 +12,41 @@ export class SipServerSession {
 
 	private srf: Srf;
 
+	private knownCalls: Map<string, SipIncomingMediaCallProvider>;
+
 	constructor() {
 		this._sessionId = Random.id();
+		this.knownCalls = new Map();
 		this.srf = new Srf();
 		this.initializeDrachtio();
 	}
 
+	public reactToCallUpdate(callId: string): void {
+		const call = this.knownCalls.get(callId);
+		if (!call) {
+			// If we don't know this call, then it's probably being handled by a session in some other server instance
+			return;
+		}
+
+		call.reactToCallChanges().catch((error) => {
+			logger.error({ msg: 'Failed to react to call changes', error, callId });
+		});
+	}
+
+	public reportInternalCallUpdate(callId: string): void {
+		console.log(callId);
+	}
+
 	private initializeDrachtio(): void {
-		// this.srf.connect({
-		// 	host: '127.0.0.1',
-		// 	port: 9022,
-		// 	secret: 'cymru',
-		// });
+		// #ToDo
+		setTimeout(() => {
+			console.log('connecting to drachtio');
+			this.srf.connect({
+				host: '172.19.0.2',
+				port: 9022,
+				secret: 'cymru',
+			});
+		}, 10000);
 
 		this.srf.on('connect', (err, hostport) => {
 			if (err) {
@@ -54,84 +78,35 @@ export class SipServerSession {
 			void this.processInvite(req, res).catch((error) => {
 				console.error(error);
 			});
-
-			// try {
-			// 	const freeswitchUri = `sip:1003@freeswitch:5060`;
-
-			// 	console.log('forwarding call to extension 1003 on freeswitch');
-
-			// 	console.log('Incoming SDP: ', req.body);
-
-			// 	const { uac, uas } = await srf.createB2BUA(req, res, freeswitchUri, {
-			// 		localSdpA: req.body,
-			// 	});
-
-			// 	if (uac.remote.sdp === req.body) {
-			// 		console.log('uac.remote.sdp: same as incoming sdp');
-			// 	} else {
-			// 		console.log('uac.remote.sdp:', uac.remote.sdp);
-			// 	}
-
-			// 	if (uac.local.sdp === req.body) {
-			// 		console.log('uac.local.sdp: same as incoming sdp');
-			// 	} else if (uac.local.sdp === uac.remote.sdp) {
-			// 		console.log('uac.local.sdp: same as uac.remote.sdp');
-			// 	} else {
-			// 		console.log('uac.local.sdp:', uac.local.sdp);
-			// 	}
-
-			// 	if (uas.remote.sdp === req.body) {
-			// 		console.log('uas.remote.sdp: same as incoming sdp');
-			// 	} else if (uas.remote.sdp === uac.remote.sdp) {
-			// 		console.log('uas.remote.sdp: same as uac.remote.sdp');
-			// 	} else if (uas.remote.sdp === uac.local.sdp) {
-			// 		console.log('uas.remote.sdp: same as uac.local.sdp');
-			// 	} else {
-			// 		console.log('uas.remote.sdp:', uas.remote.sdp);
-			// 	}
-
-			// 	if (uas.local.sdp === req.body) {
-			// 		console.log('uas.local.sdp: same as incoming sdp');
-			// 	} else if (uas.local.sdp === uac.remote.sdp) {
-			// 		console.log('uas.local.sdp: same as uac.remote.sdp');
-			// 	} else if (uas.local.sdp === uac.local.sdp) {
-			// 		console.log('uas.local.sdp: same as uac.local.sdp');
-			// 	} else if (uas.local.sdp === uas.remote.sdp) {
-			// 		console.log('uas.local.sdp: same as uas.remote.sdp');
-			// 	} else {
-			// 		console.log('uas.local.sdp:', uas.local.sdp);
-			// 	}
-
-			// 	console.log('Call bridged between caller and FreeSwitch');
-
-			// 	uas.on('destroy', () => uac.destroy());
-			// 	uac.on('destroy', () => uas.destroy());
-			// } catch (err) {
-			// 	console.error('Call failed', err);
-			// 	res.send(480);
-			// }
 		});
 	}
 
 	private async processInvite(req: SrfRequest, res: SrfResponse): Promise<void> {
 		if (!req.isNewInvite) {
+			console.log('not implemented');
 			res.send(SipErrorCodes.NOT_IMPLEMENTED);
 			return;
 		}
 
 		const originalCalle = this.getCalleeFromInvite(req);
 		if (!originalCalle) {
+			console.log('callee not found');
 			res.send(SipErrorCodes.NOT_FOUND);
 			return;
 		}
+
+		console.log('originalCalle', originalCalle);
 
 		const callee = await gateway.mutateCallee(originalCalle);
 		// If the call is coming in through SIP, the callee must be a rocket.chat user, otherwise, why is it even here?
 		// but if we couldn't identify an user as a callee, the extension might simply not be assigned to anyone, so respond with a generic unavailable
 		if (callee?.type !== 'user') {
+			console.log('callee not identified');
 			res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
 			return;
 		}
+
+		console.log('callee', callee);
 
 		const caller = this.getCallerContactFromInvite(req);
 		const localDescription = { type: 'offer', sdp: req.body } as const;
@@ -140,55 +115,50 @@ export class SipServerSession {
 
 		const call = await provider.createCall(callee);
 		console.log(call);
+		this.knownCalls.set(call._id, provider);
 
-		// #ToDo: wait for an event that signals the call was accepted
+		const uas = await this.srf.createUAS(req, res, {
+			localSdp: () => {
+				return new Promise((resolve, reject) => {
+					let resolved = false;
 
-		// const calleeAgent = await agentManager.getNewAgentForActor(callee, 'callee');
-		// if (!calleeAgent) {
-		// 	res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
-		// 	return;
-		// }
+					provider.emitter.on('gotRemoteDescription', ({ description }) => {
+						console.log('gotRemoteDescription');
+						if (resolved) {
+							return;
+						}
+						if (!description.sdp) {
+							reject();
+						}
 
-		// const factory = await SipAgentFactory.getAgentFactoryForExtension(
-		// 	{ id: req.callingNumber, sipExtension: req.callingNumber },
-		// 	this._sessionId,
-		// );
+						resolved = true;
+						resolve(description.sdp as string);
+					});
 
-		// if (!factory) {
-		// 	res.send(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
-		// 	return;
-		// }
+					provider.emitter.on('callFailed', () => {
+						console.log('callFailed');
+						if (resolved) {
+							return;
+						}
+						resolved = true;
+						reject('call-failed');
+					});
 
-		// const agent = factory.getNewAgent('caller');
-		// agent.setDataFromInvite({
-		// 	localDescription: { type: 'offer', sdp: req.body },
-		// });
+					provider.emitter.on('callEnded', () => {
+						console.log('callEnded');
+						if (resolved) {
+							return;
+						}
+						resolved = true;
+						reject('call-ended');
+					});
+				});
+			},
+		});
 
-		// const caller: MediaCallSignedActor = {
-		// 	type: 'sip',
-		// 	id: req.callingNumber,
-		// 	contractId: this._sessionId,
-		// };
-
-		// const requestedCallId = Random.id();
-
-		// const call = await gateway.createCall({
-		// 	callee,
-		// 	caller,
-		// 	requestedCallId,
-		// 	callerAgent: agent,
-		// });
-		// console.log(call);
-
-		// const callAgent = factory.getCallAgent(call);
-		// // This shouldn't be possible
-		// if (!callAgent) {
-		// 	logger.error('Could not create the SIP caller agent.');
-		// 	res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
-		// 	calleeAgent.notify(call._id, 'hangup');
-		// 	return;
-		// }
-		// console.log(callAgent);
+		uas.on('destroy', () => {
+			console.log('uas.destroy');
+		});
 	}
 
 	private getCallerContactFromInvite(req: SrfRequest): MediaCallSignedContact<'sip'> {

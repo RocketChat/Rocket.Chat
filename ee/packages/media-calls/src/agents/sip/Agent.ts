@@ -1,7 +1,9 @@
-import type { MediaCallActor, MediaCallContact } from '@rocket.chat/core-typings';
+import type { IMediaCallChannel, MediaCallActor, MediaCallContact } from '@rocket.chat/core-typings';
 import type { CallRole, CallNotification } from '@rocket.chat/media-signaling';
+import { MediaCallChannels } from '@rocket.chat/models';
 
 import { SipBasicAgent } from './BasicAgent';
+import { gateway } from '../../global/SignalGateway';
 import { logger } from '../../logger';
 import { agentManager } from '../Manager';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
@@ -36,14 +38,24 @@ export class SipMediaCallAgent extends SipBasicAgent<IMediaCallAgent> implements
 	public async setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
 		logger.debug({ msg: 'SipMediaCallAgent.setRemoteDescription', sdp });
 
-		// #ToDo: save sdp on channels collection and trigger an event to signal that the call was accepted
+		const channel = await MediaCallChannels.findOneByCallIdAndSignedActor<Pick<IMediaCallChannel, '_id'>>(
+			{
+				callId: this.callId,
+				type: 'sip',
+				id: this.contact.id,
+				contractId: this.contractId,
+			},
+			{ projection: { _id: 1 } },
+		);
 
-		// await this.sendSignal({
-		// 	callId: this.callId,
-		// 	toContractId: this.contractId,
-		// 	type: 'remote-sdp',
-		// 	sdp,
-		// });
+		if (!channel) {
+			logger.error('Could not find channel for this sip actor in order to save the remote description');
+			throw new Error('invalid-channel');
+		}
+
+		await MediaCallChannels.setRemoteDescription(channel._id, sdp);
+
+		gateway.emitter.emit('callUpdated', this.callId);
 	}
 
 	public async getLocalDescription(): Promise<RTCSessionDescriptionInit | null> {
@@ -60,7 +72,7 @@ export class SipMediaCallAgent extends SipBasicAgent<IMediaCallAgent> implements
 	public async requestOffer(params: { iceRestart?: boolean }): Promise<void> {
 		logger.debug({ msg: 'SipMediaCallAgent.requestOffer', params, actor: this.actor, contractState: this.contractState });
 
-		// We can't make offer requests over SIP without restarting the call, so just ignore this and wait for the offer to come naturally.
+		// We can't make offer requests over SIP without restarting the call, so just ignore this and wait for the offer to happen naturally.
 	}
 
 	public async notify(callId: string, notification: CallNotification, signedContractId?: string): Promise<void> {
