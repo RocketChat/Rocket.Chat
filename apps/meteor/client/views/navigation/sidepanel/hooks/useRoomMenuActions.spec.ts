@@ -83,9 +83,7 @@ describe('useRoomMenuActions', () => {
 				.build(),
 		});
 
-		expect(result.current).toHaveLength(1);
-		expect(result.current[0].items).toHaveLength(0);
-		expect(result.current[0].title).toBe('');
+		expect(result.current).toHaveLength(0);
 	});
 
 	it('should not return favorite room option if setting is disabled', () => {

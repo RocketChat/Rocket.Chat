@@ -62,57 +62,59 @@ export const useRoomMenuActions = ({
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
 
-	const menuOptions = useMemo(
-		() =>
-			!hideDefaultOptions
-				? [
-						!isOmnichannelRoom && {
-							id: 'hideRoom',
-							icon: 'eye-off',
-							content: t('Hide'),
-							onClick: handleHide,
-						},
-						{
-							id: 'toggleRead',
-							icon: 'flag',
-							content: isUnread ? t('Mark_read') : t('Mark_unread'),
-							onClick: handleToggleRead,
-						},
-						canFavorite && {
-							id: 'toggleFavorite',
-							icon: isFavorite ? 'star-filled' : 'star',
-							content: isFavorite ? t('Unfavorite') : t('Favorite'),
-							onClick: handleToggleFavorite,
-						},
-						canLeave && {
-							id: 'leaveRoom',
-							icon: 'sign-out',
-							content: t('Leave_room'),
-							onClick: handleLeave,
-						},
-					]
-				: [],
-		[
-			hideDefaultOptions,
-			t,
-			handleHide,
-			isUnread,
-			handleToggleRead,
-			canFavorite,
-			isFavorite,
-			handleToggleFavorite,
-			canLeave,
-			handleLeave,
-			isOmnichannelRoom,
-		],
-	);
-
-	const notificationsMenuOptions = useMemo(() => {
-		if (!subscription || hideDefaultOptions || isOmnichannelRoom || !href) {
-			return undefined;
+	const roomMenuOptions = useMemo<GenericMenuItemProps[]>(() => {
+		if (hideDefaultOptions || !subscription) {
+			return [];
 		}
 
-		return [
+		const options: (GenericMenuItemProps | false)[] = [
+			!isOmnichannelRoom && {
+				id: 'hideRoom',
+				icon: 'eye-off',
+				content: t('Hide'),
+				onClick: handleHide,
+			},
+			{
+				id: 'toggleRead',
+				icon: 'flag',
+				content: isUnread ? t('Mark_read') : t('Mark_unread'),
+				onClick: handleToggleRead,
+			},
+			canFavorite && {
+				id: 'toggleFavorite',
+				icon: isFavorite ? 'star-filled' : 'star',
+				content: isFavorite ? t('Unfavorite') : t('Favorite'),
+				onClick: handleToggleFavorite,
+			},
+			canLeave && {
+				id: 'leaveRoom',
+				icon: 'sign-out',
+				content: t('Leave_room'),
+				onClick: handleLeave,
+			},
+		];
+		return options.filter(Boolean) as GenericMenuItemProps[];
+	}, [
+		hideDefaultOptions,
+		subscription,
+		isOmnichannelRoom,
+		t,
+		handleHide,
+		isUnread,
+		handleToggleRead,
+		canFavorite,
+		isFavorite,
+		handleToggleFavorite,
+		canLeave,
+		handleLeave,
+	]);
+
+	const notificationsMenuOptions = useMemo<GenericMenuItemProps[]>(() => {
+		if (!subscription || hideDefaultOptions || isOmnichannelRoom || !href) {
+			return [];
+		}
+
+		const options: GenericMenuItemProps[] = [
 			{
 				id: 'turnOnNotifications',
 				icon: isNotificationEnabled ? 'bell' : 'bell-off',
@@ -126,17 +128,18 @@ export const useRoomMenuActions = ({
 				onClick: () => router.navigate(`${href}/push-notifications` as LocationPathname),
 			},
 		];
+		return options.filter(Boolean);
 	}, [hideDefaultOptions, isNotificationEnabled, subscription, t, router, href, handleToggleNotification, isOmnichannelRoom]);
 
-	if (isOmnichannelRoom && prioritiesMenu.length > 0) {
+	if (isOmnichannelRoom) {
 		return [
-			{ title: '', items: menuOptions.filter(Boolean) as GenericMenuItemProps[] },
-			{ title: t('Priorities'), items: prioritiesMenu },
+			...(roomMenuOptions.length > 0 ? [{ title: '', items: roomMenuOptions }] : []),
+			...(prioritiesMenu.length > 0 ? [{ title: t('Priorities'), items: prioritiesMenu }] : []),
 		];
 	}
 
 	return [
-		{ title: '', items: menuOptions.filter(Boolean) as GenericMenuItemProps[] },
-		...(notificationsMenuOptions ? [{ title: t('Notifications'), items: notificationsMenuOptions as GenericMenuItemProps[] }] : []),
+		...(roomMenuOptions.length > 0 ? [{ title: '', items: roomMenuOptions }] : []),
+		...(notificationsMenuOptions.length > 0 ? [{ title: t('Notifications'), items: notificationsMenuOptions }] : []),
 	];
 };
