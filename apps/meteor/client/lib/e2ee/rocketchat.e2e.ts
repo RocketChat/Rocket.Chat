@@ -27,23 +27,21 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
-import * as banners from '../../../client/lib/banners';
-import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { dispatchToastMessage } from '../../../client/lib/toast';
-import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
-import { Messages, Rooms, Subscriptions } from '../../../client/stores';
-import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
-import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
+import { settings } from '../../../app/settings/client';
+import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
+import { getUserAvatarURL } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../app/utils/lib/i18n';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { isTruthy } from '../../../lib/isTruthy';
-import { settings } from '../../settings/client';
-import { limitQuoteChain } from '../../ui-message/client/messageBox/limitQuoteChain';
-import { getUserAvatarURL } from '../../utils/client';
-import { sdk } from '../../utils/client/lib/SDKClient';
-import { t } from '../../utils/lib/i18n';
-
-import './events';
+import { Messages, Rooms, Subscriptions } from '../../stores';
+import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
+import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
+import * as banners from '../banners';
+import type { LegacyBannerPayload } from '../banners';
+import { dispatchToastMessage } from '../toast';
+import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 
 let failedToDecodeKey = false;
 
@@ -895,3 +893,7 @@ class E2E extends Emitter {
 }
 
 export const e2e = new E2E();
+
+Accounts.onLogout(() => {
+	void e2e.stopClient();
+});

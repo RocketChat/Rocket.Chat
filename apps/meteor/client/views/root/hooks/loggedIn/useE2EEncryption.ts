@@ -2,9 +2,9 @@ import { isE2EEPinnedMessage, type IRoom, type IMessage } from '@rocket.chat/cor
 import { useUserId, useSetting, useRouter, useLayout, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
-import { e2e } from '../../../../../app/e2e/client';
-import { E2EEState } from '../../../../../app/e2e/client/E2EEState';
 import { MentionsParser } from '../../../../../app/mentions/lib/MentionsParser';
+import { e2e } from '../../../../lib/e2ee';
+import { E2EEState } from '../../../../lib/e2ee/E2EEState';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
 import { Rooms } from '../../../../stores';
