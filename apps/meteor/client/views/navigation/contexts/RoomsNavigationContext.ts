@@ -50,42 +50,13 @@ export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: Translat
 	},
 };
 
-export const TEAM_COLLAB_GROUPS = {
-	ALL: 'all',
-	MENTIONS: 'mentions',
-	FAVORITES: 'favorites',
-	DISCUSSIONS: 'discussions',
-} as const;
+export type SidePanelFiltersKeys = 'all' | 'mentions' | 'favorites' | 'discussions' | 'inProgress' | 'queue' | 'onHold';
 
-export const OMNICHANNEL_GROUPS = {
-	IN_PROGRESS: 'inProgress',
-	QUEUE: 'queue',
-	ON_HOLD: 'onHold',
-} as const;
-
-export const SIDE_PANEL_GROUPS = {
-	...TEAM_COLLAB_GROUPS,
-	...OMNICHANNEL_GROUPS,
-} as const;
-
-export const SIDE_BAR_GROUPS = {
-	TEAMS: 'teams',
-	CHANNELS: 'channels',
-	DIRECT_MESSAGES: 'directMessages',
-} as const;
-
-export const ALL_GROUPS = {
-	...SIDE_PANEL_GROUPS,
-	...SIDE_BAR_GROUPS,
-} as const;
-
-export const defaultSidebarOrder = [SIDE_BAR_GROUPS.TEAMS, SIDE_BAR_GROUPS.CHANNELS, SIDE_BAR_GROUPS.DIRECT_MESSAGES];
-
-export type SidePanelFiltersKeys = (typeof SIDE_PANEL_GROUPS)[keyof typeof SIDE_PANEL_GROUPS];
+export const collapsibleFilters: SideBarFiltersKeys[] = ['teams', 'channels', 'directMessages'];
 export type SidePanelFiltersUnreadKeys = `${SidePanelFiltersKeys}_unread`;
 export type SidePanelFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
-export type SideBarFiltersKeys = (typeof SIDE_BAR_GROUPS)[keyof typeof SIDE_BAR_GROUPS];
+export type SideBarFiltersKeys = 'teams' | 'channels' | 'directMessages';
 export type SideBarFiltersUnreadKeys = `${SideBarFiltersKeys}_unread`;
 export type SideBarFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
@@ -154,7 +125,7 @@ export const useSideBarRoomsList = (): {
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groups, unreadGroupData } = useRoomsListContext();
 
-	const roomListGroups = defaultSidebarOrder
+	const roomListGroups = collapsibleFilters
 		.map((group) => {
 			const roomSet = (groups as Map<SideBarFiltersKeys, Set<SubscriptionWithRoom>>).get(group);
 			const rooms = roomSet ? Array.from(roomSet) : [];
@@ -223,7 +194,7 @@ export const useUnreadGroupData = (key: SidePanelFiltersKeys) => useRoomsListCon
 
 export const useIsRoomFilter = () => {
 	const [currentTab] = useSidePanelFilter();
-	return useMemo(() => Object.values(SIDE_BAR_GROUPS).some((group) => currentTab === group), [currentTab]);
+	return useMemo(() => collapsibleFilters.some((group) => currentTab === group), [currentTab]);
 };
 
 export const useRedirectToDefaultTab = (shouldRedirect: boolean) => {
@@ -231,7 +202,7 @@ export const useRedirectToDefaultTab = (shouldRedirect: boolean) => {
 
 	useEffect(() => {
 		if (shouldRedirect) {
-			switchSidePanelTab(ALL_GROUPS.ALL);
+			switchSidePanelTab('all');
 		}
 	}, [shouldRedirect, switchSidePanelTab]);
 };

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../components/GenericNoResults';
-import { ALL_GROUPS, sidePanelFiltersConfig } from '../contexts/RoomsNavigationContext';
+import { sidePanelFiltersConfig } from '../contexts/RoomsNavigationContext';
 import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 
 type SidePanelNoResultsProps = { currentTab: AllGroupsKeys; unreadOnly: boolean; toggleUnreadOnly: () => void };
@@ -18,7 +18,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 		: {};
 
 	switch (currentTab) {
-		case ALL_GROUPS.MENTIONS:
+		case 'mentions':
 			return (
 				<GenericNoResults
 					icon={sidePanelFiltersConfig.mentions.icon}
@@ -27,7 +27,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 					{...buttonProps}
 				/>
 			);
-		case ALL_GROUPS.FAVORITES:
+		case 'favorites':
 			return (
 				<GenericNoResults
 					icon={sidePanelFiltersConfig.favorites.icon}
@@ -36,7 +36,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 					{...buttonProps}
 				/>
 			);
-		case ALL_GROUPS.DISCUSSIONS:
+		case 'discussions':
 			return (
 				<GenericNoResults
 					icon={sidePanelFiltersConfig.discussions.icon}
@@ -45,7 +45,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 					{...buttonProps}
 				/>
 			);
-		case ALL_GROUPS.IN_PROGRESS:
+		case 'inProgress':
 			return (
 				<GenericNoResults
 					icon={sidePanelFiltersConfig.inProgress.icon}
@@ -54,7 +54,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 					{...buttonProps}
 				/>
 			);
-		case ALL_GROUPS.QUEUE:
+		case 'queue':
 			return (
 				<GenericNoResults
 					icon={sidePanelFiltersConfig.queue.icon}
@@ -63,7 +63,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 					{...buttonProps}
 				/>
 			);
-		case ALL_GROUPS.ON_HOLD:
+		case 'onHold':
 			return (
 				<GenericNoResults
 					icon={sidePanelFiltersConfig.onHold.icon}
@@ -72,7 +72,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 					{...buttonProps}
 				/>
 			);
-		case ALL_GROUPS.TEAMS:
+		case 'teams':
 			return (
 				<GenericNoResults
 					icon={null}
@@ -81,7 +81,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 					{...buttonProps}
 				/>
 			);
-		case ALL_GROUPS.CHANNELS:
+		case 'channels':
 			return (
 				<GenericNoResults
 					icon={null}
@@ -92,7 +92,7 @@ const SidePanelNoResults = ({ currentTab, unreadOnly, toggleUnreadOnly }: SidePa
 					{...buttonProps}
 				/>
 			);
-		case ALL_GROUPS.DIRECT_MESSAGES:
+		case 'directMessages':
 			return (
 				<GenericNoResults
 					icon={null}

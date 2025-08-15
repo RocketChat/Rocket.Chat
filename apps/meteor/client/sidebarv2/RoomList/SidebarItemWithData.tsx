@@ -9,12 +9,7 @@ import { memo, useCallback, useMemo } from 'react';
 import SidebarItem from './SidebarItem';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import {
-	useSwitchSidePanelTab,
-	SIDE_BAR_GROUPS,
-	useRoomsListContext,
-	useIsRoomFilter,
-} from '../../views/navigation/contexts/RoomsNavigationContext';
+import { useSwitchSidePanelTab, useRoomsListContext, useIsRoomFilter } from '../../views/navigation/contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
@@ -78,16 +73,16 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 
 	const handleClick = useCallback(() => {
 		if (isTeamRoom(room)) {
-			switchSidePanelTab(SIDE_BAR_GROUPS.TEAMS, { parentRid: room.rid });
+			switchSidePanelTab('teams', { parentRid: room.rid });
 			return;
 		}
 
 		if (isDirectMessageRoom(room)) {
-			switchSidePanelTab(SIDE_BAR_GROUPS.DIRECT_MESSAGES, { parentRid: room.rid });
+			switchSidePanelTab('directMessages', { parentRid: room.rid });
 			return;
 		}
 
-		switchSidePanelTab(SIDE_BAR_GROUPS.CHANNELS, { parentRid: room.rid });
+		switchSidePanelTab('channels', { parentRid: room.rid });
 	}, [room, switchSidePanelTab]);
 
 	const buttonProps = useButtonPattern((e) => {

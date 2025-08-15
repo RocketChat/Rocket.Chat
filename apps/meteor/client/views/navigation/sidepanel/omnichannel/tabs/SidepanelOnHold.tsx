@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import {
-	SIDE_PANEL_GROUPS,
 	sidePanelFiltersConfig,
 	useRedirectToDefaultTab,
 	useSidePanelRoomsListTab,
@@ -12,7 +11,7 @@ import SidePanel from '../../SidePanel';
 
 const SidePanelOnHold = () => {
 	const { t } = useTranslation();
-	const rooms = useSidePanelRoomsListTab(SIDE_PANEL_GROUPS.ON_HOLD);
+	const rooms = useSidePanelRoomsListTab('onHold');
 	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
 
 	const hasEEModule = useHasLicenseModule('livechat-enterprise');
@@ -24,8 +23,8 @@ const SidePanelOnHold = () => {
 
 	return (
 		<SidePanel
-			title={t(sidePanelFiltersConfig[SIDE_PANEL_GROUPS.ON_HOLD].title)}
-			currentTab={SIDE_PANEL_GROUPS.ON_HOLD}
+			title={t(sidePanelFiltersConfig.onHold.title)}
+			currentTab='onHold'
 			unreadOnly={unreadOnly}
 			toggleUnreadOnly={toggleUnreadOnly}
 			rooms={rooms}

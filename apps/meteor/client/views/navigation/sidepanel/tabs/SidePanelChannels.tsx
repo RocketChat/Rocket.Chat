@@ -1,7 +1,7 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 
-import { SIDE_BAR_GROUPS, useUnreadOnlyToggle } from '../../contexts/RoomsNavigationContext';
+import { useUnreadOnlyToggle } from '../../contexts/RoomsNavigationContext';
 import SidePanel from '../SidePanel';
 import { useChannelsChildrenList } from '../hooks/useChannelsChildrenList';
 
@@ -15,7 +15,7 @@ const SidePanelChannels = ({ parentRid, subscription }: { parentRid: string; sub
 	return (
 		<SidePanel
 			title={(isDirectSubscription ? username : subscription?.fname) || subscription.name}
-			currentTab={isDirectSubscription ? SIDE_BAR_GROUPS.DIRECT_MESSAGES : SIDE_BAR_GROUPS.CHANNELS}
+			currentTab={isDirectSubscription ? 'directMessages' : 'channels'}
 			unreadOnly={unreadOnly}
 			toggleUnreadOnly={toggleUnreadOnly}
 			rooms={rooms}

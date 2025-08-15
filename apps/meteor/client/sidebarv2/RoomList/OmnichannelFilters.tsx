@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import RoomListFiltersItem from './RoomListFiltersItem';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-import { OMNICHANNEL_GROUPS, sidePanelFiltersConfig } from '../../views/navigation/contexts/RoomsNavigationContext';
+import { sidePanelFiltersConfig } from '../../views/navigation/contexts/RoomsNavigationContext';
 
 const OmnichannelFilters = () => {
 	const { t } = useTranslation();
@@ -20,13 +20,11 @@ const OmnichannelFilters = () => {
 	return (
 		<>
 			<Box role='tablist' aria-label={t('Omnichannel_filters')} aria-orientation='vertical'>
-				<RoomListFiltersItem group={OMNICHANNEL_GROUPS.IN_PROGRESS} icon={sidePanelFiltersConfig[OMNICHANNEL_GROUPS.IN_PROGRESS].icon} />
+				<RoomListFiltersItem group='inProgress' icon={sidePanelFiltersConfig.inProgress.icon} />
 				{hasModule && queueEnabled && canViewOmnichannelQueue && (
-					<RoomListFiltersItem group={OMNICHANNEL_GROUPS.QUEUE} icon={sidePanelFiltersConfig[OMNICHANNEL_GROUPS.QUEUE].icon} />
+					<RoomListFiltersItem group='queue' icon={sidePanelFiltersConfig.queue.icon} />
 				)}
-				{hasModule && (
-					<RoomListFiltersItem group={OMNICHANNEL_GROUPS.ON_HOLD} icon={sidePanelFiltersConfig[OMNICHANNEL_GROUPS.ON_HOLD].icon} />
-				)}
+				{hasModule && <RoomListFiltersItem group='onHold' icon={sidePanelFiltersConfig.onHold.icon} />}
 			</Box>
 			<Divider borderColor='stroke-light' mb={4} mi={16} />
 		</>

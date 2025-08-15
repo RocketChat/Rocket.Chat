@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import {
-	SIDE_PANEL_GROUPS,
 	sidePanelFiltersConfig,
 	useRedirectToDefaultTab,
 	useSidePanelRoomsListTab,
@@ -18,7 +17,7 @@ const SidePanelQueue = () => {
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
 	const isQueueEnabled = useSetting('Livechat_waiting_queue');
 
-	const rooms = useSidePanelRoomsListTab(SIDE_PANEL_GROUPS.QUEUE);
+	const rooms = useSidePanelRoomsListTab('queue');
 	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
 	const shouldDisplayQueue = hasEEModule && canViewOmnichannelQueue && isQueueEnabled;
 	useRedirectToDefaultTab(!shouldDisplayQueue);
@@ -29,8 +28,8 @@ const SidePanelQueue = () => {
 
 	return (
 		<SidePanel
-			title={t(sidePanelFiltersConfig[SIDE_PANEL_GROUPS.QUEUE].title)}
-			currentTab={SIDE_PANEL_GROUPS.QUEUE}
+			title={t(sidePanelFiltersConfig.queue.title)}
+			currentTab='queue'
 			unreadOnly={unreadOnly}
 			toggleUnreadOnly={toggleUnreadOnly}
 			rooms={rooms}

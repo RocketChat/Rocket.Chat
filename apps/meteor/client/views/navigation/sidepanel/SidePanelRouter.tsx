@@ -1,5 +1,5 @@
 import SidePanelAll from './tabs/SidePanelAll';
-import { ALL_GROUPS, useRoomsListContext, useSidePanelFilter } from '../contexts/RoomsNavigationContext';
+import { useRoomsListContext, useSidePanelFilter } from '../contexts/RoomsNavigationContext';
 import SidePanelInProgress from './omnichannel/tabs/SidePanelInProgress';
 import SidePanelQueue from './omnichannel/tabs/SidePanelQueue';
 import SidePanelOnHold from './omnichannel/tabs/SidepanelOnHold';
@@ -13,23 +13,23 @@ const SidePanelRouter = () => {
 	const { parentRid } = useRoomsListContext();
 
 	switch (currentTab) {
-		case ALL_GROUPS.ALL:
+		case 'all':
 			return <SidePanelAll />;
-		case ALL_GROUPS.MENTIONS:
+		case 'mentions':
 			return <SidePanelMentions />;
-		case ALL_GROUPS.FAVORITES:
+		case 'favorites':
 			return <SidePanelFavorites />;
-		case ALL_GROUPS.DISCUSSIONS:
+		case 'discussions':
 			return <SidePanelDiscussions />;
-		case ALL_GROUPS.TEAMS:
-		case ALL_GROUPS.CHANNELS:
-		case ALL_GROUPS.DIRECT_MESSAGES:
+		case 'teams':
+		case 'channels':
+		case 'directMessages':
 			return parentRid ? <SidePanelRooms parentRid={parentRid} /> : null;
-		case ALL_GROUPS.IN_PROGRESS:
+		case 'inProgress':
 			return <SidePanelInProgress />;
-		case ALL_GROUPS.ON_HOLD:
+		case 'onHold':
 			return <SidePanelOnHold />;
-		case ALL_GROUPS.QUEUE:
+		case 'queue':
 			return <SidePanelQueue />;
 		default:
 			return null;

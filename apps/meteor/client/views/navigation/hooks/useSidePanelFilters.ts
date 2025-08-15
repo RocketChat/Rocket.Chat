@@ -4,17 +4,14 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 
 import { useSidePanelParentRid } from './useSidePanelParentRid';
 import type { AllGroupsKeysWithUnread, AllGroupsKeys } from '../contexts/RoomsNavigationContext';
-import { SIDE_PANEL_GROUPS, getFilterKey } from '../contexts/RoomsNavigationContext';
+import { getFilterKey } from '../contexts/RoomsNavigationContext';
 
 export const useSidePanelFilters = () => {
 	const {
 		sidePanel: { openSidePanel },
 	} = useLayout();
 	const { setParentRoom } = useSidePanelParentRid();
-	const [currentFilter, setCurrentFilter] = useLocalStorage<AllGroupsKeysWithUnread>(
-		'sidePanelFilters',
-		getFilterKey(SIDE_PANEL_GROUPS.ALL, false),
-	);
+	const [currentFilter, setCurrentFilter] = useLocalStorage<AllGroupsKeysWithUnread>('sidePanelFilters', getFilterKey('all', false));
 
 	const setFilter = useEffectEvent((filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => {
 		openSidePanel();

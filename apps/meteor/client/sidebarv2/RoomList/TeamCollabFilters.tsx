@@ -3,7 +3,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import RoomListFiltersItem from './RoomListFiltersItem';
-import { sidePanelFiltersConfig, TEAM_COLLAB_GROUPS } from '../../views/navigation/contexts/RoomsNavigationContext';
+import { sidePanelFiltersConfig } from '../../views/navigation/contexts/RoomsNavigationContext';
 
 const TeamCollabFilters = () => {
 	const { t } = useTranslation();
@@ -11,12 +11,10 @@ const TeamCollabFilters = () => {
 
 	return (
 		<Box role='tablist' aria-label={t('Team_collaboration_filters')} aria-orientation='vertical' mbs={8}>
-			<RoomListFiltersItem group={TEAM_COLLAB_GROUPS.ALL} icon={sidePanelFiltersConfig[TEAM_COLLAB_GROUPS.ALL].icon} />
-			<RoomListFiltersItem group={TEAM_COLLAB_GROUPS.MENTIONS} icon={sidePanelFiltersConfig[TEAM_COLLAB_GROUPS.MENTIONS].icon} />
-			<RoomListFiltersItem group={TEAM_COLLAB_GROUPS.FAVORITES} icon={sidePanelFiltersConfig[TEAM_COLLAB_GROUPS.FAVORITES].icon} />
-			{isDiscussionEnabled && (
-				<RoomListFiltersItem group={TEAM_COLLAB_GROUPS.DISCUSSIONS} icon={sidePanelFiltersConfig[TEAM_COLLAB_GROUPS.DISCUSSIONS].icon} />
-			)}
+			<RoomListFiltersItem group='all' icon={sidePanelFiltersConfig.all.icon} />
+			<RoomListFiltersItem group='mentions' icon={sidePanelFiltersConfig.mentions.icon} />
+			<RoomListFiltersItem group='favorites' icon={sidePanelFiltersConfig.favorites.icon} />
+			{isDiscussionEnabled && <RoomListFiltersItem group='discussions' icon={sidePanelFiltersConfig.discussions.icon} />}
 		</Box>
 	);
 };

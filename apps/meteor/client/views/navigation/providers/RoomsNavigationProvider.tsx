@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquiries';
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
-import { RoomsNavigationContext, SIDE_PANEL_GROUPS, SIDE_BAR_GROUPS, getEmptyUnreadInfo } from '../contexts/RoomsNavigationContext';
+import { RoomsNavigationContext, getEmptyUnreadInfo } from '../contexts/RoomsNavigationContext';
 import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
 import { useSidePanelParentRid } from '../hooks/useSidePanelParentRid';
 
@@ -67,7 +67,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 	return useDebouncedValue(
 		useMemo(() => {
 			const groups: GroupMap = new Map();
-			showOmnichannel && groups.set(SIDE_PANEL_GROUPS.QUEUE, new Set(queue));
+			showOmnichannel && groups.set('queue', new Set(queue));
 
 			const unreadGroupData: UnreadGroupDataMap = new Map();
 
@@ -97,38 +97,38 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 				}
 
 				if (hasMention(room)) {
-					setGroupRoom(SIDE_PANEL_GROUPS.MENTIONS, room);
+					setGroupRoom('mentions', room);
 				}
 
 				if (favoritesEnabled && room.f) {
-					setGroupRoom(SIDE_PANEL_GROUPS.FAVORITES, room);
+					setGroupRoom('favorites', room);
 				}
 
 				if (isTeamRoom(room)) {
-					setGroupRoom(SIDE_BAR_GROUPS.TEAMS, room);
+					setGroupRoom('teams', room);
 				}
 
 				if (isDiscussionEnabled && isDiscussion(room)) {
-					setGroupRoom(SIDE_PANEL_GROUPS.DISCUSSIONS, room);
+					setGroupRoom('discussions', room);
 				}
 
 				if ((isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
-					setGroupRoom(SIDE_BAR_GROUPS.CHANNELS, room);
+					setGroupRoom('channels', room);
 				}
 
 				if (isOmnichannelRoom(room) && showOmnichannel) {
 					if (room.onHold) {
-						return setGroupRoom(SIDE_PANEL_GROUPS.ON_HOLD, room);
+						return setGroupRoom('onHold', room);
 					}
 
-					return setGroupRoom(SIDE_PANEL_GROUPS.IN_PROGRESS, room);
+					return setGroupRoom('inProgress', room);
 				}
 
 				if (isDirectMessageRoom(room)) {
-					setGroupRoom(SIDE_BAR_GROUPS.DIRECT_MESSAGES, room);
+					setGroupRoom('directMessages', room);
 				}
 
-				setGroupRoom(SIDE_PANEL_GROUPS.ALL, room);
+				setGroupRoom('all', room);
 			});
 
 			return [groups, unreadGroupData];
