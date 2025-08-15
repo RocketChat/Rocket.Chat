@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { Wizard, useWizard, WizardContent, WizardTabs } from '@rocket.chat/ui-client';
 import { useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -9,17 +10,22 @@ import OutboundMessageWizardErrorState from './components/OutboundMessageWizardE
 import type { SubmitPayload } from './forms';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
+import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
 import GenericError from '../../../../GenericError';
 import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
 import { useOutboundMessageUpsellModal } from '../../modals';
 import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
+import { useEndpointMutation } from '../../../../../hooks/useEndpointMutation';
+import { formatOutboundMessagePayload, isMessageStepValid, isRecipientStepValid, isRepliesStepValid } from '../../utils/outbound-message';
 
 type OutboundMessageWizardProps = {
 	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId' | 'recipient' | 'sender'>>;
+	onMessageSent?(): void;
 };
 
-const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProps) => {
+const OutboundMessageWizard = ({ defaultValues = {}, onMessageSent }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
+	const dispatchToastMessage = useToastBarDispatch();
 	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
 	const { contact, sender, provider, department, agent, template, templateParameters, recipient } = state;
 
@@ -27,6 +33,10 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	const upsellModal = useOutboundMessageUpsellModal();
 	const hasModule = useHasLicenseModule('outbound-messaging');
 	const isLoadingModule = hasModule === 'loading';
+
+	const sendOutboundMessage = useEndpointMutation('POST', '/v1/omnichannel/outbound/providers/:id/message', {
+		keys: { id: provider?.providerId || '' },
+	});
 
 	const {
 		data: hasProviders = false,
@@ -62,7 +72,46 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	});
 
 	const handleSend = useEffectEvent(async () => {
-		console.log('Message sent with values:', state);
+		try {
+			if (!isRecipientStepValid(state)) {
+				throw new Error('error-invalid-recipient-step');
+			}
+
+			if (!isMessageStepValid(state)) {
+				throw new Error('error-invalid-message-step');
+			}
+
+			if (!isRepliesStepValid(state)) {
+				throw new Error('error-invalid-replies-step');
+			}
+
+			const { template, sender, recipient, templateParameters, departmentId, agentId } = state;
+
+			const payload = formatOutboundMessagePayload({
+				type: 'template',
+				template,
+				sender,
+				recipient,
+				templateParameters,
+				departmentId,
+				agentId,
+			});
+
+			await sendOutboundMessage.mutateAsync(payload);
+
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Outbound_message_sent_to__name__', { name: contact?.name || formatPhoneNumber(recipient) }),
+			});
+
+			onMessageSent?.();
+		} catch (e) {
+			if (e instanceof Error) {
+				console.error(e.message);
+			}
+
+			dispatchToastMessage({ type: 'error', message: t('Outbound_message_not_sent') });
+		}
 	});
 
 	const handleDirtyStep = useEffectEvent(() => {

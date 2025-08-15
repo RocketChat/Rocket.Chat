@@ -34,7 +34,7 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent pbe={16}>
-				<OutboundMessageWizard defaultValues={defaultValues} />
+				<OutboundMessageWizard defaultValues={defaultValues} onMessageSent={onClose} />
 			</ModalContent>
 		</Modal>
 	);

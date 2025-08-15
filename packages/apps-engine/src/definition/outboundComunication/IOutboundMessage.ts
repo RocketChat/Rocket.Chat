@@ -48,4 +48,24 @@ export type TemplateParameter =
 	| {
 			type: 'media';
 			link: string;
+			format: 'image' | 'document' | 'video';
+	  }
+	| {
+			type: 'document';
+			document: {
+				link: string;
+				filename: string;
+			};
+	  }
+	| {
+			type: 'video';
+			video: {
+				link: string;
+			};
+	  }
+	| {
+			type: 'image';
+			image: {
+				link: string;
+			};
 	  };
