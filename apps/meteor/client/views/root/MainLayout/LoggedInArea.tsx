@@ -1,6 +1,7 @@
 import { useUser } from '@rocket.chat/ui-contexts';
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
+import { useE2EEncryption } from './useE2EEncryption';
 import { useCustomEmoji } from '../../../hooks/customEmoji/useCustomEmoji';
 import { useNotificationUserCalendar } from '../../../hooks/notification/useNotificationUserCalendar';
 import { useNotifyUser } from '../../../hooks/notification/useNotifyUser';
@@ -42,6 +43,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useTwoFactorAuthSetupCheck();
 	//
 	useLogoutCleanup();
+	useE2EEncryption();
 
 	return children;
 };
