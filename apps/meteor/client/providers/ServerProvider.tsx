@@ -8,14 +8,15 @@ import type {
 	StreamKeys,
 } from '@rocket.chat/ddp-client';
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
-import type { UploadResult } from '@rocket.chat/ui-contexts';
+import type { UploadResult, ServerContextValue } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { Info as info } from '../../app/utils/rocketchat.info';
+import { useReactiveValue } from '../hooks/useReactiveValue';
 
 const absoluteUrl = (path: string): string => Meteor.absoluteUrl(path);
 
@@ -68,19 +69,36 @@ const getStream =
 	<K extends StreamKeys<N>>(eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void): (() => void) =>
 		sdk.stream(streamName, [eventName], callback).stop;
 
-const contextValue = {
-	info,
-	absoluteUrl,
-	callMethod,
-	callEndpoint,
-	uploadToEndpoint,
-	getStream,
-	disconnect: () => Meteor.disconnect(),
-	reconnect: () => Meteor.reconnect(),
-};
+const disconnect = () => Meteor.disconnect();
+
+const reconnect = () => Meteor.reconnect();
+
+const getStatus = () => ({ ...Meteor.status() });
 
 type ServerProviderProps = { children?: ReactNode };
 
-const ServerProvider = ({ children }: ServerProviderProps) => <ServerContext.Provider children={children} value={contextValue} />;
+const ServerProvider = ({ children }: ServerProviderProps) => {
+	const { connected, status, retryCount, retryTime } = useReactiveValue(getStatus);
+
+	const value = useMemo(
+		(): ServerContextValue => ({
+			connected,
+			status,
+			retryCount,
+			retryTime,
+			info,
+			absoluteUrl,
+			callMethod,
+			callEndpoint,
+			uploadToEndpoint,
+			getStream,
+			disconnect,
+			reconnect,
+		}),
+		[connected, retryCount, retryTime, status],
+	);
+
+	return <ServerContext.Provider children={children} value={value} />;
+};
 
 export default ServerProvider;

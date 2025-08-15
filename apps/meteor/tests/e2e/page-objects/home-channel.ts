@@ -62,7 +62,7 @@ export class HomeChannel {
 	}
 
 	get roomHeaderFavoriteBtn(): Locator {
-		return this.page.getByRole('button', { name: 'Favorite' });
+		return this.page.getByRole('main').getByRole('button', { name: 'Favorite' });
 	}
 
 	get readOnlyFooter(): Locator {

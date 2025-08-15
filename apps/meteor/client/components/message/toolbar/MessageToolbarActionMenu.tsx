@@ -140,17 +140,7 @@ const MessageToolbarActionMenu = ({ message, context, room, subscription, onChan
 			};
 		});
 
-	return (
-		<GenericMenu
-			onOpenChange={onChangeMenuVisibility}
-			detached
-			title={t('More')}
-			data-qa-id='menu'
-			data-qa-type='message-action-menu-options'
-			sections={groupOptions}
-			placement='bottom-end'
-		/>
-	);
+	return <GenericMenu onOpenChange={onChangeMenuVisibility} detached title={t('More')} sections={groupOptions} placement='bottom-end' />;
 };
 
 export default MessageToolbarActionMenu;

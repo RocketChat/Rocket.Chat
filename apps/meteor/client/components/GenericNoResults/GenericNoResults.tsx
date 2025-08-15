@@ -6,10 +6,10 @@ type LinkProps = { linkText: string; linkHref: string } | { linkText?: never; li
 type ButtonProps = { buttonTitle: string; buttonAction: () => void } | { buttonTitle?: never; buttonAction?: never };
 
 type GenericNoResultsProps = {
-	icon?: IconName;
+	icon?: IconName | null;
 	title?: string;
 	description?: string;
-	buttonTitle?: string;
+	buttonPrimary?: boolean;
 } & LinkProps &
 	ButtonProps;
 
@@ -19,6 +19,7 @@ const GenericNoResults = ({
 	description,
 	buttonTitle,
 	buttonAction,
+	buttonPrimary = true,
 	linkHref,
 	linkText,
 }: GenericNoResultsProps) => {
@@ -27,12 +28,14 @@ const GenericNoResults = ({
 	return (
 		<Box display='flex' height='100%' flexDirection='column' justifyContent='center'>
 			<States>
-				<StatesIcon name={icon} />
+				{icon && <StatesIcon name={icon} />}
 				<StatesTitle>{title || t('No_results_found')}</StatesTitle>
 				{description && <StatesSubtitle>{description}</StatesSubtitle>}
 				{buttonTitle && buttonAction && (
 					<StatesActions>
-						<StatesAction onClick={buttonAction}>{buttonTitle}</StatesAction>
+						<StatesAction primary={buttonPrimary} onClick={buttonAction}>
+							{buttonTitle}
+						</StatesAction>
 					</StatesActions>
 				)}
 				{linkText && linkHref && (

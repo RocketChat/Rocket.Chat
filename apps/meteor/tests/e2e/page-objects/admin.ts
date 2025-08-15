@@ -278,4 +278,8 @@ export class Admin {
 	findFileCheckboxByUsername(username: string) {
 		return this.findFileRowByUsername(username).locator('label', { has: this.page.getByRole('checkbox') });
 	}
+
+	get btnClose(): Locator {
+		return this.page.locator('role=navigation >> role=button[name=Close]');
+	}
 }

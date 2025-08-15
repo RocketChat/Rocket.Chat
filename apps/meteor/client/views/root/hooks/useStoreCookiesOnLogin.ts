@@ -1,9 +1,9 @@
-import { useConnectionStatus } from '@rocket.chat/ui-contexts';
+import { useIsLoggingIn } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { useEffect } from 'react';
 
 export const useStoreCookiesOnLogin = (userId: string) => {
-	const { isLoggingIn } = useConnectionStatus();
+	const isLoggingIn = useIsLoggingIn();
 
 	useEffect(() => {
 		// Check for isLoggingIn to be reactive and ensure it will process only after login finishes
