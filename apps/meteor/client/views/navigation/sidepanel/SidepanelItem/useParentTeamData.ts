@@ -1,9 +1,10 @@
 import type { ITeam } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useUserId } from '@rocket.chat/ui-contexts';
 
+import { useTeamInfoQuery } from '../../../../hooks/useTeamInfoQuery';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
+import { useUserTeamsQuery } from '../../../room/hooks/useUserTeamsQuery';
 
 type APIErrorResult = { success: boolean; error: string };
 
@@ -18,31 +19,20 @@ export const useParentTeamData = (teamId?: ITeam['_id']) => {
 		throw new Error('invalid uid');
 	}
 
-	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
-	const userTeamsListEndpoint = useEndpoint('GET', '/v1/users.listTeams');
-
 	const {
-		data: teamInfoData,
+		data: teamInfo,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useQuery({
-		queryKey: ['teamId', teamId],
-		queryFn: async () => teamsInfoEndpoint({ teamId }),
-		placeholderData: keepPreviousData,
-		retry: (_, error: APIErrorResult) => error?.error === 'unauthorized' && false,
-	});
+	} = useTeamInfoQuery(teamId, { retry: (_, error) => (error as unknown as APIErrorResult)?.error !== 'unauthorized' });
 
-	const { data: userTeams, isLoading: userTeamsLoading } = useQuery({
-		queryKey: ['userId', userId],
-		queryFn: async () => userTeamsListEndpoint({ userId }),
-	});
+	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeamsQuery(userId);
 
-	const userBelongsToTeam = Boolean(userTeams?.teams?.find((team) => team._id === teamId)) || false;
-	const isTeamPublic = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;
+	const userBelongsToTeam = Boolean(userTeams?.find((team) => team._id === teamId)) || false;
+	const isTeamPublic = teamInfo?.type === TEAM_TYPE.PUBLIC;
 	const shouldDisplayTeam = isTeamPublic || userBelongsToTeam;
 
 	const redirectToMainRoom = (): void => {
-		const rid = teamInfoData?.teamInfo.roomId;
+		const rid = teamInfo?.roomId;
 		if (!rid) {
 			return;
 		}
@@ -51,7 +41,7 @@ export const useParentTeamData = (teamId?: ITeam['_id']) => {
 	};
 
 	return {
-		teamName: teamInfoData?.teamInfo.name,
+		teamName: teamInfo?.name,
 		isLoading: userTeamsLoading || teamInfoLoading,
 		redirectToMainRoom,
 		teamInfoError,
