@@ -68,49 +68,76 @@ const restoreLinks = (html: string, matches: string[]): string => {
 	return html.replace(/\[\[\[LINK_(\d+)\]\]\]/g, (_, i) => matches[parseInt(i, 10)] || '');
 };
 
-// Resolve the Composer after the user modifies text
-export const resolveComposerBox = (event: Event, parseOptions: Options) => {
-	if (!event.isTrusted) return;
+// Resolve state of the composer during text composition
+export const resolveComposerBox = (
+	eventOrInput: InputEvent | KeyboardEvent | React.FocusEvent<HTMLElement> | HTMLDivElement,
+	_setMdLines: Dispatch<SetStateAction<string[]>>,
+	_setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
+	parseOptions: Options,
+): void => {
+	// Determine whether first arg is an event or an input node
+	let input: HTMLDivElement;
+	if (eventOrInput instanceof HTMLElement) {
+		// Called programmatically
+		input = eventOrInput as HTMLDivElement;
+	} else {
+		// Called from event
+		const event = eventOrInput;
+		const node = event.target as HTMLElement;
+		// Always ensure input is the contenteditable
+		// This resolves an issue where pasting inside an empty composer
+		// removes the <br> tag which the paste event targets
+		input = node.closest('[contenteditable="true"]') as HTMLDivElement;
 
-	const target = event.target as HTMLDivElement;
-	const text = target.innerText;
+		// Handle undo/redo for InputEvents
+		if ('inputType' in event) {
+			if (event.inputType === 'historyUndo') {
+				console.log('Undo detected → performing programmatic undo');
+				// document.execCommand("undo");
+				return;
+			}
 
-	// Get the position of the cursor after text modification
-	// This is so that after parsing and rendering inside the editor
-	// the cursor is restored to the correct position
-	const selection = getSelectionRange(target);
-	const { selectionStart, selectionEnd } = selection;
+			if (event.inputType === 'historyRedo') {
+				console.log('Redo detected → performing programmatic redo');
+				// document.execCommand("redo");
+				return;
+			}
+		}
+	}
 
-	// Extract the URL and substitue with a safe template
-	const { output: safeText, matches } = protectLinks(text === '' ? '\n' : text);
+	// Get state of the text before any updation
+	const beforeText = input.innerText;
 
-	// Parse the safetext
-	const ast = parseMessage(safeText, parseOptions);
+	// Delay so DOM reflects the change
+	setTimeout(() => {
+		// console.log('resolved data', input.innerText);
+		// document.execCommand('insertHTML', false, 'test');
+		const text = input.innerText;
 
-	// Parse the AST
-	const html = parseAST(ast);
-	console.log(ast);
+		const selection = getSelectionRange(input);
+		const { selectionStart, selectionEnd } = selection;
 
-	// Restore the substituted links
-	let finalHtml = restoreLinks(html, matches);
+		const lineInfo = getCursorSelectionInfo(input, selection);
+		const { start, end } = lineInfo;
 
-	// Prevent newline explosion after every end of heading updation
-	finalHtml = finalHtml
-		.replace(/<\/h1><br\s*\/?>/gi, '</h1>')
-		.replace(/<\/h2><br\s*\/?>/gi, '</h2>')
-		.replace(/<\/h3><br\s*\/?>/gi, '</h3>')
-		.replace(/<\/h4><br\s*\/?>/gi, '</h4>');
+		// setSelectionRange(input, 0, text.length);
 
-	// Rendering pipeline
-	target.innerHTML = finalHtml; // This works but it destroys the undo history
+		// Check if the event is a focus type event on the editor
+		// If it is, check whether the text state has updated
+		// Then resolve the state update by parsing the message into Markup
+		if (!(eventOrInput instanceof FocusEvent) || beforeText !== text) {
+			// Extract the URL and substitue with a safe template
+			const { output: safeText, matches } = protectLinks(text === '' ? '\n' : text);
 
-	// Select the entire composer
-	// setSelectionRange(target, 0, text.length);
+			// Parse the safetext
+			const ast = parseMessage(safeText, parseOptions);
 
-	// This execCommand is supposed to work, while preserving edit history
-	// However it explodes because insertHTML itself fires the input event
-	// document.execCommand('insertHTML', false, finalHtml);
+			// Parse the AST
+			const html = parseAST(ast);
 
-	// Restore the cursor to the correct position
-	setSelectionRange(target, selectionStart, selectionEnd);
+			// Restore the substituted links
+			const finalHtml = restoreLinks(html, matches);
+			console.log(finalHtml);
+		}
+	}, 0);
 };
