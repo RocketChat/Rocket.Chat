@@ -6,6 +6,7 @@ import type { Dispatch, SetStateAction } from 'react';
 
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
+import { escapeHTML } from './messageParser';
 import type { CursorHistory } from './messageStateHandler';
 import { resolveComposerBox } from './messageStateHandler';
 import { getSelectionRange, setSelectionRange, getCursorSelectionInfo } from './selectionRange';
@@ -81,6 +82,7 @@ export const createRichTextComposerAPI = (
 		!skipFocus && focus();
 
 		// Use innerHTML to set the value in RichTextComposer instead of innerText
+		// Here, text is the variable holding the text to be inserted to the composer
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
 		const textAreaTxt = input.innerHTML;
 
@@ -90,14 +92,14 @@ export const createRichTextComposerAPI = (
 
 		if (selection) {
 			if (!document.execCommand?.('insertText', false, text)) {
-				input.innerHTML = textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart);
+				input.innerHTML = escapeHTML(textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart));
 				!skipFocus && focus();
 			}
 			setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
 		}
 
 		if (!selection) {
-			input.innerHTML = text;
+			input.innerHTML = escapeHTML(text);
 		}
 
 		triggerEvent(input, 'input');
@@ -321,20 +323,6 @@ export const createRichTextComposerAPI = (
 		if (!document.execCommand?.('insertText', false, text)) {
 			input.innerText = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
 		}
-
-		// focus();
-
-		// const newStart = selectionStart + pattern.indexOf('{{text}}');
-		// const newEnd = newStart + selectedText.length;
-
-		// const range = document.createRange();
-		// const selection = window.getSelection();
-
-		// range.setStart(input.firstChild || input, newStart);
-		// range.setEnd(input.firstChild || input, newEnd);
-
-		// selection?.removeAllRanges();
-		// selection?.addRange(range);
 
 		focus();
 
