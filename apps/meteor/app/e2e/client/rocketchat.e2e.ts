@@ -1,7 +1,7 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUploadWithUser, IUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
@@ -12,23 +12,23 @@ import { Tracker } from 'meteor/tracker';
 
 import { E2EEState } from './E2EEState';
 import {
-	toString,
-	toArrayBuffer,
+	decryptAES,
+	deriveKey,
+	encryptAES,
+	exportJWKKey,
+	generateMnemonicPhrase,
+	generateRSAKey,
+	importRawKey,
+	importRSAKey,
 	joinVectorAndEcryptedData,
 	splitVectorAndEcryptedData,
-	encryptAES,
-	decryptAES,
-	generateRSAKey,
-	exportJWKKey,
-	importRSAKey,
-	importRawKey,
-	deriveKey,
-	generateMnemonicPhrase,
+	toArrayBuffer,
+	toString,
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
-import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
+import * as banners from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
@@ -36,15 +36,15 @@ import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
+import { InputError } from './inputerror';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { isTruthy } from '../../../lib/isTruthy';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { Messages, Rooms, Subscriptions } from '../../models/client';
 import { settings } from '../../settings/client';
 import { limitQuoteChain } from '../../ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
-
 import './events';
 
 let failedToDecodeKey = false;
@@ -556,7 +556,7 @@ class E2E extends Emitter {
 		}
 	}
 
-	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string, errorFn: (msg: string) => void, errorMsg: string) => void) {
+	openEnterE2EEPasswordModal(onEnterE2EEPassword: (password: string) => Promise<void>) {
 		imperativeModal.open({
 			component: EnterE2EPasswordModal,
 			props: {
@@ -567,9 +567,7 @@ class E2E extends Emitter {
 					this.closeAlert();
 					imperativeModal.close();
 				},
-				onConfirm: (password, errorFn: (msg: string) => void, errorMsg: string) => {
-					onEnterE2EEPassword?.(password, errorFn, errorMsg);
-				},
+				onConfirm: onEnterE2EEPassword,
 			},
 		});
 	}
@@ -577,14 +575,14 @@ class E2E extends Emitter {
 	async requestPasswordAlert(privateKey: string): Promise<string> {
 		return new Promise((resolve) => {
 			const showModal = () =>
-				this.openEnterE2EEPasswordModal(async (password: string, _errorFn: (msg: string) => void, errorMsg: string) => {
+				this.openEnterE2EEPasswordModal(async (password: string) => {
 					try {
 						await this.checkPasswordWithPrivateKey(password, privateKey);
 						this.closeAlert();
 						imperativeModal.close();
 						resolve(password);
 					} catch (e) {
-						_errorFn(errorMsg);
+						throw new InputError(t('Your_E2EE_password_is_incorrect'));
 					}
 				});
 
@@ -610,18 +608,18 @@ class E2E extends Emitter {
 	}
 
 	async requestPasswordModal(): Promise<string> {
-		return new Promise((resolve) =>
-			this.openEnterE2EEPasswordModal(async (password, _errorFn: (msg: string) => void, errorMsg: string) => {
+		return new Promise((resolve) => {
+			this.openEnterE2EEPasswordModal(async (password) => {
 				try {
 					await this.checkPassword(password);
 					this.closeAlert();
 					imperativeModal.close();
 					resolve(password);
 				} catch (e) {
-					_errorFn(errorMsg);
+					throw new InputError(t('Your_E2EE_password_is_incorrect'));
 				}
-			}),
-		);
+			});
+		});
 	}
 
 	async decodePrivateKeyFlow() {

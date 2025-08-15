@@ -5,6 +5,7 @@ import type { ChangeEvent, FormEvent, ReactElement } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { InputError } from '../../../app/e2e/client/inputerror';
 import GenericModal from '../../components/GenericModal';
 
 const EnterE2EPasswordModal = ({
@@ -12,7 +13,7 @@ const EnterE2EPasswordModal = ({
 	onClose,
 	onCancel,
 }: {
-	onConfirm: (password: string, errorFn: (msg: string) => void, errorMsg: string) => void;
+	onConfirm: (password: string) => Promise<void>;
 	onClose: () => void;
 	onCancel: () => void;
 }): ReactElement => {
@@ -28,13 +29,19 @@ const EnterE2EPasswordModal = ({
 		[setPassword],
 	);
 
-	const handleConfirm = useEffectEvent((e: FormEvent): void => {
+	const handleConfirm = useEffectEvent(async (e: FormEvent): Promise<void> => {
 		e.preventDefault();
 		if (password === '') {
 			setPasswordError(t('Invalid_pass'));
 			return;
 		}
-		onConfirm(password, setPasswordError, t('Your_E2EE_password_is_incorrect'));
+		try {
+			await onConfirm(password);
+		} catch (error) {
+			if (error instanceof InputError) {
+				setPasswordError(error.message);
+			}
+		}
 	});
 
 	return (
