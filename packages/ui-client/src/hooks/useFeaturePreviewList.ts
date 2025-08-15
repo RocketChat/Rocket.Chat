@@ -48,8 +48,8 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	},
 	{
 		name: 'newNavigation',
-		i18n: 'New_navigation',
-		description: 'New_navigation_description',
+		i18n: 'Enhanced_navigation',
+		description: 'Enhanced_navigation_description',
 		group: 'Navigation',
 		imageUrl: 'images/featurePreview/enhanced-navigation.png',
 		value: false,
