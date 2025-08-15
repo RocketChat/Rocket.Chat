@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatRooms } from '@rocket.chat/models';
+import { registerGuest } from '@rocket.chat/omni-core';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -7,7 +8,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { setMultipleVisitorCustomFields } from '../../lib/custom-fields';
-import { registerGuest, notifyGuestStatusChanged, removeContactsByVisitorId } from '../../lib/guests';
+import { notifyGuestStatusChanged, removeContactsByVisitorId } from '../../lib/guests';
 import { livechatLogger } from '../../lib/logger';
 import { saveRoomInfo } from '../../lib/rooms';
 import { updateCallStatus } from '../../lib/utils';
@@ -56,6 +57,7 @@ API.v1.addRoute(
 				...(username && { username }),
 				...(connectionData && { connectionData }),
 				...(phone && typeof phone === 'string' && { phone: { number: phone as string } }),
+				shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 				connectionData: normalizeHttpHeaderData(this.request.headers),
 			};
 

@@ -1,5 +1,6 @@
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
+import { registerGuest } from '@rocket.chat/omni-core';
 import { Random } from '@rocket.chat/random';
 import {
 	isPOSTLivechatMessageParams,
@@ -17,7 +18,6 @@ import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
 import { settings } from '../../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
-import { registerGuest } from '../../lib/guests';
 import { updateMessage, deleteMessage, sendMessage } from '../../lib/messages';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 
@@ -267,9 +267,15 @@ API.v1.addRoute(
 				rid = Random.id();
 
 				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown } = this.bodyParams.visitor;
-				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
-				const visitor = await registerGuest(guest);
+				if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+					guest.connectionData = normalizeHttpHeaderData(this.request.headers);
+				}
+
+				const visitor = await registerGuest({
+					...guest,
+					shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+				});
 				if (!visitor) {
 					throw new Error('error-livechat-visitor-registration');
 				}
