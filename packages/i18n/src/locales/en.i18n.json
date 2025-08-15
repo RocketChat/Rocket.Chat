@@ -3868,6 +3868,7 @@
   "Other": "Other",
   "Others": "Others",
   "Outbound_Message": "Outbound Message",
+  "Outbound_message": "Outbound message",
   "Outbound_message_department_hint": "Assign replies to a department.",
   "Outbound_message_agent_hint": "Leave empty so any agent from the designated department can manage the replies.",
   "Out_of_seats": "Out of Seats",
