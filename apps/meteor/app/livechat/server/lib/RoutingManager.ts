@@ -172,7 +172,7 @@ export const RoutingManager: Routing = {
 			departmentId,
 			room: { _id: room?._id, open: room?.open, servedBy: room?.servedBy },
 			shouldQueue,
-			...(defaultAgent && { defaultAgent }),
+			defaultAgent,
 		});
 
 		if (!room?.open) {
