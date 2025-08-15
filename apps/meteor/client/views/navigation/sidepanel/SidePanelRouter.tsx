@@ -24,7 +24,7 @@ const SidePanelRouter = () => {
 		case 'teams':
 		case 'channels':
 		case 'directMessages':
-			return parentRid ? <SidePanelRooms parentRid={parentRid} /> : null;
+			return parentRid ? <SidePanelRooms parentRid={parentRid} /> : <SidePanelAll />;
 		case 'inProgress':
 			return <SidePanelInProgress />;
 		case 'onHold':
@@ -32,7 +32,7 @@ const SidePanelRouter = () => {
 		case 'queue':
 			return <SidePanelQueue />;
 		default:
-			return null;
+			return <SidePanelAll />;
 	}
 };
 
