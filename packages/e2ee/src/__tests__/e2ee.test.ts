@@ -1,7 +1,13 @@
-// import { test } from 'node:test';
-// import * as assert from 'node:assert/strict';
-// import { E2EE, type KeyPair, type KeyService, type KeyStorage } from '../index.ts';
-// import { webcrypto } from 'node:crypto';
+// import { BaseE2EE, type KeyPair, type KeyService, type KeyStorage } from '../index.ts';
+// import {}
+
+// class TestE2EE extends BaseE2EE {
+// 	constructor() {
+// 		super({
+
+// 		})
+// 	}
+// }
 
 // class MemoryStorage implements KeyStorage {
 // 	private map = new Map<string, string>();
@@ -19,7 +25,7 @@
 // 	}
 // }
 
-// class DeterministicCrypto implements webcrypto.Crypto {
+// class DeterministicCrypto {
 // 	private seq: number[];
 // 	private idx = 0;
 // 	constructor(seq: number[], subtle: webcrypto.SubtleCrypto, CryptoKey: webcrypto.CryptoKeyConstructor) {
@@ -73,3 +79,4 @@
 // 	assert.equal(pwd.split(' ').length, 5);
 // 	assert.equal(await e2ee.getRandomPassword(), pwd);
 // });
+export {};

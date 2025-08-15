@@ -1,0 +1,103 @@
+NaN
+Infinity
+undefined
+parseInt
+parseFloat
+Object
+Error
+AggregateError
+EvalError
+RangeError
+ReferenceError
+SyntaxError
+TypeError
+URIError
+TimeoutError
+QuitError
+String
+BigInt
+Function
+Number
+Boolean
+Date
+RegExp
+Array
+ArrayBuffer
+DataView
+Int8Array
+Int16Array
+Int32Array
+Uint8Array
+Uint8ClampedArray
+Uint16Array
+Uint32Array
+Float32Array
+Float64Array
+BigInt64Array
+BigUint64Array
+Set
+Map
+WeakMap
+WeakSet
+Symbol
+TextEncoder
+Proxy
+Math
+JSON
+Reflect
+HermesInternal
+	concat
+	hasPromise
+	hasES6Class
+	enqueueJob
+	setPromiseRejectionTrackingHook
+	enablePromiseRejectionTracker
+	useEngineQueue
+	getEpilogues
+	getRuntimeProperties
+	ttiReached
+	ttrcReached
+	getFunctionLocation
+	getInstrumentedStats
+DebuggerInternal
+	isDebuggerAttached
+	shouldPauseOnThrow
+print
+eval
+isNaN
+isFinite
+escape
+unescape
+atob
+btoa
+decodeURI
+decodeURIComponent
+encodeURI
+encodeURIComponent
+globalThis
+gc
+Promise
+	length
+	name
+	caller
+	arguments
+	prototype
+		constructor
+		then
+		catch
+		finally
+	_l
+	_m
+	_n
+	resolve
+	all
+	allSettled
+	reject
+	race
+	any
+quit
+createHeapSnapshot
+loadSegment
+setTimeout
+clearTimeout
+setImmediate

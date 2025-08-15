@@ -1,5 +1,5 @@
 import { BaseE2EE, type KeyService, type KeyStorage } from '@rocket.chat/e2ee';
-import { WebKeyCodec } from './keyCodec.ts';
+import KeyCodec from './codec.ts';
 
 class MemoryStorage implements KeyStorage {
 	private map = new Map<string, string>();
@@ -17,9 +17,9 @@ class MemoryStorage implements KeyStorage {
 	}
 }
 
-export class WebE2EE extends BaseE2EE {
+export default class WebE2EE extends BaseE2EE {
 	constructor(keyStorage: KeyStorage, keyService: KeyService) {
-		super(new WebKeyCodec(), keyStorage, keyService);
+		super(new KeyCodec(), keyStorage, keyService);
 	}
 
 	static withMemoryStorage(keyService: KeyService): WebE2EE {

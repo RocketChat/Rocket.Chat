@@ -1,5 +1,5 @@
 import { BaseE2EE, type KeyService, type KeyStorage } from '@rocket.chat/e2ee';
-import { NodeKeyCodec } from './keyCodec.ts';
+import NodeKeyCodec from './codec.ts';
 
 class MemoryStorage implements KeyStorage {
 	private map = new Map<string, string>();
@@ -17,7 +17,7 @@ class MemoryStorage implements KeyStorage {
 	}
 }
 
-export class NodeE2EE extends BaseE2EE {
+export default class NodeE2EE extends BaseE2EE {
 	constructor(keyStorage: KeyStorage, keyService: KeyService) {
 		super(new NodeKeyCodec(), keyStorage, keyService);
 	}

@@ -4171,7 +4171,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:^1.1.5":
+"@noble/ciphers@npm:~1.3.0":
+  version: 1.3.0
+  resolution: "@noble/ciphers@npm:1.3.0"
+  checksum: 10/051660051e3e9e2ca5fb9dece2885532b56b7e62946f89afa7284a0fb8bc02e2bd1c06554dba68162ff42d295b54026456084198610f63c296873b2f1cd7a586
+  languageName: node
+  linkType: hard
+
+"@noble/curves@npm:~1.9.7":
+  version: 1.9.7
+  resolution: "@noble/curves@npm:1.9.7"
+  dependencies:
+    "@noble/hashes": "npm:1.8.0"
+  checksum: 10/3cfe2735ea94972988ca9e217e0ebb2044372a7160b2079bf885da789492a6291fc8bf76ca3d8bf8dee477847ee2d6fac267d1e6c4f555054059f5e8c4865d44
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:1.8.0, @noble/hashes@npm:^1.1.5, @noble/hashes@npm:~1.8.0":
   version: 1.8.0
   resolution: "@noble/hashes@npm:1.8.0"
   checksum: 10/474b7f56bc6fb2d5b3a42132561e221b0ea4f91e590f4655312ca13667840896b34195e2b53b7f097ec080a1fdd3b58d902c2a8d0fbdf51d2e238b53808a177e
@@ -4755,6 +4771,104 @@ __metadata:
   version: 1.27.0
   resolution: "@opentelemetry/semantic-conventions@npm:1.27.0"
   checksum: 10/98166522f299e2fe3d43376adbdeb92679b75ebb172e2a3c4c71f2942bd91585e9537618efbbae6dc08177699e5719368edf66d7e69e8636f360b85217bbdbe1
+  languageName: node
+  linkType: hard
+
+"@oxlint-tsgolint/darwin-arm64@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@oxlint-tsgolint/darwin-arm64@npm:0.0.2"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxlint-tsgolint/darwin-x64@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@oxlint-tsgolint/darwin-x64@npm:0.0.2"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxlint-tsgolint/linux-arm64@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@oxlint-tsgolint/linux-arm64@npm:0.0.2"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxlint-tsgolint/linux-x64@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@oxlint-tsgolint/linux-x64@npm:0.0.2"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxlint-tsgolint/win32-arm64@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@oxlint-tsgolint/win32-arm64@npm:0.0.2"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxlint-tsgolint/win32-x64@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@oxlint-tsgolint/win32-x64@npm:0.0.2"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxlint/darwin-arm64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "@oxlint/darwin-arm64@npm:1.11.2"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxlint/darwin-x64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "@oxlint/darwin-x64@npm:1.11.2"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-arm64-gnu@npm:1.11.2":
+  version: 1.11.2
+  resolution: "@oxlint/linux-arm64-gnu@npm:1.11.2"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-arm64-musl@npm:1.11.2":
+  version: 1.11.2
+  resolution: "@oxlint/linux-arm64-musl@npm:1.11.2"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-x64-gnu@npm:1.11.2":
+  version: 1.11.2
+  resolution: "@oxlint/linux-x64-gnu@npm:1.11.2"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxlint/linux-x64-musl@npm:1.11.2":
+  version: 1.11.2
+  resolution: "@oxlint/linux-x64-musl@npm:1.11.2"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxlint/win32-arm64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "@oxlint/win32-arm64@npm:1.11.2"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxlint/win32-x64@npm:1.11.2":
+  version: 1.11.2
+  resolution: "@oxlint/win32-x64@npm:1.11.2"
+  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -7261,7 +7375,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/e2ee-node@workspace:packages/e2ee-node"
   dependencies:
-    "@rocket.chat/e2ee": "workspace:^"
+    "@rocket.chat/e2ee": "workspace:*"
     "@types/node": "npm:~22.16.5"
     typescript: "npm:~5.9.2"
     vitest: "npm:4.0.0-beta.8"
@@ -7272,7 +7386,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/e2ee-web@workspace:packages/e2ee-web"
   dependencies:
-    "@rocket.chat/e2ee": "workspace:^"
+    "@rocket.chat/e2ee": "workspace:*"
     "@vitest/browser": "npm:4.0.0-beta.8"
     playwright: "npm:^1.54.2"
     typescript: "npm:~5.9.2"
@@ -7280,10 +7394,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/e2ee@workspace:^, @rocket.chat/e2ee@workspace:packages/e2ee":
+"@rocket.chat/e2ee@workspace:*, @rocket.chat/e2ee@workspace:^, @rocket.chat/e2ee@workspace:packages/e2ee":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/e2ee@workspace:packages/e2ee"
   dependencies:
+    "@noble/ciphers": "npm:~1.3.0"
+    "@noble/curves": "npm:~1.9.7"
+    "@noble/hashes": "npm:~1.8.0"
+    oxlint: "npm:~1.11.2"
     typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
@@ -8023,6 +8141,7 @@ __metadata:
     "@types/i18next-sprintf-postprocessor": "npm:^0.2.3"
     "@types/imap": "npm:^0.8.42"
     "@types/jest": "npm:~30.0.0"
+    "@types/js-yaml": "npm:~4.0.9"
     "@types/jsdom": "npm:^21.1.7"
     "@types/jsdom-global": "npm:^3.0.7"
     "@types/jsrsasign": "npm:^10.5.15"
@@ -11851,6 +11970,13 @@ __metadata:
   dependencies:
     "@types/sizzle": "npm:*"
   checksum: 10/2c67cac338828870ead5c5e608f5fa5ab8101598ed4572cf49b58c342adffe8918d2e2fc94d7954e6b98a889cef8c3f4e6f44b8fecb75e80854b0f9cf9dd18a1
+  languageName: node
+  linkType: hard
+
+"@types/js-yaml@npm:~4.0.9":
+  version: 4.0.9
+  resolution: "@types/js-yaml@npm:4.0.9"
+  checksum: 10/a0ce595db8a987904badd21fc50f9f444cb73069f4b95a76cc222e0a17b3ff180669059c763ec314bc4c3ce284379177a9da80e83c5f650c6c1310cafbfaa8e6
   languageName: node
   linkType: hard
 
@@ -28379,6 +28505,74 @@ __metadata:
     object-keys: "npm:^1.1.1"
     safe-push-apply: "npm:^1.0.0"
   checksum: 10/ab4bb3b8636908554fc19bf899e225444195092864cb61503a0d048fdaf662b04be2605b636a4ffeaf6e8811f6fcfa8cbb210ec964c0eb1a41eb853e1d5d2f41
+  languageName: node
+  linkType: hard
+
+"oxlint-tsgolint@npm:>=0.0.1":
+  version: 0.0.2
+  resolution: "oxlint-tsgolint@npm:0.0.2"
+  dependencies:
+    "@oxlint-tsgolint/darwin-arm64": "npm:0.0.2"
+    "@oxlint-tsgolint/darwin-x64": "npm:0.0.2"
+    "@oxlint-tsgolint/linux-arm64": "npm:0.0.2"
+    "@oxlint-tsgolint/linux-x64": "npm:0.0.2"
+    "@oxlint-tsgolint/win32-arm64": "npm:0.0.2"
+    "@oxlint-tsgolint/win32-x64": "npm:0.0.2"
+  dependenciesMeta:
+    "@oxlint-tsgolint/darwin-arm64":
+      optional: true
+    "@oxlint-tsgolint/darwin-x64":
+      optional: true
+    "@oxlint-tsgolint/linux-arm64":
+      optional: true
+    "@oxlint-tsgolint/linux-x64":
+      optional: true
+    "@oxlint-tsgolint/win32-arm64":
+      optional: true
+    "@oxlint-tsgolint/win32-x64":
+      optional: true
+  bin:
+    tsgolint: bin/tsgolint.js
+  checksum: 10/8d0b0b60fcbd480098ab666d695f584e058398d5cccaa88a9ffbc5431654558ab0848b5116386cc30e03211a163bbb586d289f7f41a061b77ad7fdd8004d58a5
+  languageName: node
+  linkType: hard
+
+"oxlint@npm:~1.11.2":
+  version: 1.11.2
+  resolution: "oxlint@npm:1.11.2"
+  dependencies:
+    "@oxlint/darwin-arm64": "npm:1.11.2"
+    "@oxlint/darwin-x64": "npm:1.11.2"
+    "@oxlint/linux-arm64-gnu": "npm:1.11.2"
+    "@oxlint/linux-arm64-musl": "npm:1.11.2"
+    "@oxlint/linux-x64-gnu": "npm:1.11.2"
+    "@oxlint/linux-x64-musl": "npm:1.11.2"
+    "@oxlint/win32-arm64": "npm:1.11.2"
+    "@oxlint/win32-x64": "npm:1.11.2"
+    oxlint-tsgolint: "npm:>=0.0.1"
+  dependenciesMeta:
+    "@oxlint/darwin-arm64":
+      optional: true
+    "@oxlint/darwin-x64":
+      optional: true
+    "@oxlint/linux-arm64-gnu":
+      optional: true
+    "@oxlint/linux-arm64-musl":
+      optional: true
+    "@oxlint/linux-x64-gnu":
+      optional: true
+    "@oxlint/linux-x64-musl":
+      optional: true
+    "@oxlint/win32-arm64":
+      optional: true
+    "@oxlint/win32-x64":
+      optional: true
+    oxlint-tsgolint:
+      optional: true
+  bin:
+    oxc_language_server: bin/oxc_language_server
+    oxlint: bin/oxlint
+  checksum: 10/2ae18b22c9fe3aa93ea7a7049116a1ccb7cdfe22602bf58297115f1ce5aa633f508fe7b3f493f4193dc6cc00e97ba77f6f06fd895b24fdc3e89fe79c7d66d36e
   languageName: node
   linkType: hard
 

@@ -3,6 +3,7 @@
 		"composite": false,
 		"module": "es2022",
 		"target": "ES2024",
+		"lib": ["ESNext", "WebWorker"],
 		"types": [],
 		"typeRoots": [],
 

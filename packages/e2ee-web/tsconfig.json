@@ -1,19 +1,21 @@
 {
 	"compilerOptions": {
-		"rootDir": "src",
-		"outDir": "dist",
-		"declaration": true,
-		"declarationMap": true,
 		"composite": false,
-		"module": "node20",
+		"module": "preserve",
 		"target": "ES2024",
+		"lib": ["ESNext", "DOM"],
 		"types": [],
-		"lib": ["ES2024","DOM"],
+
+		/** Modules */
+		"rootDir": "src",
+		"allowImportingTsExtensions": true,
+		"rewriteRelativeImportExtensions": true,
 
 		/** Emit */
 		"noEmit": true,
-		"allowImportingTsExtensions": true,
-		"rewriteRelativeImportExtensions": true,
+		"outDir": "dist",
+		"declaration": true,
+		"declarationMap": true,
 		"verbatimModuleSyntax": true,
 		"moduleDetection": "force",
 
@@ -34,10 +36,8 @@
 		"noUncheckedSideEffectImports": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-
 		"isolatedModules": true,
 		"isolatedDeclarations": true,
-
 		"allowJs": false,
 		"esModuleInterop": false,
 		"skipLibCheck": false

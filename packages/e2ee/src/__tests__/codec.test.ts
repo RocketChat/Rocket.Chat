@@ -1,25 +1,17 @@
-// import { test } from 'node:test';
-// import * as assert from 'node:assert/strict';
-// import { webcrypto } from 'node:crypto';
-// import { KeyCodec, type CryptoProvider } from '../keyCodec.ts';
+// import { BaseKeyCodec, type CryptoProvider } from '../key-codec.ts';
 
-// const deps: CryptoProvider = {
-// 	exportJsonWebKey: (key: CryptoKey): Promise<JsonWebKey> => {
-// 		return webcrypto.subtle.exportKey('jwk', key);
-// 	},
-// 	getRandomValues: (array) => crypto.getRandomValues(array),
-// 	importRawKey: (raw) => webcrypto.subtle.importKey('raw', raw, { name: 'PBKDF2' }, false, ['deriveKey']),
-// 	generateKeyPair: () =>
-// 		webcrypto.subtle.generateKey(
-// 			{ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' },
-// 			true,
-// 			['encrypt', 'decrypt'],
-// 		),
-// 	decodeBase64: (input: string) => webcrypto.subtle.decodeBase64(input),
-// };
+// class KeyCodec extends BaseKeyCodec {
+// 	constructor() {
+// 		super({
+// 			decodeBase64: (input) => {
+// 				const binaryString = atob(data)
+// 			}
+// 		});
+// 	}
+// }
 
 // test('KeyCodec roundtrip (v1 structured encoding)', async () => {
-// 	const codec = new KeyCodec(deps);
+// 	const codec = new KeyCodec(testCrypto);
 // 	const { privateJWK } = await codec.generateRSAKeyPair();
 // 	const privStr = JSON.stringify(privateJWK);
 // 	const masterKey = await codec.deriveMasterKey('pass123', new TextEncoder().encode('salt-user-1'));
@@ -58,3 +50,4 @@
 // 	const dec = await codec.legacyDecrypt(blob, 'pw', 'salt');
 // 	assert.equal(dec, privStr);
 // });
+export {};

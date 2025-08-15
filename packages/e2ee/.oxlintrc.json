@@ -1,0 +1,15 @@
+{
+	"categories": {
+		"correctness": "error",
+		"suspicious": "error",
+		"perf": "error",
+		"restriction": "error",
+		"style": "error",
+		"nursery": "error",
+		"pedantic": "error"
+	},
+	"rules": {
+		"oxc/no-map-spread": "error",
+		"oxc/no-async-await": "allow"
+	}
+}

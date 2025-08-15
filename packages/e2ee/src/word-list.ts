@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 export const v1: string[] = [
 	'acrobat',
 	'africa',

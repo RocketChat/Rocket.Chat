@@ -23,7 +23,7 @@
     "testunit": "vitest run"
   },
   "dependencies": {
-    "@rocket.chat/e2ee": "workspace:^"
+    "@rocket.chat/e2ee": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "~22.16.5",

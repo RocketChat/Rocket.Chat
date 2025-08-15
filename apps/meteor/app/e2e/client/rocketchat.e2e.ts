@@ -3,7 +3,9 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import { E2EEBase, type KeyPair } from '@rocket.chat/e2ee';
+import type { KeyPair } from '@rocket.chat/e2ee';
+import type { Optional } from '@rocket.chat/e2ee/dist/utils';
+import E2EE from '@rocket.chat/e2ee-node';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
@@ -68,15 +70,14 @@ class E2E extends Emitter {
 
 	private state: E2EEState;
 
-	private e2ee: E2EEBase;
+	private e2ee: E2EE;
 
 	constructor() {
 		super();
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
-		this.e2ee = new E2EEBase(
-			crypto,
+		this.e2ee = new E2EE(
 			{
 				load: (keyName) => Promise.resolve(Accounts.storageLocation.getItem(keyName)),
 				store: (keyName, value) => Promise.resolve(Accounts.storageLocation.setItem(keyName, value)),
@@ -308,7 +309,7 @@ class E2E extends Emitter {
 	}
 
 	private async persistKeys(
-		{ public_key, private_key }: Partial<KeyPair>,
+		{ public_key, private_key }: Optional<KeyPair>,
 		password: string,
 		{ force }: { force: boolean } = { force: false },
 	): Promise<void> {
@@ -387,7 +388,7 @@ class E2E extends Emitter {
 			try {
 				this.setState(E2EEState.ENTER_PASSWORD);
 				private_key = await this.decodePrivateKey(this.db_private_key as string);
-			} catch (error) {
+			} catch {
 				this.started = false;
 				failedToDecodeKey = true;
 				this.openAlert({
@@ -524,7 +525,7 @@ class E2E extends Emitter {
 	}
 
 	async createRandomPassword(): Promise<string> {
-		return this.e2ee.createRandomPassword();
+		return this.e2ee.createRandomPassword(5);
 	}
 
 	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
@@ -641,7 +642,7 @@ class E2E extends Emitter {
 				this.setState(E2EEState.READY);
 			}
 			dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
-		} catch (error) {
+		} catch {
 			this.setState(E2EEState.ENTER_PASSWORD);
 			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
 			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
@@ -662,7 +663,7 @@ class E2E extends Emitter {
 			}
 			const privKey = await decryptAES(vector, masterKey, cipherText);
 			return toString(privKey);
-		} catch (error) {
+		} catch {
 			this.setState(E2EEState.ENTER_PASSWORD);
 			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
 			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });

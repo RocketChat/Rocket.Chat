@@ -1,6 +1,6 @@
 import { BaseKeyCodec } from '@rocket.chat/e2ee';
 
-export class WebKeyCodec extends BaseKeyCodec {
+export default class NodeKeyCodec extends BaseKeyCodec {
 	constructor() {
 		super({
 			exportJsonWebKey: (key) => crypto.subtle.exportKey('jwk', key),
@@ -14,25 +14,34 @@ export class WebKeyCodec extends BaseKeyCodec {
 					true,
 					['encrypt', 'decrypt'],
 				),
-			decodeBase64: (input) => {
-				const binaryString = atob(input);
-				const len = binaryString.length;
-				const bytes = new Uint8Array(len);
-				for (let i = 0; i < len; i++) {
-					bytes[i] = binaryString.charCodeAt(i);
-				}
-				return bytes;
-			},
-			encodeBase64: (input) => {
-				const bytes = new Uint8Array(input);
-				let binaryString = '';
-				for (let i = 0; i < bytes.byteLength; i++) {
-					binaryString += String.fromCharCode(bytes[i]!);
-				}
-				return btoa(binaryString);
-			},
+			decodeBase64: (input) => Buffer.from(input, 'base64'),
+			encodeBase64: (bytes) => Buffer.from(bytes).toString('base64'),
 			decryptAesCbc: (key, iv, data) => crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data),
 			encryptAesCbc: (key, iv, data) => crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, data),
+			encodeUtf8: (input) => {
+				const encoder = new TextEncoder();
+				const dest = new Uint8Array(input.length);
+				encoder.encodeInto(input, dest);
+				return dest;
+			},
+			decodeUtf8: (input) => new TextDecoder().decode(input),
+			deriveKeyWithPbkdf2: (salt, baseKey) => {
+				return crypto.subtle.deriveKey(
+					{
+						name: 'PBKDF2',
+						salt,
+						iterations: 100000,
+						hash: 'SHA-256',
+					},
+					baseKey,
+					{
+						name: 'AES-GCM',
+						length: 256,
+					},
+					false,
+					['encrypt', 'decrypt'],
+				);
+			},
 		});
 	}
 }
