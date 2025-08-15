@@ -35,7 +35,6 @@ import { createTroubleshootSettings } from './troubleshoot';
 import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
-import { createWebRTCSettings } from './webrtc';
 
 await Promise.all([
 	createAccountSettings(),
@@ -75,5 +74,4 @@ await Promise.all([
 	createVConfSettings(),
 	createUserDataSettings(),
 	createWebDavSettings(),
-	createWebRTCSettings(),
 ]);

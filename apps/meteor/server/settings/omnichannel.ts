@@ -653,19 +653,19 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		await this.add('Omnichannel_call_provider', 'none', {
-			type: 'select',
-			public: true,
-			group: 'Omnichannel',
-			section: 'Video_and_Audio_Call',
-			values: [
-				{ key: 'none', i18nLabel: 'None' },
-				{ key: 'default-provider', i18nLabel: 'Default Provider' },
-			],
-			i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
-			i18nLabel: 'Call_provider',
-			enableQuery: omnichannelEnabledQuery,
-		});
+		// await this.add('Omnichannel_call_provider', 'none', {
+		// 	type: 'select',
+		// 	public: true,
+		// 	group: 'Omnichannel',
+		// 	section: 'Video_and_Audio_Call',
+		// 	values: [
+		// 		{ key: 'none', i18nLabel: 'None' },
+		// 		{ key: 'default-provider', i18nLabel: 'Default Provider' },
+		// 	],
+		// 	i18nDescription: 'Feature_depends_on_selected_call_provider_to_be_enabled_from_administration_settings',
+		// 	i18nLabel: 'Call_provider',
+		// 	enableQuery: omnichannelEnabledQuery,
+		// });
 
 		await this.add('Omnichannel_Metrics_Ignore_Automatic_Messages', false, {
 			type: 'boolean',

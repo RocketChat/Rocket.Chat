@@ -568,7 +568,7 @@ export const statistics = {
 		statistics.totalSubscriptionRoles = await RolesRaw.countByScope('Subscriptions', { readPreference });
 		statistics.totalUserRoles = await RolesRaw.countByScope('Users', { readPreference });
 		statistics.totalCustomRoles = await RolesRaw.countCustomRoles({ readPreference });
-		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
+		// statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 
 		const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
@@ -612,9 +612,9 @@ export const statistics = {
 		statistics.matrixFederation = await getMatrixFederationStatistics();
 
 		// Omnichannel call stats
-		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
-		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
-		statistics.omnichannelWebRTCCalls = await Rooms.findCountOfRoomsWithActiveCalls();
+		// statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
+		// statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
+		// statistics.omnichannelWebRTCCalls = await Rooms.findCountOfRoomsWithActiveCalls();
 
 		await Promise.all(statsPms).catch(log);
 

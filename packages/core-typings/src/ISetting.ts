@@ -185,9 +185,9 @@ export interface ISettingStatistics {
 	pushEnable?: boolean;
 	globalSearchEnabled?: boolean;
 	threadsEnabled?: boolean;
-	webRTCEnableChannel?: boolean;
-	webRTCEnablePrivate?: boolean;
-	webRTCEnableDirect?: boolean;
+	// webRTCEnableChannel?: boolean;
+	// webRTCEnablePrivate?: boolean;
+	// webRTCEnableDirect?: boolean;
 }
 
 export interface ISettingStatisticsObject {
@@ -254,9 +254,9 @@ export interface ISettingStatisticsObject {
 		bigBlueButton?: boolean;
 		jitsiEnabled?: boolean;
 	};
-	webRTC?: {
-		webRTCEnableChannel?: boolean;
-		webRTCEnablePrivate?: boolean;
-		webRTCEnableDirect?: boolean;
-	};
+	// webRTC?: {
+	// 	webRTCEnableChannel?: boolean;
+	// 	webRTCEnablePrivate?: boolean;
+	// 	webRTCEnableDirect?: boolean;
+	// };
 }

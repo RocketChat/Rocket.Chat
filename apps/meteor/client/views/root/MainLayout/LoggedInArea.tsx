@@ -15,7 +15,7 @@ import { useLogoutCleanup } from '../hooks/useLogoutCleanup';
 import { useOTRMessaging } from '../hooks/useOTRMessaging';
 import { useStoreCookiesOnLogin } from '../hooks/useStoreCookiesOnLogin';
 import { useUpdateVideoConfUser } from '../hooks/useUpdateVideoConfUser';
-import { useWebRTC } from '../hooks/useWebRTC';
+// import { useWebRTC } from '../hooks/useWebRTC';
 
 const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	const user = useUser();
@@ -28,7 +28,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useUnread();
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
-	useWebRTC(user._id);
+	// useWebRTC(user._id);
 	useOTRMessaging(user._id);
 	useNotificationUserCalendar(user);
 	useForceLogout(user._id);
