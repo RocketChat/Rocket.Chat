@@ -1,6 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-const escapeHTML = (str: string): string =>
+export const escapeHTML = (str: string): string =>
 	str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 
 const renderInline = (tokens: (MessageParser.Inlines | { fallback: MessageParser.Plain; type: undefined })[]): string =>
