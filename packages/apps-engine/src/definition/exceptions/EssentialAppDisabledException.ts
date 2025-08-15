@@ -1,4 +1,4 @@
-import { AppsEngineException } from '.';
+import { AppsEngineException } from './index.ts';
 
 /**
  * This exception informs the host system that an
