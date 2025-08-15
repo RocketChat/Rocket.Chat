@@ -312,4 +312,5 @@ export type EventSignatures = {
 	'actions.changed'(): void;
 	'otrMessage'(data: { roomId: string; message: IMessage; room: IRoom; user: IUser }): void;
 	'otrAckUpdate'(data: { roomId: string; acknowledgeMessage: IOTRMessage }): void;
+	'media-call.updated'(callId: string): void;
 };

@@ -8,6 +8,7 @@ import type { IMediaCallAgent, IMediaCallAgentFactory, IMediaCallBasicAgent, INe
 import { UserAgentFactory } from './users/AgentFactory';
 import { MediaCallMonitor } from '../global/CallMonitor';
 import { gateway } from '../global/SignalGateway';
+import { SipAgentFactory } from './sip/AgentFactory';
 
 type FactoryFn = () => Promise<IMediaCallAgentFactory | null>;
 
@@ -19,7 +20,7 @@ class MediaCallAgentManager {
 		}
 
 		if (actor.type === 'sip') {
-			return null;
+			return SipAgentFactory.getAgentFactoryForActor(actor);
 		}
 
 		return null;
@@ -48,7 +49,7 @@ class MediaCallAgentManager {
 	public async getOrCreateContract(
 		callId: string,
 		agent: IMediaCallBasicAgent,
-		params?: Pick<IMediaCallChannel, 'acknowledged'>,
+		params?: Pick<IMediaCallChannel, 'acknowledged' | 'localDescription'>,
 	): Promise<IMediaCallChannel> {
 		const { role, actorType, actorId, contractId } = agent;
 		logger.debug({ msg: 'AgentManager.getOrCreateContract', callId, params, role, actorType, actorId, contractId });
@@ -64,13 +65,14 @@ class MediaCallAgentManager {
 			state: 'none',
 			role,
 			acknowledged: Boolean(params?.acknowledged) ?? false,
+			...(params?.localDescription && { localDescription: params.localDescription }),
 			contact,
 			contractId,
 			actorType,
 			actorId,
 		};
 
-		// Create this channel if it doesn't yet exist, or update ack if it does and needs it
+		// Create this channel if it doesn't yet exist, or update ack/sdp if it does and needs it
 		const insertedChannel = await MediaCallChannels.createOrUpdateChannel(newChannel);
 		if (!insertedChannel) {
 			throw new Error('failed-to-insert-channel');

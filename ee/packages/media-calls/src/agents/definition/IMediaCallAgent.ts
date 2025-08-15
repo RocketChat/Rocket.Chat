@@ -18,7 +18,7 @@ export interface IMediaCallBasicAgent {
 
 // The New Call Agent may be instantiated without a call; it is used to start new calls
 export interface INewMediaCallAgent extends IMediaCallBasicAgent {
-	onNewCall(call: IMediaCall, otherAgent: IMediaCallBasicAgent): Promise<void>;
+	onNewCall(call: IMediaCall, oppositeContact: CallContact): Promise<void>;
 }
 
 // The full agent will always be instantiated for a specific call and contract; it is used to manage the call state
