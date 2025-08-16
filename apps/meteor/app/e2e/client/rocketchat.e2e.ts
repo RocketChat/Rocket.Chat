@@ -25,7 +25,7 @@ import {
 	generateRSAKey,
 	exportJWKKey,
 	importRSAKey,
-	deriveKey,
+	// deriveKey,
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
@@ -569,7 +569,7 @@ class E2E extends Emitter {
 
 		// Derive a key from the password
 		try {
-			return await deriveKey(this.e2ee.codec.crypto.encodeBinary(userId), baseKey);
+			return await this.e2ee.codec.deriveKey(userId, baseKey);
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error deriving baseKey: ', error);

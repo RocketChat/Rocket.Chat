@@ -214,6 +214,10 @@ export abstract class BaseKeyCodec {
 		return importRawKey(encodeBinary(password));
 	}
 
+	deriveKey(salt: string, baseKey: CryptoKey): Promise<CryptoKey> {
+		return this.#crypto.deriveKeyWithPbkdf2(this.#crypto.encodeUtf8(salt).buffer, baseKey);
+	}
+
 	async deriveMasterKey(salt: Uint8Array<ArrayBuffer>, password: string): Promise<CryptoKey> {
 		if (!password) {
 			throw new Error('Password is required');
