@@ -168,6 +168,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const handleSaveUser = useEffectEvent(async (userFormPayload: UserFormProps) => {
 		const { avatar, passwordConfirmation, ...userFormData } = userFormPayload;
 
+		if (userFormData.email) {
+			userFormData.email = userFormData.email.trim();
+		}
+
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({ userId: userData?._id, data: userFormData });
 		}
