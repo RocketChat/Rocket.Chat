@@ -60,30 +60,57 @@ export interface CryptoProvider {
 	encodeBase64(input: ArrayBuffer): string;
 	/**
 	 * @example
+	 * NodeJS / Web:
+	 * ```
+	 * (text: string): Uint8Array<ArrayBuffer> => {
+	 *   const encoder = new TextEncoder();
+	 *   const buffer = new Uint8Array();
+	 *   encoder.encodeInto(text, buffer);
+	 *   return buffer;
+	 * };
+	 * ```
+	 */
+	encodeBinary(input: string): Uint8Array<ArrayBuffer>;
+	/**
+	 * @example
+	 * NodeJS / Web:
+	 * ```
 	 * (input) => new TextEncoder().encode(input)
+	 * ```
 	 */
 	encodeUtf8(input: string): Uint8Array<ArrayBuffer>;
 	/**
 	 * @example
+	 * NodeJS / Web:
+	 * ```
 	 * (input) => TextDecoder().decode(input)
+	 * ```
 	 */
 	decodeUtf8(input: ArrayBuffer): string;
 	/**
 	 * @example
-	 * (key, iv, data) => crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data),
+	 * NodeJS / Web:
+	 * ```
+	 * (key, iv, data) => crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data)
+	 * ```
 	 */
 	decryptAesCbc(key: CryptoKey, iv: Uint8Array<ArrayBuffer>, data: Uint8Array<ArrayBuffer>): Promise<ArrayBuffer>;
 	/**
 	 * @example
+	 * NodeJS / Web:
+	 * ```
 	 * (key, iv, data) => crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, data)
+	 * ````
 	 */
 	encryptAesCbc(key: CryptoKey, iv: Uint8Array<ArrayBuffer>, data: Uint8Array<ArrayBuffer>): Promise<ArrayBuffer>;
 	/**
 	 * @example
+	 * NodeJS / Web:
 	 * (key, iv, data) => crypto.subtle.deriveKey(
 	 *  {
-	 *    name: 'PBKDF2', salt,
-	 *    iterations: ITERATIONS,
+	 *    name: 'PBKDF2',
+	 *    salt,
+	 *    iterations: 1000,
 	 *    hash: 'SHA-256',
 	 *  },
 	 *  baseKey,
@@ -103,19 +130,21 @@ export interface JsonWebKeyPair {
 	publicJWK: JsonWebKey;
 }
 
+const V1_ITERATIONS = 1000; // mirrors legacy implementation
 export interface EncodedPrivateKeyV1 {
 	version: '1';
 	mode: 'AES-CBC';
-	kdf: { name: 'PBKDF2'; hash: 'SHA-256'; iterations: number };
+	kdf: {
+		name: 'PBKDF2';
+		hash: 'SHA-256';
+		iterations: typeof V1_ITERATIONS;
+	};
 	ivB64: string;
 	/** ciphertext */
 	ctB64: string;
 }
 
 export type AnyEncodedPrivateKey = EncodedPrivateKeyV1; // forward compatible discriminated union
-
-const ITERATIONS = 1000; // mirrors legacy implementation
-
 export abstract class BaseKeyCodec {
 	#crypto: CryptoProvider;
 
@@ -146,7 +175,7 @@ export abstract class BaseKeyCodec {
 		return {
 			ctB64: encodeBase64(ct),
 			ivB64: encodeBase64(iv.buffer),
-			kdf: { hash: 'SHA-256', iterations: ITERATIONS, name: 'PBKDF2' },
+			kdf: { hash: 'SHA-256', iterations: V1_ITERATIONS, name: 'PBKDF2' },
 			mode: 'AES-CBC',
 			version: '1',
 		};
@@ -175,6 +204,14 @@ export abstract class BaseKeyCodec {
 
 	decodeSalt(salt: Uint8Array<ArrayBuffer>): string {
 		return this.#crypto.decodeUtf8(salt.buffer);
+	}
+
+	createBaseKey(password: string): Promise<CryptoKey> {
+		if (!password) {
+			throw new Error('Password is required');
+		}
+		const { encodeBinary, importRawKey } = this.#crypto;
+		return importRawKey(encodeBinary(password));
 	}
 
 	async deriveMasterKey(salt: Uint8Array<ArrayBuffer>, password: string): Promise<CryptoKey> {

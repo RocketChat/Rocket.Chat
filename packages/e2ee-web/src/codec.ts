@@ -31,6 +31,12 @@ export default class WebKeyCodec extends BaseKeyCodec {
 				}
 				return btoa(binaryString);
 			},
+			encodeBinary: (input) => {
+				const encoder = new TextEncoder();
+				const dest = new Uint8Array(input.length);
+				encoder.encodeInto(input, dest);
+				return dest;
+			},
 			decryptAesCbc: (key, iv, data) => crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data),
 			encryptAesCbc: (key, iv, data) => crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, data),
 			encodeUtf8: (input) => new TextEncoder().encode(input),

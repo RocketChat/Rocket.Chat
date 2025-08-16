@@ -45,6 +45,12 @@ export default class NodeKeyCodec extends BaseKeyCodec {
 					['encrypt', 'decrypt'],
 				);
 			},
+			encodeBinary: (input) => {
+				const encoder = new TextEncoder();
+				const dest = new Uint8Array(input.length);
+				encoder.encodeInto(input, dest);
+				return dest;
+			},
 		});
 	}
 }

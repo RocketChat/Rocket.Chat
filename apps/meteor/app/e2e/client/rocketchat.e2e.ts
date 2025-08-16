@@ -52,6 +52,8 @@ let failedToDecodeKey = false;
 const ROOM_KEY_EXCHANGE_SIZE = 10;
 const E2EEStateDependency = new Tracker.Dependency();
 
+//
+
 class E2E extends Emitter {
 	private started: boolean;
 
@@ -552,15 +554,22 @@ class E2E extends Emitter {
 		// First, create a PBKDF2 "key" containing the password
 		let baseKey;
 		try {
-			baseKey = await this.e2ee.codec.crypto.importRawKey(toArrayBuffer(password));
+			baseKey = await this.e2ee.codec.createBaseKey(password);
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error creating a key based on user password: ', error);
 		}
 
+		const userId = Meteor.userId();
+
+		if (!userId) {
+			this.setState(E2EEState.ERROR);
+			return this.error('User not found');
+		}
+
 		// Derive a key from the password
 		try {
-			return await deriveKey(toArrayBuffer(Meteor.userId()), baseKey);
+			return await deriveKey(toArrayBuffer(userId), baseKey);
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error deriving baseKey: ', error);
