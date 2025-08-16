@@ -108,11 +108,14 @@ export async function importRawKey(keyData: BufferSource, keyUsages: ReadonlyArr
 	return crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
 }
 
-export async function deriveKey(salt: any, baseKey: any, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
-	const iterations = 1000;
-	const hash = 'SHA-256';
-
-	return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations, hash }, baseKey, { name: 'AES-CBC', length: 256 }, true, keyUsages);
+export async function deriveKey(salt: Uint8Array<ArrayBuffer>, baseKey: CryptoKey) {
+	return crypto.subtle.deriveKey(
+		{ name: 'PBKDF2', salt, iterations: 1000, hash: 'SHA-256' },
+		baseKey,
+		{ name: 'AES-CBC', length: 256 },
+		true,
+		['encrypt', 'decrypt'],
+	);
 }
 
 export async function readFileAsArrayBuffer(file: File) {

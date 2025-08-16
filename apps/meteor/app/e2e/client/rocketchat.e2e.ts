@@ -569,7 +569,7 @@ class E2E extends Emitter {
 
 		// Derive a key from the password
 		try {
-			return await deriveKey(toArrayBuffer(userId), baseKey);
+			return await deriveKey(this.e2ee.codec.crypto.encodeBinary(userId), baseKey);
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error deriving baseKey: ', error);
