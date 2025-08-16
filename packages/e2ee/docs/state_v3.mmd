@@ -1,0 +1,58 @@
+stateDiagram-v2
+    direction TB
+
+    %% Style definitions (note: cannot style internal composite states per Mermaid limitations)
+    classDef normal fill:#eef,stroke:#336,stroke-width:1px
+    classDef action fill:#e8ffe8,stroke:#2a6,stroke-width:1px
+    classDef warning fill:#fff4d6,stroke:#c90,stroke-width:1px
+    classDef error fill:#ffe6e6,stroke:#c33,stroke-width:1px
+
+    [*] --> NOT_STARTED: init E2E instance
+    NOT_STARTED --> LOADING_KEYS: startClient()
+    NOT_STARTED --> DISABLED: stopClient()
+
+    LOADING_KEYS --> ENTER_PASSWORD: need user password
+    LOADING_KEYS --> OPERATIONAL: keys loaded / new keypair
+    LOADING_KEYS --> ERROR: fetch/import failure
+
+    ENTER_PASSWORD --> LOADING_KEYS: password accepted / private key decrypted
+    ENTER_PASSWORD --> ENTER_PASSWORD: wrong password (retry)
+    ENTER_PASSWORD --> ERROR: unrecoverable error
+
+    OPERATIONAL --> DISABLED: stopClient()
+    OPERATIONAL --> ERROR: runtime error
+
+    ERROR --> NOT_STARTED: restart (startClient())
+    DISABLED --> NOT_STARTED: re-enable (startClient())
+
+    %% Composite operational state with concurrency: Ready flow || Key distribution loop
+    state OPERATIONAL {
+        direction TB
+        %% Region 1: User readiness / password banner flow
+        state ReadyFlow {
+            [*] --> READY
+            READY --> SAVE_PASSWORD: random password present
+            SAVE_PASSWORD --> READY: user saved password
+        }
+        --
+        %% Region 2: Key distribution periodic task
+        [*] --> KD_IDLE
+        KD_IDLE --> KD_SAMPLE: interval tick (10s)
+        KD_SAMPLE --> KD_FETCH: sample rooms have candidates
+        KD_SAMPLE --> KD_IDLE: no rooms to process
+        KD_FETCH --> KD_PROVIDE: usersWaitingForE2EKeys found
+        KD_FETCH --> KD_IDLE: none waiting
+        KD_PROVIDE --> KD_IDLE: POST success / handled
+    }
+
+    note right of OPERATIONAL
+        Two concurrent regions:
+        1) ReadyFlow manages READY <-> SAVE_PASSWORD
+        2) KeyDistribution loop runs every 10s
+        Loop exits implicitly when leaving OPERATIONAL
+    end note
+
+    class NOT_STARTED,DISABLED normal
+    class LOADING_KEYS action
+    class ENTER_PASSWORD warning
+    class ERROR error

@@ -1,0 +1,72 @@
+stateDiagram-v2
+    direction TB
+
+    %% State styling definitions
+    classDef normal fill:#eef,stroke:#336,stroke-width:1px
+    classDef action fill:#e8ffe8,stroke:#2a6,stroke-width:1px
+    classDef warning fill:#fff4d6,stroke:#c90,stroke-width:1px
+    classDef error fill:#ffe6e6,stroke:#c33,stroke-width:1px
+
+    %% Flow start
+    [*] --> NOT_STARTED: init E2E instance
+
+    %% Start / stop
+    NOT_STARTED --> LOADING_KEYS: startClient()
+    NOT_STARTED --> DISABLED: stopClient()
+
+    %% Loading phase
+    LOADING_KEYS --> ENTER_PASSWORD: need user password / show password banner + modal
+    LOADING_KEYS --> READY: keys loaded from local & server
+    LOADING_KEYS --> READY: new keypair generated
+    LOADING_KEYS --> ERROR: fetch/import failure
+
+    %% Password entry loop
+    ENTER_PASSWORD --> LOADING_KEYS: password accepted / private key decrypted
+    ENTER_PASSWORD --> ENTER_PASSWORD: wrong password (toast errors)
+    ENTER_PASSWORD --> ERROR: unrecoverable error
+
+    %% Ready & save password banner
+    READY --> SAVE_PASSWORD: random password present -> show SavePassword banner + modal
+    SAVE_PASSWORD --> READY: user confirms save (modal confirm)
+
+    %% Disable
+    READY --> DISABLED: stopClient()
+    SAVE_PASSWORD --> DISABLED: stopClient()
+
+    %% Runtime errors
+    READY --> ERROR: runtime error
+    SAVE_PASSWORD --> ERROR: runtime error
+
+    %% Recovery paths
+    ERROR --> NOT_STARTED: restart flow (startClient())
+    DISABLED --> NOT_STARTED: re-enable (startClient())
+
+    %% Composite example (minimal placeholder) for NOT_STARTED internal idle
+    state NOT_STARTED {
+        [*] --> idle
+        idle --> [*]
+    }
+
+    %% Notes for key phases
+    note right of LOADING_KEYS
+        Fetch or generate RSA keys
+        Maybe persist encoded private key to server
+        Decide if password required
+    end note
+
+    note right of ENTER_PASSWORD
+        Banner+Modal: EnterE2EPasswordModal
+        User attempts decrypt private key
+        Toast on failure
+    end note
+
+    note right of SAVE_PASSWORD
+        Banner+Modal: SaveE2EPasswordModal
+        Prompt user to store random password
+    end note
+
+    %% Class assignments
+    class NOT_STARTED,READY,DISABLED normal
+    class LOADING_KEYS action
+    class ENTER_PASSWORD,SAVE_PASSWORD warning
+    class ERROR error

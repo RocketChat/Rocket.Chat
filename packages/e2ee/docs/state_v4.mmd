@@ -1,0 +1,61 @@
+stateDiagram-v2
+    direction TB
+
+    classDef normal fill:#eef,stroke:#336,stroke-width:1px
+    classDef action fill:#e8ffe8,stroke:#2a6,stroke-width:1px
+    classDef warning fill:#fff4d6,stroke:#c90,stroke-width:1px
+    classDef error fill:#ffe6e6,stroke:#c33,stroke-width:1px
+
+    [*] --> NOT_STARTED: init E2E instance
+    NOT_STARTED --> LOADING_KEYS: startClient()
+    NOT_STARTED --> DISABLED: stopClient()
+
+    LOADING_KEYS --> ENTER_PASSWORD: need user password
+    LOADING_KEYS --> OPERATIONAL: keys loaded / new keypair
+    LOADING_KEYS --> ERROR: fetch/import failure
+
+    ENTER_PASSWORD --> LOADING_KEYS: password accepted / private key decrypted
+    ENTER_PASSWORD --> ENTER_PASSWORD: wrong password (retry)
+    ENTER_PASSWORD --> ERROR: unrecoverable error
+
+    OPERATIONAL --> DISABLED: stopClient()
+    OPERATIONAL --> ERROR: runtime error (global)
+
+    ERROR --> NOT_STARTED: restart (startClient())
+    DISABLED --> NOT_STARTED: re-enable (startClient())
+
+    state OPERATIONAL {
+        direction TB
+        state ReadyFlow {
+            [*] --> READY
+            READY --> SAVE_PASSWORD: random password present
+            SAVE_PASSWORD --> READY: user saved password
+            READY --> ERROR: decrypt / subscription failure
+            SAVE_PASSWORD --> ERROR: modal / banner failure
+        }
+        --
+        [*] --> KD_IDLE
+        KD_IDLE --> KD_SAMPLE: interval tick (10s)
+        KD_SAMPLE --> KD_FETCH: rooms sampled
+        KD_SAMPLE --> KD_IDLE: none to process
+        KD_FETCH --> KD_PROVIDE: candidates found
+        KD_FETCH --> KD_IDLE: none waiting
+        KD_PROVIDE --> KD_IDLE: POST success
+        
+        %% Error transitions inside key distribution loop
+        KD_IDLE --> ERROR: interval setup fail
+        KD_SAMPLE --> ERROR: sampling error
+        KD_FETCH --> ERROR: fetch usersWaitingForE2EKeys fail
+        KD_PROVIDE --> ERROR: provide keys POST fail
+    }
+
+    note right of OPERATIONAL
+        OPERATIONAL has two concurrent regions.
+        Each internal state can surface errors directly
+        to ERROR for unified recovery.
+    end note
+
+    class NOT_STARTED,DISABLED normal
+    class LOADING_KEYS action
+    class ENTER_PASSWORD warning
+    class ERROR error

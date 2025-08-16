@@ -1,0 +1,42 @@
+stateDiagram-v2
+    direction TB
+    %% External events / triggers noted after colon
+    [*] --> NOT_STARTED: init E2E instance
+    NOT_STARTED --> LOADING_KEYS: startClient()
+    NOT_STARTED --> DISABLED: stopClient()
+
+    LOADING_KEYS --> ENTER_PASSWORD: need user password
+    LOADING_KEYS --> READY: keys loaded
+    LOADING_KEYS --> READY: new keys created
+    LOADING_KEYS --> ERROR: fetch/import failure
+
+    ENTER_PASSWORD --> LOADING_KEYS: password accepted
+    ENTER_PASSWORD --> ENTER_PASSWORD: wrong password
+    ENTER_PASSWORD --> ERROR: unrecoverable error
+
+    READY --> SAVE_PASSWORD: random password present
+    SAVE_PASSWORD --> READY: user saved password
+
+    READY --> DISABLED: stopClient()
+    SAVE_PASSWORD --> DISABLED: stopClient()
+
+    READY --> ERROR: runtime error
+    SAVE_PASSWORD --> ERROR: runtime error
+
+    ERROR --> NOT_STARTED: restart
+    DISABLED --> NOT_STARTED: startClient()
+
+    state NOT_STARTED {
+        [*] --> idle
+        idle --> [*]
+    }
+
+    note right of LOADING_KEYS
+        Fetch/generate keys
+        Maybe persist encoded key
+    end note
+
+    note right of SAVE_PASSWORD
+        Banner + modal prompts user
+        to store random password
+    end note
