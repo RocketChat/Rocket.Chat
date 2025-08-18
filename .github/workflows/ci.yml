@@ -177,7 +177,9 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: homeserver
-          path: homeserver
+          path: /tmp/homeserver
+          
+      - run: ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -251,7 +253,7 @@ jobs:
 
   build:
     name: 📦 Meteor Build - coverage
-    needs: [release-versions, packages-build]
+    needs: [release-versions, packages-build, build-homeserver]
     runs-on: ubuntu-24.04
 
     steps:
@@ -276,7 +278,8 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: homeserver
-          path: homeserver
+          path: /tmp/homeserver
+      - run: ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       - uses: ./.github/actions/meteor-build
         with:
@@ -362,7 +365,7 @@ jobs:
 
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
-    needs: [build, release-versions, build-matrix-rust-bindings-for-alpine]
+    needs: [build, release-versions, build-matrix-rust-bindings-for-alpine, build-homeserver]
     runs-on: ubuntu-24.04
 
     env:
@@ -382,7 +385,8 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: homeserver
-          path: homeserver
+          path: /tmp/homeserver
+      - run: ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
