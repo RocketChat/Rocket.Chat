@@ -21,7 +21,7 @@ import {
 	joinVectorAndEcryptedData,
 	splitVectorAndEcryptedData,
 	encryptAES,
-	decryptAES,
+	// decryptAES,
 	// generateRSAKey,
 	// exportJWKKey,
 	// importRSAKey,
@@ -635,7 +635,7 @@ class E2E extends Emitter {
 			if (!masterKey) {
 				throw new Error('Error getting master key');
 			}
-			const privKey = await decryptAES(vector, masterKey, cipherText);
+			const privKey = await this.e2ee.codec.crypto.decryptAesCbc(masterKey, vector, cipherText);
 			const privateKey = toString(privKey) as string;
 
 			if (this.db_public_key && privateKey) {
@@ -665,7 +665,7 @@ class E2E extends Emitter {
 			if (!masterKey) {
 				throw new Error('Error getting master key');
 			}
-			const privKey = await decryptAES(vector, masterKey, cipherText);
+			const privKey = await this.e2ee.codec.crypto.decryptAesCbc(masterKey, vector, cipherText);
 			return toString(privKey);
 		} catch {
 			this.setState(E2EEState.ENTER_PASSWORD);
