@@ -1,6 +1,11 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
-import { validateForbiddenErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
+import type { FilterOperators } from 'mongodb';
 
 import { API } from '../../../../../app/api/server';
 import {
@@ -9,13 +14,12 @@ import {
 	GETOutboundProviderBadRequestErrorSchema,
 	GETOutboundProviderMetadataSchema,
 	POSTOutboundMessageParams,
-	POSTOutboundMessageErrorSchema,
 	POSTOutboundMessageSuccessSchema,
 } from '../outboundcomms/rest';
 import { outboundMessageProvider } from './lib/outbound';
 import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { callbacks } from '../../../../../lib/callbacks';
+import { restrictDepartmentsQuery } from '../lib/restrictQuery';
 
 const outboundCommsEndpoints = API.v1
 	.get(
@@ -68,7 +72,7 @@ const outboundCommsEndpoints = API.v1
 		{
 			response: {
 				200: POSTOutboundMessageSuccessSchema,
-				400: POSTOutboundMessageErrorSchema,
+				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
 			},
@@ -83,14 +87,14 @@ const outboundCommsEndpoints = API.v1
 
 			// Case 1: Check department and check if agent is in department
 			if (departmentId) {
-				let query = { _id: departmentId };
+				let query: FilterOperators<ILivechatDepartment> = { _id: departmentId };
 				if (!(await hasPermissionAsync(this.userId, 'outbound.can-assign-queues'))) {
-					query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId: this.userId });
+					query = await restrictDepartmentsQuery({ originalQuery: query, userId: this.userId });
 				}
 
 				const department = await LivechatDepartment.findOne<Pick<ILivechatDepartment, '_id' | 'enabled'>>(query, { _id: 1, enabled: 1 });
 				if (!department?.enabled) {
-					throw new Error('error-invalid-department');
+					return API.v1.failure('error-invalid-department');
 				}
 
 				// Case 2: Agent & department: if agent is present, agent must be in department
@@ -100,14 +104,14 @@ const outboundCommsEndpoints = API.v1
 							// Override agentId when user has permission to assign self only
 							this.bodyParams.agentId = this.userId;
 						} else {
-							return API.v1.forbidden();
+							return API.v1.forbidden('afdsfads');
 						}
 					}
 
 					// On here, we take a shortcut: if the user is here, we assume it's an agent (and we assume the collection is kept up to date :) )
 					const agent = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(this.bodyParams.agentId!, departmentId);
 					if (!agent) {
-						throw new Error('error-agent-not-in-department');
+						return API.v1.failure('error-agent-not-in-department');
 					}
 				}
 				// Case 3: Agent & no department: if agent is present and there's no department, agent must be an agent
@@ -116,13 +120,13 @@ const outboundCommsEndpoints = API.v1
 					if (await hasPermissionAsync(this.userId, 'outbound.can-assign-self-only')) {
 						this.bodyParams.agentId = this.userId;
 					} else {
-						return API.v1.forbidden();
+						return API.v1.forbidden('asdfadfdas');
 					}
 				}
 
 				const agent = await Users.findOneAgentById(this.bodyParams.agentId!, { projection: { _id: 1 } });
 				if (!agent) {
-					throw new Error('error-agent-not-in-department');
+					return API.v1.failure('error-agent-not-in-department');
 				}
 			}
 

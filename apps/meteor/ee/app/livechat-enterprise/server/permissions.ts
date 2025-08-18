@@ -21,7 +21,7 @@ export const omnichannelEEPermissions = [
 	{ _id: 'block-livechat-contact', roles: [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole] },
 	{ _id: 'unblock-livechat-contact', roles: [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole] },
 	{ _id: 'outbound.send-messages', roles: [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole] },
-	{ _id: 'outbound.can-assign-queues', roles: [adminRole, livechatManagerRole, livechatMonitorRole] },
+	{ _id: 'outbound.can-assign-queues', roles: [adminRole, livechatManagerRole] },
 	{ _id: 'outbound.can-assign-any-agent', roles: [adminRole, livechatManagerRole, livechatMonitorRole] },
 	{ _id: 'outbound.can-assign-self-only', roles: [livechatAgentRole] },
 ];

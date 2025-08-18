@@ -15,8 +15,8 @@ async function getDepartmentsFromUserRoles(user: string): Promise<string[]> {
 	return (await LivechatDepartmentAgents.findByAgentId(user).toArray()).map((department) => department.departmentId);
 }
 
-const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: process.env.TEST_MODE ? 1 : 10000 });
-const memoizedGetDepartmentsFromUserRoles = mem(getDepartmentsFromUserRoles, { maxAge: process.env.TEST_MODE ? 1 : 10000 });
+export const memoizedGetUnitFromUserRoles = mem(getUnitsFromUserRoles, { maxAge: process.env.TEST_MODE ? 1 : 10000 });
+export const memoizedGetDepartmentsFromUserRoles = mem(getDepartmentsFromUserRoles, { maxAge: process.env.TEST_MODE ? 1 : 10000 });
 
 async function hasUnits(): Promise<boolean> {
 	// @ts-expect-error - this prop is injected dynamically on ee license
