@@ -23,14 +23,6 @@ export class FederationHomeContent {
 		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
 	}
 
-	get lastUserMessageNotSequential(): Locator {
-		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
-	}
-
-	get typingIndicator(): Locator {
-		return this.page.locator('.rc-message-box__activity');
-	}
-
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.locator('button[aria-label="Send"]').click();
@@ -45,13 +37,6 @@ export class FederationHomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionEditMessage.click();
 		await this.page.locator('[name="msg"]').fill(message);
-		await this.page.keyboard.press('Enter');
-	}
-
-	async editLastThreadMessage(message: string): Promise<void> {
-		await this.openLastThreadMessageMenu();
-		await this.page.locator('[data-qa-id="edit-message"]').click();
-		await this.page.locator('[name="msg"]').last().fill(message);
 		await this.page.keyboard.press('Enter');
 	}
 
@@ -106,34 +91,8 @@ export class FederationHomeContent {
 		await this.page.locator('button[aria-label="Send"]').click();
 	}
 
-	get btnModalCancel(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
-	}
-
-	get modalFilePreview(): Locator {
-		return this.page.locator(
-			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
-		);
-	}
-
 	get btnModalConfirm(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
-	}
-
-	get descriptionInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
-	}
-
-	get getLastFileAttachmentContent(): Locator {
-		return this.page.locator('.rcx-attachment__content').last();
-	}
-
-	get getLastFileName(): Locator {
-		return this.page.locator('.rcx-message-attachment').last();
-	}
-
-	get fileNameInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
 	}
 
 	get lastMessageFileName(): Locator {
@@ -149,10 +108,6 @@ export class FederationHomeContent {
 			.locator('div.thread-list ul.thread [data-qa-type="message"]:last-child .rcx-message-container')
 			.last()
 			.locator(`div[title="${filename}"]`);
-	}
-
-	async getLastVideoMessageFileName(filename: string): Promise<Locator> {
-		return this.getLastFileMessageByFileName(filename);
 	}
 
 	get lastFileMessage(): Locator {
@@ -181,10 +136,6 @@ export class FederationHomeContent {
 
 	get btnOptionStarMessage(): Locator {
 		return this.page.locator('[data-qa-id="star-message"]');
-	}
-
-	get btnOptionFileUpload(): Locator {
-		return this.page.locator('[data-qa-id="file-upload"]');
 	}
 
 	get btnVideoMessage(): Locator {
@@ -225,14 +176,6 @@ export class FederationHomeContent {
 
 	get lastThreadMessageText(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
-	}
-
-	get lastThreadMessagePreviewText(): Locator {
-		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
-	}
-
-	get threadInputMessage(): Locator {
-		return this.page.getByRole('dialog').locator('[name="msg"]').last();
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
