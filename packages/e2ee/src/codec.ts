@@ -170,10 +170,18 @@ export abstract class BaseKeyCodec {
 		return { privateJWK, publicJWK };
 	}
 
+	getRandomUint8Array(length: number): Uint8Array<ArrayBuffer> {
+		return this.#crypto.getRandomUint8Array(new Uint8Array(length));
+	}
+
+	getRandomUint32Array(length: number): Uint32Array<ArrayBuffer> {
+		return this.#crypto.getRandomUint32Array(new Uint32Array(length));
+	}
+
 	async encodePrivateKey(privateKeyJwk: JsonWebKey, masterKey: CryptoKey): Promise<EncodedPrivateKeyV1> {
-		const { getRandomUint8Array, encodeBase64, encryptAesCbc, encodeUtf8 } = this.#crypto;
+		const { encodeBase64, encryptAesCbc, encodeUtf8 } = this.#crypto;
 		const IV_LENGTH = 16;
-		const iv = getRandomUint8Array(new Uint8Array(IV_LENGTH));
+		const iv = this.getRandomUint8Array(IV_LENGTH);
 		const data = encodeUtf8(JSON.stringify(privateKeyJwk));
 		const ct = await encryptAesCbc(masterKey, iv, data);
 
@@ -243,11 +251,11 @@ export abstract class BaseKeyCodec {
 
 	// Legacy helpers replicate existing Rocket.Chat behavior (vector + ciphertext joined) for staged migration.
 	async legacyEncrypt(privateKeyJwkString: string, password: string, saltStr: string): Promise<Uint8Array<ArrayBuffer>> {
-		const { getRandomUint8Array, encodeUtf8, encryptAesCbc } = this.#crypto;
+		const { encodeUtf8, encryptAesCbc } = this.#crypto;
 		const IV_LENGTH = 16;
 		const salt = encodeUtf8(saltStr);
 		const masterKey = await this.deriveMasterKey(salt, password);
-		const iv = getRandomUint8Array(new Uint8Array(IV_LENGTH));
+		const iv = this.getRandomUint8Array(IV_LENGTH);
 		const data = encodeUtf8(privateKeyJwkString);
 		const ct = await encryptAesCbc(masterKey, iv, data);
 		const ctBytes = new Uint8Array(ct);
@@ -280,8 +288,7 @@ export abstract class BaseKeyCodec {
 
 	async generateMnemonicPhrase(length: number): Promise<string> {
 		const { v1 } = await import('./word-list.ts');
-		const randomBuffer = new Uint32Array(length);
-		this.#crypto.getRandomUint32Array(randomBuffer);
+		const randomBuffer = this.getRandomUint32Array(length);
 		return Array.from(randomBuffer, (value) => v1[value % v1.length]).join(' ');
 	}
 }

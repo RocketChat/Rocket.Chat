@@ -10,6 +10,7 @@
 	},
 	"rules": {
 		"oxc/no-map-spread": "error",
-		"oxc/no-async-await": "allow"
+		"oxc/no-async-await": "allow",
+		"eslint/id-length": "allow"
 	}
 }

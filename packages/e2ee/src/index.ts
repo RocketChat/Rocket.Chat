@@ -1,5 +1,5 @@
+import { type Optional, type Result, err, ok } from './utils.ts';
 import type { BaseKeyCodec } from './codec.ts';
-import type { Optional } from './utils.ts';
 
 export { BaseKeyCodec } from './codec.ts';
 
@@ -34,6 +34,36 @@ export abstract class BaseE2EE {
 		this.#storage = storage;
 		this.#service = service;
 		this.#codec = codec;
+	}
+
+	async getMasterKey(password: string, userId: string): Promise<Result<CryptoKey, Error>> {
+		if (!password) {
+			return err(new Error('You should provide a password'));
+		}
+
+		// First, create a PBKDF2 "key" containing the password
+		const baseKey = await (async () => {
+			try {
+				return ok(await this.#codec.createBaseKey(password));
+			} catch (error) {
+				return err(new Error(`Error creating a key based on user password: ${error}`));
+			}
+		})();
+
+		if (!baseKey.isOk) {
+			return baseKey;
+		}
+
+		if (!userId) {
+			throw new Error('User not found');
+		}
+
+		// Derive a key from the password
+		try {
+			return ok(await this.#codec.deriveKey(userId, baseKey.value));
+		} catch (error) {
+			return err(new Error(`Error deriving baseKey: ${error}`));
+		}
 	}
 
 	async getKeysFromLocalStorage(): Promise<Optional<KeyPair>> {

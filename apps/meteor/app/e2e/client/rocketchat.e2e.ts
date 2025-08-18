@@ -526,8 +526,7 @@ class E2E extends Emitter {
 
 	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
 		const masterKey = await this.getMasterKey(password);
-
-		const vector = this.e2ee.codec.crypto.getRandomUint8Array(new Uint8Array(16));
+		const vector = this.e2ee.codec.getRandomUint8Array(16);
 		try {
 			if (!masterKey) {
 				throw new Error('Error getting master key');
@@ -542,19 +541,6 @@ class E2E extends Emitter {
 	}
 
 	async getMasterKey(password: string): Promise<void | CryptoKey> {
-		if (password == null) {
-			alert('You should provide a password');
-		}
-
-		// First, create a PBKDF2 "key" containing the password
-		let baseKey;
-		try {
-			baseKey = await this.e2ee.codec.createBaseKey(password);
-		} catch (error) {
-			this.setState(E2EEState.ERROR);
-			return this.error('Error creating a key based on user password: ', error);
-		}
-
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -562,13 +548,14 @@ class E2E extends Emitter {
 			return this.error('User not found');
 		}
 
-		// Derive a key from the password
-		try {
-			return await this.e2ee.codec.deriveKey(userId, baseKey);
-		} catch (error) {
-			this.setState(E2EEState.ERROR);
-			return this.error('Error deriving baseKey: ', error);
+		const res = await this.e2ee.getMasterKey(password, userId);
+
+		if (res.isOk) {
+			return res.value;
 		}
+
+		this.setState(E2EEState.ERROR);
+		return this.error('Error getting master key: ', res.error);
 	}
 
 	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string) => void) {
