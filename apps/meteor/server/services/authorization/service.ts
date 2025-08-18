@@ -189,4 +189,16 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 		return true;
 	}
+
+	async hasAnyRole(userId: IUser['_id'], roleIds: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> {
+		if (!Array.isArray(roleIds)) {
+			throw new Error('error-invalid-arguments');
+		}
+
+		if (!userId || userId === '') {
+			return false;
+		}
+
+		return Roles.isUserInRoles(userId, roleIds, scope);
+	}
 }
