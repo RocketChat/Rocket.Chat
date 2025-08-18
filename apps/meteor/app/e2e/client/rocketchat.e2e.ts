@@ -85,6 +85,7 @@ class E2E extends Emitter {
 				remove: (keyName) => Promise.resolve(Accounts.storageLocation.removeItem(keyName)),
 			},
 			{
+				userId: () => Promise.resolve(Meteor.userId()),
 				fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
 			},
 		);
@@ -541,14 +542,7 @@ class E2E extends Emitter {
 	}
 
 	async getMasterKey(password: string): Promise<void | CryptoKey> {
-		const userId = Meteor.userId();
-
-		if (!userId) {
-			this.setState(E2EEState.ERROR);
-			return this.error('User not found');
-		}
-
-		const res = await this.e2ee.getMasterKey(password, userId);
+		const res = await this.e2ee.getMasterKey(password);
 
 		if (res.isOk) {
 			return res.value;

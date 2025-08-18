@@ -4,6 +4,9 @@ import E2EE from '../index.ts';
 import type { KeyPair, KeyService } from '@rocket.chat/e2ee';
 
 class MockedKeyService implements KeyService {
+	userId() {
+		return Promise.resolve('mocked_user_id');
+	}
 	fetchMyKeys(): Promise<KeyPair> {
 		return Promise.resolve({
 			public_key: 'mocked_public_key',

@@ -10,6 +10,7 @@ export interface KeyStorage {
 }
 
 export interface KeyService {
+	userId: () => Promise<string | null>;
 	fetchMyKeys(): Promise<KeyPair>;
 }
 
@@ -36,7 +37,7 @@ export abstract class BaseE2EE {
 		this.#codec = codec;
 	}
 
-	async getMasterKey(password: string, userId: string): Promise<Result<CryptoKey, Error>> {
+	async getMasterKey(password: string): Promise<Result<CryptoKey, Error>> {
 		if (!password) {
 			return err(new Error('You should provide a password'));
 		}
@@ -54,8 +55,10 @@ export abstract class BaseE2EE {
 			return baseKey;
 		}
 
+		const userId = await this.#service.userId();
+
 		if (!userId) {
-			throw new Error('User not found');
+			return err(new Error('User not found'));
 		}
 
 		// Derive a key from the password
