@@ -158,14 +158,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: RocketChat/homeserver
-          path: ${{ github.workspace }}/homeserver
+          path: /tmp/homeserver
 
       - uses: oven-sh/setup-bun@v2
       - run: |
-          cd ${{ github.workspace }}/homeserver
+          cd /tmp/homeserver
           bun install
           bun run build
-          ln -s ${{ github.workspace }}/homeserver ${{ github.workspace }}/Rocket.Chat/homeserver
+          ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -263,14 +263,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: RocketChat/homeserver
-          path: ${{ github.workspace }}/homeserver
+          path: /tmp/homeserver
 
       - uses: oven-sh/setup-bun@v2
       - run: |
-          cd ${{ github.workspace }}/homeserver
+          cd /tmp/homeserver
           bun install
           bun run build
-          ln -s ${{ github.workspace }}/homeserver ${{ github.workspace }}/Rocket.Chat/homeserver
+          ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       - uses: ./.github/actions/meteor-build
         with:
@@ -376,14 +376,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: RocketChat/homeserver
-          path: ${{ github.workspace }}/homeserver
+          path: /tmp/homeserver
 
       - uses: oven-sh/setup-bun@v2
       - run: |
-          cd ${{ github.workspace }}/homeserver
+          cd /tmp/homeserver
           bun install
           bun run build
-          ln -s ${{ github.workspace }}/homeserver ${{ github.workspace }}/Rocket.Chat/homeserver
+          ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
