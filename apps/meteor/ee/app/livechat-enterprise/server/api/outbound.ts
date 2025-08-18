@@ -1,3 +1,4 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import { validateForbiddenErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
@@ -14,6 +15,7 @@ import {
 import { outboundMessageProvider } from './lib/outbound';
 import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClass';
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
+import { callbacks } from '../../../../../lib/callbacks';
 
 const outboundCommsEndpoints = API.v1
 	.get(
@@ -81,11 +83,12 @@ const outboundCommsEndpoints = API.v1
 
 			// Case 1: Check department and check if agent is in department
 			if (departmentId) {
+				let query = { _id: departmentId };
 				if (!(await hasPermissionAsync(this.userId, 'outbound.can-assign-queues'))) {
-					return API.v1.forbidden();
+					query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId: this.userId });
 				}
 
-				const department = await LivechatDepartment.findOneById(departmentId, { _id: 1 });
+				const department = await LivechatDepartment.findOne<Pick<ILivechatDepartment, '_id' | 'enabled'>>(query, { _id: 1, enabled: 1 });
 				if (!department?.enabled) {
 					throw new Error('error-invalid-department');
 				}
