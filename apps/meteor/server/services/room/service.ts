@@ -4,6 +4,7 @@ import { type AtLeast, type IRoom, type IUser, isOmnichannelRoom, isRoomWithJoin
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { FederationActions } from './hooks/BeforeFederationActions';
+import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
@@ -11,15 +12,14 @@ import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUser
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { createDirectMessage } from '../../methods/createDirectMessage';
-import { getFederationVersion } from '../federation/utils';
-import { saveRoomName } from '../../../app/channel-settings/server';
+import { addRoomLeader } from '../../methods/addRoomLeader';
 import { addRoomModerator } from '../../methods/addRoomModerator';
 import { addRoomOwner } from '../../methods/addRoomOwner';
-import { addRoomLeader } from '../../methods/addRoomLeader';
-import { removeRoomOwner } from '../../methods/removeRoomOwner';
+import { createDirectMessage } from '../../methods/createDirectMessage';
 import { removeRoomLeader } from '../../methods/removeRoomLeader';
 import { removeRoomModerator } from '../../methods/removeRoomModerator';
+import { removeRoomOwner } from '../../methods/removeRoomOwner';
+import { getFederationVersion } from '../federation/utils';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -171,32 +171,37 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		await saveRoomName(roomId, name, user);
 	}
 
-	public async addUserRoleRoomScoped(fromUserId: string, userId: string, roomId: string,role: 'moderator' | 'owner' | 'leader' | 'user'): Promise<void> {
+	public async addUserRoleRoomScoped(
+		fromUserId: string,
+		userId: string,
+		roomId: string,
+		role: 'moderator' | 'owner' | 'leader' | 'user',
+	): Promise<void> {
 		if (role === 'moderator') {
 			await addRoomModerator(fromUserId, roomId, userId);
 			return;
 		}
-		
+
 		if (role === 'owner') {
 			await addRoomOwner(fromUserId, roomId, userId);
 			return;
 		}
-		
+
 		if (role === 'leader') {
 			await addRoomLeader(fromUserId, roomId, userId);
 			return;
 		}
-		
+
 		const sub = await Subscriptions.findByUserIdAndRoomIds(userId, [roomId], { projection: { roles: 1 } }).next();
 		if (!sub) {
 			throw new Error('user and room subsciption not found');
 		}
-		
+
 		if (!sub.roles) {
 			return; // 'user' role essentially
 		}
 
-		for (const currentRole of sub.roles) {
+		for await (const currentRole of sub.roles) {
 			if (currentRole === 'owner') {
 				await removeRoomOwner(fromUserId, roomId, userId);
 				return;

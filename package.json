@@ -80,7 +80,8 @@
 		"lodash": "4.17.21",
 		"mongodb": "6.10.0",
 		"cross-spawn": "7.0.6",
-		"pino": "8.21.0"
+		"pino": "8.21.0",
+		"@napi-rs/pinyin": "1.7.0"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.7",

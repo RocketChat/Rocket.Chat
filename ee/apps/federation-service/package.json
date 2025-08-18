@@ -40,7 +40,8 @@
 	"devDependencies": {
 		"@types/bun": "latest",
 		"@types/express": "^4.17.17",
-		"typescript": "^5.3.0"
+		"typescript": "^5.3.0",
+		"eslint": "~8.45.0"
 	},
 	"keywords": [
 		"rocketchat"
