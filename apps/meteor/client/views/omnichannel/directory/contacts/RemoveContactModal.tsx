@@ -9,10 +9,11 @@ import { useTranslation } from 'react-i18next';
 type RemoveContactModalProps = {
 	_id: string;
 	name: string;
+	channelsCount: number;
 	onClose: () => void;
 };
 
-const RemoveContactModal = ({ _id, name, onClose }: RemoveContactModalProps): ReactElement => {
+const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContactModalProps): ReactElement => {
 	const { t } = useTranslation();
 	const [text, setText] = useState<string>('');
 
@@ -50,10 +51,8 @@ const RemoveContactModal = ({ _id, name, onClose }: RemoveContactModalProps): Re
 			data-qa-id='delete-contact-modal'
 			confirmDisabled={text !== 'delete'}
 		>
-			<Box mbe={16}>
-				`Are you sure you want to delete ${name} and all ${4} of their conversation history? To confirm, type delete into the field below`
-			</Box>
-			<Box mbe={16}>
+			<Box mbe={16}>{t('Are_you_sure_delete_contact', { contactName: name, channelsCount })}</Box>
+			<Box mbe={16} display='flex' justifyContent='stretch'>
 				<Input
 					value={text}
 					name='confirmContactRemoval'

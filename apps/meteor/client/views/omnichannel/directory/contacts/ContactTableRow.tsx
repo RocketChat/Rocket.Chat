@@ -44,7 +44,7 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 			height='40px'
 			qa-user-id={_id}
 			rcx-show-call-button-on-hover
-			onClick={onRowClick(_id)}
+			// onClick={onRowClick(_id)}
 		>
 			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 			<GenericTableCell withTruncatedText>
@@ -65,7 +65,7 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 				</GenericTableCell>
 			)}
 			<GenericTableCell withTruncatedText>
-				<ContactItemMenu _id={_id} name={name} />
+				<ContactItemMenu _id={_id} name={name} channels={channels} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);
