@@ -82,6 +82,7 @@
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.7",
+		"hono": "^4.7.9",
 		"node-gyp": "^10.2.0"
 	}
 }
