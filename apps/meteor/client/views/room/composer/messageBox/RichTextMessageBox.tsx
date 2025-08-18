@@ -18,7 +18,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent, SetStateAction, Dispatch } from 'react';
+import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
 import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState, useEffect, useMemo } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
@@ -31,7 +31,7 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { createRichTextComposerAPI } from '../../../../../app/ui-message/client/messageBox/createRichTextComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { getTextLines, resolveComposerBox, type CursorHistory } from '../../../../../app/ui-message/client/messageBox/messageStateHandler';
+import { getTextLines } from '../../../../../app/ui-message/client/messageBox/messageStateHandler';
 import { getSelectionRange, setSelectionRange } from '../../../../../app/ui-message/client/messageBox/selectionRange';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useMessageListKatex, useMessageListShowColors } from '../../../../components/message/list/MessageListContext';
@@ -81,14 +81,7 @@ const reducer = (_: unknown, event: FormEvent<HTMLDivElement>): TypingState => {
 	};
 };
 
-const handleFormattingShortcut = (
-	event: KeyboardEvent,
-	formattingButtons: FormattingButton[],
-	composer: ComposerAPI,
-	setMdLines: Dispatch<SetStateAction<string[]>>,
-	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
-	parseOptions: Options,
-) => {
+const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: FormattingButton[], composer: ComposerAPI) => {
 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
 	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 
@@ -108,8 +101,6 @@ const handleFormattingShortcut = (
 	event.preventDefault();
 	composer.wrapSelection(formatter.pattern);
 
-	// Use the resolver function after the keyboard formatter shortcut
-	resolveComposerBox(event, setMdLines, setCursorHistory, parseOptions);
 	return true;
 };
 
@@ -179,7 +170,6 @@ const RichTextMessageBox = ({
 
 	// This state will update every time the input is updated
 	const [, setMdLines] = useState<string[]>([]);
-	const [, setCursorHistory] = useState<CursorHistory>({ undoStack: [], redoStack: [] });
 
 	const setLastCursorPosition = (e: React.FocusEvent<HTMLElement>) => {
 		const node = e.currentTarget as HTMLDivElement;
@@ -197,9 +187,6 @@ const RichTextMessageBox = ({
 
 		// Retrieve the value onFocus
 		setSelectionRange(node, savedPosition.selectionStart, savedPosition.selectionEnd);
-
-		// Use the resolver function after the editor receives focus
-		resolveComposerBox(e, setMdLines, setCursorHistory, parseOptions);
 
 		console.log('Restored cursor position for:', node);
 	};
@@ -249,7 +236,7 @@ const RichTextMessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createRichTextComposerAPI(node, storageID, setMdLines, setCursorHistory, parseOptions));
+			chat.setComposerAPI(createRichTextComposerAPI(node, storageID, parseOptions));
 		},
 		[chat, storageID, parseOptions],
 	);
@@ -332,17 +319,13 @@ const RichTextMessageBox = ({
 			event.preventDefault();
 			if (!isSending) {
 				chat.composer?.insertNewLine();
-				resolveComposerBox(event, setMdLines, setCursorHistory, parseOptions);
 				return false;
 			}
 			handleSendMessage();
 			return false;
 		}
 
-		if (
-			chat.composer &&
-			handleFormattingShortcut(event, [...formattingButtons], chat.composer, setMdLines, setCursorHistory, parseOptions)
-		) {
+		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
 			return;
 		}
 
@@ -369,7 +352,6 @@ const RichTextMessageBox = ({
 					if (event.altKey) {
 						setSelectionRange(input, 0, 0);
 					}
-					resolveComposerBox(input, setMdLines, setCursorHistory, parseOptions);
 				}
 
 				return;
@@ -387,7 +369,6 @@ const RichTextMessageBox = ({
 					if (event.altKey) {
 						setSelectionRange(input, input.innerText.length, input.innerText.length);
 					}
-					resolveComposerBox(input, setMdLines, setCursorHistory, parseOptions);
 				}
 			}
 		}
@@ -511,12 +492,6 @@ const RichTextMessageBox = ({
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
-
-	// This useEffect resolves the Composer after an option is selected from the popup
-	useEffect(() => {
-		const input = contentEditableRef.current as HTMLDivElement;
-		resolveComposerBox(input, setMdLines, setCursorHistory, parseOptions);
-	}, [shouldPopupPreview, parseOptions]);
 
 	return (
 		<>
