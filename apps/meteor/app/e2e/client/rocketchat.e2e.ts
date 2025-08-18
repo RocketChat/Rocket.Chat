@@ -438,8 +438,7 @@ class E2E extends Emitter {
 		this.log('-> Stop Client');
 		this.closeAlert();
 
-		Accounts.storageLocation.removeItem('public_key');
-		Accounts.storageLocation.removeItem('private_key');
+		await this.e2ee.removeKeysFromLocalStorage();
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.publicKey = undefined;

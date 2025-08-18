@@ -45,6 +45,11 @@ export abstract class BaseE2EE {
 		};
 	}
 
+	async removeKeysFromLocalStorage(): Promise<void> {
+		await this.#storage.remove('public_key');
+		await this.#storage.remove('private_key');
+	}
+
 	async getKeysFromService(): Promise<KeyPair> {
 		const keys = await this.#service.fetchMyKeys();
 
@@ -68,7 +73,7 @@ export abstract class BaseE2EE {
 	}
 	async createRandomPassword(length: number): Promise<string> {
 		const randomPassword = await this.#codec.generateMnemonicPhrase(length);
-		this.storeRandomPassword(randomPassword);
+		await this.storeRandomPassword(randomPassword);
 		return randomPassword;
 	}
 }
