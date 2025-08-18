@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { TextAreaInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel, FieldDescription, Box } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement} from 'react';
+import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -66,7 +66,7 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 			<FieldGroup>
 				<Field>
 					<FieldLabel htmlFor={reasonForReportId}>{t('Report_reason')}</FieldLabel>
-										<FieldDescription id={`${reasonForReportId}-description`}>{t('Let_moderators_know_what_the_issue_is')}</FieldDescription>
+					<FieldDescription id={`${reasonForReportId}-description`}>{t('Let_moderators_know_what_the_issue_is')}</FieldDescription>
 					<FieldRow>
 						<TextAreaInput
 							id={reasonForReportId}
@@ -81,9 +81,9 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 						/>
 					</FieldRow>
 					{errors.description && (
-  						<FieldError aria-live='assertive' id={`${reasonForReportId}-error`}>
-    						{errors.description.message}
-  						</FieldError>
+						<FieldError aria-live='assertive' id={`${reasonForReportId}-error`}>
+							{errors.description.message}
+						</FieldError>
 					)}
 				</Field>
 			</FieldGroup>
