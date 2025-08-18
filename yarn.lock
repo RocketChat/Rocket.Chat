@@ -9427,6 +9427,7 @@ __metadata:
     react-aria: "npm:~3.37.0"
     react-docgen-typescript-plugin: "npm:^1.0.8"
     react-dom: "npm:~18.3.1"
+    react-easy-crop: "npm:^5.5.0"
     react-error-boundary: "npm:^3.1.4"
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
@@ -29567,6 +29568,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"normalize-wheel@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "normalize-wheel@npm:1.0.1"
+  checksum: 10/7a10d4026e64549654c7ec4c08b99e73f857c6f39b9d864e1c5c1fb2c9708e48d6eb388350dbec08407d82828a602ab5366d6cf4d766d70c2aadfadec9d31f78
+  languageName: node
+  linkType: hard
+
 "normalize.css@npm:^8.0.1":
   version: 8.0.1
   resolution: "normalize.css@npm:8.0.1"
@@ -32689,6 +32697,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-easy-crop@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "react-easy-crop@npm:5.5.0"
+  dependencies:
+    normalize-wheel: "npm:^1.0.1"
+    tslib: "npm:^2.0.1"
+  peerDependencies:
+    react: ">=16.4.0"
+    react-dom: ">=16.4.0"
+  checksum: 10/388723bc7a7eda9f40ab0a001ebd66461629855e9fc3819c21ebfc37ac4b368751b0de78ade7779811861b850e8a6c3bb68fd5cb24e4e07584a302fb3b64a5d4
+  languageName: node
+  linkType: hard
+
 "react-error-boundary@npm:^3.1.4":
   version: 3.1.4
   resolution: "react-error-boundary@npm:3.1.4"
@@ -33821,6 +33842,7 @@ __metadata:
     "@types/node": "npm:~22.16.5"
     "@types/stream-buffers": "npm:^3.0.7"
     node-gyp: "npm:^10.2.0"
+    react-easy-crop: "npm:^5.5.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:~2.5.8"
     typescript: "npm:~5.9.3"
