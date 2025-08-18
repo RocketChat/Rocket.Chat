@@ -722,4 +722,34 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		await this.homeserverServices.room.setRoomTopic(matrixRoomId, userId, topic);
 	}
+	
+	async addUserRoleRoomScoped(rid: string, senderId: string, userId: string, role: 'moderator' | 'owner' | 'leader' | 'user'): Promise<void> {
+		if (!this.homeserverServices) {
+			this.logger.warn('Homeserver services not available, skipping user role room scoped');
+			return;
+		}
+		
+		if (role === 'leader') {
+			throw new Error('Leader role is not supported');
+		}
+		
+		const matrixRoomId = await MatrixBridgedRoom.getExternalRoomId(rid);
+		if (!matrixRoomId) {
+			throw new Error(`No Matrix room mapping found for room ${rid}`);
+		}
+		
+		const matrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
+		if (!matrixUserId) {
+			throw new Error(`No Matrix user ID mapping found for user ${userId}`);
+		}
+		
+		const senderMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(senderId);
+		if (!senderMatrixUserId) {
+			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
+		}
+		
+		const powerLevel = role === 'owner' ? 100 : role === 'moderator' ? 50 : 0;
+		
+		await this.homeserverServices.room.setPowerLevelForUser(matrixRoomId, senderMatrixUserId, matrixUserId, powerLevel);
+	}
 }
