@@ -15,10 +15,18 @@ export function getFederationVersion(): 'matrix' | 'native' | null {
 }
 
 export function isFederationEnabled(): boolean {
+	if (getFederationVersion() === 'native') {
+		return true;
+	}
+
 	return settings.get<boolean>('Federation_Matrix_enabled');
 }
 
 export function isFederationReady(): boolean {
+	if (getFederationVersion() === 'native') {
+		return true;
+	}
+
 	return settings.get<string>('Federation_Matrix_configuration_status') === 'Valid';
 }
 

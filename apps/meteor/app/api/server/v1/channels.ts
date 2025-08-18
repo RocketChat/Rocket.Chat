@@ -57,6 +57,7 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
+import { callbacks } from '../../../../lib/callbacks';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -562,6 +563,8 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult._id, role: 'moderator' });
+
 			await addRoomModerator(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
@@ -577,6 +580,8 @@ API.v1.addRoute(
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
+
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult._id, role: 'owner' });
 
 			await addRoomOwner(this.userId, findResult._id, user._id);
 
@@ -1186,6 +1191,8 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult._id, role: 'user' });
+
 			await removeRoomModerator(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
@@ -1201,6 +1208,8 @@ API.v1.addRoute(
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
+
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult._id, role: 'user' });
 
 			await removeRoomOwner(this.userId, findResult._id, user._id);
 
