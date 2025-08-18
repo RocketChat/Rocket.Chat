@@ -15,16 +15,16 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator(`tr[data-qa-id="${name}"]`);
 	}
 
-	btnRemoveByName(name: string) {
-		return this.findRowByName(name).locator('role=button[name="remove"]');
-	}
-
 	get inputName() {
 		return this.page.locator('[name="name"]');
 	}
 
+	get fieldDepartments() {
+		return this.page.getByLabel('Departments');
+	}
+
 	get inputDepartments() {
-		return this.page.locator('[name="departments"]').locator('input[placeholder="Select an option"]');
+		return this.fieldDepartments.getByRole('textbox');
 	}
 
 	get inputMonitors() {
@@ -39,24 +39,24 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	private selectOption(name: string) {
-		return this.page.locator(`[role=option][value="${name}"]`);
+	private findOption(name: string) {
+		return this.page.locator('#position-container').getByRole('option', { name, exact: true });
 	}
 
-	public selectOptionChip(name: string) {
-		return this.page.getByRole('option', { name });
+	public findDepartmentsChipOption(name: string) {
+		return this.fieldDepartments.getByRole('option', { name, exact: true });
 	}
 
-	async selectDepartment({ name, _id }: { name: string; _id: string }) {
+	async selectDepartment(name: string) {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
-		await this.selectOption(_id).click();
+		await this.findOption(name).click();
 		await this.contextualBar.click({ position: { x: 0, y: 0 } });
 	}
 
 	async selectMonitor(option: string) {
 		await this.inputMonitors.click();
-		await this.selectOption(option).click();
+		await this.findOption(option).click();
 		await this.contextualBar.click({ position: { x: 0, y: 0 } });
 	}
 
@@ -69,12 +69,8 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator('header').locator('role=button[name="Create unit"]');
 	}
 
-	get btnCreateUnitEmptyState() {
-		return this.page.locator('.rcx-states').locator('role=button[name="Create unit"]');
-	}
-
 	get contextualBar() {
-		return this.page.locator('div[data-qa-id="units-contextual-bar"]');
+		return this.page.locator('div[role="dialog"][aria-labelledby="contextualbarTitle"]');
 	}
 
 	get btnSave() {
@@ -95,10 +91,6 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 
 	get confirmDeleteModal() {
 		return this.page.locator('dialog[data-qa-id="units-confirm-delete-modal"]');
-	}
-
-	get btnCancelDeleteModal() {
-		return this.confirmDeleteModal.locator('role=button[name="Cancel"]');
 	}
 
 	get btnConfirmDeleteModal() {

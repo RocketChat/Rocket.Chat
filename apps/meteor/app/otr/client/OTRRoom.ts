@@ -1,18 +1,17 @@
 import type { IRoom, IMessage, IUser, UserPresence } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 
-import GenericModal from '../../../client/components/GenericModal';
-import { imperativeModal } from '../../../client/lib/imperativeModal';
 import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { Messages } from '../../models/client';
+import { Messages } from '../../../client/stores';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import type { IOnUserStreamData, IOTRAlgorithm, IOTRDecrypt, IOTRRoom } from '../lib/IOTR';
@@ -180,7 +179,9 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	deleteOTRMessages(): void {
-		Messages.remove({ t: { $in: ['otr', 'otr-ack', ...Object.values(otrSystemMessages)] }, rid: this._roomId });
+		Messages.state.remove(
+			(record) => record.rid === this._roomId && !!record.t && ['otr', 'otr-ack', ...Object.values(otrSystemMessages)].includes(record.t),
+		);
 	}
 
 	end(): void {
@@ -262,9 +263,11 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
-	async encryptText(data: string | Uint8Array): Promise<string> {
+	async encryptText(data: string | Uint8Array<ArrayBuffer>): Promise<string> {
 		if (typeof data === 'string') {
-			data = new TextEncoder().encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
+			data = new TextEncoder().encode(
+				EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }),
+			) as Uint8Array<ArrayBuffer>;
 		}
 		try {
 			if (!this._sessionKey) throw new Error('Session Key not available');
@@ -291,7 +294,7 @@ export class OTRRoom implements IOTRRoom {
 					ack: Random.id((Random.fraction() + 1) * 20),
 					ts: new Date(),
 				}),
-			);
+			) as Uint8Array<ArrayBuffer>;
 			const enc = await this.encryptText(data);
 			return enc;
 		} catch (e) {
@@ -303,7 +306,7 @@ export class OTRRoom implements IOTRRoom {
 		try {
 			if (!this._sessionKey) throw new Error('Session Key not available.');
 
-			const cipherText: Uint8Array = EJSON.parse(message);
+			const cipherText: Uint8Array<ArrayBuffer> = EJSON.parse(message);
 			const data = await decryptAES(cipherText, this._sessionKey);
 			const msgDecoded: IOTRDecrypt = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(data)));
 			if (msgDecoded && typeof msgDecoded === 'object') {

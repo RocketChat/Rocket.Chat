@@ -5,9 +5,11 @@ import type { ReactElement, ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 
 import AccessibilityShortcut from './AccessibilityShortcut';
+import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import NavBar from '../../../NavBarV2';
-import Sidebar from '../../../sidebarv2';
+import NavigationRegion from '../../navigation';
+import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
 
 const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
@@ -15,7 +17,6 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 	const currentRoutePath = useCurrentRoutePath();
 	const router = useRouter();
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
-	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
 
 	const firstChannelAfterLogin = useSetting('First_Channel_After_Login');
 
@@ -50,13 +51,12 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
 				<MainLayoutStyleTags />
-				{!removeSidenav && <Sidebar />}
-				<main
-					id='main-content'
-					className={['main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
-				>
-					{children}
-				</main>
+				{!removeSidenav && (
+					<RoomsNavigationProvider>
+						<NavigationRegion />
+					</RoomsNavigationProvider>
+				)}
+				<MainContent>{children}</MainContent>
 			</Box>
 		</>
 	);

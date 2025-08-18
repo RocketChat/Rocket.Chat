@@ -28,7 +28,7 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
-import { beforeDelegateAgent } from './hooks';
+import { afterTakeInquiry, beforeDelegateAgent } from './hooks';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -48,7 +48,12 @@ type Routing = {
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 		room?: IOmnichannelRoom,
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
-	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, shouldQueue?: boolean): Promise<boolean>;
+	unassignAgent(
+		inquiry: ILivechatInquiryRecord,
+		departmentId?: string,
+		shouldQueue?: boolean,
+		agent?: SelectedAgent | null,
+	): Promise<boolean>;
 	takeInquiry(
 		inquiry: Omit<
 			ILivechatInquiryRecord,
@@ -97,7 +102,12 @@ export const RoutingManager: Routing = {
 	async delegateInquiry(inquiry, agent, options = {}, room) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
-		if (!agent || (agent.username && !(await Users.findOneOnlineAgentByUserList(agent.username)) && !(await allowAgentSkipQueue(agent)))) {
+		if (
+			!agent ||
+			(agent.username &&
+				!(await Users.findOneOnlineAgentByUserList(agent.username, {}, settings.get<boolean>('Livechat_enabled_when_agent_idle'))) &&
+				!(await allowAgentSkipQueue(agent)))
+		) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
 			agent = await this.getNextAgent(department);
 			logger.debug(`Routing method returned agent ${agent?.agentId} for inquiry ${inquiry._id}`);
@@ -152,11 +162,19 @@ export const RoutingManager: Routing = {
 		return { inquiry, user };
 	},
 
-	async unassignAgent(inquiry, departmentId, shouldQueue = false) {
+	async unassignAgent(inquiry, departmentId, shouldQueue = false, defaultAgent?: SelectedAgent | null) {
 		const { rid, department } = inquiry;
 		const room = await LivechatRooms.findOneById(rid);
 
-		logger.debug(`Removing assignations of inquiry ${inquiry._id}`);
+		logger.debug({
+			msg: 'Removing assignations of inquiry',
+			inquiryId: inquiry._id,
+			departmentId,
+			room: { _id: room?._id, open: room?.open, servedBy: room?.servedBy },
+			shouldQueue,
+			defaultAgent,
+		});
+
 		if (!room?.open) {
 			logger.debug(`Cannot unassign agent from inquiry ${inquiry._id}: Room already closed`);
 			return false;
@@ -175,8 +193,14 @@ export const RoutingManager: Routing = {
 
 		const { servedBy } = room;
 
+		if (servedBy) {
+			await LivechatRooms.removeAgentByRoomId(rid);
+			await this.removeAllRoomSubscriptions(room);
+			await dispatchAgentDelegated(rid);
+		}
+
 		if (shouldQueue) {
-			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage);
+			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage, defaultAgent);
 			if (queuedInquiry) {
 				inquiry = queuedInquiry;
 				void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
@@ -185,12 +209,6 @@ export const RoutingManager: Routing = {
 					takenAt: undefined,
 				});
 			}
-		}
-
-		if (servedBy) {
-			await LivechatRooms.removeAgentByRoomId(rid);
-			await this.removeAllRoomSubscriptions(room);
-			await dispatchAgentDelegated(rid);
 		}
 
 		await dispatchInquiryQueued(inquiry);
@@ -265,14 +283,7 @@ export const RoutingManager: Routing = {
 		}
 
 		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
-		callbacks.runAsync(
-			'livechat.afterTakeInquiry',
-			{
-				inquiry: returnedInquiry,
-				room: roomAfterUpdate,
-			},
-			agent,
-		);
+		void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent });
 
 		void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
 			status: LivechatInquiryStatus.TAKEN,

@@ -1,6 +1,7 @@
 import { useUserId, useStream } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
+
+import { Users } from '../../../stores';
 
 export const useUpdateAvatar = () => {
 	const notify = useStream('notify-logged');
@@ -12,7 +13,11 @@ export const useUpdateAvatar = () => {
 		return notify('updateAvatar', (data) => {
 			if ('username' in data) {
 				const { username, etag } = data;
-				username && Meteor.users.update({ username }, { $set: { avatarETag: etag } });
+				username &&
+					Users.state.update(
+						(record) => record.username === username,
+						(record) => ({ ...record, avatarETag: etag }),
+					);
 			}
 		});
 	}, [notify, uid]);

@@ -23,6 +23,14 @@ export const emojiParser = (html: string) => {
 
 	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
 
+	emojis.forEach((emojiElement) => {
+		const htmlElement = emojiElement.parentElement;
+
+		if (htmlElement && htmlElement.nodeName === 'CODE') {
+			emojiElement.replaceWith(emojiElement.getAttribute('title') ?? '');
+		}
+	});
+
 	let hasText = false;
 
 	if (!isIE11) {
@@ -52,9 +60,10 @@ export const emojiParser = (html: string) => {
 				const { classList } = emojis[i];
 				classList.add('big');
 			}
-			html = checkEmojiOnly.innerHTML;
 		}
 	}
+
+	html = checkEmojiOnly.innerHTML;
 
 	// apostrophe (') back to &#39;
 	html = html.replace(/\'/g, '&#39;');

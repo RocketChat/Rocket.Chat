@@ -3,6 +3,7 @@ import type {
 	DirectCallData,
 	IRoom,
 	ISetting,
+	ISubscription,
 	IUser,
 	ProviderCapabilities,
 	Serialized,
@@ -11,12 +12,19 @@ import type {
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
-import { createFilterFromQuery } from '@rocket.chat/mongo-adapter';
+import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
-import type { Device, ModalContextValue, SettingsContextQuery, SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
+import type {
+	Device,
+	LoginService,
+	ModalContextValue,
+	ServerContextValue,
+	SettingsContextQuery,
+	SubscriptionWithRoom,
+	TranslationKey,
+} from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
-	ConnectionStatusContext,
 	RouterContext,
 	ServerContext,
 	SettingsContext,
@@ -25,6 +33,7 @@ import {
 	ActionManagerContext,
 	ModalContext,
 	UserPresenceContext,
+	AuthenticationContext,
 } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
@@ -54,15 +63,11 @@ export class MockedAppRootBuilder {
 
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
 
-	private connectionStatus: ContextType<typeof ConnectionStatusContext> = {
+	private server: ContextType<typeof ServerContext> = {
 		connected: true,
 		status: 'connected',
-		retryTime: undefined,
-		reconnect: () => undefined,
-		isLoggingIn: false,
-	};
-
-	private server: ContextType<typeof ServerContext> = {
+		retryCount: 0,
+		info: undefined,
 		absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
 		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
 			method,
@@ -80,7 +85,6 @@ export class MockedAppRootBuilder {
 		callMethod: () => Promise.reject(new Error('not implemented')),
 		disconnect: () => Promise.reject(new Error('not implemented')),
 		reconnect: () => Promise.reject(new Error('not implemented')),
-		info: undefined,
 	};
 
 	private router: ContextType<typeof RouterContext> = {
@@ -90,11 +94,9 @@ export class MockedAppRootBuilder {
 		getLocationSearch: () => '',
 		getRouteName: () => undefined,
 		getRouteParameters: () => ({}),
-		getRoutes: () => [],
 		getSearchParameters: () => ({}),
 		navigate: () => undefined,
 		subscribeToRouteChange: () => () => undefined,
-		subscribeToRoutesChange: () => () => undefined,
 		getRoomRoute: () => ({ path: '/' }),
 	};
 
@@ -107,9 +109,10 @@ export class MockedAppRootBuilder {
 
 	private user: ContextType<typeof UserContext> = {
 		logout: () => Promise.reject(new Error('not implemented')),
+		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
-		querySubscription: () => [() => () => undefined, () => undefined],
+		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
 		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
 		user: null,
 		userId: null,
@@ -178,20 +181,33 @@ export class MockedAppRootBuilder {
 		},
 	};
 
-	private authorization: ContextType<typeof AuthorizationContext> = {
-		queryPermission: () => [() => () => undefined, () => false],
-		queryAtLeastOnePermission: () => [() => () => undefined, () => false],
-		queryAllPermissions: () => [() => () => undefined, () => false],
-		queryRole: () => [() => () => undefined, () => false],
-		roleStore: {
-			roles: {},
-			emit: () => undefined,
-			on: () => () => undefined,
-			off: () => undefined,
-			events: (): Array<'change'> => ['change'],
-			has: () => false,
-			once: () => () => undefined,
+	private authorization: ContextType<typeof AuthorizationContext> = (() => {
+		const dummyRolesMap: ReturnType<ContextType<typeof AuthorizationContext>['getRoles']> = new Map();
+
+		return {
+			queryPermission: () => [() => () => undefined, () => false],
+			queryAtLeastOnePermission: () => [() => () => undefined, () => false],
+			queryAllPermissions: () => [() => () => undefined, () => false],
+			queryRole: () => [() => () => undefined, () => false],
+			getRoles: () => dummyRolesMap,
+			subscribeToRoles: () => () => undefined,
+		};
+	})();
+
+	private authServices: LoginService[] = [];
+
+	private authentication: ContextType<typeof AuthenticationContext> = {
+		isLoggingIn: false,
+		loginWithPassword: () => Promise.resolve(),
+		loginWithToken: () => Promise.resolve(),
+		loginWithService: () => () => Promise.resolve(true),
+		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
+		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
+		queryLoginServices: {
+			getCurrentValue: () => this.authServices,
+			subscribe: () => () => undefined,
 		},
+		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
 	};
 
 	private events = new Emitter<MockedAppRootEvents>();
@@ -371,13 +387,12 @@ export class MockedAppRootBuilder {
 		const outerFn = (
 			innerRole: string | ObjectId,
 			innerScope?: string | undefined,
-			innerIgnoreSubscriptions?: boolean | undefined,
 		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
 			if (innerRole === role) {
 				return [() => () => undefined, () => true];
 			}
 
-			return innerFn(innerRole, innerScope, innerIgnoreSubscriptions);
+			return innerFn(innerRole, innerScope);
 		};
 
 		this.authorization.queryRole = outerFn;
@@ -411,7 +426,7 @@ export class MockedAppRootBuilder {
 		this.settings.querySettings = (query: SettingsContextQuery) => {
 			const filter =
 				cache.get(query) ??
-				createFilterFromQuery({
+				createPredicateFromFilter({
 					...(query._id ? { _id: { $in: query._id } } : {}),
 				} as any);
 			cache.set(query, filter);
@@ -513,6 +528,11 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withServerContext(partial: Partial<ServerContextValue>): this {
+		this.server = { ...this.server, ...partial };
+		return this;
+	}
+
 	build(): JSXElementConstructor<{ children: ReactNode }> {
 		const queryClient = new QueryClient({
 			defaultOptions: {
@@ -522,7 +542,6 @@ export class MockedAppRootBuilder {
 		});
 
 		const {
-			connectionStatus,
 			server,
 			router,
 			settings,
@@ -534,6 +553,7 @@ export class MockedAppRootBuilder {
 			wrappers,
 			audioInputDevices,
 			audioOutputDevices,
+			authentication,
 		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
@@ -596,19 +616,19 @@ export class MockedAppRootBuilder {
 
 			return (
 				<QueryClientProvider client={queryClient}>
-					<ConnectionStatusContext.Provider value={connectionStatus}>
-						<ServerContext.Provider value={server}>
-							<RouterContext.Provider value={router}>
-								<SettingsContext.Provider value={settings}>
-									<I18nextProvider i18n={i18n}>
-										<TranslationContext.Provider value={translation}>
-											{/* <SessionProvider>
+					<ServerContext.Provider value={server}>
+						<RouterContext.Provider value={router}>
+							<SettingsContext.Provider value={settings}>
+								<I18nextProvider i18n={i18n}>
+									<TranslationContext.Provider value={translation}>
+										{/* <SessionProvider>
 												<TooltipProvider>
 														<ToastMessagesProvider>
 																<LayoutProvider>
 																		<AvatarUrlProvider>
 																				<CustomSoundProvider> */}
-											<UserContext.Provider value={user}>
+										<UserContext.Provider value={user}>
+											<AuthenticationContext.Provider value={authentication}>
 												<MockedDeviceContext
 													availableAudioInputDevices={audioInputDevices}
 													availableAudioOutputDevices={audioOutputDevices}
@@ -654,19 +674,19 @@ export class MockedAppRootBuilder {
 														</AuthorizationContext.Provider>
 													</ModalContext.Provider>
 												</MockedDeviceContext>
-											</UserContext.Provider>
-											{/* 					</CustomSoundProvider>
+											</AuthenticationContext.Provider>
+										</UserContext.Provider>
+										{/* 					</CustomSoundProvider>
 																</AvatarUrlProvider>
 															</LayoutProvider>
 														</ToastMessagesProvider>
 													</TooltipProvider>
 												</SessionProvider> */}
-										</TranslationContext.Provider>
-									</I18nextProvider>
-								</SettingsContext.Provider>
-							</RouterContext.Provider>
-						</ServerContext.Provider>
-					</ConnectionStatusContext.Provider>
+									</TranslationContext.Provider>
+								</I18nextProvider>
+							</SettingsContext.Provider>
+						</RouterContext.Provider>
+					</ServerContext.Provider>
 				</QueryClientProvider>
 			);
 		};

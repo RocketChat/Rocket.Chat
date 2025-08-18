@@ -14,17 +14,9 @@ type DevicesRowProps = {
 	deviceType?: string;
 	deviceOSName?: string;
 	loginAt: string;
-	onReload: () => void;
 };
 
-const DeviceManagementAccountRow = ({
-	_id,
-	deviceName,
-	deviceType = 'browser',
-	deviceOSName,
-	loginAt,
-	onReload,
-}: DevicesRowProps): ReactElement => {
+const DeviceManagementAccountRow = ({ _id, deviceName, deviceType = 'browser', deviceOSName, loginAt }: DevicesRowProps): ReactElement => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -43,7 +35,7 @@ const DeviceManagementAccountRow = ({
 			<GenericTableCell>{formatDateAndTime(loginAt)}</GenericTableCell>
 			{mediaQuery && <GenericTableCell>{_id}</GenericTableCell>}
 			<GenericTableCell align='end'>
-				<Button onClick={(): void => handleDeviceLogout(onReload)}>{t('Logout')}</Button>
+				<Button onClick={() => handleDeviceLogout()}>{t('Logout')}</Button>
 			</GenericTableCell>
 		</GenericTableRow>
 	);

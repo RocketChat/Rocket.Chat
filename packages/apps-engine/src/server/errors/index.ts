@@ -11,15 +11,15 @@ import { VideoConfProviderAlreadyExistsError } from './VideoConfProviderAlreadyE
 import { VideoConfProviderNotRegisteredError } from './VideoConfProviderNotRegisteredError';
 
 export {
-    CommandAlreadyExistsError,
-    CommandHasAlreadyBeenTouchedError,
-    PathAlreadyExistsError,
-    CompilerError,
-    MustContainFunctionError,
-    MustExtendAppError,
-    NotEnoughMethodArgumentsError,
-    RequiredApiVersionError,
-    InvalidLicenseError,
-    VideoConfProviderAlreadyExistsError,
-    VideoConfProviderNotRegisteredError,
+	CommandAlreadyExistsError,
+	CommandHasAlreadyBeenTouchedError,
+	PathAlreadyExistsError,
+	CompilerError,
+	MustContainFunctionError,
+	MustExtendAppError,
+	NotEnoughMethodArgumentsError,
+	RequiredApiVersionError,
+	InvalidLicenseError,
+	VideoConfProviderAlreadyExistsError,
+	VideoConfProviderNotRegisteredError,
 };

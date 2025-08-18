@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders Default without crashing 1`] = `
 <body>
@@ -6,68 +6,73 @@ exports[`renders Default without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
     >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
       <div
-        class="rcx-box rcx-box--full rcx-css-ftwpdg"
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        role="dialog"
+        tabindex="-1"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+          class="rcx-box rcx-box--full rcx-css-ftwpdg"
         >
-          <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
-            title="Back"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
-            >
-              ⦉
-            </i>
-          </button>
           <div
-            class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
-            id="contextualbarTitle"
+            class="rcx-box rcx-box--full rcx-css-1sl6k6j"
           >
-            Invite users
+            <button
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              title="Back"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+              >
+                ⦉
+              </i>
+            </button>
+            <div
+              class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+              id="contextualbarTitle"
+            >
+              Invite users
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
           </div>
-          <button
-            aria-label="Close"
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
-            data-qa="ContextualbarActionClose"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
-            >
-              
-            </i>
-          </button>
         </div>
-      </div>
-      <div
-        class="rcx-box rcx-box--full rcx-css-1svuzur"
-      >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
-          data-overlayscrollbars="host"
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="os-size-observer"
+            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
           >
             <div
-              class="os-size-observer-listener"
-            />
-          </div>
-          <div
-            class=""
-            data-overlayscrollbars-padding=""
-            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px);"
-          >
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
             <div
               class=""
-              data-overlayscrollbars-viewport="overflowXHidden overflowYHidden"
-              style="padding: 0px 0px 0px 0px;"
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
               tabindex="-1"
             >
               <div
@@ -77,8 +82,8 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
                 >
                   <label
-                    class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label rcx-css-irxdij"
-                    for=":r0:"
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-irxdij"
+                    for=":r1:"
                   >
                     Invite link
                   </label>
@@ -90,7 +95,7 @@ exports[`renders Default without crashing 1`] = `
                     >
                       <input
                         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-url rcx-input-box"
-                        id=":r0:"
+                        id=":r1:"
                         size="1"
                         type="url"
                         value="https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a"
@@ -115,33 +120,37 @@ exports[`renders Default without crashing 1`] = `
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-          >
             <div
-              class="os-scrollbar-track"
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
             >
               <div
-                class="os-scrollbar-handle"
-              />
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
             </div>
-          </div>
-          <div
-            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-          >
             <div
-              class="os-scrollbar-track"
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
             >
               <div
-                class="os-scrollbar-handle"
-              />
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
     </div>
   </div>
 </body>
@@ -153,68 +162,73 @@ exports[`renders InviteEdit without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
     >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
       <div
-        class="rcx-box rcx-box--full rcx-css-ftwpdg"
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        role="dialog"
+        tabindex="-1"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+          class="rcx-box rcx-box--full rcx-css-ftwpdg"
         >
-          <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
-            title="Back"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
-            >
-              ⦉
-            </i>
-          </button>
           <div
-            class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
-            id="contextualbarTitle"
+            class="rcx-box rcx-box--full rcx-css-1sl6k6j"
           >
-            Invite users
+            <button
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              title="Back"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+              >
+                ⦉
+              </i>
+            </button>
+            <div
+              class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+              id="contextualbarTitle"
+            >
+              Invite users
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
           </div>
-          <button
-            aria-label="Close"
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
-            data-qa="ContextualbarActionClose"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
-            >
-              
-            </i>
-          </button>
         </div>
-      </div>
-      <div
-        class="rcx-box rcx-box--full rcx-css-1svuzur"
-      >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
-          data-overlayscrollbars="host"
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="os-size-observer"
+            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
           >
             <div
-              class="os-size-observer-listener"
-            />
-          </div>
-          <div
-            class=""
-            data-overlayscrollbars-padding=""
-            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px);"
-          >
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
             <div
               class=""
-              data-overlayscrollbars-viewport="overflowXHidden overflowYHidden"
-              style="padding: 0px 0px 0px 0px;"
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
               tabindex="-1"
             >
               <div
@@ -224,8 +238,8 @@ exports[`renders InviteEdit without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
                 >
                   <label
-                    class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label rcx-css-irxdij"
-                    for=":r1:"
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-irxdij"
+                    for=":r3:"
                   >
                     Expiration (Days)
                   </label>
@@ -235,9 +249,9 @@ exports[`renders InviteEdit without crashing 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="listbox"
-                      aria-labelledby="react-aria-:ra:"
+                      aria-labelledby="react-aria-:rc:"
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                      id=":r1:"
+                      id=":r3:"
                       type="button"
                     >
                       <div
@@ -283,7 +297,7 @@ exports[`renders InviteEdit without crashing 1`] = `
                       </div>
                       <span
                         class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                        id="react-aria-:ra:"
+                        id="react-aria-:rc:"
                       >
                         1
                       </span>
@@ -300,8 +314,8 @@ exports[`renders InviteEdit without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
                 >
                   <label
-                    class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-field__label rcx-css-irxdij"
-                    for=":r2:"
+                    class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-irxdij"
+                    for=":r4:"
                   >
                     Max number of uses
                   </label>
@@ -311,9 +325,9 @@ exports[`renders InviteEdit without crashing 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="listbox"
-                      aria-labelledby="react-aria-:ri:"
+                      aria-labelledby="react-aria-:rk:"
                       class="rcx-box rcx-box--full rcx-select rcx-css-1vw6rc6"
-                      id=":r2:"
+                      id=":r4:"
                       type="button"
                     >
                       <div
@@ -364,7 +378,7 @@ exports[`renders InviteEdit without crashing 1`] = `
                       </div>
                       <span
                         class="rcx-box rcx-box--full rcx-css-4w7o7u"
-                        id="react-aria-:ri:"
+                        id="react-aria-:rk:"
                       >
                         5
                       </span>
@@ -394,33 +408,37 @@ exports[`renders InviteEdit without crashing 1`] = `
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-          >
             <div
-              class="os-scrollbar-track"
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
             >
               <div
-                class="os-scrollbar-handle"
-              />
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
             </div>
-          </div>
-          <div
-            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-          >
             <div
-              class="os-scrollbar-track"
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
             >
               <div
-                class="os-scrollbar-handle"
-              />
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
     </div>
   </div>
 </body>
@@ -432,68 +450,73 @@ exports[`renders InviteError without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
     >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
       <div
-        class="rcx-box rcx-box--full rcx-css-ftwpdg"
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        role="dialog"
+        tabindex="-1"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+          class="rcx-box rcx-box--full rcx-css-ftwpdg"
         >
-          <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
-            title="Back"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
-            >
-              ⦉
-            </i>
-          </button>
           <div
-            class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
-            id="contextualbarTitle"
+            class="rcx-box rcx-box--full rcx-css-1sl6k6j"
           >
-            Invite users
+            <button
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              title="Back"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+              >
+                ⦉
+              </i>
+            </button>
+            <div
+              class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+              id="contextualbarTitle"
+            >
+              Invite users
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
           </div>
-          <button
-            aria-label="Close"
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
-            data-qa="ContextualbarActionClose"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
-            >
-              
-            </i>
-          </button>
         </div>
-      </div>
-      <div
-        class="rcx-box rcx-box--full rcx-css-1svuzur"
-      >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
-          data-overlayscrollbars="host"
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="os-size-observer"
+            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
           >
             <div
-              class="os-size-observer-listener"
-            />
-          </div>
-          <div
-            class=""
-            data-overlayscrollbars-padding=""
-            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px);"
-          >
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
             <div
               class=""
-              data-overlayscrollbars-viewport="overflowXHidden overflowYHidden"
-              style="padding: 0px 0px 0px 0px;"
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
               tabindex="-1"
             >
               <div
@@ -524,33 +547,37 @@ exports[`renders InviteError without crashing 1`] = `
                 </section>
               </div>
             </div>
-          </div>
-          <div
-            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-          >
             <div
-              class="os-scrollbar-track"
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
             >
               <div
-                class="os-scrollbar-handle"
-              />
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
             </div>
-          </div>
-          <div
-            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-          >
             <div
-              class="os-scrollbar-track"
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
             >
               <div
-                class="os-scrollbar-handle"
-              />
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
     </div>
   </div>
 </body>
@@ -562,68 +589,73 @@ exports[`renders InviteLoading without crashing 1`] = `
     <div
       class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ucmcg1"
     >
+      <span
+        data-focus-scope-start="true"
+        hidden=""
+      />
       <div
-        class="rcx-box rcx-box--full rcx-css-ftwpdg"
+        aria-labelledby="contextualbarTitle"
+        class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1n0hsd8"
+        role="dialog"
+        tabindex="-1"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-1sl6k6j"
+          class="rcx-box rcx-box--full rcx-css-ftwpdg"
         >
-          <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
-            title="Back"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
-            >
-              ⦉
-            </i>
-          </button>
           <div
-            class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
-            id="contextualbarTitle"
+            class="rcx-box rcx-box--full rcx-css-1sl6k6j"
           >
-            Invite users
+            <button
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              title="Back"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+              >
+                ⦉
+              </i>
+            </button>
+            <div
+              class="rcx-box rcx-box--full rcx-css-x7bl3q rcx-css-1to6ka7"
+              id="contextualbarTitle"
+            >
+              Invite users
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
+              data-qa="ContextualbarActionClose"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
           </div>
-          <button
-            aria-label="Close"
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-x7bl3q rcx-css-1yzvz7u"
-            data-qa="ContextualbarActionClose"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
-            >
-              
-            </i>
-          </button>
         </div>
-      </div>
-      <div
-        class="rcx-box rcx-box--full rcx-css-1svuzur"
-      >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
-          data-overlayscrollbars="host"
+          class="rcx-box rcx-box--full rcx-css-1svuzur"
         >
           <div
-            class="os-size-observer"
+            class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+            data-overlayscrollbars="host"
           >
             <div
-              class="os-size-observer-listener"
-            />
-          </div>
-          <div
-            class=""
-            data-overlayscrollbars-padding=""
-            style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px);"
-          >
+              class="os-size-observer"
+            >
+              <div
+                class="os-size-observer-listener"
+              />
+            </div>
             <div
               class=""
-              data-overlayscrollbars-viewport="overflowXHidden overflowYHidden"
-              style="padding: 0px 0px 0px 0px;"
+              data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+              style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
               tabindex="-1"
             >
               <div
@@ -634,33 +666,37 @@ exports[`renders InviteLoading without crashing 1`] = `
                 />
               </div>
             </div>
-          </div>
-          <div
-            class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-          >
             <div
-              class="os-scrollbar-track"
+              class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
             >
               <div
-                class="os-scrollbar-handle"
-              />
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
             </div>
-          </div>
-          <div
-            class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
-            style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
-          >
             <div
-              class="os-scrollbar-track"
+              class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+              style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
             >
               <div
-                class="os-scrollbar-handle"
-              />
+                class="os-scrollbar-track"
+              >
+                <div
+                  class="os-scrollbar-handle"
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <span
+        data-focus-scope-end="true"
+        hidden=""
+      />
     </div>
   </div>
 </body>

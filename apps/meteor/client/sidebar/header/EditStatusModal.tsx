@@ -1,9 +1,27 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Field, TextInput, FieldGroup, Modal, Button, Box, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
+import {
+	Field,
+	TextInput,
+	FieldGroup,
+	Modal,
+	Button,
+	Box,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	ModalHeader,
+	ModalIcon,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useLocalStorage, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useId } from 'react';
 
 import UserStatusMenu from '../../components/UserStatusMenu';
 import { USER_STATUS_TEXT_MAX_LENGTH } from '../../lib/constants';
@@ -21,6 +39,7 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 	const initialStatusText = customStatus || userStatusText;
 
 	const t = useTranslation();
+	const modalId = useId();
 	const [statusText, setStatusText] = useState(initialStatusText);
 	const [statusType, setStatusType] = useState(userStatus);
 	const [statusTextError, setStatusTextError] = useState<string | undefined>();
@@ -49,10 +68,11 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 		}
 
 		onClose();
-	}, [dispatchToastMessage, setUserStatus, statusText, statusType, onClose, t]);
+	}, [onClose, setUserStatus, statusText, statusType, setCustomStatus, dispatchToastMessage, t]);
 
 	return (
 		<Modal
+			aria-labelledby={`${modalId}-title`}
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
 				<Box
 					is='form'
@@ -64,17 +84,19 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 				/>
 			)}
 		>
-			<Modal.Header>
-				<Modal.Icon name='info' />
-				<Modal.Title>{t('Edit_Status')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content fontScale='p2'>
+			<ModalHeader>
+				<ModalIcon name='info' />
+				<ModalTitle id={`${modalId}-title`}>{t('Edit_Status')}</ModalTitle>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent fontScale='p2'>
 				<FieldGroup>
 					<Field>
-						<FieldLabel>{t('StatusMessage')}</FieldLabel>
+						<FieldLabel htmlFor={`${modalId}-status-message`}>{t('StatusMessage')}</FieldLabel>
 						<FieldRow>
 							<TextInput
+								id={`${modalId}-status-message`}
+								aria-label={t('StatusMessage')}
 								error={statusTextError}
 								disabled={!allowUserStatusMessageChange}
 								flexGrow={1}
@@ -88,17 +110,17 @@ const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModa
 						<FieldError>{statusTextError}</FieldError>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button secondary onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 					<Button primary type='submit' disabled={!!statusTextError}>
 						{t('Save')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

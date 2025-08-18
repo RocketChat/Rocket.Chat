@@ -17,6 +17,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
@@ -80,7 +81,7 @@ const TeamsChannels = ({
 	);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='hash' />
 				<ContextualbarTitle>{t('Team_Channels')}</ContextualbarTitle>
@@ -142,7 +143,7 @@ const TeamsChannels = ({
 					</ButtonGroup>
 				</ContextualbarFooter>
 			)}
-		</>
+		</ContextualbarDialog>
 	);
 };
 

@@ -1,12 +1,10 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import VoipActionButton from './VoipActionButton';
 
 export default {
 	title: 'Components/VoipActionButton',
 	component: VoipActionButton,
-	decorators: [(Story): ReactElement => <Story />],
 } satisfies Meta<typeof VoipActionButton>;
 
 export const SuccessButton: StoryFn<typeof VoipActionButton> = () => {

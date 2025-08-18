@@ -10,9 +10,9 @@
   "2_Erros_Information_and_Debug": "2 - Erros,  información e depuración",
   "@username": "@usuario",
   "@username_message": "@usuario <message>",
-  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Vaise asignar automaticamente un novo propietario a<span style=\"font-weight: bold;\">{{count}}</span> salas.",
-  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Vaise asignar automaticamente un novo propietario á sala <span style=\"font-weight: bold;\">{{roomName}}</span>.",
-  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Vaise asignar automaticamente un novo propietario a<span style=\"font-weight: bold;\">{{count}}</span> salas:<br/>{{rooms}}.",
+  "A_new_owner_will_be_assigned_automatically_to__count__rooms": "Vaise asignar automaticamente un novo propietario a <bold>{{count}}</bold> salas.",
+  "A_new_owner_will_be_assigned_automatically_to_the__roomName__room": "Vaise asignar automaticamente un novo propietario á sala <bold>{{roomName}}</bold>.",
+  "A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__": "Vaise asignar automaticamente un novo propietario a <bold>{{count}}</bold> salas:<br/>{{rooms}}.",
   "Accept": "Aceptar",
   "Access_Token_URL": "URL de token de acceso",
   "Access_not_authorized": "Acceso non autorizado",
@@ -394,7 +394,7 @@
   "your_message": "a túa mensaxe",
   "your_message_optional": "a túa mensaxe (opcional)",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} salas vacías serán eliminadas automaticamente.",
-  "__count__empty_rooms_will_be_removed_automatically__rooms__": "Vanse eliminar automaticamente {{count}} salas vacías:<br/>{{rooms}}.",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "Vanse eliminar automaticamente <bold>{{count}}</bold> salas vacías:<br/>{{rooms}}.",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} xa non é {{role}} (por {{user_by}})",
   "__username__was_set__role__by__user_by_": "{{user_by}} asignou {{role}} a {{username}}"
 }

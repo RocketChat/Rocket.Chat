@@ -6,6 +6,7 @@ import type {
 	SelectedAgent,
 	IOmnichannelRoomExtraData,
 	IOmnichannelRoom,
+	TransferData,
 } from '@rocket.chat/core-typings';
 import {
 	LivechatRooms,
@@ -36,6 +37,7 @@ import {
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChanged,
 	notifyOnSubscriptionChanged,
+	notifyOnRoomChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
@@ -206,7 +208,7 @@ export async function saveRoomInfo(
 	return true;
 }
 
-export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: any = {}) {
+export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: Partial<TransferData> = {}) {
 	livechatLogger.debug({ msg: `Transfering room to ${departmentId ? 'department' : ''} queue`, room });
 	if (!room.open) {
 		throw new Meteor.Error('room-closed');
@@ -238,7 +240,7 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 
 	const transferredBy = normalizeTransferredByData(user, room);
 	livechatLogger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
-	const transferData = { roomId: room._id, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
+	const transferData = { scope: 'queue' as const, departmentId, transferredBy, ...overrideTransferData };
 	try {
 		await saveTransferHistory(room, transferData);
 		await RoutingManager.unassignAgent(inquiry, departmentId);
@@ -276,6 +278,9 @@ export async function removeOmnichannelRoom(rid: string) {
 
 	if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
 		void notifyOnLivechatInquiryChanged(inquiry, 'removed');
+	}
+	if (result[4]?.status === 'fulfilled' && result[4].value?.deletedCount) {
+		void notifyOnRoomChanged(room, 'removed');
 	}
 
 	for (const r of result) {
