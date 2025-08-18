@@ -74,7 +74,7 @@ export const processTemplatePreviewText = (text: string, parameters: TemplatePar
 
 	return replacePlaceholders(processedText, (placeholder, index) => {
 		const parameter = parameters[index - 1];
-		return parameter ? parameter.value : placeholder;
+		return parameter.value || placeholder;
 	});
 };
 
