@@ -74,14 +74,30 @@ test.describe.parallel('administration', () => {
 			await expect(page.locator('table tr[qa-user-id="user1"]')).toBeVisible();
 		});
 
-		test('expect create a user', async () => {
+		test('expect create a user', async ({ page }) => {
 			await poAdmin.tabs.users.btnNewUser.click();
-			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
-			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
-			await poAdmin.tabs.users.inputUserName.type(faker.internet.userName());
+			await poAdmin.tabs.users.inputEmail.fill(faker.internet.email());
+			await poAdmin.tabs.users.inputName.fill(faker.person.firstName());
+			await poAdmin.tabs.users.inputUserName.fill(faker.internet.userName());
 			await poAdmin.tabs.users.inputSetManually.click();
-			await poAdmin.tabs.users.inputPassword.type('any_password');
-			await poAdmin.tabs.users.inputConfirmPassword.type('any_password');
+			await poAdmin.tabs.users.inputPassword.fill('any_password');
+			await poAdmin.tabs.users.inputConfirmPassword.fill('any_password');
+			await test.step('expect to show only unscoped roles', async () => {
+				await poAdmin.tabs.users.rolesSelect.click();
+
+				// make sure the listbox is present before asserting visibility
+				await page.locator('ol[role="listbox"]').waitFor();
+				await expect(poAdmin.tabs.users.findRoleInList('user')).toBeVisible();
+				await expect(poAdmin.tabs.users.findRoleInList('admin')).toBeVisible();
+				await expect(poAdmin.tabs.users.findRoleInList('bot')).toBeVisible();
+				await expect(poAdmin.tabs.users.findRoleInList('app')).toBeVisible();
+				await expect(poAdmin.tabs.users.findRoleInList('guest')).toBeVisible();
+				await expect(poAdmin.tabs.users.findRoleInList('anonymous')).toBeVisible();
+
+				await expect(poAdmin.tabs.users.findRoleInList('owner')).toBeHidden();
+				await expect(poAdmin.tabs.users.findRoleInList('leader')).toBeHidden();
+				await expect(poAdmin.tabs.users.findRoleInList('moderator')).toBeHidden();
+			});
 			await expect(poAdmin.tabs.users.userRole).toBeVisible();
 			await poAdmin.tabs.users.btnSave.click();
 		});
