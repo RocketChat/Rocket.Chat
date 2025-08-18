@@ -46,8 +46,6 @@ const mockDepartmentAgent = {
 
 const getDepartmentMock = jest.fn();
 
-const getAgentMock = jest.fn().mockImplementation(() => ({ user: mockAgent }));
-
 const getDepartmentsAutocompleteMock = jest.fn().mockImplementation(() => ({
 	departments: [mockDepartment],
 	count: 1,
@@ -58,7 +56,6 @@ const getDepartmentsAutocompleteMock = jest.fn().mockImplementation(() => ({
 const appRoot = mockAppRoot()
 	.withJohnDoe()
 	.withEndpoint('GET', '/v1/livechat/department/:_id', () => getDepartmentMock())
-	.withEndpoint('GET', '/v1/livechat/users/agent/:_id', () => getAgentMock())
 	.withEndpoint('GET', '/v1/livechat/department', () => getDepartmentsAutocompleteMock())
 	.withTranslations('en', 'core', {
 		Department: 'Department',
@@ -140,21 +137,6 @@ describe('RepliesForm', () => {
 		await waitFor(() => expect(screen.queryByText('Error loading department information')).not.toBeInTheDocument());
 	});
 
-	it('should show retry button when agent fetch fails and retry when button is clicked', async () => {
-		getAgentMock.mockRejectedValueOnce(new Error('API Error'));
-
-		const defaultValues = { departmentId: 'department-1', agentId: 'agent-1' };
-		render(<RepliesForm defaultValues={defaultValues} onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
-
-		const agentErrorMessage = await screen.findByText('Error loading agent information');
-		expect(agentErrorMessage).toBeInTheDocument();
-
-		const retryButton = screen.getByRole('button', { name: 'Retry' });
-		await userEvent.click(retryButton);
-
-		await waitFor(() => expect(screen.queryByText('Error loading agent information')).not.toBeInTheDocument());
-	});
-
 	xit('should call submit with correct values when form is submitted', async () => {
 		const handleSubmit = jest.fn();
 		const defaultValues = {
@@ -179,19 +161,22 @@ describe('RepliesForm', () => {
 	it('should not submit if department is not found', async () => {
 		const handleSubmit = jest.fn();
 		getDepartmentMock.mockResolvedValue({ department: null, agents: [] });
+
 		render(<RepliesForm defaultValues={{ departmentId: 'department-1' }} onSubmit={handleSubmit} />, { wrapper: appRoot.build() });
 
-		await waitFor(() => expect(getDepartmentMock).toHaveBeenCalled());
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
 		await waitFor(() => expect(handleSubmit).not.toHaveBeenCalled());
 	});
 
 	it('should not submit if agent is not found', async () => {
+		getDepartmentMock.mockResolvedValue({ department: mockDepartment, agents: [] });
 		const handleSubmit = jest.fn();
-		getAgentMock.mockResolvedValue({ user: null });
 		render(<RepliesForm defaultValues={{ departmentId: 'department-1', agentId: 'agent-1' }} onSubmit={handleSubmit} />, {
 			wrapper: appRoot.build(),
 		});
+
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
 		await waitFor(() => expect(handleSubmit).not.toHaveBeenCalled());
 	});
