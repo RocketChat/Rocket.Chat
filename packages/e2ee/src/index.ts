@@ -37,6 +37,18 @@ export abstract class BaseE2EE {
 		this.#codec = codec;
 	}
 
+	async setPublicKey(key: CryptoKey): Promise<void> {
+		const exported = await this.#codec.crypto.exportJsonWebKey(key);
+		const stringified = JSON.stringify(exported);
+		return this.#storage.store('public_key', stringified);
+	}
+
+	async setPrivateKey(key: CryptoKey): Promise<void> {
+		const exported = await this.#codec.crypto.exportJsonWebKey(key);
+		const stringified = JSON.stringify(exported);
+		return this.#storage.store('private_key', stringified);
+	}
+
 	async getMasterKey(password: string): Promise<Result<CryptoKey, Error>> {
 		if (!password) {
 			return err(new Error('You should provide a password'));

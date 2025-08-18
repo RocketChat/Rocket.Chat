@@ -503,7 +503,7 @@ class E2E extends Emitter {
 			const publicKey = await this.e2ee.codec.crypto.exportJsonWebKey(key.publicKey);
 
 			this.publicKey = JSON.stringify(publicKey);
-			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
+			await this.e2ee.setPublicKey(key.publicKey);
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error exporting public key: ', error);
