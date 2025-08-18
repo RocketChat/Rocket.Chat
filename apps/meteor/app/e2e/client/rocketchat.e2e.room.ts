@@ -603,7 +603,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Encrypts messages
-	async encryptText(data: Uint8Array<ArrayBufferLike>) {
+	async encryptText(data: Uint8Array<ArrayBuffer>) {
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 
 		try {
@@ -701,7 +701,7 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
-	async doDecrypt(vector: Uint8Array<ArrayBufferLike>, key: CryptoKey, cipherText: Uint8Array<ArrayBufferLike>) {
+	async doDecrypt(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, cipherText: Uint8Array<ArrayBuffer>) {
 		const result = await decryptAES(vector, key, cipherText);
 		return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 	}
