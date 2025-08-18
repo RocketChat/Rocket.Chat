@@ -1121,8 +1121,6 @@ describe('LIVECHAT - contacts', () => {
 			});
 
 			it("should return an error if user doesn't have 'delete-livechat-contact' permission", async () => {
-				await removePermissionFromAllRoles('delete-livechat-contact');
-
 				const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
 
 				expect(response.status).to.be.equal(403);
