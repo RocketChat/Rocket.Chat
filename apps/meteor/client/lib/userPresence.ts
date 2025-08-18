@@ -70,15 +70,42 @@ export class UserPresence {
 		const isLoggingIn = useIsLoggingIn();
 		const enableAutoAway = useUserPreference<boolean>('enableAutoAway');
 		const idleTimeLimit = useUserPreference<number>('idleTimeLimit') ?? 300;
+		const { RocketChatDesktop } = window;
 
 		this.user = user;
 		this.connected = connected;
-		this.awayTime = enableAutoAway ? idleTimeLimit * 1000 : undefined;
+		this.awayTime = enableAutoAway && !RocketChatDesktop ? idleTimeLimit * 1000 : undefined;
 		this.goOnline = useMethod('UserPresence:online');
 		this.goAway = useMethod('UserPresence:away');
 		this.storeUser = Users.use((state) => state.store);
 
 		useEffect(() => {
+			if (!RocketChatDesktop) return;
+
+			RocketChatDesktop.setUserPresenceDetection({
+				isAutoAwayEnabled: enableAutoAway ?? false,
+				idleThreshold: idleTimeLimit,
+				setUserOnline: (online) => {
+					if (!online) {
+						this.goAway();
+						return;
+					}
+					this.goOnline();
+				},
+			});
+
+			return () => {
+				RocketChatDesktop.setUserPresenceDetection({
+					isAutoAwayEnabled: false,
+					idleThreshold: null,
+					setUserOnline: () => undefined,
+				});
+			};
+		}, [RocketChatDesktop, enableAutoAway, idleTimeLimit]);
+
+		useEffect(() => {
+			if (RocketChatDesktop) return;
+
 			const documentEvents = ['mousemove', 'mousedown', 'touchend', 'keydown'] as const;
 			documentEvents.forEach((key) => document.addEventListener(key, this.setOnline));
 			window.addEventListener('focus', this.setOnline);
@@ -87,7 +114,7 @@ export class UserPresence {
 				documentEvents.forEach((key) => document.removeEventListener(key, this.setOnline));
 				window.removeEventListener('focus', this.setOnline);
 			};
-		}, []);
+		}, [RocketChatDesktop]);
 
 		useEffect(() => {
 			if (!user || !connected || isLoggingIn) return;

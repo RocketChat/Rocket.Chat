@@ -4,11 +4,7 @@ if (window.RocketChatDesktop) {
 	const fakeUserPresenceModule = {
 		UserPresence: {
 			awayTime: undefined,
-			start: () => {
-				import('../providers/UserPresenceProvider').then((module) => {
-					module.userPresence.startTimer();
-				});
-			},
+			start: () => undefined,
 		},
 	};
 
