@@ -72,7 +72,6 @@ export const RichTextComposer: StoryFn<typeof RichTextComposerInput> = (args) =>
 RichTextComposer.args = {
 	// Define the props (args) you want to control
 	placeholder: 'Type a message...',
-	hidePlaceholder: false,
 };
 
 export const MessageComposerWithHints: StoryFn<typeof MessageComposer> = () => (

@@ -324,6 +324,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
 	}
 
 	return (
+		// eslint-disable-next-line jsx-a11y/no-static-element-interactions
 		<div
 			className='ai-enhancement-popup'
 			style={{ position: 'fixed', top: popup.y, left: popup.x }}
