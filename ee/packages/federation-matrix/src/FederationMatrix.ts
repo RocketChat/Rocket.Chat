@@ -22,7 +22,7 @@ import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
 import { getMatrixLocalDomain } from './helpers/domain.builder';
-import { convertExternalUserIdToInternalUsername } from './helpers/identifiers';
+import { saveExternalUserIdForLocalUser } from './helpers/identifiers';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
@@ -186,7 +186,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, matrixDomain);
 
-			await MatrixBridgedUser.createOrUpdateByLocalId(owner._id, matrixUserId, true, matrixDomain);
+			await saveExternalUserIdForLocalUser(owner, matrixUserId);
 
 			for await (const member of members) {
 				if (member === owner.username) {
@@ -195,7 +195,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 				try {
 					// TODO: Check if it is external user - split domain etc
-					const localUserId = await Users.findOneByUsername(convertExternalUserIdToInternalUsername(member));
+					const localUserId = await Users.findOneByUsername(member);
 					if (localUserId) {
 						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, false, matrixDomain);
 						// continue;
@@ -424,12 +424,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 					const isExternalUser = username.includes(':');
 					if (isExternalUser) {
-						let externalUsernameToInvite = convertExternalUserIdToInternalUsername(username);
-						const alreadyCreatedLocally = await Users.findOneByUsername(externalUsernameToInvite, { projection: { _id: 1 } });
-						if (alreadyCreatedLocally) {
-							externalUsernameToInvite = `@${username}`;
-						}
-						await this.homeserverServices.invite.inviteUserToRoom(externalUsernameToInvite, matrixRoomId, inviterUserId);
+						await this.homeserverServices.invite.inviteUserToRoom(username, matrixRoomId, inviterUserId);
 						return;
 					}
 

@@ -5,8 +5,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
 import emojione from 'emojione';
 
-import { convertExternalUserIdToInternalUsername } from '../helpers/identifiers';
-
 const logger = new Logger('federation-matrix:reaction');
 
 export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
@@ -23,7 +21,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 				return;
 			}
 
-			const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+			const internalUsername = data.sender;
 			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
 				logger.error(`No RC user mapping found for Matrix event ${reactionTargetEventId} ${internalUsername}`);
@@ -78,7 +76,7 @@ export function reaction(emitter: Emitter<HomeserverEventSignatures>) {
 				return;
 			}
 
-			const internalUsername = convertExternalUserIdToInternalUsername(data.sender);
+			const internalUsername = data.sender;
 			const user = await Users.findOneByUsername(internalUsername);
 			if (!user) {
 				logger.debug(`User not found: ${internalUsername}`);
