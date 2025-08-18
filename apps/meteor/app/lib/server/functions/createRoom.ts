@@ -283,16 +283,15 @@ export const createRoom = async <T extends RoomType>(
 
 		if (!options?.federatedRoomId) {
 			// if room if exists, we don't want to create it again
+			// adds bridge record
 			await FederationMatrix.createRoom(room, owner, members);
 		} else {
-			if (!room.federated) {
-				await Rooms.setAsFederated(room._id);
-			}
-			
-			const fromServer = options?.federatedRoomId.split(':')[1];
-			
-			await MatrixBridgedRoom.createOrUpdateByExternalRoomId(options?.federatedRoomId, room._id, fromServer);
+			// matrix room was already created and passed
+			const fromServer = options.federatedRoomId.split(':')[1];
+			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, options.federatedRoomId, fromServer);
 		}
+		
+		await Rooms.setAsFederated(room._id);
 	}
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
