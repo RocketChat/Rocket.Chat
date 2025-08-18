@@ -59,8 +59,8 @@ export interface CryptoProvider {
 	 *    for (let i = 0; i < bytes.byteLength; i++) {
 	 *        binaryString += String.fromCharCode(bytes[i]!);
 	 *    }
-	 *    return btoa(binaryString);
-	 *	}
+	 *   return btoa(binaryString);
+	 * }
 	 */
 	encodeBase64(input: ArrayBuffer): string;
 	/**
@@ -72,7 +72,7 @@ export interface CryptoProvider {
 	 *   const buffer = new Uint8Array();
 	 *   encoder.encodeInto(text, buffer);
 	 *   return buffer;
-	 * };
+	 * }
 	 * ```
 	 */
 	encodeBinary(input: string): Uint8Array<ArrayBuffer>;

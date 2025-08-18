@@ -23,7 +23,7 @@ import {
 	encryptAES,
 	decryptAES,
 	generateRSAKey,
-	exportJWKKey,
+	// exportJWKKey,
 	// importRSAKey,
 	// deriveKey,
 } from './helper';
@@ -417,7 +417,7 @@ class E2E extends Emitter {
 
 		if (!this.db_public_key || !this.db_private_key) {
 			this.setState(E2EEState.LOADING_KEYS);
-			await this.persistKeys(await this.e2ee.getKeysFromLocalStorage(), await this.createRandomPassword());
+			await this.persistKeys(await this.e2ee.getKeysFromLocalStorage(), await this.e2ee.createRandomPassword(5));
 		}
 
 		const randomPassword = await this.e2ee.getRandomPassword();
@@ -500,7 +500,7 @@ class E2E extends Emitter {
 		}
 
 		try {
-			const publicKey = await exportJWKKey(key.publicKey);
+			const publicKey = await this.e2ee.codec.crypto.exportJsonWebKey(key.publicKey);
 
 			this.publicKey = JSON.stringify(publicKey);
 			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
@@ -510,7 +510,7 @@ class E2E extends Emitter {
 		}
 
 		try {
-			const privateKey = await exportJWKKey(key.privateKey);
+			const privateKey = await this.e2ee.codec.crypto.exportJsonWebKey(key.privateKey);
 
 			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {
@@ -525,14 +525,10 @@ class E2E extends Emitter {
 		await sdk.call('e2e.requestSubscriptionKeys');
 	}
 
-	async createRandomPassword(): Promise<string> {
-		return this.e2ee.createRandomPassword(5);
-	}
-
 	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
 		const masterKey = await this.getMasterKey(password);
 
-		const vector = crypto.getRandomValues(new Uint8Array(16));
+		const vector = this.e2ee.codec.crypto.getRandomUint8Array(new Uint8Array(16));
 		try {
 			if (!masterKey) {
 				throw new Error('Error getting master key');
