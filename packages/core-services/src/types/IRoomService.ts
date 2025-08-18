@@ -10,6 +10,7 @@ export interface ISubscriptionExtraData {
 interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
+	federatedRoomId?: string;
 }
 
 export interface ICreateRoomExtraData extends Record<string, string | boolean> {
