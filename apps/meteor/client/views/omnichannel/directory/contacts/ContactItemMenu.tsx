@@ -1,7 +1,8 @@
 import type { ILivechatContactChannel } from '@rocket.chat/core-typings';
-import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import { useRouter, useSetModal, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,33 +19,43 @@ const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps): ReactEl
 	const setModal = useSetModal();
 	const router = useRouter();
 
-	const handleContactEdit = useEffectEvent((): void => router.navigate(`/omnichannel-directory/contacts/edit/${_id}`));
+	const canEditContact = usePermission('livechat-update-contact');
+	const canDeleteContact = usePermission('livechat-delete-contact');
+
+	const handleContactEdit = useEffectEvent((): void =>
+		router.navigate({
+			pattern: '/omnichannel-directory/:tab?/:context?/:id?',
+			params: {
+				tab: 'contacts',
+				context: 'edit',
+				id: _id,
+			},
+		}),
+	);
+
 	const handleContactRemoval = useEffectEvent(() => {
 		setModal(<RemoveContactModal _id={_id} name={name} channelsCount={channels.length} onClose={() => setModal(null)} />);
 	});
 
-	const menuOptions = {
-		edit: {
-			label: (
-				<Box>
-					<Icon name='edit' size='x16' mie={4} />
-					{t('Edit')}
-				</Box>
-			),
-			action: (): void => handleContactEdit(),
+	const menuOptions: GenericMenuItemProps[] = [
+		{
+			id: 'edit',
+			icon: 'edit',
+			content: t('edit'),
+			onClick: () => handleContactEdit(),
+			disabled: canEditContact,
 		},
-		delete: {
-			label: (
-				<Box>
-					<Icon name='trash' size='x16' mie={4} />
-					{t('Delete')}
-				</Box>
-			),
-			action: (): void => handleContactRemoval(),
+		{
+			id: 'delete',
+			icon: 'trash',
+			content: t('Delete'),
+			onClick: () => handleContactRemoval(),
+			variant: 'danger',
+			disabled: canDeleteContact,
 		},
-	};
+	];
 
-	return <Menu options={menuOptions} />;
+	return <GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: menuOptions }]} placement='bottom-end' />;
 };
 
 export default ContactItemMenu;
