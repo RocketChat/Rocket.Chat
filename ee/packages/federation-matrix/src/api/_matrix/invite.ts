@@ -135,7 +135,7 @@ async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
 	try {
 		await fn();
 	} catch (e) {
-		const delay =  delaySec === 625 ? 625 : delaySec ** 2;
+		const delay = delaySec === 625 ? 625 : delaySec ** 2;
 		console.log(`error occurred, retrying in ${delay}ms`, e);
 		setTimeout(() => {
 			runWithBackoff(fn, delay * 1000);
@@ -239,7 +239,7 @@ async function joinRoom({
 			options: {
 				federatedRoomId: inviteEvent.roomId,
 				creator: senderUserId,
-			}
+			},
 		});
 
 		internalRoomId = ourRoom._id;
@@ -275,7 +275,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 		},
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const { event, room_version } = await c.req.json();
+			const { event, room_version: roomVersion } = await c.req.json();
 
 			const userToCheck = event.state_key as string;
 
@@ -283,7 +283,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				throw new Error('join event has missing state key, unable to determine user to join');
 			}
 
-			const [username, _domain] = userToCheck.split(':');
+			const [username /* domain */] = userToCheck.split(':');
 
 			// TODO: check domain
 
@@ -293,7 +293,7 @@ export const getMatrixInviteRoutes = (services: HomeserverServices) => {
 				throw new Error('user not found not processing invite');
 			}
 
-			const inviteEvent = await invite.processInvite(event, roomId, eventId, room_version);
+			const inviteEvent = await invite.processInvite(event, roomId, eventId, roomVersion);
 
 			void startJoiningRoom({
 				inviteEvent,
