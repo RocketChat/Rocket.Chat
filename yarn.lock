@@ -8289,7 +8289,7 @@ __metadata:
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-import: "npm:~2.31.0"
     eslint-plugin-no-floating-promise: "npm:~2.0.0"
-    eslint-plugin-playwright: "npm:~2.2.0"
+    eslint-plugin-playwright: "npm:~2.2.2"
     eslint-plugin-prettier: "npm:~5.2.6"
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~5.0.0"
@@ -8368,8 +8368,8 @@ __metadata:
     path-to-regexp: "npm:^6.3.0"
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^7.6.1"
-    playwright-core: "npm:~1.52.0"
-    playwright-qase-reporter: "npm:^2.1.3"
+    playwright-core: "npm:~1.54.2"
+    playwright-qase-reporter: "npm:^2.1.5"
     postcss: "npm:~8.4.49"
     postcss-custom-properties: "npm:^14.0.6"
     postcss-easy-import: "npm:^4.0.0"
@@ -19774,14 +19774,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-playwright@npm:~2.2.0":
-  version: 2.2.0
-  resolution: "eslint-plugin-playwright@npm:2.2.0"
+"eslint-plugin-playwright@npm:~2.2.2":
+  version: 2.2.2
+  resolution: "eslint-plugin-playwright@npm:2.2.2"
   dependencies:
     globals: "npm:^13.23.0"
   peerDependencies:
     eslint: ">=8.40.0"
-  checksum: 10/f17255ab715a7b57b30080d3b279b4088041bcc4733c4727ba495052ce500a5bd020b4235287da48e4251281d39039e1d55ab37904cbc4522dcf0a1ae6775b39
+  checksum: 10/861bb486e30e607a3c38bf46b69b01e759a2e7db3d7e79eabb18aa006c505b632b6c6f24e8402b59b8a9b5f94a72ed454fd5a934265081028a1ca0dd4582019f
   languageName: node
   linkType: hard
 
@@ -21138,6 +21138,19 @@ __metadata:
     combined-stream: "npm:^1.0.8"
     mime-types: "npm:^2.1.12"
   checksum: 10/7264aa760a8cf09482816d8300f1b6e2423de1b02bba612a136857413fdc96d7178298ced106817655facc6b89036c6e12ae31c9eb5bdc16aabf502ae8a5d805
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "form-data@npm:4.0.4"
+  dependencies:
+    asynckit: "npm:^0.4.0"
+    combined-stream: "npm:^1.0.8"
+    es-set-tostringtag: "npm:^2.1.0"
+    hasown: "npm:^2.0.2"
+    mime-types: "npm:^2.1.12"
+  checksum: 10/a4b62e21932f48702bc468cc26fb276d186e6b07b557e3dd7cc455872bdbb82db7db066844a64ad3cf40eaf3a753c830538183570462d3649fdfd705601cbcfb
   languageName: node
   linkType: hard
 
@@ -29571,7 +29584,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.52.0, playwright-core@npm:>=1.2.0, playwright-core@npm:~1.52.0":
+"playwright-core@npm:1.52.0, playwright-core@npm:>=1.2.0":
   version: 1.52.0
   resolution: "playwright-core@npm:1.52.0"
   bin:
@@ -29580,7 +29593,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.54.2":
+"playwright-core@npm:1.54.2, playwright-core@npm:~1.54.2":
   version: 1.54.2
   resolution: "playwright-core@npm:1.54.2"
   bin:
@@ -29589,16 +29602,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-qase-reporter@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "playwright-qase-reporter@npm:2.1.3"
+"playwright-qase-reporter@npm:^2.1.5":
+  version: 2.1.5
+  resolution: "playwright-qase-reporter@npm:2.1.5"
   dependencies:
     chalk: "npm:^4.1.2"
-    qase-javascript-commons: "npm:~2.3.3"
+    qase-javascript-commons: "npm:~2.4.1"
     uuid: "npm:^9.0.0"
   peerDependencies:
     "@playwright/test": ">=1.16.3"
-  checksum: 10/4427e4b4c7a0916358ab6116791da5fc05cc065d1eae95c8ca0c49f14b44fc81e0054fee57227e6eec4edfc1b2a38460e73bb402676774621f26a1e6d81ada37
+  checksum: 10/7f0b5079563fe9207c8a6eb5c48f48cfac9e9d21cb4b058264843c875f93789313e8bdf761a77f9596dc04a5bd915e4cf7c397bd49be1dd5fe0e1237cf7065be
   languageName: node
   linkType: hard
 
@@ -30877,15 +30890,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qase-javascript-commons@npm:~2.3.3":
-  version: 2.3.5
-  resolution: "qase-javascript-commons@npm:2.3.5"
+"qase-javascript-commons@npm:~2.4.1":
+  version: 2.4.1
+  resolution: "qase-javascript-commons@npm:2.4.1"
   dependencies:
     ajv: "npm:^8.12.0"
     async-mutex: "npm:~0.5.0"
     chalk: "npm:^4.1.2"
     env-schema: "npm:^5.2.0"
-    form-data: "npm:^4.0.0"
+    form-data: "npm:^4.0.4"
     lodash.get: "npm:^4.4.2"
     lodash.merge: "npm:^4.6.2"
     lodash.mergewith: "npm:^4.6.2"
@@ -30894,7 +30907,7 @@ __metadata:
     qase-api-v2-client: "npm:~1.0.1"
     strip-ansi: "npm:^6.0.1"
     uuid: "npm:^9.0.0"
-  checksum: 10/8028f9424bf97054f1974c3b663a438f97ebf2f3f487cf9260a3d28047abe2883c870087f1619e67ce5334cc3c88361c08e9566b36052fd316b2bac3096e0712
+  checksum: 10/6a0b4263414fcbee2a5bed562a9dd14cff2ce780590a92e73aa43424231495f58db2031f54d0fee8d7ffd8f92256702af668af2a50b996603b0e7c21b1f26582
   languageName: node
   linkType: hard
 
