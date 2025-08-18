@@ -2,6 +2,7 @@ import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import { isEmojiCustomList } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -86,7 +87,7 @@ API.v1.addRoute(
 					query: name
 						? {
 								name: {
-									$regex: name,
+									$regex: escapeRegExp(name),
 									$options: 'i',
 								},
 							}

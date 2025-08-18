@@ -321,6 +321,22 @@ describe('[EmojiCustom]', () => {
 				})
 				.end(done);
 		});
+		it('should return only filtered by name emojis', (done) => {
+			void request
+				.get(api('emoji-custom.all'))
+				.set(credentials)
+				.query({
+					name: customEmojiName,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('emojis').and.to.be.an('array').and.to.have.length(1);
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+				})
+				.end(done);
+		});
 	});
 
 	describe('Accessing custom emojis', () => {
