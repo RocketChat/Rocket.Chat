@@ -49,6 +49,10 @@ export class UserAgentFactory {
 					return null;
 				}
 
+				if (role === 'callee') {
+					return null;
+				}
+
 				const { [role]: callActor } = call;
 				let contractState: AgentContractState = 'proposed';
 				if (callActor.contractId) {

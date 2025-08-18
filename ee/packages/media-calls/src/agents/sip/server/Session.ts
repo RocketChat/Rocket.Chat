@@ -1,4 +1,4 @@
-import type { MediaCallActor, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, MediaCallActor, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
 
@@ -6,13 +6,21 @@ import { SipErrorCodes } from './errorCodes';
 import { gateway } from '../../../global/SignalGateway';
 import { logger } from '../../../logger';
 import { SipIncomingMediaCallProvider } from '../../../providers/sip/SipIncomingMediaCallProvider';
+import { BaseSipMediaCallProvider } from '../../../providers/sip/BaseSipMediaCallProvider';
+import { MediaCalls } from '@rocket.chat/models';
+import { MediaCallMonitor } from '../../../global/CallMonitor';
+import { InvalidParamsError } from '../../../providers/common';
 
 export class SipServerSession {
 	private readonly _sessionId: string;
 
 	private srf: Srf;
 
-	private knownCalls: Map<string, SipIncomingMediaCallProvider>;
+	private knownCalls: Map<string, BaseSipMediaCallProvider>;
+
+	public get sessionId(): string {
+		return this._sessionId;
+	}
 
 	constructor() {
 		this._sessionId = Random.id();
@@ -35,6 +43,33 @@ export class SipServerSession {
 
 	public reportInternalCallUpdate(callId: string): void {
 		console.log(callId);
+	}
+
+	public registerCall(call: IMediaCall, provider: BaseSipMediaCallProvider): void {
+		this.knownCalls.set(call._id, provider);
+	}
+
+	public async makeOutboundCall(call: IMediaCall, sdp: RTCSessionDescriptionInit): Promise<void> {
+		if (call.callee.type !== 'sip') {
+			throw new InvalidParamsError('invalid-callee');
+		}
+
+		const updateResult = await MediaCalls.startRingingById(call._id, MediaCallMonitor.getNewExpirationTime());
+		if (!updateResult.modifiedCount) {
+			return;
+		}
+
+		const uri = `sip:${call.callee.id}@freeswitch:5060`;
+
+		const uac = await this.srf.createUAC(uri, {
+			localSdp: sdp.sdp,
+		});
+
+		console.log(`dialog established, call-id is ${uac.sip.callId}`);
+
+		uac.on('destroy', () => {
+			console.log('uac.destroy');
+		});
 	}
 
 	private initializeDrachtio(): void {
@@ -115,7 +150,7 @@ export class SipServerSession {
 
 		const call = await provider.createCall(callee);
 		console.log(call);
-		this.knownCalls.set(call._id, provider);
+		this.registerCall(call, provider);
 
 		const uas = await this.srf.createUAS(req, res, {
 			localSdp: () => {

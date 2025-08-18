@@ -2,12 +2,12 @@ import type { IMediaCall, IMediaCallChannel, MediaCallActor, MediaCallContact, M
 import { Emitter } from '@rocket.chat/emitter';
 import type { CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { MediaCallChannels, MediaCalls } from '@rocket.chat/models';
+import { MediaCallChannels } from '@rocket.chat/models';
 
 import { logger } from '../../logger';
-import { BaseMediaCallProvider, type CreateCallParams } from '../BaseMediaCallProvider';
 import type { IMediaCallProvider } from '../IMediaCallProvider';
 import { InternalServerError } from '../common';
+import { BaseSipMediaCallProvider } from './BaseSipMediaCallProvider';
 
 type IncomingCallEvents = {
 	gotRemoteDescription: { description: RTCSessionDescriptionInit };
@@ -15,30 +15,19 @@ type IncomingCallEvents = {
 	callFailed: void;
 };
 
-export class SipIncomingMediaCallProvider extends BaseMediaCallProvider implements IMediaCallProvider {
+export class SipIncomingMediaCallProvider extends BaseSipMediaCallProvider implements IMediaCallProvider {
 	public readonly providerName = 'sip.incoming';
 
 	public readonly supportedRoles: CallRole[] = ['caller'];
 
-	public readonly actorType = 'sip';
-
 	public readonly emitter: Emitter<IncomingCallEvents>;
-
-	protected channelId: string | null;
-
-	protected callId: string | null;
-
-	protected lastCallState: IMediaCall['state'];
 
 	constructor(
 		private readonly caller: MediaCallContact<MediaCallSignedActor<MediaCallActor<'sip'>>>,
 		private readonly localDescription: RTCSessionDescriptionInit,
 	) {
 		super();
-		this.channelId = null;
-		this.callId = null;
 		this.emitter = new Emitter();
-		this.lastCallState = 'none';
 	}
 
 	public async createCall(callee: MediaCallActor): Promise<IMediaCall> {
@@ -53,26 +42,7 @@ export class SipIncomingMediaCallProvider extends BaseMediaCallProvider implemen
 		);
 	}
 
-	public async reactToCallChanges(): Promise<void> {
-		logger.debug({ msg: 'SipIncomingMediaCallProvider.reactToCallChanges', callId: this.callId, lastCallState: this.lastCallState });
-		this.requireCallId('reactToCallChanges');
-
-		// If we already hung up this call, then there's nothing more to update
-		if (this.lastCallState === 'hangup') {
-			return;
-		}
-
-		const call = await MediaCalls.findOneById(this.callId);
-		if (!call) {
-			logger.error({
-				msg: `Could not find the call data`,
-				method: 'SipIncomingMediaCallProvider.reactToCallChanges',
-				callId: this.callId,
-				lastCallState: this.lastCallState,
-			});
-			throw new InternalServerError('invalid-call');
-		}
-
+	protected async reflectCall(this: SipIncomingMediaCallProviderWithCall, call: IMediaCall): Promise<void> {
 		if (call.state === 'accepted' && this.lastCallState !== 'accepted') {
 			this.requireChannelId();
 			return this.processAcceptedCall();
@@ -81,54 +51,6 @@ export class SipIncomingMediaCallProvider extends BaseMediaCallProvider implemen
 		if (call.state === 'hangup') {
 			return this.processEndedCall();
 		}
-	}
-
-	protected async createCallBetweenActors(params: CreateCallParams): Promise<IMediaCall> {
-		logger.debug({ msg: 'SipIncomingMediaCallProvider.createCallBetweenActors', params });
-
-		const call = await super.createCallBetweenActors(params);
-		this.setCallId(call._id);
-		this.lastCallState = call.state;
-
-		try {
-			await this.createContract();
-		} catch (error) {
-			logger.error({ msg: 'Failed to create initial channel for SIP caller', callId: call._id, error });
-			await MediaCalls.hangupCallById(call._id, { endedBy: { type: 'server', id: 'server' }, reason: 'error' });
-			throw error;
-		}
-		return call;
-	}
-
-	protected setCallId(callId: string): asserts this is SipIncomingMediaCallProviderWithCall {
-		this.callId = callId;
-	}
-
-	protected requireCallId(methodName?: string): asserts this is SipIncomingMediaCallProviderWithCall {
-		if (this.callId) {
-			return;
-		}
-
-		logger.error({
-			msg: `This method requires a callId`,
-			method: `SipIncomingMediaCallProvider.${methodName || 'requireCallId'}`,
-		});
-		throw new InternalServerError('invalid-call');
-	}
-
-	protected requireChannelId(methodName?: string): asserts this is SipIncomingMediaCallProviderWithChannel {
-		const method = methodName || 'requireChannelId';
-		this.requireCallId(method);
-
-		if (this.channelId) {
-			return;
-		}
-
-		logger.error({
-			msg: `This method requires a channelId`,
-			method,
-		});
-		throw new Error('invalid-channel');
 	}
 
 	protected async processEndedCall(): Promise<void> {

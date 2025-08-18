@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
@@ -7,6 +7,9 @@ import { logger } from '../logger';
 import type { ISignalGateway, ServerSignalTransport, SignalGatewayEvents } from './ISignalGateway';
 import { GlobalSignalProcessor } from './SignalProcessor';
 import { SipServerSession } from '../agents/sip/server/Session';
+import { CreateCallParams } from '../providers/IMediaCallProvider';
+import { SipOutgoingMediaCallProvider } from '../providers/sip/SipOutgoingMediaCallProvider';
+import { UserMediaCallProvider } from '../providers/users/UserMediaCallProvider';
 
 /**
  * Class used as gateway to send and receive signals to/from clients
@@ -55,6 +58,19 @@ export class SignalGateway extends GlobalSignalProcessor implements ISignalGatew
 		} catch (error) {
 			this.debugError(`SignalGateway's handler threw an exception`, { toUid, signal }, { error });
 		}
+	}
+
+	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
+		logger.debug({ msg: 'GlobalSignalProcessor.createCall', params });
+
+		if (params.callee.type === 'sip') {
+			const sipProvider = new SipOutgoingMediaCallProvider(this.session, params.callee);
+			return sipProvider.createCall(params);
+		}
+
+		const callProvider = new UserMediaCallProvider();
+
+		return callProvider.createCall(params);
 	}
 
 	public reactToCallUpdate(callId: string): void {

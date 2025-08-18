@@ -1,4 +1,4 @@
-import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallSignedActor } from '@rocket.chat/core-typings';
+import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallSignedActor, MediaCallActor } from '@rocket.chat/core-typings';
 import type { IMediaCallChannelsModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult, FindOptions, Document } from 'mongodb';
 
@@ -85,5 +85,16 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 
 	public async setRemoteDescription(_id: string, remoteDescription: RTCSessionDescriptionInit): Promise<UpdateResult> {
 		return this.updateOneById(_id, { $set: { remoteDescription } });
+	}
+
+	public async setRemoteDescriptionByCallIdAndActor(callId: string, actor: MediaCallActor, remoteDescription: RTCSessionDescriptionInit): Promise<void> {
+		await this.updateMany({
+			callId,
+			actorId: actor.id,
+			actorType: actor.type,
+			...(actor.contractId && { contractId: actor.contractId }),
+		}, {
+			$set: { remoteDescription },
+		});
 	}
 }

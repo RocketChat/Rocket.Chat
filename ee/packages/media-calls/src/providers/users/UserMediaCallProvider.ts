@@ -3,11 +3,10 @@ import type { CallRole } from '@rocket.chat/media-signaling';
 
 import { agentManager } from '../../agents/Manager';
 import { logger } from '../../logger';
-import type { CreateCallParams } from '../BaseMediaCallProvider';
 import { BaseMediaCallProvider } from '../BaseMediaCallProvider';
-import type { IMediaCallProvider } from '../IMediaCallProvider';
+import type { CreateCallParams, IOutgoingMediaCallProvider } from '../IMediaCallProvider';
 
-export class UserMediaCallProvider extends BaseMediaCallProvider implements IMediaCallProvider {
+export class UserMediaCallProvider extends BaseMediaCallProvider implements IOutgoingMediaCallProvider {
 	public readonly providerName = 'internal';
 
 	public readonly supportedRoles: CallRole[] = ['caller', 'callee'];

@@ -37,7 +37,7 @@ export class UserAgentSignalProcessor {
 
 		switch (signal.type) {
 			case 'local-sdp':
-				await this.saveLocalDescription(signal.sdp);
+				await this.saveLocalDescription(params, signal.sdp);
 				break;
 			case 'answer':
 				await this.processAnswer(params, signal.answer);
@@ -65,13 +65,13 @@ export class UserAgentSignalProcessor {
 		return this.channelId;
 	}
 
-	private async saveLocalDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
+	private async saveLocalDescription(params: ChannelFunctionParams, sdp: RTCSessionDescriptionInit): Promise<void> {
 		logger.debug({ msg: 'UserAgentSignalProcessor.saveLocalDescription', sdp });
-		const channelId = await this.getChannelId();
+		const { call, channel } = params;
 
-		await MediaCallChannels.setLocalDescription(channelId, sdp);
+		await MediaCallChannels.setLocalDescription(channel._id, sdp);
 
-		await agentManager.setLocalDescription(this.agent, sdp);
+		await agentManager.setLocalDescription(this.agent, sdp, call);
 	}
 
 	private async processAnswer(params: ChannelFunctionParams, answer: CallAnswer): Promise<void> {

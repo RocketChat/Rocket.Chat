@@ -168,15 +168,18 @@ class MediaCallAgentManager {
 		return this.processAcceptedCall(agent);
 	}
 
-	public async setLocalDescription(agent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void> {
+	public async setLocalDescription(agent: IMediaCallAgent, sdp: RTCSessionDescriptionInit, call: IMediaCall): Promise<void> {
 		logger.debug({ msg: 'AgentManager.setLocalDescription', actor: agent.actor, sdp });
 		const otherAgent = await this.getOppositeAgent(agent);
-		if (!otherAgent) {
-			logger.debug({ msg: 'Opposite agent not found', method: 'AgentManager.setLocalDescription', role: agent.role, actor: agent.actor });
+		if (otherAgent) {
+			await otherAgent.setRemoteDescription(sdp);
 			return;
 		}
 
-		otherAgent.setRemoteDescription(sdp);
+		// If the other role has no agent, then save the remote description to the channels directly and trigger a call update on the gateway
+		const otherActor = agent.role === 'callee' ? call.caller : call.callee;
+		await MediaCallChannels.setRemoteDescriptionByCallIdAndActor(call._id, otherActor, sdp);
+		gateway.emitter.emit('callUpdated', call._id);
 	}
 
 	public async hangupByServer(callId: string, serverErrorCode: string, agentsToNotify?: IMediaCallBasicAgent[]): Promise<boolean> {

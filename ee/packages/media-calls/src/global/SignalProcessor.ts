@@ -12,19 +12,12 @@ import { MediaCalls, Users } from '@rocket.chat/models';
 import { UserAgentFactory } from '../agents/users/AgentFactory';
 import { logger } from '../logger';
 import { MediaCallMonitor } from './CallMonitor';
-import type { CreateCallParams } from '../providers/BaseMediaCallProvider';
-import { UserMediaCallProvider } from '../providers/users/UserMediaCallProvider';
+import { CreateCallParams } from '../providers/IMediaCallProvider';
 
 export abstract class GlobalSignalProcessor {
 	protected abstract sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void;
 
-	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		logger.debug({ msg: 'GlobalSignalProcessor.createCall', params });
-
-		const callProvider = new UserMediaCallProvider();
-
-		return callProvider.createCall(params);
-	}
+	public abstract createCall(params: CreateCallParams): Promise<IMediaCall>;
 
 	protected async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		logger.debug({ msg: 'GlobalSignalProcessor.processSignal', signal, uid });
@@ -44,14 +37,24 @@ export abstract class GlobalSignalProcessor {
 	}
 
 	public async mutateCallee(callee: { type: CallActorType; id: string }): Promise<{ type: CallActorType; id: string }> {
+		if (callee.type === 'user') {
+			const user = await Users.findOneById(callee.id);
+			if (user?.freeSwitchExtension) {
+				return {
+					type: 'sip',
+					id: user.freeSwitchExtension,
+				};
+			}
+		}
+
 		if (callee.type !== 'sip') {
 			return callee;
 		}
 
-		const user = await Users.findOneByFreeSwitchExtension<Pick<IUser, '_id'>>(callee.id, { projection: { _id: 1 } });
-		if (user) {
-			return { type: 'user', id: user._id };
-		}
+		// const user = await Users.findOneByFreeSwitchExtension<Pick<IUser, '_id'>>(callee.id, { projection: { _id: 1 } });
+		// if (user) {
+		// 	return { type: 'user', id: user._id };
+		// }
 
 		return callee;
 	}
@@ -125,7 +128,7 @@ export abstract class GlobalSignalProcessor {
 					...caller,
 					contractId: signal.contractId,
 				},
-				callee: await this.mutateCallee(signal.callee),
+				callee,
 				requestedCallId: signal.callId,
 				...(requestedService && { requestedService }),
 			});

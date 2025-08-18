@@ -1,18 +1,12 @@
-import type { IMediaCall, MediaCallActor, MediaCallActorType, MediaCallSignedActor } from '@rocket.chat/core-typings';
-import type { CallContact, CallRole, CallService } from '@rocket.chat/media-signaling';
+import type { IMediaCall, MediaCallActor, MediaCallActorType } from '@rocket.chat/core-typings';
+import type { CallContact, CallRole } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
 import { agentManager } from '../agents/Manager';
 import { MediaCallMonitor } from '../global/CallMonitor';
 import { logger } from '../logger';
 import { InternalServerError, InvalidParamsError } from './common';
-
-export type CreateCallParams = {
-	caller: MediaCallSignedActor;
-	callee: MediaCallActor;
-	requestedCallId?: string;
-	requestedService?: CallService;
-};
+import { CreateCallParams } from './IMediaCallProvider';
 
 export type CreateCallWithAgentParams = CreateCallParams & {
 	actorRole: CallRole;
@@ -86,7 +80,11 @@ export abstract class BaseMediaCallProvider {
 			throw new InternalServerError('failed-to-retrieve-call');
 		}
 
-		return newCall;
+		return this.onCallCreated(newCall);
+	}
+
+	protected async onCallCreated(call: IMediaCall): Promise<IMediaCall> {
+		return call;
 	}
 
 	/**
@@ -122,10 +120,10 @@ export abstract class BaseMediaCallProvider {
 	/**
 	 * Create a call, trusting that the callee is a valid actor if the caller has an agent
 	 */
-	protected async createOutgoingCall(params: CreateCallParams, calleeContact: CallContact): Promise<IMediaCall> {
+	protected async createOutgoingCall(params: CreateCallParams, calleeContact?: CallContact): Promise<IMediaCall> {
 		return this.createCallWithAgent({
 			actorRole: 'caller',
-			oppositeContact: calleeContact,
+			oppositeContact: calleeContact || params.callee,
 			...params,
 		});
 	}
