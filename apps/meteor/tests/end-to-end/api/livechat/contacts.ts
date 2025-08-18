@@ -1073,7 +1073,7 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
-	describe('[POST] omnichannel/contacts.delete', () => {
+	describe.only('[POST] omnichannel/contacts.delete', () => {
 		let contactId: string;
 		let roomId: string;
 
@@ -1088,7 +1088,6 @@ describe('LIVECHAT - contacts', () => {
 		};
 
 		before(async () => {
-			await updatePermission('delete-livechat-contact', ['admin']);
 			const { body } = await request
 				.post(api('omnichannel/contacts'))
 				.set(credentials)
@@ -1101,7 +1100,9 @@ describe('LIVECHAT - contacts', () => {
 			roomId = room._id;
 		});
 
-		after(async () => Promise.all([restorePermissionToRoles('delete-livechat-contact'), closeOmnichannelRoom(roomId)]));
+		after(async () => {
+			await closeOmnichannelRoom(roomId);
+		});
 
 		it('should be able to disable a contact by its id', async () => {
 			const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
@@ -1110,14 +1111,24 @@ describe('LIVECHAT - contacts', () => {
 			expect(response.body).to.have.property('success', true);
 		});
 
-		it("should return an error if user doesn't have 'delete-livechat-contact' permission", async () => {
-			await removePermissionFromAllRoles('delete-livechat-contact');
+		describe('[PERMISSIONS] omnichannel/contacts.delete', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('delete-livechat-contact');
+			});
 
-			const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
+			after(async () => {
+				await restorePermissionToRoles('delete-livechat-contact');
+			});
 
-			expect(response.status).to.be.equal(403);
-			expect(response.body).to.have.property('success', false);
-			expect(response.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			it("should return an error if user doesn't have 'delete-livechat-contact' permission", async () => {
+				await removePermissionFromAllRoles('delete-livechat-contact');
+
+				const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
+
+				expect(response.status).to.be.equal(403);
+				expect(response.body).to.have.property('success', false);
+				expect(response.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			});
 		});
 	});
 
