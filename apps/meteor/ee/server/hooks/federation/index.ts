@@ -114,6 +114,10 @@ callbacks.add(
 	'federation-matrix-after-room-message-updated',
 );
 
+callbacks.add('beforeChangeRoomRole', async (params: { fromUserId: string; userId: string; roomId: string; role: 'moderator' | 'owner' | 'leader' | 'user' }) => {
+	await FederationMatrix.addUserRoleRoomScoped(params.roomId, params.fromUserId, params.userId, params.role);
+}, callbacks.priority.HIGH, 'federation-matrix-before-change-room-role');
+
 export const setupTypingEventListenerForRoom = (roomId: string): void => {
 	notifications.streamRoom.on(`${roomId}/user-activity`, (username, activity) => {
 		if (Array.isArray(activity) && (!activity.length || activity.includes('user-typing'))) {
