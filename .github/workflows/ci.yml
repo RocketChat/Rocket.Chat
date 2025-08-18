@@ -132,10 +132,29 @@ jobs:
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
               "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
+              
+  build-homeserver:
+    name: 📦 Build Homeserver
+    needs: [release-versions]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: RocketChat/homeserver
+          path: homeserver
+      - uses: oven-sh/setup-bun@v2
+      - run: |
+          cd homeserver
+          bun install
+          bun run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: homeserver
+          path: homeserver
 
   packages-build:
     name: 📦 Build Packages
-    needs: [release-versions, notify-draft-services]
+    needs: [release-versions, notify-draft-services, build-homeserver]
     runs-on: ubuntu-24.04
     steps:
       - name: Github Info
@@ -155,17 +174,10 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          repository: RocketChat/homeserver
-          path: /tmp/homeserver
-
-      - uses: oven-sh/setup-bun@v2
-      - run: |
-          cd /tmp/homeserver
-          bun install
-          bun run build
-          ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
+          name: homeserver
+          path: homeserver
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -260,17 +272,11 @@ jobs:
           cat $GITHUB_EVENT_PATH
 
       - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          repository: RocketChat/homeserver
-          path: /tmp/homeserver
 
-      - uses: oven-sh/setup-bun@v2
-      - run: |
-          cd /tmp/homeserver
-          bun install
-          bun run build
-          ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
+      - uses: actions/download-artifact@v4
+        with:
+          name: homeserver
+          path: homeserver
 
       - uses: ./.github/actions/meteor-build
         with:
@@ -372,18 +378,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
-      - uses: actions/checkout@v4
-        with:
-          repository: RocketChat/homeserver
-          path: /tmp/homeserver
 
-      - uses: oven-sh/setup-bun@v2
-      - run: |
-          cd /tmp/homeserver
-          bun install
-          bun run build
-          ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
+      - uses: actions/download-artifact@v4
+        with:
+          name: homeserver
+          path: homeserver
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
