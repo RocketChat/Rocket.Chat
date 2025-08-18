@@ -239,7 +239,7 @@ export const useAIEnhancement = (contentRef: RefObject<HTMLDivElement>): ReactEl
 				setTimeout(() => {
 					switch (type) {
 						case 'summary':
-							resolve(`----------- Summary -----------`);
+							resolve(`----------- Selected text : "${selectedText}" is summarized -----------`);
 							break;
 						case 'emoji':
 							resolve(`-----------😊 "${selectedText}" 🤗-----------`);
