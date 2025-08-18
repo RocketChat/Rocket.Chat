@@ -19,14 +19,15 @@
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "postbuild": "node --experimental-strip-types ./scripts/postbuild.ts",
     "typecheck": "tsc -p tsconfig.json",
-    "lint": "oxlint",
+    "lint": "oxlint --type-aware",
     "testunit": "node --experimental-strip-types --test"
   },
   "devDependencies": {
     "@noble/ciphers": "~1.3.0",
     "@noble/curves": "~1.9.7",
     "@noble/hashes": "~1.8.0",
-    "oxlint": "~1.11.2",
+    "oxlint": "~1.12.0",
+    "oxlint-tsgolint": "~0.0.4",
     "typescript": "~5.9.2"
   },
   "license": "MIT",

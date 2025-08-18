@@ -24,7 +24,7 @@ import {
 	decryptAES,
 	generateRSAKey,
 	exportJWKKey,
-	importRSAKey,
+	// importRSAKey,
 	// deriveKey,
 } from './helper';
 import { log, logError } from './logger';
@@ -478,7 +478,7 @@ class E2E extends Emitter {
 		this.publicKey = public_key;
 
 		try {
-			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
+			this.privateKey = await this.e2ee.codec.crypto.importRsaDecryptKey(EJSON.parse(private_key));
 
 			Accounts.storageLocation.setItem('private_key', private_key);
 		} catch (error) {

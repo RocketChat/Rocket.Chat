@@ -1,14 +1,19 @@
 export interface CryptoProvider {
 	/**
 	 * @example
-	 * (key) => await crypto.subtle.exportKey('jwk', key);
+	 * (key) => await crypto.subtle.exportKey('jwk', key)
 	 */
 	exportJsonWebKey(key: CryptoKey): Promise<JsonWebKey>;
 	/**
 	 * @example
-	 * (raw) => crypto.subtle.importKey('raw', raw, { name: 'PBKDF2' }, false, ['deriveKey']),
+	 * (raw) => crypto.subtle.importKey('raw', raw, { name: 'PBKDF2' }, false, ['deriveKey'])
 	 */
 	importRawKey(raw: Uint8Array<ArrayBuffer>): Promise<CryptoKey>;
+	/**
+	 * @example
+	 * (key) => crypto.subtle.importKey('jwk', key, { name: 'RSA-OAEP', hash: { name: 'SHA-256' } }, false, ['decrypt'])
+	 */
+	importRsaDecryptKey(key: JsonWebKey): Promise<CryptoKey>;
 	/**
 	 * @example
 	 * (array) => crypto.getRandomValues(array),
