@@ -2,24 +2,16 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Options } from '@rocket.chat/message-parser';
 import { Accounts } from 'meteor/accounts-base';
-import type { Dispatch, SetStateAction } from 'react';
 
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import { escapeHTML } from './messageParser';
-import type { CursorHistory } from './messageStateHandler';
 import { resolveComposerBox } from './messageStateHandler';
-import { getSelectionRange, setSelectionRange, getCursorSelectionInfo } from './selectionRange';
+import { getSelectionRange, setSelectionRange } from './selectionRange';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createRichTextComposerAPI = (
-	input: HTMLDivElement,
-	storageID: string,
-	setMdLines: Dispatch<SetStateAction<string[]>>,
-	setCursorHistory: Dispatch<SetStateAction<CursorHistory>>,
-	parseOptions: Options,
-): ComposerAPI => {
+export const createRichTextComposerAPI = (input: HTMLDivElement, storageID: string, parseOptions: Options): ComposerAPI => {
 	const triggerEvent = (input: HTMLDivElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -55,17 +47,10 @@ export const createRichTextComposerAPI = (
 		emitter.emit('quotedMessagesUpdate');
 	};
 
-	// Tracking position of text selection range for debugging purpose
-	const printSelection = (): void => {
-		console.log(getSelectionRange(input));
-		console.log(getCursorSelectionInfo(input, getSelectionRange(input)));
-	};
-
 	input.addEventListener('input', persist);
-	input.addEventListener('beforeinput', (e: InputEvent) => {
-		resolveComposerBox(e, setMdLines, setCursorHistory, parseOptions);
+	input.addEventListener('input', (event: Event) => {
+		resolveComposerBox(event, parseOptions);
 	});
-	document.addEventListener('selectionchange', printSelection);
 
 	const setText = (
 		text: string,
@@ -236,10 +221,9 @@ export const createRichTextComposerAPI = (
 
 	const release = (): void => {
 		input.removeEventListener('input', persist);
-		input.removeEventListener('beforeinput', (e: InputEvent) => {
-			resolveComposerBox(e, setMdLines, setCursorHistory, parseOptions);
+		input.removeEventListener('input', (event: Event) => {
+			resolveComposerBox(event, parseOptions);
 		});
-		document.removeEventListener('selectionchange', printSelection);
 		stopFormatterTracker.stop();
 	};
 
