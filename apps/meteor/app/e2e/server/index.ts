@@ -7,6 +7,7 @@ import './methods/setUserPublicAndPrivateKeys';
 import './methods/getUsersOfRoomWithoutKey';
 import './methods/updateGroupKey';
 import './methods/setRoomKeyID';
+import './methods/setOrGetRoomKeyID';
 import './methods/fetchMyKeys';
 import './methods/resetOwnE2EKey';
 import './methods/requestSubscriptionKeys';

@@ -19,6 +19,7 @@ import { provideUsersSuggestedGroupKeys } from '../../../e2e/server/functions/pr
 import { resetRoomKey } from '../../../e2e/server/functions/resetRoomKey';
 import { getUsersOfRoomWithoutKeyMethod } from '../../../e2e/server/methods/getUsersOfRoomWithoutKey';
 import { setRoomKeyIDMethod } from '../../../e2e/server/methods/setRoomKeyID';
+import { setOrGetRoomKeyIDMethod } from '../../../e2e/server/methods/setOrGetRoomKeyID';
 import { setUserPublicAndPrivateKeysMethod } from '../../../e2e/server/methods/setUserPublicAndPrivateKeys';
 import { updateGroupKey } from '../../../e2e/server/methods/updateGroupKey';
 import { settings } from '../../../settings/server';
@@ -74,6 +75,23 @@ const e2eEndpoints = API.v1.post(
 		await setRoomKeyIDMethod(this.userId, rid, keyID);
 
 		return API.v1.success();
+	},
+);
+
+API.v1.addRoute(
+	'e2e.setOrGetRoomKeyID',
+	{
+		authRequired: true,
+		validateParams: ise2eSetRoomKeyIDParamsPOST,
+	},
+	{
+		async post() {
+			const { rid, keyID } = this.bodyParams;
+
+			const result = await setOrGetRoomKeyIDMethod(this.userId, rid, keyID);
+
+			return API.v1.success(result);
+		},
 	},
 );
 
