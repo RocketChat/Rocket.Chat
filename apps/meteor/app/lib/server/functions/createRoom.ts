@@ -3,7 +3,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Federation, FederationEE, FederationMatrix, License, Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { MatrixBridgedRoom, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
@@ -278,8 +278,19 @@ export const createRoom = async <T extends RoomType>(
 
 	if (shouldBeHandledByFederation && federationVersion === 'native') {
 		// TODO: move this to the hooks folder
-		await FederationMatrix.createRoom(room, owner, members);
 		setupTypingEventListenerForRoom(room._id);
+
+		if (!options?.federatedRoomId) {
+			// if room if exists, we don't want to create it again
+			// adds bridge record
+			await FederationMatrix.createRoom(room, owner, members);
+		} else {
+			// matrix room was already created and passed
+			const fromServer = options.federatedRoomId.split(':')[1];
+			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, options.federatedRoomId, fromServer);
+		}
+		
+		await Rooms.setAsFederated(room._id);
 	}
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
