@@ -510,9 +510,7 @@ class E2E extends Emitter {
 		}
 
 		try {
-			const privateKey = await this.e2ee.codec.crypto.exportJsonWebKey(key.privateKey);
-
-			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
+			await this.e2ee.setPrivateKey(key.privateKey);
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error exporting private key: ', error);
