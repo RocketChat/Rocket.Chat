@@ -25,7 +25,7 @@ export class UserPresence {
 
 	private storeUser: (doc: IUser) => void = () => undefined;
 
-	private startTimer() {
+	startTimer() {
 		this.stopTimer();
 		if (!this.awayTime) return;
 
