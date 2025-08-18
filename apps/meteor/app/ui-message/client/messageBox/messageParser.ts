@@ -95,16 +95,16 @@ export const parseAST = (tokens: MessageParser.Root): string => {
 					return `<p>${renderInline(block.value)}</p>`;
 
 				case 'PARAGRAPH':
-					return `<p>${renderInline(block.value)}</p>`;
+					return `${renderInline(block.value)}\n`;
 
 				case 'HEADING':
-					return `${'#'.repeat(block.level)} <h${block.level}>${renderInline(block.value)}</h${block.level}>`;
+					return `<h${block.level}>${'#'.repeat(block.level)} ${renderInline(block.value)}</h${block.level}>`;
 
 				case 'UNORDERED_LIST':
-					return `<ul>${block.value.map((item) => `<li>${renderInline(item.value)}</li>`).join('')}</ul>`;
+					return `<ul>${block.value.map((item) => `<li>- ${renderInline(item.value)}</li>`).join('')}</ul>`;
 
 				case 'ORDERED_LIST':
-					return `<ol>${block.value.map((item) => `<li>${renderInline(item.value)}</li>`).join('')}</ol>`;
+					return `<ol>${block.value.map((item) => `<li value="${item.number}">${item.number}. ${renderInline(item.value)}</li>`).join('')}</ol>`;
 
 				case 'TASKS':
 					return `<ul class="task-list">${block.value
@@ -115,13 +115,13 @@ export const parseAST = (tokens: MessageParser.Root): string => {
 					return `<blockquote>${block.value.map((item) => `<div>\> ${renderInline(item.value)}</div>`).join('')}</blockquote>`;
 
 				case 'CODE':
-					return `<pre><code class="language-${block.language}">${escapeHTML(block.value.join('\n'))}</code></pre>`;
+					return `<pre><p>\`\`\`${block.language}\n</p><code>${block.value.map((item) => `${item.value.value}`).join('\n')}</code><p>\`\`\`</p></pre>`;
 
 				case 'KATEX':
 					return `<span class="katex">${escapeHTML(block.value)}</span>`;
 
 				case 'LINE_BREAK':
-					return `<br />`;
+					return `\n`;
 
 				default:
 					return '';
