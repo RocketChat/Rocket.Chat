@@ -59,4 +59,5 @@ export interface IRoomService {
 	beforeNameChange(room: IRoom): Promise<void>;
 	beforeTopicChange(room: IRoom): Promise<void>;
 	saveRoomName(roomId: string, userId: string, name: string): Promise<void>;
+	addUserRoleRoomScoped(fromUserId: string, userId: string, roomId: string,role: 'moderator' | 'owner' | 'leader' | 'user'): Promise<void>;
 }
