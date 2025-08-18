@@ -287,7 +287,7 @@ export const createRoom = async <T extends RoomType>(
 			const fromServer = options.federatedRoomId.split(':')[1];
 			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, options.federatedRoomId, fromServer);
 		}
-		
+
 		await Rooms.setAsFederated(room._id);
 	}
 

@@ -14,6 +14,7 @@ const { FederationActions } = proxyquire
 		'../../federation/utils': {
 			isFederationEnabled,
 			isFederationReady,
+			getFederationVersion: () => 'matrix',
 		},
 	});
 

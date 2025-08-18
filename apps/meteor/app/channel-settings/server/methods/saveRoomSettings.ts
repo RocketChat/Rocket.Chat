@@ -1,6 +1,6 @@
 import { FederationMatrix, Team } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
-import { TEAM_TYPE, isRoomFederated, isValidSidepanel } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { getFederationVersion } from '../../../../server/services/federation/utils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
@@ -21,7 +22,6 @@ import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomType } from '../functions/saveRoomType';
-import { getFederationVersion } from '../../../../server/services/federation/utils';
 
 type RoomSettings = {
 	roomAvatar: string;
@@ -223,7 +223,7 @@ const settingSavers: RoomSettingsSavers = {
 				updateRoom: false,
 			});
 		}
-		
+
 		if (value && isRoomFederated(room) && getFederationVersion() === 'native') {
 			await FederationMatrix.updateRoomName(rid, value, user._id);
 		}
@@ -235,14 +235,9 @@ const settingSavers: RoomSettingsSavers = {
 		if (value !== room.topic) {
 			await saveRoomTopic(rid, value, user);
 		}
-		
+
 		if (value && isRoomFederated(room) && getFederationVersion() === 'native') {
 			await FederationMatrix.updateRoomTopic(rid, value, user._id);
-		}
-	},
-	async sidepanel({ value, rid, room }) {
-		if (JSON.stringify(value) !== JSON.stringify(room.sidepanel)) {
-			await Rooms.setSidepanelById(rid, value);
 		}
 	},
 	async roomAnnouncement({ value, room, rid, user }) {

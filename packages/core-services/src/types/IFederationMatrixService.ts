@@ -27,4 +27,5 @@ export interface IFederationMatrixService {
 	updateRoomName(roomId: string, name: string, sender: string): Promise<void>;
 	updateRoomTopic(roomId: string, topic: string, sender: string): Promise<void>;
 	addUserRoleRoomScoped(rid: string, senderId: string, userId: string, role: 'moderator' | 'owner' | 'leader' | 'user'): Promise<void>;
+	inviteUsersToRoom(room: IRoom, usersUserName: string[], inviter: IUser): Promise<void>;
 }
