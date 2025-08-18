@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 // TODO: CRITICAL fix the race condition between the room composer and thread composer
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
 import { useSafeRefCallback } from '@rocket.chat/ui-client';
@@ -412,7 +412,23 @@ const RichTextMessageBox = ({
 
 	const isRecording = isRecordingAudio || isRecordingVideo;
 
-	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(room._id), [room._id]));
+	const federationMatrixEnabled = useSetting('Federation_Matrix_enabled', false);
+	const canSend = useReactiveValue(
+		useCallback(() => {
+			if (!room.t) {
+				return false;
+			}
+
+			if (!roomCoordinator.getRoomDirectives(room.t).canSendMessage(room)) {
+				return false;
+			}
+
+			if (isRoomFederated(room)) {
+				return federationMatrixEnabled;
+			}
+			return true;
+		}, [federationMatrixEnabled, room]),
+	);
 
 	/* const sizes = useContentBoxSize(textareaRef); */
 
