@@ -9,7 +9,7 @@ export default class NodeKeyCodec extends BaseKeyCodec {
 			getRandomUint32Array: (array) => crypto.getRandomValues(array),
 			importRawKey: (raw) => crypto.subtle.importKey('raw', raw, { name: 'PBKDF2' }, false, ['deriveKey']),
 			importRsaDecryptKey: (key) => crypto.subtle.importKey('jwk', key, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['decrypt']),
-			generateKeyPair: () =>
+			generateRsaOaepKeyPair: () =>
 				crypto.subtle.generateKey(
 					{ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' },
 					true,

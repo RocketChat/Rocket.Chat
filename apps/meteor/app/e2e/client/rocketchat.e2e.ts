@@ -22,7 +22,7 @@ import {
 	splitVectorAndEcryptedData,
 	encryptAES,
 	decryptAES,
-	generateRSAKey,
+	// generateRSAKey,
 	// exportJWKKey,
 	// importRSAKey,
 	// deriveKey,
@@ -492,7 +492,7 @@ class E2E extends Emitter {
 		this.setState(E2EEState.LOADING_KEYS);
 		let key;
 		try {
-			key = await generateRSAKey();
+			key = await this.e2ee.codec.crypto.generateRsaOaepKeyPair();
 			this.privateKey = key.privateKey;
 		} catch (error) {
 			this.setState(E2EEState.ERROR);

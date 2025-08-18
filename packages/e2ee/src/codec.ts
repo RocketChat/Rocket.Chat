@@ -31,13 +31,13 @@ export interface CryptoProvider {
 	getRandomUint32Array(array: Uint32Array<ArrayBuffer>): Uint32Array<ArrayBuffer>;
 	/**
 	 * @example
-	 * crypto.subtle.generateKey(
+	 * () => crypto.subtle.generateKey(
 	 *   { name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' },
 	 *   true,
 	 *   ['encrypt', 'decrypt'],
 	 * )
 	 */
-	generateKeyPair(): Promise<CryptoKeyPair>;
+	generateRsaOaepKeyPair(): Promise<CryptoKeyPair>;
 	/**
 	 * @example
 	 * (input) => {
@@ -161,10 +161,10 @@ export abstract class BaseKeyCodec {
 		this.#crypto = crypto;
 	}
 
-	async generateRSAKeyPair(): Promise<JsonWebKeyPair> {
-		const { generateKeyPair, exportJsonWebKey } = this.#crypto;
+	async generateRsaOaepKeyPair(): Promise<JsonWebKeyPair> {
+		const { generateRsaOaepKeyPair, exportJsonWebKey } = this.#crypto;
 
-		const keyPair = await generateKeyPair();
+		const keyPair = await generateRsaOaepKeyPair();
 		const publicJWK = await exportJsonWebKey(keyPair.publicKey);
 		const privateJWK = await exportJsonWebKey(keyPair.privateKey);
 		return { privateJWK, publicJWK };

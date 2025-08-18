@@ -5,7 +5,7 @@ const createKeyCodec = () => new KeyCodec();
 
 test('KeyCodec roundtrip (v1 structured encoding)', async () => {
 	const codec = createKeyCodec();
-	const { privateJWK } = await codec.generateRSAKeyPair();
+	const { privateJWK } = await codec.generateRsaOaepKeyPair();
 	const saltBuffer = codec.encodeSalt('salt-user-1');
 	const masterKey = await codec.deriveMasterKey(saltBuffer, 'pass123');
 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
@@ -15,7 +15,7 @@ test('KeyCodec roundtrip (v1 structured encoding)', async () => {
 
 test('KeyCodec wrong password fails', async () => {
 	const codec = createKeyCodec();
-	const { privateJWK } = await codec.generateRSAKeyPair();
+	const { privateJWK } = await codec.generateRsaOaepKeyPair();
 	const salt1 = codec.encodeSalt('salt1');
 	const masterKey = await codec.deriveMasterKey(salt1, 'correct');
 	const masterKey2 = await codec.deriveMasterKey(salt1, 'incorrect');
@@ -25,7 +25,7 @@ test('KeyCodec wrong password fails', async () => {
 
 test('KeyCodec tamper detection (ciphertext)', async () => {
 	const codec = createKeyCodec();
-	const { privateJWK } = await codec.generateRSAKeyPair();
+	const { privateJWK } = await codec.generateRsaOaepKeyPair();
 	// const privStr = JSON.stringify(privateJWK);
 	const salt = codec.encodeSalt('salt');
 	const masterKey = await codec.deriveMasterKey(salt, 'pw');
@@ -37,7 +37,7 @@ test('KeyCodec tamper detection (ciphertext)', async () => {
 
 test('KeyCodec legacy roundtrip', async () => {
 	const codec = createKeyCodec();
-	const { privateJWK } = await codec.generateRSAKeyPair();
+	const { privateJWK } = await codec.generateRsaOaepKeyPair();
 	const privStr = JSON.stringify(privateJWK);
 	const blob = await codec.legacyEncrypt(privStr, 'pw', 'salt');
 	const decAny = await codec.legacyDecrypt(blob, 'pw', 'salt');
