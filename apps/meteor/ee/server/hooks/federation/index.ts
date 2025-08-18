@@ -34,14 +34,24 @@ callbacks.add(
 
 callbacks.add(
 	'native-federation.onAddUsersToRoom',
-	async ({ invitees, inviter }, room) => FederationMatrix.inviteUsersToRoom(room, invitees, inviter),
+	async ({ invitees, inviter }, room) =>
+		FederationMatrix.inviteUsersToRoom(
+			room,
+			invitees.map((invitee) => (typeof invitee === 'string' ? invitee : (invitee.username as string))),
+			inviter,
+		),
 	callbacks.priority.MEDIUM,
 	'native-federation-on-add-users-to-room ',
 );
 
 callbacks.add(
 	'native-federation.onAfterAddUsersToRoom',
-	async ({ invitees, inviter }, room) => FederationMatrix.inviteUsersToRoom(room, invitees, inviter),
+	async ({ invitees, inviter }, room) =>
+		FederationMatrix.inviteUsersToRoom(
+			room,
+			invitees.map((invitee) => (typeof invitee === 'string' ? invitee : (invitee.username as string))),
+			inviter,
+		),
 	callbacks.priority.MEDIUM,
 	'native-federation-on-after-add-users-to-room ',
 );
@@ -114,9 +124,14 @@ callbacks.add(
 	'federation-matrix-after-room-message-updated',
 );
 
-callbacks.add('beforeChangeRoomRole', async (params: { fromUserId: string; userId: string; roomId: string; role: 'moderator' | 'owner' | 'leader' | 'user' }) => {
-	await FederationMatrix.addUserRoleRoomScoped(params.roomId, params.fromUserId, params.userId, params.role);
-}, callbacks.priority.HIGH, 'federation-matrix-before-change-room-role');
+callbacks.add(
+	'beforeChangeRoomRole',
+	async (params: { fromUserId: string; userId: string; roomId: string; role: 'moderator' | 'owner' | 'leader' | 'user' }) => {
+		await FederationMatrix.addUserRoleRoomScoped(params.roomId, params.fromUserId, params.userId, params.role);
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-before-change-room-role',
+);
 
 export const setupTypingEventListenerForRoom = (roomId: string): void => {
 	notifications.streamRoom.on(`${roomId}/user-activity`, (username, activity) => {

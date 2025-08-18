@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import UrlChangeModal from '../components/UrlChangeModal';
+import UrlChangeModal from '../../../../components/UrlChangeModal';
 
 export const useRootUrlChange = () => {
 	const { t } = useTranslation();

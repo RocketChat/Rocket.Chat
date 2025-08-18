@@ -132,10 +132,42 @@ jobs:
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
               "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"5.0\", \"6.0\", \"7.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
+              
+  build-homeserver:
+    name: 📦 Build Homeserver
+    needs: [release-versions]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/cache@v4
+        id: cache-homeserver
+        name: cache homeserver
+        with:
+          path: homeserver
+          key: ${{ runner.os }}-homeserver-${{ hashFiles('homeserver/package.json') }}
+          restore-keys: ${{ runner.os }}-homeserver-
+      - uses: actions/checkout@v4
+        if: steps.cache-homeserver.outputs.cache-hit != 'true'
+        with:
+          repository: RocketChat/homeserver
+          path: homeserver
+          ref: bundle-for-rocket.chat
+      - uses: oven-sh/setup-bun@v2
+        if: steps.cache-homeserver.outputs.cache-hit != 'true'
+      - run: |
+          cd homeserver
+          bun install
+          bun run build
+          bun run bundle:sdk
+        if: steps.cache-homeserver.outputs.cache-hit != 'true'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: homeserver
+          path: homeserver
 
   packages-build:
     name: 📦 Build Packages
-    needs: [release-versions, notify-draft-services]
+    needs: [release-versions, notify-draft-services, build-homeserver]
     runs-on: ubuntu-24.04
     steps:
       - name: Github Info
@@ -154,6 +186,13 @@ jobs:
           swap-size-gb: 4
 
       - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: homeserver
+          path: /tmp/homeserver
+          
+      - run: ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -186,48 +225,9 @@ jobs:
           overwrite: true
           include-hidden-files: true
 
-  deploy-preview:
-    name: 👀 Deploy Preview
-    runs-on: ubuntu-24.04
-    needs: [release-versions, packages-build]
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: rharkor/caching-for-turbo@v1.8
-        if: github.event.action != 'closed'
-
-      - name: Setup NodeJS
-        uses: ./.github/actions/setup-node
-        if: github.event.action != 'closed'
-        with:
-          node-version: 22.16.0
-          deno-version: 1.43.5
-          cache-modules: true
-          install: true
-      - name: Restore turbo build
-        uses: actions/download-artifact@v4
-        with:
-          name: turbo-build
-          path: .turbo/cache
-      - name: Build
-        if: github.event.action != 'closed'
-        run: |
-          yarn turbo run build-preview
-          yarn turbo run .:build-preview-move
-          npx indexifier .preview --html  --extensions .html  > .preview/index.html
-
-      - name: Create preview for PR
-        uses: rossjrw/pr-preview-action@v1
-        if: github.event.pull_request.head.repo.full_name == github.repository
-        with:
-          source-dir: .preview
-          preview-branch: gh-pages
-          umbrella-dir: pr-preview
-          action: auto
-
   build:
     name: 📦 Meteor Build - coverage
-    needs: [release-versions, packages-build]
+    needs: [release-versions, packages-build, build-homeserver]
     runs-on: ubuntu-24.04
 
     steps:
@@ -248,6 +248,12 @@ jobs:
           cat $GITHUB_EVENT_PATH
 
       - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: homeserver
+          path: /tmp/homeserver
+      - run: ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       - uses: ./.github/actions/meteor-build
         with:
@@ -333,7 +339,7 @@ jobs:
 
   build-gh-docker-coverage:
     name: 🚢 Build Docker Images for Testing
-    needs: [build, release-versions, build-matrix-rust-bindings-for-alpine]
+    needs: [build, release-versions, build-matrix-rust-bindings-for-alpine, build-homeserver]
     runs-on: ubuntu-24.04
 
     env:
@@ -349,6 +355,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: homeserver
+          path: /tmp/homeserver
+      - run: ln -s /tmp/homeserver ${{ github.workspace }}/homeserver
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
