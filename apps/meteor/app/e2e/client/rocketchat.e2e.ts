@@ -20,7 +20,7 @@ import {
 	toArrayBuffer,
 	joinVectorAndEcryptedData,
 	splitVectorAndEcryptedData,
-	encryptAES,
+	// encryptAES,
 	// decryptAES,
 	// generateRSAKey,
 	// exportJWKKey,
@@ -533,7 +533,7 @@ class E2E extends Emitter {
 			if (!masterKey) {
 				throw new Error('Error getting master key');
 			}
-			const encodedPrivateKey = await encryptAES(vector, masterKey, toArrayBuffer(privateKey));
+			const encodedPrivateKey = await this.e2ee.codec.crypto.encryptAesCbc(masterKey, vector, toArrayBuffer(privateKey));
 
 			return EJSON.stringify(joinVectorAndEcryptedData(vector, encodedPrivateKey));
 		} catch (error) {
