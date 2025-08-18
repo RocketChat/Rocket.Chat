@@ -19,14 +19,14 @@ import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
-import { memo, useEffect, useId } from 'react';
+import { memo, useEffect, useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import FilePreview from './FilePreview';
 
 type FileUploadModalProps = {
 	onClose: () => void;
-	onSubmit: (name: string, description?: string) => void;
+	onSubmit: (name: string, description: string | undefined, file: File) => void;
 	file: File;
 	fileName: string;
 	fileDescription?: string;
@@ -43,6 +43,8 @@ const FileUploadModal = ({
 	invalidContentType,
 	showDescription = true,
 }: FileUploadModalProps): ReactElement => {
+	const [currentFile, setCurrentFile] = useState<File>(file);
+	const [startCropping, setStartCropping] = useState(false);
 	const {
 		register,
 		handleSubmit,
@@ -67,7 +69,7 @@ const FileUploadModal = ({
 			});
 		}
 
-		onSubmit(name, description);
+		onSubmit(name, description, currentFile);
 	};
 
 	useEffect(() => {
@@ -114,8 +116,13 @@ const FileUploadModal = ({
 				</ModalHeader>
 				<ModalContent>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						<FilePreview file={file} />
+						<FilePreview file={currentFile} onFileChange={setCurrentFile} startCropping={startCropping} />
 					</Box>
+					 {currentFile.type.startsWith('image/') && !startCropping && (
+            <Button small onClick={() => setStartCropping(true)} mbe={16}>
+              {('Crop')}
+            </Button>
+          )}
 					<FieldGroup>
 						<Field>
 							<FieldLabel htmlFor={fileNameField}>{t('Upload_file_name')}</FieldLabel>
