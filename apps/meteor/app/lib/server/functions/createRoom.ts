@@ -3,7 +3,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Federation, FederationEE, FederationMatrix, License, Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { MatrixBridgedRoom, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
@@ -17,6 +17,7 @@ import { getFederationVersion } from '../../../../server/services/federation/uti
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
+import Room from '../../../../client/views/room/Room';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && name.trim().length > 0;
@@ -278,8 +279,20 @@ export const createRoom = async <T extends RoomType>(
 
 	if (shouldBeHandledByFederation && federationVersion === 'native') {
 		// TODO: move this to the hooks folder
-		await FederationMatrix.createRoom(room, owner, members);
 		setupTypingEventListenerForRoom(room._id);
+
+		if (!options?.federatedRoomId) {
+			// if room if exists, we don't want to create it again
+			await FederationMatrix.createRoom(room, owner, members);
+		} else {
+			if (!room.federated) {
+				await Rooms.setAsFederated(room._id);
+			}
+			
+			const fromServer = options?.federatedRoomId.split(':')[1];
+			
+			await MatrixBridgedRoom.createOrUpdateByExternalRoomId(options?.federatedRoomId, room._id, fromServer);
+		}
 	}
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
