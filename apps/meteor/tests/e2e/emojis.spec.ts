@@ -102,7 +102,7 @@ test.describe.serial('emoji', () => {
 		// Remove custom emoji
 		await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
 		await page.locator('role=link[name="Emoji"]').click();
-		await poAdminEmoji.findEmojiByName(emojiName);
+		await poAdminEmoji.findEmojiByName(newEmojiName);
 		await poAdminEmoji.addEmoji.btnDelete.click();
 	});
 });
