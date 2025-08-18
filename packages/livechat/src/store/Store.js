@@ -77,7 +77,9 @@ export default class Store {
 
 	setState(partialState) {
 		// Ultatel: avoid redundant alerts
-		if(partialState.alerts && partialState.alerts.length){
+		if(partialState.alerts && 
+			partialState.alerts.length && 
+			partialState.alerts.length > this._state.alerts.length) {
 			partialState.alerts = partialState.alerts.filter(alert => 
 				!this._state.alerts.some(existingAlert => existingAlert.children === alert.children )
 			);
