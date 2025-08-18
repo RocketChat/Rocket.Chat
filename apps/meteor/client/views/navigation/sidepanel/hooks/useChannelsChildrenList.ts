@@ -5,7 +5,17 @@ import { useShallow } from 'zustand/shallow';
 import { pipe } from '../../../../lib/cachedStores';
 import { Subscriptions } from '../../../../stores';
 
-const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => !unreadOnly || subscription.unread > 0;
+export const isUnreadSubscription = (subscription: ISubscription) => {
+	return (
+		subscription.userMentions > 0 ||
+		subscription.groupMentions > 0 ||
+		!!(subscription.tunread && subscription.tunread?.length > 0) ||
+		!!(subscription.tunreadUser && subscription.tunreadUser?.length > 0) ||
+		!!(!subscription.unread && !subscription.tunread?.length && subscription.alert)
+	);
+};
+
+const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => !unreadOnly || isUnreadSubscription(subscription);
 
 const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
 
@@ -14,7 +24,13 @@ const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
  * is always at the top of the list.
  */
 const getMainRoomAndSort = (records: SubscriptionWithRoom[]) => {
-	const [mainRoom, ...rest] = records;
+	const mainRoom = records.find((record) => !record.prid);
+	const rest = records.filter((record) => mainRoom?.rid !== record.rid);
+
+	if (!mainRoom) {
+		return [...sortByLmPipe.apply(rest)];
+	}
+
 	return [mainRoom, ...sortByLmPipe.apply(rest)];
 };
 
