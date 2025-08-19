@@ -4,15 +4,13 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ContextualbarDialog, ContextualbarHeader, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import RoomMembersWithData from '../../room/contextualBar/RoomMembers/RoomMembersWithData';
 
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -28,7 +26,6 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
-	const setModal = useSetModal();
 	const formatDate = useFormatDate();
 
 	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ts, ...args } = room;
@@ -53,19 +50,17 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 				icon: 'members' as const,
 				content: t('Manage_Members'),
 				onClick: () => {
-					setModal(
-						<ContextualbarDialog onClose={() => setModal(null)}>
-							<ContextualbarHeader>
-								<ContextualbarTitle>{t('Members')}</ContextualbarTitle>
-								<ContextualbarClose onClick={() => setModal(null)} />
-							</ContextualbarHeader>
-							<RoomMembersWithData rid={_id} adminView />
-						</ContextualbarDialog>,
-					);
+					router.navigate({
+						name: 'admin-rooms',
+						params: {
+							context: 'members',
+							id: _id,
+						},
+					});
 				},
 			},
 		}),
-		[t, setModal, _id],
+		[t, router, _id],
 	);
 
 	const menuOptions = Object.entries(actions).map(([_key, item]) => {
