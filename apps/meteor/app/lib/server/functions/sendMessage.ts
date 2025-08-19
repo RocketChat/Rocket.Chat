@@ -1,5 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
-import { api, Message } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -224,11 +224,6 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 
 	await validateMessage(message, room, user);
 	prepareMessageObject(message, room._id, user);
-
-	if (message.t === 'otr') {
-		void api.broadcast('otrMessage', { roomId: message.rid, message, user, room });
-		return message;
-	}
 
 	if (settings.get('Message_Read_Receipt_Enabled')) {
 		message.unread = true;
