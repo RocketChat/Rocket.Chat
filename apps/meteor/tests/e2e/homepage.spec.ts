@@ -152,7 +152,7 @@ test.describe.serial('homepage', () => {
 				expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
 
 				await regularUserPage.goto('/home');
-				await regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'Home', exact: true }).waitFor();
+				await regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'NewTitle', exact: true }).waitFor();
 			});
 
 			test.afterAll(async ({ api }) => {
@@ -202,7 +202,9 @@ test.describe.serial('homepage', () => {
 
 				test('expect default layout not be visible and custom body visible', async () => {
 					await test.step('expect default layout to not be visible', async () => {
-						await expect(regularUserPage.locator('[data-qa-id="homepage-welcome-text"]')).not.toBeVisible();
+						await expect(
+							regularUserPage.getByRole('main').getByRole('heading', { level: 2, name: 'Welcome to Rocket.chat', exact: true }),
+						).not.toBeVisible();
 					});
 
 					await test.step('expect custom body to be visible', async () => {
