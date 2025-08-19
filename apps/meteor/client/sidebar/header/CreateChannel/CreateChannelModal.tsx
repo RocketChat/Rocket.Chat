@@ -228,7 +228,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 								{errors.name.message}
 							</FieldError>
 						)}
-						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>}
+						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces_or_special_characters')}</FieldHint>}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
