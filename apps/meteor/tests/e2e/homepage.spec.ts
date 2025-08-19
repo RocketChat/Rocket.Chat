@@ -142,7 +142,7 @@ test.describe.serial('homepage', () => {
 			});
 
 			await test.step('expect header text to use Layout_Home_Title default setting', async () => {
-				await expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('Home');
+				await expect(regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'Home', exact: true })).toBeVisible();
 			});
 		});
 
@@ -166,7 +166,7 @@ test.describe.serial('homepage', () => {
 				});
 
 				await test.step('expect header text to be Layout_Home_Title setting', async () => {
-					await expect(regularUserPage.locator('[data-qa-type="PageHeader-title"]')).toContainText('NewTitle');
+					await expect(regularUserPage.getByRole('main').getByRole('heading', { name: 'NewTitle', exact: true })).toBeVisible();
 				});
 			});
 		});
