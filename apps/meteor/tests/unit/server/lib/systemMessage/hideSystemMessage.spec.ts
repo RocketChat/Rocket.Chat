@@ -41,7 +41,7 @@ describe('hideSystemMessage', () => {
 		});
 
 		it('should return false if message type is of deleted message', async () => {
-			const result = shouldHideSystemMessage('user-muted', undefined);
+			const result = shouldHideSystemMessage('rm', undefined);
 			expect(result).to.be.false;
 		});
 
