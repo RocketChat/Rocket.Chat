@@ -5,7 +5,6 @@ import SidePanelQueue from './omnichannel/tabs/SidePanelQueue';
 import SidePanelOnHold from './omnichannel/tabs/SidepanelOnHold';
 import SidePanelDiscussions from './tabs/SidePanelDiscussions';
 import SidePanelFavorites from './tabs/SidePanelFavorites';
-// import SidePanelMentions from './tabs/SidePanelMentions';
 import SidePanelRooms from './tabs/SidePanelRooms';
 
 const SidePanelRouter = () => {
@@ -15,8 +14,6 @@ const SidePanelRouter = () => {
 	switch (currentTab) {
 		case 'all':
 			return <SidePanelAll />;
-		// case 'mentions':
-		// 	return <SidePanelMentions />;
 		case 'favorites':
 			return <SidePanelFavorites />;
 		case 'discussions':
