@@ -53,21 +53,22 @@ describe('useMembersList', () => {
 
 		fakeMembersPage1 = {
 			offset: 0,
-			count: 2,
-			total: 4,
+			count: 3,
+			total: 5,
 			members: [
 				{ _id: 'user1', username: 'alex', roles: ['owner'], status: UserStatus.ONLINE },
-				{ _id: 'user2', username: 'john', roles: ['moderator'], status: UserStatus.OFFLINE },
+				{ _id: 'user2', username: 'bob', roles: ['leader'], status: UserStatus.OFFLINE },
+				{ _id: 'user3', username: 'john', roles: ['moderator'], status: UserStatus.OFFLINE },
 			],
 		};
 
 		fakeMembersPage2 = {
-			offset: 2,
+			offset: 3,
 			count: 2,
-			total: 4,
+			total: 5,
 			members: [
-				{ _id: 'user3', username: 'chris', roles: [], status: UserStatus.ONLINE },
-				{ _id: 'user4', username: 'zoe', roles: [], status: UserStatus.OFFLINE },
+				{ _id: 'user4', username: 'chris', roles: [], status: UserStatus.ONLINE },
+				{ _id: 'user5', username: 'zoe', roles: [], status: UserStatus.OFFLINE },
 			],
 		};
 
@@ -80,11 +81,11 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 2,
+					limit: 3,
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		await expect(result.current.isLoading).toBe(true);
@@ -102,11 +103,11 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 2,
+					limit: 3,
 					debouncedText: '',
 					roomType: 'p',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		expect(result.current.isLoading).toBe(true);
@@ -125,11 +126,11 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'directRoomId',
 					type: 'all',
-					limit: 2,
+					limit: 3,
 					debouncedText: '',
 					roomType: 'd',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -146,25 +147,24 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 2,
+					limit: 3,
 					debouncedText: '',
 					roomType: 'c',
 				}),
 			{
-				legacyRoot: true,
 				wrapper: wrapper
 					.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', ({ offset }) => {
 						if (offset === 0) {
 							return fakeMembersPage1 as any;
 						}
-						if (offset === 2) {
+						if (offset === 3) {
 							return fakeMembersPage2 as any;
 						}
 						return {
 							members: [],
 							offset,
-							count: 2,
-							total: 4,
+							count: 0,
+							total: 5,
 						};
 					})
 					.build(),
@@ -172,7 +172,7 @@ describe('useMembersList', () => {
 		);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
-		expect(result.current.data?.pages[0].members).toHaveLength(2);
+		expect(result.current.data?.pages[0].members).toHaveLength(3);
 
 		await act(async () => {
 			await result.current.fetchNextPage();
@@ -194,11 +194,11 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 2,
+					limit: 3,
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		await waitFor(() => expect(subscribeMock).toHaveBeenCalledWith('roles-change', expect.any(Function)));
@@ -224,16 +224,16 @@ describe('useMembersList', () => {
 				useMembersList({
 					rid: 'room123',
 					type: 'all',
-					limit: 2,
+					limit: 3,
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
 		let user2 = result.current.data?.pages[0].members.find((m) => m._id === 'user2') as RoomMember;
-		expect(user2?.roles).toEqual(['moderator']);
+		expect(user2?.roles).toEqual(['leader']);
 
 		// Simulate a roles-change event "added" for user2 -> 'owner'
 		await act(async () => {
@@ -248,20 +248,21 @@ describe('useMembersList', () => {
 		user2 = result.current.data?.pages[0].members.find((m) => m._id === 'user2') as RoomMember;
 
 		await waitFor(() => expect(user2?.roles).toContain('owner'));
-		await waitFor(() => expect(user2?.roles).toContain('moderator'));
+		await waitFor(() => expect(user2?.roles).toContain('leader'));
 	});
 
 	it('sorts members list cache by "roles > status > username/name" logic on roles-change', async () => {
 		const customPage = {
 			offset: 0,
-			count: 5,
-			total: 5,
+			count: 6,
+			total: 6,
 			members: [
-				{ _id: 'u1', username: 'michael', roles: ['owner'], status: UserStatus.OFFLINE },
-				{ _id: 'u2', username: 'karl', roles: ['moderator'], status: UserStatus.ONLINE },
-				{ _id: 'u3', username: 'bob', roles: ['moderator'], status: UserStatus.OFFLINE },
-				{ _id: 'u4', username: 'alex', roles: [], status: UserStatus.OFFLINE },
-				{ _id: 'u5', username: 'john', roles: [], status: UserStatus.ONLINE },
+				{ _id: 'u1', username: 'mark', roles: ['owner'], status: UserStatus.OFFLINE },
+				{ _id: 'u2', username: 'michael', roles: ['leader'], status: UserStatus.OFFLINE },
+				{ _id: 'u3', username: 'karl', roles: ['moderator'], status: UserStatus.ONLINE },
+				{ _id: 'u4', username: 'bob', roles: ['moderator'], status: UserStatus.OFFLINE },
+				{ _id: 'u5', username: 'alex', roles: [], status: UserStatus.OFFLINE },
+				{ _id: 'u6', username: 'john', roles: [], status: UserStatus.ONLINE },
 			],
 		};
 
@@ -283,7 +284,6 @@ describe('useMembersList', () => {
 					roomType: 'c',
 				}),
 			{
-				legacyRoot: true,
 				wrapper: wrapper.withEndpoint('GET', '/v1/rooms.membersOrderedByRole', (_params) => customPage as any).build(),
 			},
 		);
@@ -291,23 +291,23 @@ describe('useMembersList', () => {
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
 
 		let memberIds = result.current.data?.pages[0].members.map((m) => m._id);
-		expect(memberIds).toEqual(['u1', 'u2', 'u3', 'u4', 'u5']);
+		expect(memberIds).toEqual(['u1', 'u2', 'u3', 'u4', 'u5', 'u6']);
 
-		// Simulate giving user 'alex/u4' the "moderator" role.
-		// That should push 'alex/u4' to the third of the sorted list -
-		// after michael/u1 (since owner), after karl/u2 (since online) and before bob/u3 (since sort by username).
+		// Simulate giving user 'alex/u5' the "moderator" role.
+		// That should push 'alex/u5' to the third of the sorted list -
+		// after mark/u1 and michael/u2 (since owner), after karl/u3 (since online) and before bob/u4 (since sort by username).
 		act(() => {
 			rolesChangeCallback?.({
 				type: 'added',
 				scope: 'room123',
-				u: { _id: 'u4' },
+				u: { _id: 'u5' },
 				_id: 'moderator',
 			});
 		});
 
 		await waitFor(() => {
 			memberIds = result.current.data?.pages[0].members.map((m) => m._id);
-			expect(memberIds).toEqual(['u1', 'u2', 'u4', 'u3', 'u5']);
+			expect(memberIds).toEqual(['u1', 'u2', 'u3', 'u5', 'u4', 'u6']);
 		});
 	});
 
@@ -360,7 +360,7 @@ describe('useMembersList', () => {
 					debouncedText: '',
 					roomType: 'c',
 				}),
-			{ legacyRoot: true, wrapper: testWrapper.build() },
+			{ wrapper: testWrapper.build() },
 		);
 
 		// Page 1

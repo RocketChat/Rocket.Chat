@@ -7,7 +7,7 @@ import { MongoInternals } from 'meteor/mongo';
 import type { Db } from 'mongodb';
 
 import { schedulerLogger } from './logger';
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
 import { settings } from '../../../../../app/settings/server';
 import { i18n } from '../../../../../server/lib/i18n';
 
@@ -101,7 +101,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 
 	async closeRoomAction(room: IOmnichannelRoom): Promise<void> {
 		const comment = this.message;
-		return Livechat.closeRoom({
+		return closeRoom({
 			comment,
 			room,
 			user: await this.getRocketCatUser(),

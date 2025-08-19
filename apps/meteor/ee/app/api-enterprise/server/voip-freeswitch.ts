@@ -13,7 +13,12 @@ import { settings } from '../../../../app/settings/server/cached';
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.list',
-	{ authRequired: true, permissionsRequired: ['manage-voip-extensions'], validateParams: isVoipFreeSwitchExtensionListProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-voip-extensions'],
+		validateParams: isVoipFreeSwitchExtensionListProps,
+		license: ['voip-enterprise'],
+	},
 	{
 		async get() {
 			if (!settings.get('VoIP_TeamCollab_Enabled')) {
@@ -59,7 +64,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.assign',
-	{ authRequired: true, permissionsRequired: ['manage-voip-extensions'], validateParams: isVoipFreeSwitchExtensionAssignProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-voip-extensions'],
+		validateParams: isVoipFreeSwitchExtensionAssignProps,
+		license: ['voip-enterprise'],
+	},
 	{
 		async post() {
 			if (!settings.get('VoIP_TeamCollab_Enabled')) {
@@ -94,7 +104,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.getDetails',
-	{ authRequired: true, permissionsRequired: ['view-voip-extension-details'], validateParams: isVoipFreeSwitchExtensionGetDetailsProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-voip-extension-details'],
+		validateParams: isVoipFreeSwitchExtensionGetDetailsProps,
+		license: ['voip-enterprise'],
+	},
 	{
 		async get() {
 			if (!settings.get('VoIP_TeamCollab_Enabled')) {
@@ -124,7 +139,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.getRegistrationInfoByUserId',
-	{ authRequired: true, permissionsRequired: ['view-user-voip-extension'], validateParams: isVoipFreeSwitchExtensionGetInfoProps },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-user-voip-extension'],
+		validateParams: isVoipFreeSwitchExtensionGetInfoProps,
+		license: ['voip-enterprise'],
+	},
 	{
 		async get() {
 			if (!settings.get('VoIP_TeamCollab_Enabled')) {

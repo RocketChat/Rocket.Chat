@@ -4,8 +4,11 @@
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
-		"typescript": "~5.7.2"
+		"typescript": "~5.9.2"
 	},
 	"main": "./src/index.js",
-	"typings": "./dist/index.d.ts"
+	"typings": "./dist/index.d.ts",
+	"volta": {
+		"extends": "../../package.json"
+	}
 }

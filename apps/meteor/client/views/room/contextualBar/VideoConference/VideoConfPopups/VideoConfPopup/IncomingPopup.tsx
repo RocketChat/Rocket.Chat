@@ -20,6 +20,7 @@ import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
+import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
 type IncomingPopupProps = {
 	id: string;
@@ -34,6 +35,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const { t } = useTranslation();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers();
 	const setPreferences = useVideoConfSetPreferences();
+	const roomName = useVideoConfRoomName(room);
 
 	const videoConfInfo = useEndpoint('GET', '/v1/video-conference.info');
 	const { data, isPending, isSuccess } = useQuery({
@@ -50,7 +52,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	});
 
 	return (
-		<VideoConfPopup position={position}>
+		<VideoConfPopup position={position} id={id} aria-label={t('Incoming_call_from__roomName__', { roomName })}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Incoming_call_from')} />
 				{isPending && <Skeleton />}

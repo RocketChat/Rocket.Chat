@@ -1,10 +1,14 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useState, useEffect } from 'react';
 
 import InviteUsers from './InviteUsers';
+import InviteUsersEdit from './InviteUsersEdit';
+import InviteUsersError from './InviteUsersError';
+import InviteUsersLoading from './InviteUsersLoading';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useRoomToolbox } from '../../../contexts/RoomToolboxContext';
 
@@ -19,18 +23,12 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 	const [
 		{
 			isEditing,
-			url,
-			caption,
-			error,
 			daysAndMaxUses: { days, maxUses },
 		},
 		setInviteState,
 	] = useState({
 		isEditing: false,
 		daysAndMaxUses: { days: '1', maxUses: '0' },
-		url: '',
-		caption: '',
-		error: undefined as Error | undefined,
 	});
 
 	const { closeTab } = useRoomToolbox();
@@ -41,7 +39,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 	const handleBackToLink = useEffectEvent(() => setInviteState((prevState) => ({ ...prevState, isEditing: false })));
 
 	const linkExpirationText = useEffectEvent(
-		(data: {
+		(data?: {
 			days: number;
 			maxUses: number;
 			rid: string;
@@ -79,36 +77,53 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		},
 	);
 
+	const { data, isSuccess, error, isError, isLoading } = useQuery({
+		queryKey: ['findOrCreateInvite', days, maxUses],
+		queryFn: async () => findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) }),
+	});
+
 	useEffect(() => {
-		(async (): Promise<void> => {
-			try {
-				const data = await findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) });
-				setInviteState((prevState) => ({ ...prevState, url: data?.url, caption: linkExpirationText(data) }));
-				dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
-			} catch (error) {
-				setInviteState((prevState) => ({ ...prevState, error: error as Error }));
-			}
-		})();
-	}, [dispatchToastMessage, t, findOrCreateInvite, linkExpirationText, rid, days, maxUses]);
+		if (isSuccess) {
+			dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
+		}
+	}, [dispatchToastMessage, isSuccess, t]);
 
 	const handleGenerateLink = useEffectEvent((daysAndMaxUses: { days: string; maxUses: string }) => {
 		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
 	});
 
-	return (
-		<InviteUsers
-			isEditing={isEditing}
-			error={error}
-			linkText={url}
-			captionText={caption}
-			daysAndMaxUses={{ days, maxUses }}
-			onClose={closeTab}
-			onClickBackMembers={onClickBack}
-			onClickBackLink={handleBackToLink}
-			onClickEdit={handleEdit}
-			onClickNewLink={handleGenerateLink}
-		/>
-	);
+	if (isError) {
+		return <InviteUsersError error={error} onClose={closeTab} onClickBack={onClickBack} />;
+	}
+
+	if (isLoading) {
+		return <InviteUsersLoading onClose={closeTab} onClickBack={onClickBack} />;
+	}
+
+	if (isEditing) {
+		return (
+			<InviteUsersEdit
+				daysAndMaxUses={{ days, maxUses }}
+				onClickBackLink={handleBackToLink}
+				onClickNewLink={handleGenerateLink}
+				onClose={closeTab}
+			/>
+		);
+	}
+
+	if (isSuccess) {
+		return (
+			<InviteUsers
+				linkText={data.url}
+				captionText={linkExpirationText(data)}
+				onClose={closeTab}
+				onClickBackMembers={onClickBack}
+				onClickEdit={handleEdit}
+			/>
+		);
+	}
+
+	return <InviteUsersError error={new Error(t('Something_Went_Wrong'))} onClose={closeTab} onClickBack={onClickBack} />;
 };
 
 export default InviteUsersWithData;

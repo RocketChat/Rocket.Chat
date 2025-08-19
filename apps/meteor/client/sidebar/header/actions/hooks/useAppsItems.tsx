@@ -5,12 +5,6 @@ import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-context
 import { useUserDropdownAppsActionButtons } from '../../../../hooks/useUserDropdownAppsActionButtons';
 import { useAppRequestStats } from '../../../../views/marketplace/hooks/useAppRequestStats';
 
-/**
- * @deprecated Feature preview
- * @description Should be moved to navbar when the feature became part of the core
- * @memberof navigationBar
- */
-
 export const useAppsItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 

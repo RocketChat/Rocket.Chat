@@ -2,7 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 
-import { api, credentials, request } from './api-data';
+import { api, credentials, methodCall, request } from './api-data';
 import { password } from './user';
 
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
@@ -100,3 +100,41 @@ export const setUserStatus = (overrideCredentials = credentials, status = UserSt
 		message: '',
 		status,
 	});
+
+export const setUserAway = (overrideCredentials = credentials) =>
+	request
+		.post(methodCall('UserPresence:away'))
+		.set(overrideCredentials)
+		.send({
+			message: JSON.stringify({
+				method: 'UserPresence:away',
+				params: [],
+				id: 'id',
+				msg: 'method',
+			}),
+		});
+
+export const setUserOnline = (overrideCredentials = credentials) =>
+	request
+		.post(methodCall('UserPresence:online'))
+		.set(overrideCredentials)
+		.send({
+			message: JSON.stringify({
+				method: 'UserPresence:online',
+				params: [],
+				id: 'id',
+				msg: 'method',
+			}),
+		});
+
+export const removeRoleFromUser = (username: string, roleId: string, overrideCredentials = credentials) =>
+	getUserByUsername(username).then((user) =>
+		request
+			.post(api('users.update'))
+			.set(overrideCredentials)
+			.send({
+				userId: user._id,
+				data: { roles: user.roles.filter((role) => role !== roleId) },
+			})
+			.expect(200),
+	);

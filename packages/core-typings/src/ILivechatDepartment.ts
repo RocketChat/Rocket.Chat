@@ -35,4 +35,7 @@ export type LivechatDepartmentDTO = {
 	fallbackForwardDepartment?: string | undefined;
 	departmentsAllowedToForward?: string[] | undefined;
 	allowReceiveForwardOffline?: boolean;
+	offlineMessageChannelName?: string | undefined;
+	abandonedRoomsCloseCustomMessage?: string | undefined;
+	waitingQueueMessage?: string | undefined;
 };

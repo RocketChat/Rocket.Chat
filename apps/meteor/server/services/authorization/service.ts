@@ -1,10 +1,11 @@
 import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
-import type { IUser, IRole, IRoom, ISubscription, IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
 import mem from 'mem';
 
 import { canAccessRoom } from './canAccessRoom';
+import { canReadRoom } from './canReadRoom';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 
 import './canAccessRoomLivechat';
@@ -80,6 +81,10 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return canAccessRoom(...args);
 	}
 
+	async canReadRoom(...args: Parameters<RoomAccessValidator>): Promise<boolean> {
+		return canReadRoom(...args);
+	}
+
 	async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(rid, {
 			projection: {
@@ -101,7 +106,13 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		AuthorizationUtils.addRolePermissionWhiteList(role, permissions);
 	}
 
-	async getUsersFromPublicRoles(): Promise<(IRocketChatRecord & Pick<IUser, '_id' | 'username' | 'roles'>)[]> {
+	async getUsersFromPublicRoles(): Promise<
+		{
+			_id: string;
+			username: string;
+			roles: string[];
+		}[]
+	> {
 		const roleIds = await this.getPublicRoles();
 
 		return this.getUserFromRoles(roleIds);
@@ -109,34 +120,32 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private getPublicRoles = mem(
 		async (): Promise<string[]> => {
-			const roles = await Roles.find<Pick<IRole, '_id'>>(
-				{ scope: 'Users', description: { $exists: true, $ne: '' } },
-				{ projection: { _id: 1 } },
-			).toArray();
+			const roles = Roles.find<Pick<IRole, '_id'>>({ scope: 'Users', description: { $exists: true, $ne: '' } }, { projection: { _id: 1 } });
 
-			return roles.map(({ _id }) => _id);
+			return roles.map(({ _id }) => _id).toArray();
 		},
 		{ maxAge: 10000 },
 	);
 
 	private getUserFromRoles = mem(
 		async (roleIds: string[]) => {
-			const options = {
+			const users = Users.findUsersInRoles<Pick<Required<IUser>, '_id' | 'username' | 'roles'>>(roleIds, null, {
 				sort: {
 					username: 1,
 				},
 				projection: {
+					_id: 1,
 					username: 1,
 					roles: 1,
 				},
-			};
+			});
 
-			const users = await Users.findUsersInRoles(roleIds, null, options).toArray();
-
-			return users.map((user) => ({
-				...user,
-				roles: user.roles.filter((roleId: string) => roleIds.includes(roleId)),
-			}));
+			return users
+				.map((user) => ({
+					...user,
+					roles: user.roles.filter((roleId: string) => roleIds.includes(roleId)),
+				}))
+				.toArray();
 		},
 		{ maxAge: 10000 },
 	);

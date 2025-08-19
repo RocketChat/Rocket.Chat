@@ -1,5 +1,5 @@
 export interface IUserSettings {
-    preferences?: {
-        language?: string;
-    };
+	preferences?: {
+		language?: string;
+	};
 }

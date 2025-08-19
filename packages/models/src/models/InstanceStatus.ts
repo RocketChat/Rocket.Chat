@@ -1,6 +1,6 @@
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import type { IInstanceStatusModel } from '@rocket.chat/model-typings';
-import type { Db, UpdateResult, DeleteResult } from 'mongodb';
+import type { Db, UpdateResult, DeleteResult, ChangeStream } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -15,12 +15,11 @@ export class InstanceStatusRaw extends BaseRaw<IInstanceStatus> implements IInst
 	}
 
 	async getActiveInstanceCount(): Promise<number> {
-		return this.col.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } });
+		return this.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } });
 	}
 
-	async getActiveInstancesAddress(): Promise<string[]> {
-		const instances = await this.find({}, { projection: { _id: 1, extraInformation: { host: 1, tcpPort: 1 } } }).toArray();
-		return instances.map((instance) => `${instance.extraInformation.host}:${instance.extraInformation.tcpPort}/${instance._id}`);
+	watchActiveInstances(): ChangeStream<IInstanceStatus> {
+		return this.col.watch();
 	}
 
 	async removeInstanceById(_id: IInstanceStatus['_id']): Promise<DeleteResult> {

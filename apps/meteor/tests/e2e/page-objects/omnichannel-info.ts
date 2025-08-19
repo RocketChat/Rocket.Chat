@@ -11,10 +11,6 @@ export class OmnichannelContactInfo extends OmnichannelManageContact {
 		return this.page.locator('role=button[name="Edit"]');
 	}
 
-	get btnCall(): Locator {
-		return this.page.locator('role=button[name=Call"]');
-	}
-
 	get tabHistory(): Locator {
 		return this.dialogContactInfo.getByRole('tab', { name: 'History' });
 	}
@@ -25,5 +21,9 @@ export class OmnichannelContactInfo extends OmnichannelManageContact {
 
 	get historyMessage(): Locator {
 		return this.dialogContactInfo.getByRole('listitem').first();
+	}
+
+	get btnOpenChat(): Locator {
+		return this.dialogContactInfo.getByRole('button', { name: 'Open chat' });
 	}
 }

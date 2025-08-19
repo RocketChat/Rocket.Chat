@@ -42,6 +42,8 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
 
+	updateAllLivechatDataByToken(token: string, livechatDataToUpdate: Record<string, string>): Promise<UpdateResult>;
+
 	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<UpdateResult | Document | boolean>;
 
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;
@@ -72,4 +74,5 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	): Promise<UpdateResult | Document | boolean>;
 	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult>;
 	countVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): Promise<number>;
+	updateDepartmentById(_id: string, department: string): Promise<null | WithId<ILivechatVisitor>>;
 }

@@ -1,9 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { ComponentPropsWithoutRef } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import GenericModal from './GenericModal';
-import RawText from './RawText';
+import { Trans } from 'react-i18next';
 
 type ConfirmOwnerChangeModalProps = {
 	shouldChangeOwner: string[];
@@ -19,58 +18,70 @@ const ConfirmOwnerChangeModal = ({
 	onConfirm,
 	onCancel,
 }: ConfirmOwnerChangeModalProps) => {
-	const { t } = useTranslation();
+	const getChangeOwnerRooms = useEffectEvent(() => {
+		if (shouldChangeOwner.length === 0) {
+			return '';
+		}
 
-	let changeOwnerRooms = '';
-	if (shouldChangeOwner.length > 0) {
 		if (shouldChangeOwner.length === 1) {
-			changeOwnerRooms = t('A_new_owner_will_be_assigned_automatically_to_the__roomName__room', {
-				roomName: shouldChangeOwner.pop(),
-			});
-		} else if (shouldChangeOwner.length <= 5) {
-			changeOwnerRooms = t('A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__', {
-				count: shouldChangeOwner.length,
-				rooms: shouldChangeOwner.join(', '),
-			});
-		} else {
-			changeOwnerRooms = t('A_new_owner_will_be_assigned_automatically_to__count__rooms', {
-				count: shouldChangeOwner.length,
-			});
+			return (
+				<Trans
+					i18nKey='A_new_owner_will_be_assigned_automatically_to_the__roomName__room'
+					values={{ roomName: shouldChangeOwner[0] }}
+					components={{ bold: <Box is='span' fontWeight='bold' /> }}
+				/>
+			);
 		}
-	}
+		if (shouldChangeOwner.length <= 5) {
+			return (
+				<Trans
+					i18nKey='A_new_owner_will_be_assigned_automatically_to_those__count__rooms__rooms__'
+					values={{ count: shouldChangeOwner.length, rooms: shouldChangeOwner.join(', ') }}
+					components={{ br: <br />, bold: <Box is='span' fontWeight='bold' /> }}
+				/>
+			);
+		}
+		return (
+			<Trans
+				i18nKey='A_new_owner_will_be_assigned_automatically_to__count__rooms'
+				values={{ count: shouldChangeOwner.length }}
+				components={{ bold: <Box is='span' fontWeight='bold' /> }}
+			/>
+		);
+	});
 
-	let removedRooms = '';
-	if (shouldBeRemoved.length > 0) {
-		if (shouldBeRemoved.length === 1) {
-			removedRooms = t('The_empty_room__roomName__will_be_removed_automatically', {
-				roomName: shouldBeRemoved.pop(),
-			});
-		} else if (shouldBeRemoved.length <= 5) {
-			removedRooms = t('__count__empty_rooms_will_be_removed_automatically__rooms__', {
-				count: shouldBeRemoved.length,
-				rooms: shouldBeRemoved.join(', '),
-			});
-		} else {
-			removedRooms = t('__count__empty_rooms_will_be_removed_automatically', {
-				count: shouldBeRemoved.length,
-			});
+	const getRemovedRooms = useEffectEvent(() => {
+		if (shouldBeRemoved.length === 0) {
+			return '';
 		}
-	}
+
+		if (shouldBeRemoved.length === 1) {
+			return (
+				<Trans
+					i18nKey='The_empty_room__roomName__will_be_removed_automatically'
+					values={{ roomName: shouldBeRemoved[0] }}
+					components={{ bold: <Box is='span' fontWeight='bold' /> }}
+				/>
+			);
+		}
+		if (shouldBeRemoved.length <= 5) {
+			return (
+				<Trans
+					i18nKey='__count__empty_rooms_will_be_removed_automatically__rooms__'
+					values={{ count: shouldBeRemoved.length, rooms: shouldBeRemoved.join(', ') }}
+					components={{ br: <br />, bold: <Box is='span' fontWeight='bold' /> }}
+				/>
+			);
+		}
+		return <Trans i18nKey='__count__empty_rooms_will_be_removed_automatically' values={{ count: shouldBeRemoved.length }} />;
+	});
 
 	return (
 		<GenericModal variant='danger' onClose={onCancel} onCancel={onCancel} confirmText={confirmText} onConfirm={onConfirm}>
 			{contentTitle}
 
-			{changeOwnerRooms && (
-				<Box marginBlock={16}>
-					<RawText>{changeOwnerRooms}</RawText>
-				</Box>
-			)}
-			{removedRooms && (
-				<Box marginBlock={16}>
-					<RawText>{removedRooms}</RawText>
-				</Box>
-			)}
+			{shouldChangeOwner && <Box marginBlock={16}>{getChangeOwnerRooms()}</Box>}
+			{shouldBeRemoved && <Box marginBlock={16}>{getRemovedRooms()}</Box>}
 		</GenericModal>
 	);
 };

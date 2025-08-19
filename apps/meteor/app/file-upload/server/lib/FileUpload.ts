@@ -17,7 +17,7 @@ import filesize from 'filesize';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { Cookies } from 'meteor/ostrio:cookies';
-import type { OptionalId } from 'mongodb';
+import type { ClientSession, OptionalId } from 'mongodb';
 import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
@@ -228,7 +228,7 @@ export const FileUpload = {
 
 	defaults,
 
-	async avatarsOnValidate(this: Store, file: IUpload) {
+	async avatarsOnValidate(this: Store, file: IUpload, options?: { session?: ClientSession }) {
 		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
@@ -277,6 +277,7 @@ export const FileUpload = {
 					...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
 				},
 			},
+			options,
 		);
 	},
 
@@ -359,7 +360,7 @@ export const FileUpload = {
 		return store.insert(details, buffer);
 	},
 
-	async uploadsOnValidate(this: Store, file: IUpload) {
+	async uploadsOnValidate(this: Store, file: IUpload, options?: { session?: ClientSession }) {
 		if (!file.type || !/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type)) {
 			return;
 		}
@@ -409,6 +410,7 @@ export const FileUpload = {
 			{
 				$set: { size, identify },
 			},
+			options,
 		);
 	},
 
@@ -721,13 +723,13 @@ export class FileUploadClass {
 		return modelsAvailable[modelName];
 	}
 
-	async delete(fileId: string) {
+	async delete(fileId: string, options?: { session?: ClientSession }) {
 		// TODO: Remove this method
 		if (this.store?.delete) {
-			await this.store.delete(fileId);
+			await this.store.delete(fileId, { session: options?.session });
 		}
 
-		return this.model.deleteFile(fileId);
+		return this.model.deleteFile(fileId, { session: options?.session });
 	}
 
 	async deleteById(fileId: string) {
@@ -742,8 +744,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	async deleteByName(fileName: string) {
-		const file = await this.model.findOneByName(fileName);
+	async deleteByName(fileName: string, options?: { session?: ClientSession }) {
+		const file = await this.model.findOneByName(fileName, { session: options?.session });
 
 		if (!file) {
 			return;
@@ -766,8 +768,12 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer): Promise<IUpload> {
-		const fileId = await this.store.create(fileData);
+	async _doInsert(
+		fileData: OptionalId<IUpload>,
+		streamOrBuffer: ReadableStream | stream | Buffer,
+		options?: { session?: ClientSession },
+	): Promise<IUpload> {
+		const fileId = await this.store.create(fileData, { session: options?.session });
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		try {
@@ -779,7 +785,7 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			const file = await ufsComplete(fileId, this.name);
+			const file = await ufsComplete(fileId, this.name, { session: options?.session });
 
 			return file;
 		} catch (e: any) {
@@ -787,7 +793,11 @@ export class FileUploadClass {
 		}
 	}
 
-	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream.Readable | Buffer) {
+	async insert(
+		fileData: OptionalId<IUpload>,
+		streamOrBuffer: ReadableStream | stream.Readable | Buffer,
+		options?: { session?: ClientSession },
+	) {
 		if (streamOrBuffer instanceof stream) {
 			streamOrBuffer = await streamToBuffer(streamOrBuffer);
 		}
@@ -803,6 +813,6 @@ export class FileUploadClass {
 			await filter.check(fileData, streamOrBuffer);
 		}
 
-		return this._doInsert(fileData, streamOrBuffer);
+		return this._doInsert(fileData, streamOrBuffer, { session: options?.session });
 	}
 }

@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { Livechat } from '../lib/LivechatTyped';
+import { closeRoom } from '../lib/closeRoom';
 
 type CloseRoomOptions = {
 	clientAction?: boolean;
@@ -44,7 +44,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:closeRoom'(roomId: string, comment?: string, options?: CloseRoomOptions) {
-		methodDeprecationLogger.method('livechat:closeRoom', '7.0.0');
+		methodDeprecationLogger.method('livechat:closeRoom', '7.0.0', '/v1/livechat/room.close');
 
 		const userId = Meteor.userId();
 		if (!userId || !(await hasPermissionAsync(userId, 'close-livechat-room'))) {
@@ -87,7 +87,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Livechat.closeRoom({
+		await closeRoom({
 			user,
 			room,
 			comment,

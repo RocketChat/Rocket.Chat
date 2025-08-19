@@ -11,10 +11,6 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator(`[data-qa-id="chat-button"]`);
 	}
 
-	btnOpenOfflineLiveChat(): Locator {
-		return this.page.frameLocator('#rocketchat-iframe').locator(`button[aria-label="Leave a message"]`);
-	}
-
 	btnFinishOfflineMessage(): Locator {
 		return this.page.frameLocator('#rocketchat-iframe').locator(`button[aria-label="OK"]`);
 	}
@@ -31,16 +27,8 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator(`button >> text="Yes"`);
 	}
 
-	get txtHeaderTitle(): Locator {
-		return this.page.frameLocator('#rocketchat-iframe').locator('div >> text="Chat Finished"');
-	}
-
 	get headerTitle(): Locator {
 		return this.page.frameLocator('#rocketchat-iframe').locator('[data-qa="header-title"]');
-	}
-
-	get btnChatNow(): Locator {
-		return this.page.frameLocator('#rocketchat-iframe').locator('[type="button"] >> text="Chat now"');
 	}
 
 	get btnNewChat(): Locator {
@@ -75,20 +63,8 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator(`img[alt="${username}"]`).last();
 	}
 
-	async closeChat(): Promise<void> {
-		await this.btnOptions.click();
-		await this.btnCloseChat.click();
-		await this.btnCloseChatConfirm.click();
-	}
-
 	async openLiveChat(): Promise<void> {
 		await this.btnOpenLiveChat().click();
-	}
-
-	unreadMessagesBadge(count: number): Locator {
-		const name = count === 1 ? `${count} unread message` : `${count} unread messages`;
-
-		return this.page.frameLocator('#rocketchat-iframe').locator(`role=status[name="${name}"]`);
 	}
 
 	get inputName(): Locator {
@@ -107,10 +83,6 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator(`role=button[name="${btnText}"]`);
 	}
 
-	get btnOk(): Locator {
-		return this.page.frameLocator('#rocketchat-iframe').locator('role=button[name="OK"]');
-	}
-
 	get onlineAgentMessage(): Locator {
 		return this.page.frameLocator('#rocketchat-iframe').locator('[contenteditable="true"]');
 	}
@@ -119,8 +91,8 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator('footer div div div:nth-child(3) button');
 	}
 
-	get firstAutoMessage(): Locator {
-		return this.page.frameLocator('#rocketchat-iframe').locator('div.message-text__WwYco p');
+	get btnExpandChat(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').getByRole('button', { name: 'Expand chat', exact: true });
 	}
 
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true): Promise<void> {

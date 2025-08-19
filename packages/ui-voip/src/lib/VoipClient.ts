@@ -1,7 +1,6 @@
-import type { IMediaStreamRenderer, SignalingSocketEvents, VoipEvents as CoreVoipEvents } from '@rocket.chat/core-typings';
-import { type VoIPUserConfiguration } from '@rocket.chat/core-typings';
+import type { SignalingSocketEvents, VoipEvents as CoreVoipEvents, VoIPUserConfiguration } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { InvitationAcceptOptions, Message, Referral, Session, SessionInviteOptions } from 'sip.js';
+import type { InvitationAcceptOptions, Message, Referral, Session, SessionInviteOptions, Cancel as SipCancel } from 'sip.js';
 import { Registerer, RequestPendingError, SessionState, UserAgent, Invitation, Inviter, RegistererState, UserAgentState } from 'sip.js';
 import type { IncomingResponse, OutgoingByeRequest, URI } from 'sip.js/lib/core';
 import type { SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
@@ -10,12 +9,14 @@ import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 import type { ContactInfo, VoipSession } from '../definitions';
 import LocalStream from './LocalStream';
 import RemoteStream from './RemoteStream';
+import { getMainInviteRejectionReason } from './getMainInviteRejectionReason';
 
 export type VoipEvents = Omit<CoreVoipEvents, 'ringing' | 'callestablished' | 'incomingcall'> & {
 	callestablished: ContactInfo;
 	incomingcall: ContactInfo;
 	outgoingcall: ContactInfo;
 	dialer: { open: boolean };
+	incomingcallerror: string;
 };
 
 type SessionError = {
@@ -33,7 +34,7 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	public networkEmitter: Emitter<SignalingSocketEvents>;
 
-	private mediaStreamRendered: IMediaStreamRenderer | undefined;
+	private audioElement: HTMLAudioElement | null = null;
 
 	private remoteStream: RemoteStream | undefined;
 
@@ -47,16 +48,18 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	private contactInfo: ContactInfo | null = null;
 
-	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
-		super();
+	private reconnecting = false;
 
-		this.mediaStreamRendered = mediaRenderer;
+	private contactName: string | null = null;
+
+	constructor(private readonly config: VoIPUserConfiguration) {
+		super();
 
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
 	}
 
 	public async init() {
-		const { authPassword, authUserName, sipRegistrarHostnameOrIP, iceServers, webSocketURI } = this.config;
+		const { authPassword, authUserName, sipRegistrarHostnameOrIP, iceServers, webSocketURI, iceGatheringTimeout } = this.config;
 
 		const transportOptions = {
 			server: webSocketURI,
@@ -65,18 +68,23 @@ class VoipClient extends Emitter<VoipEvents> {
 		};
 
 		const sdpFactoryOptions = {
-			iceGatheringTimeout: 10,
+			...(typeof iceGatheringTimeout === 'number' && { iceGatheringTimeout }),
 			peerConnectionConfiguration: { iceServers },
 		};
 
+		const searchParams = new URLSearchParams(window.location.search);
+		const debug = Boolean(searchParams.get('debug') || searchParams.get('debug-voip'));
+
 		this.userAgent = new UserAgent({
+			contactName: this.getContactName(),
+			viaHost: this.getContactHostName(),
 			authorizationPassword: authPassword,
 			authorizationUsername: authUserName,
 			uri: UserAgent.makeURI(`sip:${authUserName}@${sipRegistrarHostnameOrIP}`),
 			transportOptions,
 			sessionDescriptionHandlerFactoryOptions: sdpFactoryOptions,
 			logConfiguration: false,
-			logLevel: 'error',
+			logLevel: debug ? 'debug' : 'error',
 			delegate: {
 				onInvite: this.onIncomingCall,
 				onRefer: this.onTransferedCall,
@@ -101,8 +109,8 @@ class VoipClient extends Emitter<VoipEvents> {
 		}
 	}
 
-	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoipClient> {
-		const voip = new VoipClient(config, mediaRenderer);
+	static async create(config: VoIPUserConfiguration): Promise<VoipClient> {
+		const voip = new VoipClient(config);
 		await voip.init();
 		return voip;
 	}
@@ -154,7 +162,7 @@ class VoipClient extends Emitter<VoipEvents> {
 		});
 	};
 
-	public call = async (calleeURI: string, mediaRenderer?: IMediaStreamRenderer): Promise<void> => {
+	public call = async (calleeURI: string): Promise<void> => {
 		if (!calleeURI) {
 			throw new Error('Invalid URI');
 		}
@@ -165,10 +173,6 @@ class VoipClient extends Emitter<VoipEvents> {
 
 		if (!this.userAgent) {
 			throw new Error('No User Agent.');
-		}
-
-		if (mediaRenderer) {
-			this.switchMediaRenderer(mediaRenderer);
 		}
 
 		const target = this.makeURI(calleeURI);
@@ -264,7 +268,10 @@ class VoipClient extends Emitter<VoipEvents> {
 			case SessionState.Established:
 				return this.session.bye();
 			case SessionState.Terminating:
+				console.warn('Trying to end a call that is already Terminating.');
+				break;
 			case SessionState.Terminated:
+				console.warn('Trying to end a call that is already Terminated.');
 				break;
 			default:
 				throw new Error('Unknown state');
@@ -288,35 +295,10 @@ class VoipClient extends Emitter<VoipEvents> {
 			throw new Error('Peer connection closed.');
 		}
 
-		try {
-			const options: SessionInviteOptions = {
-				requestDelegate: {
-					onAccept: (): void => {
-						this.muted = mute;
-						this.toggleMediaStreamTracks('sender', !this.muted);
-						this.toggleMediaStreamTracks('receiver', !this.muted);
-						this.emit('stateChanged');
-					},
-					onReject: (): void => {
-						this.toggleMediaStreamTracks('sender', !this.muted);
-						this.toggleMediaStreamTracks('receiver', !this.muted);
-						this.emit('muteerror');
-					},
-				},
-			};
-
-			await this.session.invite(options);
-
-			this.toggleMediaStreamTracks('sender', !this.muted);
-			this.toggleMediaStreamTracks('receiver', !this.muted);
-		} catch (error) {
-			if (error instanceof RequestPendingError) {
-				console.error(`[${this.session?.id}] A mute request is already in progress.`);
-			}
-
-			this.emit('muteerror');
-			throw error;
-		}
+		const enableTracks = !mute;
+		this.toggleMediaStreamTracks('sender', enableTracks);
+		this.muted = mute;
+		this.emit('stateChanged');
 	};
 
 	public setHold = async (hold: boolean): Promise<void> => {
@@ -404,7 +386,15 @@ class VoipClient extends Emitter<VoipEvents> {
 		}
 
 		if (connectionRetryCount !== -1 && reconnectionAttempt > connectionRetryCount) {
+			console.error('VoIP reconnection limit reached.');
+			this.reconnecting = false;
+			this.emit('stateChanged');
 			return;
+		}
+
+		if (!this.reconnecting) {
+			this.reconnecting = true;
+			this.emit('stateChanged');
 		}
 
 		const reconnectionDelay = Math.pow(2, reconnectionAttempt % 4);
@@ -441,14 +431,12 @@ class VoipClient extends Emitter<VoipEvents> {
 		return true;
 	}
 
-	public switchMediaRenderer(mediaRenderer: IMediaStreamRenderer): void {
-		if (!this.remoteStream) {
-			return;
-		}
+	public switchAudioElement(audioElement: HTMLAudioElement | null): void {
+		this.audioElement = audioElement;
 
-		this.mediaStreamRendered = mediaRenderer;
-		this.remoteStream.init(mediaRenderer.remoteMediaElement);
-		this.remoteStream.play();
+		if (this.remoteStream) {
+			this.playRemoteStream();
+		}
 	}
 
 	private setContactInfo(contact: ContactInfo) {
@@ -525,6 +513,10 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	public isError(): boolean {
 		return !!this.error;
+	}
+
+	public isReconnecting(): boolean {
+		return this.reconnecting;
 	}
 
 	public isOnline(): boolean {
@@ -610,7 +602,12 @@ class VoipClient extends Emitter<VoipEvents> {
 			isOutgoing: this.isOutgoing(),
 			isInCall: this.isInCall(),
 			isError: this.isError(),
+			isReconnecting: this.isReconnecting(),
 		};
+	}
+
+	public getAudioElement(): HTMLAudioElement | null {
+		return this.audioElement;
 	}
 
 	public notifyDialer(value: { open: boolean }) {
@@ -633,12 +630,22 @@ class VoipClient extends Emitter<VoipEvents> {
 		const { remoteMediaStream } = this.sessionDescriptionHandler;
 
 		this.remoteStream = new RemoteStream(remoteMediaStream);
-		const mediaElement = this.mediaStreamRendered?.remoteMediaElement;
+		this.playRemoteStream();
+	}
 
-		if (mediaElement) {
-			this.remoteStream.init(mediaElement);
-			this.remoteStream.play();
+	private playRemoteStream() {
+		if (!this.remoteStream) {
+			console.warn(`Attempted to play missing remote media.`);
+			return;
 		}
+
+		if (!this.audioElement) {
+			console.error('Unable to play remote media: VoIPClient is missing an AudioElement reference to play it on.');
+			return;
+		}
+
+		this.remoteStream.init(this.audioElement);
+		this.remoteStream.play();
 	}
 
 	private makeURI(calleeURI: string): URI | undefined {
@@ -747,20 +754,57 @@ class VoipClient extends Emitter<VoipEvents> {
 	}
 
 	private setError(error: SessionError | null) {
+		console.error(error);
 		this.error = error;
 		this.emit('stateChanged');
 	}
 
 	private onUserAgentConnected = (): void => {
+		console.log('VoIP user agent connected.');
+
+		const wasReconnecting = this.reconnecting;
+
+		this.reconnecting = false;
 		this.networkEmitter.emit('connected');
 		this.emit('stateChanged');
+
+		if (!this.isReady() || !wasReconnecting) {
+			return;
+		}
+
+		this.register()
+			.then(() => {
+				this.emit('stateChanged');
+			})
+			.catch((error?: any) => {
+				console.error('VoIP failed to register after user agent connection.');
+				if (error) {
+					console.error(error);
+				}
+			});
 	};
 
 	private onUserAgentDisconnected = (error: any): void => {
+		console.log('VoIP user agent disconnected.');
+
+		this.reconnecting = !!error;
 		this.networkEmitter.emit('disconnected');
 		this.emit('stateChanged');
 
 		if (error) {
+			if (this.isRegistered()) {
+				this.unregister()
+					.then(() => {
+						this.emit('stateChanged');
+					})
+					.catch((error?: any) => {
+						console.error('VoIP failed to unregister after user agent disconnection.');
+						if (error) {
+							console.error(error);
+						}
+					});
+			}
+
 			this.networkEmitter.emit('connectionerror', error);
 			this.attemptReconnection();
 		}
@@ -784,11 +828,22 @@ class VoipClient extends Emitter<VoipEvents> {
 		this.emit('unregistrationerror', error);
 	};
 
+	private onInvitationCancel(invitation: Invitation, message: SipCancel): void {
+		const reason = getMainInviteRejectionReason(invitation, message);
+		if (reason) {
+			this.emit('incomingcallerror', reason);
+		}
+	}
+
 	private onIncomingCall = async (invitation: Invitation): Promise<void> => {
 		if (!this.isRegistered() || this.session) {
 			await invitation.reject();
 			return;
 		}
+
+		invitation.delegate = {
+			onCancel: (cancel: SipCancel) => this.onInvitationCancel(invitation, cancel),
+		};
 
 		this.initSession(invitation);
 
@@ -863,6 +918,33 @@ class VoipClient extends Emitter<VoipEvents> {
 		this.networkEmitter.emit('localnetworkoffline');
 		this.emit('stateChanged');
 	};
+
+	private getContactHostName(): string | undefined {
+		try {
+			const url = new URL(this.config.siteUrl);
+			return url.hostname;
+		} catch {
+			return undefined;
+		}
+	}
+
+	private createRandomToken(size: number): string {
+		let token = '';
+		for (let i = 0; i < size; i++) {
+			const r = Math.floor(Math.random() * 32);
+			token += r.toString(32);
+		}
+		return token;
+	}
+
+	private getContactName(): string {
+		if (!this.contactName) {
+			const randomName = this.createRandomToken(8);
+			this.contactName = `${this.config.authUserName}-${this.config.userId}-${randomName}`;
+		}
+
+		return this.contactName;
+	}
 }
 
 export default VoipClient;

@@ -14,6 +14,7 @@ API.v1.addRoute(
 		permissionsRequired: ['view-livechat-manager'],
 		validateParams: isLivechatTriggerWebhookTestParams,
 		rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 60000 },
+		license: ['livechat-enterprise'],
 	},
 	{
 		async post() {
@@ -68,6 +69,7 @@ API.v1.addRoute(
 			intervalTimeInMS: 60000,
 		},
 		validateParams: isLivechatTriggerWebhookCallParams,
+		license: ['livechat-enterprise'],
 	},
 	{
 		async post() {

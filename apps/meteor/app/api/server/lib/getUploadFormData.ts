@@ -1,9 +1,8 @@
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
 
 import { MeteorError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';
 import busboy from 'busboy';
-import type { Request } from 'express';
 
 import { getMimeType } from '../../../utils/lib/mimeTypes';
 
@@ -71,7 +70,7 @@ export async function getUploadFormData<
 		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
 	};
 
-	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
+	const bb = busboy({ headers: Object.fromEntries(request.headers.entries()), defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
 	let uploadedFile: UploadResultWithOptionalFile<K> | undefined = {
@@ -142,8 +141,6 @@ export async function getUploadFormData<
 	}
 
 	function cleanup() {
-		request.unpipe(bb);
-		request.on('readable', request.read.bind(request));
 		bb.removeAllListeners();
 	}
 
@@ -167,7 +164,29 @@ export async function getUploadFormData<
 		returnError();
 	});
 
-	request.pipe(bb);
+	const webReadableStream = await request.blob().then((blob) => blob.stream());
+
+	const nodeReadableStream = new Readable({
+		async read() {
+			const reader = webReadableStream.getReader();
+			try {
+				const processChunk = async () => {
+					const { done, value } = await reader.read();
+					if (done) {
+						this.push(null);
+						return;
+					}
+					this.push(Buffer.from(value));
+					await processChunk();
+				};
+				await processChunk();
+			} catch (err: any) {
+				this.destroy(err);
+			}
+		},
+	});
+
+	nodeReadableStream.pipe(bb);
 
 	return new Promise<UploadResultWithOptionalFile<K>>((resolve, reject) => {
 		returnResult = resolve;

@@ -6,6 +6,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import mem from 'mem';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
+import type { FindOptions, SortDirection } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { federationSearchUsers } from '../../app/federation/server/handler';
@@ -32,7 +33,7 @@ const sortChannels = (field: string, direction: 'asc' | 'desc'): Record<string, 
 	}
 };
 
-const sortUsers = (field: string, direction: 'asc' | 'desc') => {
+const sortUsers = (field: string, direction: 'asc' | 'desc'): Record<string, SortDirection> => {
 	switch (field) {
 		case 'email':
 			return {
@@ -183,7 +184,7 @@ const findUsers = async ({
 	viewFullOtherUserInfo,
 }: {
 	text: string;
-	sort: Record<string, number>;
+	sort: Record<string, SortDirection>;
 	pagination: {
 		skip: number;
 		limit: number;
@@ -194,7 +195,7 @@ const findUsers = async ({
 	const searchFields =
 		workspace === 'all' ? ['username', 'name', 'emails.address'] : settings.get<string>('Accounts_SearchFields').trim().split(',');
 
-	const options = {
+	const options: FindOptions<IUser> = {
 		...pagination,
 		sort,
 		projection: {
@@ -264,7 +265,7 @@ const getUsers = async (
 	user: IUser | undefined,
 	text: string,
 	workspace: string,
-	sort: Record<string, number>,
+	sort: Record<string, SortDirection>,
 	pagination: {
 		skip: number;
 		limit: number;
@@ -289,6 +290,7 @@ const getUsers = async (
 
 			// Add the federated user to the results
 			results.unshift({
+				_id: user._id,
 				username: user.username,
 				name: user.name,
 				bio: user.bio,
@@ -306,24 +308,26 @@ const getUsers = async (
 	};
 };
 
+type BrowseChannelsParams = {
+	text?: string;
+	workspace?: string;
+	type?: 'channels' | 'users' | 'teams' | string;
+	sortBy?: 'name' | 'createdAt' | 'usersCount' | 'lastMessage' | 'usernames' | string;
+	sortDirection?: 'asc' | 'desc';
+	page?: number;
+	offset?: number;
+	limit?: number;
+};
+
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		browseChannels: (params: {
-			text?: string;
-			workspace?: string;
-			type?: 'channels' | 'users' | 'teams';
-			sortBy?: 'name' | 'createdAt' | 'usersCount' | 'lastMessage' | 'usernames';
-			sortDirection?: 'asc' | 'desc';
-			page?: number;
-			offset?: number;
-			limit?: number;
-		}) => Promise<unknown>;
+		browseChannels: (params: BrowseChannelsParams) => Promise<unknown>;
 	}
 }
 
-Meteor.methods<ServerMethods>({
-	async browseChannels({
+export const browseChannelsMethod = async (
+	{
 		text = '',
 		workspace = '',
 		type = 'channels',
@@ -332,50 +336,55 @@ Meteor.methods<ServerMethods>({
 		page = 0,
 		offset = 0,
 		limit = 10,
-	}) {
-		const searchTerm = trim(escapeRegExp(text));
+	}: BrowseChannelsParams,
+	user: IUser | undefined | null,
+) => {
+	const searchTerm = trim(escapeRegExp(text));
 
-		if (
-			!['channels', 'users', 'teams'].includes(type) ||
-			!['asc', 'desc'].includes(sortDirection) ||
-			(!page && page !== 0 && !offset && offset !== 0)
-		) {
-			return;
-		}
+	if (
+		!['channels', 'users', 'teams'].includes(type) ||
+		!['asc', 'desc'].includes(sortDirection) ||
+		(!page && page !== 0 && !offset && offset !== 0)
+	) {
+		return;
+	}
 
-		const roomParams = ['channels', 'teams'].includes(type) ? ['usernames', 'lastMessage'] : [];
-		const userParams = type === 'users' ? ['username', 'email', 'bio'] : [];
+	const roomParams = ['channels', 'teams'].includes(type) ? ['usernames', 'lastMessage'] : [];
+	const userParams = type === 'users' ? ['username', 'email', 'bio'] : [];
 
-		if (!['name', 'createdAt', 'usersCount', ...roomParams, ...userParams].includes(sortBy)) {
-			return;
-		}
+	if (!['name', 'createdAt', 'usersCount', ...roomParams, ...userParams].includes(sortBy)) {
+		return;
+	}
 
-		const skip = Math.max(0, offset || (page > -1 ? limit * page : 0));
+	const skip = Math.max(0, offset || (page > -1 ? limit * page : 0));
 
-		limit = limit > 0 ? limit : 10;
+	limit = limit > 0 ? limit : 10;
 
-		const pagination = {
-			skip,
-			limit,
-		};
+	const pagination = {
+		skip,
+		limit,
+	};
 
-		const canViewAnonymous = !!settings.get('Accounts_AllowAnonymousRead');
+	const canViewAnonymous = !!settings.get('Accounts_AllowAnonymousRead');
 
-		const user = (await Meteor.userAsync()) as IUser | null;
+	if (!user) {
+		return;
+	}
 
-		if (!user) {
-			return;
-		}
+	switch (type) {
+		case 'channels':
+			return getChannelsAndGroups(user, canViewAnonymous, searchTerm, sortChannels(sortBy, sortDirection), pagination);
+		case 'teams':
+			return getTeams(user, searchTerm, sortChannels(sortBy, sortDirection), pagination);
+		case 'users':
+			return getUsers(user, text, workspace, sortUsers(sortBy, sortDirection), pagination);
+		default:
+	}
+};
 
-		switch (type) {
-			case 'channels':
-				return getChannelsAndGroups(user, canViewAnonymous, searchTerm, sortChannels(sortBy, sortDirection), pagination);
-			case 'teams':
-				return getTeams(user, searchTerm, sortChannels(sortBy, sortDirection), pagination);
-			case 'users':
-				return getUsers(user, text, workspace, sortUsers(sortBy, sortDirection), pagination);
-			default:
-		}
+Meteor.methods<ServerMethods>({
+	async browseChannels(params: BrowseChannelsParams) {
+		return browseChannelsMethod(params, (await Meteor.userAsync()) as IUser | null);
 	},
 });
 

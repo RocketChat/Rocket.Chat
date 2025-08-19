@@ -24,6 +24,7 @@ import type {
 	LicenseLimitKind,
 	ICustomUserStatus,
 	IWebdavAccount,
+	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -56,7 +57,15 @@ export interface StreamerEvents {
 					users: string[];
 					ids?: string[]; // message ids have priority over ts
 					showDeletedStatus?: boolean;
-				},
+				} & (
+					| {
+							filesOnly: true;
+							replaceFileAttachmentsWith?: MessageAttachment;
+					  }
+					| {
+							filesOnly?: false;
+					  }
+				),
 			];
 		},
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
@@ -443,6 +452,14 @@ export interface StreamerEvents {
 		},
 		{
 			key: `department/${string}`;
+			args: [
+				{
+					type: 'added' | 'removed' | 'changed';
+				} & ILivechatInquiryRecord,
+			];
+		},
+		{
+			key: `agent/${string}`;
 			args: [
 				{
 					type: 'added' | 'removed' | 'changed';

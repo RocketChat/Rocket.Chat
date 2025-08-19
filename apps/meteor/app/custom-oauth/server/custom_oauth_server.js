@@ -445,7 +445,11 @@ Accounts.updateOrCreateUserFromExternalService = async function (...args /* serv
 
 	const [serviceName, serviceData] = args;
 
-	const user = updateOrCreateUserFromExternalService.apply(this, args);
+	const user = await updateOrCreateUserFromExternalService.apply(this, args);
+	if (!user.userId) {
+		return undefined;
+	}
+
 	const fullUser = await Users.findOneById(user.userId);
 	if (settings.get('LDAP_Update_Data_On_OAuth_Login')) {
 		await LDAP.loginAuthenticatedUserRequest(fullUser.username);

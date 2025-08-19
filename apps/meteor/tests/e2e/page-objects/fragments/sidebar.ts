@@ -1,7 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { expect } from '../../utils/test';
-
 export class Sidebar {
 	private readonly page: Page;
 
@@ -11,68 +9,70 @@ export class Sidebar {
 
 	// New navigation locators
 	get sidebar(): Locator {
-		return this.page.getByRole('navigation', { name: 'sidebar' });
+		return this.page.getByRole('navigation', { name: 'Sidebar' });
 	}
 
-	get sidebarSearchSection(): Locator {
-		return this.sidebar.getByRole('search');
+	get teamCollabFilters(): Locator {
+		return this.sidebar.getByRole('tablist', { name: 'Team collaboration filters' });
 	}
 
-	get btnRecent(): Locator {
-		return this.sidebarSearchSection.getByRole('button', { name: 'Recent' });
+	get omnichannelFilters(): Locator {
+		return this.sidebar.getByRole('tablist', { name: 'Omnichannel filters' });
+	}
+
+	get allTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'All' });
+	}
+
+	get mentionsTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button').filter({ hasText: 'Mentions' });
+	}
+
+	get favoritesTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'Favorites' });
+	}
+
+	get discussionsTeamCollabFilter(): Locator {
+		return this.teamCollabFilters.getByRole('button', { name: 'Discussions' });
+	}
+
+	// TODO: fix this filter, workaround due to virtuoso
+	get topChannelList(): Locator {
+		return this.sidebar.getByTestId('virtuoso-top-item-list');
 	}
 
 	get channelsList(): Locator {
-		return this.sidebar.getByRole('list', { name: 'Channels' });
+		// TODO: fix this filter, workaround due to virtuoso
+		// return this.sidebar.getByRole('list', { name: 'Channels' }).filter({ has: this.page.getByRole('listitem') });
+		return this.sidebar.getByTestId('virtuoso-item-list');
 	}
 
-	get searchList(): Locator {
-		return this.sidebar.getByRole('search').getByRole('list', { name: 'Channels' });
+	getSearchRoomByName(name: string) {
+		return this.channelsList.getByRole('button', { name, exact: true });
 	}
 
 	get firstCollapser(): Locator {
-		return this.channelsList.getByRole('button').first();
+		return this.topChannelList.getByRole('region').first();
+	}
+
+	get teamsCollapser(): Locator {
+		return this.sidebar.getByRole('region', { name: 'Collapse Teams' }).first();
+	}
+
+	get channelsCollapser(): Locator {
+		return this.channelsList.getByRole('region', { name: 'Collapse Channels' });
+	}
+
+	get directMessagesCollapser(): Locator {
+		return this.channelsList.getByRole('region', { name: 'Collapse Direct messages' });
 	}
 
 	get firstChannelFromList(): Locator {
 		return this.channelsList.getByRole('listitem').first();
 	}
 
-	get searchInput(): Locator {
-		return this.sidebarSearchSection.getByRole('searchbox');
-	}
-
-	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.sidebarSearchSection.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebarSearchSection.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.sidebarSearchSection.click();
-	}
-
 	async escSearch(): Promise<void> {
 		await this.page.keyboard.press('Escape');
-	}
-
-	async waitForChannel(): Promise<void> {
-		await this.page.locator('role=main').waitFor();
-		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
-		const messageList = this.page.getByRole('main').getByRole('list', { name: 'Message list', exact: true });
-		await messageList.waitFor();
-
-		await expect(messageList).not.toHaveAttribute('aria-busy', 'true');
-	}
-
-	async typeSearch(name: string): Promise<void> {
-		return this.searchInput.fill(name);
-	}
-
-	getSearchRoomByName(name: string): Locator {
-		return this.searchList.getByRole('link', { name });
-	}
-
-	async openChat(name: string): Promise<void> {
-		await this.typeSearch(name);
-		await this.getSearchRoomByName(name).click();
-		await this.waitForChannel();
 	}
 
 	async markItemAsUnread(item: Locator): Promise<void> {

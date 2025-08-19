@@ -15,12 +15,6 @@ import Login from './actions/Login';
 import Search from './actions/Search';
 import Sort from './actions/Sort';
 
-/**
- * @deprecated Feature preview
- * @description Should be removed when the feature became part of the core
- * @memberof navigationBar
- */
-
 const Header = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();

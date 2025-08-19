@@ -198,7 +198,7 @@ export class MockedLicenseBuilder {
 		return this;
 	}
 
-	public withGratedModules(modules: LicenseModule[]): this {
+	public withGrantedModules(modules: LicenseModule[]): this {
 		this.grantedModules = this.grantedModules ?? [];
 		this.grantedModules.push(
 			...(modules.map((module) => ({ module, external: !CoreModules.includes(module as InternalModuleName) })) as GrantedModules),
@@ -206,7 +206,7 @@ export class MockedLicenseBuilder {
 		return this;
 	}
 
-	withNoGratedModules(modules: LicenseModule[]): this {
+	withNoGrantedModules(modules: LicenseModule[]): this {
 		this.grantedModules = this.grantedModules ?? [];
 		this.grantedModules = this.grantedModules.filter(({ module }) => !modules.includes(module));
 		return this;

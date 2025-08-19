@@ -4,11 +4,7 @@ import type { StorybookConfig } from '@storybook/react-webpack5';
 
 const config: StorybookConfig = {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
-	addons: [
-		getAbsolutePath('@storybook/addon-essentials'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
-		getAbsolutePath('@storybook/addon-styling-webpack'),
-	],
+	addons: [getAbsolutePath('@storybook/addon-essentials'), './webpackAddon', getAbsolutePath('@storybook/addon-styling-webpack')],
 
 	framework: {
 		name: getAbsolutePath('@storybook/react-webpack5'),

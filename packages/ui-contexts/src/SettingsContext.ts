@@ -6,11 +6,12 @@ export type SettingsContextQuery = {
 	readonly group?: ISetting['_id'];
 	readonly section?: string;
 	readonly tab?: ISetting['_id'];
+	readonly skip?: number;
+	readonly limit?: number;
 };
 
 export type SettingsContextValue = {
 	readonly hasPrivateAccess: boolean;
-	readonly isLoading: boolean;
 	readonly querySetting: (
 		_id: ISetting['_id'],
 	) => [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined];
@@ -22,7 +23,6 @@ export type SettingsContextValue = {
 
 export const SettingsContext = createContext<SettingsContextValue>({
 	hasPrivateAccess: false,
-	isLoading: false,
 	querySetting: () => [(): (() => void) => (): void => undefined, (): undefined => undefined],
 	querySettings: () => [(): (() => void) => (): void => undefined, (): ISetting[] => []],
 	dispatch: async () => undefined,

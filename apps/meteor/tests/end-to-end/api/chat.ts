@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -51,7 +51,6 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', '[invalid-channel]');
 				})
 				.end(done);
 		});
@@ -514,6 +513,60 @@ describe('[Chat]', () => {
 					message = { _id: res.body.message._id };
 				})
 				.end(done);
+		});
+
+		it('should not parse urls when parseUrls=false is provided', async () => {
+			return request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: apiUrl,
+					parseUrls: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', apiUrl);
+					expect(res.body.message).to.not.have.property('urls');
+				});
+		});
+
+		it('should parse urls when parseUrls=true is provided', async () => {
+			return request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: apiUrl,
+					parseUrls: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', apiUrl);
+					expect(res.body.message).to.have.property('urls');
+				});
+		});
+
+		it('should parse urls when parseUrls is not provided', async () => {
+			return request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: apiUrl,
+					parseUrls: undefined,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', apiUrl);
+					expect(res.body.message).to.have.property('urls');
+				});
 		});
 
 		describe('text message allowed size', () => {
@@ -1386,7 +1439,7 @@ describe('[Chat]', () => {
 					.set(credentials)
 					.send({
 						roomId: testChannel._id,
-						msg: 'Sample message',
+						text: 'Sample message',
 						customFields,
 					})
 					.expect('Content-Type', 'application/json')
@@ -2455,7 +2508,7 @@ describe('[Chat]', () => {
 		});
 
 		describe('when an error occurs', () => {
-			it('should return statusCode 400 and an error when "roomId" is not provided', (done) => {
+			it('should return statusCode 400', (done) => {
 				void request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
@@ -2468,7 +2521,6 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('The required "roomId" query param is missing.');
 					})
 					.end(done);
 			});
@@ -2485,7 +2537,6 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('The required "since" query param is missing.');
 					})
 					.end(done);
 			});
@@ -2503,7 +2554,6 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('The "since" query parameter must be a valid date.');
 					})
 					.end(done);
 			});
@@ -2923,7 +2973,6 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-roomId-param-not-provided');
 					})
 					.end(done);
 			});
@@ -2952,7 +3001,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.end(done);
 		});
@@ -3011,7 +3060,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.end(done);
 		});
@@ -3087,7 +3136,6 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
 				})
 				.end(done);
 		});
@@ -3847,8 +3895,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-room-id-param-not-provided');
-						expect(res.body).to.have.property('error', 'The required "rid" query param is missing. [error-room-id-param-not-provided]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3866,8 +3913,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -3886,11 +3932,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property(
-							'error',
-							'The "updatedSince" query parameter must be a valid date. [error-updatedSince-param-invalid]',
-						);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -4088,7 +4130,7 @@ describe('Threads', () => {
 					.set(credentials)
 					.query({
 						tmid: threadMessage.tmid,
-						updatedSince: 'updatedSince',
+						updatedSince: new Date().toISOString(),
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -4111,8 +4153,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-						expect(res.body).to.have.property('error', 'The required "tmid" query param is missing. [error-invalid-params]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -4130,8 +4171,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -4150,11 +4190,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property(
-							'error',
-							'The "updatedSince" query parameter must be a valid date. [error-updatedSince-param-invalid]',
-						);
+						expect(res.body).to.have.property('errorType', 'invalid-params');
 					})
 					.end(done);
 			});
@@ -4461,7 +4497,6 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('invalid-params');
 					});
 			});
 			it('should return statusCode 400 and an error when "url" is not provided', async () => {
@@ -4475,7 +4510,6 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('invalid-params');
 					});
 			});
 			it('should return statusCode 400 and an error when "roomId" is provided but user is not in the room', async () => {

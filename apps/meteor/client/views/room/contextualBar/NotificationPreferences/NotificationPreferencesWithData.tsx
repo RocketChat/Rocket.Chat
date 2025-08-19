@@ -1,26 +1,30 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useTranslation, useCustomSound } from '@rocket.chat/ui-contexts';
+import { useCustomSound, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import NotificationPreferences from './NotificationPreferences';
-import { useEndpointAction } from '../../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
 const NotificationPreferencesWithData = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const room = useRoom();
 	const subscription = useRoomSubscription();
 	const { closeTab } = useRoomToolbox();
 	const customSound = useCustomSound();
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	const saveSettings = useEndpointAction('POST', '/v1/rooms.saveNotification', {
-		successMessage: t('Room_updated_successfully'),
+	const { mutateAsync: saveSettings } = useEndpointMutation('POST', '/v1/rooms.saveNotification', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
+		},
 	});
 
-	const customSoundAsset: SelectOption[] | undefined = customSound?.getList()?.map((value) => [value._id, value.name]);
+	const customSoundAsset: SelectOption[] | undefined = customSound.list?.map((value) => [value._id, value.name]);
 
 	const defaultOption: SelectOption[] = [
 		['default', t('Default')],
@@ -59,7 +63,7 @@ const NotificationPreferencesWithData = (): ReactElement => {
 	};
 
 	const handleSave = methods.handleSubmit(
-		({ turnOn, muteGroupMentions, showCounter, showMentions, desktopAlert, desktopSound, mobileAlert, emailAlert }) => {
+		async ({ turnOn, muteGroupMentions, showCounter, showMentions, desktopAlert, desktopSound, mobileAlert, emailAlert }) => {
 			const notifications = {
 				disableNotifications: turnOn ? '0' : '1',
 				muteGroupMentions: muteGroupMentions ? '1' : '0',
@@ -71,7 +75,7 @@ const NotificationPreferencesWithData = (): ReactElement => {
 				emailNotifications: emailAlert,
 			};
 
-			saveSettings({
+			await saveSettings({
 				roomId: room._id,
 				notifications,
 			});

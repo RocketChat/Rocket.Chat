@@ -6,6 +6,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import RoomFileItemWrapper from './RoomFileItemWrapper';
+import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
 import {
 	ContextualbarHeader,
@@ -14,8 +16,9 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarEmptyContent,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 
 type RoomFilesProps = {
 	loading: boolean;
@@ -57,7 +60,7 @@ const RoomFiles = ({
 	);
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='attachment' />
 				<ContextualbarTitle>{t('Files')}</ContextualbarTitle>
@@ -84,22 +87,27 @@ const RoomFiles = ({
 				{!loading && filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 				{!loading && filesItems.length > 0 && (
 					<Box w='full' h='full' flexShrink={1} overflow='hidden'>
-						<Virtuoso
-							style={{
-								height: '100%',
-								width: '100%',
-							}}
-							totalCount={total}
-							endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
-							overscan={50}
-							data={filesItems}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{
+									height: '100%',
+									width: '100%',
+								}}
+								totalCount={total}
+								endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
+								overscan={100}
+								data={filesItems}
+								itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
+								components={{
+									List: RoomFilesListWrapper,
+									Item: RoomFileItemWrapper,
+								}}
+							/>
+						</VirtualizedScrollbars>
 					</Box>
 				)}
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

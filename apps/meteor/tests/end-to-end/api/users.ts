@@ -2006,6 +2006,63 @@ describe('[Users]', () => {
 			await deleteUser(user);
 		});
 
+		describe('email verification', () => {
+			let admin: TestUser<IUser>;
+			let userToUpdate: TestUser<IUser>;
+			let userCredentials: Credentials;
+
+			beforeEach(async () => {
+				admin = await createUser({ roles: ['admin'] });
+				userToUpdate = await createUser();
+				userCredentials = await login(admin.username, password);
+			});
+
+			afterEach(async () => {
+				await deleteUser(userToUpdate);
+				await deleteUser(admin);
+			});
+
+			it("should update user's email verified correctly", async () => {
+				await request
+					.post(api('users.update'))
+					.set(userCredentials)
+					.send({
+						userId: userToUpdate._id,
+						data: {
+							verified: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+						expect(res.body).to.not.have.nested.property('user.e2e');
+					});
+			});
+
+			it("should update user's email verified even if email is not changed", (done) => {
+				void request
+					.post(api('users.update'))
+					.set(userCredentials)
+					.send({
+						userId: userToUpdate._id,
+						data: {
+							email: userToUpdate.emails[0].address,
+							verified: true,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('user.emails[0].verified', true);
+						expect(res.body).to.not.have.nested.property('user.e2e');
+					})
+					.end(done);
+			});
+		});
+
 		function failUpdateUser(name: string) {
 			it(`should not update an user if the new username is the reserved word ${name}`, (done) => {
 				void request
@@ -2029,6 +2086,168 @@ describe('[Users]', () => {
 
 		reservedWords.forEach((name) => {
 			failUpdateUser(name);
+		});
+
+		describe('Custom Fields', () => {
+			let testUser: TestUser<IUser>;
+
+			before(async () => {
+				await setCustomFields({
+					customFieldText1: {
+						type: 'text',
+						required: false,
+					},
+					customFieldText2: {
+						type: 'text',
+						required: false,
+					},
+				});
+			});
+
+			after(async () => {
+				await clearCustomFields();
+			});
+
+			beforeEach(async () => {
+				testUser = await createUser();
+			});
+
+			afterEach(async () => {
+				await deleteUser(testUser);
+			});
+
+			it('should merge custom fields instead of replacing them when updating a user', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: 'value1',
+								customFieldText2: 'value2',
+							},
+						},
+					})
+					.expect(200);
+
+				const updateResponse = await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: 'updated1',
+							},
+						},
+					})
+					.expect(200);
+
+				expect(updateResponse.body).to.have.property('success', true);
+				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', 'updated1');
+				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText2', 'value2');
+
+				const userInfoResponse = await request.get(api('users.info')).set(credentials).query({ userId: testUser._id }).expect(200);
+
+				expect(userInfoResponse.body).to.have.property('success', true);
+				expect(userInfoResponse.body).to.have.nested.property('user.customFields.customFieldText1', 'updated1');
+				expect(userInfoResponse.body).to.have.nested.property('user.customFields.customFieldText2', 'value2');
+			});
+
+			it('should preserve existing custom fields when adding new ones', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: 'initial1',
+							},
+						},
+					})
+					.expect(200);
+
+				const updateResponse = await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText2: 'additional2',
+							},
+						},
+					})
+					.expect(200);
+
+				expect(updateResponse.body).to.have.property('success', true);
+				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', 'initial1');
+				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText2', 'additional2');
+			});
+
+			it('should update custom field with empty string', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: 'value1',
+							},
+						},
+					})
+					.expect(200);
+
+				const updateResponse = await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: '',
+							},
+						},
+					})
+					.expect(200);
+
+				expect(updateResponse.body).to.have.property('success', true);
+				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', '');
+			});
+
+			it('should update custom field with null', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: 'value1',
+							},
+						},
+					})
+					.expect(200);
+
+				const updateResponse = await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							customFields: {
+								customFieldText1: null,
+							},
+						},
+					})
+					.expect(200);
+
+				expect(updateResponse.body).to.have.property('success', true);
+				expect(updateResponse.body).to.have.nested.property('user.customFields.customFieldText1', null);
+			});
 		});
 	});
 
@@ -3089,6 +3308,31 @@ describe('[Users]', () => {
 			before(() => updatePermission('create-personal-access-tokens', ['admin']));
 			after(() => updatePermission('create-personal-access-tokens', ['admin']));
 
+			it('should accept loginToken when we call /me', async () => {
+				let loginToken = '';
+				await request
+					.post(api('users.generatePersonalAccessToken'))
+					.set(credentials)
+					.send({
+						tokenName: 'test',
+						loginToken: '1234567890',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('token');
+						loginToken = res.body.token;
+					});
+
+				await request
+					.get(api('me')) // it does not really matter what we call here, we just want to test that the loginToken is accepted
+					.set({
+						'X-Auth-Token': loginToken,
+						'X-User-Id': credentials['X-User-Id'],
+					})
+					.expect(200);
+			});
 			describe('[/users.getPersonalAccessTokens]', () => {
 				it('should return an array when the user does not have personal tokens configured', (done) => {
 					void request

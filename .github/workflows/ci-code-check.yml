@@ -15,7 +15,7 @@ env:
 
 jobs:
   code-check:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
 
@@ -47,7 +47,7 @@ jobs:
       #     docker rmi $(docker image ls -aq)
       #     df -h
 
-      - uses: rharkor/caching-for-turbo@v1.5
+      - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore turbo build
         uses: actions/download-artifact@v4

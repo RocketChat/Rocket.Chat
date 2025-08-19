@@ -27,10 +27,11 @@ export async function configurePushNotifications(settings: ICachedSettings): Pro
 			  }
 			| undefined;
 
+		//  TODO: this part of the code should be refactored as the deprecated GCM methods are no longer being used and FCM is preferred.
 		if (!gateways) {
 			gcm = {
-				apiKey: settings.get('Push_gcm_api_key'),
-				projectNumber: settings.get('Push_gcm_project_number'),
+				apiKey: 'TO_BE_REFACTORED',
+				projectNumber: 'TO_BE_REFACTORED',
 			};
 
 			apn = {

@@ -50,13 +50,13 @@ export class MessageReadsRaw extends BaseRaw<MessageReads> implements IMessageRe
 			tmid,
 			userId: { $in: userIds },
 		};
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 
 	async countByThreadId(tmid: IMessage['_id']): Promise<number> {
 		const query = {
 			tmid,
 		};
-		return this.col.countDocuments(query);
+		return this.countDocuments(query);
 	}
 }

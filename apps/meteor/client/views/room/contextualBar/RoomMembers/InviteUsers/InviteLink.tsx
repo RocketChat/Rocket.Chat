@@ -1,5 +1,5 @@
 import { Box, Field, FieldLabel, FieldRow, UrlInput, Icon, Button, InputBox } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { useId, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useClipboardWithToast from '../../../../../hooks/useClipboardWithToast';
@@ -13,14 +13,19 @@ type InviteLinkProps = {
 const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps): ReactElement => {
 	const { t } = useTranslation();
 	const { copy } = useClipboardWithToast(linkText);
+	const inviteLinkId = useId();
 
 	return (
 		<>
 			<Field>
-				<FieldLabel flexGrow={0}>{t('Invite_Link')}</FieldLabel>
+				<FieldLabel htmlFor={inviteLinkId} flexGrow={0}>
+					{t('Invite_Link')}
+				</FieldLabel>
 				<FieldRow>
 					{!linkText && <InputBox.Skeleton />}
-					{linkText && <UrlInput value={linkText} addon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />}
+					{linkText && (
+						<UrlInput id={inviteLinkId} value={linkText} addon={<Icon onClick={(): Promise<void> => copy()} name='copy' size='x16' />} />
+					)}
 				</FieldRow>
 				{captionText && (
 					<Box pb={8} color='annotation' fontScale='c2'>

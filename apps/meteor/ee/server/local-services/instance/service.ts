@@ -1,6 +1,8 @@
 import os from 'os';
 
-import { License, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { AppStatusReport } from '@rocket.chat/core-services';
+import { Apps, License, ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import EJSON from 'ejson';
@@ -9,7 +11,9 @@ import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
 import { getLogger } from './getLogger';
 import { getTransporter } from './getTransporter';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
+import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 
 const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
@@ -75,12 +79,9 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			extra: process.env.TRANSPORTER_EXTRA,
 		});
 
-		const activeInstances = InstanceStatusRaw.getActiveInstancesAddress();
+		const isTransporterTCP = typeof transporter !== 'string';
 
-		this.transporter =
-			typeof transporter !== 'string'
-				? new Transporters.TCP({ ...transporter, urls: activeInstances })
-				: new Transporters.NATS({ url: transporter });
+		this.transporter = isTransporterTCP ? new Transporters.TCP(transporter) : new Transporters.NATS({ url: transporter });
 
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
@@ -117,7 +118,48 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 					}
 				},
 			},
+			actions: {
+				getAppsStatus(_ctx) {
+					return Apps.getAppsStatusLocal();
+				},
+			},
 		});
+
+		if (isTransporterTCP) {
+			const changeStream = InstanceStatusRaw.watchActiveInstances();
+
+			changeStream
+				.on('change', (change) => {
+					if (change.operationType === 'update') {
+						return;
+					}
+					if (change.operationType === 'insert' && change.fullDocument?.extraInformation?.tcpPort) {
+						this.connectNode(change.fullDocument);
+						return;
+					}
+					if (change.operationType === 'delete') {
+						this.disconnectNode(change.documentKey._id);
+					}
+				})
+				.once('error', (err) => {
+					SystemLogger.error({ msg: 'Error in InstanceStatus change stream:', err });
+				});
+		}
+	}
+
+	private connectNode(record: IInstanceStatus) {
+		if (record._id === InstanceStatus.id()) {
+			return;
+		}
+
+		const { host, tcpPort } = record.extraInformation;
+
+		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
+	}
+
+	private disconnectNode(nodeId: string) {
+		(this.broker.transit?.tx as any).nodes.disconnected(nodeId, false);
+		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
 	}
 
 	async started() {
@@ -175,5 +217,46 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 	async getInstances(): Promise<BrokerNode[]> {
 		return this.broker.call('$node.list', { onlyAvailable: true });
+	}
+
+	async getAppsStatusInInstances(): Promise<AppStatusReport> {
+		const instances = await this.getInstances();
+
+		if (instances.length < 2) {
+			throw new AppsEngineNoNodesFoundError();
+		}
+
+		const control: Promise<void>[] = [];
+		const statusByApp: AppStatusReport = {};
+
+		instances.forEach((instance) => {
+			const { id: instanceId } = instance;
+
+			control.push(
+				(async () => {
+					const appsStatus = await this.broker.call<Awaited<ReturnType<(typeof Apps)['getAppsStatusLocal']>>, null>(
+						'matrix.getAppsStatus',
+						null,
+						{ nodeID: instanceId },
+					);
+
+					if (!appsStatus) {
+						throw new Error(`Failed to get apps status from instance ${instanceId}`);
+					}
+
+					appsStatus.forEach(({ status, appId }) => {
+						if (!statusByApp[appId]) {
+							statusByApp[appId] = [];
+						}
+
+						statusByApp[appId].push({ instanceId, isLocal: instance.local, status });
+					});
+				})(),
+			);
+		});
+
+		await Promise.all(control);
+
+		return statusByApp;
 	}
 }

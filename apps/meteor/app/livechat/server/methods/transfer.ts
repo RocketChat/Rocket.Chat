@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { normalizeTransferredByData } from '../lib/Helper';
-import { Livechat } from '../lib/LivechatTyped';
+import { transfer } from '../lib/transfer';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -27,7 +27,7 @@ declare module '@rocket.chat/ddp-client' {
 // TODO: Deprecated: Remove in v6.0.0
 Meteor.methods<ServerMethods>({
 	async 'livechat:transfer'(transferData) {
-		methodDeprecationLogger.method('livechat:transfer', '7.0.0');
+		methodDeprecationLogger.method('livechat:transfer', '7.0.0', '/v1/livechat/room.forward');
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:transfer' });
@@ -100,6 +100,6 @@ Meteor.methods<ServerMethods>({
 			};
 		}
 
-		return Livechat.transfer(room, guest, normalizedTransferData);
+		return transfer(room, guest, normalizedTransferData);
 	},
 });

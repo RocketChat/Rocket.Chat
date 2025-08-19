@@ -13,10 +13,10 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
-	ContextualbarInnerContent,
 	ContextualbarFooter,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxContext';
 
 type CannedResponseListProps = {
@@ -65,13 +65,25 @@ const CannedResponseList = ({
 
 	const cannedItem = cannedItems.find((canned) => canned._id === cannedId);
 
+	if (cannedItem) {
+		return (
+			<WrapCannedResponse
+				allowUse={!isRoomOverMacLimit}
+				cannedItem={cannedItem}
+				onClickBack={onClickItem}
+				onClickUse={onClickUse}
+				onClose={onClose}
+				reload={reload}
+			/>
+		);
+	}
+
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{t('Canned_Responses')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
 					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
@@ -92,48 +104,34 @@ const CannedResponseList = ({
 				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
 					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-						<Virtuoso
-							style={{ width: inlineSize }}
-							totalCount={itemCount}
-							endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
-							overscan={25}
-							data={cannedItems}
-							components={{
-								Scroller: VirtuosoScrollbars,
-							}}
-							itemContent={(_index, data): ReactElement => (
-								<Item
-									data={data}
-									allowUse={!isRoomOverMacLimit}
-									onClickItem={(): void => {
-										onClickItem(data);
-									}}
-									onClickUse={onClickUse}
-								/>
-							)}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{ width: inlineSize }}
+								totalCount={itemCount}
+								endReached={loading ? undefined : (start): void => loadMoreItems(start, Math.min(25, itemCount - start))}
+								overscan={25}
+								data={cannedItems}
+								itemContent={(_index, data): ReactElement => (
+									<Item
+										data={data}
+										allowUse={!isRoomOverMacLimit}
+										onClickItem={(): void => {
+											onClickItem(data);
+										}}
+										onClickUse={onClickUse}
+									/>
+								)}
+							/>
+						</VirtualizedScrollbars>
 					</Box>
 				)}
 			</ContextualbarContent>
-
-			{cannedItem && (
-				<ContextualbarInnerContent>
-					<WrapCannedResponse
-						allowUse={!isRoomOverMacLimit}
-						cannedItem={cannedItem}
-						onClickBack={onClickItem}
-						onClickUse={onClickUse}
-						reload={reload}
-					/>
-				</ContextualbarInnerContent>
-			)}
-
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClickCreate}>{t('Create')}</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

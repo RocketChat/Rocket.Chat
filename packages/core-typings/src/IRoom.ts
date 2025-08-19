@@ -8,8 +8,6 @@ import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
-const sidepanelItemValues = ['channels', 'discussions'] as const;
-export type SidepanelItem = (typeof sidepanelItemValues)[number];
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -90,31 +88,11 @@ export interface IRoom extends IRocketChatRecord {
 
 	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
 
-	sidepanel?: {
-		items: [SidepanelItem, SidepanelItem?];
-	};
-
-	rolePrioritiesCreated?: boolean;
+	/**
+	 * @deprecated Using `boolean` is deprecated. Use `number` instead.
+	 */
+	rolePrioritiesCreated?: number | boolean;
 }
-
-export const isSidepanelItem = (item: any): item is SidepanelItem => {
-	return sidepanelItemValues.includes(item);
-};
-
-export const isValidSidepanel = (sidepanel: IRoom['sidepanel']) => {
-	if (sidepanel === null) {
-		return true;
-	}
-	if (!sidepanel?.items) {
-		return false;
-	}
-	return (
-		Array.isArray(sidepanel.items) &&
-		sidepanel.items.length &&
-		sidepanel.items.every(isSidepanelItem) &&
-		sidepanel.items.length === new Set(sidepanel.items).size
-	);
-};
 
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
 	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
@@ -289,9 +267,6 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	slaId?: string;
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes']; // It should always have a default value for sorting mechanism to work
 
-	// Signals if the room already has a pdf transcript requested
-	// This prevents the user from requesting a transcript multiple times
-	pdfTranscriptRequested?: boolean;
 	// The ID of the pdf file generated for the transcript
 	// This will help if we want to have this file shown on other places of the UI
 	pdfTranscriptFileId?: string;
@@ -422,6 +397,7 @@ export interface IRoomWithRetentionPolicy extends IRoom {
 
 export const ROOM_ROLE_PRIORITY_MAP = {
 	owner: 0,
+	leader: 250,
 	moderator: 500,
 	default: 10000,
 };

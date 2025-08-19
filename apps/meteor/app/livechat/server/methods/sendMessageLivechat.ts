@@ -5,8 +5,8 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
-import { Livechat } from '../lib/LivechatTyped';
 import type { ILivechatMessage } from '../lib/localTypes';
+import { sendMessage } from '../lib/messages';
 
 interface ILivechatMessageAgent {
 	agentId: string;
@@ -59,7 +59,7 @@ export const sendMessageLivechat = async ({
 		throw new Meteor.Error('message-length-exceeds-character-limit');
 	}
 
-	return Livechat.sendMessage({
+	return sendMessage({
 		guest,
 		message: {
 			_id,

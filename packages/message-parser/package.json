@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/message-parser",
   "description": "Rocket.Chat parser for messages",
-  "version": "0.31.31",
+  "version": "0.31.32",
   "author": {
     "name": "Rocket.Chat",
     "url": "https://rocket.chat/"
@@ -48,32 +48,32 @@
     "docs": "typedoc"
   },
   "devDependencies": {
-    "@babel/core": "~7.26.0",
+    "@babel/core": "~7.26.10",
     "@babel/eslint-parser": "~7.25.9",
-    "@babel/preset-env": "~7.26.0",
+    "@babel/preset-env": "~7.26.9",
     "@rocket.chat/eslint-config": "workspace:^",
     "@rocket.chat/jest-presets": "workspace:~",
     "@rocket.chat/peggy-loader": "workspace:~",
     "@rocket.chat/prettier-config": "~0.31.25",
-    "@types/jest": "~29.5.14",
-    "@types/node": "~20.17.8",
+    "@types/jest": "~30.0.0",
+    "@types/node": "~22.16.1",
     "@typescript-eslint/parser": "~5.58.0",
     "babel-loader": "~9.2.1",
     "eslint": "~8.45.0",
-    "jest": "~29.7.0",
+    "jest": "~30.0.5",
     "npm-run-all": "^4.1.5",
     "peggy": "4.1.1",
     "prettier": "~3.3.3",
     "prettier-plugin-pegjs": "~0.5.4",
     "rimraf": "^6.0.1",
-    "ts-loader": "~9.5.1",
-    "typedoc": "~0.24.8",
-    "typescript": "~5.7.2",
-    "webpack": "~5.96.1",
+    "ts-loader": "~9.5.2",
+    "typedoc": "~0.28.9",
+    "typescript": "~5.9.2",
+    "webpack": "~5.99.9",
     "webpack-cli": "~5.1.4"
   },
   "dependencies": {
-    "tldts": "~6.1.61"
+    "tldts": "~6.1.86"
   },
   "volta": {
     "extends": "../../package.json"

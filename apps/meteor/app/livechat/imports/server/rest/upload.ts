@@ -10,7 +10,7 @@ import { sendFileLivechatMessage } from '../../../server/methods/sendFileLivecha
 
 API.v1.addRoute('livechat/upload/:rid', {
 	async post() {
-		if (!this.request.headers['x-visitor-token']) {
+		if (!this.request.headers.get('x-visitor-token')) {
 			return API.v1.forbidden();
 		}
 
@@ -22,7 +22,7 @@ API.v1.addRoute('livechat/upload/:rid', {
 			});
 		}
 
-		const visitorToken = this.request.headers['x-visitor-token'];
+		const visitorToken = this.request.headers.get('x-visitor-token');
 		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken as string, {});
 
 		if (!visitor) {

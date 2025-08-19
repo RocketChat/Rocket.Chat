@@ -7,7 +7,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ContactInfoChannelsItem from './ContactInfoChannelsItem';
 import { ContextualbarContent, ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 
 type ContactInfoChannelsProps = {
 	contactId: ILivechatContact['_id'];
@@ -54,13 +54,14 @@ const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
 						{t('Last_contacts')}
 					</Box>
 					<Box role='list' flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-						<Virtuoso
-							totalCount={data.channels.length}
-							overscan={25}
-							data={data?.channels}
-							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(index, data) => <ContactInfoChannelsItem key={index} {...data} />}
-						/>
+						<VirtualizedScrollbars>
+							<Virtuoso
+								totalCount={data.channels.length}
+								overscan={25}
+								data={data?.channels}
+								itemContent={(index, data) => <ContactInfoChannelsItem key={index} {...data} />}
+							/>
+						</VirtualizedScrollbars>
 					</Box>
 				</>
 			)}

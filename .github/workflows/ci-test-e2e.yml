@@ -48,7 +48,7 @@ on:
         required: true
         type: string
       db-watcher-disabled:
-        default: 'false'
+        default: 'true'
         required: false
         type: string
     secrets:
@@ -75,7 +75,7 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     env:
       RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
       RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}.${{ (matrix.mongodb-version == '7.0' && 'debian' && false) || 'alpine' }}
@@ -86,7 +86,7 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '7.0' && 'Debian' && false) || 'Alpine (Official)' }}
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'false' && ' [legacy watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }}) - ${{ (matrix.mongodb-version == '7.0' && 'Debian' && false) || 'Alpine (Official)' }}
 
     steps:
       - name: Collect Workflow Telemetry
@@ -98,7 +98,7 @@ jobs:
 
       - name: Setup kernel limits
         run: |
-          sudo sysctl -w net.ipv4.ip_local_port_range="500   65535"
+          echo "500 65535" > sudo tee -a /proc/sys/net/ipv4/ip_local_port_range
           sudo sysctl -w net.ipv4.tcp_mem="383865   511820   2303190"
 
           echo fs.file-max=20000500 | sudo tee -a /etc/sysctl.conf
@@ -130,7 +130,7 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.5
+      - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore turbo build
         uses: actions/download-artifact@v4
@@ -153,6 +153,10 @@ jobs:
           publish-image: false
           setup: false
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Set DEBUG_LOG_LEVEL (debug enabled)
+        if: runner.debug == '1'
+        run: echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
 
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
@@ -184,7 +188,7 @@ jobs:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          docker compose -f docker-compose-ci.yml up -d rocketchat
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -196,22 +200,10 @@ jobs:
           COVERAGE_REPORTER: 'lcov'
           DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
-          docker compose -f docker-compose-ci.yml up -d
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d
 
-      - name: Cache Playwright binaries
+      - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
-        uses: actions/cache@v4
-        id: cache-playwright
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.48.2
-
-      - name: Install Playwright
-        if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'
-        working-directory: ./apps/meteor
-        run: npx playwright install --with-deps
 
       - name: Wait for Rocket.Chat to start up
         uses: cygnetdigital/wait_for_response@v2.0.0
@@ -276,7 +268,7 @@ jobs:
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
           REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
-          REPORTER_ROCKETCHAT_REPORT: ${{ github.event.pull_request.draft != 'true' && 'true' || '' }}
+          REPORTER_ROCKETCHAT_REPORT: ${{ github.event.pull_request.draft != 'true' && secrets.REPORTER_ROCKETCHAT_URL != '' && 'true' || '' }}
           REPORTER_ROCKETCHAT_RUN: ${{ github.run_number }}
           REPORTER_ROCKETCHAT_BRANCH: ${{ github.ref }}
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}

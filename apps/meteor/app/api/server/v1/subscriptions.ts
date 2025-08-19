@@ -100,7 +100,11 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			await unreadMessages(this.userId, (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
+			await unreadMessages(
+				this.userId,
+				'firstUnreadMessage' in this.bodyParams ? this.bodyParams.firstUnreadMessage : undefined,
+				'roomId' in this.bodyParams ? this.bodyParams.roomId : undefined,
+			);
 
 			return API.v1.success();
 		},

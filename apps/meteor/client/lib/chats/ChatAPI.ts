@@ -1,10 +1,9 @@
-import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload, Subscribable } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import type { Upload } from './Upload';
 import type { ReadStateManager } from './readStateManager';
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import type { Subscribable } from '../../definitions/Subscribable';
 
 export type ComposerAPI = {
 	release(): void;
@@ -69,9 +68,7 @@ export type DataAPI = {
 	getMessageByID(mid: IMessage['_id']): Promise<IMessage>;
 	findLastMessage(): Promise<IMessage | undefined>;
 	getLastMessage(): Promise<IMessage>;
-	findLastOwnMessage(): Promise<IMessage | undefined>;
-	getLastOwnMessage(): Promise<IMessage>;
-	findPreviousOwnMessage(message: IMessage): Promise<IMessage | undefined>;
+	findPreviousOwnMessage(message?: IMessage): Promise<IMessage | undefined>;
 	getPreviousOwnMessage(message: IMessage): Promise<IMessage>;
 	findNextOwnMessage(message: IMessage): Promise<IMessage | undefined>;
 	getNextOwnMessage(message: IMessage): Promise<IMessage>;

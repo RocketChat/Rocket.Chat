@@ -1,0 +1,30 @@
+{
+	"name": "@rocket.chat/omni-core-ee",
+	"version": "0.0.1",
+	"private": true,
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"eslint": "~8.45.0",
+		"jest": "~30.0.5",
+		"typescript": "~5.9.2"
+	},
+	"scripts": {
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+	},
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"dependencies": {
+		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/omni-core": "workspace:^"
+	}
+}

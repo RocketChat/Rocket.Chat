@@ -2,6 +2,7 @@
   "version": "3",
   "packages": {
     "specifiers": {
+      "jsr:@std/cli@^1.0.9": "jsr:@std/cli@1.0.13",
       "npm:@msgpack/msgpack@3.0.0-beta2": "npm:@msgpack/msgpack@3.0.0-beta2",
       "npm:@rocket.chat/ui-kit@^0.31.22": "npm:@rocket.chat/ui-kit@0.31.25_@rocket.chat+icons@0.32.0",
       "npm:acorn-walk@8.2.0": "npm:acorn-walk@8.2.0",
@@ -13,8 +14,8 @@
       "npm:uuid@8.3.2": "npm:uuid@8.3.2"
     },
     "jsr": {
-      "@std/cli@1.0.9": {
-        "integrity": "557e5865af000efbf3f737dcfea5b8ab86453594f4a9cd8d08c9fa83d8e3f3bc"
+      "@std/cli@1.0.13": {
+        "integrity": "5db2d95ab2dca3bca9fb6ad3c19908c314e93d6391c8b026725e4892d4615a69"
       }
     },
     "npm": {
@@ -100,6 +101,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@std/cli@^1.0.9",
       "npm:@msgpack/msgpack@3.0.0-beta2",
       "npm:@rocket.chat/ui-kit@^0.31.22",
       "npm:acorn-walk@8.2.0",

@@ -1,6 +1,6 @@
 import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
-import { type AtLeast, type IRoom, type IUser, isRoomWithJoinCode } from '@rocket.chat/core-typings';
+import { type AtLeast, type IRoom, type IUser, isOmnichannelRoom, isRoomWithJoinCode } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { FederationActions } from './hooks/BeforeFederationActions';
@@ -17,7 +17,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
 	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
-		const { type, name, members = [], readOnly, extraData, options, sidepanel } = params;
+		const { type, name, members = [], readOnly, extraData, options } = params;
 
 		const hasPermission = await Authorization.hasPermission(uid, `create-${type}`);
 		if (!hasPermission) {
@@ -30,7 +30,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user, members, false, readOnly, extraData, options, sidepanel) as unknown as IRoom;
+		return createRoom(type, name, user, members, false, readOnly, extraData, options) as unknown as IRoom;
 	}
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
@@ -100,6 +100,10 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async join({ room, user, joinCode }: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }) {
 		if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.JOIN, user._id))) {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+		}
+
+		if (isOmnichannelRoom(room) && !room.open) {
+			throw new MeteorError('room-closed', 'Room is closed', { method: 'joinRoom' });
 		}
 
 		if (!(await Authorization.canAccessRoom(room, user))) {

@@ -1,8 +1,8 @@
 import type { ITranslatedMessage, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { useTranslation } from 'react-i18next';
 
-import { useAutoTranslate } from '../../../../../views/room/MessageList/hooks/useAutoTranslate';
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
+import { useMessageListAutoTranslate } from '../../../list/MessageListContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 type QuoteMessageActionProps = {
@@ -12,7 +12,7 @@ type QuoteMessageActionProps = {
 
 const QuoteMessageAction = ({ message, subscription }: QuoteMessageActionProps) => {
 	const chat = useChat();
-	const autoTranslateOptions = useAutoTranslate(subscription);
+	const autoTranslateOptions = useMessageListAutoTranslate();
 	const { t } = useTranslation();
 
 	if (!chat || !subscription) {

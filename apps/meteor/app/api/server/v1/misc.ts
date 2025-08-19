@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
@@ -20,6 +20,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { browseChannelsMethod } from '../../../../server/methods/browseChannels';
+import { spotlightMethod } from '../../../../server/publications/spotlight';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { getLogs } from '../../../../server/stream/stdout';
 import { passwordPolicy } from '../../../lib/server';
@@ -176,26 +178,9 @@ API.v1.addRoute(
 	{
 		async get() {
 			const userFields = { ...getBaseUserFields(), services: 1 };
-			const { services, ...user } = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
+			const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
 
-			return API.v1.success(
-				await getUserInfo({
-					...user,
-					isOAuthUser: isOAuthUser({ ...user, services }),
-					...(services && {
-						services: {
-							...(services.github && { github: services.github }),
-							...(services.gitlab && { gitlab: services.gitlab }),
-							...(services.email2fa?.enabled && { email2fa: { enabled: services.email2fa.enabled } }),
-							...(services.totp?.enabled && { totp: { enabled: services.totp.enabled } }),
-							password: {
-								// The password hash shouldn't be leaked but the client may need to know if it exists.
-								exists: Boolean(services?.password?.bcrypt),
-							},
-						},
-					}),
-				}),
-			);
+			return API.v1.success(await getUserInfo(user));
 		},
 	},
 );
@@ -347,7 +332,7 @@ API.v1.addRoute(
 		async get() {
 			const { query } = this.queryParams;
 
-			const result = await Meteor.callAsync('spotlight', query);
+			const result = await spotlightMethod({ text: query, userId: this.userId });
 
 			return API.v1.success(result);
 		},
@@ -379,13 +364,16 @@ API.v1.addRoute(
 			const sortBy = sort ? Object.keys(sort)[0] : undefined;
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
-			const result = await Meteor.callAsync('browseChannels', {
-				...filter,
-				sortBy,
-				sortDirection,
-				offset: Math.max(0, offset),
-				limit: Math.max(0, count),
-			});
+			const result = await browseChannelsMethod(
+				{
+					...filter,
+					sortBy,
+					sortDirection,
+					offset: Math.max(0, offset),
+					limit: Math.max(0, count),
+				},
+				this.user,
+			);
 
 			if (!result) {
 				return API.v1.failure('Please verify the parameters');
@@ -688,7 +676,7 @@ API.v1.addRoute(
 				_id: this.userId,
 				username: this.user.username!,
 				ip: this.requestIp,
-				useragent: this.request.headers['user-agent'] || '',
+				useragent: this.request.headers.get('user-agent') || '',
 			});
 
 			const promises = settingsIds.map((settingId) => {
@@ -708,7 +696,7 @@ API.v1.addRoute(
 					_id: this.userId,
 					username: this.user.username!,
 					ip: this.requestIp,
-					useragent: this.request.headers['user-agent'] || '',
+					useragent: this.request.headers.get('user-agent') || '',
 				})(Settings.resetValueById, settingId);
 			});
 

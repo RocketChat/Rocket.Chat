@@ -18,8 +18,9 @@ import {
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
 	ContextualbarSection,
+	ContextualbarDialog,
 } from '../../../../components/Contextualbar';
-import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
 export type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
@@ -88,9 +89,22 @@ const RoomMembers = ({
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const { counts, titles } = useMemo(() => {
-		const owners = members.filter((member) => member.roles?.includes('owner'));
-		const moderators = members.filter((member) => !member.roles?.includes('owner') && member.roles?.includes('moderator'));
-		const normalMembers = members.filter((member) => !member.roles?.includes('owner') && !member.roles?.includes('moderator'));
+		const owners: RoomMemberUser[] = [];
+		const leaders: RoomMemberUser[] = [];
+		const moderators: RoomMemberUser[] = [];
+		const normalMembers: RoomMemberUser[] = [];
+
+		members.forEach((member) => {
+			if (member.roles?.includes('owner')) {
+				owners.push(member);
+			} else if (member.roles?.includes('leader')) {
+				leaders.push(member);
+			} else if (member.roles?.includes('moderator')) {
+				moderators.push(member);
+			} else {
+				normalMembers.push(member);
+			}
+		});
 
 		const counts = [];
 		const titles = [];
@@ -98,6 +112,11 @@ const RoomMembers = ({
 		if (owners.length > 0) {
 			counts.push(owners.length);
 			titles.push(<MembersListDivider title='Owners' count={owners.length} />);
+		}
+
+		if (leaders.length > 0) {
+			counts.push(leaders.length);
+			titles.push(<MembersListDivider title='Leaders' count={leaders.length} />);
 		}
 
 		if (moderators.length > 0) {
@@ -114,8 +133,8 @@ const RoomMembers = ({
 	}, [members]);
 
 	return (
-		<>
-			<ContextualbarHeader data-qa-id='RoomHeader-Members'>
+		<ContextualbarDialog>
+			<ContextualbarHeader>
 				<ContextualbarIcon name='members' />
 				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
@@ -156,20 +175,22 @@ const RoomMembers = ({
 						</Box>
 
 						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
-							<GroupedVirtuoso
-								style={{
-									height: '100%',
-									width: '100%',
-								}}
-								overscan={50}
-								groupCounts={counts}
-								groupContent={(index): ReactElement => titles[index]}
-								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-								itemContent={(index): ReactElement => (
-									<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
-								)}
-							/>
+							<VirtualizedScrollbars>
+								<GroupedVirtuoso
+									style={{
+										height: '100%',
+										width: '100%',
+									}}
+									overscan={50}
+									groupCounts={counts}
+									groupContent={(index): ReactElement => titles[index]}
+									// eslint-disable-next-line react/no-multi-comp
+									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+									itemContent={(index): ReactElement => (
+										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+									)}
+								/>
+							</VirtualizedScrollbars>
 						</Box>
 					</>
 				)}
@@ -190,7 +211,7 @@ const RoomMembers = ({
 					</ButtonGroup>
 				</ContextualbarFooter>
 			)}
-		</>
+		</ContextualbarDialog>
 	);
 };
 

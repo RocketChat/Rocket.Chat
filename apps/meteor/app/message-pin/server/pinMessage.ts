@@ -43,7 +43,15 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export async function pinMessage(originalMessage: IMessage, userId: string, pinnedAt?: Date) {
+export async function pinMessage(message: IMessage, userId: string, pinnedAt?: Date) {
+	let originalMessage = await Messages.findOneById(message._id);
+	if (!originalMessage?.rid) {
+		throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
+			method: 'pinMessage',
+			action: 'Message_pinning',
+		});
+	}
+
 	if (!settings.get('Message_AllowPinning')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Message pinning not allowed', {
 			method: 'pinMessage',
@@ -118,6 +126,81 @@ export async function pinMessage(originalMessage: IMessage, userId: string, pinn
 	});
 }
 
+export const unpinMessage = async (userId: string, message: IMessage) => {
+	if (!settings.get('Message_AllowPinning')) {
+		throw new Meteor.Error('error-action-not-allowed', 'Message pinning not allowed', {
+			method: 'unpinMessage',
+			action: 'Message_pinning',
+		});
+	}
+
+	let originalMessage = await Messages.findOneById(message._id);
+	if (originalMessage == null || originalMessage._id == null) {
+		throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
+			method: 'unpinMessage',
+			action: 'Message_pinning',
+		});
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId, { projection: { _id: 1 } });
+	if (!subscription) {
+		// If it's a valid message but on a room that the user is not subscribed to, report that the message was not found.
+		throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
+			method: 'unpinMessage',
+			action: 'Message_pinning',
+		});
+	}
+
+	if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
+	}
+
+	const me = await Users.findOneById(userId);
+	if (!me) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unpinMessage' });
+	}
+
+	// If we keep history of edits, insert a new message to store history information
+	if (settings.get('Message_KeepHistory') && isRegisterUser(me)) {
+		await Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
+	}
+
+	originalMessage.pinned = false;
+	originalMessage.pinnedBy = {
+		_id: userId,
+		username: me.username,
+	};
+
+	const room = await Rooms.findOneById(originalMessage.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
+	if (!room) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
+	}
+
+	if (!(await canAccessRoomAsync(room, { _id: userId }))) {
+		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
+	}
+
+	originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
+
+	if (isTheLastMessage(room, message)) {
+		await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+		void notifyOnRoomChangedById(room._id);
+	}
+
+	// App IPostMessagePinned event hook
+	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+
+	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+	if (settings.get('Message_Read_Receipt_Store_Users')) {
+		await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
+	}
+	void notifyOnMessageChange({
+		id: message._id,
+	});
+
+	return true;
+};
+
 Meteor.methods<ServerMethods>({
 	async pinMessage(message, pinnedAt) {
 		check(message._id, String);
@@ -129,15 +212,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const originalMessage = await Messages.findOneById(message._id);
-		if (!originalMessage?.rid) {
-			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
-				method: 'pinMessage',
-				action: 'Message_pinning',
-			});
-		}
-
-		return pinMessage(originalMessage, userId, pinnedAt);
+		return pinMessage(message, userId, pinnedAt);
 	},
 	async unpinMessage(message) {
 		check(message._id, String);
@@ -150,77 +225,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!settings.get('Message_AllowPinning')) {
-			throw new Meteor.Error('error-action-not-allowed', 'Message pinning not allowed', {
-				method: 'unpinMessage',
-				action: 'Message_pinning',
-			});
-		}
-
-		let originalMessage = await Messages.findOneById(message._id);
-		if (originalMessage == null || originalMessage._id == null) {
-			throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
-				method: 'unpinMessage',
-				action: 'Message_pinning',
-			});
-		}
-
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId, { projection: { _id: 1 } });
-		if (!subscription) {
-			// If it's a valid message but on a room that the user is not subscribed to, report that the message was not found.
-			throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
-				method: 'unpinMessage',
-				action: 'Message_pinning',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
-		}
-
-		const me = await Users.findOneById(userId);
-		if (!me) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unpinMessage' });
-		}
-
-		// If we keep history of edits, insert a new message to store history information
-		if (settings.get('Message_KeepHistory') && isRegisterUser(me)) {
-			await Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
-		}
-
-		originalMessage.pinned = false;
-		originalMessage.pinnedBy = {
-			_id: userId,
-			username: me.username,
-		};
-
-		const room = await Rooms.findOneById(originalMessage.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
-		if (!room) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
-		}
-
-		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
-		}
-
-		originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
-
-		if (isTheLastMessage(room, message)) {
-			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
-			void notifyOnRoomChangedById(room._id);
-		}
-
-		// App IPostMessagePinned event hook
-		await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
-
-		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
-		if (settings.get('Message_Read_Receipt_Store_Users')) {
-			await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
-		}
-		void notifyOnMessageChange({
-			id: message._id,
-		});
-
-		return true;
+		return unpinMessage(userId, message);
 	},
 });

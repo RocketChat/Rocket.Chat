@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.31.32
+
+### Patch Changes
+
+- ([#35172](https://github.com/RocketChat/Rocket.Chat/pull/35172)) fixes an issue where the message parser was not properly parsing bold and italic when the symbols would also match an emoticon
+
+## 0.31.32-rc.0
+
+### Patch Changes
+
+- ([#35172](https://github.com/RocketChat/Rocket.Chat/pull/35172)) fixes an issue where the message parser was not properly parsing bold and italic when the symbols would also match an emoticon
+
 ## 0.31.31
 
 ### Patch Changes

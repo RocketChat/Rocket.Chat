@@ -1,5 +1,577 @@
 # @rocket.chat/livechat Change Log
 
+## 1.23.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ba0cbd32657365abc2a10e50285e02b4e34bf674]:</summary>
+
+  - @rocket.chat/gazzodown@21.0.0
+  </details>
+
+## 1.23.4-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@21.0.0-rc.2
+  </details>
+
+## 1.23.4-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@21.0.0-rc.1
+  </details>
+
+## 1.23.4-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ba0cbd32657365abc2a10e50285e02b4e34bf674]:</summary>
+
+  - @rocket.chat/gazzodown@21.0.0-rc.0
+
+## 1.23.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.3
+  </details>
+
+## 1.23.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.2
+  </details>
+
+## 1.23.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.1
+  </details>
+
+## 1.23.0
+
+### Minor Changes
+
+- ([#36127](https://github.com/RocketChat/Rocket.Chat/pull/36127)) #### Adds support for hiding the "Expand chat" button in the Livechat widget.
+  This can be configured via the widget API by passing the `hideExpandChat` option to the `setTheme` method, or through the Livechat Appearance settings page by enabling the "Hide 'Expand chat'" option.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.0
+  </details>
+
+## 1.23.0-rc.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.0-rc.9
+  </details>
+
+## 1.23.0-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.0-rc.8
+  </details>
+
+## 1.23.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.0-rc.7
+  </details>
+
+## 1.23.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.0-rc.6
+  </details>
+
+## 1.23.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.0-rc.5
+  </details>
+
+## 1.23.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.0-rc.4
+  </details>
+
+## 1.23.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.0-rc.3
+  </details>
+
+## 1.23.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@20.0.0-rc.2
+  </details>
+
+## 1.23.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@20.0.0-rc.1
+  </details>
+
+## 1.23.0-rc.0
+
+### Minor Changes
+
+- ([#36127](https://github.com/RocketChat/Rocket.Chat/pull/36127)) #### Adds support for hiding the "Expand chat" button in the Livechat widget.
+  This can be configured via the widget API by passing the `hideExpandChat` option to the `setTheme` method, or through the Livechat Appearance settings page by enabling the "Hide 'Expand chat'" option.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@20.0.0-rc.0
+
+  </details>
+
+## 1.22.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@19.0.4
+  </details>
+
+## 1.22.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@19.0.3
+  </details>
+
+## 1.22.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@19.0.2
+
+  </details>
+
+## 1.22.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@19.0.1
+  </details>
+
+## 1.22.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [821cd886891370443117d7caa05c43fc7c3dd0c7]:</summary>
+
+  - @rocket.chat/gazzodown@19.0.0
+  </details>
+
+## 1.22.11-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@19.0.0-rc.6
+  </details>
+
+## 1.22.11-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@19.0.0-rc.5
+  </details>
+
+## 1.22.11-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@19.0.0-rc.4
+  </details>
+
+## 1.22.11-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@19.0.0-rc.3
+  </details>
+
+## 1.22.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@18.0.2
+  </details>
+
+## 1.22.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@18.0.1
+  </details>
+
+## 1.22.9-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.2
+  </details>
+
+## 1.22.9-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.1
+  </details>
+
+## 1.22.9-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [821cd886891370443117d7caa05c43fc7c3dd0c7]:</summary>
+
+  - @rocket.chat/gazzodown@19.0.0-rc.0
+
+## 1.22.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0
+  </details>
+
+## 1.22.8-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.8
+  </details>
+
+## 1.22.8-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.7
+  </details>
+
+## 1.22.8-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.6
+  </details>
+
+## 1.22.8-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.5
+  </details>
+
+## 1.22.8-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.4
+  </details>
+
+## 1.22.8-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.3
+  </details>
+
+## 1.22.8-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.2
+  </details>
+
+## 1.22.8-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.1
+  </details>
+
+## 1.22.8-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@18.0.0-rc.0
+  </details>
+
+## 1.22.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@17.0.1
+  </details>
+
+## 1.22.6
+
+### Patch Changes
+
+- ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
+
+- ([#35205](https://github.com/RocketChat/Rocket.Chat/pull/35205)) Fixes livechat routing algorithm to ensure conversations are correctly assigned to the contact manager when triggers and/or automatic agent routing are enabled.
+
+- ([#35555](https://github.com/RocketChat/Rocket.Chat/pull/35555)) Fixes an issue causing Livechat to disconnect from the websocket when registerGuest is called multiple times with the same token
+
+- ([#35551](https://github.com/RocketChat/Rocket.Chat/pull/35551)) Fixes Livechat's setDepartment api method not updating the visitor's department as expected
+
+- <details><summary>Updated dependencies [c7b21f1c1e479533a208771f3e15f064f2c7e3ff, 335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0
+  - @rocket.chat/message-parser@0.31.32
+  </details>
+
+## 1.22.6-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0-rc.5
+  </details>
+
+## 1.22.6-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0-rc.4
+  </details>
+
+## 1.22.6-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0-rc.3
+  </details>
+
+## 1.22.6-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0-rc.2
+  </details>
+
+## 1.22.6-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0-rc.1
+  </details>
+
+## 1.22.6-rc.0
+
+### Patch Changes
+
+- ([#35286](https://github.com/RocketChat/Rocket.Chat/pull/35286)) Bumps fuselage and related packages versions to use the most recent releases of each package, especially the fix for the missing track of the fuselage slider component
+
+- ([#35205](https://github.com/RocketChat/Rocket.Chat/pull/35205)) Fixes livechat routing algorithm to ensure conversations are correctly assigned to the contact manager when triggers and/or automatic agent routing are enabled.
+
+- ([#35555](https://github.com/RocketChat/Rocket.Chat/pull/35555)) Fixes an issue causing Livechat to disconnect from the websocket when registerGuest is called multiple times with the same token
+
+- ([#35551](https://github.com/RocketChat/Rocket.Chat/pull/35551)) Fixes Livechat's setDepartment api method not updating the visitor's department as expected
+
+- <details><summary>Updated dependencies [c7b21f1c1e479533a208771f3e15f064f2c7e3ff, 335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
+
+  - @rocket.chat/gazzodown@17.0.0-rc.0
+  - @rocket.chat/message-parser@0.31.32-rc.0
+  </details>
+
+## 1.22.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@16.0.1
+  </details>
+
+## 1.22.4
+
+### Patch Changes
+
+- ([#35168](https://github.com/RocketChat/Rocket.Chat/pull/35168)) Fixes Livechat conversation not closing in a few scenarios due to cross-tab interference
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@16.0.0
+  </details>
+
+## 1.22.4-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@16.0.0-rc.5
+  </details>
+
+## 1.22.4-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@16.0.0-rc.4
+  </details>
+
+## 1.22.3-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@16.0.0-rc.3
+  </details>
+
+## 1.22.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@16.0.0-rc.2
+  </details>
+
+## 1.22.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@16.0.0-rc.1
+  </details>
+
+## 1.22.3-rc.0
+
+### Patch Changes
+
+- ([#35168](https://github.com/RocketChat/Rocket.Chat/pull/35168)) Fixes Livechat conversation not closing in a few scenarios due to cross-tab interference
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@16.0.0-rc.0
+  </details>
+
+## 1.22.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@15.0.3
+  </details>
+
+## 1.22.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@15.0.2
+  </details>
+
+## 1.22.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@15.0.1
+  </details>
+
 ## 1.22.0
 
 ### Minor Changes

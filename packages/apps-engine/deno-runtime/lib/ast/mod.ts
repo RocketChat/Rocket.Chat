@@ -1,64 +1,70 @@
-import { generate } from "astring";
+import { generate } from 'astring';
 // @deno-types="../../acorn.d.ts"
-import { Program, parse } from "acorn";
+import { parse, Program } from 'acorn';
 // @deno-types="../../acorn-walk.d.ts"
-import { fullAncestor } from "acorn-walk";
+import { fullAncestor } from 'acorn-walk';
 
-import * as operations from "./operations.ts";
-import type { WalkerState } from "./operations.ts";
+import * as operations from './operations.ts';
+import type { WalkerState } from './operations.ts';
 
 function fixAst(ast: Program): boolean {
-    const pendingOperations = [
-        operations.fixLivechatIsOnlineCalls,
-        operations.checkReassignmentOfModifiedIdentifiers,
-        operations.fixRoomUsernamesCalls,
-    ];
+	const pendingOperations = [
+		operations.fixLivechatIsOnlineCalls,
+		operations.checkReassignmentOfModifiedIdentifiers,
+		operations.fixRoomUsernamesCalls,
+	];
 
-    // Have we touched the tree?
-    let isModified = false;
+	// Have we touched the tree?
+	let isModified = false;
 
-    while (pendingOperations.length) {
-        const ops = pendingOperations.splice(0);
-        const state: WalkerState = {
-            isModified: false,
-            functionIdentifiers: new Set<string>(),
-        };
+	while (pendingOperations.length) {
+		const ops = pendingOperations.splice(0);
+		const state: WalkerState = {
+			isModified: false,
+			functionIdentifiers: new Set<string>(),
+		};
 
-        fullAncestor(ast, (node, state, ancestors, type) => {
-            ops.forEach(operation => operation(node, state, ancestors, type));
-        }, undefined, state);
+		fullAncestor(
+			ast,
+			(node, state, ancestors, type) => {
+				ops.forEach((operation) => operation(node, state, ancestors, type));
+			},
+			undefined,
+			state,
+		);
 
-        if (state.isModified) {
-            isModified = true;
-        }
+		if (state.isModified) {
+			isModified = true;
+		}
 
-        if (state.functionIdentifiers.size) {
-            pendingOperations.push(
-                operations.buildFixModifiedFunctionsOperation(state.functionIdentifiers),
-                operations.checkReassignmentOfModifiedIdentifiers
-            );
-        }
-    }
+		if (state.functionIdentifiers.size) {
+			pendingOperations.push(
+				operations.buildFixModifiedFunctionsOperation(state.functionIdentifiers),
+				operations.checkReassignmentOfModifiedIdentifiers,
+			);
+		}
+	}
 
-    return isModified;
+	return isModified;
 }
 
 export function fixBrokenSynchronousAPICalls(appSource: string): string {
-    const astRootNode = parse(appSource, {
-        ecmaVersion: 2017,
-        // Allow everything, we don't want to complain if code is badly written
-        // Also, since the code itself has been transpiled, the chance of getting
-        // shenanigans is lower
-        allowReserved: true,
-        allowReturnOutsideFunction: true,
-        allowImportExportEverywhere: true,
-        allowAwaitOutsideFunction: true,
-        allowSuperOutsideMethod: true,
-    });
+	const astRootNode = parse(appSource, {
+		// Latest ecma version supported by this version of acorn.
+		ecmaVersion: "latest",
+		// Allow everything, we don't want to complain if code is badly written
+		// Also, since the code itself has been transpiled, the chance of getting
+		// shenanigans is lower
+		allowReserved: true,
+		allowReturnOutsideFunction: true,
+		allowImportExportEverywhere: true,
+		allowAwaitOutsideFunction: true,
+		allowSuperOutsideMethod: true,
+	});
 
-    if (fixAst(astRootNode)) {
-        return generate(astRootNode);
-    }
+	if (fixAst(astRootNode)) {
+		return generate(astRootNode);
+	}
 
-    return appSource;
+	return appSource;
 }

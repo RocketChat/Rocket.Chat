@@ -10,6 +10,7 @@ import type {
 	SelectedAgent,
 	InquiryWithAgentInfo,
 	TransferData,
+	IUser,
 } from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -27,6 +28,7 @@ import {
 	updateChatDepartment,
 	allowAgentSkipQueue,
 } from './Helper';
+import { afterTakeInquiry, beforeDelegateAgent } from './hooks';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -46,7 +48,12 @@ type Routing = {
 		options?: { clientAction?: boolean; forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any } },
 		room?: IOmnichannelRoom,
 	): Promise<(IOmnichannelRoom & { chatQueued?: boolean }) | null | void>;
-	unassignAgent(inquiry: ILivechatInquiryRecord, departmentId?: string, shouldQueue?: boolean): Promise<boolean>;
+	unassignAgent(
+		inquiry: ILivechatInquiryRecord,
+		departmentId?: string,
+		shouldQueue?: boolean,
+		agent?: SelectedAgent | null,
+	): Promise<boolean>;
 	takeInquiry(
 		inquiry: Omit<
 			ILivechatInquiryRecord,
@@ -60,7 +67,7 @@ type Routing = {
 	delegateAgent(agent: SelectedAgent | undefined, inquiry: ILivechatInquiryRecord): Promise<SelectedAgent | null | undefined>;
 	removeAllRoomSubscriptions(room: Pick<IOmnichannelRoom, '_id'>, ignoreUser?: { _id: string }): Promise<void>;
 
-	assignAgent(inquiry: InquiryWithAgentInfo, room: IOmnichannelRoom, agent: SelectedAgent): Promise<InquiryWithAgentInfo>;
+	assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<{ inquiry: InquiryWithAgentInfo; user: IUser }>;
 };
 
 export const RoutingManager: Routing = {
@@ -95,7 +102,12 @@ export const RoutingManager: Routing = {
 	async delegateInquiry(inquiry, agent, options = {}, room) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
-		if (!agent || (agent.username && !(await Users.findOneOnlineAgentByUserList(agent.username)) && !(await allowAgentSkipQueue(agent)))) {
+		if (
+			!agent ||
+			(agent.username &&
+				!(await Users.findOneOnlineAgentByUserList(agent.username, {}, settings.get<boolean>('Livechat_enabled_when_agent_idle'))) &&
+				!(await allowAgentSkipQueue(agent)))
+		) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
 			agent = await this.getNextAgent(department);
 			logger.debug(`Routing method returned agent ${agent?.agentId} for inquiry ${inquiry._id}`);
@@ -116,7 +128,7 @@ export const RoutingManager: Routing = {
 		return this.takeInquiry(inquiry, agent, options, room);
 	},
 
-	async assignAgent(inquiry: InquiryWithAgentInfo, room: IOmnichannelRoom, agent: SelectedAgent): Promise<InquiryWithAgentInfo> {
+	async assignAgent(inquiry: InquiryWithAgentInfo, agent: SelectedAgent): Promise<{ inquiry: InquiryWithAgentInfo; user: IUser }> {
 		check(
 			agent,
 			Match.ObjectIncluding({
@@ -137,24 +149,32 @@ export const RoutingManager: Routing = {
 		await Rooms.incUsersCountById(rid, 1);
 
 		const user = await Users.findOneById(agent.agentId);
-
-		if (user) {
-			await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
+		if (!user) {
+			throw new Error('error-user-not-found');
 		}
+
+		await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
 
 		await dispatchAgentDelegated(rid, agent.agentId);
 
 		logger.debug(`Agent ${agent.agentId} assigned to inquiry ${inquiry._id}. Instances notified`);
 
-		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room, user });
-		return inquiry;
+		return { inquiry, user };
 	},
 
-	async unassignAgent(inquiry, departmentId, shouldQueue = false) {
+	async unassignAgent(inquiry, departmentId, shouldQueue = false, defaultAgent?: SelectedAgent | null) {
 		const { rid, department } = inquiry;
 		const room = await LivechatRooms.findOneById(rid);
 
-		logger.debug(`Removing assignations of inquiry ${inquiry._id}`);
+		logger.debug({
+			msg: 'Removing assignations of inquiry',
+			inquiryId: inquiry._id,
+			departmentId,
+			room: { _id: room?._id, open: room?.open, servedBy: room?.servedBy },
+			shouldQueue,
+			defaultAgent,
+		});
+
 		if (!room?.open) {
 			logger.debug(`Cannot unassign agent from inquiry ${inquiry._id}: Room already closed`);
 			return false;
@@ -173,8 +193,14 @@ export const RoutingManager: Routing = {
 
 		const { servedBy } = room;
 
+		if (servedBy) {
+			await LivechatRooms.removeAgentByRoomId(rid);
+			await this.removeAllRoomSubscriptions(room);
+			await dispatchAgentDelegated(rid);
+		}
+
 		if (shouldQueue) {
-			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id);
+			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id, room.lastMessage, defaultAgent);
 			if (queuedInquiry) {
 				inquiry = queuedInquiry;
 				void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
@@ -183,12 +209,6 @@ export const RoutingManager: Routing = {
 					takenAt: undefined,
 				});
 			}
-		}
-
-		if (servedBy) {
-			await LivechatRooms.removeAgentByRoomId(rid);
-			await this.removeAllRoomSubscriptions(room);
-			await dispatchAgentDelegated(rid);
 		}
 
 		await dispatchInquiryQueued(inquiry);
@@ -254,7 +274,7 @@ export const RoutingManager: Routing = {
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
 		// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
-		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, room, agent);
+		const { inquiry: returnedInquiry, user } = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
 		const roomAfterUpdate = await LivechatRooms.findOneById(rid);
 
 		if (!roomAfterUpdate) {
@@ -262,14 +282,8 @@ export const RoutingManager: Routing = {
 			throw new Error('error-room-not-found');
 		}
 
-		callbacks.runAsync(
-			'livechat.afterTakeInquiry',
-			{
-				inquiry: inq,
-				room: roomAfterUpdate,
-			},
-			agent,
-		);
+		void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatAgentAssigned, { room: roomAfterUpdate, user });
+		void afterTakeInquiry({ inquiry: returnedInquiry, room: roomAfterUpdate, agent });
 
 		void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
 			status: LivechatInquiryStatus.TAKEN,
@@ -299,7 +313,7 @@ export const RoutingManager: Routing = {
 	},
 
 	async delegateAgent(agent, inquiry) {
-		const defaultAgent = await callbacks.run('livechat.beforeDelegateAgent', agent, {
+		const defaultAgent = await beforeDelegateAgent(agent, {
 			department: inquiry?.department,
 		});
 

@@ -9,5 +9,5 @@ export default {
 	decorators: [(fn) => <Margins children={fn()} all='x24' />],
 } satisfies Meta<typeof MessagesTab>;
 
-export const Default: StoryFn<typeof MessagesTab> = () => <MessagesTab />;
+export const Default: StoryFn<typeof MessagesTab> = () => <MessagesTab timezone='utc' />;
 Default.storyName = 'MessagesTab';

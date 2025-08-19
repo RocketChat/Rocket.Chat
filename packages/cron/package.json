@@ -1,10 +1,11 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.1.13",
+	"version": "0.1.33",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "~8.45.0",
-		"typescript": "~5.7.2"
+		"typescript": "~5.9.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -22,6 +23,9 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
-		"mongodb": "patch:mongodb@npm%3A6.10.0#~/.yarn/patches/mongodb-npm-6.10.0-b914157c35.patch"
+		"mongodb": "6.10.0"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

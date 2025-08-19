@@ -1,3 +1,4 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
@@ -6,10 +7,15 @@ import { requestPdfTranscript } from '../lib/requestPdfTranscript';
 
 API.v1.addRoute(
 	'omnichannel/:rid/request-transcript',
-	{ authRequired: true, permissionsRequired: ['request-pdf-transcript'] },
+	{ authRequired: true, permissionsRequired: ['request-pdf-transcript'], license: ['livechat-enterprise'] },
 	{
 		async post() {
-			const room = await LivechatRooms.findOneById(this.urlParams.rid);
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'open' | 'v' | 't' | 'pdfTranscriptFileId'>>(
+				this.urlParams.rid,
+				{
+					projection: { _id: 1, open: 1, v: 1, t: 1, pdfTranscriptFileId: 1 },
+				},
+			);
 			if (!room) {
 				throw new Error('error-invalid-room');
 			}

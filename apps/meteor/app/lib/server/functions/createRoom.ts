@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Federation, FederationEE, License, Message, Team } from '@rocket.chat/core-services';
@@ -10,8 +9,9 @@ import { Meteor } from 'meteor/meteor';
 import { createDirectRoom } from './createDirectRoom';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
+import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
-import { calculateRoomRolePriorityFromRoles, syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
+import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
@@ -126,7 +126,6 @@ export const createRoom = async <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-	sidepanel?: ICreateRoomParams['sidepanel'],
 ): Promise<
 	ICreatedRoom & {
 		rid: string;
@@ -202,7 +201,6 @@ export const createRoom = async <T extends RoomType>(
 		},
 		ts: now,
 		ro: readOnly === true,
-		sidepanel,
 	};
 
 	if (teamId) {

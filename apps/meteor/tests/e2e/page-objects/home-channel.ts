@@ -62,7 +62,7 @@ export class HomeChannel {
 	}
 
 	get roomHeaderFavoriteBtn(): Locator {
-		return this.page.getByRole('button', { name: 'Favorite' });
+		return this.page.getByRole('main').getByRole('button', { name: 'Favorite' });
 	}
 
 	get readOnlyFooter(): Locator {
@@ -85,10 +85,6 @@ export class HomeChannel {
 		return this.page.getByRole('dialog', { name: 'Save your encryption password' });
 	}
 
-	get btnSaveE2EEPassword(): Locator {
-		return this.dialogSaveE2EEPassword.getByRole('button', { name: 'Save E2EE password' });
-	}
-
 	get btnRoomSaveE2EEPassword(): Locator {
 		return this.page.getByRole('main').getByRole('button', { name: 'Save E2EE password' });
 	}
@@ -101,10 +97,6 @@ export class HomeChannel {
 		return this.dialogSaveE2EEPassword.getByRole('button', { name: 'I saved my password' });
 	}
 
-	get btnEnterE2EEPassword(): Locator {
-		return this.dialogEnterE2EEPassword.getByRole('button', { name: 'Enter your E2E password' });
-	}
-
 	get bannerSaveEncryptionPassword(): Locator {
 		return this.page.getByRole('button', { name: 'Save your encryption password' });
 	}
@@ -113,11 +105,15 @@ export class HomeChannel {
 		return this.page.getByRole('button', { name: 'Enter your E2E password' });
 	}
 
-	get btnNotPossibleDecodeKey(): Locator {
-		return this.page.getByRole('button', { name: "Wasn't possible to decode your encryption key to be imported." });
-	}
-
 	get audioRecorder(): Locator {
 		return this.page.getByRole('group', { name: 'Audio recorder', exact: true });
+	}
+
+	get btnJoinRoom(): Locator {
+		return this.page.getByRole('button', { name: 'Join' });
+	}
+
+	get statusUploadIndicator(): Locator {
+		return this.page.getByRole('main').getByRole('status');
 	}
 }

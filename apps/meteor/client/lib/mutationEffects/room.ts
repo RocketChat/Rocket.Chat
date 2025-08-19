@@ -1,19 +1,12 @@
-import { Meteor } from 'meteor/meteor';
+import { Subscriptions } from '../../stores';
 
-import { Subscriptions } from '../../../app/models/client';
+export const toggleFavoriteRoom = (roomId: string, favorite: boolean, userId: string | null) => {
+	if (!userId) {
+		return;
+	}
 
-export const toggleFavoriteRoom = (roomId: string, favorite: boolean) => {
-	const userId = Meteor.userId()!;
-
-	Subscriptions.update(
-		{
-			'rid': roomId,
-			'u._id': userId,
-		},
-		{
-			$set: {
-				f: favorite,
-			},
-		},
+	Subscriptions.state.update(
+		(record) => record.rid === roomId && record.u._id === userId,
+		(record) => ({ ...record, f: favorite }),
 	);
 };

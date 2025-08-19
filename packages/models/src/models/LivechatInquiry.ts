@@ -1,4 +1,10 @@
-import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted, ILivechatPriority } from '@rocket.chat/core-typings';
+import type {
+	ILivechatInquiryRecord,
+	IMessage,
+	RocketChatRecordDeleted,
+	ILivechatPriority,
+	SelectedAgent,
+} from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type {
@@ -133,6 +139,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
 
+	findIdsByVisitorId(_id: ILivechatInquiryRecord['v']['_id']): FindCursor<ILivechatInquiryRecord> {
+		return this.find({ 'v._id': _id }, { projection: { _id: 1 } });
+	}
+
 	getDistinctQueuedDepartments(options: AggregateOptions): Promise<{ _id: string | null }[]> {
 		return this.col
 			.aggregate<{ _id: string | null }>(
@@ -153,8 +163,19 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOneAndUpdate({ _id: inquiryId }, { $set: { department } }, { returnDocument: 'after' });
 	}
 
+	/**
+	 * Updates the `lastMessage` of inquiries that are not taken yet, after they're taken we only need to update room's `lastMessage`
+	 */
 	async setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null> {
-		return this.findOneAndUpdate({ rid }, { $set: { lastMessage: message } }, { returnDocument: 'after' });
+		return this.findOneAndUpdate(
+			{ rid, status: { $ne: LivechatInquiryStatus.TAKEN } },
+			{ $set: { lastMessage: message } },
+			{ returnDocument: 'after' },
+		);
+	}
+
+	async setLastMessageById(inquiryId: string, lastMessage: IMessage): Promise<UpdateResult> {
+		return this.updateOne({ _id: inquiryId }, { $set: { lastMessage } });
 	}
 
 	async findNextAndLock(
@@ -316,13 +337,22 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null> {
+	async queueInquiry(
+		inquiryId: string,
+		lastMessage?: IMessage,
+		defaultAgent?: SelectedAgent | null,
+	): Promise<ILivechatInquiryRecord | null> {
 		return this.findOneAndUpdate(
 			{
 				_id: inquiryId,
 			},
 			{
-				$set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() },
+				$set: {
+					status: LivechatInquiryStatus.QUEUED,
+					queuedAt: new Date(),
+					...(lastMessage && { lastMessage }),
+					...(defaultAgent && { defaultAgent }),
+				},
 				$unset: { takenAt: 1 },
 			},
 			{ returnDocument: 'after' },
@@ -354,7 +384,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async changeDepartmentIdByRoomId(rid: string, department: string): Promise<void> {
+	async changeDepartmentIdByRoomId(rid: string, department: string): Promise<UpdateResult> {
 		const query = {
 			rid,
 		};
@@ -364,7 +394,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			},
 		};
 
-		await this.updateOne(query, updateObj);
+		return this.updateOne(query, updateObj);
 	}
 
 	async getStatus(inquiryId: string): Promise<ILivechatInquiryRecord['status'] | undefined> {

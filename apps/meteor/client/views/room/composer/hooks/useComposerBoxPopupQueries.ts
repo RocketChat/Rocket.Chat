@@ -27,13 +27,13 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 			{
 				placeholderData: keepPreviousData,
 				queryKey: ['message-popup', 'local', filter, popup],
-				queryFn: () => popup?.getItemsFromLocal && popup.getItemsFromLocal(filter),
+				queryFn: () => (popup?.getItemsFromLocal && popup.getItemsFromLocal(filter)) || [],
 				enabled: enableQuery,
 			},
 			{
 				placeholderData: keepPreviousData,
 				queryKey: ['message-popup', 'server', filter, popup],
-				queryFn: () => popup?.getItemsFromServer && popup.getItemsFromServer(filter),
+				queryFn: () => (popup?.getItemsFromServer && popup.getItemsFromServer(filter)) || [],
 				enabled: counter > 0,
 			},
 		],

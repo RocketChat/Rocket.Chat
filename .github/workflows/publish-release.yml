@@ -13,7 +13,7 @@ env:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -24,13 +24,13 @@ jobs:
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: 22.11.0
-          deno-version: 1.37.1
+          node-version: 22.16.0
+          deno-version: 1.43.5
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.5
+      - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Build packages
         run: yarn build

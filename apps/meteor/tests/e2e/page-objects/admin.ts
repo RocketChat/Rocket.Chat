@@ -114,70 +114,6 @@ export class Admin {
 		return this.page.locator('//label[@title="Site_Url"]//following-sibling::button');
 	}
 
-	get inputSiteName(): Locator {
-		return this.page.locator('[data-qa-setting-id="Site_Name"]');
-	}
-
-	get btnResetSiteName(): Locator {
-		return this.page.locator('[data-qa-reset-setting-id="Site_Name"]');
-	}
-
-	get btnAllowInvalidSelfSignedCerts(): Locator {
-		return this.page.locator('//label[@data-qa-setting-id="Allow_Invalid_SelfSigned_Certs"]//i');
-	}
-
-	get btnResetAllowInvalidSelfSignedCerts(): Locator {
-		return this.page.locator('//button[@data-qa-reset-setting-id="Allow_Invalid_SelfSigned_Certs"]');
-	}
-
-	get btnEnableFavoriteRooms(): Locator {
-		return this.page.locator('[data-qa-setting-id="Favorite_Rooms"]');
-	}
-
-	get btnResetEnableFavoriteRooms(): Locator {
-		return this.page.locator('[data-qa-reset-setting-id="Favorite_Rooms"]');
-	}
-
-	get btnUseCDNPrefix(): Locator {
-		return this.page.locator('[data-qa-setting-id="CDN_PREFIX_ALL"]');
-	}
-
-	get btnResetUseCDNPrefix(): Locator {
-		return this.page.locator('[data-qa-reset-setting-id="CDN_PREFIX_ALL"]');
-	}
-
-	get btnForceSSL(): Locator {
-		return this.page.locator('[data-qa-setting-id="Force_SSL"]');
-	}
-
-	get btnResetForceSSL(): Locator {
-		return this.page.locator('[data-qa-reset-setting-id="Force_SSL"]');
-	}
-
-	get inputGoogleTagManagerId(): Locator {
-		return this.page.locator('[data-qa-setting-id="GoogleTagManager_id"]');
-	}
-
-	get btnResetGoogleTagManagerId(): Locator {
-		return this.page.locator('[data-qa-reset-setting-id="GoogleTagManager_id"]');
-	}
-
-	get inputBugsnagApiKey(): Locator {
-		return this.page.locator('[data-qa-setting-id="Bugsnag_api_key"]');
-	}
-
-	get inputResetBugsnagApiKey(): Locator {
-		return this.page.locator('[data-qa-reset-setting-id="Bugsnag_api_key"]');
-	}
-
-	get inputRobotsFileContent(): Locator {
-		return this.page.locator('#Robot_Instructions_File_Content');
-	}
-
-	get btnResetRobotsFileContent(): Locator {
-		return this.page.locator('[data-qa-reset-setting-id="Robot_Instructions_File_Content"]');
-	}
-
 	get btnImportNewFile(): Locator {
 		return this.page.locator('.rcx-button--primary.rcx-button >> text="Import New File"');
 	}
@@ -251,6 +187,10 @@ export class Admin {
 		return this.page.getByRole('button', { name: 'New', exact: true });
 	}
 
+	get btnNewApplication(): Locator {
+		return this.page.getByRole('button', { name: 'New Application', exact: true });
+	}
+
 	get btnDelete(): Locator {
 		return this.page.getByRole('button', { name: 'Delete', exact: true });
 	}
@@ -263,6 +203,26 @@ export class Admin {
 		return this.page.getByRole('textbox', { name: 'Name' });
 	}
 
+	get inputApplicationName(): Locator {
+		return this.page.getByRole('textbox', { name: 'Application Name' });
+	}
+
+	get inputClientId(): Locator {
+		return this.page.getByRole('textbox', { name: 'Client ID' });
+	}
+
+	get inputClientSecret(): Locator {
+		return this.page.getByRole('textbox', { name: 'Client Secret' });
+	}
+
+	get inputAuthUrl(): Locator {
+		return this.page.getByRole('textbox', { name: 'Authorization URL' });
+	}
+
+	get inputTokenUrl(): Locator {
+		return this.page.getByRole('textbox', { name: 'Access Token URL' });
+	}
+
 	get inputPostToChannel(): Locator {
 		return this.page.getByRole('textbox', { name: 'Post to Channel' });
 	}
@@ -271,12 +231,20 @@ export class Admin {
 		return this.page.getByRole('textbox', { name: 'Post as' });
 	}
 
+	get inputRedirectURI(): Locator {
+		return this.page.getByRole('textbox', { name: 'Redirect URI' });
+	}
+
 	codeExamplePayload(text: string): Locator {
 		return this.page.locator('code', { hasText: text });
 	}
 
 	getIntegrationByName(name: string): Locator {
 		return this.page.getByRole('table', { name: 'Integrations table' }).locator('tr', { hasText: name });
+	}
+
+	getThirdPartyAppByName(name: string): Locator {
+		return this.page.getByRole('table', { name: 'Third-party applications table' }).locator('tr', { hasText: name });
 	}
 
 	get inputWebhookUrl(): Locator {
@@ -289,6 +257,10 @@ export class Admin {
 
 	get btnFullScreen(): Locator {
 		return this.page.getByRole('button', { name: 'Full Screen', exact: true });
+	}
+
+	get btnExitFullScreen(): Locator {
+		return this.page.getByRole('button', { name: 'Exit Full Screen', exact: true });
 	}
 
 	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {
@@ -305,5 +277,9 @@ export class Admin {
 
 	findFileCheckboxByUsername(username: string) {
 		return this.findFileRowByUsername(username).locator('label', { has: this.page.getByRole('checkbox') });
+	}
+
+	get btnClose(): Locator {
+		return this.page.locator('role=navigation >> role=button[name=Close]');
 	}
 }

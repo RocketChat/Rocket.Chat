@@ -13,6 +13,12 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldError,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -41,6 +47,7 @@ type CreateDiscussionProps = {
 	nameSuggestion?: string;
 };
 
+// TODO: Replace `Modal` in favor of `GenericModal`
 const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSuggestion }: CreateDiscussionProps): ReactElement => {
 	const t = useTranslation();
 
@@ -90,17 +97,18 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const membersId = useId();
 	const firstMessageId = useId();
 	const topicId = useId();
+	const modalId = useId();
 
 	return (
 		<Modal
-			data-qa='create-discussion-modal'
+			aria-labelledby={`${modalId}-title`}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 		>
-			<Modal.Header>
-				<Modal.Title>{t('Discussion_title')}</Modal.Title>
-				<Modal.Close tabIndex={-1} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle id={`${modalId}-title`}>{t('Discussion_title')}</ModalTitle>
+				<ModalClose tabIndex={-1} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box mbe={24}>{t('Discussion_description')}</Box>
 				<FieldGroup>
 					<Field>
@@ -241,15 +249,15 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 						)}
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button type='submit' primary loading={createDiscussionMutation.isPending}>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

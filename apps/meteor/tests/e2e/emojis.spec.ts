@@ -19,22 +19,28 @@ test.describe.serial('emoji', () => {
 		await page.goto('/home');
 	});
 
-	test('should focus the active emoji tab category', async () => {
-		const activityEmojiTab = poHomeChannel.content.getEmojiPickerTabByName('Activity');
-
+	test('should display emoji picker properly', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.btnComposerEmoji.click();
-		await activityEmojiTab.click();
 
-		await expect(activityEmojiTab).toBeFocused();
-	});
+		await test.step('should display scroller', async () => {
+			await expect(poHomeChannel.content.scrollerEmojiPicker).toBeVisible();
+		});
 
-	test('expect pick and send grinning emoji', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.pickEmoji('grinning');
-		await page.keyboard.press('Enter');
+		await test.step('should focus the active emoji tab category', async () => {
+			const activityEmojiTab = poHomeChannel.content.getEmojiPickerTabByName('Activity');
+			await activityEmojiTab.click();
 
-		await expect(poHomeChannel.content.lastUserMessage).toContainText('😀');
+			await expect(activityEmojiTab).toBeFocused();
+		});
+
+		await test.step('should pick and send grinning emoji', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.pickEmoji('grinning');
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.content.lastUserMessage).toContainText('😀');
+		});
 	});
 
 	test('expect send emoji via text', async ({ page }) => {

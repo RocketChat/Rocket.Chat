@@ -4,6 +4,7 @@ import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
+	ajv,
 	isGETRoomsNameExists,
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
@@ -12,6 +13,7 @@ import {
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
+	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
@@ -22,9 +24,12 @@ import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
+import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
+import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
+import { roomsGetMethod } from '../../../../server/publications/room';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
@@ -32,9 +37,16 @@ import { createDiscussion } from '../../../discussion/server/methods/createDiscu
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
+import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
+import { cleanRoomHistoryMethod } from '../../../lib/server/methods/cleanRoomHistory';
+import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
+import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
+import type { NotificationFieldType } from '../../../push-notifications/server/methods/saveNotificationSettings';
+import { saveNotificationSettingsMethod } from '../../../push-notifications/server/methods/saveNotificationSettings';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -141,7 +153,7 @@ API.v1.addRoute(
 				}
 			}
 
-			let result: { update: IRoom[]; remove: IRoom[] } = await Meteor.callAsync('rooms/get', updatedSinceDate);
+			let result = await roomsGetMethod(this.userId, updatedSinceDate);
 
 			if (Array.isArray(result)) {
 				result = {
@@ -164,7 +176,7 @@ API.v1.addRoute(
 		authRequired: true,
 		deprecation: {
 			version: '8.0.0',
-			alternatives: ['rooms.media'],
+			alternatives: ['/v1/rooms.media/:rid'],
 		},
 	},
 	{
@@ -199,6 +211,7 @@ API.v1.addRoute(
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
 				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+				details.size = fileBuffer.length;
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
@@ -277,6 +290,7 @@ API.v1.addRoute(
 			if (stripExif) {
 				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
 				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+				details.size = fileBuffer.length;
 			}
 
 			const fileStore = FileUpload.getStore('Uploads');
@@ -349,8 +363,8 @@ API.v1.addRoute(
 			}
 
 			await Promise.all(
-				Object.keys(notifications as Notifications).map(async (notificationKey) =>
-					Meteor.callAsync('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey as keyof Notifications]),
+				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
 				),
 			);
 
@@ -372,7 +386,7 @@ API.v1.addRoute(
 
 			const room = await findRoomByIdOrName({ params: this.bodyParams });
 
-			await Meteor.callAsync('toggleFavorite', room._id, favorite);
+			await toggleFavoriteMethod(this.userId, room._id, favorite);
 
 			return API.v1.success();
 		},
@@ -411,7 +425,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "oldest" is required.');
 			}
 
-			const count = await Meteor.callAsync('cleanRoomHistory', {
+			const count = await cleanRoomHistoryMethod(this.userId, {
 				roomId: _id,
 				latest: new Date(latest),
 				oldest: new Date(oldest),
@@ -421,7 +435,7 @@ API.v1.addRoute(
 				filesOnly: [true, 'true', 1, '1'].includes(filesOnly ?? false),
 				ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads ?? false),
 				ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
-				fromUsers: users,
+				fromUsers: users?.filter(isTruthy) || [],
 			});
 
 			return API.v1.success({ _id, count });
@@ -444,7 +458,7 @@ API.v1.addRoute(
 			const discussionParent =
 				room.prid &&
 				(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
-					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1, sidepanel: 1 },
+					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
 				}));
 			const { team, parentRoom } = await Team.getRoomInfo(room);
 			const parent = discussionParent || parentRoom;
@@ -743,16 +757,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.changeArchivationState',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsChangeArchivationStateProps },
 	{
 		async post() {
 			const { rid, action } = this.bodyParams;
 
 			let result;
 			if (action === 'archive') {
-				result = await Meteor.callAsync('archiveRoom', rid);
+				result = await executeArchiveRoom(this.userId, rid);
 			} else {
-				result = await Meteor.callAsync('unarchiveRoom', rid);
+				result = await executeUnarchiveRoom(this.userId, rid);
 			}
 
 			return API.v1.success({ result });
@@ -992,3 +1006,62 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const isRoomGetRolesPropsSchema = {
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+	},
+	additionalProperties: false,
+	required: ['rid'],
+};
+export const roomEndpoints = API.v1.get(
+	'rooms.roles',
+	{
+		authRequired: true,
+		query: ajv.compile<{
+			rid: string;
+		}>(isRoomGetRolesPropsSchema),
+		response: {
+			200: ajv.compile<{
+				roles: RoomRoles[];
+			}>({
+				type: 'object',
+				properties: {
+					roles: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								rid: { type: 'string' },
+								u: {
+									type: 'object',
+									properties: { _id: { type: 'string' }, username: { type: 'string' } },
+									required: ['_id', 'username'],
+								},
+								roles: { type: 'array', items: { type: 'string' } },
+							},
+							required: ['rid', 'u', 'roles'],
+						},
+					},
+				},
+				required: ['roles'],
+			}),
+		},
+	},
+	async function () {
+		const { rid } = this.queryParams;
+		const roles = await executeGetRoomRoles(rid, this.userId);
+
+		return API.v1.success({
+			roles,
+		});
+	},
+);
+
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends RoomEndpoints {}
+}

@@ -1,5 +1,659 @@
 # @rocket.chat/apps
 
+## 0.5.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [459f635a5160fcb0f73fb96b267f76145c11b3e4, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 68426bdfae63f7be8db55d17bd40b076290fd102, cfabf2684046e1e336b1f81d548a081c25419677, e5eda7eb5c3e45ff0798559922c732f5b537d023, 9826bc2ed9a3a4232ce6d5d436c3f489f2d4192b]:</summary>
+
+  - @rocket.chat/model-typings@1.6.12
+  - @rocket.chat/apps-engine@1.54.0
+  - @rocket.chat/core-typings@7.9.0
+  </details>
+
+## 0.5.12-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cfabf2684046e1e336b1f81d548a081c25419677]:</summary>
+
+  - @rocket.chat/apps-engine@1.54.0-rc.1
+  - @rocket.chat/core-typings@7.9.0-rc.2
+  - @rocket.chat/model-typings@1.6.11-rc.2
+  </details>
+
+## 0.5.12-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.1
+  - @rocket.chat/model-typings@1.6.11-rc.1
+  </details>
+
+## 0.5.12-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [459f635a5160fcb0f73fb96b267f76145c11b3e4, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 68426bdfae63f7be8db55d17bd40b076290fd102, e5eda7eb5c3e45ff0798559922c732f5b537d023, 9826bc2ed9a3a4232ce6d5d436c3f489f2d4192b]:</summary>
+
+  - @rocket.chat/model-typings@1.6.11-rc.0
+  - @rocket.chat/apps-engine@1.54.0-rc.0
+  - @rocket.chat/core-typings@7.9.0-rc.0
+  </details>
+
+## 0.5.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3c914ca4b4f9ae3246b149409c893b7610ae6570]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.1
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/model-typings@1.6.11
+  </details>
+
+## 0.5.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [617caa8e7be9c650b96cc1fcc5b836eaa3e7ae39]:</summary>
+
+  - @rocket.chat/model-typings@1.6.10
+  - @rocket.chat/core-typings@7.8.2
+  </details>
+
+## 0.5.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.1
+  - @rocket.chat/model-typings@1.6.9
+  </details>
+
+## 0.5.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5ac20e2a84200f8002ce454df693ada2653f3827, 2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c, de4293a1ca5af138437bf01a78e7c0450f437dc7]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.0
+  - @rocket.chat/model-typings@1.6.8
+  - @rocket.chat/core-typings@7.8.0
+  </details>
+
+## 0.5.8-rc.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.9
+  - @rocket.chat/model-typings@1.6.8-rc.9
+  </details>
+
+## 0.5.5-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [de4293a1ca5af138437bf01a78e7c0450f437dc7]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.0-rc.1
+  - @rocket.chat/core-typings@7.8.0-rc.8
+  - @rocket.chat/model-typings@1.6.5-rc.8
+  </details>
+
+## 0.5.5-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.7
+  - @rocket.chat/model-typings@1.6.5-rc.7
+  </details>
+
+## 0.5.5-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.6
+  - @rocket.chat/model-typings@1.6.5-rc.6
+  </details>
+
+## 0.5.5-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.5
+  - @rocket.chat/model-typings@1.6.5-rc.5
+  </details>
+
+## 0.5.5-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.4
+  - @rocket.chat/model-typings@1.6.5-rc.4
+  </details>
+
+## 0.5.5-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.3
+  - @rocket.chat/model-typings@1.6.5-rc.3
+  </details>
+
+## 0.5.5-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.0-rc.2
+  - @rocket.chat/model-typings@1.6.5-rc.2
+  </details>
+
+## 0.5.5-rc.1
+
+## 0.5.8-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.8.0-rc.1
+  - @rocket.chat/model-typings@1.6.5-rc.1
+  </details>
+
+## 0.5.5-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5ac20e2a84200f8002ce454df693ada2653f3827, 2f8213e4c5b64201eb11c97e6e33d2488df9089d, 2de3aa60aa84bb262d3748065654b4ca7a000858, 3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.0-rc.0
+  - @rocket.chat/model-typings@1.6.5-rc.0
+  - @rocket.chat/core-typings@7.8.0-rc.0
+    </details>
+
+## 0.5.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [46662d78192b438914b2aedb974faa2367225fa5]:</summary>
+
+  - @rocket.chat/apps-engine@1.52.1
+  - @rocket.chat/core-typings@7.7.4
+  - @rocket.chat/model-typings@1.6.7
+  </details>
+
+## 0.5.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.7.3
+  - @rocket.chat/model-typings@1.6.6
+  </details>
+
+## 0.5.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.2
+  - @rocket.chat/model-typings@1.6.5
+    </details>
+
+## 0.5.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [710f6b2bc211ba1d06d701f99d17bf2405d19b32]:</summary>
+
+  - @rocket.chat/model-typings@1.6.4
+  - @rocket.chat/core-typings@7.7.1
+  </details>
+
+## 0.5.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7f9748374a3b04f7880003227cde7058e5ea9a68, 7f9748374a3b04f7880003227cde7058e5ea9a68, 8d907087746dd75bd640c6d51ae0bbb7f3dc43c0, 6d36fc25a47281aad298edc6fc3a6e981d279f61]:</summary>
+
+  - @rocket.chat/apps-engine@1.52.0
+  - @rocket.chat/model-typings@1.6.3
+  - @rocket.chat/core-typings@7.7.0
+  </details>
+
+## 0.5.3-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0-rc.6
+  - @rocket.chat/model-typings@1.6.3-rc.6
+  </details>
+
+## 0.5.3-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0-rc.5
+  - @rocket.chat/model-typings@1.6.3-rc.5
+  </details>
+
+## 0.5.3-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.1-rc.4
+  - @rocket.chat/model-typings@1.6.3-rc.4
+  </details>
+
+## 0.5.3-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.7.0-rc.3
+  - @rocket.chat/model-typings@1.6.1-rc.3
+  </details>
+
+## 0.5.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0-rc.2
+  - @rocket.chat/model-typings@1.6.1-rc.2
+  </details>
+
+## 0.5.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.7.0-rc.1
+  - @rocket.chat/model-typings@1.6.1-rc.1
+  </details>
+
+## 0.5.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7f9748374a3b04f7880003227cde7058e5ea9a68, 7f9748374a3b04f7880003227cde7058e5ea9a68, 8d907087746dd75bd640c6d51ae0bbb7f3dc43c0, 6d36fc25a47281aad298edc6fc3a6e981d279f61]:</summary>
+
+  - @rocket.chat/apps-engine@1.52.0-rc.0
+  - @rocket.chat/model-typings@1.6.1-rc.0
+  - @rocket.chat/core-typings@7.7.0-rc.0
+  </details>
+
+## 0.5.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.2
+  - @rocket.chat/model-typings@1.6.2
+  </details>
+
+## 0.5.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [587c3cafbd631b4275fd05497d3e463713583cc0]:</summary>
+
+  - @rocket.chat/apps-engine@1.51.1
+  - @rocket.chat/core-typings@7.6.1
+  - @rocket.chat/model-typings@1.6.1
+  </details>
+
+## 0.5.0
+
+### Minor Changes
+
+- ([#35280](https://github.com/RocketChat/Rocket.Chat/pull/35280)) Allows apps to react to department status changes.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [aec9eaa941fe9dad81f38d8d18d1b58edd700eb1, 2c190740d0ff166a4cefe8e833b0b2682a41fab1, d649a761edd71e1325a635b757ef1df2e5a778a4, bbd14f84214b4785f2b58cfeb8e9117bdfbf18e8, 45a93a7713546ed2e3e0b3988e1f989371ebf53a, 5f11fea4ab1dc149f82b7d8c5fc556a2cf09fa5e, d8eb824d242cbbeafb11b1c4a806860e4541ba79, bbd0b0d9ed181a156430e2a446d3b56092e3f645, 47ae69912cd90743e7bf836fdee4be481a01bbba, 4b28126ac94cf1d3312b30ad9863ca02673f49d4]:</summary>
+
+  - @rocket.chat/core-typings@7.6.0
+  - @rocket.chat/apps-engine@1.51.0
+  - @rocket.chat/model-typings@1.6.0
+  </details>
+
+## 0.5.0-rc.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.8
+  - @rocket.chat/model-typings@1.6.0-rc.8
+  </details>
+
+## 0.5.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.7
+  - @rocket.chat/model-typings@1.6.0-rc.7
+  </details>
+
+## 0.5.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.6
+  - @rocket.chat/model-typings@1.6.0-rc.6
+  </details>
+
+## 0.5.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.5
+  - @rocket.chat/model-typings@1.6.0-rc.5
+  </details>
+
+## 0.5.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.4
+  - @rocket.chat/model-typings@1.6.0-rc.4
+  </details>
+
+## 0.5.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.3
+  - @rocket.chat/model-typings@1.6.0-rc.3
+  </details>
+
+## 0.5.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.2
+  - @rocket.chat/model-typings@1.6.0-rc.2
+  </details>
+
+## 0.5.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.1
+  - @rocket.chat/model-typings@1.6.0-rc.1
+  </details>
+
+## 0.5.0-rc.0
+
+### Minor Changes
+
+- ([#35280](https://github.com/RocketChat/Rocket.Chat/pull/35280)) Allows apps to react to department status changes.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [aec9eaa941fe9dad81f38d8d18d1b58edd700eb1, 2c190740d0ff166a4cefe8e833b0b2682a41fab1, d649a761edd71e1325a635b757ef1df2e5a778a4, bbd14f84214b4785f2b58cfeb8e9117bdfbf18e8, 45a93a7713546ed2e3e0b3988e1f989371ebf53a, 5f11fea4ab1dc149f82b7d8c5fc556a2cf09fa5e, d8eb824d242cbbeafb11b1c4a806860e4541ba79, bbd0b0d9ed181a156430e2a446d3b56092e3f645, 47ae69912cd90743e7bf836fdee4be481a01bbba, 4b28126ac94cf1d3312b30ad9863ca02673f49d4]:</summary>
+
+  - @rocket.chat/core-typings@7.6.0-rc.0
+  - @rocket.chat/apps-engine@1.51.0-rc.0
+  - @rocket.chat/model-typings@1.6.0-rc.0
+  </details>
+
+## 0.4.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.1
+  - @rocket.chat/model-typings@1.5.1
+  </details>
+
+## 0.4.0
+
+### Minor Changes
+
+- ([#35486](https://github.com/RocketChat/Rocket.Chat/pull/35486)) Adds the executeLivechatRoomCreatePrevent hook to the Rocket.Chat Apps-Engine to prevent the creation of live chat rooms.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3b5406172c5575f09e9f5a2cb3ff99122900afde, 4e9d3155db516718fdd28be30a53d0051c9144d3, 25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 38f1c508c9f95cd34744066019927add53470446, c618263e8e5fa9459f48d262e5dd9e20c59c1410, c44331e0d9b0e4e04d1ec64bea74b439a1125aa0, 0d96d633a653f52d07bc9ebeead16dcb90c75e2c, d7ea246e0f7837cd3cc93f99316683b75a2faa43]:</summary>
+
+  - @rocket.chat/model-typings@1.5.0
+  - @rocket.chat/apps-engine@1.50.0
+  - @rocket.chat/core-typings@7.5.0
+  </details>
+
+## 0.4.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.0-rc.5
+  - @rocket.chat/model-typings@1.5.0-rc.5
+  </details>
+
+## 0.4.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c618263e8e5fa9459f48d262e5dd9e20c59c1410, d7ea246e0f7837cd3cc93f99316683b75a2faa43]:</summary>
+
+  - @rocket.chat/apps-engine@1.50.0-rc.1
+  - @rocket.chat/core-typings@7.5.0-rc.4
+  - @rocket.chat/model-typings@1.5.0-rc.4
+  </details>
+
+## 0.4.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.0-rc.3
+  - @rocket.chat/model-typings@1.5.0-rc.3
+  </details>
+
+## 0.4.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.0-rc.2
+  - @rocket.chat/model-typings@1.5.0-rc.2
+  </details>
+
+## 0.4.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.5.0-rc.1
+  - @rocket.chat/model-typings@1.5.0-rc.1
+  </details>
+
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#35486](https://github.com/RocketChat/Rocket.Chat/pull/35486)) Adds the executeLivechatRoomCreatePrevent hook to the Rocket.Chat Apps-Engine to prevent the creation of live chat rooms.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3b5406172c5575f09e9f5a2cb3ff99122900afde, 4e9d3155db516718fdd28be30a53d0051c9144d3, 25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 38f1c508c9f95cd34744066019927add53470446, c44331e0d9b0e4e04d1ec64bea74b439a1125aa0, 0d96d633a653f52d07bc9ebeead16dcb90c75e2c]:</summary>
+
+  - @rocket.chat/model-typings@1.5.0-rc.0
+  - @rocket.chat/apps-engine@1.50.0-rc.0
+  - @rocket.chat/core-typings@7.5.0-rc.0
+  </details>
+
+## 0.3.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.1
+  - @rocket.chat/model-typings@1.4.1
+  </details>
+
+## 0.3.0
+
+### Minor Changes
+
+- ([#35177](https://github.com/RocketChat/Rocket.Chat/pull/35177)) Adds a new IPostSystemMessageSent event, that is triggered whenever a new System Message is sent
+
+### Patch Changes
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- <details><summary>Updated dependencies [d5175eeb5be81bab061e5ff8c6991c589bfeb0f4, 0df16c4ca50a6ad8613cfdc11a8ef6cb216fb6a4, 89964144e042c8d9282b51efd89e1e684077fdd7, 2921a6aa6f7c971a29c8209574cfb66432bc9f47, f80ac66b006080313f4aa5a04706ff9c8790622b, 083fc49cf718e460dd6e8fcd72b98b42aeb6fc86, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, 271894fb3942d5d0ce3d669325d07fbbbc4bf112, 697a38d23590ac799f0f3c14a676fb6bea7e86ea, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
+
+  - @rocket.chat/model-typings@1.4.0
+  - @rocket.chat/core-typings@7.4.0
+  - @rocket.chat/apps-engine@1.49.0
+  </details>
+
+## 0.3.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.5
+  - @rocket.chat/model-typings@1.4.0-rc.5
+  </details>
+
+## 0.3.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.4
+  - @rocket.chat/model-typings@1.4.0-rc.4
+  </details>
+
+## 0.3.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.4.0-rc.3
+  - @rocket.chat/model-typings@1.4.0-rc.3
+  </details>
+
+## 0.3.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.2
+  - @rocket.chat/model-typings@1.4.0-rc.2
+  </details>
+
+## 0.3.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.4.0-rc.1
+  - @rocket.chat/model-typings@1.4.0-rc.1
+  </details>
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#35177](https://github.com/RocketChat/Rocket.Chat/pull/35177)) Adds a new IPostSystemMessageSent event, that is triggered whenever a new System Message is sent
+
+### Patch Changes
+
+- ([#35120](https://github.com/RocketChat/Rocket.Chat/pull/35120)) Fixes behavior of app updates that would save undesired field changes to documents
+
+- <details><summary>Updated dependencies [d5175eeb5be81bab061e5ff8c6991c589bfeb0f4, 0df16c4ca50a6ad8613cfdc11a8ef6cb216fb6a4, 89964144e042c8d9282b51efd89e1e684077fdd7, 2921a6aa6f7c971a29c8209574cfb66432bc9f47, f80ac66b006080313f4aa5a04706ff9c8790622b, 083fc49cf718e460dd6e8fcd72b98b42aeb6fc86, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, 271894fb3942d5d0ce3d669325d07fbbbc4bf112, 697a38d23590ac799f0f3c14a676fb6bea7e86ea, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
+
+  - @rocket.chat/model-typings@1.4.0-rc.0
+  - @rocket.chat/core-typings@7.4.0-rc.0
+  - @rocket.chat/apps-engine@1.49.0-rc.0
+  </details>
+
+## 0.2.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.3
+  - @rocket.chat/model-typings@1.3.3
+  </details>
+
+## 0.2.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.3.2
+  - @rocket.chat/model-typings@1.3.2
+  </details>
+
+## 0.2.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b7905dfebe48d27d0d774fb23cc579ea9dfd01f4]:</summary>
+
+  - @rocket.chat/model-typings@1.3.1
+  - @rocket.chat/core-typings@7.3.1
+  </details>
+
 ## 0.2.4
 
 ### Patch Changes

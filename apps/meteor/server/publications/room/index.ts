@@ -25,35 +25,48 @@ const roomMap = (record: IRoom | IOmnichannelRoom) => {
 	return _.pick(record, ...Object.keys(roomFields)) as PublicRoom;
 };
 
+export const roomsGetMethod = async (userId?: string | null, updatedAt?: Date): Promise<IRoom[] | { update: IRoom[]; remove: IRoom[] }> => {
+	const options = { projection: roomFields };
+
+	if (!userId) {
+		if (settings.get('Accounts_AllowAnonymousRead')) {
+			return Rooms.findByDefaultAndTypes(true, ['c'], options).toArray();
+		}
+		return [];
+	}
+
+	if (updatedAt instanceof Date) {
+		return {
+			update: await (await Rooms.findBySubscriptionUserIdUpdatedAfter(userId, updatedAt, options)).toArray(),
+			remove: await Rooms.trashFindDeletedAfter(updatedAt, {}, { projection: { _id: 1, _deletedAt: 1 } }).toArray(),
+		};
+	}
+
+	return (await Rooms.findBySubscriptionUserId(userId, options)).toArray();
+};
+
 Meteor.methods<ServerMethods>({
 	async 'rooms/get'(updatedAt) {
-		const options = { projection: roomFields };
-		const user = Meteor.userId();
-
-		if (!user) {
-			if (settings.get('Accounts_AllowAnonymousRead')) {
-				return Rooms.findByDefaultAndTypes(true, ['c'], options).toArray();
-			}
-			return [];
-		}
-
-		if (updatedAt instanceof Date) {
-			return {
-				update: await (await Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options)).toArray(),
-				remove: await Rooms.trashFindDeletedAfter(updatedAt, {}, { projection: { _id: 1, _deletedAt: 1 } }).toArray(),
-			};
-		}
-
-		return (await Rooms.findBySubscriptionUserId(user, options)).toArray();
+		return roomsGetMethod(Meteor.userId(), updatedAt);
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {
-		const userId = Meteor.userId();
-
-		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		if (!type || !name) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'getRoomByTypeAndName',
 			});
+		}
+
+		const userId = Meteor.userId();
+		const isAnonymous = !userId;
+
+		if (isAnonymous) {
+			const allowAnon = settings.get('Accounts_AllowAnonymousRead');
+			if (!allowAnon || type !== 'c') {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'getRoomByTypeAndName',
+				});
+			}
 		}
 
 		const roomFind = roomCoordinator.getRoomFind(type);

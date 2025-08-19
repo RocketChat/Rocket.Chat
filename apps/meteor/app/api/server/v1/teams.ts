@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE, isValidSidepanel } from '@rocket.chat/core-typings';
+import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
@@ -78,11 +78,7 @@ API.v1.addRoute(
 				}),
 			);
 
-			const { name, type, members, room, owner, sidepanel } = this.bodyParams;
-
-			if (sidepanel?.items && !isValidSidepanel(sidepanel)) {
-				throw new Error('error-invalid-sidepanel');
-			}
+			const { name, type, members, room, owner } = this.bodyParams;
 
 			const team = await Team.create(this.userId, {
 				team: {
@@ -92,7 +88,6 @@ API.v1.addRoute(
 				room,
 				members,
 				owner,
-				sidepanel,
 			});
 
 			return API.v1.success({ team });
@@ -441,9 +436,9 @@ API.v1.addRoute(
 			const canSeeAllMembers = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
 
 			const query = {
-				username: username ? new RegExp(escapeRegExp(username), 'i') : undefined,
-				name: name ? new RegExp(escapeRegExp(name), 'i') : undefined,
-				status: status ? { $in: status as UserStatus[] } : undefined,
+				...(username && { username: new RegExp(escapeRegExp(username), 'i') }),
+				...(name && { name: new RegExp(escapeRegExp(name), 'i') }),
+				...(status && { status: { $in: status as UserStatus[] } }),
 			};
 
 			const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);

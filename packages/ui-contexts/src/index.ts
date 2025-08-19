@@ -2,7 +2,6 @@ export { AttachmentContext, AttachmentContextValue } from './AttachmentContext';
 export { AuthenticationContextValue, AuthenticationContext, LoginService } from './AuthenticationContext';
 export { AuthorizationContext, AuthorizationContextValue } from './AuthorizationContext';
 export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
-export { ConnectionStatusContext, ConnectionStatusContextValue } from './ConnectionStatusContext';
 export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, LayoutContextValue } from './LayoutContext';
 export { ModalContext, ModalContextValue } from './ModalContext';
@@ -14,6 +13,7 @@ export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessages
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
 export { UserContext, UserContextValue } from './UserContext';
+export { UserPresenceContext, UserPresenceContextValue } from './UserPresenceContext';
 export { DeviceContext, Device, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
 
@@ -32,8 +32,8 @@ export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
 export { useGoToRoom } from './hooks/useGoToRoom';
 export type { EndpointFunction } from './hooks/useEndpoint';
+export { useIsLoggingIn } from './hooks/useIsLoggingIn';
 export { useIsPrivilegedSettingsContext } from './hooks/useIsPrivilegedSettingsContext';
-export { useIsSettingsContextLoading } from './hooks/useIsSettingsContextLoading';
 export { useLanguage } from './hooks/useLanguage';
 export { useLanguages } from './hooks/useLanguages';
 export { useLayout } from './hooks/useLayout';
@@ -45,7 +45,9 @@ export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';
 export { useLoginWithService } from './hooks/useLoginWithService';
+export { useLoginWithIframe } from './hooks/useLoginWithIframe';
 export { useLoginWithToken } from './hooks/useLoginWithToken';
+export { useLoginWithTokenRoute } from './hooks/useLoginWithTokenRoute';
 export { useLogout } from './hooks/useLogout';
 export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
@@ -91,9 +93,12 @@ export { useIsDeviceManagementEnabled } from './hooks/useIsDeviceManagementEnabl
 export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
+export { useUserPresence } from './hooks/useUserPresence';
+export { useUnstoreLoginToken } from './hooks/useUnstoreLoginToken';
+export { useOnLogout } from './hooks/useOnLogout';
 
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
-export { Fields } from './UserContext';
+export { Fields, FindOptions } from './UserContext';
 
 export { SubscriptionWithRoom } from './types/SubscriptionWithRoom';

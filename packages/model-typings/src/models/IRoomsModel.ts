@@ -130,8 +130,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setRoomNameById(roomId: IRoom['_id'], name: IRoom['name']): Promise<UpdateResult>;
 
-	setSidepanelById(roomId: IRoom['_id'], sidepanel: IRoom['sidepanel']): Promise<UpdateResult>;
-
 	setFnameById(_id: IRoom['_id'], fname: IRoom['fname']): Promise<UpdateResult>;
 
 	setRoomTopicById(roomId: IRoom['_id'], topic: IRoom['description']): Promise<UpdateResult>;
@@ -313,6 +311,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number>;
 	countByBroadcast(options?: CountDocumentsOptions): Promise<number>;
 	countByE2E(options?: CountDocumentsOptions): Promise<number>;
-	markRolePrioritesCreatedForRoom(rid: IRoom['_id']): Promise<UpdateResult>;
-	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id']): Promise<number>;
+	markRolePrioritesCreatedForRoom(rid: IRoom['_id'], version: number): Promise<UpdateResult>;
+	hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number): Promise<number>;
 }
