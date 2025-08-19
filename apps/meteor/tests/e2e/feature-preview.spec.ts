@@ -786,21 +786,19 @@ test.describe.serial('feature preview', () => {
 			});
 		});
 
-		test('should not open rooms when clicking on sidebar filters', async ({ page }) => {
+		test('should open rooms when clicking on sidebar filter', async ({ page }) => {
 			await page.goto('/home');
 
 			await poHomeChannel.sidenav.waitForHome();
 
 			await expect(poHomeChannel.sidebar.channelsList).toBeVisible();
-			// TODO: flaky without force click, for some reason opens 2nd channel in list
 			await poHomeChannel.sidebar.getSearchRoomByName(sidepanelTeam).click({ force: true });
 
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
 
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
-			await expect(page).toHaveURL('/home');
-			await expect(poHomeChannel.sidenav.homepageHeader).toBeVisible();
+			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 		});
 
 		test('should open room when clicking on sidepanel item', async ({ page }) => {
