@@ -10,7 +10,6 @@ export interface IReadReceiptsModel extends IBaseModel<ReadReceipt> {
 	removeByRoomIds(roomIds: string[]): Promise<DeleteResult>;
 	removeByMessageId(messageId: string): Promise<DeleteResult>;
 	removeByMessageIds(messageIds: string[]): Promise<DeleteResult>;
-	removeOTRReceiptsUntilDate(roomId: string, until: Date): Promise<DeleteResult>;
 	removeByIdPinnedTimestampLimitAndUsers(
 		roomId: string,
 		ignorePinned: boolean,
