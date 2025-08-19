@@ -162,7 +162,8 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setReaction(reaction, messageId, shouldReact) {
-		methodDeprecationLogger.method('setReaction', '8.0.0', 'Use the endpoint /v1/chat.react instead');
+		methodDeprecationLogger.method('setReaction', '8.0.0', '/v1/chat.react');
+
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });

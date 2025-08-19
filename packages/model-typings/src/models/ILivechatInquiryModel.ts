@@ -1,4 +1,4 @@
-import type { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus } from '@rocket.chat/core-typings';
+import type { IMessage, ILivechatInquiryRecord, LivechatInquiryStatus, SelectedAgent } from '@rocket.chat/core-typings';
 import type { FindOptions, Document, UpdateResult, DeleteResult, FindCursor, DeleteOptions, AggregateOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -33,7 +33,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 	takeInquiry(inquiryId: string): Promise<void>;
 	openInquiry(inquiryId: string): Promise<UpdateResult>;
-	queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null>;
+	queueInquiry(inquiryId: string, lastMessage?: IMessage, defaultAgent?: SelectedAgent | null): Promise<ILivechatInquiryRecord | null>;
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult>;
 	readyInquiry(inquiryId: string): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(rid: string, department: string): Promise<UpdateResult>;
