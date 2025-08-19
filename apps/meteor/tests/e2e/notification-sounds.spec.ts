@@ -1,3 +1,5 @@
+import type { Page } from 'playwright-core';
+
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannelAndReturnFullRoom, deleteRoom, setUserPreferences } from './utils';
@@ -16,6 +18,7 @@ test.describe.serial('Notification Sounds', () => {
 	let targetChannel: string;
 	let targetChannelId: string;
 	let poHomeChannel: HomeChannel;
+	let user1Page: Page;
 
 	test.beforeAll(async ({ api }) => {
 		const { channel } = await createTargetChannelAndReturnFullRoom(api, {
@@ -29,9 +32,9 @@ test.describe.serial('Notification Sounds', () => {
 		await deleteRoom(api, targetChannel);
 	});
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, browser }) => {
 		poHomeChannel = new HomeChannel(page);
-
+		user1Page = await browser.newPage({ storageState: Users.user1.state });
 		await page.goto(`/channel/${targetChannel}`);
 
 		await page.evaluate(() => {
@@ -45,8 +48,11 @@ test.describe.serial('Notification Sounds', () => {
 		});
 	});
 
-	test('should play default notification sounds', async ({ page, browser }) => {
-		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+	test.afterEach(async () => {
+		await user1Page.close();
+	});
+
+	test('should play default notification sounds', async ({ page }) => {
 		await user1Page.goto(`/channel/${targetChannel}`);
 		const user1PoHomeChannel = new HomeChannel(user1Page);
 		await user1PoHomeChannel.content.waitForChannel();
@@ -61,8 +67,6 @@ test.describe.serial('Notification Sounds', () => {
 		expect(audioCalls).toHaveProperty('src');
 		expect(audioCalls.src).toContain('chime');
 		expect(audioCalls.played).toBe(true);
-
-		await user1Page.close();
 	});
 
 	test.describe('Notification sound preferences', () => {
@@ -78,8 +82,7 @@ test.describe.serial('Notification Sounds', () => {
 			});
 		});
 
-		test('should play notification sound based on user preferences', async ({ page, browser }) => {
-			const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		test('should play notification sound based on user preferences', async ({ page }) => {
 			await user1Page.goto(`/channel/${targetChannel}`);
 			const user1PoHomeChannel = new HomeChannel(user1Page);
 			await user1PoHomeChannel.content.waitForChannel();
@@ -94,8 +97,6 @@ test.describe.serial('Notification Sounds', () => {
 			expect(audioCalls).toHaveProperty('src');
 			expect(audioCalls.src).toContain('ringtone');
 			expect(audioCalls.played).toBe(true);
-
-			await user1Page.close();
 		});
 	});
 
@@ -109,8 +110,7 @@ test.describe.serial('Notification Sounds', () => {
 			});
 		});
 
-		test('should play custom room notification sound', async ({ page, browser }) => {
-			const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		test('should play custom room notification sound', async ({ page }) => {
 			await user1Page.goto(`/channel/${targetChannel}`);
 			const user1PoHomeChannel = new HomeChannel(user1Page);
 			await user1PoHomeChannel.content.waitForChannel();
@@ -125,8 +125,6 @@ test.describe.serial('Notification Sounds', () => {
 			expect(audioCalls).toHaveProperty('src');
 			expect(audioCalls.src).toContain('door');
 			expect(audioCalls.played).toBe(true);
-
-			await user1Page.close();
 		});
 	});
 });
