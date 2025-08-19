@@ -60,10 +60,6 @@ export type MessageType =
 	| 'omnichannel_placed_chat_on_hold'
 	/** Sent when a chat is resumed */
 	| 'omnichannel_on_hold_chat_resumed'
-	| 'otr'
-	| 'otr-ack'
-	| 'user_joined_otr'
-	| 'user_requested_otr_key_refresh'
 	| 'user_key_refreshed_successfully'
 	/** Sent when the message came through e2e */
 	| 'e2e'

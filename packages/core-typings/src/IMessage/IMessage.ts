@@ -60,11 +60,6 @@ const LivechatMessageTypesValues = [
 	'omnichannel_on_hold_chat_resumed',
 ] as const;
 
-const OtrMessageTypeValues = ['otr', 'otr-ack'] as const;
-
-export const OtrSystemMessagesValues = ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'] as const;
-export type OtrSystemMessages = (typeof OtrSystemMessagesValues)[number];
-
 const MessageTypes = [
 	'e2e',
 	'uj',
@@ -110,8 +105,6 @@ const MessageTypes = [
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
 	...VoipMessageTypesValues,
-	...OtrMessageTypeValues,
-	...OtrSystemMessagesValues,
 ] as const;
 export type MessageTypesValues = (typeof MessageTypes)[number];
 
@@ -198,7 +191,6 @@ export interface IMessage extends IRocketChatRecord {
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
 	e2eMentions?: { e2eUserMentions?: string[]; e2eChannelMentions?: string[] };
-	otrAck?: string;
 
 	urls?: MessageUrl[];
 
@@ -443,23 +435,12 @@ export type IE2EEPinnedMessage = IMessage & {
 	attachments: [MessageAttachment & { content: EncryptedContent }];
 };
 
-export interface IOTRMessage extends IMessage {
-	t: 'otr';
-	otrAck?: string;
-}
-
-export interface IOTRAckMessage extends IMessage {
-	t: 'otr-ack';
-}
-
 export type IVideoConfMessage = IMessage & {
 	t: 'videoconf';
 };
 
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
 export const isE2EEPinnedMessage = (message: IMessage): message is IE2EEPinnedMessage => message.t === 'message_pinned_e2e';
-export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr';
-export const isOTRAckMessage = (message: IMessage): message is IOTRAckMessage => message.t === 'otr-ack';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';
 
 export type IMessageWithPendingFileImport = IMessage & {

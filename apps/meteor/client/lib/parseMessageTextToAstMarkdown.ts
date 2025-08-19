@@ -2,8 +2,6 @@ import type { IMessage, ITranslatedMessage, MessageAttachment } from '@rocket.ch
 import {
 	isFileAttachment,
 	isE2EEMessage,
-	isOTRMessage,
-	isOTRAckMessage,
 	isQuoteAttachment,
 	isTranslatedAttachment,
 	isTranslatedMessage,
@@ -47,10 +45,7 @@ export const parseMessageTextToAstMarkdown = <
 
 	return {
 		...msg,
-		md:
-			isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message) || translated
-				? textToMessageToken(text, parseOptions)
-				: (msg.md ?? textToMessageToken(text, parseOptions)),
+		md: isE2EEMessage(message) || translated ? textToMessageToken(text, parseOptions) : (msg.md ?? textToMessageToken(text, parseOptions)),
 		...(msg.attachments && {
 			attachments: parseMessageAttachments(msg.attachments, parseOptions, { autoTranslateLanguage, translated }),
 		}),

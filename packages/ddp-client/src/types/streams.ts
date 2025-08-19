@@ -244,16 +244,6 @@ export interface StreamerEvents {
 						},
 				  ];
 		},
-		{
-			key: `${string}/otr`;
-			args: [
-				'handshake' | 'acknowledge' | 'deny' | 'end',
-				{
-					roomId: IRoom['_id'];
-					userId: IUser['_id'];
-				},
-			];
-		},
 		{ key: `${string}/calendar`; args: [ICalendarNotification] },
 		{ key: `${string}/banners`; args: [IBanner] },
 	];
@@ -280,16 +270,6 @@ export interface StreamerEvents {
 		/* @deprecated */
 		{ key: 'new-banner'; args: [{ bannerId: string }] },
 
-		{
-			key: `${string}/otr`;
-			args: [
-				'handshake' | 'acknowledge' | 'deny' | 'end',
-				{
-					roomId: IRoom['_id'];
-					userId: IUser['_id'];
-				},
-			];
-		},
 		{ key: `${string}/webrtc`; args: [unknown] },
 
 		{ key: 'banner-changed'; args: [{ bannerId: string }] },
@@ -363,16 +343,6 @@ export interface StreamerEvents {
 					to?: string;
 					media: MediaStreamConstraints;
 					monitor?: boolean;
-				},
-			];
-		},
-		{
-			key: `${string}/otr`;
-			args: [
-				'handshake' | 'acknowledge' | 'deny' | 'end',
-				{
-					roomId: IRoom['_id'];
-					userId: IUser['_id'];
 				},
 			];
 		},

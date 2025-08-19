@@ -3,8 +3,6 @@ import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import { BaseRaw } from '@rocket.chat/models';
 import type { Collection, FindCursor, Db, IndexDescription, DeleteResult, Filter, UpdateResult, Document } from 'mongodb';
 
-import { otrSystemMessages } from '../../../../app/otr/lib/constants';
-
 export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadReceiptsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IReadReceipt>>) {
 		super(db, 'read_receipts', trash);
@@ -36,21 +34,6 @@ export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadRecei
 
 	removeByMessageIds(messageIds: string[]): Promise<DeleteResult> {
 		return this.deleteMany({ messageId: { $in: messageIds } });
-	}
-
-	removeOTRReceiptsUntilDate(roomId: string, until: Date): Promise<DeleteResult> {
-		return this.col.deleteMany({
-			roomId,
-			t: {
-				$in: [
-					'otr',
-					otrSystemMessages.USER_JOINED_OTR,
-					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
-				],
-			},
-			ts: { $lte: until },
-		});
 	}
 
 	async removeByIdPinnedTimestampLimitAndUsers(
