@@ -3,47 +3,55 @@ import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useCallback, useRef, useState } from 'react';
 
 const events = ['error', 'stalled', 'play'];
+
+function toURL(urlString: string): URL {
+	try {
+		return new URL(urlString);
+	} catch {
+		return new URL(urlString, window.location.href);
+	}
+}
+
+const getRedirectURLInfo = async (url: string): Promise<{ redirectUrl: string | false; expires: number | null }> => {
+	const _url = toURL(url);
+	_url.searchParams.set('replyWithRedirectUrl', 'true');
+	const response = await fetch(_url, {
+		credentials: 'same-origin',
+	});
+
+	if (!response.ok) {
+		throw new Error(`Failed to fetch URL info: ${response.statusText}`);
+	}
+
+	const data = await response.json();
+
+	return {
+		redirectUrl: data.redirectUrl,
+		expires: data.expires ? new Date(data.expires).getTime() : null,
+	};
+};
+
+const renderBufferingUIFallback = (vidEl: HTMLVideoElement) => {
+	const computed = getComputedStyle(vidEl);
+
+	const videoTempStyles = {
+		width: vidEl.style.width,
+		height: vidEl.style.height,
+	};
+	Object.assign(vidEl.style, {
+		width: computed.width,
+		height: computed.height,
+	});
+
+	return () => {
+		Object.assign(vidEl.style, videoTempStyles);
+	};
+};
+
 export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 	const [expiresAt, setExpiresAt] = useState<number | null>(null);
 	const isRecovering = useRef(false);
 	const firstRecoveryAttempted = useRef(false);
-
-	const getRedirectURLInfo = useCallback(async (url: string): Promise<{ redirectUrl: string | false; expires: number | null }> => {
-		const [path, query] = url.split('?');
-		const params = new URLSearchParams(query);
-		params.set('replyWithRedirectUrl', 'true');
-		const response = await fetch(`${path}?${params.toString()}`, {
-			credentials: 'same-origin',
-		});
-
-		if (!response.ok) {
-			throw new Error(`Failed to fetch URL info: ${response.statusText}`);
-		}
-
-		const data = await response.json();
-
-		return {
-			redirectUrl: data.redirectUrl,
-			expires: data.expires ? new Date(data.expires * 1000).getTime() : null,
-		};
-	}, []);
-
-	const renderBufferingUIFallback = useCallback((vidEl: HTMLVideoElement) => {
-		const computed = getComputedStyle(vidEl);
-
-		const videoTempStyles = {
-			width: vidEl.style.width,
-			height: vidEl.style.height,
-		};
-		Object.assign(vidEl.style, {
-			width: computed.width,
-			height: computed.height,
-		});
-
-		return () => {
-			Object.assign(vidEl.style, videoTempStyles);
-		};
-	}, []);
 
 	const handleMediaURLRecovery = useEffectEvent(async (event: Event) => {
 		if (isRecovering.current) {
@@ -58,11 +66,19 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 			return;
 		}
 
-		if (firstRecoveryAttempted.current && !expiresAt) {
-			console.debug('No expiration time set, skipping recovery');
+		if (firstRecoveryAttempted.current) {
+			if (!expiresAt) {
+				console.debug('No expiration time set, skipping recovery');
+				isRecovering.current = false;
+				return;
+			}
+		} else if (event.type === 'play') {
+			// The user has initiated a playback for the first time, probably we should wait for the stalled or error event
+			// the url may still be valid since we dont know the expiration time yet
 			isRecovering.current = false;
 			return;
 		}
+
 		firstRecoveryAttempted.current = true;
 
 		if (expiresAt && Date.now() < expiresAt) {
@@ -128,9 +144,6 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 					node.addEventListener(event, handleMediaURLRecovery);
 				});
 				return () => {
-					if (!node) {
-						return;
-					}
 					events.forEach((event) => {
 						node.removeEventListener(event, handleMediaURLRecovery);
 					});

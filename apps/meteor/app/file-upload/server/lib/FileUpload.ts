@@ -605,7 +605,7 @@ export const FileUpload = {
 				name: file.name,
 				type: file.type,
 				size: file.size,
-				...(expiresInSeconds && { expires: Date.now() / 1000 + expiresInSeconds }),
+				...(expiresInSeconds && { expires: new Date(Date.now() + expiresInSeconds * 1000).toISOString() }),
 			}),
 		);
 	},
