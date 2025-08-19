@@ -1,15 +1,20 @@
 import type { UserPresenceContextValue } from '@rocket.chat/ui-contexts';
 import { useSetting, UserPresenceContext } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useMemo, useEffect } from 'react';
 
 import { Presence } from '../lib/presence';
+import { UserPresence } from '../lib/userPresence';
+
+const userPresence = new UserPresence();
 
 type UserPresenceProviderProps = {
 	children?: ReactNode;
 };
 
-const UserPresenceProvider = ({ children }: UserPresenceProviderProps): ReactElement => {
+const UserPresenceProvider = ({ children }: UserPresenceProviderProps) => {
+	userPresence.use();
+
 	const usePresenceDisabled = useSetting('Presence_broadcast_disabled', false);
 
 	useEffect(() => {
