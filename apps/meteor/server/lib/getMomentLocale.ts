@@ -7,17 +7,18 @@ const mapLocaleToMomentLocale: Record<string, string> = {
 
 export async function getMomentLocale(locale: string): Promise<string | undefined> {
 	const localeLower = locale.toLowerCase();
-	try {
-		return await Assets.getTextAsync(`moment-locales/${localeLower}.js`);
-	} catch (error) {
+	const localesPaths = [
+		`moment-locales/${localeLower}.js`,
+		`moment-locales/${String(localeLower.split('-').shift())}.js`,
+		`moment-locales/${mapLocaleToMomentLocale[localeLower]}.js`,
+	];
+	for (const localePath of localesPaths) {
 		try {
-			return await Assets.getTextAsync(`moment-locales/${String(localeLower.split('-').shift())}.js`);
+			/* eslint-disable-next-line no-await-in-loop */
+			return await Assets.getTextAsync(localePath);
 		} catch (error) {
-			try {
-				return await Assets.getTextAsync(`moment-locales/${mapLocaleToMomentLocale[localeLower]}.js`);
-			} catch (error) {
-				throw new Meteor.Error('moment-locale-not-found', `Moment locale not found: ${locale}`);
-			}
+			continue;
 		}
 	}
+	throw new Meteor.Error('moment-locale-not-found', `Moment locale not found: ${locale}`);
 }
