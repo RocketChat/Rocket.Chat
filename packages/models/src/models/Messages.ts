@@ -1,4 +1,3 @@
-import { OtrSystemMessagesValues } from '@rocket.chat/core-typings';
 import type {
 	ILivechatDepartment,
 	IMessage,
@@ -693,17 +692,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	unsetReactions(messageId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $unset: { reactions: 1 } });
-	}
-
-	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult> {
-		const query: Filter<IMessage> = {
-			rid: roomId,
-			t: {
-				$in: ['otr', ...OtrSystemMessagesValues],
-			},
-			ts: { $lte: ts },
-		};
-		return this.col.deleteMany(query);
 	}
 
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
