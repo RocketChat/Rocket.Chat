@@ -13,12 +13,6 @@ it('should render groupingList items', async () => {
 
 	expect(result.current[1]).toEqual(
 		expect.objectContaining({
-			id: 'favorites',
-		}),
-	);
-
-	expect(result.current[2]).toEqual(
-		expect.objectContaining({
 			id: 'types',
 		}),
 	);
