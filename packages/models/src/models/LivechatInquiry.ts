@@ -1,4 +1,10 @@
-import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted, ILivechatPriority } from '@rocket.chat/core-typings';
+import type {
+	ILivechatInquiryRecord,
+	IMessage,
+	RocketChatRecordDeleted,
+	ILivechatPriority,
+	SelectedAgent,
+} from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type {
@@ -331,7 +337,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null> {
+	async queueInquiry(
+		inquiryId: string,
+		lastMessage?: IMessage,
+		defaultAgent?: SelectedAgent | null,
+	): Promise<ILivechatInquiryRecord | null> {
 		return this.findOneAndUpdate(
 			{
 				_id: inquiryId,
@@ -341,6 +351,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 					status: LivechatInquiryStatus.QUEUED,
 					queuedAt: new Date(),
 					...(lastMessage && { lastMessage }),
+					...(defaultAgent && { defaultAgent }),
 				},
 				$unset: { takenAt: 1 },
 			},

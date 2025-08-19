@@ -15,10 +15,6 @@ export class OmnichannelCannedResponses extends OmnichannelAdministration {
 		return this.page.locator('label', { has: this.page.getByRole('radio', { name: 'Public' }) });
 	}
 
-	get radioDepartment() {
-		return this.page.locator('label', { has: this.page.getByRole('radio', { name: 'Department' }) });
-	}
-
 	get radioPrivate() {
 		return this.page.locator('label', { has: this.page.getByRole('radio', { name: 'Private' }) });
 	}
