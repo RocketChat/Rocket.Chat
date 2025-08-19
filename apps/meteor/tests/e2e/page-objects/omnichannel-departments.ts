@@ -69,10 +69,6 @@ export class OmnichannelDepartments {
 		return this.page.locator('role=button[name="Back"]');
 	}
 
-	get allDepartmentsTab() {
-		return this.page.locator('[role="tab"]:first-child');
-	}
-
 	get archivedDepartmentsTab() {
 		return this.page.locator('[role="tab"]:nth-child(2)');
 	}
@@ -121,24 +117,12 @@ export class OmnichannelDepartments {
 		return this.modalConfirmDelete.locator('role=button[name="Delete"]');
 	}
 
-	get btnModalCancelDelete() {
-		return this.modalConfirmDelete.locator('role=button[name="Cancel"]');
-	}
-
 	get upgradeDepartmentsModal() {
 		return this.page.locator('[data-qa-id="enterprise-departments-modal"]');
 	}
 
 	get btnUpgradeDepartmentsModalClose() {
 		return this.page.locator('[data-qa="modal-close"]');
-	}
-
-	get btnUpgradeDepartmentsModalTalkToSales() {
-		return this.page.locator('[data-qa-id="talk-to-sales"]');
-	}
-
-	get btnUpgradeDepartmentsModalUpgrade() {
-		return this.page.locator('[data-qa-id="upgrade-now"]');
 	}
 
 	get toastSuccess(): Locator {
