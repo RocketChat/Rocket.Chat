@@ -12,9 +12,8 @@ export async function getMomentLocale(locale: string): Promise<string | undefine
 		`moment-locales/${String(localeLower.split('-').shift())}.js`,
 		`moment-locales/${mapLocaleToMomentLocale[localeLower]}.js`,
 	];
-	for (const localePath of localesPaths) {
+	for await (const localePath of localesPaths) {
 		try {
-			/* eslint-disable-next-line no-await-in-loop */
 			return await Assets.getTextAsync(localePath);
 		} catch (error) {
 			continue;
