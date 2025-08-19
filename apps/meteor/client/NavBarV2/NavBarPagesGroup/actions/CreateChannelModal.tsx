@@ -173,7 +173,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 		}
 	};
 
-	const e2eDisabled = useMemo<boolean>(() => !isPrivate || Boolean(!e2eEnabled), [e2eEnabled, isPrivate]);
+	const e2eDisabled = useMemo<boolean>(() => !isPrivate || Boolean(!e2eEnabled) || federated, [e2eEnabled, federated, isPrivate]);
 
 	const createChannelFormId = useId();
 	const nameId = useId();
@@ -307,7 +307,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 												id={encryptedId}
 												ref={ref}
 												checked={value}
-												disabled={e2eDisabled || federated}
+												disabled={e2eDisabled}
 												onChange={onChange}
 												aria-describedby={`${encryptedId}-hint`}
 												aria-labelledby={`${encryptedId}-label`}
