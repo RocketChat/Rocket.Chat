@@ -224,7 +224,6 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	subscribeNotifyUser = (): Promise<any> => {
 		return Promise.all([
 			this.stream('notify-user', `${this.account.uid}/message`, (...args) => this.ev.emit('user-message', args)),
-			this.stream('notify-user', `${this.account.uid}/otr`, (...args) => this.ev.emit('otr', args)),
 			this.stream('notify-user', `${this.account.uid}/webrtc`, (...args) => this.ev.emit('webrtc', args)),
 			this.stream('notify-user', `${this.account.uid}/notification`, (...args) => this.ev.emit('notification', args)),
 			this.stream('notify-user', `${this.account.uid}/rooms-changed`, (...args) => this.ev.emit('rooms-changed', args)),
