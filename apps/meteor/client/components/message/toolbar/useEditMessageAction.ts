@@ -1,4 +1,4 @@
-import { isOTRAckMessage, isOTRMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
@@ -24,10 +24,6 @@ export const useEditMessageAction = (
 	const condition = (() => {
 		if (isRoomFederated(room)) {
 			return message.u._id === user?._id;
-		}
-
-		if (isOTRMessage(message) || isOTRAckMessage(message)) {
-			return false;
 		}
 
 		const editOwn = message.u && message.u._id === user?._id;
