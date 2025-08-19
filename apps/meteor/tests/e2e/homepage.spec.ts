@@ -23,7 +23,7 @@ test.describe.serial('homepage', () => {
 		test.beforeAll(async ({ browser }) => {
 			adminPage = await browser.newPage({ storageState: Users.admin.state });
 			await adminPage.goto('/home');
-			await adminPage.waitForSelector('[data-qa-id="home-header"]');
+			await adminPage.getByRole('main').getByRole('heading', { level: 1, name: 'Home', exact: true }).waitFor();
 		});
 
 		test.afterAll(async ({ api }) => {
@@ -113,7 +113,7 @@ test.describe.serial('homepage', () => {
 			expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 			regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 			await regularUserPage.goto('/home');
-			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+			await regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'Home', exact: true }).waitFor();
 		});
 
 		test.afterAll(async () => {
@@ -152,7 +152,7 @@ test.describe.serial('homepage', () => {
 				expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
 
 				await regularUserPage.goto('/home');
-				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+				await regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'Home', exact: true }).waitFor();
 			});
 
 			test.afterAll(async ({ api }) => {
@@ -177,7 +177,7 @@ test.describe.serial('homepage', () => {
 				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
 
 				await regularUserPage.goto('/home');
-				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
+				await regularUserPage.getByRole('main').getByRole('heading', { level: 1, name: 'Home', exact: true }).waitFor();
 			});
 
 			test.afterAll(async ({ api }) => {
