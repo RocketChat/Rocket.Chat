@@ -33,6 +33,10 @@ export class LivechatDepartment extends Base {
 		return this.find(query, options);
 	}
 
+	findAll(options){
+		return this.find({}, options);
+	}
+
 	createOrUpdateDepartment(_id, data = {}) {
 		const oldData = _id && this.findOneById(_id);
 

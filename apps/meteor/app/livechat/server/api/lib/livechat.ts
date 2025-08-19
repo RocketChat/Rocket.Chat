@@ -31,20 +31,22 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 	}));
 }
 
-export function findDepartments(businessUnit?: string): Promise<ILivechatDepartment[]> {
-	// TODO: check this function usage
-	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
+export function findDepartments(): Promise<ILivechatDepartment[]> {
+	// Ultatel: Get All Departments & their enabled status
+	return LivechatDepartment.findAll( {
 		_id: 1,
 		name: 1,
 		showOnRegistration: 1,
 		showOnOfflineForm: 1,
+		enabled:1
 	})
 		.fetch()
-		.map(({ _id, name, showOnRegistration, showOnOfflineForm }: ILivechatDepartment) => ({
+		.map(({ _id, name, showOnRegistration, showOnOfflineForm ,enabled}: ILivechatDepartment) => ({
 			_id,
 			name,
 			showOnRegistration,
 			showOnOfflineForm,
+			enabled
 		}));
 }
 
@@ -137,20 +139,23 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 	// Putting this ugly conversion while we type the livechat service
 	const initSettings = Livechat.getInitSettings() as unknown as Record<string, string | number | any>;
 	// Ultatel: Fetching external settings from HUB API.
-	if(!widgetId) {
+	if (!widgetId) {
 		throw new Meteor.Error('error-invalid-widget-id', 'Invalid widget ID');
 	}
 
 	const initExternalSettings: any = await getHubConfig(widgetId);
 
-	if(!initExternalSettings?.department) {
+	if (!initExternalSettings?.department) {
 		throw new Meteor.Error('error-invalid-department', 'Invalid department');
 	}
-
+	
 	const triggers = await findTriggers();
 	// Ultatel: Map company department with rocketchat department.
-	const departments = await findDepartments(businessUnit);
-	const department = departments.find(dep => dep._id === initExternalSettings?.department) || departments[0];
+	const departments = await findDepartments();
+	const department = departments.find((dep) => dep._id === initExternalSettings?.department);
+	if(!department || !department.enabled) {
+		throw new Meteor.Error('error-invalid-department', 'Invalid department');
+	}
 	const departmentsExternal = [department];
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
