@@ -9,7 +9,6 @@ import { useForceLogout } from '../hooks/loggedIn/useForceLogout';
 import { useLogoutCleanup } from '../hooks/loggedIn/useLogoutCleanup';
 import { useNotificationUserCalendar } from '../hooks/loggedIn/useNotificationUserCalendar';
 import { useNotifyUser } from '../hooks/loggedIn/useNotifyUser';
-import { useOTRMessaging } from '../hooks/loggedIn/useOTRMessaging';
 import { useRestrictedRoles } from '../hooks/loggedIn/useRestrictedRoles';
 import { useRootUrlChange } from '../hooks/loggedIn/useRootUrlChange';
 import { useStoreCookiesOnLogin } from '../hooks/loggedIn/useStoreCookiesOnLogin';
@@ -30,7 +29,6 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
 	useWebRTC(user._id);
-	useOTRMessaging(user._id);
 	useNotificationUserCalendar(user);
 	useForceLogout(user._id);
 	useStoreCookiesOnLogin(user._id);
