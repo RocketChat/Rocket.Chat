@@ -15,7 +15,6 @@ import { useE2EEState } from '../../views/room/hooks/useE2EEState';
 import BaseDisableE2EEModal from '../../views/room/modals/E2EEModals/BaseDisableE2EEModal';
 import EnableE2EEModal from '../../views/room/modals/E2EEModals/EnableE2EEModal';
 
-// TODO: deleted hook test since it all uses OTR. Can this hook be deleted?
 export const useE2EERoomAction = () => {
 	const enabled = useSetting('E2E_Enable', false);
 	const room = useRoom();
