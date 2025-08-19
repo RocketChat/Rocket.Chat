@@ -10,8 +10,7 @@ export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: Filt
 
 	const units = await getUnitsFromUser(userId);
 	if (Array.isArray(units)) {
-		query.ancestors = { $in: units };
-		query._id = { $in: units };
+		query.$and = [query, { $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] }];
 	}
 
 	cbLogger.debug({ msg: 'Applying department query restrictions', userId, units });
