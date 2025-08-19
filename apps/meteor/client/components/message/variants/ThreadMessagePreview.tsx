@@ -1,4 +1,4 @@
-import { isOTRAckMessage, isOTRMessage, type IThreadMessage } from '@rocket.chat/core-typings';
+import { type IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage,
@@ -45,10 +45,9 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	const { t } = useTranslation();
 
 	const isSelecting = useIsSelecting();
-	const isOTRMsg = isOTRMessage(message) || isOTRAckMessage(message);
 
 	const toggleSelected = useToggleSelect(message._id);
-	const isSelected = useIsSelectedMessage(message._id, isOTRMsg);
+	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
@@ -67,17 +66,13 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			return goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id });
 		}
 
-		if (isOTRMsg) {
-			return;
-		}
-
 		return toggleSelected();
 	};
 
 	return (
 		<ThreadMessage
 			role='link'
-			aria-roledescription={isOTRMsg ? t('OTR_thread_message_preview') : t('thread_message_preview')}
+			aria-roledescription={t('thread_message_preview')}
 			tabIndex={0}
 			onClick={handleThreadClick}
 			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
@@ -123,7 +118,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 							size='x18'
 						/>
 					)}
-					{isSelecting && <CheckBox disabled={isOTRMsg} checked={isSelected} onChange={toggleSelected} />}
+					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>

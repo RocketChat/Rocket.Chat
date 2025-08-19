@@ -534,10 +534,6 @@ export class HomeContent {
 		return this.page.locator('[role="listitem"][aria-roledescription="message"]', { hasText: text });
 	}
 
-	getOTRMessageByText(text: string): Locator {
-		return this.page.locator('[role="listitem"][aria-roledescription="OTR message"]', { hasText: text });
-	}
-
 	getMessageById(id: string): Locator {
 		return this.page.locator(`[data-qa-type="message"][id="${id}"]`);
 	}

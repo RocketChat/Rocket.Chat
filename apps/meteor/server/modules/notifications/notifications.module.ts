@@ -276,10 +276,6 @@ export class NotificationsModule {
 
 		this.streamUser.allowWrite(async function (eventName, data: unknown) {
 			const [, e] = eventName.split('/');
-			if (e === 'otr' && (data === 'handshake' || data === 'acknowledge')) {
-				const isEnable = await Settings.getValueById('OTR_Enable');
-				return Boolean(this.userId) && (isEnable === 'true' || isEnable === true);
-			}
 			if (e === 'webrtc') {
 				return true;
 			}
@@ -313,10 +309,6 @@ export class NotificationsModule {
 		this.streamUser.allowRead(async function (eventName) {
 			const [userId, e] = eventName.split('/');
 
-			if (e === 'otr') {
-				const isEnable = await Settings.getValueById('OTR_Enable');
-				return Boolean(this.userId) && this.userId === userId && (isEnable === 'true' || isEnable === true);
-			}
 			if (e === 'webrtc') {
 				return true;
 			}
