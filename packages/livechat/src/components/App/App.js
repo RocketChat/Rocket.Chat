@@ -34,6 +34,22 @@ export class App extends Component {
 		poppedOut: false,
 	};
 
+	// Ultatel: Add Reset Logic
+	resetUnreadObj = () => {
+		try {
+			const renderedMessages = store._state.messages?.filter((message) => canRenderMessage(message));
+		const lastRenderedMessage = renderedMessages?.at(-1);
+			return {
+				unread: 0,
+				alerts: [],
+				lastReadMessageId: lastRenderedMessage?._id,
+			}
+		} catch (error) {
+			console.error('Error resetting unread object:', error);
+			return {}
+		}
+	};
+
 	handleRoute = async () => {
 		setTimeout(() => {
 			const {
@@ -107,15 +123,11 @@ export class App extends Component {
 		parentCall('restoreWindow');
 		const { dispatch, undocked } = this.props;
 		// Ultatel: Reset unread relevent keys to mark chat as readed with opened
-		const renderedMessages = store._state.messages?.filter((message) => canRenderMessage(message));
-		const lastRenderedMessage = renderedMessages?.at(-1);
 		const dispatchRestore = () =>
 			dispatch({
 				minimized: false,
 				undocked: false,
-				unread: 0,
-				alerts: [],
-				lastReadMessageId: lastRenderedMessage?._id,
+				...this.resetUnreadObj(),
 			});
 		const dispatchEvent = () => {
 			dispatchRestore();
@@ -142,7 +154,8 @@ export class App extends Component {
 
 	handleVisibilityChange = async () => {
 		const { dispatch } = this.props;
-		await dispatch({ visible: !visibility.hidden });
+		// Ultatel: Reset unread relevent keys to mark chat as readed with window visibility
+		await dispatch({ visible: !visibility.hidden, ...this.resetUnreadObj() });
 	};
 
 	handleLanguageChange = () => {
