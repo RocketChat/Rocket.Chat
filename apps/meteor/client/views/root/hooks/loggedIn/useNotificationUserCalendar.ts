@@ -4,7 +4,7 @@ import { imperativeModal } from '@rocket.chat/ui-client';
 import { useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import OutlookCalendarEventModal from '../../views/outlookCalendar/OutlookCalendarEventModal';
+import OutlookCalendarEventModal from '../../../outlookCalendar/OutlookCalendarEventModal';
 
 export const useNotificationUserCalendar = (user: IUser) => {
 	const requireInteraction = useUserPreference('desktopNotificationRequireInteraction');

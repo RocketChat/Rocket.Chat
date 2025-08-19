@@ -12,7 +12,6 @@ import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
 
 import { E2EEState } from './E2EEState';
 import {
@@ -29,28 +28,25 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
-import * as banners from '../../../client/lib/banners';
-import type { LegacyBannerPayload } from '../../../client/lib/banners';
-import { dispatchToastMessage } from '../../../client/lib/toast';
-import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
-import { Messages, Rooms, Subscriptions } from '../../../client/stores';
-import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
-import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
+import { settings } from '../../../app/settings/client';
+import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
+import { getUserAvatarURL } from '../../../app/utils/client';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../app/utils/lib/i18n';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { isTruthy } from '../../../lib/isTruthy';
-import { settings } from '../../settings/client';
-import { limitQuoteChain } from '../../ui-message/client/messageBox/limitQuoteChain';
-import { getUserAvatarURL } from '../../utils/client';
-import { sdk } from '../../utils/client/lib/SDKClient';
-import { t } from '../../utils/lib/i18n';
-
-import './events';
+import { Messages, Rooms, Subscriptions } from '../../stores';
+import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
+import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
+import * as banners from '../banners';
+import type { LegacyBannerPayload } from '../banners';
+import { dispatchToastMessage } from '../toast';
+import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 
 let failedToDecodeKey = false;
 
 const ROOM_KEY_EXCHANGE_SIZE = 10;
-const E2EEStateDependency = new Tracker.Dependency();
 
 //
 
@@ -134,8 +130,6 @@ class E2E extends Emitter {
 	}
 
 	isReady(): boolean {
-		E2EEStateDependency.depend();
-
 		// Save_Password state is also a ready state for E2EE
 		return this.state === E2EEState.READY || this.state === E2EEState.SAVE_PASSWORD;
 	}
@@ -227,8 +221,6 @@ class E2E extends Emitter {
 		const prevState = this.state;
 
 		this.state = nextState;
-
-		E2EEStateDependency.changed();
 
 		this.emit('E2E_STATE_CHANGED', { prevState, nextState });
 
@@ -883,3 +875,7 @@ class E2E extends Emitter {
 }
 
 export const e2e = new E2E();
+
+Accounts.onLogout(() => {
+	void e2e.stopClient();
+});
