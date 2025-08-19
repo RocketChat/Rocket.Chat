@@ -16,7 +16,6 @@ import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboa
 import { useMediaCallRoomAction } from './hooks/roomActions/useMediaCallRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
-import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
 import { useOutlookCalenderRoomAction } from './hooks/roomActions/useOutlookCalenderRoomAction';
 import { usePinnedMessagesRoomAction } from './hooks/roomActions/usePinnedMessagesRoomAction';
 import { usePushNotificationsRoomAction } from './hooks/roomActions/usePushNotificationsRoomAction';
@@ -56,7 +55,6 @@ export const roomActionHooks = [
 	useKeyboardShortcutListRoomAction,
 	useMembersListRoomAction,
 	useMentionsRoomAction,
-	useOTRRoomAction,
 	useOmnichannelExternalFrameRoomAction,
 	useOutlookCalenderRoomAction,
 	usePinnedMessagesRoomAction,
