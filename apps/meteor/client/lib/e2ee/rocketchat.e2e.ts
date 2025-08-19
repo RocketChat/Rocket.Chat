@@ -14,18 +14,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { E2EEState } from './E2EEState';
-import {
-	toString,
-	toArrayBuffer,
-	joinVectorAndEcryptedData,
-	splitVectorAndEcryptedData,
-	// encryptAES,
-	// decryptAES,
-	// generateRSAKey,
-	// exportJWKKey,
-	// importRSAKey,
-	// deriveKey,
-} from './helper';
+import { toString, toArrayBuffer, joinVectorAndEcryptedData, splitVectorAndEcryptedData } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { settings } from '../../../app/settings/client';

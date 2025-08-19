@@ -11,7 +11,7 @@ export interface KeyStorage {
 
 export interface KeyService {
 	userId: () => Promise<string | null>;
-	fetchMyKeys(): Promise<KeyPair>;
+	fetchMyKeys: () => Promise<KeyPair>;
 }
 
 export type PrivateKey = string;
