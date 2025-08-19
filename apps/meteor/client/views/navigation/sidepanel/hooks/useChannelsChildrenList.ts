@@ -25,13 +25,13 @@ const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
  */
 const getMainRoomAndSort = (records: SubscriptionWithRoom[]) => {
 	const mainRoom = records.find((record) => !record.prid);
-	const rest = records.filter((record) => mainRoom?.rid !== record.rid);
+	const rest = sortByLmPipe.apply(records.filter((record) => mainRoom?.rid !== record.rid));
 
-	if (!mainRoom) {
-		return [...sortByLmPipe.apply(rest)];
+	if (mainRoom) {
+		rest.unshift(mainRoom);
 	}
 
-	return [mainRoom, ...sortByLmPipe.apply(rest)];
+	return rest;
 };
 
 export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: string) => {
