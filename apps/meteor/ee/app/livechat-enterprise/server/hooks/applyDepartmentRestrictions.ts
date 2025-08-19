@@ -6,11 +6,11 @@ import { cbLogger } from '../lib/logger';
 import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: FilterOperators<ILivechatDepartment> = {}, userId: string) => {
-	const query: FilterOperators<ILivechatDepartment> = { ...originalQuery, type: { $ne: 'u' } };
+	const query: FilterOperators<ILivechatDepartment> = { $and: [originalQuery, { type: { $ne: 'u' } }] };
 
 	const units = await getUnitsFromUser(userId);
 	if (Array.isArray(units)) {
-		query.$and = [query, { $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] }];
+		query.$and.push({ $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] });
 	}
 
 	cbLogger.debug({ msg: 'Applying department query restrictions', userId, units });
