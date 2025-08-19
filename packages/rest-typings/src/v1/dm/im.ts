@@ -2,7 +2,6 @@ import type { IMessage, IRoom, IUser, IUploadWithUser } from '@rocket.chat/core-
 
 import type { DmCloseProps } from './DmCloseProps';
 import type { DmCreateProps } from './DmCreateProps';
-import type { DmDeleteProps } from './DmDeleteProps';
 import type { DmFileProps } from './DmFileProps';
 import type { DmHistoryProps } from './DmHistoryProps';
 import type { DmLeaveProps } from './DmLeaveProps';
@@ -16,9 +15,6 @@ export type ImEndpoints = {
 		POST: (params: DmCreateProps) => {
 			room: IRoom & { rid: IRoom['_id'] };
 		};
-	};
-	'/v1/im.delete': {
-		POST: (params: DmDeleteProps) => void;
 	};
 	'/v1/im.close': {
 		POST: (params: DmCloseProps) => void;

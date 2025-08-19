@@ -8,27 +8,24 @@ import type { BlockProps } from '../utils/BlockProps';
 
 type DatePickerElementProps = BlockProps<UiKit.DatePickerElement>;
 
-const DatePickerElement = ({
-  block,
-  context,
-}: DatePickerElementProps): ReactElement => {
-  const [{ loading, value, error }, action] = useUiKitState(block, context);
-  const { actionId, placeholder } = block;
-  const fromTextObjectToString = useStringFromTextObject();
+const DatePickerElement = ({ block, context }: DatePickerElementProps): ReactElement => {
+	const [{ loading, value, error }, action] = useUiKitState(block, context);
+	const { actionId, placeholder } = block;
+	const fromTextObjectToString = useStringFromTextObject();
 
-  return (
-    <InputBox
-      type='date'
-      error={error}
-      value={value as string}
-      disabled={loading}
-      id={actionId}
-      name={actionId}
-      rows={6}
-      placeholder={fromTextObjectToString(placeholder)}
-      onInput={action}
-    />
-  );
+	return (
+		<InputBox
+			type='date'
+			error={error}
+			value={value as string}
+			disabled={loading}
+			id={actionId}
+			name={actionId}
+			rows={6}
+			placeholder={fromTextObjectToString(placeholder)}
+			onInput={action}
+		/>
+	);
 };
 
 export default DatePickerElement;

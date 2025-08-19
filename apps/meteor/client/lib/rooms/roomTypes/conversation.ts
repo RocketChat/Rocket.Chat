@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
-import { getUserPreference } from '../../../../app/utils/client';
 import { getConversationRoomType } from '../../../../lib/rooms/roomTypes/conversation';
 import { roomCoordinator } from '../roomCoordinator';
 
@@ -11,10 +8,5 @@ roomCoordinator.add(
 		...ConversationRoomType,
 		label: 'Conversations',
 	},
-	{
-		condition(): boolean {
-			// returns true only if sidebarGroupByType is not set
-			return !getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-		},
-	},
+	{},
 );

@@ -11,6 +11,7 @@ import {
 	AppSettingsManager,
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
+	AppOutboundCommunicationProviderManager,
 } from '../../src/server/managers';
 import type { AppLogStorage, AppMetadataStorage, AppSourceStorage } from '../../src/server/storage';
 import { SimpleClass, TestInfastructureSetup } from '../test-data/utilities';
@@ -118,5 +119,6 @@ export class AppManagerTestFixture {
 		Expect(manager.getApiManager() instanceof AppApiManager).toBe(true);
 		Expect(manager.getSettingsManager() instanceof AppSettingsManager).toBe(true);
 		Expect(manager.getVideoConfProviderManager() instanceof AppVideoConfProviderManager).toBe(true);
+		Expect(manager.getOutboundCommunicationProviderManager() instanceof AppOutboundCommunicationProviderManager).toBe(true);
 	}
 }

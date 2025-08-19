@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/i18n",
-	"version": "1.7.0",
+	"version": "1.9.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
@@ -8,8 +8,8 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "~8.45.0",
 		"i18next": "~23.4.9",
-		"jest": "~30.0.2",
-		"typescript": "~5.8.3"
+		"jest": "~30.0.5",
+		"typescript": "~5.9.2"
 	},
 	"scripts": {
 		"build": "node ./src/scripts/build.mjs && run .:build:esm && run .:build:cjs",

@@ -1,7 +1,6 @@
 import { Decorator, Parameters } from '@storybook/react';
 import '../../../apps/meteor/app/theme/client/main.css';
 import 'highlight.js/styles/github.css';
-import { ReactElement } from 'react';
 
 export const parameters: Parameters = {
 	controls: {
@@ -13,7 +12,7 @@ export const parameters: Parameters = {
 };
 
 export const decorators: Decorator[] = [
-	(Story): ReactElement => (
+	(Story) => (
 		<div>
 			<style>{`
 				body {

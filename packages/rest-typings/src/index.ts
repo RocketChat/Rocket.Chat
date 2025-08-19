@@ -33,9 +33,7 @@ import type { MailerEndpoints } from './v1/mailer';
 import type { MeEndpoints } from './v1/me';
 import type { MiscEndpoints } from './v1/misc';
 import type { ModerationEndpoints } from './v1/moderation';
-import type { OAuthAppsEndpoint } from './v1/oauthapps';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
-import type { PermissionsEndpoints } from './v1/permissions';
 import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
@@ -49,7 +47,6 @@ import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 import type { VoipEndpoints } from './v1/voip';
 import type { VoipFreeSwitchEndpoints } from './v1/voip-freeswitch';
-import type { WebdavEndpoints } from './v1/webdav';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
@@ -80,7 +77,6 @@ export interface Endpoints
 		StatisticsEndpoints,
 		LicensesEndpoints,
 		MiscEndpoints,
-		PermissionsEndpoints,
 		PresenceEndpoints,
 		InstancesEndpoints,
 		IntegrationsEndpoints,
@@ -92,8 +88,6 @@ export interface Endpoints
 		AssetsEndpoints,
 		EmailInboxEndpoints,
 		MailerEndpoints,
-		WebdavEndpoints,
-		OAuthAppsEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
 		ImportEndpoints,
@@ -216,7 +210,6 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
 export * from './apps';
-export * from './v1/permissions';
 export * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';
@@ -236,11 +229,6 @@ export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
 export * from './v1/licenses';
 export * from './v1/omnichannel';
-export * from './v1/oauthapps';
-export * from './v1/oauthapps/UpdateOAuthAppParamsPOST';
-export * from './v1/oauthapps/OAuthAppsGetParamsGET';
-export * from './v1/oauthapps/OAuthAppsAddParamsPOST';
-export * from './v1/oauthapps/DeleteOAuthAppParamsDELETE';
 export * from './helpers/PaginatedRequest';
 export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
@@ -261,7 +249,6 @@ export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
 export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
 export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
-export * from './v1/e2e/e2eSetRoomKeyIDParamsPOST';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/e2e';
@@ -278,3 +265,6 @@ export * from './v1/auth';
 export * from './v1/cloud';
 export * from './v1/banners';
 export * from './default';
+
+// Export the ajv instance for use in other packages
+export * from './v1/Ajv';

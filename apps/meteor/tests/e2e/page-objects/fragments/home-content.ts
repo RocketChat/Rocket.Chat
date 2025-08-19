@@ -15,6 +15,10 @@ export class HomeContent {
 		return this.page.locator('main header');
 	}
 
+	get burgerButton(): Locator {
+		return this.channelHeader.getByRole('button', { name: 'Open sidebar' });
+	}
+
 	get channelRetentionPolicyWarning(): Locator {
 		return this.page.locator('main').getByRole('alert', { name: 'Retention policy warning banner' });
 	}
@@ -65,10 +69,6 @@ export class HomeContent {
 
 	get btnJoinRoom(): Locator {
 		return this.page.locator('role=button[name="Join"]');
-	}
-
-	async openRoomInfo(): Promise<void> {
-		await this.channelHeader.locator('button[data-qa-id="ToolBoxAction-info-circled"]').click();
 	}
 
 	async joinRoom(): Promise<void> {
@@ -156,6 +156,14 @@ export class HomeContent {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
 
+	get btnModalConfirmDelete(): Locator {
+		return this.page.getByRole('button', { name: 'Yes, delete', exact: true });
+	}
+
+	get btnCancelQuotePreview(): Locator {
+		return this.page.getByRole('button', { name: 'Dismiss quoted message' });
+	}
+
 	get descriptionInput(): Locator {
 		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
 	}
@@ -170,6 +178,10 @@ export class HomeContent {
 
 	get lastMessageFileName(): Locator {
 		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
+	}
+
+	get lastMessageTextAttachment(): Locator {
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-attachment"]');
 	}
 
 	get lastMessageTextAttachmentEqualsText(): Locator {
@@ -244,20 +256,28 @@ export class HomeContent {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="attachment-title-link"]');
 	}
 
+	get menuMore(): Locator {
+		return this.page.getByRole('menu', { name: 'More', exact: true });
+	}
+
+	get lastThreadMessageTextAttachment(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-attachment"]');
+	}
+
 	get btnOptionEditMessage(): Locator {
-		return this.page.locator('role=menu[name="More"] >> role=menuitem[name="Edit"]');
+		return this.menuMore.getByRole('menuitem', { name: 'Edit', exact: true });
 	}
 
 	get btnOptionDeleteMessage(): Locator {
-		return this.page.locator('[data-qa-id="delete-message"]');
+		return this.menuMore.getByRole('menuitem', { name: 'Delete', exact: true });
 	}
 
 	get btnOptionPinMessage(): Locator {
-		return this.page.locator('[data-qa-id="pin-message"]');
+		return this.menuMore.getByRole('menuitem', { name: 'Pin', exact: true });
 	}
 
 	get btnOptionStarMessage(): Locator {
-		return this.page.locator('[data-qa-id="star-message"]');
+		return this.menuMore.getByRole('menuitem', { name: 'Star', exact: true });
 	}
 
 	get btnOptionFileUpload(): Locator {
@@ -412,10 +432,14 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
+	get threadMessageList(): Locator {
+		return this.page.getByRole('list', { name: 'Thread message list' });
+	}
+
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
-		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
-		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
+		await this.threadMessageList.last().hover();
+		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
@@ -437,8 +461,24 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-pause-unfilled"]');
 	}
 
+	get primaryRoomActionsToolbar(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Primary Room actions' });
+	}
+
 	get btnVideoCall(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]').getByRole('button', { name: 'Video call' });
+	}
+
+	get btnToolbarOptions(): Locator {
+		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Options', exact: true });
+	}
+
+	get optionsMenu(): Locator {
+		return this.page.getByRole('menu', { name: 'Options', exact: true });
+	}
+
+	get starredMessagesMenuOption(): Locator {
+		return this.optionsMenu.getByRole('menuitem', { name: 'Starred Messages', exact: true });
 	}
 
 	getVideoConfPopup(name?: string): Locator {
@@ -459,10 +499,6 @@ export class HomeContent {
 
 	get videoConfMessageBlock(): Locator {
 		return this.page.locator('.rcx-videoconf-message-block');
-	}
-
-	get videoConfMessageBlockAvatars(): Locator {
-		return this.videoConfMessageBlock.getByLabel('figure');
 	}
 
 	get btnAnonymousSignIn(): Locator {
@@ -526,6 +562,13 @@ export class HomeContent {
 		await this.page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click();
 	}
 
+	async deleteLastMessage(): Promise<void> {
+		await this.lastUserMessage.hover();
+		await this.openLastMessageMenu();
+		await this.btnOptionDeleteMessage.click();
+		await this.btnModalConfirmDelete.click();
+	}
+
 	get btnClearSelection() {
 		return this.page.getByRole('button', { name: 'Clear selection' });
 	}
@@ -542,7 +585,29 @@ export class HomeContent {
 		return this.contactUnknownCallout.getByRole('button', { name: 'Dismiss' });
 	}
 
-	async expectLastMessageToHaveText(text: string): Promise<void> {
-		await expect(this.lastUserMessageBody).toHaveText(text);
+	get btnOptionStartDiscussion(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Start a Discussion' });
+	}
+
+	async quoteMessage(quoteText: string, originalMessageText?: string): Promise<void> {
+		await this.lastUserMessage.hover();
+		await this.btnQuoteMessage.click();
+		if (originalMessageText) {
+			await expect(this.quotePreview).toBeVisible();
+			await expect(this.quotePreview).toContainText(originalMessageText);
+		}
+		await this.sendMessage(quoteText);
+	}
+
+	get clearAllUnreadsModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Clear all unreads?' });
+	}
+
+	async markAllRoomsAsRead(): Promise<void> {
+		await this.page.keyboard.down('Shift');
+		await this.page.keyboard.press('Escape');
+		await this.page.keyboard.up('Shift');
+		await expect(this.clearAllUnreadsModal).toBeVisible();
+		await this.clearAllUnreadsModal.getByRole('button', { name: 'Yes, clear all!' }).click();
 	}
 }

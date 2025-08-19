@@ -1,6 +1,7 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { Box } from '@rocket.chat/fuselage';
-import type { OperationParams } from '@rocket.chat/rest-typings';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useEndpoint, type TranslationKey } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
 import type { ComponentPropsWithoutRef, MutableRefObject } from 'react';
@@ -10,8 +11,7 @@ import { useTranslation } from 'react-i18next';
 import Chart from './Chart';
 import { useUpdateChartData } from './useUpdateChartData';
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 const labels = ['Open', 'Queued', 'On_Hold_Chats', 'Closed'];
 
@@ -32,11 +32,11 @@ const init = (canvas: HTMLCanvasElement, context: chartjs.Chart<'doughnut'> | un
 	);
 
 type ChatsChartProps = {
-	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/chats'>;
-	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
-} & Omit<ComponentPropsWithoutRef<typeof Box>, 'data'>;
+	departmentId: ILivechatDepartment['_id'];
+	dateRange: { start: string; end: string };
+} & ComponentPropsWithoutRef<typeof Box>;
 
-const ChatsChart = ({ params, reloadRef, ...props }: ChatsChartProps) => {
+const ChatsChart = ({ departmentId, dateRange, ...props }: ChatsChartProps) => {
 	const { t } = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
@@ -49,9 +49,11 @@ const ChatsChart = ({ params, reloadRef, ...props }: ChatsChartProps) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/chats', { params });
-
-	reloadRef.current.chatsChart = reload;
+	const getChats = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/chats');
+	const { isSuccess, data } = useQuery({
+		queryKey: omnichannelQueryKeys.analytics.chats(departmentId, dateRange),
+		queryFn: () => getChats({ departmentId, ...dateRange }),
+	});
 
 	const { open, queued, closed, onhold } = data ?? initialData;
 
@@ -66,13 +68,13 @@ const ChatsChart = ({ params, reloadRef, ...props }: ChatsChartProps) => {
 	}, [t]);
 
 	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED) {
-			updateChartData(t('Open'), [open]);
-			updateChartData(t('Closed'), [closed]);
-			updateChartData(t('On_Hold_Chats'), [onhold]);
-			updateChartData(t('Queued'), [queued]);
-		}
-	}, [closed, open, queued, onhold, state, t, updateChartData]);
+		if (!isSuccess) return;
+
+		updateChartData(t('Open'), [open]);
+		updateChartData(t('Closed'), [closed]);
+		updateChartData(t('On_Hold_Chats'), [onhold]);
+		updateChartData(t('Queued'), [queued]);
+	}, [closed, open, queued, onhold, isSuccess, t, updateChartData]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };

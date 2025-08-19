@@ -1,21 +1,20 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useEndpoint, useRoute, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import Call from './calls/Call';
 import { VoipInfo } from './calls/contextualBar/VoipInfo';
 import { ContextualbarSkeleton } from '../../../components/Contextualbar';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { voipQueryKeys } from '../../../lib/queryKeys';
 
 // TODO: We should render contextual bar components in this view
 const CallsContextualBarDirectory = () => {
 	const { t } = useTranslation();
 
-	const id = useRouteParameter('id');
-	const token = useSearchParameter('token');
+	const rid = useRouteParameter('id') ?? '';
+	const token = useSearchParameter('token') ?? '';
 	const context = useRouteParameter('context');
 
 	const directoryRoute = useRoute('omnichannel-directory');
@@ -24,25 +23,21 @@ const CallsContextualBarDirectory = () => {
 		directoryRoute.push({ tab: 'calls' });
 	};
 
-	const query = useMemo(
-		() => ({
-			rid: id || '',
-			token: token || '',
-		}),
-		[id, token],
-	);
+	const getVoipRoom = useEndpoint('GET', '/v1/voip/room');
+	const { isPending, isError, data } = useQuery({
+		queryKey: voipQueryKeys.room(rid, token),
+		queryFn: () => getVoipRoom({ rid, token }),
+	});
 
-	const { value: data, phase: state, error } = useEndpointData(`/v1/voip/room`, { params: query });
-
-	if (context === 'view' && id) {
-		return <Call rid={id} />;
+	if (context === 'view' && rid) {
+		return <Call rid={rid} />;
 	}
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isPending) {
 		return <ContextualbarSkeleton />;
 	}
 
-	if (error || !data || !data.room) {
+	if (isError || !data?.room) {
 		return <Box mbs={16}>{t('Room_not_found')}</Box>;
 	}
 

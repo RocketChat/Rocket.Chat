@@ -76,17 +76,15 @@ export interface IRoomTypeClientDirectives {
 	roomName: (room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>) => string | undefined;
 	isGroupChat: (room: Partial<IRoom>) => boolean;
 	getUiText: (context: ValueOf<typeof UiTextContext>) => string;
-	condition: () => boolean;
 	getAvatarPath: (
 		room: Pick<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
 	getIcon?: (room: Partial<IRoom>) => IconName;
 	extractOpenRoomParams?: (routeParams: Record<string, string | null | undefined>) => { type: RoomType; reference: string };
 	findRoom: (identifier: string) => IRoom | undefined;
-	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
-	canSendMessage: (rid: string) => boolean;
-	readOnly?: (rid: string, user: AtLeast<IUser, 'username'>) => boolean;
+	canSendMessage: (room: IRoom) => boolean;
+	readOnly?: (room?: IRoom, user?: AtLeast<IUser, 'username'> | null) => boolean;
 }
 
 export interface IRoomTypeServerDirectives {
@@ -105,8 +103,7 @@ export interface IRoomTypeServerDirectives {
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
 		userId: string,
-		language?: string,
-	) => Promise<{ title?: string; text: string; name?: string }>;
+	) => Promise<{ title: string | undefined; text: string; name: string | undefined }>;
 	getMsgSender: (message: IMessage) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
