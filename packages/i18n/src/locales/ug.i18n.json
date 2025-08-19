@@ -1214,7 +1214,6 @@
   "quote": "نەقىل كەلتۈرۈش",
   "registration.component.form.confirmPassword": "مەخپىي نومۇرنى جەزملەشتۈرۈش",
   "registration.component.form.email": "ئىلخەت",
-  "registration.component.form.emailAlreadyExists": "ئىلخەت ئاللىبۇرۇن بار",
   "registration.component.form.emailOrUsername": "ئىلخەت ياكى ئەزا نامى",
   "registration.component.form.invalidConfirmPass": "ئىككىنچى قېتىم كىرگۈزۈلگەن مەخپىي نومۇر بىلەن بىرىنچى قېتىم كىرگۈزۈلگىنى بىلەن ماس كەلمىدى.",
   "registration.component.form.invalidEmail": "كىرگۈزۈلگەن ئىلخەت ئادرېسى ئىناۋەتسىز",
