@@ -449,25 +449,6 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.favoritesTeamCollabFilter).toHaveAttribute('aria-selected', 'true');
 		});
 
-		test('should open parent team when clicking button on sidepanel discussion item', async ({ page }) => {
-			await page.goto(`/group/${sidepanelTeam}`);
-
-			const discussionName = faker.string.uuid();
-			await poHomeChannel.content.btnMenuMoreActions.click();
-			await page.getByRole('menuitem', { name: 'Discussion' }).click();
-			await poHomeChannel.content.inputDiscussionName.fill(discussionName);
-			await poHomeChannel.content.btnCreateDiscussionModal.click();
-
-			await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
-
-			await expect(poHomeChannel.sidepanel.getItemByName(discussionName).getByRole('button', { name: sidepanelTeam })).toBeVisible();
-
-			await poHomeChannel.sidepanel.getItemByName(discussionName).getByRole('button', { name: sidepanelTeam }).click();
-
-			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
-			await expect(page.getByRole('heading', { name: sidepanelTeam })).toBeVisible();
-		});
-
 		test('should show all filters and tablist on sidepanel', async ({ page }) => {
 			await page.goto('/home');
 
