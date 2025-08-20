@@ -17,7 +17,7 @@ export class AdminEmoji {
 	}
 
 	get closeAdminButton(): Locator {
-		return this.page.locator('#sidebar-region').getByRole('button', { name: 'Close' });
+		return this.page.getByRole('navigation').getByRole('button', { name: 'Close' });
 	}
 
 	get searchInput(): Locator {
