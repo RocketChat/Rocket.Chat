@@ -7,17 +7,29 @@ import { isUnreadSubscription } from '../../contexts/RoomsNavigationContext';
 
 const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
 
-const sortByUnread = (a: SubscriptionWithRoom, b: SubscriptionWithRoom) =>
-	(isUnreadSubscription(b) ? 1 : 0) - (isUnreadSubscription(a) ? 1 : 0);
-
 /**
  * This helper function is used to ensure that the main room (main team room or parent's discussion room)
  * is always at the top of the list.
  */
 const getMainRoomAndSort = (records: SubscriptionWithRoom[], unreadOnly: boolean) => {
-	const mainRoom = records.find((record) => !record.prid);
+	const mainRoom = records.find((record) => record.teamMain || (!record.prid && !record.teamId));
 	const filteredRecords = records.filter((record) => mainRoom?.rid !== record.rid);
-	const rest = sortByLmPipe.apply(unreadOnly ? filteredRecords.sort(sortByUnread) : filteredRecords);
+	const sortedRecords = sortByLmPipe.apply(filteredRecords);
+	const rest = !unreadOnly
+		? sortedRecords
+		: sortedRecords
+				.reduce(
+					(result, record) => {
+						if (isUnreadSubscription(record)) {
+							result[0].push(record);
+							return result;
+						}
+						result[1].push(record);
+						return result;
+					},
+					[[] as SubscriptionWithRoom[], [] as SubscriptionWithRoom[]],
+				)
+				.flat();
 
 	if (mainRoom) {
 		rest.unshift(mainRoom);
@@ -38,10 +50,6 @@ export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, 
 				}
 				return false;
 			});
-
-			if (!records.length) {
-				return [];
-			}
 
 			return getMainRoomAndSort(records, unreadOnly);
 		}),

@@ -1,4 +1,3 @@
-import { isLivechatInquiryRecord } from '@rocket.chat/core-typings';
 import type { ISubscription, ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
@@ -182,28 +181,30 @@ export const isUnreadSubscription = (subscription: Partial<ISubscription>) => {
 export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
 	const [, unread] = useSidePanelFilter();
 	const roomSet = useRoomsListContext().groups.get(tab);
-	console.log(getFilterKey(tab, unread));
-
-	console.log(roomSet);
 
 	const roomsList = useMemo(() => {
 		if (!roomSet) {
 			return [];
 		}
 
-		return unread
-			? Array.from(roomSet).sort((a, b) => {
-					// if (isLivechatInquiryRecord(a) && isLivechatInquiryRecord(b)) {
-					// 	return 0;
-					// }
+		if (!unread) {
+			return Array.from(roomSet);
+		}
 
-					if (!isLivechatInquiryRecord(a) && !isLivechatInquiryRecord(b)) {
-						return (isUnreadSubscription(b) ? 1 : 0) - (isUnreadSubscription(a) ? 1 : 0);
+		return Array.from(roomSet)
+			.reduce(
+				(result, room) => {
+					if (isUnreadSubscription(room)) {
+						result[0].push(room);
+						return result;
 					}
 
-					return 0;
-				})
-			: Array.from(roomSet);
+					result[1].push(room);
+					return result;
+				},
+				[[], []] as [Array<SubscriptionWithRoom | ILivechatInquiryRecord>, Array<SubscriptionWithRoom | ILivechatInquiryRecord>],
+			)
+			.flat();
 	}, [roomSet, unread]);
 	return roomsList;
 };
