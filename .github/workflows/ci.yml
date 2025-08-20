@@ -589,7 +589,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Restore build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: build
           path: /tmp/build
