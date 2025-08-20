@@ -37,14 +37,16 @@ const AutoCompleteDepartmentAgent = ({ value, onChange, agents, ...props }: Auto
 			value={value}
 			onChange={onChange as (value: string | string[]) => void}
 			options={options}
-			renderSelected={({ selected: { value, label }, onRemove, ...props }): ReactElement => (
-				<Chip {...props} height='x20' value={value} onClick={onRemove} mie={4}>
-					<UserAvatar size='x20' username={value} />
-					<Box is='span' margin='none' mis={4}>
-						{label}
-					</Box>
-				</Chip>
-			)}
+			renderSelected={({ selected: { value, label }, ...props }): ReactElement => {
+				return (
+					<Chip {...props} height='x20' value={value} onClick={() => onChange('')} mie={4}>
+						<UserAvatar size='x20' username={value} />
+						<Box is='span' margin='none' mis={4}>
+							{label}
+						</Box>
+					</Chip>
+				);
+			}}
 			renderItem={({ value, label, ...props }): ReactElement => (
 				<Option key={value} {...props}>
 					<OptionAvatar>

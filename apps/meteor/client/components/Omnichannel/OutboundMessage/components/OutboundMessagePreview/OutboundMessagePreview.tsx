@@ -57,7 +57,11 @@ const OutboundMessagePreview = ({
 	const sender = useMemo(() => formatContact(rawSender, providerType), [providerType, rawSender]);
 	const replies = useMemo(() => {
 		if (agentName) {
-			return `${agentName || agentUsername} ${agentUsername ? `(${agentUsername})` : ''} ${departmentName ? `at ${departmentName}` : ''}`;
+			return `${agentName} ${agentUsername ? `(${agentUsername})` : ''} ${departmentName ? `at ${departmentName}` : ''}`;
+		}
+
+		if (agentUsername) {
+			return `@${agentUsername} ${departmentName ? `at ${departmentName}` : ''}`;
 		}
 
 		return departmentName;

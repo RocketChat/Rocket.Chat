@@ -47,7 +47,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	});
 
 	useEffect(() => {
-		if (!isLoadingProviders && !isLoadingModule && !hasModule && !hasProviders) {
+		if (!isLoadingProviders && !isLoadingModule && (!hasModule || !hasProviders)) {
 			upsellModal.open();
 		}
 	}, [hasModule, hasProviders, isLoadingModule, isLoadingProviders, upsellModal]);
@@ -103,7 +103,6 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 							departmentName={department?.name}
 							providerType={provider?.providerType}
 							providerName={provider?.providerName}
-							agentName={agent?.name}
 							agentUsername={agent?.username}
 							template={template}
 							templateParameters={templateParameters}
