@@ -142,11 +142,13 @@ jobs:
         with:
           repository: RocketChat/homeserver
           path: homeserver
+          ref: bundle-for-rocket.chat
       - uses: oven-sh/setup-bun@v2
       - run: |
           cd homeserver
           bun install
           bun run build
+          bun run bundle:sdk
       - uses: actions/upload-artifact@v4
         with:
           name: homeserver
