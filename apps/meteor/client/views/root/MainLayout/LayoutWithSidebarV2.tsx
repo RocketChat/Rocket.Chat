@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useLayout, useSetting, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
@@ -8,6 +9,7 @@ import AccessibilityShortcut from './AccessibilityShortcut';
 import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import NavBar from '../../../NavBarV2';
+import Sidebar from '../../../sidebarv2';
 import NavigationRegion from '../../navigation';
 import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
 
@@ -52,9 +54,16 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 			>
 				<MainLayoutStyleTags />
 				{!removeSidenav && (
-					<RoomsNavigationProvider>
-						<NavigationRegion />
-					</RoomsNavigationProvider>
+					<FeaturePreview feature='sidebarFilters'>
+						<FeaturePreviewOn>
+							<RoomsNavigationProvider>
+								<NavigationRegion />
+							</RoomsNavigationProvider>
+						</FeaturePreviewOn>
+						<FeaturePreviewOff>
+							<Sidebar />
+						</FeaturePreviewOff>
+					</FeaturePreview>
 				)}
 				<MainContent>{children}</MainContent>
 			</Box>

@@ -5,7 +5,7 @@ import type { Meta, StoryFn } from '@storybook/react';
 import type { ObjectId } from 'mongodb';
 import type { ContextType } from 'react';
 
-import Sidebar from './Sidebar';
+import Sidebar from './SidebarRegion';
 
 export default {
 	title: 'SidebarV2',
@@ -37,10 +37,12 @@ const settingContextValue: ContextType<typeof SettingsContext> = {
 };
 
 const userPreferences: Record<string, unknown> = {
+	sidebarViewMode: 'medium',
 	sidebarDisplayAvatar: true,
 	sidebarGroupByType: true,
 	sidebarShowFavorites: true,
 	sidebarShowUnread: true,
+	sidebarSortby: 'activity',
 };
 
 const subscriptions: SubscriptionWithRoom[] = [
