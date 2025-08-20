@@ -24,8 +24,13 @@ const ImageAttachment = ({
 	collapsed,
 }: ImageAttachmentProps) => {
 	const [loadImage, setLoadImage] = useLoadImage();
-	const getURL = useMediaUrl();
+	const originalGetURL = useMediaUrl();
 
+	// If running inside Gitpod, modify getURL behavior
+	const getURL = window.location.origin.includes('gitpod.io')
+		? (path: string) => `${window.location.origin}${path}`
+		: originalGetURL;
+    
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
