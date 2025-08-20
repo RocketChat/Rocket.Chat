@@ -20,9 +20,9 @@ import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } fr
 import { RoomsNavigationContext, getEmptyUnreadInfo } from '../contexts/RoomsNavigationContext';
 import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
 import { useSidePanelParentRid } from '../hooks/useSidePanelParentRid';
+import { useSortQueryOptions } from '../hooks/useSortQueryOptions';
 
 const query = { open: { $ne: false } };
-const sortOptions = { sort: { lm: -1 } } as const;
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
@@ -65,9 +65,12 @@ type UnreadGroupDataMap = Map<AllGroupsKeys, GroupedUnreadInfoData>;
 const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
+	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
+	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
+	const options = useSortQueryOptions();
 
-	const rooms = useUserSubscriptions(query, sortOptions);
+	const rooms = useUserSubscriptions(query, options);
 
 	const inquiries = useQueuedInquiries();
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
@@ -104,6 +107,14 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return;
 				}
 
+				if (sidebarShowUnread && isUnread(room)) {
+					setGroupRoom('unread', room);
+				}
+
+				if (!sidebarGroupByType) {
+					setGroupRoom('conversations', room);
+				}
+
 				if (hasMention(room)) {
 					setGroupRoom('mentions', room);
 				}
@@ -112,7 +123,11 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					setGroupRoom('favorites', room);
 				}
 
-				if (isTeamRoom(room)) {
+				if (sidebarGroupByType && isTeamRoom(room)) {
+					if (sidebarShowUnread && isUnread(room)) {
+						return;
+					}
+
 					setGroupRoom('teams', room);
 				}
 
@@ -120,7 +135,11 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					setGroupRoom('discussions', room);
 				}
 
-				if ((isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
+				if (sidebarGroupByType && (isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
+					if (sidebarShowUnread && isUnread(room)) {
+						return;
+					}
+
 					setGroupRoom('channels', room);
 				}
 
@@ -132,7 +151,11 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return setGroupRoom('inProgress', room);
 				}
 
-				if (isDirectMessageRoom(room)) {
+				if (sidebarGroupByType && isDirectMessageRoom(room)) {
+					if (sidebarShowUnread && isUnread(room)) {
+						return;
+					}
+
 					setGroupRoom('directMessages', room);
 				}
 
@@ -140,7 +163,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 			});
 
 			return [groups, unreadGroupData];
-		}, [rooms, showOmnichannel, queue, favoritesEnabled, isDiscussionEnabled]),
+		}, [showOmnichannel, queue, rooms, sidebarShowUnread, sidebarGroupByType, favoritesEnabled, isDiscussionEnabled]),
 		50,
 	);
 };
