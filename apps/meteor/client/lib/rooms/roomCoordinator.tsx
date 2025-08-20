@@ -42,17 +42,11 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getUiText(_context: ValueOf<typeof UiTextContext>): string {
 				return '';
 			},
-			condition(): boolean {
-				return true;
-			},
 			getAvatarPath(_room): string {
 				return '';
 			},
 			findRoom(_identifier: string): IRoom | undefined {
 				return undefined;
-			},
-			showJoinLink(_roomId: string): boolean {
-				return false;
 			},
 			isLivechatRoom(): boolean {
 				return false;
