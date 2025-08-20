@@ -107,13 +107,15 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return;
 				}
 
-				if (sidebarShowUnread && isUnread(room)) {
-					setGroupRoom('unread', room);
+				if (isOmnichannelRoom(room) && showOmnichannel) {
+					if (room.onHold) {
+						return setGroupRoom('onHold', room);
+					}
+
+					return setGroupRoom('inProgress', room);
 				}
 
-				if (!sidebarGroupByType) {
-					setGroupRoom('conversations', room);
-				}
+				setGroupRoom('all', room);
 
 				if (hasMention(room)) {
 					setGroupRoom('mentions', room);
@@ -123,43 +125,32 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					setGroupRoom('favorites', room);
 				}
 
-				if (sidebarGroupByType && isTeamRoom(room)) {
-					if (sidebarShowUnread && isUnread(room)) {
-						return;
-					}
+				if (isDiscussionEnabled && isDiscussion(room)) {
+					setGroupRoom('discussions', room);
+					return;
+				}
 
+				if (sidebarShowUnread && isUnread(room)) {
+					setGroupRoom('unread', room);
+					return;
+				}
+
+				if (!sidebarGroupByType) {
+					setGroupRoom('conversations', room);
+					return;
+				}
+
+				if (isTeamRoom(room)) {
 					setGroupRoom('teams', room);
 				}
 
-				if (isDiscussionEnabled && isDiscussion(room)) {
-					setGroupRoom('discussions', room);
-				}
-
-				if (sidebarGroupByType && (isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
-					if (sidebarShowUnread && isUnread(room)) {
-						return;
-					}
-
+				if ((isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
 					setGroupRoom('channels', room);
 				}
 
-				if (isOmnichannelRoom(room) && showOmnichannel) {
-					if (room.onHold) {
-						return setGroupRoom('onHold', room);
-					}
-
-					return setGroupRoom('inProgress', room);
-				}
-
-				if (sidebarGroupByType && isDirectMessageRoom(room)) {
-					if (sidebarShowUnread && isUnread(room)) {
-						return;
-					}
-
+				if (isDirectMessageRoom(room)) {
 					setGroupRoom('directMessages', room);
 				}
-
-				setGroupRoom('all', room);
 			});
 
 			return [groups, unreadGroupData];
