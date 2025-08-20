@@ -143,6 +143,45 @@ async function runWithBackoff(fn: () => Promise<void>, delaySec = 5) {
 	}
 }
 
+async function isDirectMessage(matrixRoom: unknown, inviteEvent: PersistentEventBase): Promise<boolean> {
+	try {
+		const room = matrixRoom as { getEvent?: (type: string) => { content?: { is_direct?: boolean } } };
+		const creationEvent = room.getEvent?.('m.room.create');
+		if (creationEvent?.content?.is_direct) {
+			return true;
+		}
+
+		const roomWithEvents = matrixRoom as { getEvents?: (type: string) => Array<{ content?: { membership?: string }; stateKey?: string }> };
+		const memberEvents = roomWithEvents.getEvents?.('m.room.member');
+		const joinedMembers =
+			memberEvents?.filter((event) => event.content?.membership === 'join' || event.content?.membership === 'invite') || [];
+
+		if (joinedMembers.length === 2) {
+			return true;
+		}
+
+		const uniqueUsers = new Set<string>();
+		if (memberEvents) {
+			for (const event of memberEvents) {
+				if (event.content?.membership === 'join' || event.content?.membership === 'invite') {
+					if (event.stateKey) {
+						uniqueUsers.add(event.stateKey);
+					}
+				}
+			}
+		}
+		uniqueUsers.add(inviteEvent.sender);
+		if (inviteEvent.stateKey) {
+			uniqueUsers.add(inviteEvent.stateKey);
+		}
+
+		return uniqueUsers.size <= 2;
+	} catch (error) {
+		console.log('Could not determine if room is DM:', error);
+		return false;
+	}
+}
+
 async function joinRoom({
 	inviteEvent,
 	user, // ours trying to join the room
@@ -168,9 +207,11 @@ async function joinRoom({
 		throw new Error('room not found not processing invite');
 	}
 
-	// we only understand these two types of rooms
-	if (!matrixRoom.isPublic() && !matrixRoom.isInviteOnly()) {
-		throw new Error('room is neither public not private, rocketchat is unable to join for now');
+	// we only understand these two types of rooms, plus direct messages
+	const isDM = await isDirectMessage(matrixRoom, inviteEvent);
+
+	if (!isDM && !matrixRoom.isPublic() && !matrixRoom.isInviteOnly()) {
+		throw new Error('room is neither public, private, nor direct message - rocketchat is unable to join for now');
 	}
 
 	// need both the sender and the participating user to exist in the room
@@ -233,14 +274,55 @@ async function joinRoom({
 	const internalMappedRoomId = await MatrixBridgedRoom.getLocalRoomId(inviteEvent.roomId);
 
 	if (!internalMappedRoomId) {
-		const ourRoom = await Room.create(senderUserId, {
-			type: matrixRoom.isPublic() ? 'c' : 'p',
-			name: matrixRoom.name,
-			options: {
-				federatedRoomId: inviteEvent.roomId,
-				creator: senderUserId,
+		let roomName: string;
+		try {
+			roomName = matrixRoom.name || '';
+		} catch (error) {
+			roomName = inviteEvent.roomId.split(':')[0].replace('!', '') || 'Unnamed Room';
+		}
+
+		const roomType = isDM ? 'd' : matrixRoom.isPublic() ? 'c' : 'p';
+
+		let ourRoom: { _id: string };
+
+		if (isDM) {
+			const [senderUser, inviteeUser] = await Promise.all([
+				Users.findOneById(senderUserId, { projection: { _id: 1, username: 1 } }),
+				Promise.resolve(user),
+			]);
+
+			if (!senderUser?.username) {
+				throw new Error('Sender user not found');
 			}
-		});
+			if (!inviteeUser?.username) {
+				throw new Error('inviteeUser user not found');
+			}
+
+			ourRoom = await Room.create(senderUserId, {
+				type: roomType,
+				name: roomName,
+				members: [senderUser.username, inviteeUser.username],
+				options: {
+					federatedRoomId: inviteEvent.roomId,
+					creator: senderUserId,
+				},
+				extraData: {
+					federated: true,
+				},
+			});
+		} else {
+			ourRoom = await Room.create(senderUserId, {
+				type: roomType,
+				name: roomName,
+				options: {
+					federatedRoomId: inviteEvent.roomId,
+					creator: senderUserId,
+				},
+				extraData: {
+					federated: true,
+				},
+			});
+		}
 
 		internalRoomId = ourRoom._id;
 	} else {
@@ -253,6 +335,10 @@ async function joinRoom({
 	}
 
 	await Room.addUserToRoom(internalRoomId, { _id: user._id }, { _id: senderUserId, username: inviteEvent.sender });
+
+	if (isDM) {
+		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(internalRoomId, inviteEvent.roomId, matrixRoom.origin);
+	}
 }
 
 async function startJoiningRoom(...opts: Parameters<typeof joinRoom>) {

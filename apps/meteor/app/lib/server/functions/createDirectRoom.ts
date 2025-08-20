@@ -64,7 +64,7 @@ export async function createDirectRoom(
 	const membersUsernames: string[] = members
 		.map((member) => {
 			if (typeof member === 'string') {
-				return member.replace('@', '');
+				return member;
 			}
 			return member.username;
 		})
