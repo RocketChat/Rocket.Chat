@@ -42,7 +42,15 @@ describe('extractParameterMetadata', () => {
 });
 
 describe('processTemplatePreviewText', () => {
-	const text = processTemplatePreviewText('Hello {{1}}', [{ type: 'text', value: 'World', format: 'text' }]);
+	it('should replate placeholder with the parameter value', () => {
+		const text = processTemplatePreviewText('Hello {{1}}', [{ type: 'text', value: 'World', format: 'text' }]);
 
-	expect(text).toBe('Hello World');
+		expect(text).toBe('Hello World');
+	});
+
+	it('it should keep the placeholder in case the parameter is an empty string', () => {
+		const text = processTemplatePreviewText('Hello {{1}}', [{ type: 'text', value: '', format: 'text' }]);
+
+		expect(text).toBe('Hello {{1}}');
+	});
 });
