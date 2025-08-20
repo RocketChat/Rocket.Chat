@@ -100,11 +100,8 @@ const outboundCommsEndpoints = API.v1
 				// Case 2: Agent & department: if agent is present, agent must be in department
 				if (agentId) {
 					if (!(await hasPermissionAsync(this.userId, 'outbound.can-assign-any-agent'))) {
-						if (await hasPermissionAsync(this.userId, 'outbound.can-assign-self-only')) {
-							// Override agentId when user has permission to assign self only
-							this.bodyParams.agentId = this.userId;
-						} else {
-							return API.v1.forbidden('afdsfads');
+						if (await hasPermissionAsync(this.userId, 'outbound.can-assign-self-only') && agentId !== this.userId) {
+							return API.v1.forbidden('error-invalid-agent');
 						}
 					}
 
@@ -117,12 +114,10 @@ const outboundCommsEndpoints = API.v1
 				// Case 3: Agent & no department: if agent is present and there's no department, agent must be an agent
 			} else if (agentId) {
 				if (!(await hasPermissionAsync(this.userId, 'outbound.can-assign-any-agent'))) {
-					if (await hasPermissionAsync(this.userId, 'outbound.can-assign-self-only')) {
-						this.bodyParams.agentId = this.userId;
-					} else {
-						return API.v1.forbidden('asdfadfdas');
+						if (await hasPermissionAsync(this.userId, 'outbound.can-assign-self-only') && agentId !== this.userId) {
+							return API.v1.forbidden('error-invalid-agent');
+						}
 					}
-				}
 
 				const agent = await Users.findOneAgentById(this.bodyParams.agentId!, { projection: { _id: 1 } });
 				if (!agent) {
