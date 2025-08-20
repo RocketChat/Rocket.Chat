@@ -53,7 +53,6 @@ export const loadConfig = async () => {
 		...(department && { department }),
 		widgetId
 	});
-
 	await store.setState({
 		config,
 		agent: agent && agent.hiddenInfo ? { hiddenInfo: true } : agent, // TODO: revert it when the API is updated
@@ -66,6 +65,8 @@ export const loadConfig = async () => {
 		noMoreMessages: false,
 		visible: true,
 		unread: null,
+		// Ultatel: Reset Alert When Request Config (Room Closed)
+		alerts:[]
 	});
 };
 
@@ -125,7 +126,8 @@ export const processUnread = async () => {
 
 			const alert = { id: constants.unreadMessagesAlertId, children: alertMessage, success: true, timeout: 0 };
 			const newAlerts = alerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
-			await store.setState({ alerts: (newAlerts.push(alert), newAlerts), unread: unreadMessages.length });
+			console.log('processUnread',{ alerts: [...newAlerts,alert], unread: unreadMessages.length })
+			await store.setState({ alerts: [...newAlerts,alert], unread: unreadMessages.length });
 		}
 	}
 };

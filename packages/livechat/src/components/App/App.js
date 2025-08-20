@@ -35,15 +35,16 @@ export class App extends Component {
 	};
 
 	// Ultatel: Add Reset Logic
-	resetUnreadObj = () => {
+	resetUnreadObj = (clearAlerts = false) => {
 		try {
 			const renderedMessages = store._state.messages?.filter((message) => canRenderMessage(message));
 		const lastRenderedMessage = renderedMessages?.at(-1);
-			return {
+		const resetOnject = 
+			{
 				unread: 0,
-				alerts: [],
 				lastReadMessageId: lastRenderedMessage?._id,
 			}
+			return clearAlerts ? { ...resetOnject, alerts: [] } : resetOnject;
 		} catch (error) {
 			console.error('Error resetting unread object:', error);
 			return {}
@@ -127,7 +128,7 @@ export class App extends Component {
 			dispatch({
 				minimized: false,
 				undocked: false,
-				...this.resetUnreadObj(),
+				...this.resetUnreadObj(true),
 			});
 		const dispatchEvent = () => {
 			dispatchRestore();
@@ -155,7 +156,7 @@ export class App extends Component {
 	handleVisibilityChange = async () => {
 		const { dispatch } = this.props;
 		// Ultatel: Reset unread relevent keys to mark chat as readed with window visibility
-		await dispatch({ visible: !visibility.hidden, ...this.resetUnreadObj() });
+		await dispatch({ visible: !visibility.hidden, ...(!store._state.minimized ? this.resetUnreadObj() : {}) });
 	};
 
 	handleLanguageChange = () => {
