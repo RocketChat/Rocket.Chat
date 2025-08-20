@@ -49,15 +49,23 @@ export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: Translat
 		title: 'Direct_Messages',
 		icon: 'at',
 	},
+	unread: {
+		title: 'Unread',
+		icon: 'flag',
+	},
+	conversations: {
+		title: 'Conversations',
+		icon: 'chat',
+	},
 };
 
 export type SidePanelFiltersKeys = 'all' | 'mentions' | 'favorites' | 'discussions' | 'inProgress' | 'queue' | 'onHold';
 
-export const collapsibleFilters: SideBarFiltersKeys[] = ['teams', 'channels', 'directMessages'];
+export const collapsibleFilters: SideBarFiltersKeys[] = ['unread', 'conversations', 'teams', 'channels', 'directMessages'];
 export type SidePanelFiltersUnreadKeys = `${SidePanelFiltersKeys}_unread`;
 export type SidePanelFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
-export type SideBarFiltersKeys = 'teams' | 'channels' | 'directMessages';
+export type SideBarFiltersKeys = 'teams' | 'channels' | 'directMessages' | 'conversations' | 'unread';
 export type SideBarFiltersUnreadKeys = `${SideBarFiltersKeys}_unread`;
 export type SideBarFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
