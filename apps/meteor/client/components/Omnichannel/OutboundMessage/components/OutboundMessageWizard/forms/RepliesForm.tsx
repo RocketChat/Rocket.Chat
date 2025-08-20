@@ -1,8 +1,8 @@
-import type { Serialized, ILivechatDepartment, ILivechatAgent } from '@rocket.chat/core-typings';
+import type { Serialized, ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useEffect, useId, useMemo } from 'react';
@@ -26,7 +26,7 @@ export type RepliesFormSubmitPayload = {
 	departmentId?: string;
 	department?: Serialized<ILivechatDepartment>;
 	agentId?: string;
-	agent?: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat' | 'phone'>;
+	agent?: Serialized<ILivechatDepartmentAgents>;
 };
 
 export type RepliesFormRef = {
@@ -44,20 +44,22 @@ const RepliesForm = (props: RepliesFormProps) => {
 	const dispatchToastMessage = useToastBarDispatch();
 	const { t } = useTranslation();
 	const repliesFormId = useId();
+	const canAssignAllDepartments = usePermission('outbound.can-assign-queues');
+
 	const {
 		control,
 		formState: { errors, isSubmitting },
 		trigger,
 		clearErrors,
 		handleSubmit,
+		setValue,
 	} = useForm<RepliesFormData>({ defaultValues });
 
 	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
 
-	const [departmentId, agentId] = useWatch({ control, name: ['departmentId', 'agentId'] });
+	const departmentId = useWatch({ control, name: 'departmentId' });
 
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: departmentId ?? '' });
-	const getAgent = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: agentId ?? '' });
 
 	const {
 		data: { department, agents } = {},
@@ -66,20 +68,8 @@ const RepliesForm = (props: RepliesFormProps) => {
 		refetch: refetchDepartment,
 	} = useQuery({
 		queryKey: omnichannelQueryKeys.department(departmentId),
-		queryFn: () => getDepartment({ onlyMyDepartments: 'true' }),
+		queryFn: () => getDepartment({ onlyMyDepartments: !canAssignAllDepartments ? 'true' : 'false' }),
 		enabled: !!departmentId,
-	});
-
-	const {
-		data: agent,
-		isError: isErrorAgent,
-		isFetching: isFetchingAgent,
-		refetch: refetchAgent,
-	} = useQuery({
-		queryKey: omnichannelQueryKeys.agent(agentId),
-		queryFn: () => getAgent(),
-		enabled: !!agentId,
-		select: (data) => data.user,
 	});
 
 	useEffect(() => {
@@ -87,28 +77,30 @@ const RepliesForm = (props: RepliesFormProps) => {
 		return () => clearErrors('departmentId');
 	}, [clearErrors, isErrorDepartment, trigger]);
 
-	useEffect(() => {
-		isErrorAgent && trigger('agentId');
-		return () => clearErrors('agentId');
-	}, [clearErrors, isErrorAgent, trigger]);
+	const handleDepartmentChange = useEffectEvent((onChange: (value: string) => void) => {
+		return (value: string) => {
+			setValue('agentId', '');
+			onChange(value);
+		};
+	});
 
 	const submit = useEffectEvent(async ({ agentId, departmentId }: RepliesFormData) => {
 		try {
+			const agent = agents?.find((agent) => agent.agentId === agentId);
+
 			// Wait if department or agent is still being fetched in background
-			const [updatedDepartment, updatedAgent] = await Promise.all([
-				departmentId && isFetchingDepartment ? refetchDepartment().then((r) => r.data?.department) : Promise.resolve(department),
-				agentId && isFetchingAgent ? refetchAgent().then((r) => r.data) : Promise.resolve(agent),
-			]);
+			const updatedDepartment =
+				departmentId && isFetchingDepartment ? await refetchDepartment().then((r) => r.data?.department) : department;
 
 			if (departmentId && !updatedDepartment) {
 				throw new FormFetchError('error-department-not-found');
 			}
 
-			if (agentId && !updatedAgent) {
+			if (agentId && !agent) {
 				throw new FormFetchError('error-agent-not-found');
 			}
 
-			onSubmit({ departmentId, department: updatedDepartment, agentId, agent: updatedAgent });
+			onSubmit({ departmentId, department: updatedDepartment, agentId, agent });
 		} catch (error) {
 			if (error instanceof FormFetchError) {
 				trigger();
@@ -144,8 +136,9 @@ const RepliesForm = (props: RepliesFormProps) => {
 									})}
 									error={errors.departmentId?.message}
 									placeholder={t('Select_department')}
+									onlyMyDepartments={!canAssignAllDepartments}
 									value={field.value}
-									onChange={field.onChange}
+									onChange={handleDepartmentChange(field.onChange)}
 								/>
 							)}
 						/>
@@ -164,9 +157,6 @@ const RepliesForm = (props: RepliesFormProps) => {
 						<Controller
 							control={control}
 							name='agentId'
-							rules={{
-								validate: () => (isErrorAgent ? t('Error_loading__name__information', { name: t('agent') }) : true),
-							}}
 							render={({ field }) => (
 								<AutoCompleteAgent
 									name={field.name}
@@ -190,7 +180,6 @@ const RepliesForm = (props: RepliesFormProps) => {
 					{errors.agentId && (
 						<FieldError aria-live='assertive' id={`${repliesFormId}-agent-error`} display='flex' alignItems='center'>
 							{errors.agentId.message}
-							{isErrorAgent && <RetryButton loading={isFetchingAgent} onClick={refetchAgent} />}
 						</FieldError>
 					)}
 					<FieldHint id={`${repliesFormId}-agent-hint`}>{t('Outbound_message_agent_hint')}</FieldHint>
