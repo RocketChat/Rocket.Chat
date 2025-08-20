@@ -40,7 +40,7 @@ export const getUnitsFromUser = async (userId?: string): Promise<string[] | unde
 		return;
 	}
 
-	if (!(await hasAnyRoleAsync(userId, ['livechat-monitor']))) {
+	if (!(await hasAnyRoleAsync(userId, ['livechat-monitor', 'livechat-agent']))) {
 		return;
 	}
 
