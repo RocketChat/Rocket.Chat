@@ -35,6 +35,7 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 		refetch: refetchProviders,
 	} = useOutboundProvidersList<boolean>({
 		select: ({ providers = [] }) => providers.length > 0,
+		enabled: hasModule === true,
 	});
 
 	const wizardApi = useWizard({
