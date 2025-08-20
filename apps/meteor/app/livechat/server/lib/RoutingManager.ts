@@ -269,7 +269,11 @@ export const RoutingManager: Routing = {
 			return cbRoom;
 		}
 
-		await LivechatInquiry.takeInquiry(_id);
+		const result = await LivechatInquiry.takeInquiry(_id, inquiry.lockedAt);
+		if (result.modifiedCount === 0) {
+			logger.error('Failed to take inquiry, could not match lockedAt', { inquiryId: _id, lockedAt: inquiry.lockedAt });
+			throw new Error('error-taking-inquiry-lockedAt-mismatch');
+		}
 
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 

@@ -32,12 +32,16 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 			Users.samluser1,
 			Users.samluser2,
 			Users.samluser4,
+			Users.samluser5,
+			Users.samluser6,
+			Users.samluser7,
 			Users.samlusernoname,
 			Users.samlusernoname2,
 		].map(({ data: { username } }) => username),
 		'custom_saml_username',
 		'custom_saml_username2',
 	];
+
 	await connection
 		.db()
 		.collection('users')
@@ -94,6 +98,8 @@ test.describe('SAML', () => {
 	let targetInviteGroupId: string;
 	let targetInviteGroupName: string;
 	let inviteId: string;
+	let targetChannel: string;
+	let autoCreatedChannel: string;
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
@@ -118,11 +124,18 @@ test.describe('SAML', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		const groupResponse = await api.post('/groups.create', { name: faker.string.uuid() });
+		const [groupResponse, channelResponse] = await Promise.all([
+			api.post('/groups.create', { name: faker.string.uuid() }),
+			api.post('/channels.create', { name: 'saml-channel-1' }),
+		]);
+
 		expect(groupResponse.status()).toBe(200);
+		expect(channelResponse.status()).toBe(200);
+
 		const { group } = await groupResponse.json();
 		targetInviteGroupId = group._id;
 		targetInviteGroupName = group.name;
+		targetChannel = 'saml-channel-1';
 
 		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 0 });
 		expect(inviteResponse.status()).toBe(200);
@@ -154,7 +167,11 @@ test.describe('SAML', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/groups.delete', { roomId: targetInviteGroupId })).status()).toBe(200);
+		await Promise.all([
+			api.post('/groups.delete', { roomId: targetInviteGroupId }).then((response) => expect(response.status()).toBe(200)),
+			api.post('/channels.delete', { roomName: targetChannel }).then((response) => expect(response.status()).toBe(200)),
+			api.post('/channels.delete', { roomName: autoCreatedChannel }),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -573,12 +590,97 @@ test.describe('SAML', () => {
 		// Test different variations of the Immutable Property setting
 	});
 
-	test.fixme('Login - User without name', async () => {
-		// Test login with a SAML user with no name
+	test('Login - User without name', async ({ page, api }) => {
+		await test.step('expect user name to fallback to username when displayName is not provided', async () => {
+			await doLoginStep(page, 'samluser5');
+
+			const user = await getUserInfo(api, 'samluser5');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('samluser5');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser5@example.com');
+			// When displayName is not provided, it should fall back to username
+			expect(user?.name).toBe('samluser5');
+			await doLogoutStep(page);
+		});
+
+		await test.step('expect user name to fallback to displayName when provided', async () => {
+			await doLoginStep(page, 'samluser6');
+
+			const user = await getUserInfo(api, 'samluser6');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('samluser6');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser6@example.com');
+			// When displayName is provided, it should fall back to displayName
+			expect(user?.name).toBe('Saml User 6 Display Name');
+		});
 	});
 
-	test.fixme('Login - User with channels attribute', async () => {
-		// Test login with a SAML user with a "channels" attribute
+	test('Login - User with channels attribute', async ({ page, api }) => {
+		autoCreatedChannel = 'saml-channel-2';
+
+		await test.step('Configure SAML to enable channels attribute updates', async () => {
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_channels_update', true)).status()).toBe(200);
+		});
+
+		await doLoginStep(page, 'samluser7');
+
+		await test.step('expect user data to have been mapped correctly', async () => {
+			const user = await getUserInfo(api, 'samluser7');
+
+			expect(user).toBeDefined();
+			expect(user?.username).toBe('samluser7');
+			expect(user?.name).toBe('Saml User 7');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser7@example.com');
+		});
+
+		await test.step('expect auto-created channel to be created automatically', async () => {
+			const channelInfoResponse = await api.get(`/channels.info?roomName=${autoCreatedChannel}`);
+			expect(channelInfoResponse.status()).toBe(200);
+			const { channel } = await channelInfoResponse.json();
+			expect(channel).toBeDefined();
+			expect(channel.name).toBe(autoCreatedChannel);
+		});
+
+		await test.step('expect user to be member of existing channel', async () => {
+			const existingChannelMembersResponse = await api.get(`/channels.members?roomName=${targetChannel}`);
+			expect(existingChannelMembersResponse.status()).toBe(200);
+			const { members: existingMembers } = await existingChannelMembersResponse.json();
+			expect(existingMembers).toBeDefined();
+			expect(existingMembers.some((member: { username: string }) => member.username === 'samluser7')).toBe(true);
+		});
+
+		await test.step('expect user to be member of auto-created channel', async () => {
+			const autoCreatedChannelMembersResponse = await api.get(`/channels.members?roomName=${autoCreatedChannel}`);
+			expect(autoCreatedChannelMembersResponse.status()).toBe(200);
+			const { members: autoCreatedMembers } = await autoCreatedChannelMembersResponse.json();
+			expect(autoCreatedMembers).toBeDefined();
+			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser7')).toBe(true);
+		});
+
+		await doLogoutStep(page);
+
+		await doLoginStep(page, 'samluser1');
+
+		await test.step('expect user without channels attribute to not be added to existing channel', async () => {
+			const existingChannelMembersResponse = await api.get(`/channels.members?roomName=${targetChannel}`);
+			expect(existingChannelMembersResponse.status()).toBe(200);
+			const { members: existingMembers } = await existingChannelMembersResponse.json();
+			expect(existingMembers).toBeDefined();
+			expect(existingMembers.some((member: { username: string }) => member.username === 'samluser1')).toBe(false);
+		});
+
+		await test.step('expect user without channels attribute to not be added to auto-created channel', async () => {
+			const autoCreatedChannelMembersResponse = await api.get(`/channels.members?roomName=${autoCreatedChannel}`);
+			expect(autoCreatedChannelMembersResponse.status()).toBe(200);
+			const { members: autoCreatedMembers } = await autoCreatedChannelMembersResponse.json();
+			expect(autoCreatedMembers).toBeDefined();
+			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser1')).toBe(false);
+		});
 	});
 
 	test.fixme('Data Sync - Custom Field Map', async () => {
