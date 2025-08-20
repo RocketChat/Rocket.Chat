@@ -7,11 +7,11 @@ import type { FilterOperators } from 'mongodb';
 import { defaultLogger } from '../utils/logger';
 
 export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: FilterOperators<ILivechatDepartment> = {}, userId: string) => {
-	const query: FilterOperators<ILivechatDepartment> = { ...originalQuery, type: { $ne: 'u' } };
+	const query: FilterOperators<ILivechatDepartment> = { $and: [originalQuery, { type: { $ne: 'u' } }] };
 
 	const units = await getUnitsFromUser(userId);
 	if (Array.isArray(units)) {
-		query.ancestors = { $in: units };
+		query.$and.push({ $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] });
 	}
 
 	defaultLogger.debug({ msg: 'Applying department query restrictions', userId, units });
@@ -51,7 +51,7 @@ export const getUnitsFromUser = async (userId?: string): Promise<string[] | unde
 		return;
 	}
 
-	if (!(await Authorization.hasAnyRole(userId, ['livechat-monitor']))) {
+	if (!(await Authorization.hasAnyRole(userId, ['livechat-monitor', 'livechat-agent']))) {
 		return;
 	}
 
