@@ -34,4 +34,16 @@ export class OmnichannelRoomInfo {
 	getLabel(label: string): Locator {
 		return this.page.locator(`div >> text="${label}"`);
 	}
+
+	getUserName(name: string): Locator {
+		return this.page.getByRole('link', { name: `${name}` });
+	}
+
+	getSidebarItemByName(name: string): Locator {
+		return this.page.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
+	}
+
+	getBadgeIndicator(name: string, title: string): Locator {
+		return this.getSidebarItemByName(name).getByTitle(`${title}`);
+	}
 }
