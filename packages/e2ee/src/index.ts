@@ -84,6 +84,23 @@ export abstract class BaseE2EE {
 		}
 	}
 
+	async loadKeysFromDB(callbacks: {
+		onSuccess: (keys: KeyPair) => void;
+		onError: (error: unknown) => void;
+	}): Promise<void> {
+		try {
+			callbacks.onSuccess((await this.getKeysFromService()));
+		} catch (error) {
+			callbacks.onError(error);
+		}
+	}
+
+	/// Low-level key management methods
+
+	/**
+	 * Sets the public key in the storage.
+	 * @param key The public key to store.
+	 */
 	async setPublicKey(key: CryptoKey): Promise<void> {
 		const exported = await this.#codec.crypto.exportJsonWebKey(key);
 		const stringified = JSON.stringify(exported);

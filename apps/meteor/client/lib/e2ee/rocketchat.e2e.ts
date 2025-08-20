@@ -432,19 +432,20 @@ class E2E extends Emitter {
 	}
 
 	async loadKeysFromDB(): Promise<void> {
-		try {
-			this.setState(E2EEState.LOADING_KEYS);
-			const { public_key, private_key } = await this.e2ee.getKeysFromService();
-
-			this.db_public_key = public_key;
-			this.db_private_key = private_key;
-		} catch (error) {
-			this.setState(E2EEState.ERROR);
-			this.error('Error fetching RSA keys: ', error);
-			// Stop any process since we can't communicate with the server
-			// to get the keys. This prevents new key generation
-			throw error;
-		}
+		this.setState(E2EEState.LOADING_KEYS);
+		await this.e2ee.loadKeysFromDB({
+			onSuccess: ({ public_key, private_key }) => {
+				this.db_public_key = public_key;
+				this.db_private_key = private_key;
+			},
+			onError: (error) => {
+				this.setState(E2EEState.ERROR);
+				this.error('Error fetching RSA keys from DB: ', error);
+				// Stop any process since we can't communicate with the server
+				// to get the keys. This prevents new key generation
+				throw error;
+			},
+		});
 	}
 
 	async loadKeys(keys: { public_key: string; private_key: string }): Promise<void> {
