@@ -39,7 +39,7 @@ jobs:
       # to avoid this, we are using a dummy license, expiring at 2026-07-01
       enterprise-license: Uo7Jcr6WW0XYA8ydHd+Sk6pZ9/0V6dIASnyTwvUrNym/zJg2Ma3eYNKkC8osXLCc72y1ahohnWY7/+7IYkvono3GYXQR+IGvYbbrVgNR6OjMahd9P/odHZL1GFTm2qHrEL5Hh/XEOG+YluFeRdWPzCizQlp4zGGOi0+PkQo096TR9NVCLrsErVl2MW1WM6ZM1W5EUJG9pKly4BQnaOTUAlor1im6i8qPTDCKrISZfLiZEWuQKaPW/GE3mRKjQNjDh0CabX1N2S880pRRGoozBYAnp2NmFfrQW0+5ihKisBTIeMbMZ7K5NE5PkYU1nhQDcc+rpDHtwG9Ceg5X0J+oea3UfrPTmDON2aSI0iO22kvL6G7QI3fyrEIvJrMbxcNKxAFeQYgnjisw/b06+chWSG4jG686Fx58XrVS87dFhWL9WoGltsk1dJCntUQvI1sX6zOfpvyg1iWRnHfYDOrwoWlX57XMm29fWineEoqnOOTOVnA/uP+DKEhercQ9Xuo7Cr6zJxpQpwd03e7ODVjiEbTDqlkZE687rmxRCD4Wmu8L86WIl2xSEIajKLX301Ww5mz/FdLqk+Mg32lkW66W3azQKvJ1440NBrYxhpJ+dl9vSFMb3s1+xnz1cYUbjUcq9mARvORcgy5mLwKulmqT6Sq0Uvbv10YCO0TW0beXYW8=
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             package.json
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [release-versions]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             package.json
@@ -153,7 +153,7 @@ jobs:
         with:
           swap-size-gb: 4
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -208,7 +208,7 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: ./.github/actions/meteor-build
         with:
@@ -239,7 +239,7 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           cat $GITHUB_EVENT_PATH
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: ./.github/actions/meteor-build
         with:
@@ -259,7 +259,7 @@ jobs:
           path: /tmp/build/matrix-sdk-crypto.linux-x64-musl.node
           key: matrix-rust-sdk-crypto-nodejs-v0.2.0-beta.1
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: matrix-org/matrix-rust-sdk-crypto-nodejs
           ref: v0.2.0-beta.1 # https://github.com/element-hq/matrix-bot-sdk/blob/e72a4c498e00c6c339a791630c45d00a351f56a8/package.json#L58
@@ -309,7 +309,7 @@ jobs:
         platform: ['alpine']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # we only build and publish the actual docker images if not a PR from a fork
       - uses: ./.github/actions/build-docker
@@ -354,7 +354,7 @@ jobs:
         platform: ['alpine']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: ./.github/actions/build-docker
         with:
@@ -581,7 +581,7 @@ jobs:
     needs: [build-gh-docker, release-versions]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             package.json
@@ -835,7 +835,7 @@ jobs:
       - docker-image-publish
       - release-versions
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             package.json
