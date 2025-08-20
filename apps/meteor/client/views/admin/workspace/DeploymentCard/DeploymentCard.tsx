@@ -30,7 +30,7 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 	});
 
 	return (
-		<Card data-qa-id='deployment-card' height='full'>
+		<Card height='full'>
 			<CardBody flexDirection='column'>
 				<WorkspaceCardSection>
 					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />

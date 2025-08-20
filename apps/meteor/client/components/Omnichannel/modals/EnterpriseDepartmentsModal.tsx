@@ -61,7 +61,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 
-					<Button onClick={goToManageSubscriptionPage} primary data-qa-id='upgrade-now'>
+					<Button onClick={goToManageSubscriptionPage} primary>
 						{t('Upgrade')}
 					</Button>
 				</ModalFooterControllers>
