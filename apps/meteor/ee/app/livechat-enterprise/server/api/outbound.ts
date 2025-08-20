@@ -99,7 +99,7 @@ const outboundCommsEndpoints = API.v1
 
 				// Case 2: Agent & department: if agent is present, agent must be in department
 				if (agentId) {
-					if (agentId !== this.userId && !(await hasPermissionAsync(this.userId, 'outbound.can-assign-any-agent'))) {
+					if (!(await hasPermissionAsync(this.userId, 'outbound.can-assign-any-agent'))) {
 						if (await hasPermissionAsync(this.userId, 'outbound.can-assign-self-only')) {
 							// Override agentId when user has permission to assign self only
 							this.bodyParams.agentId = this.userId;
