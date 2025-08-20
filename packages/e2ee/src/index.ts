@@ -55,6 +55,35 @@ export abstract class BaseE2EE {
 		}
 	}
 
+	async createAndLoadKeys(callbacks: {
+		onPrivateKey: (privateKey: CryptoKey) => void;
+		onPublicKey: (publicKey: JsonWebKey) => void;
+		onError: (error: unknown) => void;
+	}): Promise<void> {
+		// Could not obtain public-private keypair from server.
+		try {
+			const keys = await this.#codec.crypto.generateRsaOaepKeyPair();
+			callbacks.onPrivateKey(keys.privateKey);
+			try {
+				await this.setPublicKey(keys.publicKey);
+				const publicKey = await this.#codec.crypto.exportJsonWebKey(keys.publicKey);
+				callbacks.onPublicKey(publicKey);
+				try {
+					await this.setPrivateKey(keys.privateKey);
+				} catch (error) {
+					callbacks.onError(error);
+					return;
+				}
+			} catch (error) {
+				callbacks.onError(error);
+				return;
+			}
+		} catch (error) {
+			callbacks.onError(error);
+			return;
+		}
+	}
+
 	async setPublicKey(key: CryptoKey): Promise<void> {
 		const exported = await this.#codec.crypto.exportJsonWebKey(key);
 		const stringified = JSON.stringify(exported);

@@ -464,30 +464,21 @@ class E2E extends Emitter {
 	async createAndLoadKeys(): Promise<void> {
 		// Could not obtain public-private keypair from server.
 		this.setState(E2EEState.LOADING_KEYS);
-		let key;
-		try {
-			key = await this.e2ee.codec.crypto.generateRsaOaepKeyPair();
-			this.privateKey = key.privateKey;
-		} catch (error) {
-			this.setState(E2EEState.ERROR);
-			return this.error('Error generating key: ', error);
-		}
+		await this.e2ee.createAndLoadKeys({
+			onPrivateKey: (privateKey) => {
+				this.privateKey = privateKey;
+			},
+			onPublicKey: (publicKey) => {
+				this.publicKey = JSON.stringify(publicKey);
+			},
+			onError: (error) => {
+				this.setState(E2EEState.ERROR);
+				this.error('Error creating keys: ', error);
+			},
+		});
 
-		try {
-			const publicKey = await this.e2ee.codec.crypto.exportJsonWebKey(key.publicKey);
-
-			this.publicKey = JSON.stringify(publicKey);
-			await this.e2ee.setPublicKey(key.publicKey);
-		} catch (error) {
-			this.setState(E2EEState.ERROR);
-			return this.error('Error exporting public key: ', error);
-		}
-
-		try {
-			await this.e2ee.setPrivateKey(key.privateKey);
-		} catch (error) {
-			this.setState(E2EEState.ERROR);
-			return this.error('Error exporting private key: ', error);
+		if (this.getState() === E2EEState.LOADING_KEYS) {
+			return;
 		}
 
 		await this.requestSubscriptionKeys();
