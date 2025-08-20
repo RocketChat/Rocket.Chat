@@ -40,6 +40,6 @@ export class OmnichannelRoomInfo {
 	}
 
 	getBadgeIndicator(name: string, title: string): Locator {
-		return this.getSidebarItemByName(name).getByTitle(`${title}`);
+		return this.getSidebarItemByName(name).getByTitle(title);
 	}
 }
