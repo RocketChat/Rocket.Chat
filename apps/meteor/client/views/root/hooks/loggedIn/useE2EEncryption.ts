@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 
 import { MentionsParser } from '../../../../../app/mentions/lib/MentionsParser';
 import { e2e } from '../../../../lib/e2ee';
-import { E2EEState } from '../../../../lib/e2ee/E2EEState';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
 import { Rooms } from '../../../../stores';
@@ -33,13 +32,13 @@ export const useE2EEncryption = () => {
 			e2e.startClient();
 		} else {
 			e2e.log('E2E disabled');
-			e2e.setState(E2EEState.DISABLED);
+			e2e.setState('DISABLED');
 			e2e.closeAlert();
 		}
 	}, [adminEmbedded, enabled, userId]);
 
 	const state = useE2EEState();
-	const ready = state === E2EEState.READY || state === E2EEState.SAVE_PASSWORD;
+	const ready = state === 'READY' || state === 'SAVE_PASSWORD';
 	const listenersAttachedRef = useRef(false);
 
 	const mentionsEnabled = useSetting('E2E_Enabled_Mentions', true);
