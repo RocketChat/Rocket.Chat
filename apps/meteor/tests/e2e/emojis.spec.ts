@@ -66,43 +66,46 @@ test.describe.serial('emoji', () => {
 
 		poAdminEmoji = new AdminEmoji(page);
 
-		// Add custom emoji
-		await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
-		await page.locator('role=link[name="Emoji"]').click();
-		await poAdminEmoji.newButton.click();
-		await poAdminEmoji.addEmoji.nameInput.fill(emojiName);
+		await test.step('Add custom emoji', async () => {
+			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+			await page.locator('role=link[name="Emoji"]').click();
+			await poAdminEmoji.newButton.click();
+			await poAdminEmoji.addEmoji.nameInput.fill(emojiName);
 
-		const [fileChooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('role=button[name="Custom Emoji"]').click()]);
-		await fileChooser.setFiles(emojiUrl);
+			const [fileChooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('role=button[name="Custom Emoji"]').click()]);
+			await fileChooser.setFiles(emojiUrl);
 
-		await poAdminEmoji.addEmoji.btnSave.click();
-		await poAdminEmoji.closeAdminButton.click();
+			await poAdminEmoji.addEmoji.btnSave.click();
+			await poAdminEmoji.closeAdminButton.click();
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidenav.openChat(targetChannel);
 
-		await poHomeChannel.content.sendMessage(`:${emojiName}:`);
-		await page.keyboard.press('Enter');
-		await expect(poHomeChannel.content.lastUserMessage.getByTestId(emojiName)).toBeVisible();
+			await poHomeChannel.content.sendMessage(`:${emojiName}:`);
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.content.lastUserMessage.getByTitle(`:${emojiName}:`)).toBeVisible();
+		});
 
-		// Rename custom emoji
-		await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
-		await page.locator('role=link[name="Emoji"]').click();
-		await poAdminEmoji.findEmojiByName(emojiName);
-		await poAdminEmoji.addEmoji.nameInput.fill(newEmojiName);
+		await test.step('Rename custom emoji', async () => {
+			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+			await page.locator('role=link[name="Emoji"]').click();
+			await poAdminEmoji.findEmojiByName(emojiName);
+			await poAdminEmoji.addEmoji.nameInput.fill(newEmojiName);
 
-		await poAdminEmoji.addEmoji.btnSave.click();
-		await poAdminEmoji.closeAdminButton.click();
+			await poAdminEmoji.addEmoji.btnSave.click();
+			await poAdminEmoji.closeAdminButton.click();
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.sidenav.openChat(targetChannel);
 
-		await poHomeChannel.content.sendMessage(`:${newEmojiName}:`);
-		await page.keyboard.press('Enter');
-		await expect(poHomeChannel.content.lastUserMessage.getByTestId(newEmojiName)).toBeVisible();
+			await poHomeChannel.content.sendMessage(`:${newEmojiName}:`);
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.content.lastUserMessage.getByTitle(`:${newEmojiName}:`)).toBeVisible();
+		});
 
-		// Remove custom emoji
-		await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
-		await page.locator('role=link[name="Emoji"]').click();
-		await poAdminEmoji.findEmojiByName(newEmojiName);
-		await poAdminEmoji.addEmoji.btnDelete.click();
+		await test.step('Delete custom emoji', async () => {
+			await poHomeChannel.sidenav.openAdministrationByLabel('Workspace');
+			await page.locator('role=link[name="Emoji"]').click();
+			await poAdminEmoji.findEmojiByName(newEmojiName);
+			await poAdminEmoji.addEmoji.btnDelete.click();
+		});
 	});
 });
