@@ -1128,6 +1128,20 @@ describe('LIVECHAT - contacts', () => {
 				expect(response.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 			});
 		});
+
+		describe('[GDPR Setting] omnichannel/contacts.delete', () => {
+			before(async () => {});
+
+			after(async () => {});
+
+			it("should not delete the contact if the GDPR setting isn't enabled and contact has open rooms", async () => {
+				const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
+
+				expect(response.status).to.be.equal(400);
+				expect(response.body).to.have.property('success', false);
+				expect(response.body.error).to.be.equal('error-contact-has-open-rooms');
+			});
+		});
 	});
 
 	describe('[GET] omnichannel/contacts.checkExistence', () => {

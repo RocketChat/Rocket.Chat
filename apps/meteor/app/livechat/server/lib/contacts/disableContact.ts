@@ -1,15 +1,23 @@
 import type { ILivechatContact } from '@rocket.chat/core-typings';
-import { LivechatContacts, LivechatVisitors } from '@rocket.chat/models';
+import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
+
+import { settings } from '../../../../settings/server';
+import { removeGuest } from '../guests';
 
 export async function disableContactById(contactId: string): Promise<void> {
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId);
+	const contact = await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'channels'>>(contactId);
 	if (!contact) {
 		throw new Error('error-contact-not-found');
 	}
-	// Cleaning up any visitor object for the contact
-	for await (const channel of contact.channels) {
-		await LivechatVisitors.disableById(channel.visitor.visitorId);
+
+	// Checking if the contact has any open channel/room before removing its data.
+	const contactOpenRooms = await LivechatRooms.findOpenByContactId(contactId).toArray();
+	if (contactOpenRooms.length && !settings.get<boolean>('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+		throw new Error('error-contact-has-open-rooms');
 	}
+
+	// Cleaning contact/visitor data;
+	await Promise.all(contact.channels.map((channel) => removeGuest({ _id: channel.visitor.visitorId })));
 
 	await LivechatContacts.disableByContactId(contactId);
 }

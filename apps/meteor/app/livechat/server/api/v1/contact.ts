@@ -252,8 +252,15 @@ const omnichannelContactsEndpoints = API.v1.post(
 			await disableContactById(contactId);
 			return API.v1.success();
 		} catch (error) {
-			if (!(error instanceof Error) || error.message !== 'error-contact-not-found') {
+			if (!(error instanceof Error)) {
 				return API.v1.failure('error-invalid-contact');
+			}
+
+			switch (error.message) {
+				case 'error-contact-not-found':
+					return API.v1.failure(error.message);
+				case 'error-contact-has-open-rooms':
+					return API.v1.failure(error.message);
 			}
 
 			return API.v1.failure(error.message);
