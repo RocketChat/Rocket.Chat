@@ -1,22 +1,8 @@
 import { Authorization } from '@rocket.chat/core-services';
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatUnit, LivechatDepartmentAgents } from '@rocket.chat/models';
 import mem from 'mem';
-import type { FilterOperators } from 'mongodb';
 
 import { defaultLogger } from '../utils/logger';
-
-export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: FilterOperators<ILivechatDepartment> = {}, userId: string) => {
-	const query: FilterOperators<ILivechatDepartment> = { $and: [originalQuery, { type: { $ne: 'u' } }] };
-
-	const units = await getUnitsFromUser(userId);
-	if (Array.isArray(units)) {
-		query.$and.push({ $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] });
-	}
-
-	defaultLogger.debug({ msg: 'Applying department query restrictions', userId, units });
-	return query;
-};
 
 async function getUnitsFromUserRoles(user: string): Promise<string[]> {
 	return LivechatUnit.findByMonitorId(user);

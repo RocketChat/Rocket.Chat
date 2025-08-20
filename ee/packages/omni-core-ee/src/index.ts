@@ -1,5 +1,5 @@
-import { applyDepartmentRestrictionsPatch } from './hooks/applyDepartmentRestrictions';
 import { isDepartmentCreationAvailablePatch } from './isDepartmentCreationAvailable';
+import { applyDepartmentRestrictionsPatch } from './patches/applyDepartmentRestrictions';
 
 export function patchOmniCore(): void {
 	isDepartmentCreationAvailablePatch();
