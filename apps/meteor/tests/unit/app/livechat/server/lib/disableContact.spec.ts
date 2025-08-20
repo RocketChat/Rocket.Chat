@@ -24,7 +24,7 @@ const { disableContactById } = proxyquire.noCallThru().load('../../../../../../a
 	'../../../../settings/server': { settings: settingsMock },
 });
 
-describe.only('disableContact', () => {
+describe('disableContact', () => {
 	const contact = {
 		_id: 'contact-id',
 		channels: [
