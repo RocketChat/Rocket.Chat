@@ -2,6 +2,7 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVideoConfMessage } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
+import { CurrentEditingMessage } from './CurrentEditingMessage';
 import { UserAction } from './UserAction';
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
@@ -15,10 +16,7 @@ import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
 import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
-import {
-	setHighlightMessage,
-	clearHighlightMessage,
-} from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
+import { setHighlightMessage } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 
 type DeepWritable<T> = T extends (...args: any) => any
 	? T
@@ -38,6 +36,8 @@ export class ChatMessages implements ChatAPI {
 
 	public data: DataAPI;
 
+	public currentEditingMessage: CurrentEditingMessage;
+
 	public readStateManager: ReadStateManager;
 
 	public uploads: UploadsAPI;
@@ -55,15 +55,15 @@ export class ChatMessages implements ChatAPI {
 		performContinuously(action: 'recording' | 'uploading' | 'playing'): Promise<void> | void;
 	};
 
-	private currentEditingMID?: string;
-
 	public messageEditing: ChatAPI['messageEditing'] = {
 		toPreviousMessage: async () => {
 			if (!this.composer) {
 				return;
 			}
 
-			if (!this.currentEditing) {
+			const mid = this.currentEditingMessage.getMID();
+
+			if (!mid) {
 				let lastMessage = await this.data.findPreviousOwnMessage();
 
 				// Videoconf messages should not be edited
@@ -79,7 +79,7 @@ export class ChatMessages implements ChatAPI {
 				return;
 			}
 
-			const currentMessage = await this.data.findMessageByID(this.currentEditing.mid);
+			const currentMessage = await this.data.findMessageByID(mid);
 			let previousMessage = currentMessage ? await this.data.findPreviousOwnMessage(currentMessage) : undefined;
 
 			// Videoconf messages should not be edited
@@ -92,14 +92,16 @@ export class ChatMessages implements ChatAPI {
 				return;
 			}
 
-			await this.currentEditing.cancel();
+			await this.currentEditingMessage.cancel();
 		},
 		toNextMessage: async () => {
-			if (!this.composer || !this.currentEditing) {
+			const mid = this.currentEditingMessage.getMID();
+
+			if (!this.composer || !mid) {
 				return;
 			}
 
-			const currentMessage = await this.data.findMessageByID(this.currentEditing.mid);
+			const currentMessage = await this.data.findMessageByID(mid);
 			let nextMessage = currentMessage ? await this.data.findNextOwnMessage(currentMessage) : undefined;
 
 			// Videoconf messages should not be edited
@@ -112,18 +114,18 @@ export class ChatMessages implements ChatAPI {
 				return;
 			}
 
-			await this.currentEditing.cancel();
+			await this.currentEditingMessage.cancel();
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
 			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0]?.description || message.msg;
 
-			await this.currentEditing?.stop();
+			await this.currentEditingMessage.stop();
 
 			if (!this.composer || !(await this.data.canUpdateMessage(message))) {
 				return;
 			}
 
-			this.currentEditingMID = message._id;
+			this.currentEditingMessage.setMID(message._id);
 			setHighlightMessage(message._id);
 			this.composer.setEditingMode(true);
 
@@ -136,19 +138,13 @@ export class ChatMessages implements ChatAPI {
 
 	public flows: DeepWritable<ChatAPI['flows']>;
 
-	public constructor(
-		private params: {
-			rid: IRoom['_id'];
-			tmid?: IMessage['_id'];
-			uid: IUser['_id'] | null;
-			actionManager: IActionManager;
-		},
-	) {
+	public constructor(params: { rid: IRoom['_id']; tmid?: IMessage['_id']; uid: IUser['_id'] | null; actionManager: IActionManager }) {
 		const { rid, tmid } = params;
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid, tmid });
 		this.ActionManager = params.actionManager;
+		this.currentEditingMessage = new CurrentEditingMessage(this.data, params, this.composer);
 
 		const unimplemented = () => {
 			throw new Error('Flow is not implemented');
@@ -183,64 +179,5 @@ export class ChatMessages implements ChatAPI {
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
 			replyBroadcast: replyBroadcast.bind(null, this),
 		};
-	}
-
-	public get currentEditing() {
-		if (!this.composer || !this.currentEditingMID) {
-			return undefined;
-		}
-
-		return {
-			mid: this.currentEditingMID,
-			reset: async (): Promise<boolean> => {
-				if (!this.composer || !this.currentEditingMID) {
-					return false;
-				}
-
-				const message = await this.data.findMessageByID(this.currentEditingMID);
-				if (this.composer.text !== message?.msg) {
-					this.composer.setText(message?.msg ?? '');
-					return true;
-				}
-
-				return false;
-			},
-			stop: async (): Promise<void> => {
-				if (!this.composer || !this.currentEditingMID) {
-					return;
-				}
-
-				const message = await this.data.findMessageByID(this.currentEditingMID);
-				const draft = this.composer.text;
-
-				if (draft === message?.msg) {
-					await this.data.discardDraft(this.currentEditingMID);
-				} else {
-					await this.data.saveDraft(this.currentEditingMID, (await this.data.getDraft(this.currentEditingMID)) || draft);
-				}
-
-				this.composer.setEditingMode(false);
-				this.currentEditingMID = undefined;
-				clearHighlightMessage();
-			},
-			cancel: async (): Promise<void> => {
-				if (!this.currentEditingMID) {
-					return;
-				}
-
-				await this.data.discardDraft(this.currentEditingMID);
-				await this.currentEditing?.stop();
-				this.composer?.setText((await this.data.getDraft(undefined)) ?? '');
-			},
-		};
-	}
-
-	public async release() {
-		if (this.currentEditing) {
-			if (!this.params.tmid) {
-				await this.currentEditing.cancel();
-			}
-			this.composer?.clear();
-		}
 	}
 }
