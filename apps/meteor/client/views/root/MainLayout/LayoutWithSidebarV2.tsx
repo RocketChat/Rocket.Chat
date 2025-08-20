@@ -54,7 +54,7 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 			>
 				<MainLayoutStyleTags />
 				{!removeSidenav && (
-					<FeaturePreview feature='sidebarFilters'>
+					<FeaturePreview feature='secondarySidebar'>
 						<FeaturePreviewOn>
 							<RoomsNavigationProvider>
 								<NavigationRegion />

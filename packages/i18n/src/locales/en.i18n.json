@@ -2244,6 +2244,8 @@
   "Filter_by_room": "Filter by room type",
   "Filter_by_visibility": "Filter by visibility",
   "Filters": "Filters",
+  "Filters_and_secondary_sidebar": "Filters and secondary sidebar",
+  "Filters_and_secondary_sidebar_description": "Reduce noise and increase focus using sidebar filters and a secondary navigation layer. Filter your mentions, favorite rooms, discussions or filter by a specific room to see its associated channels and discussions.", 
   "Filters_applied": "Filters applied",
   "Financial_Services": "Financial Services",
   "Finish": "Finish",

@@ -5,7 +5,7 @@ export type FeaturesAvailable =
 	| 'enable-timestamp-message-parser'
 	| 'contextualbarResizable'
 	| 'newNavigation'
-	| 'sidebarFilters';
+	| 'secondarySidebar';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -53,21 +53,25 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	},
 	{
 		name: 'newNavigation',
-		i18n: 'Enhanced_navigation',
-		description: 'Enhanced_navigation_description',
+		i18n: 'New_navigation',
+		description: 'New_navigation_description',
 		group: 'Navigation',
 		imageUrl: 'images/featurePreview/enhanced-navigation.png',
 		value: false,
 		enabled: true,
 	},
 	{
-		name: 'sidebarFilters',
-		i18n: 'Enhanced_navigation',
-		description: 'Enhanced_navigation_description',
+		name: 'secondarySidebar',
+		i18n: 'Filters_and_secondary_sidebar',
+		description: 'Filters_and_secondary_sidebar_description',
 		group: 'Navigation',
-		imageUrl: 'images/featurePreview/enhanced-navigation.png',
+		imageUrl: 'images/featurePreview/secondary-sidebar.png',
 		value: false,
 		enabled: true,
+		enableQuery: {
+			name: 'newNavigation',
+			value: true,
+		},
 	},
 ];
 
