@@ -3,7 +3,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import RoomListFiltersItem from './RoomListFiltersItem';
-import { sidePanelFiltersConfig } from '../../views/navigation/contexts/RoomsNavigationContext';
+import { sidePanelFiltersConfig } from '../../contexts/RoomsNavigationContext';
 
 const TeamCollabFilters = () => {
 	const { t } = useTranslation();
