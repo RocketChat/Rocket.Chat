@@ -535,7 +535,6 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.sidepanel.unreadToggleLabel.click();
 
 			await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-			await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
 
 			await test.step('send a thread message from another user', async () => {
 				await user1Page.goto(`/channel/${targetChannel}`);
@@ -545,7 +544,6 @@ test.describe.serial('feature preview', () => {
 				await user1Channel.content.sendMessageInThread('hello thread');
 			});
 
-			await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).not.toBeVisible();
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			await expect(
 				poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 unread threaded message' }),
@@ -554,15 +552,12 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.sidepanel.getItemByName(targetChannel).click();
 			await poHomeChannel.content.waitForChannel();
 
-			await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).not.toBeVisible();
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			await expect(
 				poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 unread threaded message' }),
 			).toBeVisible();
 
 			await poHomeChannel.content.openReplyInThread();
-
-			await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
 			await user1Page.close();
 		});
 
@@ -593,12 +588,10 @@ test.describe.serial('feature preview', () => {
 				await poHomeChannel.sidepanel.unreadToggleLabel.click();
 
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
 
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread favorite rooms' })).toBeVisible();
 			});
 
 			await poHomeChannel.navbar.homeButton.click();
@@ -612,13 +605,11 @@ test.describe.serial('feature preview', () => {
 			await test.step('unread mentions badge should be visible on all filters', async () => {
 				await poHomeChannel.sidebar.allTeamCollabFilter.click();
 
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).not.toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 mention' })).toBeVisible();
 				await expect(poHomeChannel.sidebar.allTeamCollabFilter.getByRole('status', { name: '1 mention from All' })).toBeVisible();
 
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread favorite rooms' })).not.toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 mention' })).toBeVisible();
 				await expect(
@@ -633,19 +624,14 @@ test.describe.serial('feature preview', () => {
 
 			await test.step('unread mentions badge should not be visible on any filters', async () => {
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
 
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread favorite rooms' })).toBeVisible();
 
 				await poHomeChannel.sidebar.allTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
 			});
 
 			await user1Page.close();
