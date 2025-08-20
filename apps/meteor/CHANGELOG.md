@@ -1,5 +1,124 @@
 # @rocket.chat/meteor
 
+## 7.10.0-rc.0
+
+### Minor Changes
+
+- ([#36623](https://github.com/RocketChat/Rocket.Chat/pull/36623)) Overrides the scrollbars auto hide behavior from hiding while not scrolling to hiding while not moving
+
+- ([#36556](https://github.com/RocketChat/Rocket.Chat/pull/36556)) Adds a "Clear Filters" Button to the App Logs Filter Contextual Bar
+
+- ([#36424](https://github.com/RocketChat/Rocket.Chat/pull/36424)) Adds an endpoint to fetch a Outbound Comms Provider's metadata.
+
+- ([#36553](https://github.com/RocketChat/Rocket.Chat/pull/36553)) Creates a new endpoint that allows agents to send an outbound message from a registered app provider
+
+- ([#36558](https://github.com/RocketChat/Rocket.Chat/pull/36558)) Adds a "Collapse All" button to the Apps Logs Filter and moves existing "Expand All" button to a kebab menu
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- ([#36622](https://github.com/RocketChat/Rocket.Chat/pull/36622)) Fixes an issue where audio and video messages would stop playing if left idle past their link expiration. Now the player automatically refreshes expired links so users can continue listening or watching without reloading the chat.
+
+- ([#36507](https://github.com/RocketChat/Rocket.Chat/pull/36507) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.create API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36585](https://github.com/RocketChat/Rocket.Chat/pull/36585) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.update API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36703](https://github.com/RocketChat/Rocket.Chat/pull/36703)) Fixes an issue where custom room notification sounds were not applied.
+
+- ([#36738](https://github.com/RocketChat/Rocket.Chat/pull/36738)) Addresses an issue where video conference popups don't receive proper focus because FocusScope is mispositioned
+
+- ([#36577](https://github.com/RocketChat/Rocket.Chat/pull/36577)) Fixes an issue where rooms transferred to a department's queue could get stuck—marked as taken but with no agent assigned.
+
+- ([#36020](https://github.com/RocketChat/Rocket.Chat/pull/36020) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat chat.pinMessage API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36617](https://github.com/RocketChat/Rocket.Chat/pull/36617)) Allows agents to set a default agent when the chat being transferred ends up in the queue
+
+- ([#36716](https://github.com/RocketChat/Rocket.Chat/pull/36716) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e.setRoomKeyID endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36625](https://github.com/RocketChat/Rocket.Chat/pull/36625)) Fixes an issue where app installation would fail if the app package contained JS syntax newer than 2017
+
+- ([#36592](https://github.com/RocketChat/Rocket.Chat/pull/36592)) Fixes `create-p` and `create-c` permissions not being applyed in teams creation
+
+- ([#36714](https://github.com/RocketChat/Rocket.Chat/pull/36714)) Fixes an issue where the Encrypted toggle in the `Create Channel Modal` would change unexpectedly or become disabled after switching the Private or Broadcast options when E2E defaults are enabled.
+
+- ([#36611](https://github.com/RocketChat/Rocket.Chat/pull/36611)) Fix an issue where the report exported in the App logs page would not consider the instance id filter
+
+- ([#36606](https://github.com/RocketChat/Rocket.Chat/pull/36606) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.delete API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36080](https://github.com/RocketChat/Rocket.Chat/pull/36080)) Fixes issue preventing the Security Logs from being accessed using the Enhanced Navbar in feature preview
+
+- ([#36749](https://github.com/RocketChat/Rocket.Chat/pull/36749)) Fixes an issue with Omnichannel inquiries where multiple instances could take the same inquiry from the queue resulting in the same room being assined to multiple agents.
+
+- ([#36527](https://github.com/RocketChat/Rocket.Chat/pull/36527)) Fixes an issue that caused some types of messages to generate an empty thread preview
+
+- ([#36672](https://github.com/RocketChat/Rocket.Chat/pull/36672)) fixes an issue where some apps that don't need permission would have grantedPermissions as null making it impossible to activate the app
+
+- ([#36651](https://github.com/RocketChat/Rocket.Chat/pull/36651)) Fixes some locale loading issues for date-time formatting functionality.
+
+- ([#36747](https://github.com/RocketChat/Rocket.Chat/pull/36747)) Fixes the `onlyMyDepartments` flag that some endpoints accept so it works more consistent across different user roles. Now, for monitors, `onlyMyDepartments` will include departments the user is serving as an agent. For agents, it will filter the ones the user is serving. There's no change for managers and admins, which can see anything.
+
+- ([#36601](https://github.com/RocketChat/Rocket.Chat/pull/36601)) Fixes an issue where user custom status text is being overwritten, causing it not being updated in real time
+
+- ([#36591](https://github.com/RocketChat/Rocket.Chat/pull/36591)) Fixes order on featured room header actions
+
+- ([#36677](https://github.com/RocketChat/Rocket.Chat/pull/36677) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat dm.delete/im.delete API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36569](https://github.com/RocketChat/Rocket.Chat/pull/36569)) Fixes "View Logs" button not filtering logs by instance id
+
+- ([#36662](https://github.com/RocketChat/Rocket.Chat/pull/36662)) Fixes scroll issue when moving between channels or DMs
+
+- ([#36586](https://github.com/RocketChat/Rocket.Chat/pull/36586) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.list API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36598](https://github.com/RocketChat/Rocket.Chat/pull/36598) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36676](https://github.com/RocketChat/Rocket.Chat/pull/36676)) Fixes an issue where files containing exif data would fail to upload to S3 when `Message_Attachments_Strip_Exif` is enabled.
+
+- ([#36544](https://github.com/RocketChat/Rocket.Chat/pull/36544)) fixes an issue where bussines hours are not working on weekends when the timezone of bh slip into another day
+
+- ([#36627](https://github.com/RocketChat/Rocket.Chat/pull/36627)) fixes an issue where using `/v1/users.updateOwnBasicInfo`, the user was not be able to set the password (not change), even when required
+
+- ([#35985](https://github.com/RocketChat/Rocket.Chat/pull/35985) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Permissions API endpoints by migrating to a centralized syntax and utilizing shared AJV schemas for validation. This will enhance API documentation and ensure type safety through response validation.
+
+- ([#36670](https://github.com/RocketChat/Rocket.Chat/pull/36670)) Fixes an issue that would cause the chat server to crash with an unhandled rejection in some cases
+
+- ([#36578](https://github.com/RocketChat/Rocket.Chat/pull/36578)) Fixes a bug where the `/api/v1/users.update` API call was replacing the entire `customFields` object instead of merging only the specified properties. The fix ensures that when updating custom fields, existing values are preserved while only specified fields are updated or added.
+
+- <details><summary>Updated dependencies [f040b27ff67c31188026a0aed9ba1e9c4f717f08, a54f8837338246842585d037a0d0327a79245811, c5f0be15b31d1de03256f74bd277ad4ab753ada2, b25f05acd07762387fa45d67a1241b982c192f5d, c86fbce9b44942662dc25a599fc12b009fd40a74, 22498de4e9de4467642f637d00cc8344ba876987, 2fea1a79b831999f148505b9442cd584e1b06d09, 2f162a0dca79274d4458a5853afe64c506a7554f, fd32867fd4949bc2951a22075498ccb551cc6bbc, 759b178946951f10dfcf0c9daf0f45aceb422998, 1ca92c346e45486e9b6afc66566ae38fac65b48f, 580a3c945252666b3b477e1b626ea1001de6f456, c0c8919723c8d1242973625d15db74c994318460, 8942187a9b062be3aaac8fee4b576dcad467641e, 5d7dec3a68f7281b4b4531fa708d7fc7589a863c, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, a1c99dfe7bdee81e85164155e61b94b55dcbb752, dc6acda84bf7452d96f375be3cd97748ed016bfc, 42979690f3880d3c700582b7892020e37bc82be3, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0-rc.0
+  - @rocket.chat/model-typings@1.7.0-rc.0
+  - @rocket.chat/models@1.6.0-rc.0
+  - @rocket.chat/apps-engine@1.55.0-rc.0
+  - @rocket.chat/ui-client@22.0.0-rc.0
+  - @rocket.chat/http-router@7.9.1-rc.0
+  - @rocket.chat/i18n@1.10.0-rc.0
+  - @rocket.chat/core-typings@7.10.0-rc.0
+  - @rocket.chat/core-services@0.10.0-rc.0
+  - @rocket.chat/ui-contexts@22.0.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.31-rc.0
+  - @rocket.chat/presence@0.2.34-rc.0
+  - @rocket.chat/api-client@0.2.34-rc.0
+  - @rocket.chat/web-ui-registration@22.0.0-rc.0
+  - @rocket.chat/apps@0.5.13-rc.0
+  - @rocket.chat/omni-core-ee@0.0.2-rc.0
+  - @rocket.chat/cron@0.1.34-rc.0
+  - @rocket.chat/instance-status@0.1.34-rc.0
+  - @rocket.chat/omni-core@0.0.2-rc.0
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.0
+  - @rocket.chat/gazzodown@22.0.0-rc.0
+  - @rocket.chat/ui-voip@12.0.0-rc.0
+  - @rocket.chat/license@1.0.25-rc.0
+  - @rocket.chat/pdf-worker@0.3.13-rc.0
+  - @rocket.chat/freeswitch@1.2.21-rc.0
+  - @rocket.chat/ui-avatar@18.0.0-rc.0
+  - @rocket.chat/network-broker@0.2.13-rc.0
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+
 ## 7.9.0
 
 ### Minor Changes

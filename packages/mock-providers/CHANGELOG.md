@@ -1,5 +1,20 @@
 # @rocket.chat/mock-providers
 
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [8942187a9b062be3aaac8fee4b576dcad467641e, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/i18n@1.10.0-rc.0
+  - @rocket.chat/ui-contexts@22.0.0-rc.0
+  </details>
+
 ## 0.2.12
 
 ### Patch Changes

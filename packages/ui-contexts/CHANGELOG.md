@@ -1,5 +1,22 @@
 # @rocket.chat/ui-contexts
 
+## 22.0.0-rc.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f040b27ff67c31188026a0aed9ba1e9c4f717f08, a54f8837338246842585d037a0d0327a79245811, c5f0be15b31d1de03256f74bd277ad4ab753ada2, c86fbce9b44942662dc25a599fc12b009fd40a74, 2fea1a79b831999f148505b9442cd584e1b06d09, 2f162a0dca79274d4458a5853afe64c506a7554f, 1ca92c346e45486e9b6afc66566ae38fac65b48f, 8942187a9b062be3aaac8fee4b576dcad467641e, 5d7dec3a68f7281b4b4531fa708d7fc7589a863c, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, dc6acda84bf7452d96f375be3cd97748ed016bfc, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0-rc.0
+  - @rocket.chat/i18n@1.10.0-rc.0
+  - @rocket.chat/core-typings@7.10.0-rc.0
+  - @rocket.chat/ddp-client@0.3.34-rc.0
+  </details>
+
 ## 21.0.0
 
 ### Patch Changes

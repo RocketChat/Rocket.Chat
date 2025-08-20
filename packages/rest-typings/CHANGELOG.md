@@ -1,5 +1,39 @@
 # @rocket.chat/rest-typings
 
+## 7.10.0-rc.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- ([#36507](https://github.com/RocketChat/Rocket.Chat/pull/36507) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.create API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36585](https://github.com/RocketChat/Rocket.Chat/pull/36585) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.update API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36020](https://github.com/RocketChat/Rocket.Chat/pull/36020) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat chat.pinMessage API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36716](https://github.com/RocketChat/Rocket.Chat/pull/36716) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e.setRoomKeyID endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36611](https://github.com/RocketChat/Rocket.Chat/pull/36611)) Fix an issue where the report exported in the App logs page would not consider the instance id filter
+
+- ([#36606](https://github.com/RocketChat/Rocket.Chat/pull/36606) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.delete API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36677](https://github.com/RocketChat/Rocket.Chat/pull/36677) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat dm.delete/im.delete API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36586](https://github.com/RocketChat/Rocket.Chat/pull/36586) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.list API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36598](https://github.com/RocketChat/Rocket.Chat/pull/36598) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#35985](https://github.com/RocketChat/Rocket.Chat/pull/35985) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Permissions API endpoints by migrating to a centralized syntax and utilizing shared AJV schemas for validation. This will enhance API documentation and ensure type safety through response validation.
+
+- <details><summary>Updated dependencies [17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.0
+  </details>
+
 ## 7.9.0
 
 ### Minor Changes

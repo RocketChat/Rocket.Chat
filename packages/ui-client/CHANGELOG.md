@@ -1,5 +1,24 @@
 # @rocket.chat/ui-client
 
+## 22.0.0-rc.0
+
+### Minor Changes
+
+- ([#36315](https://github.com/RocketChat/Rocket.Chat/pull/36315)) Adds Wizard component to ui-client package
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- ([#36575](https://github.com/RocketChat/Rocket.Chat/pull/36575)) Adds an annotation prop to the WizardActions component, enabling the display of a contextual description alongside the action buttons.
+
+- <details><summary>Updated dependencies [c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/ui-contexts@22.0.0-rc.0
+  - @rocket.chat/ui-avatar@18.0.0-rc.0
+  </details>
+
 ## 21.0.0
 
 ### Patch Changes
