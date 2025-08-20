@@ -2958,6 +2958,27 @@ describe('[Chat]', () => {
 					})
 					.end(done);
 			});
+			it('should return a list of pinned messages sorted by timestamp descending when sort is provided as {"ts":-1}}', (done) => {
+				void request
+					.get(api('chat.getPinnedMessages'))
+					.set(credentials)
+					.query({
+						roomId,
+						sort: JSON.stringify({ ts: -1 }),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').and.to.be.an('array');
+
+						const { messages } = res.body;
+						for (let i = 0; i < messages.length - 1; i++) {
+							expect(new Date(messages[i].ts).getTime()).to.be.greaterThan(new Date(messages[i + 1].ts).getTime());
+						}
+					})
+					.end(done);
+			});
 		});
 
 		describe('when an error occurs', () => {
