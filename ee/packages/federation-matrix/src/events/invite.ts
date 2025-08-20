@@ -32,7 +32,7 @@ export function invite(emitter: Emitter<HomeserverEventSignatures>) {
 			federated: true,
 		});
 		const serverName = data.sender.split(':')[1] || 'unknown';
-		const bridgedUser = await MatrixBridgedUser.findOne({ mri: data.sender });
+		const bridgedUser = await MatrixBridgedUser.findOne({ mui: data.sender });
 
 		if (!bridgedUser) {
 			await MatrixBridgedUser.createOrUpdateByLocalId(insertedId, data.sender, true, serverName);

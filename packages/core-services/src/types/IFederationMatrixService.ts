@@ -16,6 +16,8 @@ export interface IFederationMatrixService {
 		wellKnown: Router<'/.well-known'>;
 	};
 	createRoom(room: IRoom, owner: IUser, members: string[]): Promise<void>;
+	ensureFederatedUsersExistLocally?(members: IUser[] | string[]): Promise<void>;
+	createDirectMessageRoom(room: IRoom, members: IUser[], creatorId: IUser['_id']): Promise<void>;
 	sendMessage(message: IMessage, room: IRoom, user: IUser): Promise<void>;
 	deleteMessage(message: IMessage): Promise<void>;
 	sendReaction(messageId: string, reaction: string, user: IUser): Promise<void>;
