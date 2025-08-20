@@ -1,4 +1,5 @@
-import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
+import { isLivechatInquiryRecord } from '@rocket.chat/core-typings';
+import type { ISubscription, ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -156,16 +157,46 @@ export const useSideBarRoomsList = (): {
 	};
 };
 
+export const isUnreadSubscription = (subscription: Partial<ISubscription>) => {
+	if (subscription.hideUnreadStatus) {
+		return false;
+	}
+
+	return (
+		(subscription.userMentions && subscription.userMentions > 0) ||
+		(subscription.groupMentions && subscription.groupMentions > 0) ||
+		!!(subscription.tunread && subscription.tunread?.length > 0) ||
+		!!(subscription.tunreadUser && subscription.tunreadUser?.length > 0) ||
+		!!(!subscription.unread && !subscription.tunread?.length && subscription.alert)
+	);
+};
+
 export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
 	const [, unread] = useSidePanelFilter();
-	const roomSet = useRoomsListContext().groups.get(getFilterKey(tab, unread));
+	const roomSet = useRoomsListContext().groups.get(tab);
+	console.log(getFilterKey(tab, unread));
+
+	console.log(roomSet);
+
 	const roomsList = useMemo(() => {
 		if (!roomSet) {
 			return [];
 		}
 
-		return Array.from(roomSet);
-	}, [roomSet]);
+		return unread
+			? Array.from(roomSet).sort((a, b) => {
+					// if (isLivechatInquiryRecord(a) && isLivechatInquiryRecord(b)) {
+					// 	return 0;
+					// }
+
+					if (!isLivechatInquiryRecord(a) && !isLivechatInquiryRecord(b)) {
+						return (isUnreadSubscription(b) ? 1 : 0) - (isUnreadSubscription(a) ? 1 : 0);
+					}
+
+					return 0;
+				})
+			: Array.from(roomSet);
+	}, [roomSet, unread]);
 	return roomsList;
 };
 

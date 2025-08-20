@@ -1,31 +1,23 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useShallow } from 'zustand/shallow';
 
 import { pipe } from '../../../../lib/cachedStores';
 import { Subscriptions } from '../../../../stores';
-
-export const isUnreadSubscription = (subscription: ISubscription) => {
-	return (
-		subscription.userMentions > 0 ||
-		subscription.groupMentions > 0 ||
-		!!(subscription.tunread && subscription.tunread?.length > 0) ||
-		!!(subscription.tunreadUser && subscription.tunreadUser?.length > 0) ||
-		!!(!subscription.unread && !subscription.tunread?.length && subscription.alert)
-	);
-};
-
-const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => !unreadOnly || isUnreadSubscription(subscription);
+import { isUnreadSubscription } from '../../contexts/RoomsNavigationContext';
 
 const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
+
+const sortByUnread = (a: SubscriptionWithRoom, b: SubscriptionWithRoom) =>
+	(isUnreadSubscription(b) ? 1 : 0) - (isUnreadSubscription(a) ? 1 : 0);
 
 /**
  * This helper function is used to ensure that the main room (main team room or parent's discussion room)
  * is always at the top of the list.
  */
-const getMainRoomAndSort = (records: SubscriptionWithRoom[]) => {
+const getMainRoomAndSort = (records: SubscriptionWithRoom[], unreadOnly: boolean) => {
 	const mainRoom = records.find((record) => !record.prid);
-	const rest = sortByLmPipe.apply(records.filter((record) => mainRoom?.rid !== record.rid));
+	const filteredRecords = records.filter((record) => mainRoom?.rid !== record.rid);
+	const rest = sortByLmPipe.apply(unreadOnly ? filteredRecords.sort(sortByUnread) : filteredRecords);
 
 	if (mainRoom) {
 		rest.unshift(mainRoom);
@@ -39,10 +31,10 @@ export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, 
 		useShallow((state) => {
 			const records = state.filter((subscription) => {
 				if (parentRid === subscription.prid || parentRid === subscription.rid) {
-					return filterUnread(subscription, unreadOnly);
+					return true;
 				}
 				if (teamId && subscription.teamId === teamId) {
-					return filterUnread(subscription, unreadOnly);
+					return true;
 				}
 				return false;
 			});
@@ -51,7 +43,7 @@ export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, 
 				return [];
 			}
 
-			return getMainRoomAndSort(records);
+			return getMainRoomAndSort(records, unreadOnly);
 		}),
 	);
 };
