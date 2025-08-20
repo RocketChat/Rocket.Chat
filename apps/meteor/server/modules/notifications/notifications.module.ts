@@ -47,6 +47,8 @@ export class NotificationsModule {
 
 	public readonly streamPresence: IStreamer<'user-presence'>;
 
+	public readonly streamQR: IStreamer<'qr-code'>;
+
 	constructor(private Streamer: IStreamerConstructor) {
 		this.streamAll = new this.Streamer('notify-all');
 		this.streamLogged = new this.Streamer('notify-logged');
@@ -64,6 +66,7 @@ export class NotificationsModule {
 		this.streamRoomData = new this.Streamer('room-data');
 		this.streamPresence = StreamPresence.getInstance(Streamer, 'user-presence');
 		this.streamRoomMessage = new this.Streamer('room-messages');
+		this.streamQR = new this.Streamer('qr-code', { retransmit: false });
 
 		this.streamRoomMessage.on('_afterPublish', async (streamer, publication: IPublication, eventName: string): Promise<void> => {
 			const { userId } = publication._session;
@@ -337,6 +340,11 @@ export class NotificationsModule {
 		this.streamAppsEngine.allowRead('none');
 		this.streamAppsEngine.allowEmit('all');
 		this.streamAppsEngine.allowWrite('none');
+
+		this.streamQR.serverOnly = true;
+		this.streamQR.allowRead('all');
+		this.streamQR.allowEmit('all');
+		this.streamQR.allowWrite('none');
 
 		this.streamCannedResponses.allowWrite('none');
 		this.streamCannedResponses.allowRead(async function () {

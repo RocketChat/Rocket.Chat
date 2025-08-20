@@ -36,6 +36,7 @@ import type { ModerationEndpoints } from './v1/moderation';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
+import type { QRCodeEndpoint } from './v1/qrcode';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
 import type { ServerEventsEndpoints } from './v1/server-events';
@@ -88,6 +89,8 @@ export interface Endpoints
 		AssetsEndpoints,
 		EmailInboxEndpoints,
 		MailerEndpoints,
+		OAuthAppsEndpoint,
+		QRCodeEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
 		ImportEndpoints,

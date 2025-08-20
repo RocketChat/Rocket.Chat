@@ -8012,6 +8012,7 @@ __metadata:
     "@types/proxy-from-env": "npm:^1.0.4"
     "@types/proxyquire": "npm:^1.3.31"
     "@types/psl": "npm:^1.1.3"
+    "@types/qrcode": "npm:^1.5.5"
     "@types/qs": "npm:^6.14.0"
     "@types/react": "npm:~18.3.23"
     "@types/react-dom": "npm:~18.3.7"
@@ -8183,6 +8184,7 @@ __metadata:
     proxy-from-env: "npm:^1.1.0"
     proxyquire: "npm:^2.1.3"
     psl: "npm:^1.10.0"
+    qrcode: "npm:^1.5.4"
     qs: "npm:^6.14.0"
     query-string: "npm:^7.1.3"
     queue-fifo: "npm:^0.2.6"
@@ -12067,6 +12069,15 @@ __metadata:
   version: 1.1.3
   resolution: "@types/psl@npm:1.1.3"
   checksum: 10/adc24b5f0a2569563367437cbdcbb63c780e798360a4c21470043acda2adad56e510c9f357be36f297974d68534821febc38652709e5d712ac2cdd62f9a6777a
+  languageName: node
+  linkType: hard
+
+"@types/qrcode@npm:^1.5.5":
+  version: 1.5.5
+  resolution: "@types/qrcode@npm:1.5.5"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/a25686339bd2718e6a93943e7807ed68dd9c74a9da28aa77212086ee0ce9a173c0a232af9e3f6835acd09938dfc8a0f98c6bccf1a6c6a905fb003ab07f9e08f2
   languageName: node
   linkType: hard
 
@@ -18096,6 +18107,13 @@ __metadata:
     miller-rabin: "npm:^4.0.0"
     randombytes: "npm:^2.0.0"
   checksum: 10/2ff28231f93b27a4903461432d2de831df02e3568ea7633d5d7b6167eb73077f823b2bca26de6ba4f5c7ecd10a3df5aa94d376d136ab6209948c03cc4e4ac1fe
+  languageName: node
+  linkType: hard
+
+"dijkstrajs@npm:^1.0.1":
+  version: 1.0.3
+  resolution: "dijkstrajs@npm:1.0.3"
+  checksum: 10/0d8429699a6d5897ed371de494ef3c7072e8052b42abbd978e686a9b8689e70af005fa3e93e93263ee3653673ff5f89c36db830a57ae7c2e088cb9c496307507
   languageName: node
   linkType: hard
 
@@ -28923,6 +28941,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pngjs@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "pngjs@npm:5.0.0"
+  checksum: 10/345781644740779752505af2fea3e9043f6c7cc349b18e1fb8842796360d1624791f0c24d33c0f27b05658373f90ffaa177a849e932e5fea1f540cef3975f3c9
+  languageName: node
+  linkType: hard
+
 "pngquant-bin@npm:^6.0.0":
   version: 6.0.1
   resolution: "pngquant-bin@npm:6.0.1"
@@ -30170,6 +30195,19 @@ __metadata:
     strip-ansi: "npm:^6.0.1"
     uuid: "npm:^9.0.0"
   checksum: 10/8028f9424bf97054f1974c3b663a438f97ebf2f3f487cf9260a3d28047abe2883c870087f1619e67ce5334cc3c88361c08e9566b36052fd316b2bac3096e0712
+  languageName: node
+  linkType: hard
+
+"qrcode@npm:^1.5.4":
+  version: 1.5.4
+  resolution: "qrcode@npm:1.5.4"
+  dependencies:
+    dijkstrajs: "npm:^1.0.1"
+    pngjs: "npm:^5.0.0"
+    yargs: "npm:^15.3.1"
+  bin:
+    qrcode: bin/qrcode
+  checksum: 10/9a1b61760e4ea334545a0f54bbc11c537aba0a17cf52cab9fa1b07f8a1337eed0bc6f7fde41b197f2c82c249bc48728983bfaf861bb7ecb29dc597b2ae33c424
   languageName: node
   linkType: hard
 
@@ -31659,8 +31697,10 @@ __metadata:
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:~22.16.1"
+    "@types/qrcode": "npm:^1.5.5"
     "@types/stream-buffers": "npm:^3.0.7"
     node-gyp: "npm:^10.2.0"
+    qrcode: "npm:^1.5.4"
     ts-node: "npm:^10.9.2"
     turbo: "npm:~2.5.5"
     typescript: "npm:~5.9.2"
@@ -36754,7 +36794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^15.0.2, yargs@npm:^15.4.1":
+"yargs@npm:^15.0.2, yargs@npm:^15.3.1, yargs@npm:^15.4.1":
   version: 15.4.1
   resolution: "yargs@npm:15.4.1"
   dependencies:
