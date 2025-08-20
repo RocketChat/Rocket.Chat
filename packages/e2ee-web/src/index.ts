@@ -17,16 +17,20 @@ class MemoryStorage implements KeyStorage {
 	}
 }
 
-class LocalStorage implements KeyStorage {
+export class LocalStorage implements KeyStorage {
+	#storage: Storage;
+	constructor(storage: Storage = globalThis.localStorage) {
+		this.#storage = storage;
+	}
 	load(keyName: string): Promise<string | null> {
-		return Promise.resolve(localStorage.getItem(keyName));
+		return Promise.resolve(this.#storage.getItem(keyName));
 	}
 	store(keyName: string, value: string): Promise<void> {
-		localStorage.setItem(keyName, value);
+		this.#storage.setItem(keyName, value);
 		return Promise.resolve();
 	}
 	remove(keyName: string): Promise<void> {
-		localStorage.removeItem(keyName);
+		this.#storage.removeItem(keyName);
 		return Promise.resolve();
 	}
 }

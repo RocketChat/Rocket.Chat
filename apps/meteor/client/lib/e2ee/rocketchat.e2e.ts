@@ -5,7 +5,7 @@ import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUs
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { KeyPair } from '@rocket.chat/e2ee';
 import type { Optional } from '@rocket.chat/e2ee/dist/utils';
-import E2EE from '@rocket.chat/e2ee-web';
+import E2EE, { LocalStorage } from '@rocket.chat/e2ee-web';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
@@ -63,17 +63,10 @@ class E2E extends Emitter {
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
-		this.e2ee = new E2EE(
-			{
-				load: (keyName) => Promise.resolve(Accounts.storageLocation.getItem(keyName)),
-				store: (keyName, value) => Promise.resolve(Accounts.storageLocation.setItem(keyName, value)),
-				remove: (keyName) => Promise.resolve(Accounts.storageLocation.removeItem(keyName)),
-			},
-			{
-				userId: () => Promise.resolve(Meteor.userId()),
-				fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
-			},
-		);
+		this.e2ee = new E2EE(new LocalStorage(Accounts.storageLocation), {
+			userId: () => Promise.resolve(Meteor.userId()),
+			fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
+		});
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			this.log(`${prevState} -> ${nextState}`);
@@ -454,18 +447,18 @@ class E2E extends Emitter {
 		}
 	}
 
-	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
-		Accounts.storageLocation.setItem('public_key', public_key);
-		this.publicKey = public_key;
-
-		try {
-			this.privateKey = await this.e2ee.codec.crypto.importRsaDecryptKey(EJSON.parse(private_key));
-
-			Accounts.storageLocation.setItem('private_key', private_key);
-		} catch (error) {
-			this.setState(E2EEState.ERROR);
-			return this.error('Error importing private key: ', error);
-		}
+	async loadKeys(keys: { public_key: string; private_key: string }): Promise<void> {
+		this.publicKey = keys.public_key;
+		await this.e2ee.loadKeys(keys, {
+			onSuccess: (privateKey) => {
+				this.privateKey = privateKey;
+			},
+			onError: (error) => {
+				this.setState(E2EEState.ERROR);
+				this.error('Error loading keys: ', error);
+			},
+			parse: (data) => EJSON.parse(data),
+		});
 	}
 
 	async createAndLoadKeys(): Promise<void> {

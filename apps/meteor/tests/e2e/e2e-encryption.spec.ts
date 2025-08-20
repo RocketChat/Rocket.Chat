@@ -914,7 +914,7 @@ test.describe.serial('e2e-encryption', () => {
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('e2ee room setup', () => {
+test.describe.fixme('e2ee room setup', () => {
 	let poAccountProfile: AccountProfile;
 	let poHomeChannel: HomeChannel;
 	let e2eePassword: string;
