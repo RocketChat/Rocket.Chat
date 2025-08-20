@@ -3,11 +3,11 @@ import { isOTRMessage } from '@rocket.chat/core-typings';
 import { useMethod, useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import OTR from '../../../../app/otr/client/OTR';
-import { OtrRoomState } from '../../../../app/otr/lib/OtrRoomState';
-import { t } from '../../../../app/utils/lib/i18n';
-import { onClientBeforeSendMessage } from '../../../lib/onClientBeforeSendMessage';
-import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
+import OTR from '../../../../../app/otr/client/OTR';
+import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
+import { t } from '../../../../../app/utils/lib/i18n';
+import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
+import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
 
 export const useOTRMessaging = (uid: string) => {
 	const updateOTRAck = useMethod('updateOTRAck');
