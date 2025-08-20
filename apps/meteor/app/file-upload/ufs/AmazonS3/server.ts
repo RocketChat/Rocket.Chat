@@ -190,6 +190,10 @@ class AmazonS3Store extends UploadFS.Store {
 
 			return writeStream;
 		};
+
+		this.getUrlExpiryTimeSpan = async () => {
+			return options.URLExpiryTimeSpan || null;
+		};
 	}
 }
 

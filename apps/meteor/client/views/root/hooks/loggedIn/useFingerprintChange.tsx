@@ -3,8 +3,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useEffect, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import FingerprintChangeModal from '../components/FingerprintChangeModal';
-import FingerprintChangeModalConfirmation from '../components/FingerprintChangeModalConfirmation';
+import FingerprintChangeModal from '../../../../components/FingerprintChangeModal';
+import FingerprintChangeModalConfirmation from '../../../../components/FingerprintChangeModalConfirmation';
 
 const reducer = (
 	state: { openModal: boolean; openConfirmation: boolean; newWorkspace?: boolean },
