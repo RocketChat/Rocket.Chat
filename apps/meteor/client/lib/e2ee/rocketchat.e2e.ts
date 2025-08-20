@@ -477,7 +477,7 @@ class E2E extends Emitter {
 			},
 		});
 
-		if (this.getState() === E2EEState.LOADING_KEYS) {
+		if (this.getState() === E2EEState.ERROR) {
 			return;
 		}
 
