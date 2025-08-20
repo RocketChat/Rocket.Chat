@@ -59,9 +59,8 @@ const defineDepartment = async (idOrName?: string) => {
 
 const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber);
-	let data: { token: string; department?: string; shouldConsiderIdleAgent: boolean } = {
+	let data: { token: string; department?: string } = {
 		token: visitor?.token || Random.id(),
-		shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 	};
 
 	if (!visitor) {
@@ -77,7 +76,7 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 		data.department = targetDepartment;
 	}
 
-	const livechatVisitor = await registerGuest(data);
+	const livechatVisitor = await registerGuest(data, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') });
 
 	if (!livechatVisitor) {
 		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');

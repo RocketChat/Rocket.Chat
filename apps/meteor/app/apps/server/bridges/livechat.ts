@@ -208,12 +208,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			token: visitor.token,
 			email: '',
 			id: visitor.id,
-			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		const livechatVisitor = await registerGuest(registerData);
+		const livechatVisitor = await registerGuest(registerData, {
+			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		});
 
 		if (!livechatVisitor) {
 			throw new Error('Invalid visitor, cannot create');
@@ -232,12 +233,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			token: visitor.token,
 			email: '',
 			id: visitor.id,
-			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		const livechatVisitor = await registerGuest(registerData);
+		const livechatVisitor = await registerGuest(registerData, {
+			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		});
 
 		return this.orch.getConverters()?.get('visitors').convertVisitor(livechatVisitor);
 	}

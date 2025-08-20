@@ -41,13 +41,15 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		return guest;
 	}
 
-	const livechatVisitor = await registerGuest({
-		token: Random.id(),
-		name: name || email,
-		email,
-		department,
-		shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
-	});
+	const livechatVisitor = await registerGuest(
+		{
+			token: Random.id(),
+			name: name || email,
+			email,
+			department,
+		},
+		{ shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') },
+	);
 
 	if (!livechatVisitor) {
 		throw new Error('Error getting guest');

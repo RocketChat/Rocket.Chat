@@ -57,11 +57,10 @@ API.v1.addRoute(
 				...(username && { username }),
 				...(connectionData && { connectionData }),
 				...(phone && typeof phone === 'string' && { phone: { number: phone as string } }),
-				shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 				connectionData: normalizeHttpHeaderData(this.request.headers),
 			};
 
-			const visitor = await registerGuest(guest);
+			const visitor = await registerGuest(guest, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') });
 			if (!visitor) {
 				throw new Meteor.Error('error-livechat-visitor-registration', 'Error registering visitor', {
 					method: 'livechat/visitor',

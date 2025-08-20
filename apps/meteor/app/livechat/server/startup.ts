@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatContacts, LivechatRooms } from '@rocket.chat/models';
-import { registerGuest, type RegisterGuestType } from '@rocket.chat/omni-core';
+import { registerGuest } from '@rocket.chat/omni-core';
 import { validateEmail, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -26,8 +26,8 @@ const logger = new Logger('LivechatStartup');
 
 // TODO this patch is temporary because `ContactMerger` still a lot of dependencies, so it is not suitable to be moved to omni-core package
 // TODO add tests covering the ContactMerger usage
-registerGuest.patch(async (originalFn, newData: RegisterGuestType) => {
-	const visitor = await originalFn(newData);
+registerGuest.patch(async (originalFn, newData, options) => {
+	const visitor = await originalFn(newData, options);
 	if (!visitor) {
 		return null;
 	}

@@ -6,27 +6,18 @@ import { validateEmail } from '@rocket.chat/tools';
 
 const logger = new Logger('Livechat - Visitor');
 
-export type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
+type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
 	id?: string;
 	connectionData?: any;
 	email?: string;
 	phone?: { number: string };
-	shouldConsiderIdleAgent: boolean;
 };
 
 export const registerGuest = makeFunction(
-	async ({
-		id,
-		token,
-		name,
-		phone,
-		email,
-		department,
-		username,
-		connectionData,
-		status = UserStatus.ONLINE,
-		shouldConsiderIdleAgent,
-	}: RegisterGuestType): Promise<ILivechatVisitor | null> => {
+	async (
+		{ id, token, name, phone, email, department, username, connectionData, status = UserStatus.ONLINE }: RegisterGuestType,
+		{ shouldConsiderIdleAgent }: { shouldConsiderIdleAgent: boolean },
+	): Promise<ILivechatVisitor | null> => {
 		if (!token) {
 			throw Error('error-invalid-token');
 		}

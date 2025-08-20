@@ -3,7 +3,7 @@ import type { ILivechatContactsModel, ILivechatDepartmentModel, ILivechatVisitor
 import { registerModel } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
 
-import { registerGuest, type RegisterGuestType } from './create';
+import { registerGuest } from './create';
 
 // Mock the validateEmail function
 jest.mock('@rocket.chat/tools', () => ({
@@ -67,20 +67,17 @@ describe('registerGuest', () => {
 
 	describe('validation', () => {
 		it('should throw error when token is not provided', async () => {
-			const guestData: RegisterGuestType = {
-				shouldConsiderIdleAgent: false,
-			};
+			const guestData = {};
 
-			await expect(registerGuest(guestData)).rejects.toThrow('error-invalid-token');
+			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false })).rejects.toThrow('error-invalid-token');
 		});
 
 		it('should throw error when token is empty string', async () => {
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token: '',
-				shouldConsiderIdleAgent: false,
 			};
 
-			await expect(registerGuest(guestData)).rejects.toThrow('error-invalid-token');
+			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false })).rejects.toThrow('error-invalid-token');
 		});
 	});
 
@@ -104,13 +101,12 @@ describe('registerGuest', () => {
 			findContactByEmailAndContactManagerSpy.mockResolvedValue(mockContact);
 			findOneOnlineAgentByIdSpy.mockResolvedValue(mockAgent);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				email,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(mockValidateEmail).toHaveBeenCalledWith('test@example.com');
 			expect(findContactByEmailAndContactManagerSpy).toHaveBeenCalledWith('test@example.com');
@@ -146,13 +142,12 @@ describe('registerGuest', () => {
 			findContactByEmailAndContactManagerSpy.mockResolvedValue(mockContact);
 			findOneOnlineAgentByIdSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				email,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			// Verify contact manager is not included in the data
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
@@ -175,13 +170,12 @@ describe('registerGuest', () => {
 			const email = '  TEST@EXAMPLE.COM  ';
 			const token = 'test-token';
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				email,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(mockValidateEmail).toHaveBeenCalledWith('test@example.com');
 			expect(findContactByEmailAndContactManagerSpy).toHaveBeenCalledWith('test@example.com');
@@ -208,13 +202,12 @@ describe('registerGuest', () => {
 
 			findOneByIdOrNameSpy.mockResolvedValue(mockDepartment);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				department,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(findOneByIdOrNameSpy).toHaveBeenCalledWith(department, { projection: { _id: 1 } });
 
@@ -238,13 +231,12 @@ describe('registerGuest', () => {
 			findOneByIdOrNameSpy.mockResolvedValue(null);
 			getVisitorByTokenSpy.mockResolvedValue({ department: 'different-dept' });
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				department,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await expect(registerGuest(guestData)).rejects.toThrow('error-invalid-department');
+			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false })).rejects.toThrow('error-invalid-department');
 
 			// Verify updateOneByIdOrToken is not called when department validation fails
 			expect(updateOneByIdOrTokenSpy).not.toHaveBeenCalled();
@@ -260,13 +252,12 @@ describe('registerGuest', () => {
 				token,
 			});
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				department,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			// Department validation should be skipped
 			expect(findOneByIdOrNameSpy).not.toHaveBeenCalled();
@@ -293,13 +284,12 @@ describe('registerGuest', () => {
 
 			getVisitorByTokenSpy.mockResolvedValue(existingVisitor);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				name: 'Updated Name',
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(getVisitorByTokenSpy).toHaveBeenCalledWith(token, { projection: { _id: 1 } });
 
@@ -327,13 +317,12 @@ describe('registerGuest', () => {
 			getVisitorByTokenSpy.mockResolvedValue(null);
 			findOneVisitorByPhoneSpy.mockResolvedValue(existingVisitor);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				phone: { number: phoneNumber },
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(findOneVisitorByPhoneSpy).toHaveBeenCalledWith(phoneNumber);
 
@@ -361,13 +350,12 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(existingVisitor);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				email,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(findOneGuestByEmailAddressSpy).toHaveBeenCalledWith(email);
 
@@ -393,14 +381,13 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				id,
 				token,
 				username,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			// Verify new visitor data is created with provided values
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
@@ -424,12 +411,11 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(getNextVisitorUsernameSpy).toHaveBeenCalled();
 
@@ -454,13 +440,12 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				username: providedUsername,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(getNextVisitorUsernameSpy).not.toHaveBeenCalled();
 
@@ -486,13 +471,12 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				phone: { number: phoneNumber },
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -515,13 +499,12 @@ describe('registerGuest', () => {
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 			findContactByEmailAndContactManagerSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				email,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -542,12 +525,11 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -568,13 +550,12 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				status,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -604,13 +585,12 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				connectionData,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -639,13 +619,12 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				connectionData,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -670,13 +649,12 @@ describe('registerGuest', () => {
 			findOneVisitorByPhoneSpy.mockResolvedValue(null);
 			findOneGuestByEmailAddressSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				connectionData,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -702,12 +680,11 @@ describe('registerGuest', () => {
 			// Mock upsert to return null (failure case)
 			updateOneByIdOrTokenSpy.mockResolvedValue(null);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
-				shouldConsiderIdleAgent: false,
 			};
 
-			const result = await registerGuest(guestData);
+			const result = await registerGuest(guestData, { shouldConsiderIdleAgent: false });
 
 			expect(result).toBeNull();
 			expect(updateOneByIdOrTokenSpy).toHaveBeenCalledWith(
@@ -728,13 +705,12 @@ describe('registerGuest', () => {
 				throw new Error('Invalid email');
 			});
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				email,
-				shouldConsiderIdleAgent: false,
 			};
 
-			await expect(registerGuest(guestData)).rejects.toThrow('Invalid email');
+			await expect(registerGuest(guestData, { shouldConsiderIdleAgent: false })).rejects.toThrow('Invalid email');
 		});
 	});
 
@@ -762,13 +738,12 @@ describe('registerGuest', () => {
 			findContactByEmailAndContactManagerSpy.mockResolvedValue(mockContact);
 			findOneOnlineAgentByIdSpy.mockResolvedValue(mockAgent);
 
-			const guestData: RegisterGuestType = {
+			const guestData = {
 				token,
 				email,
-				shouldConsiderIdleAgent: true,
 			};
 
-			await registerGuest(guestData);
+			await registerGuest(guestData, { shouldConsiderIdleAgent: true });
 
 			expect(findOneOnlineAgentByIdSpy).toHaveBeenCalledWith(
 				agentId,

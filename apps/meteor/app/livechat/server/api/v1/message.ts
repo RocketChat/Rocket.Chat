@@ -272,10 +272,7 @@ API.v1.addRoute(
 					guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 				}
 
-				const visitor = await registerGuest({
-					...guest,
-					shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
-				});
+				const visitor = await registerGuest(guest, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') });
 				if (!visitor) {
 					throw new Error('error-livechat-visitor-registration');
 				}
