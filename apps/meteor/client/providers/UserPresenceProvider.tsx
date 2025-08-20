@@ -6,7 +6,7 @@ import { useMemo, useEffect } from 'react';
 import { Presence } from '../lib/presence';
 import { UserPresence } from '../lib/userPresence';
 
-const userPresence = new UserPresence();
+export const userPresence = new UserPresence();
 
 type UserPresenceProviderProps = {
 	children?: ReactNode;
