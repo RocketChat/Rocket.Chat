@@ -46,17 +46,26 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
 		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
+
+		const siteUrl = await Settings.get<string>('Site_Url');
+
+		const serverHostname = new URL(siteUrl).hostname;
+
+		const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor';
+
+		const dbName = new URL(mongoUri).pathname.slice(1);
+
 		const config = new ConfigService({
-			serverName: process.env.MATRIX_SERVER_NAME || 'rc1',
+			serverName: serverHostname,
 			keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
-			matrixDomain: process.env.MATRIX_DOMAIN || 'rc1',
+			matrixDomain: serverHostname,
 			version: process.env.SERVER_VERSION || '1.0',
 			port: Number.parseInt(process.env.SERVER_PORT || '8080', 10),
 			signingKey: settingsSigningKey,
 			signingKeyPath: process.env.CONFIG_FOLDER || './rc1.signing.key',
 			database: {
-				uri: process.env.MONGODB_URI || 'mongodb://localhost:3001/meteor',
-				name: process.env.DATABASE_NAME || 'meteor',
+				uri: mongoUri,
+				name: dbName,
 				poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
 			},
 		});

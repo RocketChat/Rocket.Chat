@@ -278,6 +278,7 @@ const MessageBox = ({
 	const { autoGrowRef, textAreaStyle } = useAutoGrow(textareaRef, isRecordingAudio);
 
 	const federationMatrixEnabled = useSetting('Federation_Matrix_enabled', false);
+	const serviceFederationEnabled = useSetting('Federation_Service_Enabled', false);
 	const canSend = useReactiveValue(
 		useCallback(() => {
 			if (!room.t) {
@@ -289,10 +290,10 @@ const MessageBox = ({
 			}
 
 			if (isRoomFederated(room)) {
-				return federationMatrixEnabled;
+				return federationMatrixEnabled || serviceFederationEnabled;
 			}
 			return true;
-		}, [federationMatrixEnabled, room]),
+		}, [federationMatrixEnabled, serviceFederationEnabled, room]),
 	);
 
 	const sizes = useContentBoxSize(textareaRef);
