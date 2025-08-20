@@ -8,19 +8,18 @@ import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 type OutboundProvidersResponse = Serialized<OperationResult<'GET', '/v1/omnichannel/outbound/providers'>>;
 
-type UseOutboundProvidersListProps<TData> = {
+type UseOutboundProvidersListProps<TData> = Omit<UseQueryOptions<OutboundProvidersResponse, Error, TData>, 'queryKey' | 'queryFn'> & {
 	type?: IOutboundProvider['providerType'];
-	select?: UseQueryOptions<OutboundProvidersResponse, Error, TData, unknown[]>['select'];
 };
 
 const useOutboundProvidersList = <TData = OutboundProvidersResponse>(options?: UseOutboundProvidersListProps<TData>) => {
-	const { type = 'phone', select } = options || {};
+	const { type = 'phone', ...queryOptions } = options || {};
 	const getProviders = useEndpoint('GET', '/v1/omnichannel/outbound/providers');
 	return useQuery<OutboundProvidersResponse, Error, TData>({
 		queryKey: omnichannelQueryKeys.outboundProviders(),
 		queryFn: () => getProviders({ type }),
 		retry: 3,
-		select,
+		...queryOptions,
 	});
 };
 
