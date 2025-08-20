@@ -13,7 +13,6 @@ type TemplateSelectProps = Omit<ComponentProps<typeof SelectFiltered>, 'value' |
 
 const TemplateSelect = ({ templates, value, onChange, ...props }: TemplateSelectProps) => {
 	const languages = useLanguages();
-	console.log(languages);
 
 	const [options, templateMap] = useMemo(() => {
 		const templateMap = new Map<string, IOutboundProviderTemplate>();
@@ -37,7 +36,6 @@ const TemplateSelect = ({ templates, value, onChange, ...props }: TemplateSelect
 				const { language: templateLanguage = '' } = templateMap.get(templateId) || {};
 				const normalizedTemplateLanguage = templateLanguage.replace(/_/g, '-').replace(/en-US/g, 'en');
 				const language = languages.find((lang) => lang.key === normalizedTemplateLanguage);
-				console.log(normalizedTemplateLanguage, language);
 
 				return (
 					<Option {...props} label={label}>
