@@ -3,6 +3,7 @@ import type {
 	DirectCallData,
 	IRoom,
 	ISetting,
+	ISubscription,
 	IUser,
 	ProviderCapabilities,
 	Serialized,
@@ -18,13 +19,13 @@ import type {
 	DeviceContext,
 	LoginService,
 	ModalContextValue,
+	ServerContextValue,
 	SettingsContextQuery,
 	SubscriptionWithRoom,
 	TranslationKey,
 } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
-	ConnectionStatusContext,
 	RouterContext,
 	ServerContext,
 	SettingsContext,
@@ -63,15 +64,11 @@ export class MockedAppRootBuilder {
 
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
 
-	private connectionStatus: ContextType<typeof ConnectionStatusContext> = {
+	private server: ContextType<typeof ServerContext> = {
 		connected: true,
 		status: 'connected',
-		retryTime: undefined,
-		reconnect: () => undefined,
-		isLoggingIn: false,
-	};
-
-	private server: ContextType<typeof ServerContext> = {
+		retryCount: 0,
+		info: undefined,
 		absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
 		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
 			method,
@@ -89,7 +86,6 @@ export class MockedAppRootBuilder {
 		callMethod: () => Promise.reject(new Error('not implemented')),
 		disconnect: () => Promise.reject(new Error('not implemented')),
 		reconnect: () => Promise.reject(new Error('not implemented')),
-		info: undefined,
 	};
 
 	private router: ContextType<typeof RouterContext> = {
@@ -117,7 +113,7 @@ export class MockedAppRootBuilder {
 		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
-		querySubscription: () => [() => () => undefined, () => undefined],
+		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
 		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
 		user: null,
 		userId: null,
@@ -202,6 +198,7 @@ export class MockedAppRootBuilder {
 	private authServices: LoginService[] = [];
 
 	private authentication: ContextType<typeof AuthenticationContext> = {
+		isLoggingIn: false,
 		loginWithPassword: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
@@ -556,6 +553,11 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withServerContext(partial: Partial<ServerContextValue>): this {
+		this.server = { ...this.server, ...partial };
+		return this;
+	}
+
 	build(): JSXElementConstructor<{ children: ReactNode }> {
 		const queryClient = new QueryClient({
 			defaultOptions: {
@@ -564,20 +566,7 @@ export class MockedAppRootBuilder {
 			},
 		});
 
-		const {
-			connectionStatus,
-			server,
-			router,
-			settings,
-			user,
-			userPresence,
-			videoConf,
-			i18n,
-			authorization,
-			wrappers,
-			deviceContext,
-			authentication,
-		} = this;
+		const { server, router, settings, user, userPresence, videoConf, i18n, authorization, wrappers, deviceContext, authentication } = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -639,76 +628,74 @@ export class MockedAppRootBuilder {
 
 			return (
 				<QueryClientProvider client={queryClient}>
-					<ConnectionStatusContext.Provider value={connectionStatus}>
-						<ServerContext.Provider value={server}>
-							<RouterContext.Provider value={router}>
-								<SettingsContext.Provider value={settings}>
-									<I18nextProvider i18n={i18n}>
-										<TranslationContext.Provider value={translation}>
-											{/* <SessionProvider>
+					<ServerContext.Provider value={server}>
+						<RouterContext.Provider value={router}>
+							<SettingsContext.Provider value={settings}>
+								<I18nextProvider i18n={i18n}>
+									<TranslationContext.Provider value={translation}>
+										{/* <SessionProvider>
 												<TooltipProvider>
 														<ToastMessagesProvider>
 																<LayoutProvider>
 																		<AvatarUrlProvider>
 																				<CustomSoundProvider> */}
-											<UserContext.Provider value={user}>
-												<AuthenticationContext.Provider value={authentication}>
-													<MockedDeviceContext {...deviceContext}>
-														<ModalContext.Provider value={modal}>
-															<AuthorizationContext.Provider value={authorization}>
-																{/* <EmojiPickerProvider>
+										<UserContext.Provider value={user}>
+											<AuthenticationContext.Provider value={authentication}>
+												<MockedDeviceContext {...deviceContext}>
+													<ModalContext.Provider value={modal}>
+														<AuthorizationContext.Provider value={authorization}>
+															{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																	*/}
-																<UserPresenceContext.Provider value={userPresence}>
-																	<ActionManagerContext.Provider
-																		value={{
-																			generateTriggerId: () => '',
-																			emitInteraction: () => Promise.reject(new Error('not implemented')),
-																			getInteractionPayloadByViewId: () => undefined,
-																			handleServerInteraction: () => undefined,
-																			off: () => undefined,
-																			on: () => undefined,
-																			openView: () => undefined,
-																			disposeView: () => undefined,
-																			notifyBusy: () => undefined,
-																			notifyIdle: () => undefined,
-																		}}
-																	>
-																		<VideoConfContext.Provider value={videoConf}>
-																			{/* <CallProvider>
+															<UserPresenceContext.Provider value={userPresence}>
+																<ActionManagerContext.Provider
+																	value={{
+																		generateTriggerId: () => '',
+																		emitInteraction: () => Promise.reject(new Error('not implemented')),
+																		getInteractionPayloadByViewId: () => undefined,
+																		handleServerInteraction: () => undefined,
+																		off: () => undefined,
+																		on: () => undefined,
+																		openView: () => undefined,
+																		disposeView: () => undefined,
+																		notifyBusy: () => undefined,
+																		notifyIdle: () => undefined,
+																	}}
+																>
+																	<VideoConfContext.Provider value={videoConf}>
+																		{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																			{wrappers.reduce<ReactNode>(
-																				(children, wrapper) => wrapper(children),
-																				<>
-																					{children}
-																					{modal.currentModal.component}
-																				</>,
-																			)}
-																			{/* </OmnichannelProvider>
+																		{wrappers.reduce<ReactNode>(
+																			(children, wrapper) => wrapper(children),
+																			<>
+																				{children}
+																				{modal.currentModal.component}
+																			</>,
+																		)}
+																		{/* </OmnichannelProvider>
 																	</CallProvider> */}
-																		</VideoConfContext.Provider>
-																	</ActionManagerContext.Provider>
-																</UserPresenceContext.Provider>
-																{/*
+																	</VideoConfContext.Provider>
+																</ActionManagerContext.Provider>
+															</UserPresenceContext.Provider>
+															{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-															</AuthorizationContext.Provider>
-														</ModalContext.Provider>
-													</MockedDeviceContext>
-												</AuthenticationContext.Provider>
-											</UserContext.Provider>
-											{/* 					</CustomSoundProvider>
+														</AuthorizationContext.Provider>
+													</ModalContext.Provider>
+												</MockedDeviceContext>
+											</AuthenticationContext.Provider>
+										</UserContext.Provider>
+										{/* 					</CustomSoundProvider>
 																</AvatarUrlProvider>
 															</LayoutProvider>
 														</ToastMessagesProvider>
 													</TooltipProvider>
 												</SessionProvider> */}
-										</TranslationContext.Provider>
-									</I18nextProvider>
-								</SettingsContext.Provider>
-							</RouterContext.Provider>
-						</ServerContext.Provider>
-					</ConnectionStatusContext.Provider>
+									</TranslationContext.Provider>
+								</I18nextProvider>
+							</SettingsContext.Provider>
+						</RouterContext.Provider>
+					</ServerContext.Provider>
 				</QueryClientProvider>
 			);
 		};

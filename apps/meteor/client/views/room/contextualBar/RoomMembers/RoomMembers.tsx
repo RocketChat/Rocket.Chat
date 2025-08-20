@@ -134,7 +134,7 @@ const RoomMembers = ({
 
 	return (
 		<ContextualbarDialog>
-			<ContextualbarHeader data-qa-id='RoomHeader-Members'>
+			<ContextualbarHeader>
 				<ContextualbarIcon name='members' />
 				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}

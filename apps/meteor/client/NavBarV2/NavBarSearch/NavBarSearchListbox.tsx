@@ -57,7 +57,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
 					{items.length > 0 && (
-						<Box color='title-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4}>
+						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4}>
 							{filterText ? t('Results') : t('Recent')}
 						</Box>
 					)}
