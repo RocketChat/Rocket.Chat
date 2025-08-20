@@ -3681,7 +3681,7 @@
   "No_results_found": "No results found",
   "No_results_found_for": "No results found for:",
   "No_snippet_messages": "No snippet",
-  "No_spaces": "No spaces",
+  "No_spaces_or_special_characters": "No spaces or special characters",
   "No_starred_messages": "No starred messages",
   "No_such_command": "No such command: `/{{command}}`",
   "No_tags_yet": "No tags yet",

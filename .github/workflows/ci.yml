@@ -214,45 +214,6 @@ jobs:
           overwrite: true
           include-hidden-files: true
 
-  deploy-preview:
-    name: 👀 Deploy Preview
-    runs-on: ubuntu-24.04
-    needs: [release-versions, packages-build]
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: rharkor/caching-for-turbo@v1.8
-        if: github.event.action != 'closed'
-
-      - name: Setup NodeJS
-        uses: ./.github/actions/setup-node
-        if: github.event.action != 'closed'
-        with:
-          node-version: 22.16.0
-          deno-version: 1.43.5
-          cache-modules: true
-          install: true
-      - name: Restore turbo build
-        uses: actions/download-artifact@v4
-        with:
-          name: turbo-build
-          path: .turbo/cache
-      - name: Build
-        if: github.event.action != 'closed'
-        run: |
-          yarn turbo run build-preview
-          yarn turbo run .:build-preview-move
-          npx indexifier .preview --html  --extensions .html  > .preview/index.html
-
-      - name: Create preview for PR
-        uses: rossjrw/pr-preview-action@v1
-        if: github.event.pull_request.head.repo.full_name == github.repository
-        with:
-          source-dir: .preview
-          preview-branch: gh-pages
-          umbrella-dir: pr-preview
-          action: auto
-
   build:
     name: 📦 Meteor Build - coverage
     needs: [release-versions, packages-build, build-homeserver]
