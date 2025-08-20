@@ -19,8 +19,8 @@ const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps): ReactEl
 	const setModal = useSetModal();
 	const router = useRouter();
 
-	const canEditContact = usePermission('livechat-update-contact');
-	const canDeleteContact = usePermission('livechat-delete-contact');
+	const canEditContact = usePermission('update-livechat-contact');
+	const canDeleteContact = usePermission('delete-livechat-contact');
 
 	const handleContactEdit = useEffectEvent((): void =>
 		router.navigate({
@@ -43,7 +43,7 @@ const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps): ReactEl
 			icon: 'edit',
 			content: t('edit'),
 			onClick: () => handleContactEdit(),
-			disabled: canEditContact,
+			disabled: !canEditContact,
 		},
 		{
 			id: 'delete',
@@ -51,7 +51,7 @@ const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps): ReactEl
 			content: t('Delete'),
 			onClick: () => handleContactRemoval(),
 			variant: 'danger',
-			disabled: canDeleteContact,
+			disabled: !canDeleteContact,
 		},
 	];
 

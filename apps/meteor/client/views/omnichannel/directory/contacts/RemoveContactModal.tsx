@@ -1,4 +1,5 @@
 import { Box, Input } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -21,10 +22,15 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 	const removeContact = useEndpoint('POST', '/v1/omnichannel/contacts.delete');
 	const dispatchToast = useToastMessageDispatch();
 
+	const handleSubmit = useEffectEvent((event: ChangeEvent<HTMLFormElement>): void => {
+		event.preventDefault();
+		removeContactMutation.mutate();
+	});
+
 	const removeContactMutation = useMutation({
 		mutationFn: () => removeContact({ contactId: _id }),
 		onSuccess: async () => {
-			dispatchToast({ type: 'success', message: 'Contact successfully removed!' });
+			dispatchToast({ type: 'success', message: t('Contact_has_been_deleted') });
 			await Promise.all([
 				queryClient.invalidateQueries({
 					queryKey: ['current-contacts'],
@@ -36,13 +42,13 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 			onClose();
 		},
 		onError: (error) => {
-			dispatchToast({ type: 'error', message: error.message });
+			dispatchToast({ type: 'error', message: t(error.message, { defaultValue: t('error-contact-something-went-wrong') }) });
 		},
 	});
 
 	return (
 		<GenericModal
-			wrapperFunction={(props) => <Box is='form' onSubmit={() => removeContactMutation.mutate()} {...props} />}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Delete')}
 			title='Delete Contact'
