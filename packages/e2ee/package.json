@@ -28,7 +28,8 @@
     "@noble/hashes": "~1.8.0",
     "oxlint": "~1.12.0",
     "oxlint-tsgolint": "~0.0.4",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": ""
   },
   "license": "MIT",
   "publishConfig": {

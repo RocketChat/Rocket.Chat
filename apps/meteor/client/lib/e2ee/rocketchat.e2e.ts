@@ -499,15 +499,15 @@ class E2E extends Emitter<{
 	}
 
 	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
-		const masterKey = await this.getMasterKey(password);
+		const masterKey = await this.e2ee.getMasterKey(password);
 		const vector = this.e2ee.codec.getRandomUint8Array(16);
 		try {
-			if (!masterKey) {
+			if (!masterKey.isOk) {
 				throw new Error('Error getting master key');
 			}
-			const encodedPrivateKey = await this.e2ee.codec.crypto.encryptAesCbc(masterKey, vector, toArrayBuffer(privateKey));
+			const encodedPrivateKey = await this.e2ee.codec.crypto.encryptAesCbc(masterKey.value, vector, toArrayBuffer(privateKey));
 
-			return EJSON.stringify(joinVectorAndEcryptedData(vector, encodedPrivateKey));
+			return this.e2ee.codec.stringifyUint8Array(joinVectorAndEcryptedData(vector, encodedPrivateKey));
 		} catch (error) {
 			this.setState('ERROR');
 			return this.error('Error encrypting encodedPrivateKey: ', error);
@@ -582,7 +582,7 @@ class E2E extends Emitter<{
 			return;
 		}
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(this.db_private_key));
+		const [vector, cipherText] = splitVectorAndEcryptedData(this.e2ee.codec.parseUint8Array(this.db_private_key));
 
 		try {
 			if (!masterKey) {
@@ -612,7 +612,7 @@ class E2E extends Emitter<{
 
 		const masterKey = await this.getMasterKey(password);
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(privateKey));
+		const [vector, cipherText] = splitVectorAndEcryptedData(this.e2ee.codec.parseUint8Array(privateKey));
 
 		try {
 			if (!masterKey) {

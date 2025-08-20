@@ -1,11 +1,24 @@
 import { test, expect } from 'vitest';
 import KeyCodec from '../codec.ts';
+import type { JsonWebKey } from 'node:crypto';
 
-const createKeyCodec = () => new KeyCodec();
+const codec = new KeyCodec();
+
+test('KeyCodec stringifyUint8Array', () => {
+	const data = new Uint8Array([1, 2, 3]);
+	const jsonString = codec.stringifyUint8Array(data);
+	expect(jsonString).toBe('{"$binary":"AQID"}');
+});
+
+test('KeyCodec parseUint8Array', () => {
+	const jsonString = '{"$binary":"AQID"}';
+	const data = codec.parseUint8Array(jsonString);
+	expect(data).toEqual(new Uint8Array([1, 2, 3]));
+});
 
 test('KeyCodec roundtrip (v1 structured encoding)', async () => {
-	const codec = createKeyCodec();
 	const { privateJWK } = await codec.generateRsaOaepKeyPair();
+
 	const saltBuffer = codec.encodeSalt('salt-user-1');
 	const masterKey = await codec.deriveMasterKey(saltBuffer, 'pass123');
 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
@@ -14,7 +27,6 @@ test('KeyCodec roundtrip (v1 structured encoding)', async () => {
 });
 
 test('KeyCodec wrong password fails', async () => {
-	const codec = createKeyCodec();
 	const { privateJWK } = await codec.generateRsaOaepKeyPair();
 	const salt1 = codec.encodeSalt('salt1');
 	const masterKey = await codec.deriveMasterKey(salt1, 'correct');
@@ -24,9 +36,7 @@ test('KeyCodec wrong password fails', async () => {
 });
 
 test('KeyCodec tamper detection (ciphertext)', async () => {
-	const codec = createKeyCodec();
 	const { privateJWK } = await codec.generateRsaOaepKeyPair();
-	// const privStr = JSON.stringify(privateJWK);
 	const salt = codec.encodeSalt('salt');
 	const masterKey = await codec.deriveMasterKey(salt, 'pw');
 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
@@ -36,11 +46,10 @@ test('KeyCodec tamper detection (ciphertext)', async () => {
 });
 
 test('KeyCodec legacy roundtrip', async () => {
-	const codec = createKeyCodec();
 	const { privateJWK } = await codec.generateRsaOaepKeyPair();
 	const privStr = JSON.stringify(privateJWK);
 	const blob = await codec.legacyEncrypt(privStr, 'pw', 'salt');
 	const decAny = await codec.legacyDecrypt(blob, 'pw', 'salt');
-	const dec = typeof decAny === 'string' ? (JSON.parse(decAny) as any) : decAny;
+	const dec = typeof decAny === 'string' ? (JSON.parse(decAny) as JsonWebKey) : decAny;
 	expect(dec).toStrictEqual(privateJWK);
 });
