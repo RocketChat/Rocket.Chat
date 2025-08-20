@@ -17,7 +17,7 @@ import { useMemo } from 'react';
 import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquiries';
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
-import { RoomsNavigationContext, getEmptyUnreadInfo } from '../contexts/RoomsNavigationContext';
+import { RoomsNavigationContext, getEmptyUnreadInfo, isUnreadSubscription } from '../contexts/RoomsNavigationContext';
 import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
 import { useSidePanelParentRid } from '../hooks/useSidePanelParentRid';
 import { useSortQueryOptions } from '../hooks/useSortQueryOptions';
@@ -52,9 +52,6 @@ const updateGroupUnreadInfo = (
 		unread: current.unread + (room.unread || (!room.unread && !room.tunread?.length && room.alert ? 1 : 0)),
 	};
 };
-
-const isUnread = (room: SubscriptionWithRoom | ILivechatInquiryRecord) =>
-	'alert' in room && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus;
 
 const hasMention = (room: SubscriptionWithRoom) =>
 	room.userMentions || room.groupMentions || room.tunreadUser?.length || room.tunreadGroup?.length;
@@ -93,8 +90,8 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 
 				getGroupSet(key).add(room);
 
-				if (isUnread(room)) {
-					getGroupSet(`${key}_unread`).add(room);
+				if (isUnreadSubscription(room)) {
+					// getGroupSet(`${key}_unread`).add(room);
 
 					const currentUnreadData = unreadGroupData.get(key) || getEmptyUnreadInfo();
 					const unreadInfo = updateGroupUnreadInfo(room, currentUnreadData);
@@ -130,7 +127,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return;
 				}
 
-				if (sidebarShowUnread && isUnread(room)) {
+				if (sidebarShowUnread && isUnreadSubscription(room)) {
 					setGroupRoom('unread', room);
 					return;
 				}

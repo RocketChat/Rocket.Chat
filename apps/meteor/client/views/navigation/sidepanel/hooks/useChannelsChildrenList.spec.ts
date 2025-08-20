@@ -4,6 +4,7 @@ import { renderHook } from '@testing-library/react';
 
 import { createFakeSubscription } from '../../../../../tests/mocks/data';
 import { emptyUnread, createMockGlobalStore } from '../../../../../tests/mocks/utils';
+import { isUnreadSubscription } from '../../contexts/RoomsNavigationContext';
 
 const fakeTeam = { ...createFakeSubscription({ alert: true }) };
 const fakeChannel = { ...createFakeSubscription({ t: 'c', alert: true }) };
@@ -70,15 +71,24 @@ it('should return all subscriptions parent of fakeChannel', async () => {
 	expect(result.current[0].prid).toBe(fakeChannel.rid);
 });
 
-it('should return only unread subscriptions parent of fakeChannel', async () => {
-	const { useChannelsChildrenList, isUnreadSubscription } = await import('./useChannelsChildrenList');
+it('should return unread subscriptions after parent but before read ones for channels', async () => {
+	const { useChannelsChildrenList } = await import('./useChannelsChildrenList');
 
 	const { result } = renderHook(() => useChannelsChildrenList(fakeChannel.rid, true), {
 		wrapper: mockAppRoot().withSubscriptions(subscriptionsMock).build(),
 	});
 
-	expect(result.current).toHaveLength(channelsSubscriptions.filter((sub) => isUnreadSubscription(sub)).length);
+	expect(result.current).toHaveLength(channelsSubscriptions.length);
 	expect(result.current[0].rid).toBe(fakeChannel.rid);
+
+	expect(isUnreadSubscription(result.current[1])).toBe(true);
+	expect(isUnreadSubscription(result.current[2])).toBe(true);
+	expect(isUnreadSubscription(result.current[3])).toBe(true);
+	expect(isUnreadSubscription(result.current[4])).toBe(true);
+	expect(isUnreadSubscription(result.current[5])).toBe(true);
+	expect(isUnreadSubscription(result.current[6])).toBe(true);
+
+	expect(isUnreadSubscription(result.current[7])).toBe(false);
 
 	if (result.current[0].rid === fakeChannel.rid) return;
 	expect(result.current[0].prid).toBe(fakeChannel.rid);
@@ -98,15 +108,18 @@ it('should return subscriptions parent of fakeTeam', async () => {
 	expect(result.current[0].prid).toBe(fakeTeam.rid);
 });
 
-it('should return only unread subscriptions parent of fakeTeam', async () => {
-	const { useChannelsChildrenList, isUnreadSubscription } = await import('./useChannelsChildrenList');
+it('should return unread subscriptions after parent but before read ones for teams', async () => {
+	const { useChannelsChildrenList } = await import('./useChannelsChildrenList');
 
 	const { result } = renderHook(() => useChannelsChildrenList(fakeTeam.rid, true), {
 		wrapper: mockAppRoot().withSubscriptions(subscriptionsMock).build(),
 	});
 
-	expect(result.current).toHaveLength(teamsSubscriptions.filter((sub) => isUnreadSubscription(sub)).length);
+	expect(result.current).toHaveLength(teamsSubscriptions.length);
 	expect(result.current[0].rid).toBe(fakeTeam.rid);
+
+	expect(isUnreadSubscription(result.current[1])).toBe(true);
+	expect(isUnreadSubscription(result.current[2])).toBe(false);
 
 	if (result.current[0].rid === fakeTeam.rid) return;
 	expect(result.current[0].prid).toBe(fakeTeam.rid);
