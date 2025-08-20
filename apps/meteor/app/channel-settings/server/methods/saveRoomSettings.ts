@@ -1,6 +1,6 @@
 import { FederationMatrix, Team } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
-import { TEAM_TYPE, isRoomFederated, isValidSidepanel } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -238,11 +238,6 @@ const settingSavers: RoomSettingsSavers = {
 		
 		if (value && isRoomFederated(room) && getFederationVersion() === 'native') {
 			await FederationMatrix.updateRoomTopic(rid, value, user._id);
-		}
-	},
-	async sidepanel({ value, rid, room }) {
-		if (JSON.stringify(value) !== JSON.stringify(room.sidepanel)) {
-			await Rooms.setSidepanelById(rid, value);
 		}
 	},
 	async roomAnnouncement({ value, room, rid, user }) {
