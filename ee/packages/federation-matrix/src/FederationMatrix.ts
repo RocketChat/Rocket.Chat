@@ -53,7 +53,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor';
 
-		const dbName = new URL(mongoUri).pathname.slice(1);
+		const dbName = process.env.DATABASE_NAME || new URL(mongoUri).pathname.slice(1);
 
 		const config = new ConfigService({
 			serverName: serverHostname,
