@@ -78,9 +78,8 @@ describe('disableContact', () => {
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith(contact._id)).to.be.true;
 		expect(modelsMock.LivechatRooms.findOpenByContactId.calledOnceWith(contact._id)).to.be.true;
 		expect(removeGuestMock.removeGuest.calledTwice).to.be.true;
-		console.log(removeGuestMock.removeGuest.getCall(0).args[0]);
-		console.log(removeGuestMock.removeGuest.getCall(1).args[0]);
-		expect(removeGuestMock.removeGuest.calledOnceWith({ _id: 'visitor-id' })).to.be.true;
+		expect(removeGuestMock.removeGuest.getCall(0).args[0]).to.deep.equal({ _id: 'visitor-id' });
+		expect(removeGuestMock.removeGuest.getCall(1).args[0]).to.deep.equal({ _id: 'visitor-id-2' });
 		expect(removeGuestMock.removeGuest.calledOnceWith({ _id: 'visitor-id-2' })).to.be.true;
 		expect(modelsMock.LivechatContacts.disableByContactId.calledOnceWith(contact._id)).to.be.true;
 	});
