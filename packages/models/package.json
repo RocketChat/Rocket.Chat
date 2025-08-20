@@ -1,15 +1,15 @@
 {
 	"name": "@rocket.chat/models",
-	"version": "1.5.10",
+	"version": "1.5.12",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~29.5.14",
+		"@types/jest": "~30.0.0",
 		"@types/node-rsa": "^1.1.4",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.2",
-		"typescript": "~5.8.3"
+		"jest": "~30.0.5",
+		"typescript": "~5.9.2"
 	},
 	"dependencies": {
 		"@rocket.chat/model-typings": "workspace:~",

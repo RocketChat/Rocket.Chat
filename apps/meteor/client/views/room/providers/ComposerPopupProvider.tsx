@@ -2,6 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useMethod, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -10,9 +11,9 @@ import { useTranslation } from 'react-i18next';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { emoji } from '../../../../app/emoji/client';
-import { Messages, Subscriptions } from '../../../../app/models/client';
 import { slashCommands } from '../../../../app/utils/client';
 import { cannedResponsesQueryKeys } from '../../../lib/queryKeys';
+import { Messages, Subscriptions } from '../../../stores';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
 import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';
@@ -25,6 +26,7 @@ import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
+import { pipe } from '../../../lib/cachedStores';
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
 
@@ -159,27 +161,19 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				title: t('Channels'),
 				getItemsFromLocal: async (filter: string) => {
 					const filterRegex = new RegExp(escapeRegExp(filter), 'i');
-					const records = Subscriptions.find(
-						{
-							$and: [
-								{
-									$or: [{ fname: filterRegex }, { name: filterRegex }],
-								},
-								{
-									$or: [{ federated: { $exists: false } }, { federated: false }],
-								},
-							],
-							t: {
-								$in: ['c', 'p'],
-							},
-						},
-						{
-							limit: suggestionsCount ?? 5,
-							sort: {
-								ls: -1,
-							},
-						},
-					).fetch();
+
+					const { apply: transform } = pipe<SubscriptionWithRoom>()
+						.sortByField('ls', -1)
+						.slice(0, suggestionsCount ?? 5);
+
+					const predicate = (record: SubscriptionWithRoom): boolean =>
+						Boolean(
+							(record.fname?.match(filterRegex) || record.name?.match(filterRegex)) &&
+								!record.federated &&
+								(record.t === 'c' || record.t === 'p'),
+						);
+
+					const records = transform(Subscriptions.state.filter(predicate));
 					return records;
 				},
 				getItemsFromServer: async (filter: string) => {

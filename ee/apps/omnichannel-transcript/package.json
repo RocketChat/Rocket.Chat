@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/omnichannel-transcript",
 	"private": true,
-	"version": "0.4.31",
+	"version": "0.4.33",
 	"description": "Rocket.Chat service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -55,7 +55,7 @@
 		"eslint": "~8.45.0",
 		"react": "~18.3.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"main": "./dist/ee/apps/omnichannel-transcript/src/service.js",
 	"files": [

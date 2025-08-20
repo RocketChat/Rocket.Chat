@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/presence-service",
 	"private": true,
-	"version": "0.4.31",
+	"version": "0.4.33",
 	"description": "Rocket.Chat Presence service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -44,7 +44,7 @@
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"main": "./dist/ee/apps/presence-service/src/service.js",
 	"files": [

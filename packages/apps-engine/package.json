@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps-engine",
-	"version": "1.53.0",
+	"version": "1.54.0",
 	"description": "The engine code for the Rocket.Chat Apps which manages, runs, translates, coordinates and all of that.",
 	"main": "index",
 	"typings": "index",
@@ -89,8 +89,8 @@
 		"rimraf": "^6.0.1",
 		"tap-bark": "^1.0.0",
 		"ts-node": "^6.2.0",
-		"typedoc": "~0.28.5",
-		"typescript": "~5.8.3",
+		"typedoc": "~0.28.9",
+		"typescript": "~5.9.2",
 		"uglify-es": "^3.3.10"
 	},
 	"dependencies": {

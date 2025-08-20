@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "7.9.0-develop",
+	"version": "7.10.0-develop",
 	"private": true,
 	"type": "commonjs",
 	"author": {
@@ -113,7 +113,7 @@
 		"@types/he": "^1.2.3",
 		"@types/i18next-sprintf-postprocessor": "^0.2.3",
 		"@types/imap": "^0.8.42",
-		"@types/jest": "~29.5.14",
+		"@types/jest": "~30.0.0",
 		"@types/jsdom": "^21.1.7",
 		"@types/jsdom-global": "^3.0.7",
 		"@types/jsrsasign": "^10.5.15",
@@ -186,7 +186,7 @@
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"fast-glob": "^3.3.3",
 		"i18next": "~23.4.9",
-		"jest": "~30.0.2",
+		"jest": "~30.0.5",
 		"jsdom-global": "^3.0.2",
 		"mocha": "^9.2.2",
 		"nyc": "^17.1.0",
@@ -217,7 +217,7 @@
 		"supports-color": "~7.2.0",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.8.3",
+		"typescript": "~5.9.2",
 		"webpack": "~5.99.9"
 	},
 	"dependencies": {
@@ -277,6 +277,8 @@
 		"@rocket.chat/mongo-adapter": "workspace:^",
 		"@rocket.chat/mp3-encoder": "^0.31.26",
 		"@rocket.chat/network-broker": "workspace:^",
+		"@rocket.chat/omni-core": "workspace:^",
+		"@rocket.chat/omni-core-ee": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
 		"@rocket.chat/onboarding-ui": "^0.35.2",
 		"@rocket.chat/password-policies": "workspace:^",
@@ -443,7 +445,7 @@
 		"tinykeys": "^1.4.0",
 		"twilio": "^5.4.2",
 		"twit": "^2.2.11",
-		"typia": "~9.3.1",
+		"typia": "~9.7.0",
 		"ua-parser-js": "^1.0.40",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",

@@ -6,8 +6,8 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelPriorities } from './useOmnichannelPriorities';
+import { PRIORITIES_CONFIG } from './useOmnichannelPrioritiesConfig';
 import { roomsQueryKeys } from '../../lib/queryKeys';
-import { PRIORITY_ICONS } from '../priorities/PriorityIcon';
 
 export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 	const { t } = useTranslation();
@@ -30,8 +30,8 @@ export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 
 		const unprioritizedOption = {
 			id: 'unprioritized',
-			icon: PRIORITY_ICONS[LivechatPriorityWeight.NOT_SPECIFIED].iconName,
-			iconColor: PRIORITY_ICONS[LivechatPriorityWeight.NOT_SPECIFIED].color,
+			icon: PRIORITIES_CONFIG[LivechatPriorityWeight.NOT_SPECIFIED].iconName,
+			iconColor: PRIORITIES_CONFIG[LivechatPriorityWeight.NOT_SPECIFIED].color,
 			content: t('Unprioritized'),
 			onClick: handlePriorityChange(''),
 		};
@@ -41,8 +41,8 @@ export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 
 			return {
 				id: priorityId,
-				icon: PRIORITY_ICONS[sortItem].iconName,
-				iconColor: PRIORITY_ICONS[sortItem].color,
+				icon: PRIORITIES_CONFIG[sortItem].iconName,
+				iconColor: PRIORITIES_CONFIG[sortItem].color,
 				content: label,
 				onClick: handlePriorityChange(priorityId),
 			};
