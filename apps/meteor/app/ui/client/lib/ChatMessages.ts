@@ -180,4 +180,13 @@ export class ChatMessages implements ChatAPI {
 			replyBroadcast: replyBroadcast.bind(null, this),
 		};
 	}
+
+	public async release() {
+		if (this.currentEditingMessage.getMID()) {
+			if (!this.currentEditingMessage.getParams().tmid) {
+				await this.currentEditingMessage.cancel();
+			}
+			this.composer?.clear();
+		}
+	}
 }

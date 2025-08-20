@@ -121,6 +121,7 @@ export type ChatAPI = {
 	readonly currentEditingMessage: {
 		setMID(mid: IMessage['_id']): void;
 		getMID(): string | undefined;
+		getParams(): { tmid?: string };
 		reset(): Promise<boolean>;
 		stop(): Promise<void>;
 		cancel(): Promise<void>;

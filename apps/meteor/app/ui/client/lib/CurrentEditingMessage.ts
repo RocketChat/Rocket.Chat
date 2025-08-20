@@ -117,6 +117,10 @@ export class CurrentEditingMessage {
 		this.mid = mid;
 	}
 
+	public getParams() {
+		return this.params;
+	}
+
 	private async runExclusive<T>(callback: () => Promise<T>) {
 		const release = await this.acquire();
 
