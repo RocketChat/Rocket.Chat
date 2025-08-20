@@ -57,7 +57,7 @@
 		"eslint": "~8.45.0",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"main": "./dist/service.js",
 	"files": [

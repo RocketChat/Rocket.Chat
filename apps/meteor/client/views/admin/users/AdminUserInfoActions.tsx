@@ -55,11 +55,7 @@ const AdminUserInfoActions = ({
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
-	return (
-		<ButtonGroup align='center' data-qa-id='UserInfoActions'>
-			{actions}
-		</ButtonGroup>
-	);
+	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
 };
 
 export default AdminUserInfoActions;
