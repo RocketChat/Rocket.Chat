@@ -104,7 +104,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return;
 				}
 
-				if (sidebarShowUnread && isUnread(room)) {
+				if (sidebarShowUnread && isUnreadSubscription(room)) {
 					setGroupRoom('unread', room);
 				}
 
@@ -121,7 +121,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 				}
 
 				if (sidebarGroupByType && isTeamRoom(room)) {
-					if (sidebarShowUnread && isUnread(room)) {
+					if (sidebarShowUnread && isUnreadSubscription(room)) {
 						return;
 					}
 
@@ -133,7 +133,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 				}
 
 				if (sidebarGroupByType && (isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
-					if (sidebarShowUnread && isUnread(room)) {
+					if (sidebarShowUnread && isUnreadSubscription(room)) {
 						return;
 					}
 
@@ -149,7 +149,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 				}
 
 				if (sidebarGroupByType && isDirectMessageRoom(room)) {
-					if (sidebarShowUnread && isUnread(room)) {
+					if (sidebarShowUnread && isUnreadSubscription(room)) {
 						return;
 					}
 

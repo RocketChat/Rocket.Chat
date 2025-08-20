@@ -4,6 +4,7 @@ import { renderHook } from '@testing-library/react';
 
 import { createFakeSubscription } from '../../../../../tests/mocks/data';
 import { emptyUnread, createMockGlobalStore } from '../../../../../tests/mocks/utils';
+import { isUnreadSubscription } from '../../contexts/RoomsNavigationContext';
 
 const fakeTeam = { ...createFakeSubscription({ alert: true }) };
 const fakeChannel = { ...createFakeSubscription({ t: 'c', alert: true }) };
@@ -99,7 +100,7 @@ it('should return subscriptions parent of fakeTeam', async () => {
 });
 
 it('should return only unread subscriptions parent of fakeTeam', async () => {
-	const { useChannelsChildrenList, isUnreadSubscription } = await import('./useChannelsChildrenList');
+	const { useChannelsChildrenList } = await import('./useChannelsChildrenList');
 
 	const { result } = renderHook(() => useChannelsChildrenList(fakeTeam.rid, true), {
 		wrapper: mockAppRoot().withSubscriptions(subscriptionsMock).build(),

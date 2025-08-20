@@ -169,12 +169,13 @@ export const isUnreadSubscription = (subscription: Partial<ISubscription>) => {
 		return false;
 	}
 
-	return (
-		(subscription.userMentions && subscription.userMentions > 0) ||
-		(subscription.groupMentions && subscription.groupMentions > 0) ||
-		!!(subscription.tunread && subscription.tunread?.length > 0) ||
-		!!(subscription.tunreadUser && subscription.tunreadUser?.length > 0) ||
-		!!(!subscription.unread && !subscription.tunread?.length && subscription.alert)
+	return Boolean(
+		subscription.userMentions ||
+			subscription.groupMentions ||
+			subscription.tunread?.length ||
+			subscription.tunreadUser?.length ||
+			subscription.unread ||
+			subscription.alert,
 	);
 };
 
