@@ -116,7 +116,7 @@ const outboundCommsEndpoints = API.v1
 				}
 				// Case 3: Agent & no department: if agent is present and there's no department, agent must be an agent
 			} else if (agentId) {
-				if (agentId !== this.userId && !(await hasPermissionAsync(this.userId, 'outbound.can-assign-any-agent'))) {
+				if (!(await hasPermissionAsync(this.userId, 'outbound.can-assign-any-agent'))) {
 					if (await hasPermissionAsync(this.userId, 'outbound.can-assign-self-only')) {
 						this.bodyParams.agentId = this.userId;
 					} else {
