@@ -1,0 +1,27 @@
+{
+	"$schema": "https://www.schemastore.org/package",
+	"name": "@rocket.chat/desktop-api",
+	"version": "0.0.1",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "rimraf dist && tsc -p tsconfig.json",
+		"lint": "eslint",
+		"typecheck": "tsc -p tsconfig.json --noEmit"
+	},
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:~",
+		"eslint": "~8.45.0",
+		"rimraf": "~6.0.1",
+		"typescript": "~5.9.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

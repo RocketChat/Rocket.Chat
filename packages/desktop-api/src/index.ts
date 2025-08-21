@@ -1,16 +1,18 @@
-type ServerInfo = {
+export type ServerInfo = {
 	version: string;
 };
 
-type Badge = '•' | number;
+export type Badge = '•' | number;
 
-type ThemeAppearance = 'dark' | 'light' | 'auto' | 'high-contrast' | undefined;
+export type ThemeAppearance = 'dark' | 'light' | 'auto' | 'high-contrast' | undefined;
 
-type VideoCallWindowOptions = {
+export type VideoChatWindowOptions = {
 	providerName?: string | undefined;
 };
 
-type OutlookEventsResponse = { status: 'success' | 'canceled' };
+export type OutlookEventsResponse = {
+	status: 'success' | 'canceled';
+};
 
 export interface IRocketChatDesktop {
 	onReady: (cb: (serverInfo: ServerInfo) => void) => void;
@@ -37,7 +39,7 @@ export interface IRocketChatDesktop {
 	) => Promise<unknown>;
 	destroyNotification: (id: unknown) => void;
 	getInternalVideoChatWindowEnabled: () => boolean;
-	openInternalVideoChatWindow: (url: string, options: VideoCallWindowOptions) => void;
+	openInternalVideoChatWindow: (url: string, options: VideoChatWindowOptions) => void;
 	setGitCommitHash: (gitCommitHash: string) => void;
 	writeTextToClipboard: (text: string) => void;
 	getOutlookEvents: (date: Date) => Promise<OutlookEventsResponse>;
