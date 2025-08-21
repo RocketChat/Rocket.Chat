@@ -14,9 +14,17 @@ import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 
 type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel> & {
 	contactId?: string;
+	canSendOutboundMessage?: boolean;
 };
 
-const ContactInfoChannelsItem = ({ contactId, visitor, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
+const ContactInfoChannelsItem = ({
+	contactId,
+	visitor,
+	details,
+	blocked,
+	lastChat,
+	canSendOutboundMessage,
+}: ContactInfoChannelsItemProps) => {
 	const { t } = useTranslation();
 	const { getSourceLabel, getSourceName } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
@@ -24,7 +32,6 @@ const ContactInfoChannelsItem = ({ contactId, visitor, details, blocked, lastCha
 	const [showButton, setShowButton] = useState(false);
 	const handleBlockContact = useBlockChannel({ association: visitor, blocked });
 	const outboundMessageModal = useOutboundMessageModal();
-	const isOutboundMessageEnabled = true;
 
 	const customClass = css`
 		&:hover,
@@ -38,7 +45,7 @@ const ContactInfoChannelsItem = ({ contactId, visitor, details, blocked, lastCha
 			id: 'outbound-message',
 			icon: 'send',
 			content: t('Outbound_message'),
-			disabled: !isOutboundMessageEnabled,
+			disabled: !canSendOutboundMessage,
 			onClick: () => outboundMessageModal.open({ contactId, providerId: details.id }),
 		},
 		{
