@@ -4,7 +4,15 @@ import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.cha
 import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
 import type { FilterOperators } from 'mongodb';
 
-export async function canSendOutboundMessage(userId: string, agentId?: string, departmentId?: string) {
+async function validateAgentAssignPermissions(userId: string, agentId: string): Promise<void> {
+	if (!(await Authorization.hasPermission(userId, 'outbound.can-assign-any-agent'))) {
+		if ((await Authorization.hasPermission(userId, 'outbound.can-assign-self-only')) && agentId !== userId) {
+			throw new Error('error-invalid-agent');
+		}
+	}
+}
+
+export async function canSendOutboundMessage(userId: string, agentId?: string, departmentId?: string): Promise<void> {
 	// Case 1: Check department and check if agent is in department
 	if (departmentId) {
 		let query: FilterOperators<ILivechatDepartment> = { _id: departmentId };
@@ -19,12 +27,7 @@ export async function canSendOutboundMessage(userId: string, agentId?: string, d
 
 		// Case 2: Agent & department: if agent is present, agent must be in department
 		if (agentId) {
-			if (!(await Authorization.hasPermission(userId, 'outbound.can-assign-any-agent'))) {
-				if ((await Authorization.hasPermission(userId, 'outbound.can-assign-self-only')) && agentId !== userId) {
-					throw new Error('error-invalid-agent');
-				}
-			}
-
+			await validateAgentAssignPermissions(userId, agentId);
 			// On here, we take a shortcut: if the user is here, we assume it's an agent (and we assume the collection is kept up to date :) )
 			const agent = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
 			if (!agent) {
@@ -33,15 +36,11 @@ export async function canSendOutboundMessage(userId: string, agentId?: string, d
 		}
 		// Case 3: Agent & no department: if agent is present and there's no department, agent must be an agent
 	} else if (agentId) {
-		if (!(await Authorization.hasPermission(userId, 'outbound.can-assign-any-agent'))) {
-			if ((await Authorization.hasPermission(userId, 'outbound.can-assign-self-only')) && agentId !== userId) {
-				throw new Error('error-invalid-agent');
-			}
-		}
+		await validateAgentAssignPermissions(userId, agentId);
 
 		const agent = await Users.findOneAgentById(agentId, { projection: { _id: 1 } });
 		if (!agent) {
-			throw new Error('error-agent-not-in-department');
+			throw new Error('error-invalid-agent');
 		}
 	}
 }

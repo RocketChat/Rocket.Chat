@@ -127,13 +127,13 @@ describe('canSendOutboundMessage', () => {
 			expect(findUserAgentMock).not.toHaveBeenCalled();
 		});
 
-		test('throws error-agent-not-in-department if selected agent is not an agent (any-agent allowed)', async () => {
+		test('throws error-invalid-agent if selected agent is not an agent (any-agent allowed)', async () => {
 			setPermissions({
 				'outbound.can-assign-any-agent': true,
 			});
 			findUserAgentMock.mockResolvedValueOnce(null);
 
-			await expect(canSendOutboundMessage('me', 'notAnAgent')).rejects.toThrow('error-agent-not-in-department');
+			await expect(canSendOutboundMessage('me', 'notAnAgent')).rejects.toThrow('error-invalid-agent');
 
 			expect(findUserAgentMock).toHaveBeenCalledWith('notAnAgent', { projection: { _id: 1 } });
 		});
