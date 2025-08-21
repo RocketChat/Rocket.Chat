@@ -11,7 +11,7 @@ export async function disableContactById(contactId: string): Promise<void> {
 	}
 
 	// Checking if the contact has any open channel/room before removing its data.
-	const contactOpenRooms = await LivechatRooms.findOne({ contactId }, { projection: { _id: 1 } });
+	const contactOpenRooms = await LivechatRooms.findOne({ contactId, open: true }, { projection: { _id: 1 } });
 	if (contactOpenRooms && !settings.get<boolean>('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
 		throw new Error('error-contact-has-open-rooms');
 	}

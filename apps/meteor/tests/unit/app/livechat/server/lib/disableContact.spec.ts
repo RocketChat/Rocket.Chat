@@ -54,7 +54,7 @@ describe('disableContact', () => {
 		await disableContactById(contact._id);
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith(contact._id)).to.be.true;
-		expect(modelsMock.LivechatRooms.findOne.calledOnceWith({ contactId: contact._id }, { projection: { _id: 1 } })).to.be.true;
+		expect(modelsMock.LivechatRooms.findOne.calledOnceWith({ contactId: contact._id, open: true }, { projection: { _id: 1 } })).to.be.true;
 		expect(removeGuestMock.removeGuest.calledOnceWith({ _id: 'visitor-id' })).to.be.true;
 		expect(modelsMock.LivechatContacts.disableByContactId.calledOnceWith(contact._id)).to.be.true;
 	});
@@ -72,7 +72,7 @@ describe('disableContact', () => {
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith(contact._id)).to.be.true;
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith(contact._id)).to.be.true;
-		expect(modelsMock.LivechatRooms.findOne.calledOnceWith({ contactId: contact._id }, { projection: { _id: 1 } })).to.be.true;
+		expect(modelsMock.LivechatRooms.findOne.calledOnceWith({ contactId: contact._id, open: true }, { projection: { _id: 1 } })).to.be.true;
 		expect(removeGuestMock.removeGuest.calledTwice).to.be.true;
 		expect(removeGuestMock.removeGuest.getCall(0).args[0]).to.deep.equal({ _id: 'visitor-id' });
 		expect(removeGuestMock.removeGuest.getCall(1).args[0]).to.deep.equal({ _id: 'visitor-id-2' });
@@ -98,7 +98,7 @@ describe('disableContact', () => {
 
 		await expect(disableContactById(contact._id)).to.be.rejectedWith('error-contact-has-open-rooms');
 
-		expect(modelsMock.LivechatRooms.findOne.calledOnceWith({ contactId: contact._id }, { projection: { _id: 1 } })).to.be.true;
+		expect(modelsMock.LivechatRooms.findOne.calledOnceWith({ contactId: contact._id, open: true }, { projection: { _id: 1 } })).to.be.true;
 		expect(removeGuestMock.removeGuest.notCalled).to.be.true;
 		expect(modelsMock.LivechatContacts.disableByContactId.notCalled).to.be.true;
 	});
