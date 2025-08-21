@@ -75,6 +75,7 @@
   },
   "changesets": [
     "afraid-rings-call",
+    "bump-patch-1755818756486",
     "chatty-feet-ring",
     "clean-flies-glow",
     "clever-trees-occur",
