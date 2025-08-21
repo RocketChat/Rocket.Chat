@@ -14,7 +14,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { E2EEState } from './E2EEState';
-import { toString, splitVectorAndEcryptedData } from './helper';
+// import { toString, splitVectorAndEcryptedData } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { settings } from '../../../app/settings/client';
@@ -569,35 +569,29 @@ class E2E extends Emitter<{
 
 	async decodePrivateKeyFlow() {
 		const password = await this.requestPasswordModal();
-		const masterKey = await this.getMasterKey(password);
 
 		if (!this.db_private_key) {
 			return;
 		}
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(this.e2ee.codec.parseUint8Array(this.db_private_key));
+		const res = await this.e2ee.decodePrivateKey(this.db_private_key, password);
 
-		try {
-			if (!masterKey) {
-				throw new Error('Error getting master key');
-			}
-			const privKey = await this.e2ee.codec.crypto.decryptAesCbc(masterKey, vector, cipherText);
-			const privateKey = toString(privKey) as string;
-
-			if (this.db_public_key && privateKey) {
-				await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
-				this.setState('READY');
-			} else {
-				await this.createAndLoadKeys();
-				this.setState('READY');
-			}
-			dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
-		} catch {
+		if (!res.isOk) {
 			this.setState('ENTER_PASSWORD');
 			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
 			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
-			throw new Error('E2E -> Error decrypting private key');
+			throw res.error;
 		}
+
+		const privateKey = res.value;
+
+		if (this.db_public_key && privateKey) {
+			await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
+		} else {
+			await this.createAndLoadKeys();
+		}
+
+		this.setState('READY');
 	}
 
 	async decodePrivateKey(privateKey: string): Promise<string> {
