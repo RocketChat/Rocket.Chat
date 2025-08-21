@@ -61,7 +61,6 @@ type UnreadGroupDataMap = Map<AllGroupsKeys, GroupedUnreadInfoData>;
 
 const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 	const showOmnichannel = useOmnichannelEnabled();
-	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
@@ -118,7 +117,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					setGroupRoom('mentions', room);
 				}
 
-				if (favoritesEnabled && room.f) {
+				if (room.f) {
 					setGroupRoom('favorites', room);
 				}
 
@@ -151,7 +150,7 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 			});
 
 			return [groups, unreadGroupData];
-		}, [showOmnichannel, queue, rooms, sidebarShowUnread, sidebarGroupByType, favoritesEnabled, isDiscussionEnabled]),
+		}, [showOmnichannel, queue, rooms, sidebarShowUnread, sidebarGroupByType, isDiscussionEnabled]),
 		50,
 	);
 };
