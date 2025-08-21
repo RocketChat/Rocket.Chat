@@ -3182,10 +3182,12 @@
   "mention-all_description": "Дозвіл на використання @all згадки",
   "mention-here": "Згадаю тут",
   "mention-here_description": "Дозвіл на використання @here згадати",
-  "message_counter_one": "{{count}} повідомлення",
-  "message_counter_other": "{{count}} повідомлень",
-  "message_counter_many": "{{count}} повідомлень",
-  "message_counter_few": "{{count}} повідомлень",
+  "message_counter": {
+    "one": "{{count}} повідомлення",
+    "few": "{{count}} повідомлень",
+    "many": "{{count}} повідомлень",
+    "other": "{{count}} повідомлень"
+  },
   "messages": "повідомлення",
   "messages_pruned": "повідомлення обрізані",
   "meteor_status_try_now_waiting": "Спробуй зараз",
