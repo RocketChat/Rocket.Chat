@@ -80,7 +80,7 @@ describe('MessageForm', () => {
 		expect(screen.queryByText(component.body.text)).not.toBeInTheDocument();
 
 		await userEvent.click(screen.getByLabelText('Template*'));
-		await userEvent.click(await screen.findByRole('option', { name: 'Template One' }));
+		await userEvent.click(await screen.findByRole('option', { name: /Template One/ }));
 
 		expect(screen.getByLabelText('Template*')).toHaveTextContent('Template One');
 		expect(await screen.findByText(component.body.text)).toBeInTheDocument();
@@ -91,7 +91,7 @@ describe('MessageForm', () => {
 		render(<MessageForm {...defaultProps} onSubmit={handleSubmit} />, { wrapper: appRoot.build() });
 
 		await userEvent.click(screen.getByLabelText('Template*'));
-		await userEvent.click(await screen.findByRole('option', { name: 'Template One' }));
+		await userEvent.click(await screen.findByRole('option', { name: /Template One/ }));
 
 		await userEvent.type(screen.getByLabelText('Body {{1}}'), 'Hello World');
 
@@ -160,7 +160,7 @@ describe('MessageForm', () => {
 		await userEvent.type(screen.getByLabelText('Body {{1}}'), 'Hello World');
 
 		await userEvent.click(screen.getByLabelText('Template*'));
-		await userEvent.click(await screen.findByRole('option', { name: 'Template Two' }));
+		await userEvent.click(await screen.findByRole('option', { name: /Template Two/ }));
 
 		expect(screen.getByLabelText('Body {{1}}')).toHaveValue('');
 	});
