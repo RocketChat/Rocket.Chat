@@ -157,6 +157,7 @@ jobs:
           bun install
           bun run build
           bun run bundle:sdk
+          rm -rf .git
           cp -r ../homeserver /tmp/homeserver
         if: steps.cache-homeserver.outputs.cache-hit != 'true'
 
