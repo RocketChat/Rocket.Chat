@@ -256,13 +256,6 @@ const omnichannelContactsEndpoints = API.v1.post(
 				return API.v1.failure('error-invalid-contact');
 			}
 
-			switch (error.message) {
-				case 'error-contact-not-found':
-					return API.v1.failure(error.message);
-				case 'error-contact-has-open-rooms':
-					return API.v1.failure(error.message);
-			}
-
 			return API.v1.failure(error.message);
 		}
 	},

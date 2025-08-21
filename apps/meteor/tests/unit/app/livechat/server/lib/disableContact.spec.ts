@@ -8,7 +8,7 @@ const modelsMock = {
 		disableByContactId: sinon.stub(),
 	},
 	LivechatRooms: {
-		findOne: sinon.stub(),
+		checkContactOpenRooms: sinon.stub(),
 	},
 };
 
@@ -38,7 +38,7 @@ describe('disableContact', () => {
 
 	beforeEach(() => {
 		modelsMock.LivechatContacts.findOneEnabledById.reset();
-		modelsMock.LivechatRooms.findOne.reset();
+		modelsMock.LivechatRooms.checkContactOpenRooms.reset();
 		modelsMock.LivechatContacts.disableByContactId.reset();
 		settingsMock.get.reset();
 		removeGuestMock.removeGuest.reset();
@@ -47,14 +47,14 @@ describe('disableContact', () => {
 	it('should disable the contact', async () => {
 		settingsMock.get.withArgs('Livechat_Allow_collect_and_store_HTTP_header_informations').returns(true);
 		modelsMock.LivechatContacts.findOneEnabledById.resolves(contact);
-		modelsMock.LivechatRooms.findOne.resolves(null);
+		modelsMock.LivechatRooms.checkContactOpenRooms.resolves(null);
 		removeGuestMock.removeGuest.resolves();
 		modelsMock.LivechatContacts.disableByContactId.resolves();
 
 		await disableContactById(contact._id);
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith(contact._id)).to.be.true;
-		expect(modelsMock.LivechatRooms.findOne.calledOnceWith({ contactId: contact._id, open: true }, { projection: { _id: 1 } })).to.be.true;
+		expect(modelsMock.LivechatRooms.checkContactOpenRooms.calledOnceWith(contact._id)).to.be.true;
 		expect(removeGuestMock.removeGuest.calledOnceWith({ _id: 'visitor-id' })).to.be.true;
 		expect(modelsMock.LivechatContacts.disableByContactId.calledOnceWith(contact._id)).to.be.true;
 	});
@@ -64,7 +64,7 @@ describe('disableContact', () => {
 
 		settingsMock.get.withArgs('Livechat_Allow_collect_and_store_HTTP_header_informations').returns(true);
 		modelsMock.LivechatContacts.findOneEnabledById.resolves(contact);
-		modelsMock.LivechatRooms.findOne.resolves(null);
+		modelsMock.LivechatRooms.checkContactOpenRooms.resolves(null);
 		removeGuestMock.removeGuest.resolves();
 		modelsMock.LivechatContacts.disableByContactId.resolves();
 
@@ -72,7 +72,7 @@ describe('disableContact', () => {
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith(contact._id)).to.be.true;
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith(contact._id)).to.be.true;
-		expect(modelsMock.LivechatRooms.findOne.calledOnceWith({ contactId: contact._id, open: true }, { projection: { _id: 1 } })).to.be.true;
+		expect(modelsMock.LivechatRooms.checkContactOpenRooms.calledOnceWith(contact._id)).to.be.true;
 		expect(removeGuestMock.removeGuest.calledTwice).to.be.true;
 		expect(removeGuestMock.removeGuest.getCall(0).args[0]).to.deep.equal({ _id: 'visitor-id' });
 		expect(removeGuestMock.removeGuest.getCall(1).args[0]).to.deep.equal({ _id: 'visitor-id-2' });
@@ -85,7 +85,7 @@ describe('disableContact', () => {
 		await expect(disableContactById('nonexistent-contact-id')).to.be.rejectedWith('error-contact-not-found');
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith('nonexistent-contact-id')).to.be.true;
-		expect(modelsMock.LivechatRooms.findOne.notCalled).to.be.true;
+		expect(modelsMock.LivechatRooms.checkContactOpenRooms.notCalled).to.be.true;
 		expect(removeGuestMock.removeGuest.notCalled).to.be.true;
 		expect(modelsMock.LivechatContacts.disableByContactId.notCalled).to.be.true;
 	});
@@ -93,12 +93,12 @@ describe('disableContact', () => {
 	it('should throw error if contact has open rooms and GDPR is disabled', async () => {
 		settingsMock.get.withArgs('Livechat_Allow_collect_and_store_HTTP_header_informations').returns(false);
 		modelsMock.LivechatContacts.findOneEnabledById.resolves(contact);
-		modelsMock.LivechatRooms.findOne.resolves({ _id: 'room-id' });
+		modelsMock.LivechatRooms.checkContactOpenRooms.resolves({ _id: 'room-id' });
 		modelsMock.LivechatContacts.disableByContactId.resolves();
 
 		await expect(disableContactById(contact._id)).to.be.rejectedWith('error-contact-has-open-rooms');
 
-		expect(modelsMock.LivechatRooms.findOne.calledOnceWith({ contactId: contact._id, open: true }, { projection: { _id: 1 } })).to.be.true;
+		expect(modelsMock.LivechatRooms.checkContactOpenRooms.calledOnceWith(contact._id)).to.be.true;
 		expect(removeGuestMock.removeGuest.notCalled).to.be.true;
 		expect(modelsMock.LivechatContacts.disableByContactId.notCalled).to.be.true;
 	});
