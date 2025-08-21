@@ -166,7 +166,7 @@ describe('useReloadOnError', () => {
 		);
 
 		// Mock fetch to return first, then second
-		(global.fetch as jest.Mock) = jest.fn().mockResolvedValueOnce(firstReply).mockResolvedValueOnce(secondReply);
+		(global.fetch as unknown as jest.Mock) = jest.fn().mockResolvedValueOnce(firstReply).mockResolvedValueOnce(secondReply);
 
 		const { result } = renderHook(() => useReloadOnError('/sampleurl?token=old', 'audio'));
 		const media = makeMediaEl();
@@ -217,7 +217,7 @@ describe('useReloadOnError', () => {
 
 	it('ignores initial play when expiry is unknown', async () => {
 		// no fetch expected on first play because expiresAt is not known yet
-		global.fetch = jest.fn();
+		(global.fetch as unknown as jest.Mock) = jest.fn();
 
 		const { result } = renderHook(() => useReloadOnError('/foo', 'audio'));
 		const media = makeMediaEl();
