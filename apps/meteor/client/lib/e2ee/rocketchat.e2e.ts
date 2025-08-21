@@ -14,7 +14,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { E2EEState } from './E2EEState';
-import { toString, toArrayBuffer, joinVectorAndEcryptedData, splitVectorAndEcryptedData } from './helper';
+import { toString, splitVectorAndEcryptedData } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { settings } from '../../../app/settings/client';
@@ -499,19 +499,12 @@ class E2E extends Emitter<{
 	}
 
 	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
-		const masterKey = await this.e2ee.getMasterKey(password);
-		const vector = this.e2ee.codec.getRandomUint8Array(16);
-		try {
-			if (!masterKey.isOk) {
-				throw new Error('Error getting master key');
-			}
-			const encodedPrivateKey = await this.e2ee.codec.crypto.encryptAesCbc(masterKey.value, vector, toArrayBuffer(privateKey));
-
-			return this.e2ee.codec.stringifyUint8Array(joinVectorAndEcryptedData(vector, encodedPrivateKey));
-		} catch (error) {
-			this.setState('ERROR');
-			return this.error('Error encrypting encodedPrivateKey: ', error);
+		const res = await this.e2ee.encodePrivateKey(privateKey, password);
+		if (res.isOk) {
+			return res.value;
 		}
+		this.setState('ERROR');
+		return this.error('Error encoding private key: ', res.error);
 	}
 
 	async getMasterKey(password: string): Promise<void | CryptoKey> {

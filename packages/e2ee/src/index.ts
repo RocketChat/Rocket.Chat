@@ -1,5 +1,7 @@
 import { type Optional, type Result, err, ok } from './utils.ts';
 import type { BaseKeyCodec } from './codec.ts';
+import { joinVectorAndEncryptedData } from './vector.ts';
+import { toArrayBuffer } from './binary.ts';
 
 export { BaseKeyCodec } from './codec.ts';
 
@@ -84,14 +86,27 @@ export abstract class BaseE2EE {
 		}
 	}
 
-	async loadKeysFromDB(callbacks: {
-		onSuccess: (keys: KeyPair) => void;
-		onError: (error: unknown) => void;
-	}): Promise<void> {
+	async loadKeysFromDB(callbacks: { onSuccess: (keys: KeyPair) => void; onError: (error: unknown) => void }): Promise<void> {
 		try {
-			callbacks.onSuccess((await this.getKeysFromService()));
+			callbacks.onSuccess(await this.getKeysFromService());
 		} catch (error) {
 			callbacks.onError(error);
+		}
+	}
+
+	async encodePrivateKey(privateKey: string, password: string): Promise<Result<string, Error>> {
+		const masterKey = await this.getMasterKey(password);
+		if (!masterKey.isOk) {
+			return masterKey;
+		}
+		const IV_LENGTH = 16;
+		const vector = this.#codec.getRandomUint8Array(IV_LENGTH);
+		try {
+			const encodedPrivateKey = await this.#codec.crypto.encryptAesCbc(masterKey.value, vector, toArrayBuffer(privateKey));
+
+			return ok(this.#codec.stringifyUint8Array(joinVectorAndEncryptedData(vector, encodedPrivateKey)));
+		} catch (error) {
+			return err(new Error('Error encrypting encodedPrivateKey', { cause: error }));
 		}
 	}
 

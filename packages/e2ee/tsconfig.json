@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"composite": false,
-		"module": "es2022",
+		"module": "preserve",
 		"target": "ES2024",
 		"lib": ["ESNext", "WebWorker"],
 		"types": [],
@@ -9,6 +9,7 @@
 
 		/** Modules */
 		"rootDir": "src",
+		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
 		"rewriteRelativeImportExtensions": true,
 
@@ -18,6 +19,7 @@
 		"declaration": true,
 		"declarationMap": true,
 		"verbatimModuleSyntax": true,
+		
 		"moduleDetection": "force",
 
 		/** Language and Environment */

@@ -1,53 +1,65 @@
-// import { BaseKeyCodec, type CryptoProvider } from '../key-codec.ts';
+// import { cbc } from '@noble/ciphers/aes.js';
+// import { expect, test } from 'vitest';
+// import { BaseKeyCodec } from '../codec.ts';
 
 // class KeyCodec extends BaseKeyCodec {
 // 	constructor() {
 // 		super({
-// 			decodeBase64: (input) => {
-// 				const binaryString = atob(data)
-// 			}
+// 			decryptAesCbc(key, iv, data) {
+// 				return cbc(key, iv).encrypt(data);
+// 			},
 // 		});
 // 	}
 // }
 
+// test('KeyCodec stringifyUint8Array', () => {
+// 	const data = new Uint8Array([0x01, 2, 3]);
+// 	const jsonString = codec.stringifyUint8Array(data);
+// 	expect(jsonString).toBe('{"$binary":"AQID"}');
+// });
+
+// test('KeyCodec parseUint8Array', () => {
+// 	const jsonString = '{"$binary":"AQID"}';
+// 	const data = codec.parseUint8Array(jsonString);
+// 	expect(data).toEqual(new Uint8Array([1, 2, 3]));
+// });
+
 // test('KeyCodec roundtrip (v1 structured encoding)', async () => {
-// 	const codec = new KeyCodec(testCrypto);
-// 	const { privateJWK } = await codec.generateRSAKeyPair();
-// 	const privStr = JSON.stringify(privateJWK);
-// 	const masterKey = await codec.deriveMasterKey('pass123', new TextEncoder().encode('salt-user-1'));
-// 	const enc = await codec.encodePrivateKey(privStr, masterKey);
+// 	const { privateJWK } = await codec.generateRsaOaepKeyPair();
+
+// 	const saltBuffer = codec.encodeSalt('salt-user-1');
+// 	const masterKey = await codec.deriveMasterKey(saltBuffer, 'pass123');
+// 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
 // 	const dec = await codec.decodePrivateKey(enc, masterKey);
-// 	assert.equal(dec, privStr);
+// 	expect(dec).toStrictEqual(privateJWK);
 // });
 
 // test('KeyCodec wrong password fails', async () => {
-// 	const codec = new KeyCodec(deps);
-// 	const { privateJWK } = await codec.generateRSAKeyPair();
-// 	const privStr = JSON.stringify(privateJWK);
-// 	const salt1 = new TextEncoder().encode('salt1');
-// 	const masterKey = await codec.deriveMasterKey('correct', salt1);
-// 	const masterKey2 = await codec.deriveMasterKey('incorrect', salt1);
-// 	const enc = await codec.encodePrivateKey(privStr, masterKey);
-// 	await assert.rejects(() => codec.decodePrivateKey(enc, masterKey2));
+// 	const { privateJWK } = await codec.generateRsaOaepKeyPair();
+// 	const salt1 = codec.encodeSalt('salt1');
+// 	const masterKey = await codec.deriveMasterKey(salt1, 'correct');
+// 	const masterKey2 = await codec.deriveMasterKey(salt1, 'incorrect');
+// 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
+// 	await expect(codec.decodePrivateKey(enc, masterKey2)).rejects.toThrow();
 // });
 
 // test('KeyCodec tamper detection (ciphertext)', async () => {
-// 	const codec = new KeyCodec(deps);
-// 	const { privateJWK } = await codec.generateRSAKeyPair();
-// 	const privStr = JSON.stringify(privateJWK);
-// 	const masterKey = await codec.deriveMasterKey('pw', new TextEncoder().encode('salt'));
-// 	const enc = await codec.encodePrivateKey(privStr, masterKey);
+// 	const { privateJWK } = await codec.generateRsaOaepKeyPair();
+// 	const salt = codec.encodeSalt('salt');
+// 	const masterKey = await codec.deriveMasterKey(salt, 'pw');
+// 	const enc = await codec.encodePrivateKey(privateJWK, masterKey);
 // 	// Tamper with ctB64
 // 	const mutated = { ...enc, ctB64: enc.ctB64.slice(0, -2) + 'AA' };
-// 	await assert.rejects(() => codec.decodePrivateKey(mutated, masterKey));
+// 	await expect(codec.decodePrivateKey(mutated, masterKey)).rejects.toThrow();
 // });
 
 // test('KeyCodec legacy roundtrip', async () => {
-// 	const codec = new KeyCodec(deps);
-// 	const { privateJWK } = await codec.generateRSAKeyPair();
+// 	const { privateJWK } = await codec.generateRsaOaepKeyPair();
 // 	const privStr = JSON.stringify(privateJWK);
 // 	const blob = await codec.legacyEncrypt(privStr, 'pw', 'salt');
-// 	const dec = await codec.legacyDecrypt(blob, 'pw', 'salt');
-// 	assert.equal(dec, privStr);
+// 	const decAny = await codec.legacyDecrypt(blob, 'pw', 'salt');
+// 	const dec = typeof decAny === 'string' ? JSON.parse(decAny) : decAny;
+// 	expect(dec).toStrictEqual(privateJWK);
 // });
+
 export {};
