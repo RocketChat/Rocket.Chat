@@ -1,7 +1,7 @@
 import { type Optional, type Result, err, ok } from './utils.ts';
+import { joinVectorAndEncryptedData, splitVectorAndEncryptedData } from './vector.ts';
+import { toArrayBuffer, toString } from './binary.ts';
 import type { BaseKeyCodec } from './codec.ts';
-import { joinVectorAndEncryptedData } from './vector.ts';
-import { toArrayBuffer } from './binary.ts';
 
 export { BaseKeyCodec } from './codec.ts';
 
@@ -107,6 +107,22 @@ export abstract class BaseE2EE {
 			return ok(this.#codec.stringifyUint8Array(joinVectorAndEncryptedData(vector, encodedPrivateKey)));
 		} catch (error) {
 			return err(new Error('Error encrypting encodedPrivateKey', { cause: error }));
+		}
+	}
+
+	async decodePrivateKey(privateKey: string, password: string): Promise<Result<string, Error>> {
+		const masterKey = await this.getMasterKey(password);
+		if (!masterKey.isOk) {
+			return masterKey;
+		}
+
+		const [vector, cipherText] = splitVectorAndEncryptedData(this.#codec.parseUint8Array(privateKey));
+
+		try {
+			const privKey = await this.#codec.crypto.decryptAesCbc(masterKey.value, vector, cipherText);
+			return ok(toString(privKey));
+		} catch (error) {
+			return err(new Error('Error decrypting private key', { cause: error }));
 		}
 	}
 

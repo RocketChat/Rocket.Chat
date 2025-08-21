@@ -1,18 +1,14 @@
 // Returns the input unchanged if it's already a string; otherwise treats the input
-// as an ArrayBuffer / TypedArray / DataView whose bytes become 1:1 code points in the string.
-export const toString = (data: Uint8Array<ArrayBuffer>): string => {
-	if (typeof data === 'string') {
-		return data;
-	}
+// as an ArrayBuffer / TypedArray whose bytes become 1:1 char codes in the string.
+export const toString = (data: ArrayBuffer): string => {
+	// Accept ArrayBuffer, TypedArray, DataView
+	const u8 = new Uint8Array(data);
 
-	const u8: Uint8Array = new Uint8Array(data.length);
-
-	// Convert in chunks to avoid exceeding argument length limits (spread arg cap)
-	const CHUNK_SIZE = 32_768; // 32 KB per chunk
+	// Convert in chunks to avoid exceeding argument length limits
+	const CHUNK = 0x80_00;
 	let result = '';
-	for (let offset = 0; offset < u8.length; offset += CHUNK_SIZE) {
-		const slice = u8.subarray(offset, offset + CHUNK_SIZE);
-		result += String.fromCodePoint(...slice);
+	for (let i = 0; i < u8.length; i += CHUNK) {
+		result += String.fromCodePoint(...u8.subarray(i, i + CHUNK));
 	}
 	return result;
 };
@@ -24,7 +20,7 @@ export const toArrayBuffer = (data: string): Uint8Array<ArrayBuffer> => {
 		return new Uint8Array();
 	}
 
-	const BYTE_RANGE = 256;
+	const BYTE_RANGE = 0x1_00; // 256 possible byte values
 	const FALLBACK_CODE_POINT = 0;
 	const INCREMENT = 1;
 	const len = data.length;
