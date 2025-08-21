@@ -8,11 +8,12 @@ type MessageToolbarItemProps = {
 	icon: IconName;
 	title: string;
 	disabled?: boolean;
+	danger?: boolean;
 	qa: string;
 	onClick: MouseEventHandler;
 };
 
-const MessageToolbarItem = ({ id, icon, title, disabled, qa, onClick }: MessageToolbarItemProps) => {
+const MessageToolbarItem = ({ id, icon, title, disabled, danger, qa, onClick }: MessageToolbarItemProps) => {
 	const hiddenActions = useLayoutHiddenActions().messageToolbox;
 
 	if (hiddenActions.includes(id)) {
@@ -24,6 +25,7 @@ const MessageToolbarItem = ({ id, icon, title, disabled, qa, onClick }: MessageT
 			icon={icon}
 			title={title}
 			disabled={disabled}
+			danger={danger}
 			data-qa-id={qa}
 			data-qa-type='message-action-menu'
 			onClick={onClick}
