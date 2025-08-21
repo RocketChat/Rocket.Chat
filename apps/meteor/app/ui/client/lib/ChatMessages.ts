@@ -27,6 +27,8 @@ type DeepWritable<T> = T extends (...args: any) => any
 export class ChatMessages implements ChatAPI {
 	public uid: string | null;
 
+	public tmid?: IMessage['_id'];
+
 	public composer: ComposerAPI | undefined;
 
 	public setComposerAPI = (composer?: ComposerAPI): void => {
@@ -93,6 +95,7 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			await this.currentEditingMessage.cancel();
+			await this.currentEditingMessage.stop();
 		},
 		toNextMessage: async () => {
 			const mid = this.currentEditingMessage.getMID();
@@ -115,6 +118,7 @@ export class ChatMessages implements ChatAPI {
 			}
 
 			await this.currentEditingMessage.cancel();
+			await this.currentEditingMessage.stop();
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
 			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0]?.description || message.msg;
@@ -140,11 +144,12 @@ export class ChatMessages implements ChatAPI {
 
 	public constructor(params: { rid: IRoom['_id']; tmid?: IMessage['_id']; uid: IUser['_id'] | null; actionManager: IActionManager }) {
 		const { rid, tmid } = params;
+		this.tmid = tmid;
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid, tmid });
 		this.ActionManager = params.actionManager;
-		this.currentEditingMessage = new CurrentEditingMessage(this.data, params, this.composer);
+		this.currentEditingMessage = new CurrentEditingMessage(this);
 
 		const unimplemented = () => {
 			throw new Error('Flow is not implemented');
@@ -183,8 +188,9 @@ export class ChatMessages implements ChatAPI {
 
 	public async release() {
 		if (this.currentEditingMessage.getMID()) {
-			if (!this.currentEditingMessage.getParams().tmid) {
+			if (!this.tmid) {
 				await this.currentEditingMessage.cancel();
+				await this.currentEditingMessage.stop();
 			}
 			this.composer?.clear();
 		}

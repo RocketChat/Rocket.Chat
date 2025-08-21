@@ -180,6 +180,7 @@ const MessageBox = ({
 			chat.currentEditingMessage.reset().then((reset) => {
 				if (!reset) {
 					chat.currentEditingMessage.cancel();
+					chat.currentEditingMessage.stop();
 				}
 			});
 		}

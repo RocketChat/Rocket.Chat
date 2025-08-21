@@ -6,32 +6,26 @@ export class CurrentEditingMessage {
 
 	private mid?: string;
 
-	private composer: ChatAPI['composer'] | undefined;
-
-	private data: ChatAPI['data'];
-
-	private params: { tmid?: string };
-
 	private queue: {
 		resolve: (release: () => void) => void;
 	}[] = [];
 
-	constructor(data: ChatAPI['data'], params: { tmid?: string }, composer?: ChatAPI['composer']) {
-		this.composer = composer;
-		this.data = data;
-		this.params = params;
+	private chat: ChatAPI;
+
+	constructor(chat: ChatAPI) {
+		this.chat = chat;
 	}
 
 	public reset = async () => {
 		return this.runExclusive(async () => {
-			if (!this.composer || !this.mid) {
+			if (!this.chat.composer || !this.mid) {
 				return false;
 			}
 
-			const message = await this.data.findMessageByID(this.mid);
+			const message = await this.chat.data.findMessageByID(this.mid);
 
-			if (this.composer.text !== message?.msg) {
-				this.composer.setText(message?.msg ?? '');
+			if (this.chat.composer.text !== message?.msg) {
+				this.chat.composer.setText(message?.msg ?? '');
 				return true;
 			}
 
@@ -41,20 +35,20 @@ export class CurrentEditingMessage {
 
 	public stop = async () => {
 		await this.runExclusive(async () => {
-			if (!this.composer || !this.mid) {
+			if (!this.chat.composer || !this.mid) {
 				return;
 			}
 
-			const message = await this.data.findMessageByID(this.mid);
-			const draft = this.composer.text;
+			const message = await this.chat.data.findMessageByID(this.mid);
+			const draft = this.chat.composer.text;
 
 			if (draft === message?.msg) {
-				await this.data.discardDraft(this.mid);
+				await this.chat.data.discardDraft(this.mid);
 			} else {
-				await this.data.saveDraft(this.mid, (await this.data.getDraft(this.mid)) || draft);
+				await this.chat.data.saveDraft(this.mid, (await this.chat.data.getDraft(this.mid)) || draft);
 			}
 
-			this.composer.setEditingMode(false);
+			this.chat.composer.setEditingMode(false);
 			this.mid = undefined;
 			clearHighlightMessage();
 		});
@@ -66,9 +60,8 @@ export class CurrentEditingMessage {
 				return;
 			}
 
-			await this.data.discardDraft(this.mid);
-			await this.stop();
-			this.composer?.setText((await this.data.getDraft(undefined)) ?? '');
+			await this.chat.data.discardDraft(this.mid);
+			this.chat.composer?.setText((await this.chat.data.getDraft(undefined)) ?? '');
 		});
 	};
 
@@ -91,20 +84,12 @@ export class CurrentEditingMessage {
 		}
 
 		this.lock = true;
-
 		next.resolve(this.buildRelease());
 	}
 
 	private buildRelease = () => {
 		return async () => {
 			this.lock = false;
-
-			if (!this.params.tmid) {
-				await this.cancel();
-			}
-
-			this.composer?.clear();
-
 			this.dispatch();
 		};
 	};
@@ -115,10 +100,6 @@ export class CurrentEditingMessage {
 
 	public setMID(mid: string) {
 		this.mid = mid;
-	}
-
-	public getParams() {
-		return this.params;
 	}
 
 	private async runExclusive<T>(callback: () => Promise<T>) {
