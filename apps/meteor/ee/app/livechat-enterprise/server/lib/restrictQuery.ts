@@ -1,9 +1,9 @@
-import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
 import { cbLogger } from './logger';
-import { getUnitsFromUser, memoizedGetDepartmentsFromUserRoles, memoizedGetUnitFromUserRoles } from '../methods/getUnitsFromUserRoles';
+import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 export const restrictQuery = async ({
 	originalQuery = {},
@@ -42,26 +42,5 @@ export const restrictQuery = async ({
 	query.$and = [condition, ...expressions];
 
 	cbLogger.debug({ msg: 'Applying room query restrictions', userUnits });
-	return query;
-};
-
-export const restrictDepartmentsQuery = async ({
-	originalQuery = {},
-	userId,
-}: {
-	originalQuery?: FilterOperators<ILivechatDepartment>;
-	userId: string;
-}) => {
-	const query: FilterOperators<ILivechatDepartment> = { ...originalQuery };
-
-	const userUnits = await memoizedGetUnitFromUserRoles(userId);
-	const userDepartments = await memoizedGetDepartmentsFromUserRoles(userId);
-	const expressions = query.$and || [];
-	const condition = {
-		$or: [{ ancestors: { $in: userUnits } }, { _id: { $in: userDepartments } }],
-	};
-	query.$and = [condition, ...expressions];
-
-	cbLogger.debug({ msg: 'Applying department query restrictions', userUnits });
 	return query;
 };

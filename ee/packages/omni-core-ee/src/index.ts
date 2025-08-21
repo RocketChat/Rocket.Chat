@@ -3,3 +3,5 @@ import { isDepartmentCreationAvailablePatch } from './isDepartmentCreationAvaila
 export function patchOmniCore(): void {
 	isDepartmentCreationAvailablePatch();
 }
+
+export * from './outbound-communication';
