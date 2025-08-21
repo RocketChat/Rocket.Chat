@@ -1,4 +1,4 @@
-import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
@@ -15,11 +15,10 @@ const SidePanelQueue = () => {
 
 	const hasEEModule = useHasLicenseModule('livechat-enterprise');
 	const canViewOmnichannelQueue = usePermission('view-livechat-queue');
-	const isQueueEnabled = useSetting('Livechat_waiting_queue');
 
 	const rooms = useSidePanelRoomsListTab('queue');
 	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
-	const shouldDisplayQueue = hasEEModule && canViewOmnichannelQueue && isQueueEnabled;
+	const shouldDisplayQueue = hasEEModule && canViewOmnichannelQueue;
 	useRedirectToDefaultTab(!shouldDisplayQueue);
 
 	if (!shouldDisplayQueue) {
