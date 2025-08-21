@@ -195,7 +195,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 			throw new Error('error-invalid-arguments');
 		}
 
-		if (!userId || userId === '') {
+		if (!userId) {
 			return false;
 		}
 
