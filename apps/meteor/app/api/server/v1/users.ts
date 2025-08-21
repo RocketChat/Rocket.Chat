@@ -32,7 +32,6 @@ import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/
 import { i18n } from '../../../../server/lib/i18n';
 import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
-import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
 import { resetAvatar } from '../../../../server/methods/resetAvatar';
@@ -56,6 +55,7 @@ import { generateUsernameSuggestion } from '../../../lib/server/functions/getUse
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
+import { sendWelcomeEmail } from '../../../lib/server/functions/saveUser/sendUserEmail';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
@@ -66,6 +66,7 @@ import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnAccount';
 import { settings } from '../../../settings/server';
+import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -634,7 +635,22 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { email } = this.bodyParams;
-			await sendWelcomeEmail(email);
+
+			if (!isSMTPConfigured()) {
+				throw new Meteor.Error('error-email-send-failed', 'SMTP is not configured', {
+					method: 'sendWelcomeEmail',
+				});
+			}
+
+			const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
+
+			if (!user) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'sendWelcomeEmail',
+				});
+			}
+
+			await sendWelcomeEmail({ ...user, email });
 
 			return API.v1.success();
 		},
