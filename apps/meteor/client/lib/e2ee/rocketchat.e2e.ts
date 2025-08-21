@@ -14,7 +14,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { E2EEState } from './E2EEState';
-// import { toString, splitVectorAndEcryptedData } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { settings } from '../../../app/settings/client';
