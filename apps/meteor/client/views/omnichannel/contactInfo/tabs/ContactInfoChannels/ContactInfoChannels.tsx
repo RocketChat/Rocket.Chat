@@ -25,7 +25,6 @@ const ContactInfoChannels = ({ contactId }: ContactInfoChannelsProps) => {
 
 	const { data: providers = [] } = useOutboundProvidersList({
 		select: (data) => data.providers.map((provider) => provider.providerId),
-		staleTime: 1000 * 60 * 5, // 5 minutes
 	});
 
 	if (isPending) {
