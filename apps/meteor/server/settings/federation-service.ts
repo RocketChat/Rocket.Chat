@@ -10,13 +10,6 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			alert: 'Federation_Service_Alert',
 		});
 
-		await this.add('Federation_Service_Matrix_Domain', 'localhost', {
-			type: 'string',
-			i18nLabel: 'Federation_Service_Matrix_Domain',
-			i18nDescription: 'Federation_Service_Matrix_Domain_Description',
-			public: true,
-		});
-
 		await this.add('Federation_Service_Matrix_Port', 3000, {
 			type: 'int',
 			i18nLabel: 'Federation_Service_Matrix_Port',
