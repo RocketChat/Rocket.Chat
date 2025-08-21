@@ -3,8 +3,8 @@ import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import RoomListFiltersItem from './RoomListFiltersItem';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
-import { sidePanelFiltersConfig } from '../../views/navigation/contexts/RoomsNavigationContext';
+import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import { sidePanelFiltersConfig } from '../../contexts/RoomsNavigationContext';
 
 const OmnichannelFilters = () => {
 	const { t } = useTranslation();

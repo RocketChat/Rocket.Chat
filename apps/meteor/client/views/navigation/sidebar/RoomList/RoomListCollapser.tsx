@@ -3,24 +3,26 @@ import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { AllGroupsKeys } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListCollapserProps = {
+	group: AllGroupsKeys;
 	groupTitle: string;
 	collapsedGroups: string[];
 	onClick: MouseEventHandler<HTMLElement>;
 	onKeyDown: (e: KeyboardEvent) => void;
 	unreadCount: Pick<ISubscription, 'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
 } & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'onKeyDown'>;
-const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapsedGroups, ...props }: RoomListCollapserProps) => {
+
+const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapsedGroups, group, ...props }: RoomListCollapserProps) => {
 	const { t } = useTranslation();
 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
-
 	return (
 		<SidebarV2CollapseGroup
 			title={t(groupTitle)}
-			expanded={!collapsedGroups.includes(groupTitle)}
+			expanded={!collapsedGroups.includes(group)}
 			badge={
 				showUnread ? (
 					<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
@@ -29,7 +31,7 @@ const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapse
 				) : undefined
 			}
 			aria-label={
-				!collapsedGroups.includes(groupTitle) ? t('Collapse_group', { group: t(groupTitle) }) : t('Expand_group', { group: t(groupTitle) })
+				!collapsedGroups.includes(group) ? t('Collapse_group', { group: t(groupTitle) }) : t('Expand_group', { group: t(groupTitle) })
 			}
 			{...props}
 		/>
