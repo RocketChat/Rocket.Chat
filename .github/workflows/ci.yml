@@ -138,19 +138,18 @@ jobs:
     needs: [release-versions]
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: RocketChat/homeserver
+          path: homeserver
+
       - uses: actions/cache@v4
         id: cache-homeserver
         name: cache homeserver
         with:
-          path: homeserver
-          key: ${{ runner.os }}-homeserver-${{ hashFiles('homeserver/package.json') }}
-          restore-keys: ${{ runner.os }}-homeserver-
-      - uses: actions/checkout@v4
-        if: steps.cache-homeserver.outputs.cache-hit != 'true'
-        with:
-          repository: RocketChat/homeserver
-          path: homeserver
-          ref: bundle-for-rocket.chat
+          path: /tmp/homeserver
+          key: homeserver-${{ hashFiles('homeserver/.git/refs/heads/main') }}
+
       - uses: oven-sh/setup-bun@v2
         if: steps.cache-homeserver.outputs.cache-hit != 'true'
       - run: |
@@ -165,7 +164,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: homeserver
-          path: homeserver
+          path: /tmp/homeserver
 
   packages-build:
     name: 📦 Build Packages
