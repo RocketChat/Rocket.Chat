@@ -4,5 +4,4 @@ export default {
 	livechatConnectedAlertId: 'LIVECHAT_CONNECTED',
 	livechatDisconnectedAlertId: 'LIVECHAT_DISCONNECTED',
 	livechatQueueMessageId: 'LIVECHAT_QUEUE_MESSAGE',
-	webRTCCallStartedMessageType: 'livechat_webrtc_video_call',
 } as const;

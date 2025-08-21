@@ -5,7 +5,6 @@ import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { i18n } from '../../../../../server/lib/i18n';
 import { normalizeAgent } from '../../lib/Helper';
 import { getInitSettings } from '../../lib/settings';
 
@@ -148,20 +147,6 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 			background: initSettings.Livechat_background,
 			hideExpandChat: initSettings.Livechat_hide_expand_chat,
 			actionLinks: {
-				webrtc: [
-					{
-						actionLinksAlignment: 'flex-start',
-						i18nLabel: 'Join_call',
-						label: i18n.t('Join_call'),
-						method_id: 'joinLivechatWebRTCCall',
-					},
-					{
-						i18nLabel: 'End_call',
-						label: i18n.t('End_call'),
-						method_id: 'endLivechatWebRTCCall',
-						danger: true,
-					},
-				],
 				jitsi: [
 					{ icon: 'icon-videocam', i18nLabel: 'Accept' },
 					{ icon: 'icon-cancel', i18nLabel: 'Decline' },

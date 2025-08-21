@@ -9,7 +9,6 @@ import { upsert } from '../helpers/upsert';
 import { store, initialState } from '../store';
 import { normalizeAgent } from './api';
 import Commands from './commands';
-import constants from './constants';
 import { loadConfig, processUnread } from './main';
 import { parentCall } from './parentCall';
 import { createToken } from './random';
@@ -49,10 +48,6 @@ const getVideoConfMessageData = (message) =>
 		?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 
 const isVideoCallMessage = (message) => {
-	if (message.t === constants.webRTCCallStartedMessageType) {
-		return true;
-	}
-
 	if (getVideoConfMessageData(message)) {
 		return true;
 	}

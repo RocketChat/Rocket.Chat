@@ -859,15 +859,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<IRoomFederated>(query, options);
 	}
 
-	findCountOfRoomsWithActiveCalls(): Promise<number> {
-		const query: Filter<IRoom> = {
-			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
-			callStatus: { $exists: true },
-		};
-
-		return this.countDocuments(query);
-	}
-
 	async findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined> {
 		const asc = false;
 

@@ -4058,14 +4058,6 @@ export type OmnichannelEndpoints = {
 		GET: () => { responses: IOmnichannelCannedResponse[] };
 	};
 
-	'/v1/livechat/webrtc.call': {
-		GET: (params: GETWebRTCCall) => { videoCall: { rid: string; provider: string; callStatus: 'ringing' | 'ongoing' } };
-	};
-
-	'/v1/livechat/webrtc.call/:callId': {
-		PUT: (params: PUTWebRTCCallId) => { status: string | undefined };
-	};
-
 	'/v1/livechat/sla': {
 		GET: (params: LivechatPrioritiesProps) => PaginatedResult<{ sla: IOmnichannelServiceLevelAgreements[] }>;
 		POST: (params: CreateOrUpdateLivechatSlaProps) => { sla: Omit<IOmnichannelServiceLevelAgreements, '_updatedAt'> };

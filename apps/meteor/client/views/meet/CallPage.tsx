@@ -5,9 +5,6 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 
 import OngoingCallDuration from './OngoingCallDuration';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { WebRTC } from '../../../app/webrtc/client';
-import { WEB_RTC_EVENTS } from '../../../app/webrtc/lib/constants';
 import './styles.css';
 
 type CallPageProps = {
@@ -39,10 +36,10 @@ const CallPage = ({
 	const [isAgentActive, setIsAgentActive] = useState(false);
 	const [isMicOn, setIsMicOn] = useState(false);
 	const [isCameraOn, setIsCameraOn] = useState(false);
-	const [isRemoteMobileDevice, setIsRemoteMobileDevice] = useState(false);
-	const [callInIframe, setCallInIframe] = useState(false);
-	const [isRemoteCameraOn, setIsRemoteCameraOn] = useState(false);
-	const [isLocalMobileDevice, setIsLocalMobileDevice] = useState(false);
+	const [isRemoteMobileDevice] = useState(false);
+	const [callInIframe] = useState(false);
+	const [isRemoteCameraOn] = useState(false);
+	const [isLocalMobileDevice] = useState(false);
 
 	let iconSize = 'x21';
 	let buttonSize = 'x40';
@@ -60,138 +57,18 @@ const CallPage = ({
 			if (!visitorId) {
 				throw new Error('Call Page - no visitor id');
 			}
-			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId, visitorId);
-			const isMobileDevice = (): boolean => {
-				if (isLayoutEmbedded) {
-					setCallInIframe(true);
-				}
-				if (window.innerWidth <= 450 && window.innerHeight >= 629 && window.innerHeight <= 900) {
-					setIsLocalMobileDevice(true);
-					if (webrtcInstance)
-						webrtcInstance.media = {
-							audio: true,
-							video: {
-								width: { ideal: 440 },
-								height: { ideal: 580 },
-							},
-						};
-					return true;
-				}
-				return false;
-			};
-
-			const unsubNotifyUser = subscribeNotifyUser(`${visitorId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type, data) => {
-				if (data.room == null) {
-					return;
-				}
-
-				switch (type) {
-					case 'candidate':
-						webrtcInstance?.onUserStream('candidate', data);
-						break;
-					case 'description':
-						webrtcInstance?.onUserStream('description', data);
-						break;
-					case 'join':
-						webrtcInstance?.onUserStream('join', data);
-						break;
-				}
-			});
-
-			const unsubNotifyRoom = subscribeNotifyRoom(`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type: any, data: any) => {
-				if (type === 'callStatus' && data.callStatus === 'ended') {
-					webrtcInstance?.stop();
-					setStatus(data.callStatus);
-				} else if (type === 'getDeviceType') {
-					sdk.publish('notify-room', [
-						`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`,
-						'deviceType',
-						{
-							isMobileDevice: isMobileDevice(),
-						},
-					]);
-				} else if (type === 'cameraStatus') {
-					setIsRemoteCameraOn(data.isCameraOn);
-				}
-			});
-
-			sdk.publish('notify-room', [
-				`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`,
-				'deviceType',
-				{
-					isMobileDevice: isMobileDevice(),
-				},
-			]);
-
-			sdk.publish('notify-room', [
-				`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`,
-				'callStatus',
-				{
-					callStatus: 'inProgress',
-				},
-			]);
-
-			return () => {
-				unsubNotifyRoom();
-				unsubNotifyUser();
-			};
 		}
 
 		if (!isAgentActive) {
-			const webrtcInstance = WebRTC.getInstanceByRoomId(roomId);
-			if (status === 'inProgress') {
-				sdk.publish('notify-room', [`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`, 'getDeviceType']);
-
-				webrtcInstance?.startCall({
-					audio: true,
-					video: {
-						width: { ideal: 1920 },
-						height: { ideal: 1080 },
-					},
-				});
-			}
-
 			setIsAgentActive(true);
-
-			return subscribeNotifyRoom(`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`, (type: any, data: any) => {
-				if (type === 'callStatus') {
-					switch (data.callStatus) {
-						case 'ended':
-							webrtcInstance?.stop();
-							break;
-						case 'inProgress':
-							webrtcInstance?.startCall({
-								audio: true,
-								video: {
-									width: { ideal: 1920 },
-									height: { ideal: 1080 },
-								},
-							});
-					}
-					setStatus(data.callStatus);
-				} else if (type === 'deviceType' && data.isMobileDevice) {
-					setIsRemoteMobileDevice(true);
-				} else if (type === 'cameraStatus') {
-					setIsRemoteCameraOn(data.isCameraOn);
-				}
-			});
 		}
 	}, [isAgentActive, status, setStatus, visitorId, roomId, visitorToken, isLayoutEmbedded, subscribeNotifyUser, subscribeNotifyRoom]);
 
 	const toggleButton = (control: any): any => {
 		if (control === 'mic') {
-			WebRTC.getInstanceByRoomId(roomId, visitorToken)?.toggleAudio();
 			return setIsMicOn(!isMicOn);
 		}
-		WebRTC.getInstanceByRoomId(roomId, visitorToken)?.toggleVideo();
 		setIsCameraOn(!isCameraOn);
-		sdk.publish('notify-room', [
-			`${roomId}/${WEB_RTC_EVENTS.WEB_RTC}`,
-			'cameraStatus',
-			{
-				isCameraOn: !isCameraOn,
-			},
-		]);
 	};
 
 	const closeWindow = (): void => {

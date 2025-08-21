@@ -3,13 +3,11 @@ import { useState } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
 import { Livechat } from '../../api';
-import { getAvatarUrl, getConnectionBaseUrl } from '../../helpers/baseUrl';
+import { getAvatarUrl } from '../../helpers/baseUrl';
 import { createClassName } from '../../helpers/createClassName';
-import { isMobileDevice } from '../../helpers/isMobileDevice';
 import PhoneAccept from '../../icons/phone.svg';
 import PhoneDecline from '../../icons/phoneOff.svg';
-import constants from '../../lib/constants';
-import store, { type Dispatch } from '../../store';
+import { type Dispatch } from '../../store';
 import { Avatar } from '../Avatar';
 import { Button } from '../Button';
 import { CallStatus } from './CallStatus';
@@ -29,22 +27,6 @@ type CallNotificationProps = {
 const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, rid, callId, t }: CallNotificationProps) => {
 	const [show, setShow] = useState(true);
 
-	const callInNewTab = async () => {
-		const { token } = store.state;
-		const url = `${getConnectionBaseUrl()}/meet/${rid}?token=${token}`;
-		await dispatch({
-			ongoingCall: {
-				callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
-				time: { time },
-			},
-			incomingCallAlert: {
-				show: false,
-				callProvider,
-			},
-		});
-		window.open(url, rid);
-	};
-
 	const acceptClick = async () => {
 		setShow(!show);
 		switch (callProvider) {
@@ -57,15 +39,6 @@ const CallNotification = ({ callProvider, callerUsername, url, dispatch, time, r
 						time: { time },
 					},
 				});
-				break;
-			}
-			case constants.webRTCCallStartedMessageType: {
-				await Livechat.updateCallStatus(CallStatus.IN_PROGRESS, rid, callId);
-				if (isMobileDevice()) {
-					callInNewTab();
-					break;
-				}
-				dispatch({ ongoingCall: { callStatus: CallStatus.IN_PROGRESS_SAME_TAB, time: { time } } });
 				break;
 			}
 		}
