@@ -89,7 +89,6 @@ export interface Endpoints
 		AssetsEndpoints,
 		EmailInboxEndpoints,
 		MailerEndpoints,
-		OAuthAppsEndpoint,
 		QRCodeEndpoint,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
