@@ -11,13 +11,13 @@ import { MediaCalls, Users } from '@rocket.chat/models';
 
 import { UserAgentFactory } from '../agents/users/AgentFactory';
 import { logger } from '../logger';
-import { MediaCallMonitor } from './CallMonitor';
-import { CreateCallParams } from '../providers/IMediaCallProvider';
+import { MediaCallDirector } from './CallDirector';
+import type { InternalCallParams } from '../InternalCallProvider';
 
 export abstract class GlobalSignalProcessor {
 	protected abstract sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void;
 
-	public abstract createCall(params: CreateCallParams): Promise<IMediaCall>;
+	public abstract createCall(params: InternalCallParams): Promise<IMediaCall>;
 
 	protected async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		logger.debug({ msg: 'GlobalSignalProcessor.processSignal', signal, uid });
@@ -72,29 +72,28 @@ export abstract class GlobalSignalProcessor {
 
 			const isCaller = call.caller.type === 'user' && call.caller.id === uid;
 			const isCallee = call.callee.type === 'user' && call.callee.id === uid;
-			if (!isCaller && !isCallee) {
-				logger.error({ msg: 'actor is not part of the call', method: 'processSignal', signal });
+			if (isCaller === isCallee) {
+				logger.error({ msg: 'failed to identify actor role in the call', method: 'processSignal', signal, isCaller, isCallee });
 				throw new Error('invalid-call');
 			}
 
+			const role = isCaller ? 'caller' : 'callee';
+			const callActor = call[role];
+
 			// Ignore signals from different sessions
-			if (isCaller && call.caller.contractId && call.caller.contractId !== signal.contractId) {
-				return;
-			}
-			if (isCallee && call.callee.contractId && call.callee.contractId !== signal.contractId) {
+			if (callActor.contractId && callActor.contractId !== signal.contractId) {
 				return;
 			}
 
-			await MediaCallMonitor.renewCallId(call._id);
+			await MediaCallDirector.renewCallId(call._id);
 
-			const factory = await UserAgentFactory.getAgentFactoryForUserId(uid, signal.contractId);
-			const agent = factory?.getCallAgent(call);
+			const agent = await UserAgentFactory.getAgentForActor(callActor, role);
 			if (!agent) {
 				logger.error({ msg: 'agent not found', method: 'processSignal', signal });
 				throw new Error('invalid-call');
 			}
 
-			await agent.processSignal(signal, call);
+			await agent.processSignal(call, signal);
 		} catch (e) {
 			logger.error(e);
 			throw e;

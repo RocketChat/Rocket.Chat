@@ -24,6 +24,8 @@ export type MediaCallContactInformation = {
 
 export type MediaCallContact<T extends MediaCallActor = MediaCallActor> = T & MediaCallContactInformation;
 
+export type TypedMediaCallContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallContact<MediaCallActor<T>>;
+
 export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallContact<
 	MediaCallSignedActor<MediaCallActor<T>>
 >;
@@ -31,7 +33,6 @@ export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActor
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
 	kind: 'direct';
-	providerName: string;
 
 	state: 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 

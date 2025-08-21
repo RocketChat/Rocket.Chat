@@ -1,99 +1,73 @@
-import type { IMediaCall, IUser, MediaCallActor } from '@rocket.chat/core-typings';
+import type { IUser, MediaCallActor } from '@rocket.chat/core-typings';
 import type { CallRole } from '@rocket.chat/media-signaling';
 import { Users } from '@rocket.chat/models';
 
-import type { MinimalUserData } from './BasicAgent';
-import { agentManager } from '../Manager';
-import { UserMediaCallAgent } from './Agent';
-import { UserNewCallAgent } from './NewCallAgent';
+import type { UserActorAgent } from './BaseAgent';
+import { UserActorCalleeAgent } from './CalleeAgent';
+import { UserActorCallerAgent } from './CallerAgent';
 import { logger } from '../../logger';
-import type { IMediaCallAgentFactory } from '../definition/IMediaCallAgent';
-import type { AgentContractState } from '../definition/common';
+import type { MinimalUserData } from '../definition/common';
 
-// Overriding the interface to use the same factory for the AgentManager class and the processSignal function
-export interface IUserAgentFactory extends IMediaCallAgentFactory {
-	getNewAgent(role: CallRole): UserNewCallAgent;
-	getCallAgent(call: IMediaCall): UserMediaCallAgent | null;
-}
-
-// Agent that handles all 'user' actors
 export class UserAgentFactory {
-	public static async getAgentFactoryForUser(
+	public static async getAgentForUser(
 		user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>,
-		contractId?: string,
-	): Promise<IUserAgentFactory | null> {
+		role: CallRole,
+	): Promise<UserActorAgent | null> {
 		const { _id: userId } = user;
 
 		if (!user.username) {
-			logger.debug({ msg: 'invalid user or no username', method: 'UserAgentFactory.getAgentFactoryForUser', userId, contractId });
+			logger.debug({ msg: 'invalid user or no username', method: 'UserAgentFactory.getAgentForUser', userId });
 			return null;
 		}
 
 		const userData = user as MinimalUserData;
 
-		return {
-			getNewAgent(role: CallRole) {
-				return new UserNewCallAgent(userData, { role, contractId });
-			},
-			getCallAgent(call: IMediaCall) {
-				const { _id: callId } = call;
+		if (role === 'caller') {
+			return new UserActorCallerAgent(userData);
+		}
 
-				if (!contractId) {
-					logger.debug({ msg: 'no contractId', method: 'UserAgentFactory.getCallAgent', userId, contractId, callId });
-					return null;
-				}
+		if (role === 'callee') {
+			return new UserActorCalleeAgent(userData);
+		}
 
-				const role = agentManager.getRoleForCallActor(call, { type: 'user', id: userId });
-				if (!role) {
-					logger.debug({ msg: 'no role', method: 'UserAgentFactory.getCallAgent', userId, contractId, callId });
-					return null;
-				}
-
-				if (role === 'callee') {
-					return null;
-				}
-
-				const { [role]: callActor } = call;
-				let contractState: AgentContractState = 'proposed';
-				if (callActor.contractId) {
-					contractState = callActor.contractId === contractId ? 'signed' : 'ignored';
-				}
-
-				// If the role is already signed with a different contract, do not create the agent
-				if (contractState === 'ignored') {
-					logger.debug({
-						msg: 'signed by another contract',
-						method: 'UserAgentFactory.getAgentFactoryForUser',
-						userId,
-						contractId,
-						callActor,
-					});
-					return null;
-				}
-
-				return new UserMediaCallAgent(userData, { role, callId, contractId, contractState });
-			},
-		};
+		return null;
 	}
 
-	public static async getAgentFactoryForUserId(userId: string, contractId?: string): Promise<IUserAgentFactory | null> {
+	public static async getAgentForUserId(userId: string, role: CallRole): Promise<UserActorAgent | null> {
 		const user = await Users.findOneActiveById(userId, {
 			projection: { username: 1, name: 1, freeSwitchExtension: 1 },
 		});
 
 		if (!user?.username) {
-			logger.debug({ msg: 'invalid user or no username', method: 'UserAgentFactory.getAgentFactoryForUserId', userId, contractId });
+			logger.debug({ msg: 'invalid user or no username', method: 'UserAgentFactory.getAgentForUserId', userId });
 			return null;
 		}
 
-		return this.getAgentFactoryForUser(user, contractId);
+		return this.getAgentForUser(user, role);
 	}
 
-	public static async getAgentFactoryForActor(actor: MediaCallActor): Promise<IUserAgentFactory | null> {
-		if (actor.type !== 'user') {
+	public static async getAgentForUserExtension(extension: string, role: CallRole): Promise<UserActorAgent | null> {
+		const user = await Users.findOneByFreeSwitchExtension(extension, {
+			projection: { username: 1, name: 1, freeSwitchExtension: 1 },
+		});
+
+		if (!user?.username || !user?.active) {
+			logger.debug({ msg: 'invalid user or no username', method: 'UserAgentFactory.getAgentForUserExtension', extension });
 			return null;
 		}
 
-		return this.getAgentFactoryForUserId(actor.id, actor.contractId);
+		return this.getAgentForUser(user, role);
+	}
+
+	public static async getAgentForActor(actor: MediaCallActor, role: CallRole): Promise<UserActorAgent | null> {
+		if (actor.type === 'user') {
+			return this.getAgentForUserId(actor.id, role);
+		}
+
+		if (actor.type === 'sip') {
+			return this.getAgentForUserExtension(actor.id, role);
+		}
+
+		return null;
 	}
 }

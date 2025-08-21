@@ -87,14 +87,21 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 		return this.updateOneById(_id, { $set: { remoteDescription } });
 	}
 
-	public async setRemoteDescriptionByCallIdAndActor(callId: string, actor: MediaCallActor, remoteDescription: RTCSessionDescriptionInit): Promise<void> {
-		await this.updateMany({
-			callId,
-			actorId: actor.id,
-			actorType: actor.type,
-			...(actor.contractId && { contractId: actor.contractId }),
-		}, {
-			$set: { remoteDescription },
-		});
+	public async setRemoteDescriptionByCallIdAndActor(
+		callId: string,
+		actor: MediaCallActor,
+		remoteDescription: RTCSessionDescriptionInit,
+	): Promise<void> {
+		await this.updateMany(
+			{
+				callId,
+				actorId: actor.id,
+				actorType: actor.type,
+				...(actor.contractId && { contractId: actor.contractId }),
+			},
+			{
+				$set: { remoteDescription },
+			},
+		);
 	}
 }

@@ -1,9 +1,9 @@
 import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
-import type { IUser, IMediaCall } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { gateway, MediaCallMonitor } from '@rocket.chat/media-calls';
+import { gateway, MediaCallDirector } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
-import { Users, MediaCalls } from '@rocket.chat/models';
+import { MediaCalls } from '@rocket.chat/models';
 
 const logger = new Logger('media-call service');
 
@@ -38,49 +38,13 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 	}
 
-	public async createInternalCall(caller: { uid: IUser['_id']; contractId: string }, callee: { uid: IUser['_id'] }): Promise<IMediaCall> {
-		const user = await Users.findOneActiveById(callee.uid, { projection: { _id: 1 } });
-		if (!user) {
-			throw new Error('invalid-user');
-		}
-
-		return gateway.createCall({
-			caller: {
-				type: 'user',
-				id: caller.uid,
-				contractId: caller.contractId,
-			},
-			callee: { type: 'user', id: callee.uid },
-		});
-	}
-
-	public async callExtension(caller: { uid: IUser['_id']; contractId: string }, extension: string): Promise<IMediaCall> {
-		const user = await Users.findOneByFreeSwitchExtension(extension, { projection: { _id: 1 } });
-		if (!user) {
-			throw new Error('invalid-user');
-		}
-
-		return gateway.createCall({
-			caller: {
-				type: 'user',
-				id: caller.uid,
-				contractId: caller.contractId,
-			},
-			callee: { type: 'user', id: user._id },
-		});
-	}
-
-	public async callUser(caller: { uid: IUser['_id']; contractId: string }, userId: IUser['_id']): Promise<IMediaCall> {
-		return this.createInternalCall(caller, { uid: userId });
-	}
-
 	public async hangupExpiredCalls(): Promise<void> {
-		await MediaCallMonitor.hangupExpiredCalls().catch((error) => {
+		await MediaCallDirector.hangupExpiredCalls().catch((error) => {
 			logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error });
 		});
 
 		if (await MediaCalls.hasUnfinishedCalls()) {
-			MediaCallMonitor.scheduleExpirationCheck();
+			MediaCallDirector.scheduleExpirationCheck();
 		}
 	}
 

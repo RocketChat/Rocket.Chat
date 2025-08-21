@@ -6,10 +6,9 @@ import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-si
 import { logger } from '../logger';
 import type { ISignalGateway, ServerSignalTransport, SignalGatewayEvents } from './ISignalGateway';
 import { GlobalSignalProcessor } from './SignalProcessor';
+import type { InternalCallParams } from '../InternalCallProvider';
+import { InternalCallProvider } from '../InternalCallProvider';
 import { SipServerSession } from '../agents/sip/server/Session';
-import { CreateCallParams } from '../providers/IMediaCallProvider';
-import { SipOutgoingMediaCallProvider } from '../providers/sip/SipOutgoingMediaCallProvider';
-import { UserMediaCallProvider } from '../providers/users/UserMediaCallProvider';
 
 /**
  * Class used as gateway to send and receive signals to/from clients
@@ -60,17 +59,14 @@ export class SignalGateway extends GlobalSignalProcessor implements ISignalGatew
 		}
 	}
 
-	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		logger.debug({ msg: 'GlobalSignalProcessor.createCall', params });
+	public async createCall(params: InternalCallParams): Promise<IMediaCall> {
+		logger.debug({ msg: 'SignalGateway.createCall', params });
 
 		if (params.callee.type === 'sip') {
-			const sipProvider = new SipOutgoingMediaCallProvider(this.session, params.callee);
-			return sipProvider.createCall(params);
+			return this.session.createOutgoingCall(params);
 		}
 
-		const callProvider = new UserMediaCallProvider();
-
-		return callProvider.createCall(params);
+		return InternalCallProvider.createCall(params);
 	}
 
 	public reactToCallUpdate(callId: string): void {

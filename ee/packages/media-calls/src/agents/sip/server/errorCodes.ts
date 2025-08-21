@@ -18,3 +18,12 @@ export const SipErrorCodes = {
 	INTERNAL_SERVER_ERROR: 500,
 	NOT_IMPLEMENTED: 501,
 } as const;
+
+export class SipError extends Error {
+	constructor(
+		public readonly sipErrorCode: number,
+		message?: string,
+	) {
+		super(message || 'sip-error');
+	}
+}
