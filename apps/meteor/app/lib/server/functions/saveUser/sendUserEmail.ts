@@ -45,10 +45,10 @@ export async function sendUserEmail(subject: string, html: string, userData: Sav
 	}
 }
 
-export async function sendWelcomeEmail(userData: SaveUserData) {
+export async function sendWelcomeEmail(userData: Pick<SaveUserData, 'email' | 'name'>) {
 	return sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
 }
 
-export async function sendPasswordEmail(userData: SaveUserData) {
+export async function sendPasswordEmail(userData: Pick<SaveUserData, 'email' | 'password' | 'name'>) {
 	return sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 }
