@@ -19,7 +19,7 @@
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "postbuild": "node --experimental-strip-types ./scripts/postbuild.ts",
     "typecheck": "tsc -p tsconfig.json",
-    "lint": "eslint 'src/**/*.ts'",
+    "lint": "oxlint --type-aware",
     "testunit": "vitest run"
   },
   "dependencies": {
@@ -27,6 +27,8 @@
   },
   "devDependencies": {
     "@vitest/browser": "4.0.0-beta.8",
+    "oxlint": "~1.12.0",
+    "oxlint-tsgolint": "~0.0.4",
     "playwright": "~1.54.2",
     "typescript": "~5.9.2",
     "vitest": "4.0.0-beta.8"

@@ -7430,6 +7430,8 @@ __metadata:
   dependencies:
     "@rocket.chat/e2ee": "workspace:*"
     "@vitest/browser": "npm:4.0.0-beta.8"
+    oxlint: "npm:~1.12.0"
+    oxlint-tsgolint: "npm:~0.0.4"
     playwright: "npm:~1.54.2"
     typescript: "npm:~5.9.2"
     vitest: "npm:4.0.0-beta.8"

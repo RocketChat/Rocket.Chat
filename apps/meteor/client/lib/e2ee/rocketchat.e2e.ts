@@ -3,12 +3,10 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import type { KeyPair } from '@rocket.chat/e2ee';
-import type { Optional } from '@rocket.chat/e2ee/dist/utils';
-import E2EE, { LocalStorage } from '@rocket.chat/e2ee-web';
+import type { LocalKeyPair } from '@rocket.chat/e2ee';
+import E2EE from '@rocket.chat/e2ee-web';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
-import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -71,10 +69,13 @@ class E2E extends Emitter<{
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
-		this.e2ee = new E2EE(new LocalStorage(Accounts.storageLocation), {
-			userId: () => Promise.resolve(Meteor.userId()),
-			fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
-		});
+		this.e2ee = E2EE.withLocalStorage(
+			{
+				userId: () => Promise.resolve(Meteor.userId()),
+				fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
+			},
+			Accounts.storageLocation,
+		);
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			this.log(`${prevState} -> ${nextState}`);
@@ -293,7 +294,7 @@ class E2E extends Emitter<{
 	}
 
 	private async persistKeys(
-		{ public_key, private_key }: Optional<KeyPair>,
+		{ public_key, private_key }: LocalKeyPair,
 		password: string,
 		{ force }: { force: boolean } = { force: false },
 	): Promise<void> {
@@ -466,7 +467,6 @@ class E2E extends Emitter<{
 				this.setState('ERROR');
 				this.error('Error loading keys: ', error);
 			},
-			parse: (data) => EJSON.parse(data),
 		});
 	}
 

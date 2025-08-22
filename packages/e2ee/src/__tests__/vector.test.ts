@@ -46,6 +46,6 @@ test('joinVectorAndEncryptedData with invalid vector length', () => {
 
 test('splitVectorAndEncryptedData with invalid cipherText length', () => {
 	expect(() => splitVectorAndEncryptedData(new Uint8Array([1, 2, 3]))).toThrowErrorMatchingInlineSnapshot(
-		`[Error: Invalid cipherText length: 3]`,
+		`[Error: Invalid cipherText length]`,
 	);
 });

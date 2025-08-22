@@ -1,4 +1,4 @@
-import { type Optional, type Result, err, ok } from './utils.ts';
+import { type Result, err, ok } from './result.ts';
 import { joinVectorAndEncryptedData, splitVectorAndEncryptedData } from './vector.ts';
 import { toArrayBuffer, toString } from './binary.ts';
 import type { BaseKeyCodec } from './codec.ts';
@@ -6,9 +6,9 @@ import type { BaseKeyCodec } from './codec.ts';
 export { BaseKeyCodec } from './codec.ts';
 
 export interface KeyStorage {
-	load(keyName: string): Promise<string | null>;
+	load(keyName: string): Promise<string | undefined | null>;
 	store(keyName: string, value: string): Promise<void>;
-	remove(keyName: string): Promise<void>;
+	remove(keyName: string): Promise<boolean | void>;
 }
 
 export interface KeyService {
@@ -22,6 +22,11 @@ export type PublicKey = string;
 export interface KeyPair {
 	public_key: PublicKey;
 	private_key: PrivateKey;
+}
+
+export interface LocalKeyPair {
+	public_key: PublicKey | null | undefined;
+	private_key: PublicKey | null | undefined;
 }
 
 export abstract class BaseE2EE {
@@ -44,13 +49,11 @@ export abstract class BaseE2EE {
 		callbacks: {
 			onSuccess: (privateKey: CryptoKey) => void;
 			onError: (error: unknown) => void;
-			parse: (data: string) => object;
 		},
 	): Promise<void> {
 		await this.#storage.store('public_key', public_key);
 		try {
-			callbacks.onSuccess(await this.codec.crypto.importRsaDecryptKey(callbacks.parse(private_key)));
-
+			callbacks.onSuccess(await this.#codec.crypto.importRsaDecryptKey(JSON.parse(private_key)));
 			await this.#storage.store('private_key', private_key);
 		} catch (error) {
 			callbacks.onError(error);
@@ -176,7 +179,7 @@ export abstract class BaseE2EE {
 		}
 	}
 
-	async getKeysFromLocalStorage(): Promise<Optional<KeyPair>> {
+	async getKeysFromLocalStorage(): Promise<LocalKeyPair> {
 		const public_key = await this.#storage.load('public_key');
 		const private_key = await this.#storage.load('private_key');
 		return {
@@ -204,11 +207,11 @@ export abstract class BaseE2EE {
 		await this.#storage.store('e2e.random_password', randomPassword);
 	}
 
-	getRandomPassword(): Promise<string | null> {
+	getRandomPassword(): Promise<string | undefined | null> {
 		return this.#storage.load('e2e.random_password');
 	}
 
-	removeRandomPassword(): Promise<void> {
+	removeRandomPassword(): Promise<boolean | void> {
 		return this.#storage.remove('e2e.random_password');
 	}
 	async createRandomPassword(length: number): Promise<string> {

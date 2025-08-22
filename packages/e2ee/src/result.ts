@@ -13,6 +13,7 @@ export interface Err<E> {
 }
 
 export type Result<V, E> = Ok<V> | Err<E>;
+export type AsyncResult<V, E> = Promise<Result<V, E>>;
 
 export const ok = <V>(value: V): Ok<V> => ({ isOk: true, value });
 
