@@ -4,11 +4,11 @@ import { usePermission, useSetting, useUserSubscription } from '@rocket.chat/ui-
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useLeaveRoomAction } from '../../hooks/menuActions/useLeaveRoom';
-import { useToggleFavoriteAction } from '../../hooks/menuActions/useToggleFavoriteAction';
-import { useToggleReadAction } from '../../hooks/menuActions/useToggleReadAction';
-import { useHideRoomAction } from '../../hooks/useHideRoomAction';
-import { useOmnichannelPrioritiesMenu } from '../../omnichannel/hooks/useOmnichannelPrioritiesMenu';
+import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
+import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
+import { useToggleReadAction } from './menuActions/useToggleReadAction';
+import { useHideRoomAction } from './useHideRoomAction';
+import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 type RoomMenuActionsProps = {
 	rid: string;

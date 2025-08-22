@@ -16,11 +16,11 @@ import { useMemo } from 'react';
 
 import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquiries';
+import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
 import { RoomsNavigationContext, getEmptyUnreadInfo, isUnreadSubscription } from '../contexts/RoomsNavigationContext';
 import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
 import { useSidePanelParentRid } from '../hooks/useSidePanelParentRid';
-import { useSortQueryOptions } from '../hooks/useSortQueryOptions';
 
 const query = { open: { $ne: false } };
 

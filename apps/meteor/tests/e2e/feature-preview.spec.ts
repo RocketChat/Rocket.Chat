@@ -316,6 +316,10 @@ test.describe.serial('feature preview', () => {
 						name: 'newNavigation',
 						value: true,
 					},
+					{
+						name: 'secondarySidebar',
+						value: true,
+					},
 				],
 			});
 		});
@@ -327,6 +331,10 @@ test.describe.serial('feature preview', () => {
 				featuresPreview: [
 					{
 						name: 'newNavigation',
+						value: false,
+					},
+					{
+						name: 'secondarySidebar',
 						value: false,
 					},
 				],
@@ -737,6 +745,10 @@ test.describe.serial('feature preview', () => {
 						name: 'newNavigation',
 						value: true,
 					},
+					{
+						name: 'secondarySidebar',
+						value: true,
+					},
 				],
 			});
 		});
@@ -748,6 +760,10 @@ test.describe.serial('feature preview', () => {
 				featuresPreview: [
 					{
 						name: 'newNavigation',
+						value: false,
+					},
+					{
+						name: 'secondarySidebar',
 						value: false,
 					},
 				],
