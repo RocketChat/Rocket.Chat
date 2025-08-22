@@ -691,10 +691,11 @@
   "Caller": "Beller",
   "Caller_Id": "Beller ID",
   "Calling": "Bellen",
-  "Calls_in_queue": "{{calls}} oproep in de wachtrij",
-  "Calls_in_queue_one": "{{count}} oproep in de wachtrij",
-  "Calls_in_queue_other": "{{count}} oproepen in de wachtrij",
-  "Calls_in_queue_zero": "Wachtrij is leeg",
+  "Calls_in_queue": {
+    "zero": "Wachtrij is leeg",
+    "one": "{{count}} oproep in de wachtrij",
+    "other": "{{count}} oproepen in de wachtrij"
+  },
   "Cancel": "Annuleren",
   "Cancel_message_input": "Annuleren",
   "Canceled": "Geannuleerd",
@@ -4536,8 +4537,10 @@
   "message": "bericht",
   "message-impersonate": "Zich als andere gebruikers voordoen",
   "message-impersonate_description": "Toestemming om andere gebruikers na te bootsen met behulp van een berichtalias",
-  "message_counter_one": "{{count}} bericht",
-  "message_counter_other": "{{count}} berichten",
+  "message_counter": {
+    "one": "{{count}} bericht",
+    "other": "{{count}} berichten"
+  },
   "message_pruned": "bericht gesnoeid",
   "messages": "berichten",
   "messages_pruned": "berichten gesnoeid",
@@ -4545,8 +4548,10 @@
   "meteor_status_connecting": "Verbinden...",
   "meteor_status_failed": "Verbinding met de server is mislukt",
   "meteor_status_offline": "Offline modus.",
-  "meteor_status_reconnect_in_one": "probeer het over een seconde opnieuw...",
-  "meteor_status_reconnect_in_other": "probeer het over {{count}} seconden opnieuw...",
+  "meteor_status_reconnect_in": {
+    "one": "probeer het over een seconde opnieuw...",
+    "other": "probeer het over {{count}} seconden opnieuw..."
+  },
   "meteor_status_try_now_offline": "Opnieuw verbinden",
   "meteor_status_try_now_waiting": "Probeer nu",
   "meteor_status_waiting": "Wachten op serververbinding,",
