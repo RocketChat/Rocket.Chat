@@ -3,7 +3,7 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import type { KeyPair, LocalKeyPair } from '@rocket.chat/e2ee';
+import type { LocalKeyPair, RemoteKeyPair } from '@rocket.chat/e2ee';
 import E2EE from '@rocket.chat/e2ee-web';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
@@ -455,7 +455,7 @@ class E2E extends Emitter<{
 		this.db_private_key = result.value.private_key;
 	}
 
-	async loadKeys(keys: KeyPair): Promise<void> {
+	async loadKeys(keys: RemoteKeyPair): Promise<void> {
 		this.publicKey = JSON.parse(keys.public_key);
 		const res = await this.e2ee.loadKeys(keys);
 		if (!res.isOk) {
@@ -469,22 +469,15 @@ class E2E extends Emitter<{
 	async createAndLoadKeys(): Promise<void> {
 		// Could not obtain public-private keypair from server.
 		this.setState('LOADING_KEYS');
-		await this.e2ee.createAndLoadKeys({
-			onPrivateKey: (privateKey) => {
-				this.privateKey = privateKey;
-			},
-			onPublicKey: (publicKey) => {
-				this.publicKey = publicKey;
-			},
-			onError: (error) => {
-				this.setState('ERROR');
-				this.error('Error creating keys: ', error);
-			},
-		});
+		const keys = await this.e2ee.createAndLoadKeys();
 
-		if (this.getState() === 'ERROR') {
-			return;
+		if (!keys.isOk) {
+			this.setState('ERROR');
+			return this.error('Error creating keys: ', keys.error);
 		}
+
+		this.publicKey = keys.value.publicKey;
+		this.privateKey = keys.value.privateKey;
 
 		await this.requestSubscriptionKeys();
 	}

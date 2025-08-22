@@ -13,20 +13,25 @@ export interface KeyStorage {
 
 export interface KeyService {
 	userId: () => Promise<string | null>;
-	fetchMyKeys: () => Promise<KeyPair>;
+	fetchMyKeys: () => Promise<RemoteKeyPair>;
 }
 
 export type PrivateKey = string;
 export type PublicKey = string;
 
-export interface KeyPair {
-	public_key: PublicKey;
-	private_key: PrivateKey;
+export interface RemoteKeyPair {
+	public_key: string;
+	private_key: string;
 }
 
 export interface LocalKeyPair {
-	public_key: PublicKey | null | undefined;
-	private_key: PublicKey | null | undefined;
+	public_key: string | null | undefined;
+	private_key: string | null | undefined;
+}
+
+export interface KeyPair {
+	privateKey: CryptoKey;
+	publicKey: JsonWebKey;
 }
 
 export abstract class BaseE2EE {
@@ -44,7 +49,7 @@ export abstract class BaseE2EE {
 		this.#codec = codec;
 	}
 
-	async loadKeys({ public_key, private_key }: KeyPair): AsyncResult<CryptoKey, Error> {
+	async loadKeys({ public_key, private_key }: RemoteKeyPair): AsyncResult<CryptoKey, Error> {
 		try {
 			const res = await this.#codec.crypto.importRsaDecryptKey(JSON.parse(private_key));
 			await this.#storage.store('public_key', public_key);
@@ -55,36 +60,29 @@ export abstract class BaseE2EE {
 		}
 	}
 
-	async createAndLoadKeys(callbacks: {
-		onPrivateKey: (privateKey: CryptoKey) => void;
-		onPublicKey: (publicKey: JsonWebKey) => void;
-		onError: (error: unknown) => void;
-	}): Promise<void> {
-		// Could not obtain public-private keypair from server.
+	async createAndLoadKeys(): AsyncResult<KeyPair, Error> {
 		try {
 			const keys = await this.#codec.crypto.generateRsaOaepKeyPair();
-			callbacks.onPrivateKey(keys.privateKey);
 			try {
-				await this.setPublicKey(keys.publicKey);
-				const publicKey = await this.#codec.crypto.exportJsonWebKey(keys.publicKey);
-				callbacks.onPublicKey(publicKey);
+				const publicKey = await this.setPublicKey(keys.publicKey);
 				try {
 					await this.setPrivateKey(keys.privateKey);
+					return ok({
+						privateKey: keys.privateKey,
+						publicKey,
+					});
 				} catch (error) {
-					callbacks.onError(error);
-					return;
+					return err(new Error('Error setting private key', { cause: error }));
 				}
 			} catch (error) {
-				callbacks.onError(error);
-				return;
+				return err(new Error('Error setting public key', { cause: error }));
 			}
 		} catch (error) {
-			callbacks.onError(error);
-			return;
+			return err(new Error('Error creating and loading keys', { cause: error }));
 		}
 	}
 
-	async loadKeysFromDB(): AsyncResult<KeyPair, Error> {
+	async loadKeysFromDB(): AsyncResult<RemoteKeyPair, Error> {
 		try {
 			return ok(await this.getKeysFromService());
 		} catch (error) {
@@ -130,10 +128,11 @@ export abstract class BaseE2EE {
 	 * Sets the public key in the storage.
 	 * @param key The public key to store.
 	 */
-	async setPublicKey(key: CryptoKey): Promise<void> {
+	async setPublicKey(key: CryptoKey): Promise<JsonWebKey> {
 		const exported = await this.#codec.crypto.exportJsonWebKey(key);
 		const stringified = JSON.stringify(exported);
-		return this.#storage.store('public_key', stringified);
+		await this.#storage.store('public_key', stringified);
+		return exported;
 	}
 
 	async setPrivateKey(key: CryptoKey): Promise<void> {
@@ -188,7 +187,7 @@ export abstract class BaseE2EE {
 		await this.#storage.remove('private_key');
 	}
 
-	async getKeysFromService(): Promise<KeyPair> {
+	async getKeysFromService(): Promise<RemoteKeyPair> {
 		const keys = await this.#service.fetchMyKeys();
 
 		if (!keys) {

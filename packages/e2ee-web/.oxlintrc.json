@@ -17,6 +17,5 @@
 		"eslint/no-plusplus": "allow",
 		"eslint/no-magic-numbers": "allow",
 		"unicorn/prefer-code-point": "allow"
-
 	}
 }

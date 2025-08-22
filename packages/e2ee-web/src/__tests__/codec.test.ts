@@ -1,4 +1,4 @@
-import { test, expect } from 'vitest';
+import { expect, test } from 'vitest';
 import KeyCodec from '../codec.ts';
 
 const codec = new KeyCodec();

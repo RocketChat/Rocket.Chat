@@ -19,7 +19,7 @@ export default class WebE2EE extends BaseE2EE {
 		return new WebE2EE(memoryStorage, keyService);
 	}
 
-	static withLocalStorage(keyService: KeyService, storage: Storage = globalThis.localStorage): WebE2EE {
+	static withLocalStorage(keyService: KeyService, storage: Storage): WebE2EE {
 		const localStorage: KeyStorage = {
 			load: (keyName) => {
 				const item = storage.getItem(keyName);
