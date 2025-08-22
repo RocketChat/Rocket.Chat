@@ -1,4 +1,5 @@
 import { MeteorError } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
 import type { SaveUserData } from './saveUser';
 import * as Mailer from '../../../../mailer/server/api';
@@ -6,6 +7,7 @@ import { settings } from '../../../../settings/server';
 
 let html = '';
 let passwordChangedHtml = '';
+
 Meteor.startup(() => {
 	Mailer.getTemplate('Accounts_UserAddedEmail_Email', (template) => {
 		html = template;
