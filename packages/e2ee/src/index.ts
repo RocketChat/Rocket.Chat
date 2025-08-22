@@ -44,19 +44,14 @@ export abstract class BaseE2EE {
 		this.#codec = codec;
 	}
 
-	async loadKeys(
-		{ public_key, private_key }: { public_key: string; private_key: string },
-		callbacks: {
-			onSuccess: (privateKey: CryptoKey) => void;
-			onError: (error: unknown) => void;
-		},
-	): Promise<void> {
-		await this.#storage.store('public_key', public_key);
+	async loadKeys({ public_key, private_key }: KeyPair): AsyncResult<CryptoKey, Error> {
 		try {
-			callbacks.onSuccess(await this.#codec.crypto.importRsaDecryptKey(JSON.parse(private_key)));
+			const res = await this.#codec.crypto.importRsaDecryptKey(JSON.parse(private_key));
+			await this.#storage.store('public_key', public_key);
 			await this.#storage.store('private_key', private_key);
+			return ok(res);
 		} catch (error) {
-			callbacks.onError(error);
+			return err(new Error('Error loading keys', { cause: error }));
 		}
 	}
 

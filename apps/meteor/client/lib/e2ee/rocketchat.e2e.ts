@@ -3,7 +3,7 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import type { LocalKeyPair } from '@rocket.chat/e2ee';
+import type { KeyPair, LocalKeyPair } from '@rocket.chat/e2ee';
 import E2EE from '@rocket.chat/e2ee-web';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
@@ -455,17 +455,15 @@ class E2E extends Emitter<{
 		this.db_private_key = result.value.private_key;
 	}
 
-	async loadKeys(keys: { public_key: string; private_key: string }): Promise<void> {
+	async loadKeys(keys: KeyPair): Promise<void> {
 		this.publicKey = keys.public_key;
-		await this.e2ee.loadKeys(keys, {
-			onSuccess: (privateKey) => {
-				this.privateKey = privateKey;
-			},
-			onError: (error) => {
-				this.setState('ERROR');
-				this.error('Error loading keys: ', error);
-			},
-		});
+		const res = await this.e2ee.loadKeys(keys);
+		if (!res.isOk) {
+			this.setState('ERROR');
+			this.error('Error loading keys: ', res.error);
+			return;
+		}
+		this.privateKey = res.value;
 	}
 
 	async createAndLoadKeys(): Promise<void> {
