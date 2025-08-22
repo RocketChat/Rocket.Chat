@@ -2,8 +2,6 @@ import type { AtLeast, ISubscription } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 
-import { Subscriptions } from '../../stores';
-
 export const useNewMessageNotification = () => {
 	const { notificationSounds } = useCustomSound();
 
@@ -12,10 +10,8 @@ export const useNewMessageNotification = () => {
 			return;
 		}
 
-		const subscription = Subscriptions.state.find((record) => record.rid === sub.rid);
-
-		if (subscription?.audioNotificationValue) {
-			return notificationSounds.playNewMessageCustom(subscription.audioNotificationValue);
+		if (sub?.audioNotificationValue) {
+			return notificationSounds.playNewMessageCustom(sub.audioNotificationValue);
 		}
 
 		notificationSounds.playNewMessage();

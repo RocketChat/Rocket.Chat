@@ -28,7 +28,15 @@ type SubscriptionAggregation = {
 	receiver: [Pick<IUser, 'active' | 'emails' | 'language' | 'status' | 'statusConnection' | 'username' | 'settings'> | null];
 } & Pick<
 	ISubscription,
-	'desktopNotifications' | 'emailNotifications' | 'mobilePushNotifications' | 'muteGroupMentions' | 'name' | 'rid' | 'userHighlights' | 'u'
+	| 'desktopNotifications'
+	| 'emailNotifications'
+	| 'mobilePushNotifications'
+	| 'muteGroupMentions'
+	| 'name'
+	| 'rid'
+	| 'userHighlights'
+	| 'u'
+	| 'audioNotificationValue'
 >;
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
@@ -128,12 +136,14 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
+		console.log('desktop notification - ', subscription);
 		await notifyDesktopUser({
 			notificationMessage,
 			userId: subscription.u._id,
 			user: sender,
 			message,
 			room,
+			audioNotificationValue: subscription.audioNotificationValue,
 		});
 	}
 
@@ -244,6 +254,7 @@ const project = {
 		'receiver.statusConnection': 1,
 		'receiver.username': 1,
 		'receiver.settings.preferences.enableMobileRinging': 1,
+		'audioNotificationValue': 1,
 	},
 } as const;
 
