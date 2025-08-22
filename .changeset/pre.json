@@ -71,11 +71,13 @@
     "@rocket.chat/ui-kit": "0.37.0",
     "@rocket.chat/ui-video-conf": "21.0.0",
     "@rocket.chat/ui-voip": "11.0.0",
-    "@rocket.chat/web-ui-registration": "21.0.0"
+    "@rocket.chat/web-ui-registration": "21.0.0",
+    "@rocket.chat/desktop-api": "0.0.1"
   },
   "changesets": [
     "afraid-rings-call",
     "bump-patch-1755818756486",
+    "bump-patch-1755888089463",
     "chatty-feet-ring",
     "clean-flies-glow",
     "clever-trees-occur",
@@ -114,6 +116,7 @@
     "thick-ravens-flow",
     "thirty-experts-thank",
     "tough-ravens-shop",
+    "tough-students-remain",
     "twelve-plums-turn",
     "twenty-wasps-attend",
     "wild-kiwis-cover"
