@@ -86,6 +86,7 @@ export class MockedAppRootBuilder {
 		callMethod: () => Promise.reject(new Error('not implemented')),
 		disconnect: () => Promise.reject(new Error('not implemented')),
 		reconnect: () => Promise.reject(new Error('not implemented')),
+		writeStream: () => Promise.reject(new Error('not implemented')),
 	};
 
 	private router: ContextType<typeof RouterContext> = {
