@@ -1,4 +1,4 @@
-import { type Result, err, ok } from './result.ts';
+import { type AsyncResult, type Result, err, ok } from './result.ts';
 import { joinVectorAndEncryptedData, splitVectorAndEncryptedData } from './vector.ts';
 import { toArrayBuffer, toString } from './binary.ts';
 import type { BaseKeyCodec } from './codec.ts';
@@ -89,11 +89,11 @@ export abstract class BaseE2EE {
 		}
 	}
 
-	async loadKeysFromDB(callbacks: { onSuccess: (keys: KeyPair) => void; onError: (error: unknown) => void }): Promise<void> {
+	async loadKeysFromDB(): AsyncResult<KeyPair, Error> {
 		try {
-			callbacks.onSuccess(await this.getKeysFromService());
+			return ok(await this.getKeysFromService());
 		} catch (error) {
-			callbacks.onError(error);
+			return err(new Error('Error loading keys from service', { cause: error }));
 		}
 	}
 

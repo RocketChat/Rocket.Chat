@@ -1,7 +1,3 @@
-export type Optional<Obj> = {
-	[Key in keyof Obj]: Obj[Key] | null;
-};
-
 export interface Ok<V> {
 	isOk: true;
 	value: V;
