@@ -85,9 +85,9 @@ export async function exportJWKKey(key: CryptoKey): Promise<JsonWebKey> {
 	return crypto.subtle.exportKey('jwk', key);
 }
 
-export async function importRSAKey(keyData: any, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
+export async function importRSAKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
 	return crypto.subtle.importKey(
-		'jwk' as any,
+		'jwk',
 		keyData,
 		{
 			name: 'RSA-OAEP',

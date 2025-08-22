@@ -490,7 +490,7 @@ export class E2ERoom extends Emitter {
 				}[]
 			> = { [this.roomId]: [] };
 			for await (const user of users) {
-				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key!);
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(JSON.parse(user.e2e!.public_key!));
 				if (!encryptedGroupKey) {
 					return;
 				}
@@ -540,10 +540,10 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	async encryptGroupKeyForParticipant(publicKey: string) {
+	async encryptGroupKeyForParticipant(publicKey: JsonWebKey) {
 		let userKey;
 		try {
-			userKey = await importRSAKey(JSON.parse(publicKey), ['encrypt']);
+			userKey = await importRSAKey(publicKey, ['encrypt']);
 		} catch (error) {
 			return this.error('Error importing user key: ', error);
 		}
@@ -772,7 +772,7 @@ export class E2ERoom extends Emitter {
 		const usersWithKeys = await Promise.all(
 			users.map(async (user) => {
 				const { _id, public_key } = user;
-				const key = await this.encryptGroupKeyForParticipant(public_key);
+				const key = await this.encryptGroupKeyForParticipant(JSON.parse(public_key));
 				if (decryptedOldGroupKeys) {
 					const oldKeys = await this.encryptOldKeysForParticipant(public_key, decryptedOldGroupKeys);
 					return { _id, key, oldKeys };

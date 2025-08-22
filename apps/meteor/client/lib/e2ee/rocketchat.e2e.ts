@@ -56,7 +56,7 @@ class E2E extends Emitter<{
 
 	public privateKey: CryptoKey | undefined;
 
-	public publicKey: string | undefined;
+	public publicKey: JsonWebKey | undefined;
 
 	private keyDistributionInterval: ReturnType<typeof setInterval> | null;
 
@@ -456,7 +456,7 @@ class E2E extends Emitter<{
 	}
 
 	async loadKeys(keys: KeyPair): Promise<void> {
-		this.publicKey = keys.public_key;
+		this.publicKey = JSON.parse(keys.public_key);
 		const res = await this.e2ee.loadKeys(keys);
 		if (!res.isOk) {
 			this.setState('ERROR');
@@ -474,7 +474,7 @@ class E2E extends Emitter<{
 				this.privateKey = privateKey;
 			},
 			onPublicKey: (publicKey) => {
-				this.publicKey = JSON.stringify(publicKey);
+				this.publicKey = publicKey;
 			},
 			onError: (error) => {
 				this.setState('ERROR');
