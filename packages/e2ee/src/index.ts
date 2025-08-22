@@ -1,4 +1,4 @@
-import { type AsyncResult, type Result, err, ok } from './result.ts';
+import { type AsyncResult, err, ok } from './result.ts';
 import { joinVectorAndEncryptedData, splitVectorAndEncryptedData } from './vector.ts';
 import { toArrayBuffer, toString } from './binary.ts';
 import type { BaseKeyCodec } from './codec.ts';
@@ -92,7 +92,7 @@ export abstract class BaseE2EE {
 		}
 	}
 
-	async encodePrivateKey(privateKey: string, password: string): Promise<Result<string, Error>> {
+	async encodePrivateKey(privateKey: string, password: string): AsyncResult<string, Error> {
 		const masterKey = await this.getMasterKey(password);
 		if (!masterKey.isOk) {
 			return masterKey;
@@ -108,7 +108,7 @@ export abstract class BaseE2EE {
 		}
 	}
 
-	async decodePrivateKey(privateKey: string, password: string): Promise<Result<string, Error>> {
+	async decodePrivateKey(privateKey: string, password: string): AsyncResult<string, Error> {
 		const masterKey = await this.getMasterKey(password);
 		if (!masterKey.isOk) {
 			return masterKey;
@@ -142,7 +142,7 @@ export abstract class BaseE2EE {
 		return this.#storage.store('private_key', stringified);
 	}
 
-	async getMasterKey(password: string): Promise<Result<CryptoKey, Error>> {
+	async getMasterKey(password: string): AsyncResult<CryptoKey, Error> {
 		if (!password) {
 			return err(new Error('You should provide a password'));
 		}

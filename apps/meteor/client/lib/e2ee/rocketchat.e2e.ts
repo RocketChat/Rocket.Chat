@@ -502,17 +502,6 @@ class E2E extends Emitter<{
 		return this.error('Error encoding private key: ', res.error);
 	}
 
-	async getMasterKey(password: string): Promise<void | CryptoKey> {
-		const res = await this.e2ee.getMasterKey(password);
-
-		if (res.isOk) {
-			return res.value;
-		}
-
-		this.setState('ERROR');
-		return this.error('Error getting master key: ', res.error);
-	}
-
 	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string) => void) {
 		imperativeModal.open({
 			component: EnterE2EPasswordModal,
