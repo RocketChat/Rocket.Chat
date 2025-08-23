@@ -449,10 +449,19 @@ class E2E extends Emitter {
 	async loadKeysFromDB(): Promise<void> {
 		try {
 			this.setState(E2EEState.LOADING_KEYS);
-			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
+			const result: any = await sdk.rest.get('/v1/e2e.fetchMyKeys');
 
-			this.db_public_key = public_key;
-			this.db_private_key = private_key;
+			if (result && typeof result.public_key === 'string') {
+				this.db_public_key = result.public_key;
+			} else {
+				this.db_public_key = undefined;
+			}
+
+			if (result && typeof result.private_key === 'string') {
+				this.db_private_key = result.private_key;
+			} else {
+				this.db_private_key = undefined;
+			}
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			this.error('Error fetching RSA keys: ', error);
