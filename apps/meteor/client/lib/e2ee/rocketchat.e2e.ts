@@ -73,6 +73,11 @@ class E2E extends Emitter<{
 			{
 				userId: () => Promise.resolve(Meteor.userId()),
 				fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
+				persistKeys: (keys, force) =>
+					sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
+						...keys,
+						force,
+					}),
 			},
 			Accounts.storageLocation,
 		);
@@ -218,6 +223,9 @@ class E2E extends Emitter<{
 		this.emit(nextState);
 	}
 
+	/**
+	 * Handles the suggested E2E key for a subscription.
+	 */
 	async handleAsyncE2EESuggestedKey() {
 		const subs = Subscriptions.state.filter((sub) => typeof sub.E2ESuggestedKey !== 'undefined');
 		await Promise.all(
@@ -293,26 +301,11 @@ class E2E extends Emitter<{
 		delete this.instancesByRoomId[rid];
 	}
 
-	private async persistKeys(
-		{ public_key, private_key }: LocalKeyPair,
-		password: string,
-		{ force }: { force: boolean } = { force: false },
-	): Promise<void> {
-		if (typeof public_key !== 'string' || typeof private_key !== 'string') {
-			throw new Error('Failed to persist keys as they are not strings.');
+	private async persistKeys(localKeyPair: LocalKeyPair, password: string, force = false): Promise<void> {
+		const res = await this.e2ee.persistKeys(localKeyPair, password, force);
+		if (!res.isOk) {
+			throw res.error;
 		}
-
-		const encodedPrivateKey = await this.encodePrivateKey(private_key, password);
-
-		if (!encodedPrivateKey) {
-			throw new Error('Failed to encode private key with provided password.');
-		}
-
-		await sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
-			public_key,
-			private_key: encodedPrivateKey,
-			force,
-		});
 	}
 
 	async acceptSuggestedKey(rid: string): Promise<void> {
@@ -363,7 +356,9 @@ class E2E extends Emitter<{
 
 		let { public_key, private_key } = await this.e2ee.getKeysFromLocalStorage();
 
-		await this.loadKeysFromDB();
+		const dbKeys = await this.loadKeysFromDB();
+		this.db_private_key = dbKeys.private_key;
+		this.db_public_key = dbKeys.public_key;
 
 		if (!public_key && this.db_public_key) {
 			public_key = this.db_public_key;
@@ -433,14 +428,14 @@ class E2E extends Emitter<{
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
-		await this.persistKeys(await this.e2ee.getKeysFromLocalStorage(), newPassword, { force: true });
+		await this.persistKeys(await this.e2ee.getKeysFromLocalStorage(), newPassword, true);
 
 		if (await this.e2ee.getRandomPassword()) {
 			await this.e2ee.storeRandomPassword(newPassword);
 		}
 	}
 
-	async loadKeysFromDB(): Promise<void> {
+	async loadKeysFromDB(): Promise<RemoteKeyPair> {
 		this.setState('LOADING_KEYS');
 		const result = await this.e2ee.loadKeysFromDB();
 		if (!result.isOk) {
@@ -451,8 +446,7 @@ class E2E extends Emitter<{
 			throw result.error;
 		}
 
-		this.db_public_key = result.value.public_key;
-		this.db_private_key = result.value.private_key;
+		return result.value;
 	}
 
 	async loadKeys(keys: RemoteKeyPair): Promise<void> {

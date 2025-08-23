@@ -14,6 +14,7 @@ export interface KeyStorage {
 export interface KeyService {
 	userId: () => Promise<string | null>;
 	fetchMyKeys: () => Promise<RemoteKeyPair>;
+	persistKeys: (keys: RemoteKeyPair, force: boolean) => Promise<void | null>;
 }
 
 export type PrivateKey = string;
@@ -88,6 +89,27 @@ export abstract class BaseE2EE {
 		} catch (error) {
 			return err(new Error('Error loading keys from service', { cause: error }));
 		}
+	}
+
+	async persistKeys(localKeyPair: LocalKeyPair, password: string, force: boolean): AsyncResult<void | null, Error> {
+		if (typeof localKeyPair.public_key !== 'string' || typeof localKeyPair.private_key !== 'string') {
+			return err(new TypeError('Failed to persist keys as they are not strings.'));
+		}
+
+		const encodedPrivateKey = await this.encodePrivateKey(localKeyPair.private_key, password);
+		if (!encodedPrivateKey.isOk) {
+			return encodedPrivateKey;
+		}
+
+		return ok(
+			await this.#service.persistKeys(
+				{
+					private_key: encodedPrivateKey.value,
+					public_key: localKeyPair.public_key,
+				},
+				force,
+			),
+		);
 	}
 
 	async encodePrivateKey(privateKey: string, password: string): AsyncResult<string, Error> {
