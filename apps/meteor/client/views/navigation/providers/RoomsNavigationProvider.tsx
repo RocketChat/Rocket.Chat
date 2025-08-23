@@ -17,12 +17,12 @@ import { useMemo } from 'react';
 import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquiries';
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
-import { RoomsNavigationContext, getEmptyUnreadInfo } from '../contexts/RoomsNavigationContext';
+import { RoomsNavigationContext, getEmptyUnreadInfo, isUnreadSubscription } from '../contexts/RoomsNavigationContext';
 import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
 import { useSidePanelParentRid } from '../hooks/useSidePanelParentRid';
+import { useSortQueryOptions } from '../hooks/useSortQueryOptions';
 
 const query = { open: { $ne: false } };
-const sortOptions = { sort: { lm: -1 } } as const;
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
@@ -53,9 +53,6 @@ const updateGroupUnreadInfo = (
 	};
 };
 
-const isUnread = (room: SubscriptionWithRoom | ILivechatInquiryRecord) =>
-	'alert' in room && (room.alert || room.unread || room.tunread?.length) && !room.hideUnreadStatus;
-
 const hasMention = (room: SubscriptionWithRoom) =>
 	room.userMentions || room.groupMentions || room.tunreadUser?.length || room.tunreadGroup?.length;
 
@@ -65,9 +62,12 @@ type UnreadGroupDataMap = Map<AllGroupsKeys, GroupedUnreadInfoData>;
 const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 	const showOmnichannel = useOmnichannelEnabled();
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
+	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
+	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
+	const options = useSortQueryOptions();
 
-	const rooms = useUserSubscriptions(query, sortOptions);
+	const rooms = useUserSubscriptions(query, options);
 
 	const inquiries = useQueuedInquiries();
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
@@ -90,8 +90,8 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 
 				getGroupSet(key).add(room);
 
-				if (isUnread(room)) {
-					getGroupSet(`${key}_unread`).add(room);
+				if (isUnreadSubscription(room)) {
+					// getGroupSet(`${key}_unread`).add(room);
 
 					const currentUnreadData = unreadGroupData.get(key) || getEmptyUnreadInfo();
 					const unreadInfo = updateGroupUnreadInfo(room, currentUnreadData);
@@ -104,26 +104,6 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return;
 				}
 
-				if (hasMention(room)) {
-					setGroupRoom('mentions', room);
-				}
-
-				if (favoritesEnabled && room.f) {
-					setGroupRoom('favorites', room);
-				}
-
-				if (isTeamRoom(room)) {
-					setGroupRoom('teams', room);
-				}
-
-				if (isDiscussionEnabled && isDiscussion(room)) {
-					setGroupRoom('discussions', room);
-				}
-
-				if ((isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
-					setGroupRoom('channels', room);
-				}
-
 				if (isOmnichannelRoom(room) && showOmnichannel) {
 					if (room.onHold) {
 						return setGroupRoom('onHold', room);
@@ -132,15 +112,46 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 					return setGroupRoom('inProgress', room);
 				}
 
+				setGroupRoom('all', room);
+
+				if (hasMention(room)) {
+					setGroupRoom('mentions', room);
+				}
+
+				if (favoritesEnabled && room.f) {
+					setGroupRoom('favorites', room);
+				}
+
+				if (isDiscussionEnabled && isDiscussion(room)) {
+					setGroupRoom('discussions', room);
+					return;
+				}
+
+				if (sidebarShowUnread && isUnreadSubscription(room)) {
+					setGroupRoom('unread', room);
+					return;
+				}
+
+				if (!sidebarGroupByType) {
+					setGroupRoom('conversations', room);
+					return;
+				}
+
+				if (isTeamRoom(room)) {
+					setGroupRoom('teams', room);
+				}
+
+				if ((isPrivateRoom(room) || isPublicRoom(room)) && !isDiscussion(room) && !isTeamRoom(room)) {
+					setGroupRoom('channels', room);
+				}
+
 				if (isDirectMessageRoom(room)) {
 					setGroupRoom('directMessages', room);
 				}
-
-				setGroupRoom('all', room);
 			});
 
 			return [groups, unreadGroupData];
-		}, [rooms, showOmnichannel, queue, favoritesEnabled, isDiscussionEnabled]),
+		}, [showOmnichannel, queue, rooms, sidebarShowUnread, sidebarGroupByType, favoritesEnabled, isDiscussionEnabled]),
 		50,
 	);
 };

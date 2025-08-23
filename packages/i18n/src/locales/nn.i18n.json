@@ -480,8 +480,10 @@
   "App_Url_to_Install_From_File": "Installer fra fil",
   "App_author_homepage": "forfatter hjemmeside",
   "App_cannot_be_enabled_without_add-on": "Appen kan ikke aktiveres uten utvidelse.",
-  "App_has_been_disabled_addon_message_one": "Appen {{appNames}} har blitt deaktivert på grunn av et ugyldig tillegg. Et gyldig tilleggsabonnement kreves for å aktivere det på nytt",
-  "App_has_been_disabled_addon_message_other": "Appene {{appNames}} har blitt deaktivert på grunn av ugyldige tillegg. Et gyldig tilleggsabonnement kreves for å aktivere dem på nytt",
+  "App_has_been_disabled_addon_message": {
+    "one": "Appen {{appNames}} har blitt deaktivert på grunn av et ugyldig tillegg. Et gyldig tilleggsabonnement kreves for å aktivere det på nytt",
+    "other": "Appene {{appNames}} har blitt deaktivert på grunn av ugyldige tillegg. Et gyldig tilleggsabonnement kreves for å aktivere dem på nytt"
+  },
   "App_limit_exceeded": "Appgrensen er overskredet",
   "App_limit_reached": "Appgrensen er nådd",
   "App_not_enabled": "App ikke aktivert",
@@ -511,8 +513,10 @@
   "Apply_and_refresh_all_clients": "Påfør og oppdater alle klienter",
   "Apps": "Apps",
   "Apps_Cannot_Be_Updated": "Appen kan ikke oppdateres",
-  "Apps_Count_Enabled_one": "{{count}} app aktivert",
-  "Apps_Count_Enabled_other": "{{count}} apper aktivert",
+  "Apps_Count_Enabled": {
+    "one": "{{count}} app aktivert",
+    "other": "{{count}} apper aktivert"
+  },
   "Apps_Count_Enabled_tooltip": "Community-arbeidsområder kan aktivere opptil {{number}} {{context}} apper",
   "Apps_Currently_Enabled": "{{enabled}} av {{limit}} {{context}} apper er for øyeblikket aktivert",
   "Apps_Engine_Version": "Versjon av Apps Engine",
@@ -897,10 +901,11 @@
   "Caller_Id": "Anrops-ID",
   "Calling": "Ringer",
   "Calls": "Samtaler",
-  "Calls_in_queue": "{{calls}} anrop i kø",
-  "Calls_in_queue_one": "{{count}} anrop i kø",
-  "Calls_in_queue_other": "{{count}} anrop i kø",
-  "Calls_in_queue_zero": "Køen er tom",
+  "Calls_in_queue": {
+    "zero": "Køen er tom",
+    "one": "{{count}} anrop i kø",
+    "other": "{{count}} anrop i kø"
+  },
   "Cam_off": "Kamera av",
   "Cam_on": "Kamera på",
   "Camera_access_not_allowed": "Kameratilgang ble ikke tillatt, sjekk nettleserinnstillingene.",
@@ -2214,8 +2219,10 @@
   "Flags": "Flags",
   "Follow_message": "Følg melding",
   "Follow_social_profiles": "Følg våre sosiale profiler, gaffel oss på github og del dine tanker om rocket.chat-appen på vår trello bord.",
-  "Follower_one": "Følger",
-  "Follower_other": "Følgere",
+  "Follower": {
+    "one": "Følger",
+    "other": "Følgere"
+  },
   "Following": "Følgende",
   "Font_size": "Skriftstørrelse",
   "Fonts": "fonter",
@@ -3567,7 +3574,6 @@
   "No_results_found": "Ingen resultater",
   "No_results_found_for": "Ingen resultater funnet for:",
   "No_snippet_messages": "Ingen utdrag",
-  "No_spaces": "Ingen mellomrom",
   "No_starred_messages": "Ingen stjernemerkede meldinger",
   "No_such_command": "Ingen slik kommando: `/ {{command}}`",
   "No_tags_yet": "Ingen tagger ennå",
@@ -3912,8 +3918,10 @@
   "Privacy_summary": "Personvernsammendrag",
   "Private": "Privat",
   "Private_Apps": "Private apper",
-  "Private_Apps_Count_Enabled_one": "{{count}} privat app aktivert",
-  "Private_Apps_Count_Enabled_other": "{{count}} private apper aktivert",
+  "Private_Apps_Count_Enabled": {
+    "one": "{{count}} privat app aktivert",
+    "other": "{{count}} private apper aktivert"
+  },
   "Private_Channel": "Privat kanal",
   "Private_Channels": "Private kanaler",
   "Private_Chats": "Private chatter",
@@ -5720,8 +5728,10 @@
   "get-server-info_description": "Tillatelse til å hente serverinformasjon",
   "github_HEAD": "HEAD",
   "github_no_public_email": "Du har ingen e-post som offentlig e-post i din GitHub-konto",
-  "group_mentions_counter_one": "{{count}} gruppeomtale",
-  "group_mentions_counter_other": "{{count}} gruppeomtaler",
+  "group_mentions_counter": {
+    "one": "{{count}} gruppeomtale",
+    "other": "{{count}} gruppeomtaler"
+  },
   "hours": "timer",
   "if_they_are_from": "(hvis de er fra %s)",
   "importer_status_done": "Fullført",
@@ -5850,13 +5860,17 @@
   "mention-all_description": "Tillatelse til å bruke @all nevne",
   "mention-here": "Nevn her",
   "mention-here_description": "Tillatelse til å bruke @here mention",
-  "mentions_counter_one": "{{count}} omtale",
-  "mentions_counter_other": "{{count}} omtaler",
+  "mentions_counter": {
+    "one": "{{count}} omtale",
+    "other": "{{count}} omtaler"
+  },
   "message": "melding",
   "message-impersonate": "Utgi seg for andre brukere",
   "message-impersonate_description": "Tillatelse til å utgi seg for andre brukere ved å bruke meldingsalias",
-  "message_counter_one": "{{count}} melding",
-  "message_counter_other": "{{count}} meldinger",
+  "message_counter": {
+    "one": "{{count}} melding",
+    "other": "{{count}} meldinger"
+  },
   "message_pruned": "melding beskåret",
   "messages": "meldinger",
   "messages_pruned": "meldinger beskjæres",
@@ -5864,8 +5878,10 @@
   "meteor_status_connecting": "Kobler til...",
   "meteor_status_failed": "Servertilkoblingen mislyktes",
   "meteor_status_offline": "Frakoblet modus.",
-  "meteor_status_reconnect_in_one": "Prøver å koble til igjen om 1 sekund",
-  "meteor_status_reconnect_in_other": "prøver igjen om {{count}} sekunder...",
+  "meteor_status_reconnect_in": {
+    "one": "Prøver å koble til igjen om 1 sekund",
+    "other": "prøver igjen om {{count}} sekunder..."
+  },
   "meteor_status_try_again_later": "Prøv igjen senere eller be arbeidsområdeadministratoren din om hjelp",
   "meteor_status_try_now_offline": "Koble til igjen",
   "meteor_status_try_now_waiting": "Prøv nå",
@@ -6035,10 +6051,14 @@
   "subscription.callout.activeUsers": "seter",
   "subscription.callout.allPremiumCapabilitiesDisabled": "Alle premium-funksjoner er deaktivert",
   "subscription.callout.capabilitiesDisabled": "Funksjoner deaktivert",
-  "subscription.callout.description.limitsExceeded_one": "Arbeidsområdet ditt overskred lisensgrensen <1>{{val}}</1>. <3>Administrer abonnementet ditt</3> for å øke grensene.",
-  "subscription.callout.description.limitsExceeded_other": "Arbeidsområdet ditt overskred <1>{{val, list}}</1> lisensgrensene. <3>Administrer abonnementet ditt</3> for å øke grensene.",
-  "subscription.callout.description.limitsReached_one": "Arbeidsområdet ditt nådde lisensgrensen <1>{{val}}</1>. <3>Administrer abonnementet ditt</3> for å øke grensene.",
-  "subscription.callout.description.limitsReached_other": "Arbeidsområdet ditt nådde lisensgrensene <1>{{val, list}}</1>. <3>Administrer abonnementet ditt</3> for å øke grensene.",
+  "subscription.callout.description.limitsExceeded": {
+    "one": "Arbeidsområdet ditt overskred lisensgrensen <1>{{val}}</1>. <3>Administrer abonnementet ditt</3> for å øke grensene.",
+    "other": "Arbeidsområdet ditt overskred <1>{{val, list}}</1> lisensgrensene. <3>Administrer abonnementet ditt</3> for å øke grensene."
+  },
+  "subscription.callout.description.limitsReached": {
+    "one": "Arbeidsområdet ditt nådde lisensgrensen <1>{{val}}</1>. <3>Administrer abonnementet ditt</3> for å øke grensene.",
+    "other": "Arbeidsområdet ditt nådde lisensgrensene <1>{{val, list}}</1>. <3>Administrer abonnementet ditt</3> for å øke grensene."
+  },
   "subscription.callout.guestUsers": "gjester",
   "subscription.callout.marketplaceApps": "installerte markedsplassapper",
   "subscription.callout.monthlyActiveContacts": "månedlige aktive kontakter",
@@ -6095,8 +6115,10 @@
   "theme-font-body-font-family": "Body Font Family",
   "this_app_is_included_with_subscription": "Denne appen er inkludert i {{bundleName}}-planer",
   "thread_message": "trådmelding",
-  "threads_counter_one": "{{count}} ulest trådmelding",
-  "threads_counter_other": "{{count}} uleste trådmeldinger",
+  "threads_counter": {
+    "one": "{{count}} ulest trådmelding",
+    "other": "{{count}} uleste trådmeldinger"
+  },
   "to_see_more_details_on_how_to_integrate": "for å se flere detaljer om hvordan å integrere.",
   "toggle-room-e2e-encryption_description": "Tillatelse til å veksle e2e-krypteringsrom",
   "totp-invalid": "Kode eller passord er ugyldig",
@@ -6107,8 +6129,10 @@
   "unarchive-room_description": "Tillatelse til å unarchive kanaler",
   "unauthorized": "Ikke autorisert",
   "unblock-livechat-contact": "Fjern blokkering av omnikanal kontaktkanal",
-  "unread_messages_counter_one": "{{count}} ulest melding",
-  "unread_messages_counter_other": "{{count}} uleste meldinger",
+  "unread_messages_counter": {
+    "one": "{{count}} ulest melding",
+    "other": "{{count}} uleste meldinger"
+  },
   "update-livechat-contact": "Oppdater omnikanalkontakter",
   "used_limit": "{{used, number}} / {{limit, number}}",
   "used_limit_infinite": "{{used, number}} / ∞",
@@ -6179,10 +6203,14 @@
   "__count__conversations__period__": "{{count}} samtaler, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} tomme rom vil bli fjernet automatisk.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> tomme rom vil bli fjernet automatisk:<br/> {{rooms}}.",
-  "__count__follower_one": "+{{count}} følger",
-  "__count__follower_other": "+{{count}} følgere",
-  "__count__message_pruned_one": "{{count}} melding beskjært",
-  "__count__message_pruned_other": "{{count}} meldinger beskjært",
+  "__count__follower": {
+    "one": "+{{count}} følger",
+    "other": "+{{count}} følgere"
+  },
+  "__count__message_pruned": {
+    "one": "{{count}} melding beskjært",
+    "other": "{{count}} meldinger beskjært"
+  },
   "__count__messages_selected": "{{count}} meldinger er valgt",
   "__count__replies": "{{count}} svar",
   "__count__replies__date__": "{{count}} svar, {{date}}",
