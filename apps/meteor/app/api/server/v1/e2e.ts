@@ -85,7 +85,7 @@ const e2eEndpoints = API.v1
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile<object | { public_key: string; private_key: string }>({
+				200: ajv.compile<{ public_key: string; private_key: string }>({
 					type: 'object',
 					properties: {
 						public_key: { type: 'string' },
@@ -98,7 +98,7 @@ const e2eEndpoints = API.v1
 		},
 
 		async function action() {
-			const result = await Users.fetchKeysByUserId(this.userId);
+			const result = (await Users.fetchKeysByUserId(this.userId)) as unknown as { public_key: string; private_key: string };
 
 			return API.v1.success(result);
 		},
