@@ -25,9 +25,10 @@ type AddUsersProps = {
 	rid: IRoom['_id'];
 	onClickBack: () => void;
 	reload: () => void;
+	hideDialog?: boolean;
 };
 
-const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => {
+const AddUsers = ({ rid, onClickBack, reload, hideDialog }: AddUsersProps): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const room = useUserRoom(rid);
@@ -56,6 +57,61 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const addClickHandler = useAddMatrixUsers();
 
 	const isFederated = room ? isRoomFederated(room) : false;
+
+	// If hideDialog is true, render content without ContextualbarDialog wrapper
+	if (hideDialog) {
+		return (
+			<>
+				<ContextualbarHeader>
+					{onClickBack && <ContextualbarBack onClick={onClickBack} />}
+					<ContextualbarTitle>{t('Add_users')}</ContextualbarTitle>
+					{closeTab && <ContextualbarClose onClick={closeTab} />}
+				</ContextualbarHeader>
+				<ContextualbarScrollableContent>
+					<FieldGroup>
+						<Field>
+							<FieldLabel flexGrow={0}>{t('Choose_users')}</FieldLabel>
+						</Field>
+						{isFederated ? (
+							<Controller
+								name='users'
+								control={control}
+								render={({ field }) => <UserAutoCompleteMultipleFederated {...field} placeholder={t('Choose_users')} />}
+							/>
+						) : (
+							<Controller
+								name='users'
+								control={control}
+								render={({ field }) => <UserAutoCompleteMultiple {...field} placeholder={t('Choose_users')} />}
+							/>
+						)}
+					</FieldGroup>
+				</ContextualbarScrollableContent>
+				<ContextualbarFooter>
+					<ButtonGroup stretch>
+						{isFederated ? (
+							<Button
+								primary
+								disabled={addClickHandler.isPending}
+								onClick={() =>
+									addClickHandler.mutate({
+										users: getValues('users'),
+										handleSave,
+									})
+								}
+							>
+								{t('Add_users')}
+							</Button>
+						) : (
+							<Button primary loading={isSubmitting} disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+								{t('Add_users')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</ContextualbarFooter>
+			</>
+		);
+	}
 
 	return (
 		<ContextualbarDialog>

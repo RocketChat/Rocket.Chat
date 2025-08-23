@@ -23,7 +23,15 @@ enum ROOM_MEMBERS_TABS {
 type validRoomType = 'd' | 'p' | 'c';
 
 // Added optional adminView to disable member row actions for admin modal usage
-const RoomMembersWithData = ({ rid, adminView }: { rid: IRoom['_id']; adminView?: boolean }): ReactElement => {
+const RoomMembersWithData = ({
+	rid,
+	adminView,
+	onClose: adminOnClose,
+}: {
+	rid: IRoom['_id'];
+	adminView?: boolean;
+	onClose?: () => void;
+}): ReactElement => {
 	const user = useUser();
 	const room = useUserRoom(rid);
 	const { closeTab } = useRoomToolbox();
@@ -118,7 +126,15 @@ const RoomMembersWithData = ({ rid, adminView }: { rid: IRoom['_id']; adminView?
 	}, [setState]);
 
 	if (state.tab === ROOM_MEMBERS_TABS.INFO && state.userId) {
-		return <UserInfoWithData rid={rid} uid={state.userId} onClose={closeTab} onClickBack={handleBack} />;
+		return (
+			<UserInfoWithData
+				rid={rid}
+				uid={state.userId}
+				onClose={adminView && adminOnClose ? adminOnClose : closeTab}
+				onClickBack={handleBack}
+				hideDialog={adminView}
+			/>
+		);
 	}
 
 	if (state.tab === ROOM_MEMBERS_TABS.INVITE) {
@@ -126,7 +142,7 @@ const RoomMembersWithData = ({ rid, adminView }: { rid: IRoom['_id']; adminView?
 	}
 
 	if (state.tab === ROOM_MEMBERS_TABS.ADD) {
-		return <AddUsers rid={rid} onClickBack={handleBack} reload={refetch} />;
+		return <AddUsers rid={rid} onClickBack={handleBack} reload={refetch} hideDialog={adminView} />;
 	}
 
 	return (
@@ -141,7 +157,7 @@ const RoomMembersWithData = ({ rid, adminView }: { rid: IRoom['_id']; adminView?
 			setType={setType}
 			members={data?.pages?.flatMap((page) => page.members) ?? []}
 			total={data?.pages[data.pages.length - 1].total ?? 0}
-			onClickClose={closeTab}
+			onClickClose={adminView && adminOnClose ? adminOnClose : closeTab}
 			onClickView={openUserInfo}
 			loadMoreItems={hasNextPage ? fetchNextPage : () => undefined}
 			reload={refetch}

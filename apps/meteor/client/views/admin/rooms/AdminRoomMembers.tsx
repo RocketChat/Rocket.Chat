@@ -8,8 +8,8 @@ type AdminRoomMembersProps = {
 	onClose?: () => void;
 };
 
-const AdminRoomMembers = ({ rid }: AdminRoomMembersProps): ReactElement => {
-	return <RoomMembersWithData rid={rid} adminView />;
+const AdminRoomMembers = ({ rid, onClose }: AdminRoomMembersProps): ReactElement => {
+	return <RoomMembersWithData rid={rid} adminView onClose={onClose} />;
 };
 
 export default AdminRoomMembers;

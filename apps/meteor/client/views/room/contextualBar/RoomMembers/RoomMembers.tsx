@@ -134,6 +134,91 @@ const RoomMembers = ({
 		return { counts, titles };
 	}, [members]);
 
+	// In admin view, don't render ContextualbarDialog since it's already provided by RoomsPage
+	if (adminView) {
+		return (
+			<>
+				<ContextualbarHeader>
+					<ContextualbarIcon name='members' />
+					<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
+					{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+				</ContextualbarHeader>
+				<ContextualbarSection>
+					<TextInput
+						placeholder={t('Search_by_username')}
+						value={text}
+						ref={inputRef}
+						onChange={setText}
+						addon={<Icon name='magnifier' size='x20' />}
+					/>
+					<Box w='x144' mis={8}>
+						<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
+					</Box>
+				</ContextualbarSection>
+				<ContextualbarContent p={0} pb={12}>
+					{loading && (
+						<Box pi={24} pb={12}>
+							<Throbber size='x12' />
+						</Box>
+					)}
+
+					{error && (
+						<Box pi={24} pb={12}>
+							<Callout type='danger'>{error.message}</Callout>
+						</Box>
+					)}
+
+					{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
+
+					{!loading && members.length > 0 && (
+						<>
+							<Box pi={24} pb={12}>
+								<Box is='span' color='hint' fontScale='p2'>
+									{t('Showing_current_of_total', { current: members.length, total })}
+								</Box>
+							</Box>
+
+							<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+								<VirtualizedScrollbars>
+									<GroupedVirtuoso
+										style={{
+											height: '100%',
+											width: '100%',
+										}}
+										overscan={50}
+										groupCounts={counts}
+										groupContent={(index): ReactElement => titles[index]}
+										// eslint-disable-next-line react/no-multi-comp
+										components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+										itemContent={(index): ReactElement => (
+											<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+										)}
+									/>
+								</VirtualizedScrollbars>
+							</Box>
+						</>
+					)}
+				</ContextualbarContent>
+				{!isDirect && (onClickInvite || onClickAdd) && (
+					<ContextualbarFooter>
+						<ButtonGroup stretch>
+							{onClickInvite && (
+								<Button icon='link' onClick={onClickInvite} width='50%'>
+									{t('Invite_Link')}
+								</Button>
+							)}
+							{onClickAdd && (
+								<Button icon='user-plus' onClick={onClickAdd} width='50%' primary>
+									{t('Add')}
+								</Button>
+							)}
+						</ButtonGroup>
+					</ContextualbarFooter>
+				)}
+			</>
+		);
+	}
+
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
