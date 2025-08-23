@@ -2505,16 +2505,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gerrit0/mini-shiki@npm:^3.2.2":
-  version: 3.6.0
-  resolution: "@gerrit0/mini-shiki@npm:3.6.0"
+"@gerrit0/mini-shiki@npm:^3.9.0":
+  version: 3.9.2
+  resolution: "@gerrit0/mini-shiki@npm:3.9.2"
   dependencies:
-    "@shikijs/engine-oniguruma": "npm:^3.6.0"
-    "@shikijs/langs": "npm:^3.6.0"
-    "@shikijs/themes": "npm:^3.6.0"
-    "@shikijs/types": "npm:^3.6.0"
+    "@shikijs/engine-oniguruma": "npm:^3.9.2"
+    "@shikijs/langs": "npm:^3.9.2"
+    "@shikijs/themes": "npm:^3.9.2"
+    "@shikijs/types": "npm:^3.9.2"
     "@shikijs/vscode-textmate": "npm:^10.0.2"
-  checksum: 10/8f33f76598f3088dc2c632aad37389929300d4cee4cd868a318809133de86d96a68d0334ee0061fb62cc732cb12fe7cc9f64eed7885ce1e76e77000ed12ceb99
+  checksum: 10/ac156a91bcaf1479bc6b6d741a9bfd982fa11dafd638d1b8770c89587ac74a4370c5aa2101e70d31f68df43eba3635e330d809bb5b6d95d93ab339e95858c0c5
   languageName: node
   linkType: hard
 
@@ -6928,7 +6928,7 @@ __metadata:
     polka: "npm:^0.5.2"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     uuid: "npm:^11.0.3"
   languageName: unknown
   linkType: soft
@@ -6938,7 +6938,7 @@ __metadata:
   resolution: "@rocket.chat/account-utils@workspace:packages/account-utils"
   dependencies:
     eslint: "npm:~8.45.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -6954,7 +6954,7 @@ __metadata:
     human-interval: "npm:^2.0.1"
     moment-timezone: "npm:~0.5.48"
     mongodb: "npm:6.10.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -6975,7 +6975,7 @@ __metadata:
     query-string: "npm:^7.1.3"
     split-on-first: "npm:^3.0.0"
     strict-uri-encode: "npm:^2.0.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7012,8 +7012,8 @@ __metadata:
     stack-trace: "npm:0.0.10"
     tap-bark: "npm:^1.0.0"
     ts-node: "npm:^6.2.0"
-    typedoc: "npm:~0.28.5"
-    typescript: "npm:~5.8.3"
+    typedoc: "npm:~0.28.9"
+    typescript: "npm:~5.9.2"
     uglify-es: "npm:^3.3.10"
     uuid: "npm:~11.0.5"
   languageName: unknown
@@ -7028,7 +7028,7 @@ __metadata:
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~8.45.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7063,7 +7063,7 @@ __metadata:
     polka: "npm:^0.5.2"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7080,7 +7080,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7091,7 +7091,7 @@ __metadata:
     cheerio: "npm:1.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7119,7 +7119,7 @@ __metadata:
     jest: "npm:~30.0.5"
     mongodb: "npm:6.10.0"
     prettier: "npm:~3.3.3"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7139,8 +7139,8 @@ __metadata:
     prettier: "npm:~3.3.3"
     rimraf: "npm:^6.0.1"
     ts-patch: "npm:^3.3.0"
-    typescript: "npm:~5.8.3"
-    typia: "npm:~9.3.1"
+    typescript: "npm:~5.9.2"
+    typia: "npm:~9.7.0"
   languageName: unknown
   linkType: soft
 
@@ -7155,7 +7155,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~8.45.0"
     mongodb: "npm:6.10.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7195,7 +7195,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     jest-websocket-mock: "npm:~2.5.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     ws: "npm:^8.18.2"
   peerDependencies:
     "@rocket.chat/emitter": "*"
@@ -7243,7 +7243,7 @@ __metadata:
     prometheus-gc-stats: "npm:^1.1.0"
     sharp: "npm:^0.33.5"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     underscore: "npm:^1.13.7"
     uuid: "npm:^11.0.3"
     ws: "npm:^8.18.2"
@@ -7275,7 +7275,7 @@ __metadata:
     eslint-plugin-jsx-a11y: "npm:^6.10.2"
     eslint-plugin-prettier: "npm:~5.2.6"
     prettier: "npm:~3.3.3"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7284,7 +7284,7 @@ __metadata:
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
   dependencies:
     eslint: "npm:~8.45.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7301,7 +7301,7 @@ __metadata:
     esl: "github:pierre-lehnen-rc/esl"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7420,7 +7420,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     storybook: "npm:^8.6.14"
     storybook-dark-mode: "npm:^4.0.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
   peerDependencies:
     "@rocket.chat/apps-engine": "workspace:^"
@@ -7523,7 +7523,7 @@ __metadata:
     react-stately: "npm:~3.17.0"
     react-virtuoso: "npm:^4.12.0"
     storybook: "npm:^8.6.14"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -7559,7 +7559,7 @@ __metadata:
     qs: "npm:^6.14.0"
     supertest: "npm:^7.1.1"
     ts-jest: "npm:~29.4.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7573,7 +7573,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   peerDependencies:
     "@rocket.chat/tools": "workspace:~"
     i18next: "*"
@@ -7598,7 +7598,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     mongodb: "npm:6.10.0"
     prettier: "npm:~3.3.3"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7620,7 +7620,7 @@ __metadata:
     jest-axe: "npm:~10.0.0"
     jest-environment-jsdom: "npm:~30.0.2"
     jest-environment-node: "npm:~30.0.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     uuid: "npm:~11.0.5"
   languageName: unknown
   linkType: soft
@@ -7635,7 +7635,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     jose: "npm:^4.15.9"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7667,7 +7667,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     jest-websocket-mock: "npm:~2.5.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7758,7 +7758,7 @@ __metadata:
     stylelint-order: "npm:^6.0.4"
     svg-loader: "npm:^0.0.2"
     terser-webpack-plugin: "npm:~4.2.3"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     url-loader: "npm:^4.1.1"
     webpack: "npm:~5.99.9"
     webpack-cli: "npm:~5.1.4"
@@ -7779,7 +7779,7 @@ __metadata:
     chalk: "npm:^4.1.2"
     ejson: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7790,7 +7790,7 @@ __metadata:
     "@rocket.chat/emitter": "npm:~0.31.25"
     eslint: "npm:~8.45.0"
     pino: "npm:^8.21.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7838,8 +7838,8 @@ __metadata:
     rimraf: "npm:^6.0.1"
     tldts: "npm:~6.1.86"
     ts-loader: "npm:~9.5.2"
-    typedoc: "npm:~0.28.5"
-    typescript: "npm:~5.8.3"
+    typedoc: "npm:~0.28.9"
+    typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
     webpack-cli: "npm:~5.1.4"
   languageName: unknown
@@ -8225,8 +8225,8 @@ __metadata:
     ts-node: "npm:^10.9.2"
     twilio: "npm:^5.4.2"
     twit: "npm:^2.2.11"
-    typescript: "npm:~5.8.3"
-    typia: "npm:~9.3.1"
+    typescript: "npm:~5.9.2"
+    typia: "npm:~9.7.0"
     ua-parser-js: "npm:^1.0.40"
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
@@ -8267,7 +8267,7 @@ __metadata:
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
     storybook: "npm:^8.6.14"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   peerDependencies:
     "@tanstack/react-query": "*"
     react: "*"
@@ -8282,7 +8282,7 @@ __metadata:
     "@types/node-rsa": "npm:^1.1.4"
     eslint: "npm:~8.45.0"
     mongodb: "npm:6.10.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8304,7 +8304,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     node-rsa: "npm:^1.1.1"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8316,7 +8316,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     mongodb: "npm:6.10.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   peerDependencies:
     mongodb: 6.10.0
   languageName: unknown
@@ -8347,7 +8347,7 @@ __metadata:
     moleculer: "npm:^0.14.35"
     pino: "npm:^8.21.0"
     sinon: "npm:^19.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8363,7 +8363,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8375,11 +8375,12 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/patch-injection": "workspace:^"
+    "@rocket.chat/tools": "workspace:*"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8415,7 +8416,7 @@ __metadata:
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.10.0"
     pino: "npm:^8.21.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8461,7 +8462,7 @@ __metadata:
     prometheus-gc-stats: "npm:^1.1.0"
     react: "npm:~18.3.1"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8495,7 +8496,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8508,7 +8509,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8541,7 +8542,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     storybook: "npm:^8.6.14"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8557,7 +8558,7 @@ __metadata:
     peggy: "npm:4.1.1"
     prettier: "npm:~3.3.3"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
   peerDependencies:
     peggy: "*"
@@ -8570,7 +8571,7 @@ __metadata:
   resolution: "@rocket.chat/poplib@workspace:packages/node-poplib"
   dependencies:
     eslint: "npm:~8.45.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8605,7 +8606,7 @@ __metadata:
     polka: "npm:^0.5.2"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8627,7 +8628,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     mongodb: "npm:6.10.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8673,7 +8674,7 @@ __metadata:
     polka: "npm:^0.5.2"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8690,7 +8691,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8710,7 +8711,7 @@ __metadata:
     remark-parse: "npm:9.0.0"
     remark-stringify: "npm:9.0.1"
     semver: "npm:^7.6.3"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     unified: "npm:9.2.2"
   languageName: unknown
   linkType: soft
@@ -8725,7 +8726,7 @@ __metadata:
     dataloader: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
     node-fetch: "npm:^2.7.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8744,7 +8745,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     mongodb: "npm:6.10.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8754,7 +8755,7 @@ __metadata:
   dependencies:
     "@rocket.chat/license": "workspace:^"
     eslint: "npm:~8.45.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8769,7 +8770,7 @@ __metadata:
     https-proxy-agent: "npm:^7.0.6"
     node-fetch: "npm:2.7.0"
     proxy-from-env: "npm:^1.1.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8786,7 +8787,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8817,7 +8818,7 @@ __metadata:
     react-virtuoso: "npm:^4.12.0"
     storybook: "npm:^8.6.14"
     storybook-dark-mode: "npm:^4.0.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -8859,7 +8860,7 @@ __metadata:
     polka: "npm:^0.5.2"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8890,7 +8891,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/tools@workspace:^, @rocket.chat/tools@workspace:packages/tools, @rocket.chat/tools@workspace:~":
+"@rocket.chat/tools@workspace:*, @rocket.chat/tools@workspace:^, @rocket.chat/tools@workspace:packages/tools, @rocket.chat/tools@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/tools@workspace:packages/tools"
   dependencies:
@@ -8900,7 +8901,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     moment-timezone: "npm:^0.5.48"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8915,7 +8916,7 @@ __metadata:
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
     ts-jest: "npm:~29.4.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -8948,7 +8949,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -8997,7 +8998,7 @@ __metadata:
     react-hook-form: "npm:~7.45.4"
     react-virtuoso: "npm:^4.12.0"
     storybook: "npm:^8.6.14"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   peerDependencies:
     "@react-aria/toolbar": "*"
     "@rocket.chat/css-in-js": "*"
@@ -9046,7 +9047,7 @@ __metadata:
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
     storybook: "npm:^8.6.14"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
   peerDependencies:
     "@react-aria/toolbar": "*"
@@ -9067,17 +9068,20 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "npm:^0.37.0"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/i18n": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/password-policies": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/tools": "workspace:~"
+    "@types/jest": "npm:~30.0.0"
     "@types/react": "npm:~18.3.23"
     "@types/react-dom": "npm:~18.3.7"
     eslint: "npm:~8.45.0"
     eslint-plugin-react-hooks: "npm:^5.0.0"
     i18next: "npm:~23.4.9"
+    jest: "npm:~30.0.2"
     mongodb: "npm:6.10.0"
     react: "npm:~18.3.1"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
@@ -9109,8 +9113,8 @@ __metadata:
     rimraf: "npm:~6.0.1"
     ts-jest: "npm:~29.4.0"
     ts-patch: "npm:^3.3.0"
-    typescript: "npm:~5.8.3"
-    typia: "npm:~9.3.1"
+    typescript: "npm:~5.9.2"
+    typia: "npm:~9.7.0"
   peerDependencies:
     "@rocket.chat/icons": "*"
   languageName: unknown
@@ -9139,7 +9143,7 @@ __metadata:
     react-docgen-typescript-plugin: "npm:~1.0.8"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
@@ -9190,7 +9194,7 @@ __metadata:
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
     storybook: "npm:^8.6.14"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     webpack: "npm:~5.99.9"
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
@@ -9259,7 +9263,7 @@ __metadata:
     react-virtuoso: "npm:^4.12.0"
     sip.js: "npm:^0.21.2"
     storybook: "npm:^8.6.14"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
@@ -9320,7 +9324,7 @@ __metadata:
     react-split-pane: "npm:^0.1.92"
     react-virtuoso: "npm:^4.12.0"
     reactflow: "npm:^11.11.4"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     vite: "npm:^6.2.4"
   languageName: unknown
   linkType: soft
@@ -9371,7 +9375,7 @@ __metadata:
     react-virtuoso: "npm:^4.12.0"
     storybook: "npm:^8.6.14"
     storybook-dark-mode: "npm:^4.0.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.3
@@ -9530,10 +9534,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@samchon/openapi@npm:^4.3.1":
-  version: 4.3.3
-  resolution: "@samchon/openapi@npm:4.3.3"
-  checksum: 10/a25f66c2735dba223f50f9ff4767494aec401bde895f41982f58c7c1856c5c9f2567ddb26eb5228851a9552767dbe7e9d2032c1946a4c90bba01887216dbde8f
+"@samchon/openapi@npm:^4.7.1":
+  version: 4.7.1
+  resolution: "@samchon/openapi@npm:4.7.1"
+  checksum: 10/4e0a3d529f4113b2a86a369759ecf0d3629af58e4de58d4c9ece737e99219a8f7cf2b9e78ea60a0b99005d5fcdad2269f19c1b792856766025788e1b7b7d00ad
   languageName: node
   linkType: hard
 
@@ -9583,41 +9587,41 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shikijs/engine-oniguruma@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@shikijs/engine-oniguruma@npm:3.6.0"
+"@shikijs/engine-oniguruma@npm:^3.9.2":
+  version: 3.9.2
+  resolution: "@shikijs/engine-oniguruma@npm:3.9.2"
   dependencies:
-    "@shikijs/types": "npm:3.6.0"
+    "@shikijs/types": "npm:3.9.2"
     "@shikijs/vscode-textmate": "npm:^10.0.2"
-  checksum: 10/f97481aefba3eee0ab0e797c9a164e55e4e8797519762150ad01fa3d7da571e35620c193b84f58cd170820f0df96eb85ca3f464598406d683fefaf8445a8c828
+  checksum: 10/1ffb3501df871aea7fcafd9ed1cbe49e8897d479f90448fba892fd00aee7b2bd2a0afedabb0cb48e6038be91c7582d6aab98b95873f2fd38176be66c3160271b
   languageName: node
   linkType: hard
 
-"@shikijs/langs@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@shikijs/langs@npm:3.6.0"
+"@shikijs/langs@npm:^3.9.2":
+  version: 3.9.2
+  resolution: "@shikijs/langs@npm:3.9.2"
   dependencies:
-    "@shikijs/types": "npm:3.6.0"
-  checksum: 10/ff8bd42cd3528649f9aa278c2030e844389f1bf61cc8d9eba64e43517aeb72d54b95a68038788159c5286b0550012964cdb4f2007d845f7c4f3fe14cb3021cf6
+    "@shikijs/types": "npm:3.9.2"
+  checksum: 10/eef3380d6296179280bebd742b586a7388cc120388e4dcff61dc93e71ee5dc50bc9219e7b579744f79f1132de0f141706fc8e5f3772c13a4ef62a3db2eb31744
   languageName: node
   linkType: hard
 
-"@shikijs/themes@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@shikijs/themes@npm:3.6.0"
+"@shikijs/themes@npm:^3.9.2":
+  version: 3.9.2
+  resolution: "@shikijs/themes@npm:3.9.2"
   dependencies:
-    "@shikijs/types": "npm:3.6.0"
-  checksum: 10/dc28668d1fa03f08eace564d1b9fb4466a84774cd486695d9d66261a3470147dd06e0ab16173861338ea63026008f58269ba5e8b27179616e9b7ad235ddf181d
+    "@shikijs/types": "npm:3.9.2"
+  checksum: 10/29836bdbc75560772472597eb173f0fbb07a7dbd161f854b89adcd6ed3a9aab46a829cb3919d4b519a2604dde1e0021a538917995e0d3f1efb608ce812f1338f
   languageName: node
   linkType: hard
 
-"@shikijs/types@npm:3.6.0, @shikijs/types@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "@shikijs/types@npm:3.6.0"
+"@shikijs/types@npm:3.9.2, @shikijs/types@npm:^3.9.2":
+  version: 3.9.2
+  resolution: "@shikijs/types@npm:3.9.2"
   dependencies:
     "@shikijs/vscode-textmate": "npm:^10.0.2"
     "@types/hast": "npm:^3.0.4"
-  checksum: 10/0dde01f5733d156b57946911ae461d6e9172f4ccd7e8d99d8ba9de6004275de37fba53e38d853de2a187357ac4540b2c2dbd8de09ef2d12c37e913829a89566b
+  checksum: 10/d21020066f12c618be759cdeb01984d8236bfa3aec96343e2886040748aaf3c7fe07a2cbeebe125afed3d57136dcae35eb28f2ba6985f0b6327cbc90ba387472
   languageName: node
   linkType: hard
 
@@ -11956,15 +11960,6 @@ __metadata:
   version: 14.18.63
   resolution: "@types/node@npm:14.18.63"
   checksum: 10/82a7775898c2ea6db0b610a463512206fb2c7adc1af482c7eb44b99d94375fff51c74f67ae75a63c5532971159f30c866a4d308000624ef02fd9a7175e277019
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:~22.14.1":
-  version: 22.14.1
-  resolution: "@types/node@npm:22.14.1"
-  dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10/561b1ad98ef5176d6da856ffbbe494f16655149f6a7d561de0423c8784910c81267d7d6459f59d68a97b3cbae9b5996b3b5dfe64f4de3de2239d295dcf4a4dcc
   languageName: node
   linkType: hard
 
@@ -24623,7 +24618,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:~30.0.5":
+"jest@npm:~30.0.2, jest@npm:~30.0.5":
   version: 30.0.5
   resolution: "jest@npm:30.0.5"
   dependencies:
@@ -31667,12 +31662,12 @@ __metadata:
     "@changesets/cli": "npm:^2.27.11"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
-    "@types/node": "npm:~22.14.1"
+    "@types/node": "npm:~22.16.1"
     "@types/stream-buffers": "npm:^3.0.7"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
-    turbo: "npm:^2.5.4"
-    typescript: "npm:~5.8.3"
+    turbo: "npm:~2.5.5"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -31719,7 +31714,7 @@ __metadata:
     sodium-native: "npm:^4.3.3"
     sodium-plus: "npm:^0.9.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
     uuid: "npm:^11.0.3"
     ws: "npm:^8.18.2"
   languageName: unknown
@@ -34755,58 +34750,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-darwin-64@npm:2.5.4"
+"turbo-darwin-64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-darwin-64@npm:2.5.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-darwin-arm64@npm:2.5.4"
+"turbo-darwin-arm64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-darwin-arm64@npm:2.5.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-linux-64@npm:2.5.4"
+"turbo-linux-64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-linux-64@npm:2.5.5"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-linux-arm64@npm:2.5.4"
+"turbo-linux-arm64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-linux-arm64@npm:2.5.5"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-windows-64@npm:2.5.4"
+"turbo-windows-64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-windows-64@npm:2.5.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:2.5.4":
-  version: 2.5.4
-  resolution: "turbo-windows-arm64@npm:2.5.4"
+"turbo-windows-arm64@npm:2.5.5":
+  version: 2.5.5
+  resolution: "turbo-windows-arm64@npm:2.5.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.5.4":
-  version: 2.5.4
-  resolution: "turbo@npm:2.5.4"
+"turbo@npm:~2.5.5":
+  version: 2.5.5
+  resolution: "turbo@npm:2.5.5"
   dependencies:
-    turbo-darwin-64: "npm:2.5.4"
-    turbo-darwin-arm64: "npm:2.5.4"
-    turbo-linux-64: "npm:2.5.4"
-    turbo-linux-arm64: "npm:2.5.4"
-    turbo-windows-64: "npm:2.5.4"
-    turbo-windows-arm64: "npm:2.5.4"
+    turbo-darwin-64: "npm:2.5.5"
+    turbo-darwin-arm64: "npm:2.5.5"
+    turbo-linux-64: "npm:2.5.5"
+    turbo-linux-arm64: "npm:2.5.5"
+    turbo-windows-64: "npm:2.5.5"
+    turbo-windows-arm64: "npm:2.5.5"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -34822,7 +34817,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10/43dd952192a1261de3845ecac96d4f42ea6d8e49eaa4c339c029dbe010a1323957ef4b0080f8f06e3cd0169c1f00c356d32cbabde1ee08c72b0708f90994a774
+  checksum: 10/edbaf7f88a1238b52655bee7846460b9807b31f29e6712202c1723d548b2da6c79824afe90d700054b1f8e3ab76cf633fb5a40745815e7060369501b51f48a66
   languageName: node
   linkType: hard
 
@@ -35017,48 +35012,48 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typedoc@npm:~0.28.5":
-  version: 0.28.5
-  resolution: "typedoc@npm:0.28.5"
+"typedoc@npm:~0.28.9":
+  version: 0.28.9
+  resolution: "typedoc@npm:0.28.9"
   dependencies:
-    "@gerrit0/mini-shiki": "npm:^3.2.2"
+    "@gerrit0/mini-shiki": "npm:^3.9.0"
     lunr: "npm:^2.3.9"
     markdown-it: "npm:^14.1.0"
     minimatch: "npm:^9.0.5"
-    yaml: "npm:^2.7.1"
+    yaml: "npm:^2.8.0"
   peerDependencies:
-    typescript: 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x || 5.8.x
+    typescript: 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x || 5.8.x || 5.9.x
   bin:
     typedoc: bin/typedoc
-  checksum: 10/620426f4fd593dea5ffd37bce8741bfa996cb25e0f67c6aac11434788652c3cd10af2a9c47d1445f10b9fbb44304ffcf6ec59f5cedd353175e3b3d9a24cb5d29
+  checksum: 10/b803651a2c1295c293c68b97bc8aa722ba89fe253b23104aab0f751f30921b69a813352173bf09fa65efc0c6dfbce11305f365218ee7298f955a0993907da36d
   languageName: node
   linkType: hard
 
-"typescript@npm:~5.8.3":
-  version: 5.8.3
-  resolution: "typescript@npm:5.8.3"
+"typescript@npm:~5.9.2":
+  version: 5.9.2
+  resolution: "typescript@npm:5.9.2"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/65c40944c51b513b0172c6710ee62e951b70af6f75d5a5da745cb7fab132c09ae27ffdf7838996e3ed603bb015dadd099006658046941bd0ba30340cc563ae92
+  checksum: 10/cc2fe6c822819de5d453fa25aa9f32096bf70dde215d481faa1ad84a283dfb264e33988ed8f6d36bc803dd0b16dbe943efa311a798ef76d5b3892a05dfbfd628
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A~5.8.3#optional!builtin<compat/typescript>":
-  version: 5.8.3
-  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
+"typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
+  version: 5.9.2
+  resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10/b9b1e73dabac5dc730c041325dbd9c99467c1b0d239f1b74ec3b90d831384af3e2ba973946232df670519147eb51a2c20f6f96163cea2b359f03de1e2091cc4f
+  checksum: 10/bd810ab13e8e557225a8b5122370385440b933e4e077d5c7641a8afd207fdc8be9c346e3c678adba934b64e0e70b0acf5eef9493ea05170a48ce22bef845fdc7
   languageName: node
   linkType: hard
 
-"typia@npm:~9.3.1":
-  version: 9.3.1
-  resolution: "typia@npm:9.3.1"
+"typia@npm:~9.7.0":
+  version: 9.7.0
+  resolution: "typia@npm:9.7.0"
   dependencies:
-    "@samchon/openapi": "npm:^4.3.1"
+    "@samchon/openapi": "npm:^4.7.1"
     "@standard-schema/spec": "npm:^1.0.0"
     commander: "npm:^10.0.0"
     comment-json: "npm:^4.2.3"
@@ -35066,11 +35061,10 @@ __metadata:
     package-manager-detector: "npm:^0.2.0"
     randexp: "npm:^0.5.3"
   peerDependencies:
-    "@samchon/openapi": ">=4.3.1 <5.0.0"
-    typescript: ">=4.8.0 <5.9.0"
+    typescript: ">=4.8.0 <5.10.0"
   bin:
     typia: lib/executable/typia.js
-  checksum: 10/77e593799d5ad6ccf6dcd78431b379cab3771b4d609e04c5a344e09c7a237a6b888c4756b93c2e07a8c6da11116813327a41612d7a9002c336098bb45e37f2cc
+  checksum: 10/1f0b260402900b46225af7bba1110399a21a9276122a306b34448a4d6f9de12035857f520baf1ee27a663274835a85e6f9cdeb856c866e437b544b87164d48f9
   languageName: node
   linkType: hard
 
@@ -36681,12 +36675,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.2.2, yaml@npm:^2.7.1":
+"yaml@npm:^2.2.2":
   version: 2.8.0
   resolution: "yaml@npm:2.8.0"
   bin:
     yaml: bin.mjs
   checksum: 10/7d4bd9c10d0e467601f496193f2ac254140f8e36f96f5ff7f852b9ce37974168eb7354f4c36dc8837dde527a2043d004b6aff48818ec24a69ab2dd3c6b6c381c
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.8.0":
+  version: 2.8.1
+  resolution: "yaml@npm:2.8.1"
+  bin:
+    yaml: bin.mjs
+  checksum: 10/eae07b3947d405012672ec17ce27348aea7d1fa0534143355d24a43a58f5e05652157ea2182c4fe0604f0540be71f99f1173f9d61018379404507790dff17665
   languageName: node
   linkType: hard
 

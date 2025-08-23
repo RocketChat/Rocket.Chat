@@ -2,8 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { memoize } from '@rocket.chat/memo';
 
 import { callWithErrorHandling } from './callWithErrorHandling';
-import { Subscriptions } from '../../../app/models/client';
 import { router } from '../../providers/RouterProvider';
+import { Subscriptions } from '../../stores';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const getRoomById = memoize((rid: IRoom['_id']) => callWithErrorHandling('getRoomById', rid));

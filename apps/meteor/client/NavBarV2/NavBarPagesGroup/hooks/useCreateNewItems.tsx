@@ -63,6 +63,6 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
 		...(canCreateChannel ? [createChannelItem] : []),
-		...(canCreateTeam ? [createTeamItem] : []),
+		...(canCreateTeam && canCreateChannel ? [createTeamItem] : []),
 	];
 };

@@ -1,8 +1,8 @@
 import { LivechatUnit } from '@rocket.chat/models';
+import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 
 import type { CheckUnitsFromUser } from '../../../../../app/livechat/server/api/lib/livechat';
 import { checkUnitsFromUser } from '../../../../../app/livechat/server/api/lib/livechat';
-import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 checkUnitsFromUser.patch(async (_next, { businessUnit, userId }: CheckUnitsFromUser) => {
 	if (!businessUnit) {

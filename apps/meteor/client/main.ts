@@ -1,13 +1,6 @@
 import './serviceWorker';
 import './startup/accounts';
-
-import { FlowRouter } from 'meteor/ostrio:flow-router-extra';
-
-FlowRouter.wait();
-
-FlowRouter.notFound = {
-	action: () => undefined,
-};
+import './startup/fakeUserPresence';
 
 import('@rocket.chat/fuselage-polyfills')
 	.then(() => import('./meteorOverrides'))

@@ -2,7 +2,7 @@ import type { RoomType, ISubscription, SlashCommandCallbackParams } from '@rocke
 
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { router } from '../../../client/providers/RouterProvider';
-import { Subscriptions } from '../../models/client';
+import { Subscriptions } from '../../../client/stores';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { slashCommands } from '../../utils/client/slashCommand';
 

@@ -46,13 +46,13 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 		<>
 			{(children || popups?.length > 0) && (
 				<VideoConfPopupPortal>
-					<FocusScope autoFocus contain restoreFocus>
-						<VideoConfPopupBackdrop>
-							{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index = 1) => (
-								<VideoConfPopup key={id} id={id} rid={rid} isReceiving={isReceiving} isCalling={isCalling} position={index * 10} />
-							))}
+					{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index = 1) => (
+						<VideoConfPopupBackdrop key={id}>
+							<FocusScope autoFocus contain restoreFocus>
+								<VideoConfPopup id={id} rid={rid} isReceiving={isReceiving} isCalling={isCalling} position={index * 10} />
+							</FocusScope>
 						</VideoConfPopupBackdrop>
-					</FocusScope>
+					))}
 				</VideoConfPopupPortal>
 			)}
 		</>

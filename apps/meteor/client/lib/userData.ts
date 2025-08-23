@@ -1,11 +1,11 @@
 import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typings';
 import { createTransformFromUpdateFilter } from '@rocket.chat/mongo-adapter';
-import { ReactiveVar } from 'meteor/reactive-var';
+import { create } from 'zustand';
 
-import { Users } from '../../app/models/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { Users } from '../stores';
 
-export const isSyncReady = new ReactiveVar(false);
+export const useUserDataSyncReady = create(() => false);
 
 type RawUserData = Serialized<
 	Pick<
@@ -137,7 +137,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 			_updatedAt: new Date(userData._updatedAt),
 		});
 	}
-	isSyncReady.set(true);
+	useUserDataSyncReady.setState(true);
 
 	return userData;
 };
