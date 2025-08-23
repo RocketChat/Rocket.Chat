@@ -50,46 +50,59 @@ const E2eSetRoomKeyIdSchema = {
 
 const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
 
-const e2eEndpoints = API.v1.post(
-	'e2e.setRoomKeyID',
-	{
-		authRequired: true,
-		body: isE2eSetRoomKeyIdProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-			}),
+const e2eEndpoints = API.v1
+	.post(
+		'e2e.setRoomKeyID',
+		{
+			authRequired: true,
+			body: isE2eSetRoomKeyIdProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+			},
 		},
-	},
 
-	async function action() {
-		const { rid, keyID } = this.bodyParams;
+		async function action() {
+			const { rid, keyID } = this.bodyParams;
 
-		await setRoomKeyIDMethod(this.userId, rid, keyID);
+			await setRoomKeyIDMethod(this.userId, rid, keyID);
 
-		return API.v1.success();
-	},
-);
+			return API.v1.success();
+		},
+	)
+	.get(
+		'e2e.fetchMyKeys',
+		{
+			authRequired: true,
+			query: undefined,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<object | { public_key: string; private_key: string }>({
+					type: 'object',
+					properties: {
+						public_key: { type: 'string' },
+						private_key: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+			},
+		},
 
-API.v1.addRoute(
-	'e2e.fetchMyKeys',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
+		async function action() {
 			const result = await Users.fetchKeysByUserId(this.userId);
 
 			return API.v1.success(result);
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'e2e.getUsersOfRoomWithoutKey',
