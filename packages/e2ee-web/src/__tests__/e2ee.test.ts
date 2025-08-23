@@ -9,6 +9,7 @@ const mockedKeyService: KeyService = {
 			private_key: 'mocked_private_key',
 		}),
 	userId: () => Promise.resolve('mocked_user_id'),
+	persistKeys: () => Promise.resolve(),
 };
 
 test('E2EE createRandomPassword deterministic generation with 5 words', async () => {
