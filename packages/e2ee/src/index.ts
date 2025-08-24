@@ -40,10 +40,6 @@ export abstract class BaseE2EE {
 	#storage: KeyStorage;
 	#codec: BaseKeyCodec;
 
-	get codec(): BaseKeyCodec {
-		return this.#codec;
-	}
-
 	constructor(codec: BaseKeyCodec, storage: KeyStorage, service: KeyService) {
 		this.#storage = storage;
 		this.#service = service;
