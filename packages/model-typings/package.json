@@ -6,7 +6,7 @@
 		"@types/node-rsa": "^1.1.4",
 		"eslint": "~8.45.0",
 		"mongodb": "6.10.0",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

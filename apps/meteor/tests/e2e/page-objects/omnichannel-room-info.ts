@@ -1,10 +1,15 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { HomeSidenav } from './fragments/home-sidenav';
+
 export class OmnichannelRoomInfo {
 	private readonly page: Page;
 
+	private readonly homeSidenav: HomeSidenav;
+
 	constructor(page: Page) {
 		this.page = page;
+		this.homeSidenav = new HomeSidenav(page);
 	}
 
 	get dialogRoomInfo(): Locator {
@@ -33,5 +38,9 @@ export class OmnichannelRoomInfo {
 
 	getLabel(label: string): Locator {
 		return this.page.locator(`div >> text="${label}"`);
+	}
+
+	getBadgeIndicator(name: string, title: string): Locator {
+		return this.homeSidenav.getSidebarItemByName(name).getByTitle(title);
 	}
 }

@@ -1,10 +1,7 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { settings } from '../../../../app/settings/client';
-import { getUserPreference } from '../../../../app/utils/client';
 import { getRoomAvatarURL } from '../../../../app/utils/client/getRoomAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
@@ -77,14 +74,6 @@ roomCoordinator.add(
 			}
 		},
 
-		condition() {
-			const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-			return (
-				groupByType &&
-				(hasAtLeastOnePermission(['view-c-room', 'view-joined-room']) || settings.get('Accounts_AllowAnonymousRead') === true)
-			);
-		},
-
 		getAvatarPath(room) {
 			return getRoomAvatarURL({ roomId: room._id, cache: room.avatarETag });
 		},
@@ -112,11 +101,6 @@ roomCoordinator.add(
 				return record.t === 'c' && record.name === identifier;
 			};
 			return Rooms.state.find(predicate);
-		},
-
-		showJoinLink(roomId) {
-			const predicate = (record: IRoom): boolean => record.t === 'c' && record._id === roomId;
-			return !!Rooms.state.find(predicate);
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'isGroupChat' | 'roomName'>,
 );

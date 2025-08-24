@@ -52,7 +52,7 @@ export const isEmojiCustomList = ajv.compile<emojiCustomList>(emojiCustomListSch
 
 export type EmojiCustomEndpoints = {
 	'/v1/emoji-custom.all': {
-		GET: (params: PaginatedRequest<{ query: string }, 'name'>) => PaginatedResult<{
+		GET: (params: PaginatedRequest<{ name?: string }, 'name'>) => PaginatedResult<{
 			emojis: IEmojiCustom[];
 		}>;
 	};

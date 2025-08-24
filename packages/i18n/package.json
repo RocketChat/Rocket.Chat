@@ -2,6 +2,21 @@
 	"name": "@rocket.chat/i18n",
 	"version": "1.9.0",
 	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		".:build:cjs": "tsc -p tsconfig.cjs.json",
+		".:build:esm": "tsc -p tsconfig.esm.json",
+		"build": "node ./src/scripts/build.mjs && run .:build:esm && run .:build:cjs",
+		"lint": "eslint --ext .mjs,.js,.jsx,.ts,.tsx .",
+		"lint:fix": "eslint --ext .mjs,.js,.jsx,.ts,.tsx . --fix",
+		"test": "jest",
+		"testunit": "jest"
+	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",
@@ -9,28 +24,13 @@
 		"eslint": "~8.45.0",
 		"i18next": "~23.4.9",
 		"jest": "~30.0.5",
-		"typescript": "~5.8.3"
-	},
-	"scripts": {
-		"build": "node ./src/scripts/build.mjs && run .:build:esm && run .:build:cjs",
-		".:build:esm": "tsc -p tsconfig.esm.json",
-		".:build:cjs": "tsc -p tsconfig.cjs.json",
-		"lint": "eslint --ext .mjs,.js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .mjs,.js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"testunit": "jest"
-	},
-	"main": "./dist/index.js",
-	"module": "./dist/index.mjs",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"volta": {
-		"extends": "../../package.json"
+		"typescript": "~5.9.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/tools": "workspace:~",
 		"i18next": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

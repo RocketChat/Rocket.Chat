@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">
-  The ultimate Free Open Source Solution for team communications
+  The ultimate secure open-source solution for team communications
 </h1>
 
 <p align="center">
@@ -15,77 +15,74 @@
 
 
 
-[Rocket.Chat](https://rocket.chat) is an open-source fully customizable communications platform developed in JavaScript for organizations with high standards of data protection.
+[Rocket.Chat](https://rocket.chat) is an open-source, secure, fully customizable communications platform developed in TypeScript for organizations with high standards of data protection.
 
-We are the ultimate **Free Open Source Solution** for team communications, enabling real-time conversations between colleagues, with other companies or with your customers, regardless of how they connect with you. The result is an increase in productivity and customer satisfaction rates.
+We are the ultimate solution for team communications, enabling real-time conversations between colleagues, with other companies, and with your customers or citizens, regardless of how they connect with you. The result is an increase in productivity and user satisfaction rates.
 
 Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, The US Navy, and Credit Suisse trust Rocket.Chat to keep their communications completely private and secure.
 
-# 🚀 Product Offerings - Self-hosted and Cloud
+# 🚀 Platform overview
 
-Rocket.Chat has four key product offerings: 
+Rocket.Chat provides endless possibilities. Here’s an overview of the features you benefit from:
 
-💬 **Team collaboration** - A single point for secure internal and cross-company collaboration.
+💬 [**Team collaboration**](https://docs.rocket.chat/docs/collaborate-using-rocketchat): A single point for secure internal and cross-company collaboration with role-based access control.
 
-🎯 **Omnichannel customer service** - Engage in seamless interactions with customers regardless of how they connect with you.
+🎯 [**Omnichannel citizen engagement**](https://docs.rocket.chat/docs/omnichannel): Seamless digital interactions with your citizens and customers across platforms like WhatsApp, SMS, and more.
 
-🦾 **Chat engine** - Create customized messaging experiences within your mobile or web app.
+🦾 [**Optimization**](https://docs.rocket.chat/docs/optimize-your-workspace): Enhance productivity with self-hosted AI and a customizable and accessible workspace.
 
-🤖 **Marketplace** - Choose a wide range of apps and native integrations that help your business communicate more effectively.
+🤖 [**Extend and integrate**](https://docs.rocket.chat/docs/extend-and-integrate-rocketchat-capabilities): Install and use public apps from the Rocket.Chat Marketplace, build your own apps, and embed the workspace into your platform.
 
 <img src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp" data-canonical-src="https://global-uploads.webflow.com/611a19b9853b7414a0f6b3f6/6319c72bbd8af5c8c22efab6_heroImage.webp"  />
 
-# ☁️ Cloud-hosted Rocket.Chat
-
-Rocket.Chat has flexible hosting options that adapt to your infrastructure needs.
-For more information please [follow this link](https://www.rocket.chat/hosting)
-
-# 📖 Docs for Developers, Admins and Users
-
-Visit our official [User Documentation](https://docs.rocket.chat/) and [Developer Docs](https://developer.rocket.chat/docs) before sending questions.
-
-# 🛠️ Local Development
-
-You can set up a Rocket.Chat server development environment by following the guide below for your operating system:
-
-
-- [Linux](https://developer.rocket.chat/docs/linux): See how to set up a Rocket.Chat server development environment on any Linux distribution.
-
-- [Mac OSX](https://developer.rocket.chat/docs/mac-osx): Learn how to set up a Rocket.Chat server development environment on Mac.
-
-- [Windows 10](https://developer.rocket.chat/docs/windows-10): Set up a Rocket.Chat server development environment on Windows.
-
-- [Gitpod](https://developer.rocket.chat/docs/gitpod): Use the online development environment pre-configuration to develop Rocket.Chat server.
-
-> Visit the [Rocket.Chat Environment Setup guide](https://developer.rocket.chat/docs/server-environment-setup) to learn more.
-
-
 # 💻 Deploy Rocket.Chat
 
-Refer to the [System requirements documentation](https://docs.rocket.chat/docs/system-requirements) for required hardware and software specifications. For detailed instructions on deploying your Rocket.Chat workspace, visit [Deploy Rocket.Chat](https://rocket.chat/install).
+We support different methods of deployment for different needs. Choose your method:
 
-# 📱 Mobile apps
+- Are you deploying Rocket.Chat on your own servers? You can deploy using one of the recommended methods: Docker, Podman, or Kubernetes. Refer to the [Deployment Guide](https://docs.rocket.chat/docs/deploy-rocketchat) for details. Before you deploy, make sure to check the [system requirements](https://docs.rocket.chat/docs/system-requirements) to deploy a workspace successfully.
 
-In addition to the web app, you can also download Rocket.Chat clients for:
+- Do you need to run the workspace on an isolated network? Set up an [air-gapped workspace](https://docs.rocket.chat/docs/rocketchat-air-gapped-deployment) to use Rocket.Chat without internet access, suitable for high-security or regulated environments.
 
+- Looking for a custom cloud-hosted solution without handling infrastructure? Check out our premium, dedicated [cloud hosting options](https://docs.rocket.chat/docs/rocketchat-cloud-hosting-service-level-agreement-sla) that adapt to your needs.
+
+- Interested in decentralized communication? Deploy a [federated workspace](https://docs.rocket.chat/docs/rocketchat-federation) to securely communicate and share resources across a federated network.
+
+# 📱 Desktop and mobile apps
+
+In addition to the web app, you can also download the Rocket.Chat mobile app:
 
 [![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android)
 
-You can also contribute to the mobile open source code in [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative) and check it out its [documentation](https://developer.rocket.chat/docs/mobile-app).
+Download the desktop app:
+- [Download on the Mac App Store](https://apps.apple.com/us/app/rocket-chat/id1086818840?mt=12)
+- [Install from the Windows Store](https://apps.microsoft.com/detail/9nblggh52jv6?hl=en-us&gl=NG&ocid=pdpshare)
+- [Get from Snapcraft for Linux](https://snapcraft.io/rocketchat-desktop) or use the command `sudo snap install rocketchat-desktop`
 
-# 🧩 Apps Engine for Rocket.Chat
+Refer to the [Installation guide](https://docs.rocket.chat/docs/desktop-mobile-apps) for further details.
 
-You can develop your own app that can be integrated with Rocket.Chat. We provide an [Open Source Apps-Engine framework](https://developer.rocket.chat/apps-engine/getting-started) which expands the integration possibilities within the Rocket.Chat ecosystem.
+# 📖 Rocket.Chat documentation
 
-# 📚 Learn More
+- [User documentation](https://docs.rocket.chat/docs/rocketchat)
+- [Administrator's guide](https://docs.rocket.chat/docs/administrators-guide)
+- [Developer documentation](https://developer.rocket.chat/docs/rocketchat-developer)
+- [API documentation](https://developer.rocket.chat/apidocs)
+- [YouTube Rocket.Chat Learning Center](https://www.youtube.com/playlist?list=PLee3gqXJQrFVXnNs5GiuoTMy269ydvcOB)
 
-- [User documentation](https://docs.rocket.chat)
-- [Developer documentation](https://developer.rocket.chat)
-- [API documentation](https://developer.rocket.chat/reference/api)
-- [Apps-Engine development](https://developer.rocket.chat/apps-engine/rocket.chat-apps-and-apps-engine)
-- [See who's using Rocket.Chat](https://www.rocket.chat/customers)
+# 🛠️ Additional resources for developers
 
-# 🆕 Feature Request
+You can set up a Rocket.Chat development environment by following the guides below:
+
+- **[Server](https://developer.rocket.chat/docs/server)**: See how to set up a Rocket.Chat server development environment on Linux distributions, Windows, Mac, and Gitpod.
+
+- **[Desktop](https://developer.rocket.chat/docs/desktop-app)**: Learn how to set up and customize a desktop development environment. You can follow and contribute to the [Rocket.Chat.Electron](https://github.com/RocketChat/Rocket.Chat.Electron) repository.
+
+- **[Mobile](https://developer.rocket.chat/docs/mobile-app)**: Learn about mobile app development and configuring push notifications. You can follow and contribute to the [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative) repository.
+
+# 🧩 Apps-Engine
+
+Develop your own apps that can be integrated with Rocket.Chat. We provide an [open-source Apps-Engine framework](https://developer.rocket.chat/docs/rocketchat-apps-engine) which expands the integration possibilities within the Rocket.Chat ecosystem.
+
+# 🆕 Feature request
 
 [Rocket.Chat/feature-requests](https://github.com/RocketChat/feature-requests) is used to track Rocket.Chat feature requests and discussions. Click [here](https://github.com/RocketChat/feature-requests/issues/new?template=feature_request.md) to open a new feature request. [Feature Request Forums](https://forums.rocket.chat/c/feature-requests/8) stores the historical archives of old feature requests (up to 2018).
 
@@ -97,12 +94,12 @@ Join [#support](https://open.rocket.chat/channel/support) and [#general](https:/
 
 # 👥 Contributions
 
-Rocket.Chat is an open source project and we are very happy to accept community contributions. Refer to the [Modes of contribution guide](https://developer.rocket.chat/contribute-to-rocket.chat/ways-to-contribute) for more details.
+Rocket.Chat is an open-source project, and we are very happy to accept community contributions. Refer to the [Contribution guide](https://developer.rocket.chat/docs/contribute-to-rocketchat) for more details.
 
 
 # 💼 Become a Rocketeer
 
-We're hiring developers, support people, and product managers all the time. Check out our [jobs page](https://rocket.chat/jobs).
+We're hiring developers, technical support, and product managers all the time. Check out our [jobs page](https://rocket.chat/jobs).
 
 # 🗞️ Get the Latest News
 

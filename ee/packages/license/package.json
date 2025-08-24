@@ -11,7 +11,7 @@
 		"eslint": "~8.45.0",
 		"jest": "~30.0.5",
 		"jest-websocket-mock": "~2.5.0",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"scripts": {
 		"build": "tsc",

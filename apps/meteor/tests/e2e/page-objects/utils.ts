@@ -11,16 +11,8 @@ export class Utils {
 		return this.page.locator('#main-content');
 	}
 
-	get toastBar(): Locator {
-		return this.page.locator('.rcx-toastbar');
-	}
-
 	get toastBarSuccess(): Locator {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
-	}
-
-	get toastBarError(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--error');
 	}
 
 	get btnModalConfirmDelete() {

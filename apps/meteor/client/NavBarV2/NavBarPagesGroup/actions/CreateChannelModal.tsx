@@ -107,23 +107,23 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const { isPrivate, broadcast, readOnly, federated, encrypted } = watch();
 
 	useEffect(() => {
-		if (!isPrivate) {
-			setValue('encrypted', false);
-		}
-
-		if (broadcast) {
-			setValue('encrypted', false);
-		}
-
 		if (federated) {
 			// if room is federated, it cannot be encrypted or broadcast or readOnly
 			setValue('encrypted', false);
 			setValue('broadcast', false);
 			setValue('readOnly', false);
 		}
+	}, [federated, setValue]);
 
+	useEffect(() => {
+		if (!isPrivate) {
+			setValue('encrypted', false);
+		}
+	}, [isPrivate, setValue]);
+
+	useEffect(() => {
 		setValue('readOnly', broadcast);
-	}, [federated, setValue, broadcast, isPrivate]);
+	}, [broadcast, setValue]);
 
 	const validateChannelName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
@@ -173,10 +173,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 		}
 	};
 
-	const e2eDisabled = useMemo<boolean>(
-		() => !isPrivate || broadcast || Boolean(!e2eEnabled) || Boolean(e2eEnabledForPrivateByDefault),
-		[e2eEnabled, e2eEnabledForPrivateByDefault, broadcast, isPrivate],
-	);
+	const e2eDisabled = useMemo<boolean>(() => !isPrivate || Boolean(!e2eEnabled) || federated, [e2eEnabled, federated, isPrivate]);
 
 	const createChannelFormId = useId();
 	const nameId = useId();
@@ -226,7 +223,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 								{errors.name.message}
 							</FieldError>
 						)}
-						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>}
+						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces_or_special_characters')}</FieldHint>}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
@@ -276,13 +273,16 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 							</Box>
 							<Field>
 								<FieldRow>
-									<FieldLabel htmlFor={federatedId}>{t('Federation_Matrix_Federated')}</FieldLabel>
+									<FieldLabel htmlFor={federatedId} id={`${federatedId}-label`}>
+										{t('Federation_Matrix_Federated')}
+									</FieldLabel>
 									<Controller
 										control={control}
 										name='federated'
 										render={({ field: { onChange, value, ref } }): ReactElement => (
 											<ToggleSwitch
 												aria-describedby={`${federatedId}-hint`}
+												aria-labelledby={`${federatedId}-label`}
 												id={federatedId}
 												ref={ref}
 												checked={value}
@@ -296,7 +296,9 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 							</Field>
 							<Field>
 								<FieldRow>
-									<FieldLabel htmlFor={encryptedId}>{t('Encrypted')}</FieldLabel>
+									<FieldLabel htmlFor={encryptedId} id={`${encryptedId}-label`}>
+										{t('Encrypted')}
+									</FieldLabel>
 									<Controller
 										control={control}
 										name='encrypted'
@@ -305,10 +307,10 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 												id={encryptedId}
 												ref={ref}
 												checked={value}
-												disabled={e2eDisabled || federated}
+												disabled={e2eDisabled}
 												onChange={onChange}
 												aria-describedby={`${encryptedId}-hint`}
-												aria-labelledby='Encrypted_channel_Label'
+												aria-labelledby={`${encryptedId}-label`}
 											/>
 										)}
 									/>
@@ -317,7 +319,9 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 							</Field>
 							<Field>
 								<FieldRow>
-									<FieldLabel htmlFor={readOnlyId}>{t('Read_only')}</FieldLabel>
+									<FieldLabel htmlFor={readOnlyId} id={`${readOnlyId}-label`}>
+										{t('Read_only')}
+									</FieldLabel>
 									<Controller
 										control={control}
 										name='readOnly'
@@ -325,6 +329,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 											<ToggleSwitch
 												id={readOnlyId}
 												aria-describedby={`${readOnlyId}-hint`}
+												aria-labelledby={`${readOnlyId}-label`}
 												ref={ref}
 												checked={value}
 												disabled={!canSetReadOnly || broadcast || federated}
@@ -339,13 +344,16 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 							</Field>
 							<Field>
 								<FieldRow>
-									<FieldLabel htmlFor={broadcastId}>{t('Broadcast')}</FieldLabel>
+									<FieldLabel htmlFor={broadcastId} id={`${broadcastId}-label`}>
+										{t('Broadcast')}
+									</FieldLabel>
 									<Controller
 										control={control}
 										name='broadcast'
 										render={({ field: { onChange, value, ref } }): ReactElement => (
 											<ToggleSwitch
 												aria-describedby={`${broadcastId}-hint`}
+												aria-labelledby={`${broadcastId}-label`}
 												id={broadcastId}
 												ref={ref}
 												checked={value}

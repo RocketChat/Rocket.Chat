@@ -15,10 +15,6 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator(`tr[data-qa-id="${name}"]`);
 	}
 
-	btnRemoveByName(name: string) {
-		return this.findRowByName(name).locator('role=button[name="remove"]');
-	}
-
 	get inputName() {
 		return this.page.locator('[name="name"]');
 	}
@@ -73,10 +69,6 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator('header').locator('role=button[name="Create unit"]');
 	}
 
-	get btnCreateUnitEmptyState() {
-		return this.page.locator('.rcx-states').locator('role=button[name="Create unit"]');
-	}
-
 	get contextualBar() {
 		return this.page.locator('div[role="dialog"][aria-labelledby="contextualbarTitle"]');
 	}
@@ -99,10 +91,6 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 
 	get confirmDeleteModal() {
 		return this.page.locator('dialog[data-qa-id="units-confirm-delete-modal"]');
-	}
-
-	get btnCancelDeleteModal() {
-		return this.confirmDeleteModal.locator('role=button[name="Cancel"]');
 	}
 
 	get btnConfirmDeleteModal() {

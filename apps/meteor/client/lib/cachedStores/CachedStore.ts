@@ -310,8 +310,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			await this.loadFromServerAndPopulate();
 		}
 
-		this.setReady(true);
-
 		this.reconnectionComputation?.stop();
 		let wentOffline = Tracker.nonreactive(() => Meteor.status().status === 'offline');
 		this.reconnectionComputation = Tracker.autorun(() => {
@@ -340,9 +338,12 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			return this.initializationPromise;
 		}
 
-		this.initializationPromise = this.performInitialization().finally(() => {
-			this.initializationPromise = undefined;
-		});
+		this.initializationPromise = this.performInitialization()
+			.catch(console.error)
+			.finally(() => {
+				this.initializationPromise = undefined;
+				this.setReady(true);
+			});
 
 		return this.initializationPromise;
 	}

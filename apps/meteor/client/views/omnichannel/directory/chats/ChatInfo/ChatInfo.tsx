@@ -9,9 +9,9 @@ import {
 	useTranslation,
 	usePermission,
 	useEndpoint,
+	useUserId,
 } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import { useMemo } from 'react';
 
@@ -74,7 +74,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 	const canViewCustomFields = usePermission('view-livechat-room-customfields');
 	const subscription = useUserSubscription(id);
 	const hasGlobalEditRoomPermission = usePermission('save-others-livechat-room-info');
-	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
+	const hasLocalEditRoomPermission = servedBy?._id === useUserId();
 	const visitorId = v?._id;
 	const queueStartedAt = queuedAt || ts;
 
@@ -190,7 +190,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button icon='pencil' onClick={onEditClick} data-qa-id='room-info-edit'>
+					<Button icon='pencil' onClick={onEditClick}>
 						{t('Edit')}
 					</Button>
 				</ButtonGroup>

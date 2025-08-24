@@ -4,6 +4,7 @@ import type { IMessage } from './IMessage';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IOmnichannelRoom, OmnichannelSourceType } from './IRoom';
+import type { ISubscription } from './ISubscription';
 import type { SelectedAgent } from './omnichannel/routing';
 
 export interface IInquiry {
@@ -59,6 +60,8 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	slaId?: string;
 	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes'];
 }
+
+export const isLivechatInquiryRecord = (record: Partial<ISubscription>): record is ILivechatInquiryRecord => 'status' in record;
 
 export type InquiryWithAgentInfo = Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department' | 'v'> & {
 	position?: number;

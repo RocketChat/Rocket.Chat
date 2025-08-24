@@ -21,14 +21,6 @@ class OmnichannelManageSlaPolicy {
 		return this.page.locator('[name="dueTimeInMinutes"]');
 	}
 
-	get btnClose() {
-		return this.page.locator('button.rcx-button >> text="Close"');
-	}
-
-	get btnCancel() {
-		return this.page.locator('button.rcx-button >> text="Cancel"');
-	}
-
 	get btnSave() {
 		return this.page.locator('button.rcx-button >> text="Save"');
 	}

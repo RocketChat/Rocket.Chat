@@ -102,10 +102,6 @@ runs:
 
     - uses: rharkor/caching-for-turbo@v1.5
 
-    - name: Translation check
-      shell: bash
-      run: yarn turbo run translation-check
-
     - name: Reset Meteor
       shell: bash
       if: ${{ inputs.reset-meteor == 'true' }}
@@ -125,6 +121,10 @@ runs:
         fi
 
         yarn build:ci
+
+    - name: Translation check
+      shell: bash
+      run: yarn turbo run translation-check
 
     - name: Prepare build
       shell: bash

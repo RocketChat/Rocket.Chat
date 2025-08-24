@@ -58,7 +58,7 @@
 		"react-virtuoso": "^4.12.0",
 		"storybook": "^8.6.14",
 		"storybook-dark-mode": "^4.0.2",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",

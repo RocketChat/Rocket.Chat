@@ -22,7 +22,6 @@ import '../app/slashcommands-topic/client';
 import '../app/slashcommands-unarchiveroom/client';
 import '../app/webrtc/client';
 import '../app/wordpress/client';
-import '../app/e2e/client';
 import '../app/utils/client';
 import '../app/settings/client';
 import '../app/ui-utils/client';

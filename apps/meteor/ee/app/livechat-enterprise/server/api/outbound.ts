@@ -21,6 +21,7 @@ const outboundCommsEndpoints = API.v1
 			},
 			query: GETOutboundProviderParamsSchema,
 			authRequired: true,
+			license: ['outbound-messaging'],
 		},
 		async function action() {
 			const { type } = this.queryParams;
@@ -39,6 +40,7 @@ const outboundCommsEndpoints = API.v1
 				400: GETOutboundProviderBadRequestErrorSchema,
 			},
 			authRequired: true,
+			license: ['outbound-messaging'],
 		},
 		async function action() {
 			const { id } = this.urlParams;
@@ -55,6 +57,7 @@ const outboundCommsEndpoints = API.v1
 			response: { 200: POSTOutboundMessageSuccessSchema, 400: POSTOutboundMessageErrorSchema },
 			authRequired: true,
 			body: POSTOutboundMessageParams,
+			license: ['outbound-messaging'],
 		},
 		async function action() {
 			const { id } = this.urlParams;

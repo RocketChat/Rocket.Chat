@@ -657,7 +657,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 			isWaitingQueueEnabled,
 		});
 		await saveTransferHistory(room, transferData);
-		return RoutingManager.unassignAgent(inquiry, departmentId, true);
+		return RoutingManager.unassignAgent(inquiry, departmentId, true, agent);
 	}
 
 	// Fake the department to forward the inquiry - Case the forward process does not success

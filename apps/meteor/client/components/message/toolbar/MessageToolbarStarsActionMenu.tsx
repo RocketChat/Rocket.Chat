@@ -76,8 +76,6 @@ const MessageToolbarStarsActionMenu = ({ message, context, onChangeMenuVisibilit
 			title={t('AI_Actions')}
 			sections={groupOptions}
 			placement='bottom-end'
-			data-qa-id='menu'
-			data-qa-type='message-action-stars-menu-options'
 			onOpenChange={onChangeMenuVisibility}
 		/>
 	);

@@ -10,7 +10,6 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { Meteor } from 'meteor/meteor';
 import type { ReactElement, ContextType } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -87,7 +86,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			try {
 				await loginWithPassword(email, password);
 			} catch (error) {
-				if (error instanceof Meteor.Error && error.error === 'error-invalid-email') {
+				if ((error as { error?: unknown }).error === 'error-invalid-email') {
 					dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
 					return;
 				}
