@@ -1,7 +1,7 @@
 import { Authorization } from '@rocket.chat/core-services';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
-import { canSendOutboundMessage } from './canSendMessage';
+import { canSendOutboundMessage, validateAgentAssignPermissions } from './canSendMessage';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	Authorization: {
@@ -155,5 +155,36 @@ describe('canSendOutboundMessage', () => {
 		expect(findDepartmentMock).not.toHaveBeenCalled();
 		expect(findDepartmentAgentMock).not.toHaveBeenCalled();
 		expect(findUserAgentMock).not.toHaveBeenCalled();
+	});
+});
+
+describe('validateAgentAssignPermissions', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		setPermissions({});
+	});
+
+	test('resolves when user has any-agent permission', async () => {
+		setPermissions({ 'outbound.can-assign-any-agent': true });
+
+		await expect(validateAgentAssignPermissions('u1', 'other')).resolves.toBeUndefined();
+	});
+
+	test('resolves when user has self-only and agentId equals userId', async () => {
+		setPermissions({ 'outbound.can-assign-self-only': true });
+
+		await expect(validateAgentAssignPermissions('me', 'me')).resolves.toBeUndefined();
+	});
+
+	test('throws error-invalid-agent when self-only and agentId != userId', async () => {
+		setPermissions({ 'outbound.can-assign-self-only': true });
+
+		await expect(validateAgentAssignPermissions('me', 'other')).rejects.toThrow('error-invalid-agent');
+	});
+
+	test('throws error-invalid-agent when user lacks both permissions', async () => {
+		setPermissions({});
+
+		await expect(validateAgentAssignPermissions('me', 'other')).rejects.toThrow('error-invalid-agent');
 	});
 });
