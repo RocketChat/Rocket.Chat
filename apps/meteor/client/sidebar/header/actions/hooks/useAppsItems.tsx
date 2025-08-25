@@ -33,6 +33,12 @@ export const useAppsItems = (): GenericMenuItemProps[] => {
 			content: t('Installed'),
 			onClick: () => marketplaceRoute.push({ context: 'installed', page }),
 		},
+		{
+			id: 'private',
+			icon: 'lock',
+			content: t('Private'),
+			onClick: () => marketplaceRoute.push({ context: 'private', page }),
+		},
 	];
 
 	const appsManagementItem: GenericMenuItemProps = {
