@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 import RoomE2EENotAllowed from './RoomE2EENotAllowed';
 import { e2e } from '../../../lib/e2ee';
-import { E2ERoomState } from '../../../lib/e2ee/E2ERoomState';
 import RoomBody from '../body/RoomBody';
 import RoomBodyV2 from '../body/RoomBodyV2';
 import { useRoom } from '../contexts/RoomContext';
@@ -55,7 +54,7 @@ const RoomE2EESetup = () => {
 		);
 	}
 
-	if (e2eRoomState === E2ERoomState.WAITING_KEYS) {
+	if (e2eRoomState === 'WAITING_KEYS') {
 		return (
 			<RoomE2EENotAllowed
 				title={t('Check_back_later')}

@@ -4,7 +4,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
 
-import { E2ERoomState } from './E2ERoomState';
+import type { E2ERoomState } from './E2ERoomState';
 import {
 	toString,
 	toArrayBuffer,
@@ -36,21 +36,14 @@ import { roomCoordinator } from '../rooms/roomCoordinator';
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
-type Mutations = { [k in keyof typeof E2ERoomState]?: (keyof typeof E2ERoomState)[] };
+type Mutations = { [k in E2ERoomState]?: E2ERoomState[] };
 
 const permitedMutations: Mutations = {
-	[E2ERoomState.NOT_STARTED]: [E2ERoomState.ESTABLISHING, E2ERoomState.DISABLED, E2ERoomState.KEYS_RECEIVED],
-	[E2ERoomState.READY]: [E2ERoomState.DISABLED, E2ERoomState.CREATING_KEYS, E2ERoomState.WAITING_KEYS],
-	[E2ERoomState.ERROR]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.NOT_STARTED],
-	[E2ERoomState.WAITING_KEYS]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.ERROR, E2ERoomState.DISABLED],
-	[E2ERoomState.ESTABLISHING]: [
-		E2ERoomState.READY,
-		E2ERoomState.KEYS_RECEIVED,
-		E2ERoomState.ERROR,
-		E2ERoomState.DISABLED,
-		E2ERoomState.WAITING_KEYS,
-		E2ERoomState.CREATING_KEYS,
-	],
+	NOT_STARTED: ['ESTABLISHING', 'DISABLED', 'KEYS_RECEIVED'],
+	READY: ['DISABLED', 'CREATING_KEYS', 'WAITING_KEYS'],
+	ERROR: ['KEYS_RECEIVED', 'NOT_STARTED'],
+	WAITING_KEYS: ['KEYS_RECEIVED', 'ERROR', 'DISABLED'],
+	ESTABLISHING: ['READY', 'KEYS_RECEIVED', 'ERROR', 'DISABLED', 'WAITING_KEYS', 'CREATING_KEYS'],
 };
 
 const filterMutation = (currentState: E2ERoomState | undefined, nextState: E2ERoomState): E2ERoomState | false => {
@@ -60,7 +53,7 @@ const filterMutation = (currentState: E2ERoomState | undefined, nextState: E2ERo
 	}
 
 	if (currentState === nextState) {
-		return nextState === E2ERoomState.ERROR ? E2ERoomState.ERROR : false;
+		return nextState === 'ERROR' ? 'ERROR' : false;
 	}
 
 	if (!(currentState in permitedMutations)) {
@@ -105,11 +98,11 @@ export class E2ERoom extends Emitter {
 		this.typeOfRoom = room.t;
 		this.roomKeyId = room.e2eKeyId;
 
-		this.once(E2ERoomState.READY, async () => {
+		this.once('READY', async () => {
 			await this.decryptOldRoomKeys();
 			return this.decryptPendingMessages();
 		});
-		this.once(E2ERoomState.READY, () => this.decryptSubscription());
+		this.once('READY', () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === RoomManager.opened) {
 				this.log(`[PREV: ${prev}]`, 'State CHANGED');
@@ -117,7 +110,7 @@ export class E2ERoom extends Emitter {
 		});
 		this.on('STATE_CHANGED', () => this.handshake());
 
-		this.setState(E2ERoomState.NOT_STARTED);
+		this.setState('NOT_STARTED');
 	}
 
 	log(...msg: unknown[]) {
@@ -152,23 +145,23 @@ export class E2ERoom extends Emitter {
 	}
 
 	isReady() {
-		return this.state === E2ERoomState.READY;
+		return this.state === 'READY';
 	}
 
 	isDisabled() {
-		return this.state === E2ERoomState.DISABLED;
+		return this.state === 'DISABLED';
 	}
 
 	enable() {
-		if (this.state === E2ERoomState.READY) {
+		if (this.state === 'READY') {
 			return;
 		}
 
-		this.setState(E2ERoomState.READY);
+		this.setState('READY');
 	}
 
 	disable() {
-		this.setState(E2ERoomState.DISABLED);
+		this.setState('DISABLED');
 	}
 
 	pause() {
@@ -184,7 +177,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	keyReceived() {
-		this.setState(E2ERoomState.KEYS_RECEIVED);
+		this.setState('KEYS_RECEIVED');
 	}
 
 	async shouldConvertSentMessages(message: { msg: string }) {
@@ -210,7 +203,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	isWaitingKeys() {
-		return this.state === E2ERoomState.WAITING_KEYS;
+		return this.state === 'WAITING_KEYS';
 	}
 
 	get keyID() {
@@ -313,21 +306,21 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		if (this.state !== E2ERoomState.KEYS_RECEIVED && this.state !== E2ERoomState.NOT_STARTED) {
+		if (this.state !== 'KEYS_RECEIVED' && this.state !== 'NOT_STARTED') {
 			return;
 		}
 
-		this.setState(E2ERoomState.ESTABLISHING);
+		this.setState('ESTABLISHING');
 
 		try {
 			const groupKey = Subscriptions.state.find((record) => record.rid === this.roomId)?.E2EKey;
 			if (groupKey) {
 				await this.importGroupKey(groupKey);
-				this.setState(E2ERoomState.READY);
+				this.setState('READY');
 				return;
 			}
 		} catch (error) {
-			this.setState(E2ERoomState.ERROR);
+			this.setState('ERROR');
 			this.error('Error fetching group key: ', error);
 			return;
 		}
@@ -335,18 +328,18 @@ export class E2ERoom extends Emitter {
 		try {
 			const room = Rooms.state.get(this.roomId);
 			if (!room?.e2eKeyId) {
-				this.setState(E2ERoomState.CREATING_KEYS);
+				this.setState('CREATING_KEYS');
 				await this.createGroupKey();
-				this.setState(E2ERoomState.READY);
+				this.setState('READY');
 				return;
 			}
 
-			this.setState(E2ERoomState.WAITING_KEYS);
+			this.setState('WAITING_KEYS');
 			this.log('Requesting room key');
 			sdk.publish('notify-room-users', [`${this.roomId}/e2ekeyRequest`, this.roomId, room.e2eKeyId]);
 		} catch (error) {
 			// this.error = error;
-			this.setState(E2ERoomState.ERROR);
+			this.setState('ERROR');
 		}
 	}
 
@@ -444,13 +437,13 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		this.setState(E2ERoomState.CREATING_KEYS);
+		this.setState('CREATING_KEYS');
 		try {
 			await this.createNewGroupKey();
 
 			const e2eNewKeys = { e2eKeyId: this.keyID, e2eKey: await this.encryptGroupKeyForParticipant(e2e.publicKey) };
 
-			this.setState(E2ERoomState.READY);
+			this.setState('READY');
 			this.log(`Room key reset done for room ${this.roomId}`);
 
 			return e2eNewKeys;
@@ -462,7 +455,7 @@ export class E2ERoom extends Emitter {
 
 	onRoomKeyReset(keyID: string) {
 		this.log(`Room keyID was reset. New keyID: ${keyID} Previous keyID: ${this.keyID}`);
-		this.setState(E2ERoomState.WAITING_KEYS);
+		this.setState('WAITING_KEYS');
 		this.keyID = keyID;
 		this.groupSessionKey = undefined;
 		this.sessionKeyExportedString = undefined;
@@ -754,7 +747,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		void this.encryptKeyForOtherParticipants();
-		this.setState(E2ERoomState.READY);
+		this.setState('READY');
 	}
 
 	onStateChange(cb: () => void) {

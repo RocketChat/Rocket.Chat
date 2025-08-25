@@ -6,7 +6,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
-import { E2ERoomState } from '../../lib/e2ee/E2ERoomState';
 import { getRoomTypeTranslation } from '../../lib/getRoomTypeTranslation';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
@@ -34,11 +33,11 @@ export const useE2EERoomAction = () => {
 
 	const isE2EERoomNotReady = () => {
 		if (
-			e2eeRoomState === E2ERoomState.NO_PASSWORD_SET ||
-			e2eeRoomState === E2ERoomState.NOT_STARTED ||
-			e2eeRoomState === E2ERoomState.DISABLED ||
-			e2eeRoomState === E2ERoomState.ERROR ||
-			e2eeRoomState === E2ERoomState.WAITING_KEYS
+			e2eeRoomState === 'NO_PASSWORD_SET' ||
+			e2eeRoomState === 'NOT_STARTED' ||
+			e2eeRoomState === 'DISABLED' ||
+			e2eeRoomState === 'ERROR' ||
+			e2eeRoomState === 'WAITING_KEYS'
 		) {
 			return true;
 		}
