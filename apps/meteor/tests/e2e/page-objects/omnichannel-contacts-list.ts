@@ -25,7 +25,27 @@ export class OmnichannelContacts {
 	}
 
 	findRowByName(contactName: string) {
-		return this.page.locator(`td >> text="${contactName}"`);
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${contactName}"`) });
+	}
+
+	findRowMenu(contactName: string): Locator {
+		return this.findRowByName(contactName).getByRole('button', { name: 'More Actions' });
+	}
+
+	findMenuItem(name: string): Locator {
+		return this.page.getByRole('menuitem', { name });
+	}
+
+	get deleteContactModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Delete Contact' });
+	}
+
+	get inputDeleteContactConfirmation(): Locator {
+		return this.deleteContactModal.getByRole('textbox', { name: 'confirm_contact_removal' });
+	}
+
+	get btnDeleteContact(): Locator {
+		return this.deleteContactModal.getByRole('button', { name: 'Delete' });
 	}
 
 	get btnFilters(): Locator {

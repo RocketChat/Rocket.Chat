@@ -25,6 +25,13 @@ const EXISTING_CONTACT = {
 	phones: [faker.phone.number('+############')],
 	token: undefined,
 };
+const DELETE_CONTACT = {
+	id: undefined,
+	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
+	emails: [faker.internet.email().toLowerCase()],
+	phones: [faker.phone.number('+############')],
+};
+
 const NEW_CUSTOM_FIELD = {
 	searchable: true,
 	field: 'hiddenCustomField',
@@ -65,6 +72,7 @@ test.describe('Omnichannel Contact Center', () => {
 	test.beforeAll(async ({ api }) => {
 		// Add a contact
 		await api.post('/omnichannel/contacts', EXISTING_CONTACT);
+		await api.post('/omnichannel/contacts', DELETE_CONTACT);
 
 		if (IS_EE) {
 			await api.post('/livechat/custom.field', NEW_CUSTOM_FIELD);
@@ -262,4 +270,28 @@ test.describe('Omnichannel Contact Center', () => {
 			await expect(poContacts.findRowByName(EDIT_CONTACT.name)).toBeVisible();
 		});
 	});
+
+	test.only('Delete a contact', async () => {
+		await test.step('Find contact', async () => {
+			await poContacts.inputSearch.fill(DELETE_CONTACT.name);
+			await poContacts.findRowMenu(DELETE_CONTACT.name).click();
+			await poContacts.findMenuItem('Delete').click();
+		});
+
+		await test.step('Fill confirmation and delete contact', async () => {
+			await expect(poContacts.deleteContactModal).toBeVisible();
+			await expect(poContacts.btnDeleteContact).toBeDisabled();
+			await poContacts.inputDeleteContactConfirmation.fill('delete');
+
+			await expect(poContacts.btnDeleteContact).toBeEnabled();
+			await poContacts.btnDeleteContact.click();
+
+			await expect(poContacts.deleteContactModal).not.toBeVisible();
+		});
+
+		await test.step('Confirm contact removal', async () => {
+			await poContacts.inputSearch.fill(DELETE_CONTACT.name);
+			await expect(poContacts.findRowByName(DELETE_CONTACT.name)).not.toBeVisible();
+		})
+	})
 });
