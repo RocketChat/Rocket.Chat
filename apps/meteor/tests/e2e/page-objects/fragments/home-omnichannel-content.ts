@@ -55,8 +55,12 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
 	}
 
+	get contactContextualBar() {
+		return this.page.getByRole('dialog', { name: 'Contact' });
+	}
+
 	get infoContactEmail(): Locator {
-		return this.page.getByRole('dialog').locator('p[data-type="email"]');
+		return this.contactContextualBar.getByRole('list', { name: 'Email' }).getByRole('listitem').first();
 	}
 
 	get btnReturn(): Locator {

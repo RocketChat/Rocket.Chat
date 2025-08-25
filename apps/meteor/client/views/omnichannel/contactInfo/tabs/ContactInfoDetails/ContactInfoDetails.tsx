@@ -28,31 +28,36 @@ const ContactInfoDetails = ({ contactId, emails, phones, createdAt, customFieldE
 		<ContextualbarScrollableContent>
 			{emails?.length ? (
 				<Field>
-					<Label is='span'>{t('Email')}</Label>
-					{emails.map((email, index) => (
-						<ContactInfoDetailsEntry key={index} icon='mail' value={email} />
-					))}
+					<Label id={`${contactId}-emails`}>{t('Email')}</Label>
+					<ul aria-labelledby={`${contactId}-emails`}>
+						{emails.map((email) => (
+							<ContactInfoDetailsEntry key={email} is='li' icon='mail' value={email} />
+						))}
+					</ul>
 				</Field>
 			) : null}
 
 			{phones?.length ? (
 				<Field>
-					<Label is='span'>{t('Phone')}</Label>
-					{phones.map((phone, index) => (
-						<ContactInfoPhoneEntry key={index} contactId={contactId} value={phone} />
-					))}
+					<Label id={`${contactId}-phones`}>{t('Phone')}</Label>
+					<ul aria-labelledby={`${contactId}-phones`}>
+						{phones.map((phone) => (
+							<ContactInfoPhoneEntry key={phone} is='li' contactId={contactId} value={phone} />
+						))}
+					</ul>
 				</Field>
 			) : null}
 
-			{contactManager && <ContactManagerInfo userId={contactManager} />}
+			{contactManager ? <ContactManagerInfo userId={contactManager} /> : null}
 
 			<Margins block={4}>
 				{createdAt && (
 					<Field>
-						<Label>{t('Created_at')}</Label>
-						<Info>{formatDate(createdAt)}</Info>
+						<Label id={`${contactId}-created-at`}>{t('Created_at')}</Label>
+						<Info aria-labelledby={`${contactId}-created-at`}>{formatDate(createdAt)}</Info>
 					</Field>
 				)}
+
 				{customFieldEntries.length > 0 && (
 					<>
 						<Divider mi={-24} />
