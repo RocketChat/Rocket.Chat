@@ -45,7 +45,7 @@ const emitActivities = debounce(async (rid: string, extras: IExtras): Promise<vo
 
 function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
 	rid = extras?.tmid || rid;
-	const roomActivities = performingUsers.get(rid) || {};
+	const roomActivities = { ...performingUsers.get(rid) };
 
 	for (const [, activity] of Object.entries(USER_ACTIVITIES)) {
 		roomActivities[activity] = roomActivities[activity] || new Map();
