@@ -4,7 +4,7 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { ReactElement, ChangeEvent } from 'react';
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type RemoveContactModalProps = {
@@ -21,6 +21,7 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 	const queryClient = useQueryClient();
 	const removeContact = useEndpoint('POST', '/v1/omnichannel/contacts.delete');
 	const dispatchToast = useToastMessageDispatch();
+	const contactDeleteModalId = useId();
 
 	const handleSubmit = useEffectEvent((event: ChangeEvent<HTMLFormElement>): void => {
 		event.preventDefault();
@@ -51,17 +52,21 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit} {...props} />}
 			onCancel={onClose}
 			confirmText={t('Delete')}
-			title='Delete Contact'
+			title={t('Delete_Contact')}
 			onClose={onClose}
 			variant='danger'
 			data-qa-id='delete-contact-modal'
-			confirmDisabled={text !== 'delete'}
+			confirmDisabled={text !== t('Delete').toLowerCase()}
 		>
-			<Box mbe={16}>{t('Are_you_sure_delete_contact', { contactName: name, channelsCount })}</Box>
+			<Box id={`${contactDeleteModalId}-description`} mbe={16}>
+				{t('Are_you_sure_delete_contact', { contactName: name, channelsCount })}
+			</Box>
 			<Box mbe={16} display='flex' justifyContent='stretch'>
 				<Input
 					value={text}
 					name='confirmContactRemoval'
+					aria-label='confirm_contact_removal' // translate this
+					aria-describedby={`${contactDeleteModalId}-description`}
 					onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.currentTarget.value)}
 				/>
 			</Box>
