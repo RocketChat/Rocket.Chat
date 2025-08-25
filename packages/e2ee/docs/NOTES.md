@@ -9,8 +9,8 @@
 ### Shared Package
 - Separate all client-side e2ee logic from core into zero-dependency runtime-agnostic package.
 	- Things like nodejs Buffer and SubtleCrypto are not available from React Native.
-- Create adapter for web
-- Create adapter for node (testing purposes)
+- Create adapter for [web](../../e2ee-web/)
+- Create adapter for [node](../../e2ee-node/) (testing purposes)
 - Create adapter for react-native
 
 ### Refactor Web
@@ -27,4 +27,4 @@
 - Tests in [e2e-encryption.ts](../../../apps/meteor/tests/e2e/e2e-encryption.spec.ts) are failing when ran:
 	- More than once: lack of cleanup
 	- Out of order: inter-test dependencies
-	- Locally: slowness of CI and retries are masking bugs
+	- Locally: slowness of CI + retries are masking bugs (eg: in full page loads)
