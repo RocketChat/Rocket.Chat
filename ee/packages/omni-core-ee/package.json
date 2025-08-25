@@ -25,8 +25,12 @@
 		"/dist"
 	],
 	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
-		"@rocket.chat/omni-core": "workspace:^"
+		"@rocket.chat/omni-core": "workspace:^",
+		"mem": "^8.1.1",
+		"mongodb": "6.10.0"
 	},
 	"volta": {
 		"extends": "../../../package.json"

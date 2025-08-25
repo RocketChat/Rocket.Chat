@@ -3488,15 +3488,19 @@
   "mention-here": "ახსენეთ აქ",
   "mention-here_description": "აქ ხსენების გამოყენების უფლება",
   "message": "შეტყობინება",
-  "message_counter_one": "{{count}} შეტყობინება",
-  "message_counter_other": "{{count}} შეტყობინებები",
+  "message_counter": {
+    "one": "{{count}} შეტყობინება",
+    "other": "{{count}} შეტყობინებები"
+  },
   "messages": "შეტყობინებები",
   "meteor_status_connected": "დაკავშირებულია",
   "meteor_status_connecting": "დაკავშირება ...",
   "meteor_status_failed": "სერვერთან დაკავშირება ვერ მოხერხდა",
   "meteor_status_offline": "ოფლაინ რეჟიმი",
-  "meteor_status_reconnect_in_one": "კიდევ სცადე 1 წამის შემდეგ...",
-  "meteor_status_reconnect_in_other": "კიდვ სცადე {{count}} წამში...",
+  "meteor_status_reconnect_in": {
+    "one": "კიდევ სცადე 1 წამის შემდეგ...",
+    "other": "კიდვ სცადე {{count}} წამში..."
+  },
   "meteor_status_try_now_offline": "ისევ დაკავშირება",
   "meteor_status_try_now_waiting": "სცადე ახლა",
   "meteor_status_waiting": "სერვერთან კავშირის მოლოდინი",

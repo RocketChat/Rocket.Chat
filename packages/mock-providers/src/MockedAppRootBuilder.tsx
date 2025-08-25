@@ -16,6 +16,7 @@ import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type {
 	Device,
+	DeviceContext,
 	LoginService,
 	ModalContextValue,
 	ServerContextValue,
@@ -213,9 +214,16 @@ export class MockedAppRootBuilder {
 
 	private events = new Emitter<MockedAppRootEvents>();
 
-	private audioInputDevices: Device[] = [];
-
-	private audioOutputDevices: Device[] = [];
+	private deviceContext: Partial<ContextType<typeof DeviceContext>> = {
+		enabled: true,
+		availableAudioOutputDevices: [],
+		availableAudioInputDevices: [],
+		selectedAudioOutputDevice: undefined,
+		selectedAudioInputDevice: undefined,
+		setAudioOutputDevice: () => undefined,
+		setAudioInputDevice: () => undefined,
+		permissionStatus: undefined,
+	};
 
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
@@ -489,12 +497,29 @@ export class MockedAppRootBuilder {
 	}
 
 	withAudioInputDevices(devices: Device[]): this {
-		this.audioInputDevices = devices;
+		if (!this.deviceContext.enabled) {
+			throw new Error('DeviceContext is not enabled');
+		}
+
+		this.deviceContext.availableAudioInputDevices = devices;
 		return this;
 	}
 
 	withAudioOutputDevices(devices: Device[]): this {
-		this.audioOutputDevices = devices;
+		if (!this.deviceContext.enabled) {
+			throw new Error('DeviceContext is not enabled');
+		}
+
+		this.deviceContext.availableAudioOutputDevices = devices;
+		return this;
+	}
+
+	withMicrophonePermissionState(status: PermissionStatus): this {
+		if (!this.deviceContext.enabled) {
+			throw new Error('DeviceContext is not enabled');
+		}
+
+		this.deviceContext.permissionStatus = status;
 		return this;
 	}
 
@@ -542,20 +567,7 @@ export class MockedAppRootBuilder {
 			},
 		});
 
-		const {
-			server,
-			router,
-			settings,
-			user,
-			userPresence,
-			videoConf,
-			i18n,
-			authorization,
-			wrappers,
-			audioInputDevices,
-			audioOutputDevices,
-			authentication,
-		} = this;
+		const { server, router, settings, user, userPresence, videoConf, i18n, authorization, wrappers, deviceContext, authentication } = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -630,10 +642,7 @@ export class MockedAppRootBuilder {
 																				<CustomSoundProvider> */}
 										<UserContext.Provider value={user}>
 											<AuthenticationContext.Provider value={authentication}>
-												<MockedDeviceContext
-													availableAudioInputDevices={audioInputDevices}
-													availableAudioOutputDevices={audioOutputDevices}
-												>
+												<MockedDeviceContext {...deviceContext}>
 													<ModalContext.Provider value={modal}>
 														<AuthorizationContext.Provider value={authorization}>
 															{/* <EmojiPickerProvider>

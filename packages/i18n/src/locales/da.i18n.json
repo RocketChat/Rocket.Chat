@@ -3864,8 +3864,10 @@
   "mention-here": "Nævn her",
   "mention-here_description": "Tilladelse til at bruge @here omtalen",
   "message": "Besked",
-  "message_counter_one": "{{count}} meddelelse",
-  "message_counter_other": "{{count}} meddelelser",
+  "message_counter": {
+    "one": "{{count}} meddelelse",
+    "other": "{{count}} meddelelser"
+  },
   "message_pruned": "besked slettet",
   "messages": "Meddelelser",
   "messages_pruned": "beskeder beskåret",
@@ -3873,8 +3875,10 @@
   "meteor_status_connecting": "Forbinder...",
   "meteor_status_failed": "Forbindelsen til serveren gik tabt",
   "meteor_status_offline": "Offline-tilstand.",
-  "meteor_status_reconnect_in_one": "forsøger igen om 1 sekund...",
-  "meteor_status_reconnect_in_other": "forsøger igen om {{count}} sekunder...",
+  "meteor_status_reconnect_in": {
+    "one": "forsøger igen om 1 sekund...",
+    "other": "forsøger igen om {{count}} sekunder..."
+  },
   "meteor_status_try_now_offline": "Forbind igen",
   "meteor_status_try_now_waiting": "Forsøg nu",
   "meteor_status_waiting": "Afventer forbindelse til server,",
@@ -4077,8 +4081,10 @@
   "__count__conversations__period__": "{{count}} samtaler, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} tomme rum fjernes automatisk.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> tomme rum vil blive fjernet automatisk: <br/> {{rooms}}.",
-  "__count__message_pruned_one": "{{count}} besked er beskåret",
-  "__count__message_pruned_other": "{{count}} beskeder er beskåret",
+  "__count__message_pruned": {
+    "one": "{{count}} besked er beskåret",
+    "other": "{{count}} beskeder er beskåret"
+  },
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} is no longer {{role}} by {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} was set {{role}} by {{user_by}}"
 }
