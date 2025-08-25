@@ -35,7 +35,6 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 		refetch: refetchProviders,
 	} = useOutboundProvidersList<boolean>({
 		select: ({ providers = [] }) => providers.length > 0,
-		staleTime: 1000 * 60 * 5, // 5 minutes
 	});
 
 	const wizardApi = useWizard({
