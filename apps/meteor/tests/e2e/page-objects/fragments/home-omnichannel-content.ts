@@ -60,7 +60,7 @@ export class HomeOmnichannelContent extends HomeContent {
 	}
 
 	get infoContactEmail(): Locator {
-		return this.contactContextualBar.getByRole('list', { name: 'Email' }).getByRole('listitem').first();
+		return this.contactContextualBar.getByRole('list', { name: 'Email' }).getByRole('listitem').first().locator('p');
 	}
 
 	get btnReturn(): Locator {
