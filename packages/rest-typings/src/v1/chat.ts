@@ -175,24 +175,6 @@ const ChatUnstarMessageSchema = {
 
 export const isChatUnstarMessageProps = ajv.compile<ChatUnstarMessage>(ChatUnstarMessageSchema);
 
-type ChatUnpinMessage = {
-	messageId: IMessage['_id'];
-};
-
-const ChatUnpinMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-export const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
-
 type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	text?: string;
@@ -933,9 +915,6 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.unStarMessage': {
 		POST: (params: ChatUnstarMessage) => void;
-	};
-	'/v1/chat.unPinMessage': {
-		POST: (params: ChatUnpinMessage) => void;
 	};
 	'/v1/chat.reportMessage': {
 		POST: (params: ChatReportMessage) => void;
