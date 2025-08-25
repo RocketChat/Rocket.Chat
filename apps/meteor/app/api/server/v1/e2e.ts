@@ -1,9 +1,9 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
-	ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
 	isE2EProvideUsersGroupKeyProps,
@@ -34,6 +34,10 @@ type E2eSetRoomKeyIdProps = {
 	keyID: string;
 };
 
+type e2eGetUsersOfRoomWithoutKeyParamsGET = {
+	rid: string;
+};
+
 const E2eSetRoomKeyIdSchema = {
 	type: 'object',
 	properties: {
@@ -48,34 +52,95 @@ const E2eSetRoomKeyIdSchema = {
 	additionalProperties: false,
 };
 
-const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
-
-const e2eEndpoints = API.v1.post(
-	'e2e.setRoomKeyID',
-	{
-		authRequired: true,
-		body: isE2eSetRoomKeyIdProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-			}),
+const e2eGetUsersOfRoomWithoutKeyParamsGETSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
 		},
 	},
+	additionalProperties: false,
+	required: ['rid'],
+};
 
-	async function action() {
-		const { rid, keyID } = this.bodyParams;
+const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
 
-		await setRoomKeyIDMethod(this.userId, rid, keyID);
-
-		return API.v1.success();
-	},
+const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile<e2eGetUsersOfRoomWithoutKeyParamsGET>(
+	e2eGetUsersOfRoomWithoutKeyParamsGETSchema,
 );
+
+const e2eEndpoints = API.v1
+	.post(
+		'e2e.setRoomKeyID',
+		{
+			authRequired: true,
+			body: isE2eSetRoomKeyIdProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+			},
+		},
+
+		async function action() {
+			const { rid, keyID } = this.bodyParams;
+
+			await setRoomKeyIDMethod(this.userId, rid, keyID);
+
+			return API.v1.success();
+		},
+	)
+	.get(
+		'e2e.getUsersOfRoomWithoutKey',
+		{
+			authRequired: true,
+			query: ise2eGetUsersOfRoomWithoutKeyParamsGET,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					users: Pick<IUser, '_id' | 'e2e'>[];
+				}>({
+					type: 'object',
+					properties: {
+						users: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									e2e: {
+										type: 'object',
+										properties: {
+											private_key: { type: 'string' },
+											public_key: { type: 'string' },
+										},
+									},
+								},
+								required: ['_id'],
+							},
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['users', 'success'],
+				}),
+			},
+		},
+
+		async function action() {
+			const { rid } = this.queryParams;
+
+			const result = await getUsersOfRoomWithoutKeyMethod(this.userId, rid);
+
+			return API.v1.success(result);
+		},
+	);
 
 API.v1.addRoute(
 	'e2e.fetchMyKeys',
@@ -85,23 +150,6 @@ API.v1.addRoute(
 	{
 		async get() {
 			const result = await Users.fetchKeysByUserId(this.userId);
-
-			return API.v1.success(result);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'e2e.getUsersOfRoomWithoutKey',
-	{
-		authRequired: true,
-		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	},
-	{
-		async get() {
-			const { rid } = this.queryParams;
-
-			const result = await getUsersOfRoomWithoutKeyMethod(this.userId, rid);
 
 			return API.v1.success(result);
 		},
