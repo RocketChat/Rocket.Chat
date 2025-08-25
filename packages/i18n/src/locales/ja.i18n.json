@@ -688,7 +688,9 @@
   "Caller": "発信者",
   "Caller_Id": "発信者ID",
   "Calling": "通話中",
-  "Calls_in_queue": "キュー内の{{count}}通話",
+  "Calls_in_queue": {
+    "other": "キュー内の{{count}}通話"
+  },
   "Cancel": "キャンセル",
   "Cancel_message_input": "キャンセル",
   "Canceled": "キャンセルしました",
@@ -4502,7 +4504,6 @@
   "message": "メッセージ",
   "message-impersonate": "他のユーザーの偽装",
   "message-impersonate_description": "メッセージエイリアスを使用して他のユーザーを偽装する権限",
-  "message_counter_other": "{{count}}件のメッセージ",
   "message_pruned": "整理されたメッセージ",
   "messages": "メッセージ",
   "messages_pruned": "整理されたメッセージ",
@@ -4510,7 +4511,6 @@
   "meteor_status_connecting": "接続中...",
   "meteor_status_failed": "サーバー接続が失敗しました",
   "meteor_status_offline": "オフラインモード。",
-  "meteor_status_reconnect_in_other": "{{count}}秒後に再試行します...",
   "meteor_status_try_now_offline": "再接続",
   "meteor_status_try_now_waiting": "今すぐ再試行",
   "meteor_status_waiting": "サーバー接続を待機しています。",
