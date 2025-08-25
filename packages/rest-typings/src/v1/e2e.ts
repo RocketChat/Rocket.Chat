@@ -152,11 +152,6 @@ export type E2eEndpoints = {
 	'/v1/e2e.setUserPublicAndPrivateKeys': {
 		POST: (params: E2eSetUserPublicAndPrivateKeysProps) => void;
 	};
-	'/v1/e2e.getUsersOfRoomWithoutKey': {
-		GET: (params: E2eGetUsersOfRoomWithoutKeyProps) => {
-			users: Pick<IUser, '_id' | 'e2e'>[];
-		};
-	};
 	'/v1/e2e.updateGroupKey': {
 		POST: (params: E2eUpdateGroupKeyProps) => void;
 	};
