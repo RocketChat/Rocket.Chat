@@ -27,7 +27,7 @@ const AppDetailsPageTabs = ({
 
 	const router = useRouter();
 
-	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs' | 'requests' | 'instances') => {
+	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs' | 'requests' | 'instances' | 'scheduler-jobs') => {
 		router.navigate(
 			{
 				name: 'marketplace',
@@ -70,6 +70,11 @@ const AppDetailsPageTabs = ({
 			{hasCluster && installed && isAdminUser && (
 				<Tabs.Item onClick={() => handleTabClick('instances')} selected={tab === 'instances'}>
 					{t('Instances')}
+				</Tabs.Item>
+			)}
+			{installed && isAdminUser && (
+				<Tabs.Item onClick={() => handleTabClick('scheduler-jobs')} selected={tab === 'scheduler-jobs'}>
+					{t('Scheduler_Jobs')}
 				</Tabs.Item>
 			)}
 		</Tabs>

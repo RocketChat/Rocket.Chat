@@ -15,6 +15,7 @@ import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetails from './tabs/AppDetails';
 import AppInstances from './tabs/AppInstances';
 import AppLogs from './tabs/AppLogs';
+import AppSchedulerJobs from './tabs/AppSchedulerJobs';
 import { AppLogsFilterContextualBar } from './tabs/AppLogs/Filters/AppLogsFilterContextualBar';
 import { useAppLogsFilterForm } from './tabs/AppLogs/useAppLogsFilterForm';
 import AppReleases from './tabs/AppReleases';
@@ -146,6 +147,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 									</FormProvider>
 								)}
 								{tab === 'instances' && <AppInstances id={id} />}
+								{tab === 'scheduler-jobs' && <AppSchedulerJobs id={id} />}
 							</>
 						)}
 					</Box>

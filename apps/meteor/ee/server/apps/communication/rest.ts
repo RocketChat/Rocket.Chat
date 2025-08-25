@@ -9,6 +9,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 import { ZodError } from 'zod';
 
 import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
@@ -1325,5 +1326,61 @@ export class AppsRestApi {
 				},
 			},
 		);
+
+		this.api.addRoute(
+			':id/scheduler-jobs',
+			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{
+				async get() {
+					const app = manager.getOneById(this.urlParams.id);
+
+					if (!app) {
+						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
+					}
+
+					try {
+						// Get the MongoDB collection that Agenda uses for jobs
+						const mongoClient = (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client;
+						const db = mongoClient.db();
+						const collection = db.collection('rocketchat_apps_scheduler');
+
+						// Query for jobs that belong to this app (jobs have appId in their data)
+						const jobs = await collection
+							.find({ 'data.appId': app.getID() })
+							.project({
+								_id: 1,
+								name: 1,
+								nextRunAt: 1,
+								lastRunAt: 1,
+								failedAt: 1,
+								lastFinishedAt: 1,
+								repeatInterval: 1,
+								lockedAt: 1,
+							})
+							.toArray();
+
+						// Transform the jobs to a more readable format
+						const formattedJobs = jobs.map((job: any) => ({
+							id: job._id.toString(),
+							name: job.name,
+							nextRunAt: job.nextRunAt,
+							lastRunAt: job.lastRunAt,
+							failedAt: job.failedAt,
+							lastFinishedAt: job.lastFinishedAt,
+							repeatInterval: job.repeatInterval,
+							lockedAt: job.lockedAt,
+							status: job.failedAt ? 'failed' : job.lockedAt ? 'running' : 'scheduled',
+						}));
+
+						return API.v1.success({ jobs: formattedJobs });
+					} catch (e) {
+						orchestrator.getRocketChatLogger().error('Error getting scheduler jobs for app:', e);
+						return API.v1.internalError();
+					}
+				},
+			},
+		);
+
+
 	}
 }
