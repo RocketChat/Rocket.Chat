@@ -9,7 +9,7 @@ export async function sendRequest(
 		type: string;
 		[key: string]: any;
 	},
-	attempts = 10,
+	attempts = 5,
 ) {
 	if (!attempts) {
 		webhooksLogger.error({ msg: 'Omnichannel webhook call failed. Max attempts reached' });
@@ -38,9 +38,8 @@ export async function sendRequest(
 		throw new Error(await result.text());
 	} catch (err) {
 		const retryAfter = timeout * 4;
-		webhooksLogger.error({ msg: `Error response on ${11 - attempts} try ->`, err });
-		// try 10 times after 20 seconds each
-		attempts - 1 && webhooksLogger.warn({ msg: `Webhook call failed. Retrying`, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
+		webhooksLogger.error({ msg: `Error response on ${6 - attempts} try ->`, err, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
+		// try 5 times after 20 seconds each
 		setTimeout(async () => {
 			await sendRequest(postData, attempts - 1);
 		}, retryAfter);
