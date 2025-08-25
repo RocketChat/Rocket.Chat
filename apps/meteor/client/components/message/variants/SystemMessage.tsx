@@ -90,7 +90,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						)}
 					</MessageNameContainer>
 					{messageType && (
-						<MessageSystemBody data-qa-type='system-message-body'>
+						<MessageSystemBody data-qa-type='system-message-body' style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
 							{t(messageType.message, messageType.data ? messageType.data(message) : {})}
 						</MessageSystemBody>
 					)}
