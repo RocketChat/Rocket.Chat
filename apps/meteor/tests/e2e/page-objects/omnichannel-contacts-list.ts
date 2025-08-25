@@ -41,7 +41,7 @@ export class OmnichannelContacts {
 	}
 
 	get inputDeleteContactConfirmation(): Locator {
-		return this.deleteContactModal.getByRole('textbox', { name: 'confirm_contact_removal' });
+		return this.deleteContactModal.getByRole('textbox', { name: 'Confirm contact removal' });
 	}
 
 	get btnDeleteContact(): Locator {
