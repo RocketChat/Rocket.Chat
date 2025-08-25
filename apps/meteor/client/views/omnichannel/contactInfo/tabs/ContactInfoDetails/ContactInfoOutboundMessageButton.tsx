@@ -15,8 +15,9 @@ const ContactInfoOutboundMessageButton = ({ defaultValues }: ContactInfoOutbound
 	const outboundMessageModal = useOutboundMessageModal();
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise') === true;
+	const hasPermission = usePermission('outbound.send-messages');
 
-	if (!hasLicense) {
+	if (!hasLicense || !hasPermission) {
 		return null;
 	}
 

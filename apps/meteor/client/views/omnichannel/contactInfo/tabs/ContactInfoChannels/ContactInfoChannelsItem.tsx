@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useBlockChannel } from './useBlockChannel';
@@ -40,22 +40,28 @@ const ContactInfoChannelsItem = ({
 		}
 	`;
 
-	const menuItems: GenericMenuItemProps[] = [
-		{
-			id: 'outbound-message',
-			icon: 'send',
-			content: t('Outbound_message'),
-			disabled: !canSendOutboundMessage,
-			onClick: () => outboundMessageModal.open({ contactId, providerId: details.id }),
-		},
-		{
-			id: 'block',
-			icon: 'ban',
-			content: blocked ? t('Unblock') : t('Block'),
-			variant: 'danger',
-			onClick: handleBlockContact,
-		},
-	];
+	const menuItems = useMemo(() => {
+		const items: GenericMenuItemProps[] = [
+			{
+				id: 'block',
+				icon: 'ban',
+				content: blocked ? t('Unblock') : t('Block'),
+				variant: 'danger',
+				onClick: handleBlockContact,
+			},
+		];
+
+		if (canSendOutboundMessage) {
+			items.unshift({
+				id: 'outbound-message',
+				icon: 'send',
+				content: t('Outbound_message'),
+				onClick: () => outboundMessageModal.open({ contactId, providerId: details.id }),
+			});
+		}
+
+		return items;
+	}, [blocked, canSendOutboundMessage, contactId, details.id, handleBlockContact, outboundMessageModal, t]);
 
 	return (
 		<Box
