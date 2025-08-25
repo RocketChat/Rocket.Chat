@@ -5,11 +5,15 @@ import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
 import type { FilterOperators } from 'mongodb';
 
 async function validateAgentAssignPermissions(userId: string, agentId: string): Promise<void> {
-	if (!(await Authorization.hasPermission(userId, 'outbound.can-assign-any-agent'))) {
-		if ((await Authorization.hasPermission(userId, 'outbound.can-assign-self-only')) && agentId !== userId) {
-			throw new Error('error-invalid-agent');
-		}
+	if (await Authorization.hasPermission(userId, 'outbound.can-assign-any-agent')) {
+		return;
 	}
+
+	if ((await Authorization.hasPermission(userId, 'outbound.can-assign-self-only')) && agentId === userId) {
+		return;
+	}
+	
+	throw new Error('error-invalid-agent');
 }
 
 export async function canSendOutboundMessage(userId: string, agentId?: string, departmentId?: string): Promise<void> {
