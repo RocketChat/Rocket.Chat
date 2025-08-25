@@ -55,17 +55,16 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 			title={t('Delete_Contact')}
 			onClose={onClose}
 			variant='danger'
-			data-qa-id='delete-contact-modal'
 			confirmDisabled={text !== t('Delete').toLowerCase()}
 		>
-			<Box id={`${contactDeleteModalId}-description`} mbe={16}>
+			<Box is='p' id={`${contactDeleteModalId}-description`} mbe={16}>
 				{t('Are_you_sure_delete_contact', { contactName: name, channelsCount })}
 			</Box>
 			<Box mbe={16} display='flex' justifyContent='stretch'>
 				<Input
 					value={text}
 					name='confirmContactRemoval'
-					aria-label='confirm_contact_removal' // translate this
+					aria-label={t('Confirm_contact_removal')}
 					aria-describedby={`${contactDeleteModalId}-description`}
 					onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.currentTarget.value)}
 				/>

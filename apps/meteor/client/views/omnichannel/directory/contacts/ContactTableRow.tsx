@@ -64,7 +64,7 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 					<CallDialpadButton phoneNumber={phoneNumber} />
 				</GenericTableCell>
 			)}
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell>
 				<ContactItemMenu _id={_id} name={name} channels={channels} />
 			</GenericTableCell>
 		</GenericTableRow>

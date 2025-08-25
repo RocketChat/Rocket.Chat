@@ -272,7 +272,7 @@ test.describe('Omnichannel Contact Center', () => {
 	});
 
 	test.only('Delete a contact', async () => {
-		await test.step('Find contact', async () => {
+		await test.step('Find contact and open modal', async () => {
 			await poContacts.inputSearch.fill(DELETE_CONTACT.name);
 			await poContacts.findRowMenu(DELETE_CONTACT.name).click();
 			await poContacts.findMenuItem('Delete').click();
@@ -292,6 +292,6 @@ test.describe('Omnichannel Contact Center', () => {
 		await test.step('Confirm contact removal', async () => {
 			await poContacts.inputSearch.fill(DELETE_CONTACT.name);
 			await expect(poContacts.findRowByName(DELETE_CONTACT.name)).not.toBeVisible();
-		})
-	})
+		});
+	});
 });
