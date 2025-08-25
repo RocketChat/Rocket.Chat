@@ -14,7 +14,7 @@ it('should return and empty array if the user does not have `manage-apps` and `a
 	expect(result.current).toEqual([]);
 });
 
-it('should return `marketplace` and `installed` items if the user has `access-marketplace` permission', () => {
+it('should return `marketplace`, `installed`, `private` items if the user has `access-marketplace` permission', () => {
 	const { result } = renderHook(() => useAppsItems(), {
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
@@ -33,9 +33,15 @@ it('should return `marketplace` and `installed` items if the user has `access-ma
 			id: 'installed',
 		}),
 	);
+
+	expect(result.current[2]).toEqual(
+		expect.objectContaining({
+			id: 'private',
+		}),
+	);
 });
 
-it('should return `marketplace` and `installed` items if the user has `manage-apps` permission', () => {
+it('should return `marketplace`, `installed`, `private` and `requested-apps` items if the user has `manage-apps` permission', () => {
 	const { result } = renderHook(() => useAppsItems(), {
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
@@ -62,6 +68,12 @@ it('should return `marketplace` and `installed` items if the user has `manage-ap
 	);
 
 	expect(result.current[2]).toEqual(
+		expect.objectContaining({
+			id: 'private',
+		}),
+	);
+
+	expect(result.current[3]).toEqual(
 		expect.objectContaining({
 			id: 'requested-apps',
 		}),
@@ -101,8 +113,20 @@ it('should return one action from the server with no conditions', async () => {
 		}),
 	);
 
+	expect(result.current[2]).toEqual(
+		expect.objectContaining({
+			id: 'private',
+		}),
+	);
+
+	expect(result.current[3]).toEqual(
+		expect.objectContaining({
+			id: 'requested-apps',
+		}),
+	);
+
 	await waitFor(() =>
-		expect(result.current[3]).toEqual(
+		expect(result.current[4]).toEqual(
 			expect.objectContaining({
 				id: 'APP_ID_ACTION_ID',
 			}),
@@ -149,8 +173,20 @@ describe('User Dropdown actions with role conditions', () => {
 			}),
 		);
 
+		expect(result.current[2]).toEqual(
+			expect.objectContaining({
+				id: 'private',
+			}),
+		);
+
+		expect(result.current[3]).toEqual(
+			expect.objectContaining({
+				id: 'requested-apps',
+			}),
+		);
+
 		await waitFor(() =>
-			expect(result.current[3]).toEqual(
+			expect(result.current[4]).toEqual(
 				expect.objectContaining({
 					id: 'APP_ID_ACTION_ID',
 				}),
@@ -196,11 +232,17 @@ describe('User Dropdown actions with role conditions', () => {
 
 		expect(result.current[2]).toEqual(
 			expect.objectContaining({
+				id: 'private',
+			}),
+		);
+
+		expect(result.current[3]).toEqual(
+			expect.objectContaining({
 				id: 'requested-apps',
 			}),
 		);
 
-		expect(result.current[3]).toEqual(undefined);
+		expect(result.current[4]).toEqual(undefined);
 	});
 });
 
@@ -241,8 +283,14 @@ describe('User Dropdown actions with permission conditions', () => {
 			}),
 		);
 
+		expect(result.current[2]).toEqual(
+			expect.objectContaining({
+				id: 'private',
+			}),
+		);
+
 		await waitFor(() =>
-			expect(result.current[3]).toEqual(
+			expect(result.current[4]).toEqual(
 				expect.objectContaining({
 					id: 'APP_ID_ACTION_ID',
 				}),
@@ -274,6 +322,6 @@ describe('User Dropdown actions with permission conditions', () => {
 				.build(),
 		});
 
-		expect(result.current[3]).toEqual(undefined);
+		expect(result.current[4]).toEqual(undefined);
 	});
 });
