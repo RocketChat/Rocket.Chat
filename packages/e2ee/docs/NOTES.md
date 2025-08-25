@@ -7,7 +7,7 @@
 ## Tasks
 
 ### Shared Package
-- Separate all client-side e2ee logic from core into zero-dependency runtime-agnostic package.
+- Separate all client-side e2ee logic from core into zero-dependency runtime-agnostic [package](../src/index.ts).
 	- Things like nodejs Buffer and SubtleCrypto are not available from React Native.
 - Create adapter for [web](../../e2ee-web/)
 - Create adapter for [node](../../e2ee-node/) (testing purposes)
