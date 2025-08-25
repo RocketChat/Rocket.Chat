@@ -15,6 +15,8 @@ type AutoCompleteDepartmentAgentProps = Omit<AllHTMLAttributes<HTMLInputElement>
 const AutoCompleteDepartmentAgent = ({ value, onChange, agents, ...props }: AutoCompleteDepartmentAgentProps) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
+	const canAssignSelfOnly = usePermission('outbound.can-assign-self-only');
+	const userId = useUserId();
 
 	const options = useMemo(() => {
 		if (!agents) {
@@ -22,12 +24,13 @@ const AutoCompleteDepartmentAgent = ({ value, onChange, agents, ...props }: Auto
 		}
 
 		return agents
+			.filter((agent) => (canAssignSelfOnly ? agent.agentId === userId : true))
 			.filter((agent) => agent.username?.includes(debouncedFilter))
 			.map((agent) => ({
 				value: agent.agentId,
 				label: agent.username,
 			}));
-	}, [agents, debouncedFilter]);
+	}, [agents, canAssignSelfOnly, debouncedFilter, userId]);
 
 	return (
 		<AutoComplete
