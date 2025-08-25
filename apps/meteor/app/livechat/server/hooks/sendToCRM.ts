@@ -140,12 +140,16 @@ export async function sendToCRM(
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = await sendRequest(responseData);
+	// do not wait for the request to be answered
+	// this will avoid blocking the process of saving the message
+	setTimeout(async () => {
+		const response = await sendRequest(responseData);
 
-	if (response) {
-		const responseData = await response.text();
-		await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
-	}
+		if (response) {
+			const responseData = await response.text();
+			await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
+		}
+	}, 0);
 
 	return room;
 }
