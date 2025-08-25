@@ -25,8 +25,12 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 
 	const templates = sender ? provider?.templates[sender] : [];
 	const upsellModal = useOutboundMessageUpsellModal();
-	const hasModule = useHasLicenseModule('outbound-messaging');
-	const isLoadingModule = hasModule === 'loading';
+
+	const hasOmnichannelModule = useHasLicenseModule('livechat-enterprise');
+	const hasOutboundModule = useHasLicenseModule('outbound-messaging');
+	const hasOutboundPermission = usePermission('outbound.send-messages');
+
+	const isLoadingModule = hasOutboundModule === 'loading' || hasOmnichannelModule === 'loading';
 
 	const {
 		data: hasProviders = false,
@@ -47,13 +51,13 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	});
 
 	useEffect(() => {
-		if (!isLoadingProviders && !isLoadingModule && (!hasModule || !hasProviders)) {
+		if (!isLoadingProviders && !isLoadingModule && (!hasOutboundModule || !hasProviders)) {
 			upsellModal.open();
 		}
-	}, [hasModule, hasProviders, isLoadingModule, isLoadingProviders, upsellModal]);
+	}, [hasOutboundModule, hasProviders, isLoadingModule, isLoadingProviders, upsellModal]);
 
 	const handleSubmit = useEffectEvent((values: SubmitPayload) => {
-		if (!hasModule) {
+		if (!hasOutboundModule) {
 			upsellModal.open();
 			return;
 		}
@@ -68,6 +72,12 @@ const OutboundMessageWizard = ({ defaultValues = {} }: OutboundMessageWizardProp
 	const handleDirtyStep = useEffectEvent(() => {
 		wizardApi.resetNextSteps();
 	});
+
+	if (!hasOutboundPermission) {
+		return (
+			<OutboundMessageWizardErrorState title={t('error-not-authorized')} description={t('You_are_not_authorized_to_access_this_feature')} />
+		);
+	}
 
 	if (isLoadingModule || isLoadingProviders) {
 		return <OutboubdMessageWizardSkeleton />;
