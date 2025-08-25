@@ -1,4 +1,5 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type { Response } from '@rocket.chat/server-fetch';
 
 import { webhooksLogger } from './logger';
 import { metrics } from '../../../metrics/server';
@@ -10,6 +11,7 @@ export async function sendRequest(
 		[key: string]: any;
 	},
 	attempts = 5,
+	cb?: (response: Response) => Promise<void>,
 ) {
 	if (!attempts) {
 		webhooksLogger.error({ msg: 'Omnichannel webhook call failed. Max attempts reached' });
@@ -31,6 +33,7 @@ export async function sendRequest(
 
 		if (result.status === 200) {
 			metrics.totalLivechatWebhooksSuccess.inc();
+			await cb?.(result);
 			return result;
 		}
 
@@ -41,7 +44,7 @@ export async function sendRequest(
 		webhooksLogger.error({ msg: `Error response on ${6 - attempts} try ->`, err, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
 		// try 5 times after 20 seconds each
 		setTimeout(async () => {
-			await sendRequest(postData, attempts - 1);
+			await sendRequest(postData, attempts - 1, cb);
 		}, retryAfter);
 	}
 }
