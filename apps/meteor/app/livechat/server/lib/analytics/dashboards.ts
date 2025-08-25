@@ -4,9 +4,6 @@ import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@
 import mem from 'mem';
 import moment from 'moment';
 
-import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
-import { settings } from '../../../../settings/server';
-import { getAnalyticsOverviewDataCachedForRealtime } from '../AnalyticsTyped';
 import {
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,
@@ -14,16 +11,27 @@ import {
 	findAllNumberOfAbandonedRoomsAsync,
 	findAllAverageServiceTimeAsync,
 } from './departments';
+import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
+import { settings } from '../../../../settings/server';
 
 const findAllChatsStatusAsync = async ({ start, end, departmentId = undefined }: { start: Date; end: Date; departmentId?: string }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+
+	// TODO: single query faster?
+	const [open, closed, queued, onhold] = await Promise.all([
+		LivechatRooms.countAllOpenChatsBetweenDate({ start, end, departmentId }),
+		LivechatRooms.countAllClosedChatsBetweenDate({ start, end, departmentId }),
+		LivechatRooms.countAllQueuedChatsBetweenDate({ start, end, departmentId }),
+		LivechatRooms.getOnHoldConversationsBetweenDate(start, end, departmentId),
+	]);
+
 	return {
-		open: await LivechatRooms.countAllOpenChatsBetweenDate({ start, end, departmentId }),
-		closed: await LivechatRooms.countAllClosedChatsBetweenDate({ start, end, departmentId }),
-		queued: await LivechatRooms.countAllQueuedChatsBetweenDate({ start, end, departmentId }),
-		onhold: await LivechatRooms.getOnHoldConversationsBetweenDate(start, end, departmentId),
+		open,
+		closed,
+		queued,
+		onhold,
 	};
 };
 
@@ -236,7 +244,7 @@ const getConversationsMetricsAsync = async ({
 		throw new Error('"start" and "end" must be provided');
 	}
 	const totalizers =
-		(await getAnalyticsOverviewDataCachedForRealtime({
+		(await OmnichannelAnalytics.getAnalyticsOverviewData({
 			daterange: {
 				from: start,
 				to: end,
@@ -275,21 +283,12 @@ const findAllChatMetricsByAgentAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const open = await LivechatRooms.countAllOpenChatsByAgentBetweenDate({
-		start,
-		end,
-		departmentId,
-	});
-	const closed = await LivechatRooms.countAllClosedChatsByAgentBetweenDate({
-		start,
-		end,
-		departmentId,
-	});
-	const onhold = await LivechatRooms.countAllOnHoldChatsByAgentBetweenDate({
-		start,
-		end,
-		departmentId,
-	});
+
+	const [open, closed, onhold] = await Promise.all([
+		LivechatRooms.countAllOpenChatsByAgentBetweenDate({ start, end, departmentId }),
+		LivechatRooms.countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }),
+		LivechatRooms.countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }),
+	]);
 
 	const result: Record<string, { open: number; closed: number; onhold?: number }> = {};
 	(open || []).forEach((agent: { chats: number; _id: string }) => {
@@ -326,16 +325,11 @@ const findAllChatMetricsByDepartmentAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const open = await LivechatRooms.countAllOpenChatsByDepartmentBetweenDate({
-		start,
-		end,
-		departmentId,
-	});
-	const closed = await LivechatRooms.countAllClosedChatsByDepartmentBetweenDate({
-		start,
-		end,
-		departmentId,
-	});
+	const [open, closed] = await Promise.all([
+		LivechatRooms.countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }),
+		LivechatRooms.countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }),
+	]);
+
 	const result: Record<string, { open: number; closed: number }> = {};
 	(open || []).forEach((department: { name: string; chats: number }) => {
 		result[department.name] = { open: department.chats, closed: 0 };
@@ -361,9 +355,12 @@ const findAllResponseTimeMetricsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const responseTimes = (await LivechatRooms.calculateResponseTimingsBetweenDates({ start, end, departmentId }))[0];
-	const reactionTimes = (await LivechatRooms.calculateReactionTimingsBetweenDates({ start, end, departmentId }))[0];
-	const durationTimings = (await LivechatRooms.calculateDurationTimingsBetweenDates({ start, end, departmentId }))[0];
+
+	const [[responseTimes], [reactionTimes], [durationTimings]] = await Promise.all([
+		LivechatRooms.calculateResponseTimingsBetweenDates({ start, end, departmentId }),
+		LivechatRooms.calculateReactionTimingsBetweenDates({ start, end, departmentId }),
+		LivechatRooms.calculateDurationTimingsBetweenDates({ start, end, departmentId }),
+	]);
 
 	return {
 		response: {
@@ -381,15 +378,29 @@ const findAllResponseTimeMetricsAsync = async ({
 	};
 };
 
-export const getConversationsMetricsAsyncCached = mem(getConversationsMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
-export const getAgentsProductivityMetricsAsyncCached = mem(getAgentsProductivityMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
-export const getChatsMetricsAsyncCached = mem(getChatsMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
-export const getProductivityMetricsAsyncCached = mem(getProductivityMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
-export const findAllChatsStatusAsyncCached = mem(findAllChatsStatusAsync, { maxAge: 5000, cacheKey: JSON.stringify });
-export const findAllChatMetricsByAgentAsyncCached = mem(findAllChatMetricsByAgentAsync, { maxAge: 5000, cacheKey: JSON.stringify });
-export const findAllAgentsStatusAsyncCached = mem(findAllAgentsStatusAsync, { maxAge: 5000, cacheKey: JSON.stringify });
-export const findAllChatMetricsByDepartmentAsyncCached = mem(findAllChatMetricsByDepartmentAsync, {
-	maxAge: 5000,
+export const getConversationsMetricsAsyncCached = mem(getConversationsMetricsAsync, { maxAge: 60000, cacheKey: JSON.stringify });
+export const getAgentsProductivityMetricsAsyncCached = mem(getAgentsProductivityMetricsAsync, {
+	maxAge: 60000,
 	cacheKey: JSON.stringify,
 });
-export const findAllResponseTimeMetricsAsyncCached = mem(findAllResponseTimeMetricsAsync, { maxAge: 5000, cacheKey: JSON.stringify });
+export const getChatsMetricsAsyncCached = mem(getChatsMetricsAsync, { maxAge: 60000, cacheKey: JSON.stringify });
+export const getProductivityMetricsAsyncCached = mem(getProductivityMetricsAsync, { maxAge: 60000, cacheKey: JSON.stringify });
+export const findAllChatsStatusAsyncCached = mem(findAllChatsStatusAsync, { maxAge: 60000, cacheKey: JSON.stringify });
+export const findAllChatMetricsByAgentAsyncCached = mem(findAllChatMetricsByAgentAsync, { maxAge: 60000, cacheKey: JSON.stringify });
+export const findAllAgentsStatusAsyncCached = mem(findAllAgentsStatusAsync, { maxAge: 60000, cacheKey: JSON.stringify });
+export const findAllChatMetricsByDepartmentAsyncCached = mem(findAllChatMetricsByDepartmentAsync, {
+	maxAge: 60000,
+	cacheKey: JSON.stringify,
+});
+export const findAllResponseTimeMetricsAsyncCached = mem(findAllResponseTimeMetricsAsync, {
+	maxAge: 60000,
+	cacheKey: JSON.stringify,
+});
+export const getAnalyticsOverviewDataCached = mem(OmnichannelAnalytics.getAnalyticsOverviewData, {
+	maxAge: 60000,
+	cacheKey: JSON.stringify,
+});
+export const getAgentOverviewDataCached = mem(OmnichannelAnalytics.getAgentOverviewData, {
+	maxAge: process.env.TEST_MODE === 'true' ? 1 : 60000,
+	cacheKey: JSON.stringify,
+});

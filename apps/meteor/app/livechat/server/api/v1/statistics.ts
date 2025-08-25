@@ -3,7 +3,7 @@ import { isLivechatAnalyticsAgentOverviewProps, isLivechatAnalyticsOverviewProps
 
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
-import { getAgentOverviewDataCached, getAnalyticsOverviewDataCached } from '../../lib/AnalyticsTyped';
+import { getAnalyticsOverviewDataCached, getAgentOverviewDataCached } from '../../lib/analytics/dashboards';
 
 API.v1.addRoute(
 	'livechat/analytics/agent-overview',

@@ -27,7 +27,7 @@ const dateRange = getDateRange();
 const RealTimeMonitoringPage = () => {
 	const { t } = useTranslation();
 
-	const [reloadFrequency, setReloadFrequency] = useState(5);
+	const [reloadFrequency, setReloadFrequency] = useState(60);
 	const [departmentId, setDepartment] = useState('');
 
 	const queryClient = useQueryClient();
@@ -46,10 +46,10 @@ const RealTimeMonitoringPage = () => {
 
 	const reloadOptions = useMemo(
 		() => [
-			[5, <Fragment key='5 seconds'>5 {t('seconds')}</Fragment>] as unknown as SelectOption,
-			[10, <Fragment key='10 seconds'>10 {t('seconds')}</Fragment>] as unknown as SelectOption,
-			[30, <Fragment key='30 seconds'>30 {t('seconds')}</Fragment>] as unknown as SelectOption,
 			[60, <Fragment key='1 minute'>1 {t('minute')}</Fragment>] as unknown as SelectOption,
+			[120, <Fragment key='2 minutes'>2 {t('minutes')}</Fragment>] as unknown as SelectOption,
+			[300, <Fragment key='5 minutes'>5 {t('minutes')}</Fragment>] as unknown as SelectOption,
+			[600, <Fragment key='30 seconds'>10 {t('minutes')}</Fragment>] as unknown as SelectOption,
 		],
 		[t],
 	);
