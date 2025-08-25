@@ -1,6 +1,7 @@
 # Notes
 
-## Bookmarks
+## History
+- [[NEW] Support for end to end encryption](https://github.com/RocketChat/Rocket.Chat/pull/10094)
 - [[NEW] Encrypted Discussions and new Encryption Permissions](https://github.com/RocketChat/Rocket.Chat/pull/20201)
 - [feat!: Allow E2EE rooms to reset its room key](https://github.com/RocketChat/Rocket.Chat/pull/33328)
 - [refactor!: Room's Key ID generation](https://github.com/RocketChat/Rocket.Chat/pull/33329)
