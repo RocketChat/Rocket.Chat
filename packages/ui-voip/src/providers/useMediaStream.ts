@@ -8,7 +8,8 @@ const useMediaStream = (instance?: MediaSignalingSession) => {
 	return useSafeRefCallback(
 		useCallback(
 			(node: HTMLAudioElement) => {
-				if (!remoteStream) {
+				// TODO remove node check when useSafeRefCallback is updated from fuselage.
+				if (!remoteStream || !node) {
 					return;
 				}
 
