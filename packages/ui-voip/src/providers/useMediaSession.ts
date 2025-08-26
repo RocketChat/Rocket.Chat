@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import {
-	CallContact,
+	// CallContact,
 	MediaSignalingSession,
 	MediaCallWebRTCProcessor,
 	MediaSignalTransport,
@@ -9,11 +9,11 @@ import {
 	ClientMediaSignal,
 	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
-import { useStream, useWriteStream } from '@rocket.chat/ui-contexts';
+import { useStream, useUserAvatarPath, useWriteStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback } from 'react';
 
 import { useCallSounds } from './useCallSounds';
-import type { State } from '../v2/MediaCallContext';
+import type { PeerInfo, State } from '../v2/MediaCallContext';
 
 // TODO remove this once the permission flow PR is merged
 export async function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
@@ -24,18 +24,28 @@ export async function getUserMedia(constraints: MediaStreamConstraints): Promise
 	return navigator.mediaDevices.getUserMedia.call(navigator.mediaDevices, constraints);
 }
 
-type SessionInfo = {
+interface BaseSession {
 	state: State;
-	contact?: CallContact;
-
+	peerInfo?: PeerInfo;
 	muted: boolean;
 	held: boolean;
 	startedAt: Date | null; // todo not sure if I need this
-};
+}
+
+interface EmptySession extends BaseSession {
+	state: Extract<State, 'closed' | 'new'>;
+}
+
+interface CallSession extends BaseSession {
+	state: Extract<State, 'calling' | 'ringing' | 'ongoing'>;
+	peerInfo: PeerInfo;
+}
+
+type SessionInfo = EmptySession | CallSession;
 
 const defaultSessionInfo: SessionInfo = {
 	state: 'closed' as const,
-	contact: undefined,
+	peerInfo: undefined,
 	muted: false,
 	held: false,
 	startedAt: new Date(),
@@ -45,7 +55,8 @@ type MediaSession = SessionInfo & {
 	toggleMute: () => void;
 	toggleHold: () => void;
 
-	toggleWidget: () => void;
+	toggleWidget: (peerInfo?: PeerInfo) => void;
+	selectPeer: (peerInfo: PeerInfo) => void;
 
 	endCall: () => void;
 	startCall: (id?: string, kind?: 'user' | 'sip') => Promise<void>;
@@ -169,7 +180,10 @@ export const useMediaSessionInstance = (userId?: string) => {
 
 const reducer = (
 	reducerState: SessionInfo,
-	action: { type: 'mute' | 'hold' | 'toggleWidget' | 'instance_updated' | 'reset'; payload?: Partial<SessionInfo> },
+	action: {
+		type: 'mute' | 'hold' | 'toggleWidget' | 'selectPeer' | 'instance_updated' | 'reset';
+		payload?: Partial<SessionInfo>;
+	},
 ): SessionInfo => {
 	if (action.type === 'mute') {
 		return {
@@ -187,7 +201,7 @@ const reducer = (
 
 	if (action.type === 'toggleWidget') {
 		if (reducerState.state === 'closed') {
-			return { ...reducerState, state: 'new' };
+			return { ...reducerState, state: 'new', peerInfo: action.payload?.peerInfo };
 		}
 
 		if (reducerState.state === 'new') {
@@ -196,7 +210,15 @@ const reducer = (
 	}
 
 	if (action.type === 'instance_updated') {
-		return { ...reducerState, ...action.payload };
+		return { ...reducerState, ...action.payload } as SessionInfo;
+	}
+
+	if (action.type === 'selectPeer') {
+		if (reducerState.state !== 'new') {
+			return reducerState;
+		}
+
+		return { ...reducerState, peerInfo: action.payload?.peerInfo };
 	}
 
 	if (action.type === 'reset') {
@@ -208,7 +230,8 @@ const reducer = (
 
 export const useMediaSession = (instance?: MediaSignalingSession): MediaSession => {
 	const [mediaSession, dispatch] = useReducer<typeof reducer>(reducer, defaultSessionInfo);
-	console.log('useMediaSession', mediaSession);
+
+	const getAvatarUrl = useUserAvatarPath();
 	useEffect(() => {
 		if (!instance) {
 			dispatch({ type: 'reset' });
@@ -224,10 +247,39 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 
 			const { contact, state: callState, role } = mainCall;
-
 			const state = deriveWidgetStateFromCallState(callState, role);
 
-			dispatch({ type: 'instance_updated', payload: { state, contact } });
+			if (contact.type === 'sip') {
+				dispatch({ type: 'instance_updated', payload: { peerInfo: { number: contact.id || 'unknown' }, state } });
+				return;
+			}
+
+			const avatarUrl = (() => {
+				if (contact.avatarUrl) {
+					return contact.avatarUrl;
+				}
+
+				if (contact.username) {
+					return getAvatarUrl({ username: contact.username });
+				}
+
+				if (contact.id) {
+					return getAvatarUrl({ userId: contact.id });
+				}
+
+				return undefined;
+			})();
+
+			const peerInfo = {
+				displayName: contact.displayName,
+				userId: contact.id,
+				username: contact.username,
+				avatarUrl,
+				callerId: contact.sipExtension,
+			} as PeerInfo; // TODO: Some of these fields are typed as optional, but I think they are always present.
+			// Also as of now, there is no sip calls to handle.
+
+			dispatch({ type: 'instance_updated', payload: { state, peerInfo } });
 		};
 
 		const offCbs = [
@@ -240,7 +292,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 		return () => {
 			offCbs.forEach((off) => off());
 		};
-	}, [instance]);
+	}, [getAvatarUrl, instance]);
 
 	useCallSounds(
 		mediaSession.state,
@@ -256,8 +308,12 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 	);
 
 	const cbs = useMemo(() => {
-		const toggleWidget = () => {
-			dispatch({ type: 'toggleWidget' });
+		const toggleWidget = (peerInfo?: PeerInfo) => {
+			dispatch({ type: 'toggleWidget', payload: { peerInfo } });
+		};
+
+		const selectPeer = (peerInfo: PeerInfo) => {
+			dispatch({ type: 'selectPeer', payload: { peerInfo } });
 		};
 
 		const toggleMute = () => {
@@ -289,15 +345,15 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 		};
 
 		const startCall = async (id?: string, kind?: 'user' | 'sip') => {
-			console.log('startCall', id, kind, instance);
+			// console.log('startCall', id, kind, instance);
 			if (!instance) {
 				return;
 			}
 
 			const call = instance.getMainCall();
-			console.log({ ...call });
+			// console.log({ ...call });
 			if (call && call.state === 'ringing') {
-				console.log('accepting call');
+				// console.log('accepting call');
 				call.accept();
 				return;
 			}
@@ -334,6 +390,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			changeDevice,
 			forwardCall,
 			sendTone,
+			selectPeer,
 		};
 	}, [instance]);
 

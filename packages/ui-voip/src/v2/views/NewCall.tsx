@@ -54,12 +54,17 @@ const NewCall = () => {
 								return;
 							}
 
-							if ('identifier' in peerInfo) {
-								// TODO: Fix this casting
-								onCall(peerInfo.identifier as string, 'user');
-							} else {
-								onCall(peerInfo.number, 'sip');
+							if ('userId' in peerInfo) {
+								onCall(peerInfo.userId, 'user');
+								return;
 							}
+
+							if ('number' in peerInfo) {
+								onCall(peerInfo.number, 'sip');
+								return;
+							}
+
+							throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 						}}
 					>
 						{t('Call')}
