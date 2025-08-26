@@ -5,7 +5,6 @@ import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
 import { getAttachmentUrl } from '../../../helpers/baseUrl';
 import { createClassName } from '../../../helpers/createClassName';
 import store from '../../../store';
-import { isCallOngoing } from '../../Calls/CallStatus';
 import Message from '../Message';
 import MessageSeparator from '../MessageSeparator';
 import { TypingIndicator } from '../TypingIndicator';
@@ -141,23 +140,12 @@ export class MessageList extends MemoizedComponent {
 		typingUsernames,
 	}) => {
 		const items = [];
-		const { ongoingCall } = store.state;
 		const { hideSenderAvatar = false, hideReceiverAvatar = false } = this.props || {};
 
 		for (let i = 0; i < messages.length; ++i) {
 			const previousMessage = messages[i - 1];
 			const message = messages[i];
 			const nextMessage = messages[i + 1];
-			const videoConfJoinBlock = message.blocks
-				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
-				?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
-			if (videoConfJoinBlock) {
-				// If the call is not accepted yet, don't render the message.
-				if (!ongoingCall || !isCallOngoing(ongoingCall.callStatus)) {
-					continue;
-				}
-			}
-
 			const showDateSeparator = !previousMessage || !isSameDay(parseISO(message.ts), parseISO(previousMessage.ts));
 			if (showDateSeparator) {
 				items.push(<MessageSeparator key={`sep-${message.ts}`} use='li' date={message.ts} />);
