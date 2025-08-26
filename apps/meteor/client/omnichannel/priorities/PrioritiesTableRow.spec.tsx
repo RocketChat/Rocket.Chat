@@ -17,6 +17,7 @@ test('should match the translation if its the default language', async () => {
 	render(<PrioritiesTableRow {...mockedPriority} />, {
 		container: defaultContainer,
 		wrapper: mockAppRoot()
+			.withDefaultLanguage('en')
 			.withTranslations('en', 'core', {
 				Highest: mockedPriority.i18n,
 			})
@@ -30,6 +31,7 @@ test('should not match the defaultText if its not the default language', async (
 	render(<PrioritiesTableRow {...mockedPriority} />, {
 		container: defaultContainer,
 		wrapper: mockAppRoot()
+			.withDefaultLanguage('pt-BR')
 			.withTranslations('pt-BR', 'core', {
 				Highest: 'Muito Alta',
 			})

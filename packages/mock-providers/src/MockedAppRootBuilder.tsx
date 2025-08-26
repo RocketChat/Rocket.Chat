@@ -539,7 +539,6 @@ export class MockedAppRootBuilder {
 
 	withTranslations(lng: string, ns: string, resources: Record<string, string>): this {
 		const addResources = () => {
-			this.i18n.changeLanguage(lng);
 			this.i18n.addResources(lng, ns, resources);
 			for (const [key, value] of Object.entries(resources)) {
 				this.i18n.addResource(lng, ns, key, value);
@@ -552,6 +551,21 @@ export class MockedAppRootBuilder {
 		}
 
 		this.i18n.on('initialized', addResources);
+		return this;
+	}
+
+	// Manually changes the language in the i18next instance
+	// To be used with languages other than the default one
+	withDefaultLanguage(lng: string): this {
+		if (this.i18n.isInitialized) {
+			this.i18n.changeLanguage(lng);
+			return this;
+		}
+
+		this.i18n.on('initialized', () => {
+			this.i18n.changeLanguage(lng);
+		});
+
 		return this;
 	}
 
