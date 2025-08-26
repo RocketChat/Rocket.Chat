@@ -11,13 +11,13 @@ export const useEncryptedRoomDescription = (roomType: 'channel' | 'team') => {
 			return t('Not_available_for_this_workspace');
 		}
 		if (!isPrivate) {
-			return t('Encrypted_not_available', { roomType });
+			return t('Encrypted_not_available', { roomType: t(roomType) });
 		}
 		if (broadcast) {
-			return t('Not_available_for_broadcast', { roomType });
+			return t('Not_available_for_broadcast', { roomType: t(roomType) });
 		}
 		if (e2eEnabledForPrivateByDefault || encrypted) {
-			return t('Encrypted_messages', { roomType });
+			return t('Encrypted_messages', { roomType: t(roomType) });
 		}
 		return t('Encrypted_messages_false');
 	};
