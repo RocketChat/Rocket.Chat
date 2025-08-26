@@ -1,5 +1,6 @@
 export * from './account-profile';
 export * from './admin-email-inboxes';
+export * from './admin-emojis';
 export * from './admin';
 export * from './auth';
 export * from './home-channel';

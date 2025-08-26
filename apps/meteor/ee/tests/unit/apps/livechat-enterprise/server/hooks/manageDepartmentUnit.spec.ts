@@ -21,7 +21,7 @@ const getUnitsFromUserStub = sinon.stub();
 const { manageDepartmentUnit } = proxyquire
 	.noCallThru()
 	.load('../../../../../../app/livechat-enterprise/server/hooks/manageDepartmentUnit.ts', {
-		'../methods/getUnitsFromUserRoles': {
+		'@rocket.chat/omni-core-ee': {
 			getUnitsFromUser: getUnitsFromUserStub,
 		},
 		'../../../../../app/authorization/server/functions/hasRole': {

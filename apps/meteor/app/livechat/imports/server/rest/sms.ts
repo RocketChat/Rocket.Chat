@@ -10,6 +10,7 @@ import type {
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
+import { registerGuest } from '@rocket.chat/omni-core';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -20,7 +21,6 @@ import { FileUpload } from '../../../../file-upload/server';
 import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
 import { setCustomField } from '../../../server/api/lib/customFields';
-import { registerGuest } from '../../../server/lib/guests';
 import type { ILivechatMessage } from '../../../server/lib/localTypes';
 import { sendMessage } from '../../../server/lib/messages';
 import { createRoom } from '../../../server/lib/rooms';
@@ -76,7 +76,7 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 		data.department = targetDepartment;
 	}
 
-	const livechatVisitor = await registerGuest(data);
+	const livechatVisitor = await registerGuest(data, { shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle') });
 
 	if (!livechatVisitor) {
 		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');
