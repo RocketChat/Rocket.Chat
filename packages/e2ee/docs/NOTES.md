@@ -30,3 +30,32 @@
 	- More than once: lack of cleanup
 	- Out of order: inter-test dependencies
 	- Locally: slowness of CI + retries are masking bugs (eg: in full page loads)
+
+### Introduce AES-GCM
+- Add AES‑GCM primitives alongside AES‑CBC
+- Introduce a versioned “envelope” that records the cipher mode
+- Default new writes to AES‑GCM; keep multi‑strategy decryption with fallback to AES‑CBC
+- Update key derivation to produce AES keys for either mode
+- Add tests for both modes and for mixed-mode migration
+
+#### The compatibility strategy (WIP)
+1. Versioned envelope
+	- V1: `{ version: '1', mode: 'AES-CBC', ivB64, ctB64, kdf: {…} }`
+	- V2: `{ version: '2', mode: 'AES-GCM', ivB64, ctB64, tagLen, aadB64?, kdf: { ... } }`
+2. Dual-read, single-write
+	- On decode, try:
+		- If parseable as JSON and has version/mode:
+			- If `mode === AES‑GCM`: decrypt with AES‑GCM
+			- If `mode === AES‑CBC`: decrypt with AES‑CBC (existing code)
+		- Else (legacy “vector + ciphertext” blob):
+			- Treat as AES‑CBC with current [split/join helpers](../src/vector.ts).
+	- On encode, default to `AES‑GCM` for new data.
+		- All readers will still accept older `CBC` payloads.
+		- New payloads advertise `GCM`.
+3. Derivation and key types
+	- WebCrypto requires the CryptoKey algorithm.name to match the operation (CBC vs GCM).
+	- Add a generic derivation that yields raw bits, then import for the required algorithm:
+	- deriveBits with PBKDF2:
+		- `importKey('raw', …, { name: 'AES-GCM'|'AES-CBC', ... }, false, ['encrypt','decrypt'])`
+	- Keep existing CBC derivation for old data.
+	- For new GCM data, import the same bits as AES‑GCM.
