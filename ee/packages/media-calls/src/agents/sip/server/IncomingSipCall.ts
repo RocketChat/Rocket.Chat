@@ -1,9 +1,9 @@
 import type {
-	TypedMediaCallContact,
 	MediaCallSignedContact,
 	IMediaCall,
 	IMediaCallChannel,
 	MediaCallContactInformation,
+	MediaCallContact,
 } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
@@ -14,7 +14,6 @@ import type { SipServerSession } from './Session';
 import { SipError, SipErrorCodes } from './errorCodes';
 import { MediaCallDirector } from '../../../global/CallDirector';
 import { logger } from '../../../logger';
-import { getUserContactByExtension, getUserContactById } from '../../users/getUserContact';
 import { SipActorAgent } from '../BaseSipAgent';
 import type { SipActorCallerAgent } from '../CallerAgent';
 
@@ -184,7 +183,7 @@ export class IncomingSipCall extends BaseSipCall {
 		this.lastCallState = 'accepted';
 	}
 
-	private static async getCalleeFromInvite(req: SrfRequest): Promise<TypedMediaCallContact<'user'>> {
+	private static async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallContact> {
 		let foundAnyIdentifier = false;
 
 		if (req.has('X-RocketChat-To-Uid')) {
@@ -192,7 +191,7 @@ export class IncomingSipCall extends BaseSipCall {
 			if (userId && typeof userId === 'string') {
 				foundAnyIdentifier = true;
 
-				const userContact = await getUserContactById(userId);
+				const userContact = await MediaCallDirector.cast.getContactForUserId(userId, { requiredType: 'user' });
 				if (userContact) {
 					return userContact;
 				}
@@ -201,7 +200,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		if (req.calledNumber && typeof req.calledNumber === 'string') {
 			foundAnyIdentifier = true;
-			const userContact = await getUserContactByExtension(req.calledNumber);
+			const userContact = await MediaCallDirector.cast.getContactForExtensionNumber(req.calledNumber, { requiredType: 'user' });
 			if (userContact) {
 				return userContact;
 			}
@@ -216,12 +215,12 @@ export class IncomingSipCall extends BaseSipCall {
 		throw new SipError(SipErrorCodes.NOT_FOUND);
 	}
 
-	private static async getRocketChatCallerFromInvite(req: SrfRequest): Promise<TypedMediaCallContact<'user'> | null> {
+	private static async getRocketChatCallerFromInvite(req: SrfRequest): Promise<MediaCallContact | null> {
 		if (req.has('X-RocketChat-From-Uid')) {
 			const userId = req.get('X-RocketChat-From-Uid');
 
 			if (userId && typeof userId === 'string') {
-				const userContact = await getUserContactById(userId);
+				const userContact = await MediaCallDirector.cast.getContactForUserId(userId, { preferredType: 'user' });
 				if (userContact) {
 					return userContact;
 				}
@@ -230,7 +229,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		if (req.callingNumber && typeof req.callingNumber === 'string') {
 			// #ToDo: Parse extension number from the callingNumber attribute
-			const userContact = await getUserContactByExtension(req.callingNumber);
+			const userContact = await MediaCallDirector.cast.getContactForExtensionNumber(req.callingNumber, { preferredType: 'sip' });
 			if (userContact) {
 				return userContact;
 			}
@@ -256,11 +255,7 @@ export class IncomingSipCall extends BaseSipCall {
 			displayName: displayName || sipExtension,
 		};
 
-		const contact = await MediaCallDirector.cast.getContactForExtensionNumber(
-			sipExtension,
-			{ requiredType: 'sip' },
-			defaultContactInfo,
-		);
+		const contact = await MediaCallDirector.cast.getContactForExtensionNumber(sipExtension, { requiredType: 'sip' }, defaultContactInfo);
 
 		if (contact) {
 			return {
