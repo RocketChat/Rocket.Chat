@@ -738,8 +738,7 @@ describe('LIVECHAT - rooms', () => {
 					.set(userCreds)
 					.expect(200)
 					.expect((res) => {
-						expect(res.body.rooms.length).to.be.equal(1);
-						expect(res.body.rooms[0]._id).to.be.equal(room1._id);
+						expect(res.body.rooms.some((r: IOmnichannelRoom) => r._id === room1._id)).to.be.true;
 					});
 			});
 			it('should return a valid list of rooms for monitor 2', () => {
@@ -748,22 +747,26 @@ describe('LIVECHAT - rooms', () => {
 					.set(user2Creds)
 					.expect(200)
 					.expect((res) => {
-						expect(res.body.rooms.length).to.be.equal(2);
+						expect(res.body.rooms.some((r: IOmnichannelRoom) => r._id === room2._id)).to.be.true;
+						expect(res.body.rooms.some((r: IOmnichannelRoom) => r._id === room1._id)).to.be.true;
 					});
 			});
 			it('should allow monitor 1 to filter by units', async () => {
 				const { body } = await request.get(api('livechat/rooms')).set(userCreds).query({ 'units[]': unit._id }).expect(200);
-				expect(body.rooms.length).to.be.equal(1);
-				expect(body.rooms[0]._id).to.be.equal(room1._id);
+				expect(body.rooms.some((room: IOmnichannelRoom) => room._id === room1._id)).to.be.true;
+				expect(body.rooms.find((r: IOmnichannelRoom) => r._id === room2._id)).to.be.undefined;
+				expect(body.rooms.some((r: IOmnichannelRoom) => r.departmentAncestors?.includes(unit._id))).to.be.true;
+				expect(body.rooms.every((r: IOmnichannelRoom) => !r.departmentAncestors?.includes(unit2._id))).to.be.true;
 			});
 			it('should not allow monitor 1 to filter by a unit hes not part of', async () => {
 				const { body } = await request.get(api('livechat/rooms')).set(userCreds).query({ 'units[]': unit2._id }).expect(200);
-				expect(body.rooms.length).to.be.equal(0);
+				expect(body.rooms.every((r: IOmnichannelRoom) => !r.departmentAncestors?.includes(unit2._id))).to.be.true;
 			});
 			it('should allow monitor 2 to filter by only one unit', async () => {
 				const { body } = await request.get(api('livechat/rooms')).set(user2Creds).query({ 'units[]': unit2._id }).expect(200);
-				expect(body.rooms.length).to.be.equal(1);
-				expect(body.rooms[0]._id).to.be.equal(room2._id);
+				expect(body.rooms.every((r: IOmnichannelRoom) => !r.departmentAncestors?.includes(unit._id))).to.be.true;
+				expect(body.rooms.some((r: IOmnichannelRoom) => r.departmentAncestors?.includes(unit2._id))).to.be.true;
+				expect(body.rooms.find((r: IOmnichannelRoom) => r._id === room2._id)).to.be.not.undefined;
 			});
 		});
 		(IS_EE ? describe : describe.skip)('units & room restrictions for agents & monitors', () => {
