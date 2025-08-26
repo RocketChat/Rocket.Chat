@@ -86,7 +86,7 @@ describe('canSendOutboundMessage', () => {
 
 				await expect(canSendOutboundMessage('me', 'agentX', 'dep1')).rejects.toThrow('error-agent-not-in-department');
 
-				expect(findDepartmentAgentMock).toHaveBeenCalledWith('agentX', 'dep1');
+				expect(findDepartmentAgentMock).toHaveBeenCalledWith('agentX', 'dep1', { projection: { _id: 1 } });
 			});
 
 			test('resolves if selected agent is in the department (any-agent allowed)', async () => {
