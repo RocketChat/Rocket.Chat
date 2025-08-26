@@ -1,10 +1,10 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`renders StartCall without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-css-11d1wak rcx-css-tzpx07"
+      class="rcx-box rcx-box--full rcx-css-11d1wak rcx-css-veoob9"
     >
       <div
         aria-label="Start Call"
