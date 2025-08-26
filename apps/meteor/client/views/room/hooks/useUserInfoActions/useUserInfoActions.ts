@@ -1,7 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useLayoutHiddenActions, usePermission } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
@@ -78,6 +78,7 @@ export const useUserInfoActions = ({
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const { userToolbox: hiddenActions } = useLayoutHiddenActions();
+	const hasManageRemotely = usePermission('manage-room-members-remotely');
 
 	const userinfoActions = useMemo(
 		() => ({
@@ -85,15 +86,15 @@ export const useUserInfoActions = ({
 			...(videoCall && { videoCall }),
 			...(voipCall && { voipCall }),
 			...(!isMember && addUser && { addUser }),
-			...(isMember && changeOwner && { changeOwner }),
-			...(isMember && changeLeader && { changeLeader }),
-			...(isMember && changeModerator && { changeModerator }),
-			...(isMember && openModerationConsole && { openModerationConsole }),
+			...((isMember || hasManageRemotely) && changeOwner && { changeOwner }),
+			...((isMember || hasManageRemotely) && changeLeader && { changeLeader }),
+			...((isMember || hasManageRemotely) && changeModerator && { changeModerator }),
+			...((isMember || hasManageRemotely) && openModerationConsole && { openModerationConsole }),
 			...(isMember && ignoreUser && { ignoreUser }),
 			...(isMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
-			...(isMember && removeUser && { removeUser }),
+			...((isMember || hasManageRemotely) && removeUser && { removeUser }),
 		}),
 		[
 			openDirectMessage,
@@ -111,6 +112,7 @@ export const useUserInfoActions = ({
 			openModerationConsole,
 			addUser,
 			isMember,
+			hasManageRemotely,
 		],
 	);
 

@@ -4,7 +4,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useRouter } from '@rocket.chat/ui-contexts';
+import { useRouter, usePermission } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +27,7 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
 	const formatDate = useFormatDate();
+	const hasManageRemotely = usePermission('manage-room-members-remotely');
 
 	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ts, ...args } = room;
 	const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room as IRoom);
@@ -48,7 +49,7 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 		() => ({
 			manageMembers: {
 				icon: 'members' as const,
-				content: t('Manage_Members'),
+				content: t('Manage room members'),
 				onClick: () => {
 					router.navigate({
 						name: 'admin-rooms',
@@ -70,6 +71,9 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 			content: item.content,
 		};
 	});
+
+	// Check if More actions button should be displayed
+	const shouldShowMoreActions = hasManageRemotely && type !== 'l' && type !== 'd';
 
 	const getRoomType = (
 		room: Pick<Serialized<IRoom>, RoomAdminFieldsType>,
@@ -121,7 +125,9 @@ const RoomRow = ({ room }: { room: Pick<Serialized<IRoom>, RoomAdminFieldsType> 
 				}}
 			>
 				<Box display='flex' justifyContent='flex-end'>
-					<GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: menuOptions }]} placement='bottom-end' />
+					{shouldShowMoreActions && (
+						<GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: menuOptions }]} placement='bottom-end' />
+					)}
 				</Box>
 			</GenericTableCell>
 		</GenericTableRow>
