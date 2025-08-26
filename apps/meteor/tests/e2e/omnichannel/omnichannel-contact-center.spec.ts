@@ -281,8 +281,13 @@ test.describe('Omnichannel Contact Center', () => {
 		await test.step('Fill confirmation and delete contact', async () => {
 			await expect(poContacts.deleteContactModal).toBeVisible();
 			await expect(poContacts.btnDeleteContact).toBeDisabled();
-			await poContacts.inputDeleteContactConfirmation.fill('delete');
 
+			// Fills the input with the wrong confirmation
+			await poContacts.inputDeleteContactConfirmation.fill('wrong');
+			await expect(poContacts.btnDeleteContact).toBeDisabled();
+
+			// Fills the input correctly
+			await poContacts.inputDeleteContactConfirmation.fill('delete');
 			await expect(poContacts.btnDeleteContact).toBeEnabled();
 			await poContacts.btnDeleteContact.click();
 
