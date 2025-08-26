@@ -32,9 +32,6 @@ export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichann
 		slaId,
 		estimatedWaitingTimeQueue,
 	});
-
-	void notifyOnRoomChangedById(roomId, 'updated');
-	void notifyOnLivechatInquiryChangedByRoom([roomId], 'updated');
 };
 
 export const updateRoomSlaWeights = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
