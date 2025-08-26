@@ -4020,13 +4020,6 @@ export type OmnichannelEndpoints = {
 		GET: (params: LivechatVisitorTokenRoom) => { rooms: IOmnichannelRoom[] };
 	};
 
-	'/v1/livechat/visitor.callStatus': {
-		POST: (params: LivechatVisitorCallStatus) => {
-			token: string;
-			callStatus: string;
-		};
-	};
-
 	'/v1/livechat/visitor.status': {
 		POST: (params: LivechatVisitorStatus) => {
 			token: string;
