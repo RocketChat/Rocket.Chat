@@ -75,7 +75,7 @@ const outboundCommsEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['outbound.send-messages'],
 			body: POSTOutboundMessageParams,
-			// license: ['outbound-messaging'],
+			license: ['outbound-messaging'],
 		},
 		async function action() {
 			const { id } = this.urlParams;
