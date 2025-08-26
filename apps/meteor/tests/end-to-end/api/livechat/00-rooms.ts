@@ -22,13 +22,13 @@ import type { SuccessResult } from '../../../../app/api/server/definition';
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
 import { apps, APP_URL } from '../../../data/apps/apps-data';
 import { createCustomField } from '../../../data/livechat/custom-fields';
+import type { OnlineAgent } from '../../../data/livechat/department';
 import {
 	createDepartmentWith2OnlineAgents,
 	createDepartmentWithAnAwayAgent,
 	createDepartmentWithAnOfflineAgent,
 	createDepartmentWithAnOnlineAgent,
 	deleteDepartment,
-	OnlineAgent,
 } from '../../../data/livechat/department';
 import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import {
@@ -88,7 +88,7 @@ describe('LIVECHAT - rooms', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
-		if (false) {
+		if (IS_EE) {
 			// install the app
 			await request
 				.post(apps())
@@ -121,7 +121,7 @@ describe('LIVECHAT - rooms', () => {
 	after(async () => {
 		await updateSetting('Omnichannel_enable_department_removal', false);
 
-		if (false) {
+		if (IS_EE) {
 			await request
 				.delete(apps(`/${appId}`))
 				.set(credentials)
