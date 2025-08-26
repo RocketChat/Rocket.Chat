@@ -1,6 +1,6 @@
 // import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 // import { usePermission /* , useUserId */ } from '@rocket.chat/ui-contexts';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { useUserAvatarPath, useUserId } from '@rocket.chat/ui-contexts';
 import { useMediaCallContext /* useVoipAPI, useVoipState */ } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useMediaPermissions } from '../../views/room/composer/messageBox/hooks/useMediaPermissions';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
+import { useUserInfoQuery } from '../useUserInfoQuery';
 
 const getPeerId = (uids: string[], ownUserId: string | null) => {
 	if (!ownUserId) {
@@ -32,7 +33,9 @@ export const useMediaCallRoomAction = () => {
 
 	const [isMicPermissionDenied] = useMediaPermissions('microphone');
 
-	const { state, onCall } = useMediaCallContext();
+	const { state, onToggleWidget } = useMediaCallContext();
+
+	const getAvatarUrl = useUserAvatarPath();
 
 	const isInCall = state !== 'closed' && state !== 'new';
 	const disabled = isMicPermissionDenied || isInCall;
@@ -53,7 +56,8 @@ export const useMediaCallRoomAction = () => {
 
 	const peerId = getPeerId(uids, ownUserId);
 
-	// TODO: Implement call in progress ("loading")
+	const { data: peerInfo } = useUserInfoQuery({ userId: peerId as string }, { enabled: !!peerId });
+
 	// TODO: Implement hangup call
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!peerId) {
@@ -65,10 +69,26 @@ export const useMediaCallRoomAction = () => {
 			title: 'Voice_Call',
 			icon: 'phone',
 			featured: true,
-			action: () => onCall(peerId, 'user'),
+			action: () => {
+				const { user } = peerInfo || {};
+				// console.log('user', user);
+				if (user) {
+					const avatarUrl = user.username
+						? getAvatarUrl({ username: user.username, etag: user.avatarETag })
+						: getAvatarUrl({ userId: peerId });
+
+					return onToggleWidget({
+						userId: peerId,
+						displayName: user.name || user.username || '',
+						avatarUrl,
+					});
+				}
+
+				return onToggleWidget();
+			},
 			groups: ['direct'] as const,
 			disabled,
 			tooltip,
 		};
-	}, [peerId, disabled, tooltip, onCall]);
+	}, [peerId, disabled, tooltip, peerInfo, onToggleWidget, getAvatarUrl]);
 };

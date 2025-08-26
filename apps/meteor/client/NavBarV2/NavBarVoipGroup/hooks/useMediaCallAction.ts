@@ -40,9 +40,10 @@ export const useMediaCallAction = () => {
 		return {
 			id: 'start-voice-call',
 			title: 'Voice_Call',
-			icon: 'phone',
+			icon: 'phone-out', // TODO: use phone-plus when it's available in fuselage
+			// icon: 'phone-plus',
 			featured: true,
-			action: onToggleWidget,
+			action: () => onToggleWidget(),
 			groups: ['direct'] as const,
 			disabled,
 			tooltip,
