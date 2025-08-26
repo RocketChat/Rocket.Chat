@@ -2,7 +2,6 @@ import type { IMediaCall, MediaCallActor, MediaCallSignedActor } from '@rocket.c
 import type { CallService } from '@rocket.chat/media-signaling';
 
 import { BaseCallProvider } from './BaseCallProvider';
-import { UserAgentFactory } from './agents/users/AgentFactory';
 import { MediaCallDirector } from './global/CallDirector';
 
 export type InternalCallParams = {
@@ -14,8 +13,9 @@ export type InternalCallParams = {
 
 export class InternalCallProvider extends BaseCallProvider {
 	public static async createCall(params: InternalCallParams): Promise<IMediaCall> {
-		const callerAgent = await UserAgentFactory.getAgentForActor(params.caller, 'caller');
-		const calleeAgent = await UserAgentFactory.getAgentForActor(params.callee, 'callee');
+		console.log('create internal call');
+		const callerAgent = await MediaCallDirector.cast.getAgentForActorAndRole(params.caller, 'caller');
+		const calleeAgent = await MediaCallDirector.cast.getAgentForActorAndRole(params.callee, 'callee');
 
 		if (!callerAgent) {
 			throw new Error('invalid-caller');

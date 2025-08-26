@@ -1,16 +1,21 @@
-import type { TypedMediaCallContact, MediaCallSignedContact, IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
+import type {
+	TypedMediaCallContact,
+	MediaCallSignedContact,
+	IMediaCall,
+	IMediaCallChannel,
+	MediaCallContactInformation,
+} from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
+import type { SipServerSession } from './Session';
 import { SipError, SipErrorCodes } from './errorCodes';
 import { MediaCallDirector } from '../../../global/CallDirector';
 import { logger } from '../../../logger';
-import { UserAgentFactory } from '../../users/AgentFactory';
 import { getUserContactByExtension, getUserContactById } from '../../users/getUserContact';
-import { SipAgentFactory } from '../AgentFactory';
-import type { SipServerSession } from './Session';
+import { SipActorAgent } from '../BaseSipAgent';
 import type { SipActorCallerAgent } from '../CallerAgent';
 
 type IncomingCallEvents = {
@@ -33,6 +38,7 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	public static async processInvite(session: SipServerSession, req: SrfRequest): Promise<IncomingSipCall> {
+		console.log('process incoming sip call');
 		if (!req.isNewInvite) {
 			throw new SipError(SipErrorCodes.NOT_IMPLEMENTED, 'not-a-new-invite');
 		}
@@ -44,14 +50,18 @@ export class IncomingSipCall extends BaseSipCall {
 		const caller = await this.getCallerContactFromInvite(session.sessionId, req);
 		const localDescription = { type: 'offer', sdp: req.body } as const;
 
-		const callerAgent = await SipAgentFactory.getAgentForActor(caller, 'caller');
+		const callerAgent = await MediaCallDirector.cast.getAgentForActorAndRole(caller, 'caller');
 		if (!callerAgent) {
-			throw new SipError(SipErrorCodes.NOT_FOUND, 'caller-agent-not-found');
+			throw new SipError(SipErrorCodes.NOT_FOUND, 'Caller agent not found');
 		}
 
-		const calleeAgent = await UserAgentFactory.getAgentForActor(callee, 'callee');
+		if (!(callerAgent instanceof SipActorAgent)) {
+			throw new SipError(SipErrorCodes.INTERNAL_SERVER_ERROR, 'Caller agent not valid');
+		}
+
+		const calleeAgent = await MediaCallDirector.cast.getAgentForActorAndRole(callee, 'callee');
 		if (!calleeAgent) {
-			throw new SipError(SipErrorCodes.NOT_FOUND, 'callee-agent-not-found');
+			throw new SipError(SipErrorCodes.NOT_FOUND, 'Callee agent not found');
 		}
 
 		const call = await MediaCallDirector.createCall({
@@ -60,6 +70,8 @@ export class IncomingSipCall extends BaseSipCall {
 
 			callerAgent,
 			calleeAgent,
+
+			webrtcOffer: localDescription,
 		});
 
 		const channel = await callerAgent.getOrCreateChannel(call, session.sessionId, {
@@ -238,13 +250,30 @@ export class IncomingSipCall extends BaseSipCall {
 
 		const sipExtension = req.callingNumber;
 
+		const defaultContactInfo: MediaCallContactInformation = {
+			username,
+			sipExtension,
+			displayName: displayName || sipExtension,
+		};
+
+		const contact = await MediaCallDirector.cast.getContactForExtensionNumber(
+			sipExtension,
+			{ requiredType: 'sip' },
+			defaultContactInfo,
+		);
+
+		if (contact) {
+			return {
+				...contact,
+				contractId: sessionId,
+			} as MediaCallSignedContact<'sip'>;
+		}
+
 		return {
 			type: 'sip',
 			id: sipExtension,
 			contractId: sessionId,
-			username,
-			sipExtension,
-			displayName: displayName || sipExtension,
+			...defaultContactInfo,
 		};
 	}
 }

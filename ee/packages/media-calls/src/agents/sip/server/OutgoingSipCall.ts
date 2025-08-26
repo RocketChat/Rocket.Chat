@@ -3,11 +3,10 @@ import { MediaCalls } from '@rocket.chat/models';
 
 import { BaseSipCall } from './BaseSipCall';
 import type { SipServerSession } from './Session';
-import type { InternalCallParams } from '../../../InternalCallProvider';
-import { UserAgentFactory } from '../../users/AgentFactory';
-import { SipAgentFactory } from '../AgentFactory';
 import { SipError, SipErrorCodes } from './errorCodes';
+import type { InternalCallParams } from '../../../InternalCallProvider';
 import { MediaCallDirector } from '../../../global/CallDirector';
+import { SipActorAgent } from '../BaseSipAgent';
 import type { SipActorCalleeAgent } from '../CalleeAgent';
 
 export class OutgoingSipCall extends BaseSipCall {
@@ -22,6 +21,8 @@ export class OutgoingSipCall extends BaseSipCall {
 	}
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
+		console.log('create outgoing sip call');
+
 		const { callee, ...extraParams } = params;
 
 		// pre-sign the callee to this session
@@ -30,14 +31,18 @@ export class OutgoingSipCall extends BaseSipCall {
 			contractId: session.sessionId,
 		};
 
-		const calleeAgent = await SipAgentFactory.getAgentForActor(callee, 'callee');
+		const calleeAgent = await MediaCallDirector.cast.getAgentForActorAndRole(signedCallee, 'callee');
 		if (!calleeAgent) {
-			throw new SipError(SipErrorCodes.NOT_FOUND, 'callee-agent-not-found');
+			throw new SipError(SipErrorCodes.NOT_FOUND, 'Callee agent not found');
 		}
 
-		const callerAgent = await UserAgentFactory.getAgentForActor(params.caller, 'caller');
+		if (!(calleeAgent instanceof SipActorAgent)) {
+			throw new SipError(SipErrorCodes.INTERNAL_SERVER_ERROR, 'Caller agent not valid');
+		}
+
+		const callerAgent = await MediaCallDirector.cast.getAgentForActorAndRole(params.caller, 'caller');
 		if (!callerAgent) {
-			throw new SipError(SipErrorCodes.NOT_FOUND, 'caller-agent-not-found');
+			throw new SipError(SipErrorCodes.NOT_FOUND, 'Caller agent not found');
 		}
 
 		const call = await MediaCallDirector.createCall({

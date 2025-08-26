@@ -1,23 +1,11 @@
 import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
-import type { CallRole, ClientMediaSignal, ServerMediaSignal, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, ServerMediaSignal, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 
 import { gateway } from '../../global/SignalGateway';
 import { logger } from '../../logger';
 import { BaseMediaCallAgent } from '../BaseAgent';
-import type { MinimalUserData } from '../definition/common';
 
 export abstract class UserActorAgent extends BaseMediaCallAgent {
-	constructor(
-		protected readonly user: MinimalUserData,
-		role: CallRole,
-	) {
-		super({
-			type: 'user',
-			id: user._id,
-			role,
-		});
-	}
-
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
 		const channel = await this.getOrCreateChannel(call, signal.contractId, { acknowledged: true });
 
@@ -25,7 +13,7 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async sendSignal(signal: ServerMediaSignal): Promise<void> {
-		gateway.sendSignal(this.user._id, signal);
+		gateway.sendSignal(this.actorId, signal);
 	}
 
 	public async onCallAccepted(callId: string, signedContractId: string): Promise<void> {

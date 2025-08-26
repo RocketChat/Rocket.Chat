@@ -3,6 +3,8 @@ import type { CallHangupReason, CallService } from '@rocket.chat/media-signaling
 import { MediaCalls } from '@rocket.chat/models';
 
 import type { IMediaCallAgent } from '../agents/definition/IMediaCallAgent';
+import type { IMediaCallCastDirector } from '../agents/definition/IMediaCallCastDirector';
+import { getCastDirector } from '../agents/definition/IMediaCallCastDirector';
 import { logger } from '../logger';
 
 const EXPIRATION_TIME = 120000;
@@ -16,6 +18,8 @@ export type CreateCallParams = {
 
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
+
+	webrtcOffer?: RTCSessionDescriptionInit;
 };
 
 export class MediaCallDirector {
@@ -81,9 +85,57 @@ export class MediaCallDirector {
 		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
 	}
 
+	public static get cast(): IMediaCallCastDirector {
+		try {
+			return getCastDirector();
+		} catch (error) {
+			logger.error({ msg: 'Failed to access castDirector', error });
+			throw error;
+		}
+	}
+
+	public static async saveWebrtcSession(call: IMediaCall, fromAgent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void> {
+		if (sdp.type === 'offer') {
+			if (fromAgent.role !== 'caller') {
+				throw new Error('invalid-sdp');
+			}
+
+			return this.saveWebrtcOffer(call, fromAgent, sdp);
+		}
+
+		if (fromAgent.role !== 'callee') {
+			throw new Error('invalid-sdp');
+		}
+
+		return this.saveWebrtcAnswer(call, fromAgent, sdp);
+	}
+
+	private static async saveWebrtcOffer(call: IMediaCall, fromAgent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void> {
+		logger.debug({ msg: 'MediaCallDirector.saveWebrtcOffer', callId: call?._id });
+		const result = await MediaCalls.setWebrtcOfferById(call._id, sdp, this.getNewExpirationTime());
+		if (!result.modifiedCount) {
+			return;
+		}
+
+		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, sdp);
+	}
+
+	private static async saveWebrtcAnswer(call: IMediaCall, fromAgent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void> {
+		logger.debug({ msg: 'MediaCallDirector.saveWebrtcAnswer', callId: call?._id });
+		const result = await MediaCalls.setWebrtcAnswerById(call._id, sdp, this.getNewExpirationTime());
+		if (!result.modifiedCount) {
+			return;
+		}
+
+		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, sdp);
+
+		fromAgent.onWebrtcAnswer(call._id);
+		await fromAgent.oppositeAgent?.onWebrtcAnswer(call._id);
+	}
+
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
 		logger.debug({ msg: 'MediaCallDirector.createCall', params });
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent } = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, webrtcOffer } = params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -105,6 +157,9 @@ export class MediaCallDirector {
 			throw new Error('invalid-callee');
 		}
 
+		callerAgent.oppositeAgent = calleeAgent;
+		calleeAgent.oppositeAgent = callerAgent;
+
 		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
 			service,
 			kind: 'direct',
@@ -119,6 +174,7 @@ export class MediaCallDirector {
 			expiresAt: MediaCallDirector.getNewExpirationTime(),
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
+			...(webrtcOffer && { webrtcOffer }),
 		};
 
 		console.log('creating call', call);

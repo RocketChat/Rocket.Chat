@@ -1,14 +1,14 @@
-import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
+import type { IMediaCall, IMediaCallChannel, MediaCallContact } from '@rocket.chat/core-typings';
 import type { ClientMediaSignal, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
+import { MediaCalls } from '@rocket.chat/models';
 
 import { UserActorAgent } from './BaseAgent';
 import { UserActorCallerSignalProcessor } from './CallerSignalProcessor';
 import { logger } from '../../logger';
-import type { MinimalUserData } from '../definition/common';
 
 export class UserActorCallerAgent extends UserActorAgent {
-	constructor(user: MinimalUserData) {
-		super(user, 'caller');
+	constructor(contact: MediaCallContact) {
+		super(contact, 'caller');
 	}
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
@@ -36,5 +36,21 @@ export class UserActorCallerAgent extends UserActorAgent {
 	protected doProcessSignal(call: IMediaCall, channel: IMediaCallChannel, signal: ClientMediaSignal): Promise<void> {
 		const signalProcessor = new UserActorCallerSignalProcessor(this, call, channel);
 		return signalProcessor.processSignal(signal);
+	}
+
+	public async onWebrtcAnswer(callId: string): Promise<void> {
+		const call = await MediaCalls.findOneById(callId);
+
+		if (call?.state !== 'accepted' || !call.webrtcAnswer) {
+			logger.error({ msg: 'Invalid call state', call });
+			return;
+		}
+
+		await this.sendSignal({
+			callId,
+			toContractId: call.caller.contractId,
+			type: 'remote-sdp',
+			sdp: call.webrtcAnswer,
+		});
 	}
 }

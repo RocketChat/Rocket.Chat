@@ -1,16 +1,22 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallActor, MediaCallActorType, MediaCallSignedActor } from '@rocket.chat/core-typings';
+import type {
+	IMediaCall,
+	IMediaCallChannel,
+	MediaCallActor,
+	MediaCallActorType,
+	MediaCallContact,
+	MediaCallSignedActor,
+} from '@rocket.chat/core-typings';
 import type { CallContact, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallChannels } from '@rocket.chat/models';
 
+import { logger } from '../logger';
 import type { IMediaCallAgent } from './definition/IMediaCallAgent';
 
 export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 	public readonly actorType: MediaCallActorType;
 
 	public readonly actorId: string;
-
-	public readonly role: CallRole;
 
 	public oppositeAgent: IMediaCallAgent | null;
 
@@ -27,10 +33,12 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 
 	protected localDescription: RTCSessionDescriptionInit | null;
 
-	constructor(data: MediaCallActor & { role: CallRole }) {
-		this.actorType = data.type;
-		this.actorId = data.id;
-		this.role = data.role;
+	constructor(
+		protected readonly contact: MediaCallContact,
+		public readonly role: CallRole,
+	) {
+		this.actorType = contact.type;
+		this.actorId = contact.id;
 		this.localDescription = null;
 		this.oppositeAgent = null;
 	}
@@ -60,6 +68,8 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 
 	public abstract onCallEnded(callId: string): Promise<void>;
 
+	public abstract onWebrtcAnswer(callId: string): Promise<void>;
+
 	public async getOrCreateChannel(
 		call: IMediaCall,
 		contractId: string,
@@ -71,6 +81,7 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 	public abstract onCallCreated(call: IMediaCall): Promise<void>;
 
 	public async onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void> {
+		logger.debug({ msg: 'BaseMediaCallAgent.onRemoteDescriptionChanged', callId, description });
 		await MediaCallChannels.setRemoteDescriptionByCallIdAndActor(callId, this.actor, description);
 	}
 

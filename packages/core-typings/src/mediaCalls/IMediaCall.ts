@@ -49,4 +49,7 @@ export interface IMediaCall extends IRocketChatRecord {
 	expiresAt: Date;
 
 	callerRequestedId?: string;
+
+	webrtcOffer?: RTCSessionDescriptionInit;
+	webrtcAnswer?: RTCSessionDescriptionInit;
 }

@@ -39,9 +39,10 @@ export class SignalGateway extends GlobalSignalProcessor implements ISignalGatew
 			throw new Error('invalid-signal');
 		}
 
-		this.processSignal(fromUid, signal).catch((error) =>
-			this.debugError('Failed to process client signal', { signal }, { error, type: signal.type }),
-		);
+		this.processSignal(fromUid, signal).catch((error) => {
+			console.log(error);
+			this.debugError('Failed to process client signal', { signal }, { error, type: signal.type });
+		});
 	}
 
 	public sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
@@ -61,6 +62,7 @@ export class SignalGateway extends GlobalSignalProcessor implements ISignalGatew
 
 	public async createCall(params: InternalCallParams): Promise<IMediaCall> {
 		logger.debug({ msg: 'SignalGateway.createCall', params });
+		console.log('create call from signal', params);
 
 		if (params.callee.type === 'sip') {
 			return this.session.createOutgoingCall(params);

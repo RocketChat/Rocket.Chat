@@ -1,18 +1,17 @@
 import type { IMediaCall, IUser, MediaCallActor } from '@rocket.chat/core-typings';
 import type {
-	CallActorType,
 	ClientMediaSignal,
 	ClientMediaSignalRegister,
 	ClientMediaSignalRequestCall,
 	ServerMediaSignal,
 	ServerMediaSignalRejectedCallRequest,
 } from '@rocket.chat/media-signaling';
-import { MediaCalls, Users } from '@rocket.chat/models';
+import { MediaCalls } from '@rocket.chat/models';
 
-import { UserAgentFactory } from '../agents/users/AgentFactory';
 import { logger } from '../logger';
 import { MediaCallDirector } from './CallDirector';
 import type { InternalCallParams } from '../InternalCallProvider';
+import { UserActorAgent } from '../agents/users/BaseAgent';
 
 export abstract class GlobalSignalProcessor {
 	protected abstract sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void;
@@ -36,29 +35,6 @@ export abstract class GlobalSignalProcessor {
 		logger.error({ msg: 'Unrecognized media signal', signal });
 	}
 
-	public async mutateCallee(callee: { type: CallActorType; id: string }): Promise<{ type: CallActorType; id: string }> {
-		if (callee.type === 'user') {
-			const user = await Users.findOneById(callee.id);
-			if (user?.freeSwitchExtension) {
-				return {
-					type: 'sip',
-					id: user.freeSwitchExtension,
-				};
-			}
-		}
-
-		if (callee.type !== 'sip') {
-			return callee;
-		}
-
-		// const user = await Users.findOneByFreeSwitchExtension<Pick<IUser, '_id'>>(callee.id, { projection: { _id: 1 } });
-		// if (user) {
-		// 	return { type: 'user', id: user._id };
-		// }
-
-		return callee;
-	}
-
 	private async processCallSignal(
 		uid: IUser['_id'],
 		signal: Exclude<ClientMediaSignal, ClientMediaSignalRegister | ClientMediaSignalRequestCall>,
@@ -72,6 +48,8 @@ export abstract class GlobalSignalProcessor {
 
 			const isCaller = call.caller.type === 'user' && call.caller.id === uid;
 			const isCallee = call.callee.type === 'user' && call.callee.id === uid;
+
+			// The user must be either the caller or the callee, if its none or both, we can't process it
 			if (isCaller === isCallee) {
 				logger.error({ msg: 'failed to identify actor role in the call', method: 'processSignal', signal, isCaller, isCallee });
 				throw new Error('invalid-call');
@@ -80,17 +58,18 @@ export abstract class GlobalSignalProcessor {
 			const role = isCaller ? 'caller' : 'callee';
 			const callActor = call[role];
 
-			// Ignore signals from different sessions
+			// Ignore signals from different sessions if the actor is already signed
 			if (callActor.contractId && callActor.contractId !== signal.contractId) {
 				return;
 			}
 
 			await MediaCallDirector.renewCallId(call._id);
 
-			const agent = await UserAgentFactory.getAgentForActor(callActor, role);
-			if (!agent) {
-				logger.error({ msg: 'agent not found', method: 'processSignal', signal });
-				throw new Error('invalid-call');
+			const agents = await MediaCallDirector.cast.getAgentsFromCall(call);
+			const { [role]: agent } = agents;
+
+			if (!(agent instanceof UserActorAgent)) {
+				throw new Error('Actor agent is not prepared to process signals');
 			}
 
 			await agent.processSignal(call, signal);
@@ -107,10 +86,19 @@ export abstract class GlobalSignalProcessor {
 	}
 
 	private async processRequestCallSignal(uid: IUser['_id'], signal: ClientMediaSignalRequestCall): Promise<void> {
-		logger.debug({ msg: 'GlobalSignalProcessor.processNewCallSignal', signal, uid });
+		logger.debug({ msg: 'GlobalSignalProcessor.processRequestCallSignal', signal, uid });
 
-		const caller = { type: 'user', id: uid } as const;
-		const callee = await this.mutateCallee(signal.callee);
+		// The caller contact should always be from type = 'user' when the call was initiated from rocket.chat
+		const caller = await MediaCallDirector.cast.getContactForUserId(uid, { requiredType: 'user' });
+		if (!caller) {
+			throw new Error('Failed to load caller contact information');
+		}
+
+		// The callee contact type will determine if the call is going to go through SIP or directly to another rocket.chat user
+		const callee = await MediaCallDirector.cast.getContactForActor(signal.callee, { preferredType: 'user' });
+		if (!callee) {
+			throw new Error('Failed to load callee contact information');
+		}
 
 		const existingCall = await this.getExistingRequestedCall(uid, signal, callee);
 

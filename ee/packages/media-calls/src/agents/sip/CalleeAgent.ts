@@ -1,8 +1,9 @@
+import type { MediaCallContact } from '@rocket.chat/core-typings';
+
 import { SipActorAgent } from './BaseSipAgent';
-import type { SipUserData } from '../definition/common';
 
 export class SipActorCalleeAgent extends SipActorAgent {
-	constructor(user: SipUserData) {
-		super(user, 'callee');
+	constructor(contact: MediaCallContact) {
+		super(contact, 'callee');
 	}
 }

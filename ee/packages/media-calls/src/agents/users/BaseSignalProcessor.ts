@@ -113,18 +113,15 @@ export abstract class UserActorSignalProcessor {
 		}
 	}
 
-	private async hangup(reason: CallHangupReason): Promise<void> {
+	protected async hangup(reason: CallHangupReason): Promise<void> {
 		return MediaCallDirector.hangup(this.call, this.agent, reason);
 	}
 
-	private async saveLocalDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
+	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdp });
 
 		await MediaCallChannels.setLocalDescription(this.channel._id, sdp);
-
-		const { [this.agent.oppositeRole]: otherActor } = this.call;
-		await MediaCallChannels.setRemoteDescriptionByCallIdAndActor(this.call._id, otherActor, sdp);
-		gateway.emitter.emit('callUpdated', this.call._id);
+		await MediaCallDirector.saveWebrtcSession(this.call, this.agent, sdp);
 	}
 
 	private async processAnswer(answer: CallAnswer): Promise<void> {
