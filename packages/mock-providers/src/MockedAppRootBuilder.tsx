@@ -539,6 +539,7 @@ export class MockedAppRootBuilder {
 
 	withTranslations(lng: string, ns: string, resources: Record<string, string>): this {
 		const addResources = () => {
+			this.i18n.changeLanguage(lng);
 			this.i18n.addResources(lng, ns, resources);
 			for (const [key, value] of Object.entries(resources)) {
 				this.i18n.addResource(lng, ns, key, value);
