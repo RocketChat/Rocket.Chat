@@ -3927,12 +3927,18 @@
   "mention-here_description": "使用 @here 提及的权限",
   "message": "消息",
   "message_pruned": "已修剪消息",
+  "message_counter": {
+    "other": "{{count}} 消息"
+  },
   "messages": "消息",
   "messages_pruned": "消息被修剪",
   "meteor_status_connected": "已连接",
   "meteor_status_connecting": "连接中...",
   "meteor_status_failed": "服务器连接失败",
   "meteor_status_offline": "离线模式。",
+  "meteor_status_reconnect_in": {
+    "other": "在 {{count}} 秒钟后重试..."
+  },
   "meteor_status_try_now_offline": "重新连接",
   "meteor_status_try_now_waiting": "立即尝试",
   "meteor_status_waiting": "等待服务器连接，",

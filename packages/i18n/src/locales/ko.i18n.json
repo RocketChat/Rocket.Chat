@@ -3830,6 +3830,9 @@
   "mention-here": "여기에 멘션",
   "mention-here_description": "@here 멘션 사용 권한",
   "message": "메시지",
+  "message_counter": {
+    "other": "{{count}} 메시지"
+  },
   "message_pruned": "메시지 정리",
   "messages": "메시지",
   "messages_pruned": "메시지 정리를 완료했습니다.",
@@ -3837,6 +3840,9 @@
   "meteor_status_connecting": "연결중...",
   "meteor_status_failed": "서버 연결에 실패했습니다.",
   "meteor_status_offline": "오프라인 모드.",
+  "meteor_status_reconnect_in": {
+    "other": "{{count}} 초 후에 다시 시도합니다 ..."
+  },
   "meteor_status_try_now_offline": "다시 접속하기",
   "meteor_status_try_now_waiting": "지금 시도",
   "meteor_status_waiting": "서버 연결을 기다리는 중...",
@@ -4039,6 +4045,12 @@
   "__count__conversations__period__": "{{count}} 대화, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} 빈 대화방은 자동으로 제거됩니다.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> 빈 대화방은 자동으로 제거됩니다 : <br/> {{rooms}}.",
+  "__count__follower": {
+    "other": "+{{count}} 팔로워"
+  },
+  "__count__message_pruned": {
+    "other": "{{count}} 메시지 삭제"
+  },
   "__count__replies": "{{count}} 답글",
   "__count__replies__date__": "{{count}} 답글, {{date}}",
   "__count__tags__and__count__conversations__period__": "{{count}} 태그와 {{conversations}} 대화, {{period}}",
