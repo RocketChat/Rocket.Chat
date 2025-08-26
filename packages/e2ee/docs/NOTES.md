@@ -16,16 +16,23 @@
 - Create adapter for react-native
 
 ### Refactor Web
-- Remove use of enums for state in favor of literal types.
 
-### Dependency Cleanup
+#### Maintainance/Interop
+- Remove use of non-javascript constructs:
+	- `enum` -> `literal types`.
+	- `private member` -> `#member`.
+	- Use `localStorage` and/or `sessionStorage` explicitly instead of:
+		[Accounts.storageLocation](../../../apps/meteor/definition/externals/meteor/accounts-base.d.ts).
+		[Meteor._localStorage](../../../apps/meteor/app/ui-master/server/scripts.ts)
+
+#### Dependency Cleanup
 - Remove use of `ejson` for serializing/deserializing Uint8Array: [codec.ts](../src/codec.ts#L165-L175)
 	- It is simply a JSON with a "$binary" field containing the base64 encoded data.
 - Remove use of `bytebuffer` for encoding/decoding strings: [binary.ts](../src/binary.ts)
 	- ByteBuffer.wrap('hello', 'binary').toArrayBuffer()
 	- ByteBuffer.wrap('hello').toString('binary')
 
-### Improve Tests
+#### Improve Tests
 - Tests in [e2e-encryption.ts](../../../apps/meteor/tests/e2e/e2e-encryption.spec.ts) are failing when ran:
 	- More than once: lack of cleanup
 	- Out of order: inter-test dependencies
