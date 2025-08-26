@@ -7,6 +7,28 @@ export type MediaCallServerEvents = {
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
 };
 
+export interface IMediaCallServerSettings {
+	enabled: boolean;
+
+	internalCalls: {
+		requireExtensions: boolean;
+		routeExternally: 'never' | 'preferrably' | 'always';
+	};
+
+	sip: {
+		enabled: boolean;
+		drachtio: {
+			host: string;
+			port: number;
+			secret: string;
+		};
+		sipServer: {
+			host: string;
+			port: number;
+		};
+	};
+}
+
 export interface IMediaCallServer {
 	emitter: Emitter<MediaCallServerEvents>;
 
@@ -21,4 +43,5 @@ export interface IMediaCallServer {
 	// extra functions available to the service
 	hangupExpiredCalls(): Promise<void>;
 	scheduleExpirationCheck(): void;
+	configure(settings: IMediaCallServerSettings): void;
 }

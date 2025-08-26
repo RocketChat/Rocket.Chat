@@ -3,13 +3,15 @@ import { MediaCalls } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
 
-import { SipError } from './errorCodes';
+import { SipError, SipErrorCodes } from './errorCodes';
 import { logger } from '../logger';
 import type { BaseSipCall } from './providers/BaseSipCall';
 import { OutgoingSipCall } from './providers/OutgoingSipCall';
 import { MediaCallDirector } from '../server/CallDirector';
 import { IncomingSipCall } from './providers/IncomingSipCall';
+import type { IMediaCallServerSettings } from '../definition/IMediaCallServer';
 import type { InternalCallParams } from '../definition/common';
+import { getDefaultSettings } from '../server/getDefaultSettings';
 
 export class SipServerSession {
 	private readonly _sessionId: string;
@@ -17,6 +19,10 @@ export class SipServerSession {
 	private srf: Srf;
 
 	private knownCalls: Map<string, BaseSipCall>;
+
+	private settings: IMediaCallServerSettings;
+
+	private wasEverEnabled = false;
 
 	public get sessionId(): string {
 		return this._sessionId;
@@ -26,6 +32,8 @@ export class SipServerSession {
 		this._sessionId = Random.id();
 		this.knownCalls = new Map();
 		this.srf = new Srf();
+		// Always instantiate it with the default settings as it stays disconnected until explicitly configured
+		this.settings = getDefaultSettings();
 		this.initializeDrachtio();
 	}
 
@@ -49,6 +57,18 @@ export class SipServerSession {
 		this.knownCalls.set(call.callId, call);
 	}
 
+	public configure(settings: IMediaCallServerSettings): void {
+		this.settings = settings;
+
+		if (!this.isEnabledOnSettings(settings)) {
+			return;
+		}
+
+		if (!this.wasEverEnabled) {
+			this.connectDrachtio();
+		}
+	}
+
 	public async createOutgoingCall(params: InternalCallParams): Promise<IMediaCall> {
 		return OutgoingSipCall.createCall(this, params);
 	}
@@ -58,12 +78,19 @@ export class SipServerSession {
 			throw new Error('invalid-callee');
 		}
 
+		const { host, port } = this.settings.sip.sipServer;
+		if (!host) {
+			throw new Error('Sip Server Host is not configured');
+		}
+
 		const updateResult = await MediaCalls.startRingingById(call._id, MediaCallDirector.getNewExpirationTime());
 		if (!updateResult.modifiedCount) {
 			return;
 		}
 
-		const uri = `sip:${call.callee.id}@44.219.40.169:5060`;
+		const portStr = port ? `:${port}` : '';
+
+		const uri = `sip:${call.callee.id}@${host}${portStr}`;
 
 		console.log('calling ', uri);
 
@@ -83,17 +110,12 @@ export class SipServerSession {
 		});
 	}
 
-	private initializeDrachtio(): void {
-		// #ToDo
-		// setTimeout(() => {
-		// 	console.log('connecting to drachtio');
-		// 	this.srf.connect({
-		// 		host: '172.19.0.2',
-		// 		port: 9022,
-		// 		secret: 'cymru',
-		// 	});
-		// }, 10000);
+	private isEnabledOnSettings(settings: IMediaCallServerSettings): boolean {
+		return Boolean(settings.enabled && settings.sip.enabled && settings.sip.drachtio.host && settings.sip.drachtio.secret);
+	}
 
+	private initializeDrachtio(): void {
+		console.log('initializeDrachtio');
 		this.srf.on('connect', (err, hostport) => {
 			if (err) {
 				console.error('connection failed', err);
@@ -103,11 +125,8 @@ export class SipServerSession {
 			console.log(`connected to a drachtio server listening on: ${hostport}`);
 		});
 
-		this.srf.on('error', (err) => {
-			console.error('error');
-			console.error(err);
-			void this.srf.disconnect();
-		});
+		// @ts-expect-error: The package is exporting wrong types
+		this.srf.on('error', (err: Error, socket: unknown) => this.onDrachtioError(err, socket));
 
 		this.srf.use((req, _res, next) => {
 			console.log(`incoming ${req.method} from ${req.source_address}`);
@@ -127,7 +146,26 @@ export class SipServerSession {
 		});
 	}
 
+	private connectDrachtio(): void {
+		if (this.wasEverEnabled) {
+			return;
+		}
+
+		console.log('connecting to drachtio');
+		this.wasEverEnabled = true;
+		this.srf.connect({
+			host: this.settings.sip.drachtio.host,
+			port: this.settings.sip.drachtio.port ?? 9022,
+			secret: this.settings.sip.drachtio.secret,
+		});
+	}
+
 	private async processInvite(req: SrfRequest, res: SrfResponse): Promise<void> {
+		if (!this.isEnabledOnSettings(this.settings)) {
+			res.send(SipErrorCodes.SERVICE_NOT_AVAILABLE);
+			return;
+		}
+
 		const sipCall = await IncomingSipCall.processInvite(this, req).catch((e) => {
 			this.forwardSipExceptionToResponse(e, res);
 			throw e;
@@ -148,5 +186,21 @@ export class SipServerSession {
 		}
 
 		res.send(exception.sipErrorCode);
+	}
+
+	private onDrachtioError(error: Error, socket: unknown): void {
+		console.error('error');
+		console.error(error);
+
+		if (this.isEnabledOnSettings(this.settings)) {
+			return;
+		}
+
+		try {
+			// @ts-expect-error: The package is exporting wrong types
+			this.srf.disconnect(socket);
+		} catch {
+			// Supress errors on socket disconnection
+		}
 	}
 }

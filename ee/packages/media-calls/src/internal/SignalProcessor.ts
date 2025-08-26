@@ -9,10 +9,12 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
-import type { InternalCallParams } from '../definition/common';
+import type { GetActorContactOptions, InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { MediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/BaseUserAgent';
+import type { IMediaCallServerSettings } from '../definition/IMediaCallServer';
+import { getDefaultSettings } from '../server/getDefaultSettings';
 
 export type SignalProcessorEvents = {
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
@@ -22,8 +24,11 @@ export type SignalProcessorEvents = {
 export class GlobalSignalProcessor {
 	public readonly emitter: Emitter<SignalProcessorEvents>;
 
+	private settings: IMediaCallServerSettings;
+
 	constructor() {
 		this.emitter = new Emitter();
+		this.settings = getDefaultSettings();
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
@@ -41,6 +46,10 @@ export class GlobalSignalProcessor {
 		}
 
 		logger.error({ msg: 'Unrecognized media signal', signal });
+	}
+
+	public configure(settings: IMediaCallServerSettings): void {
+		this.settings = settings;
 	}
 
 	protected sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
@@ -101,6 +110,34 @@ export class GlobalSignalProcessor {
 		// 2. Hangup active calls involving the oldContractId if it's different from the new one.
 	}
 
+	private getCalleeContactOptions(): GetActorContactOptions {
+		if (!this.settings.sip.enabled) {
+			return {
+				requiredType: 'user',
+			};
+		}
+
+		switch (this.settings.internalCalls.routeExternally) {
+			case 'always':
+				// Will only make sip calls
+				return {
+					requiredType: 'sip',
+				};
+			case 'never':
+				// Will not use sip when calling an user or an extension assigned to an user, but will use sip when calling an unassigned extension
+				return {
+					preferredType: 'user',
+				};
+			case 'preferrably':
+				// Will only skip sip for users that don't have an assigned extension (or not call at all if `requireExtensions` is true)
+				return {
+					preferredType: 'sip',
+				};
+		}
+
+		return {};
+	}
+
 	private async processRequestCallSignal(uid: IUser['_id'], signal: ClientMediaSignalRequestCall): Promise<void> {
 		logger.debug({ msg: 'GlobalSignalProcessor.processRequestCallSignal', signal, uid });
 
@@ -111,9 +148,13 @@ export class GlobalSignalProcessor {
 		}
 
 		// The callee contact type will determine if the call is going to go through SIP or directly to another rocket.chat user
-		const callee = await MediaCallDirector.cast.getContactForActor(signal.callee, { preferredType: 'user' });
+		const callee = await MediaCallDirector.cast.getContactForActor(signal.callee, this.getCalleeContactOptions());
 		if (!callee) {
 			throw new Error('Failed to load callee contact information');
+		}
+
+		if (this.settings.internalCalls.requireExtensions && !callee.sipExtension) {
+			throw new Error('Invalid target user');
 		}
 
 		const existingCall = await this.getExistingRequestedCall(uid, signal, callee);

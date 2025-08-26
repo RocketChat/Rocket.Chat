@@ -173,7 +173,7 @@ declare module 'drachtio-srf' {
 
 		connect(config?: Srf.SrfConfig): Promise<void>;
 
-		disconnect(): void;
+		disconnect(session?: unknown): void;
 
 		use(callback: (req: Srf.SrfRequest, res: Srf.SrfResponse, next: Function) => void): void;
 
@@ -247,7 +247,7 @@ declare module 'drachtio-srf' {
 
 		on(event: 'connect', listener: (err: Error, hostPort: string) => void): this;
 
-		on(event: 'error', listener: (err: Error) => void): this;
+		on(event: 'error', listener: (err: Error, session?: unknown) => void): this;
 
 		on(event: 'disconnect', listener: () => void): this;
 

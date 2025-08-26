@@ -4,7 +4,7 @@ import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
 import { MediaCallDirector } from './CallDirector';
-import type { IMediaCallServer, MediaCallServerEvents } from '../definition/IMediaCallServer';
+import type { IMediaCallServer, IMediaCallServerSettings, MediaCallServerEvents } from '../definition/IMediaCallServer';
 import type { InternalCallParams } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
 import { GlobalSignalProcessor } from '../internal/SignalProcessor';
@@ -82,6 +82,10 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public scheduleExpirationCheck(): void {
 		return MediaCallDirector.scheduleExpirationCheck();
+	}
+
+	public configure(settings: IMediaCallServerSettings): void {
+		this.session.configure(settings);
 	}
 
 	private debugError(msg: string, debugInfo: Record<string, unknown>, errorInfo?: Record<string, unknown>): void {

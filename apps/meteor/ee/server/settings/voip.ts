@@ -17,53 +17,106 @@ export function addSettings(): Promise<void> {
 					alert: 'VoIP_TeamCollab_Beta_Alert',
 				});
 
-				await this.add('VoIP_TeamCollab_FreeSwitch_Host', '', {
-					type: 'string',
-					public: true,
-					invalidValue: '',
-					enableQuery,
+				await this.section('VoIP_TeamCollab_WebRTC', async function () {
+					await this.add('VoIP_TeamCollab_Ice_Servers', 'stun:stun.l.google.com:19302', {
+						type: 'string',
+						public: true,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000, {
+						type: 'int',
+						public: true,
+						invalidValue: 5000,
+						enableQuery,
+					});
 				});
 
-				await this.add('VoIP_TeamCollab_FreeSwitch_Port', 8021, {
-					type: 'int',
-					public: true,
-					invalidValue: 8021,
-					enableQuery,
+				await this.section('VoIP_TeamCollab_SIP_Integration', async function () {
+					await this.add('VoIP_TeamCollab_SIP_Integration_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+					});
+
+					await this.add('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+					});
+
+					await this.add('VoIP_TeamCollab_Drachtio_Host', '', {
+						type: 'string',
+						public: true,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_Drachtio_Port', 9022, {
+						type: 'int',
+						public: true,
+						invalidValue: 9022,
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_Drachtio_Password', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_SIP_Server_Host', '', {
+						type: 'string',
+						public: true,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_SIP_Server_Port', 5080, {
+						type: 'int',
+						public: true,
+						invalidValue: 5080,
+						enableQuery,
+					});
 				});
 
-				await this.add('VoIP_TeamCollab_FreeSwitch_Password', '', {
-					type: 'password',
-					secret: true,
-					invalidValue: '',
-					enableQuery,
-				});
+				await this.section('VoIP_TeamCollab_FreeSwitch', async function () {
+					await this.add('VoIP_TeamCollab_FreeSwitch_Host', '', {
+						type: 'string',
+						public: true,
+						invalidValue: '',
+						enableQuery,
+					});
 
-				await this.add('VoIP_TeamCollab_FreeSwitch_Timeout', 3000, {
-					type: 'int',
-					public: true,
-					invalidValue: 3000,
-					enableQuery,
-				});
+					await this.add('VoIP_TeamCollab_FreeSwitch_Port', 8021, {
+						type: 'int',
+						public: true,
+						invalidValue: 8021,
+						enableQuery,
+					});
 
-				await this.add('VoIP_TeamCollab_FreeSwitch_WebSocket_Path', '', {
-					type: 'string',
-					public: true,
-					invalidValue: '',
-					enableQuery,
-				});
+					await this.add('VoIP_TeamCollab_FreeSwitch_Password', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						enableQuery,
+					});
 
-				await this.add('VoIP_TeamCollab_Ice_Servers', 'stun:stun.l.google.com:19302', {
-					type: 'string',
-					public: true,
-					invalidValue: '',
-					enableQuery,
-				});
+					await this.add('VoIP_TeamCollab_FreeSwitch_Timeout', 3000, {
+						type: 'int',
+						public: true,
+						invalidValue: 3000,
+						enableQuery,
+					});
 
-				await this.add('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000, {
-					type: 'int',
-					public: true,
-					invalidValue: 5000,
-					enableQuery,
+					await this.add('VoIP_TeamCollab_FreeSwitch_WebSocket_Path', '', {
+						type: 'string',
+						public: true,
+						invalidValue: '',
+						enableQuery,
+					});
 				});
 			},
 		);

@@ -1,9 +1,11 @@
 import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { callServer } from '@rocket.chat/media-calls';
+import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
+
+import { settings } from '../../../app/settings/server';
 
 const logger = new Logger('media-call service');
 
@@ -15,6 +17,14 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
 		callServer.emitter.on('callUpdated', (callId) => api.broadcast('media-call.updated', callId));
 		this.onEvent('media-call.updated', (callId) => callServer.receiveCallUpdate(callId));
+
+		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
+			if (setting._id.startsWith('VoIP_TeamCollab_')) {
+				setImmediate(() => this.configureMediaCallServer());
+			}
+		});
+
+		this.configureMediaCallServer();
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
@@ -50,6 +60,36 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
 		void api.broadcast('user.media-signal', { userId: toUid, signal });
+	}
+
+	private configureMediaCallServer(): void {
+		callServer.configure(this.getMediaServerSettings());
+	}
+
+	private getMediaServerSettings(): IMediaCallServerSettings {
+		const enabled = settings.get<boolean>('VoIP_TeamCollab_Enabled') ?? false;
+		const sipEnabled = enabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false);
+		const forceSip = sipEnabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls') ?? false);
+
+		return {
+			enabled,
+			internalCalls: {
+				requireExtensions: forceSip,
+				routeExternally: forceSip ? 'always' : 'never',
+			},
+			sip: {
+				enabled: sipEnabled,
+				drachtio: {
+					host: settings.get<string>('VoIP_TeamCollab_Drachtio_Host') ?? '',
+					port: settings.get<number>('VoIP_TeamCollab_Drachtio_Port') ?? 9022,
+					secret: settings.get<string>('VoIP_TeamCollab_Drachtio_Password') ?? '',
+				},
+				sipServer: {
+					host: settings.get<string>('VoIP_TeamCollab_SIP_Server_Host') ?? '',
+					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5080,
+				},
+			},
+		};
 	}
 
 	private async deserializeClientSignal(serialized: string): Promise<ClientMediaSignal> {
