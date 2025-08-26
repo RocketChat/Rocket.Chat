@@ -74,7 +74,7 @@ export async function saveGuest(
 	return ret;
 }
 
-async function removeGuest({ _id }: { _id: string }) {
+export async function removeGuest({ _id }: { _id: string }) {
 	await cleanGuestHistory(_id);
 	return LivechatVisitors.disableById(_id);
 }
