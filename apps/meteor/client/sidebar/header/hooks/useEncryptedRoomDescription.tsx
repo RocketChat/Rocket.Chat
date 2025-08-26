@@ -5,16 +5,12 @@ export const useEncryptedRoomDescription = (roomType: 'channel' | 'team') => {
 	const { t } = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 
-	return ({ isPrivate, broadcast, encrypted }: { isPrivate: boolean; broadcast?: boolean; encrypted: boolean }) => {
+	return ({ isPrivate, encrypted }: { isPrivate: boolean; encrypted: boolean }) => {
 		if (!e2eEnabled) {
 			return t('Not_available_for_this_workspace');
 		}
 		if (!isPrivate) {
 			return t('Encrypted_not_available', { roomType });
-		}
-		// TODO: This case will be removed once we enable E2E for broadcast teams in teams creation modal
-		if (broadcast !== undefined && broadcast) {
-			return t('Not_available_for_broadcast', { roomType });
 		}
 		if (encrypted) {
 			return t('Encrypted_messages', { roomType });
