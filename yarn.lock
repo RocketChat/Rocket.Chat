@@ -8355,14 +8355,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/omni-core-ee@workspace:ee/packages/omni-core-ee"
   dependencies:
+    "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/omni-core": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
+    mem: "npm:^8.1.1"
+    mongodb: "npm:6.10.0"
     typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
@@ -8380,6 +8384,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
+    mongodb: "npm:6.10.0"
     typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft

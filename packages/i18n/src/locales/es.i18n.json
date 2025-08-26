@@ -699,6 +699,8 @@
   "Caller_Id": "ID de llamador",
   "Calling": "Llamando",
   "Calls_in_queue": {
+    "one": "{{calls}} llamada en cola",
+    "many": "{{calls}} llamadas en cola",
     "other": "{{calls}} llamadas en cola"
   },
   "Cancel": "Cancelar",

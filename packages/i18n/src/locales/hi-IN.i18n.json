@@ -826,6 +826,7 @@
   "Calling": "कॉलिंग",
   "Calls": "कॉल",
   "Calls_in_queue": {
+    "one": "कतार में {{calls}} कॉल करें",
     "other": "{{calls}} कतार में कॉल करें"
   },
   "Cam_off": "कैम बंद",
