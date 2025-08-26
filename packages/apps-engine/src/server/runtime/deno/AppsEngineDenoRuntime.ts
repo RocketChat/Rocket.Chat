@@ -17,6 +17,7 @@ import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
+import type { IRuntimeController } from '../IRuntimeController';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -81,13 +82,9 @@ export function getDenoWrapperPath(): string {
 	}
 }
 
-export type DenoRuntimeOptions = {
-	timeout: number;
-};
-
 type AbortFunction = (reason?: any) => void;
 
-export class DenoRuntimeSubprocessController extends EventEmitter {
+export class DenoRuntimeSubprocessController extends EventEmitter implements IRuntimeController {
 	private deno: child_process.ChildProcess | undefined;
 
 	private state: 'uninitialized' | 'ready' | 'invalid' | 'restarting' | 'unknown' | 'stopped';
