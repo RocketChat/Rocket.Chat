@@ -284,35 +284,6 @@ const LivechatVisitorTokenRoomSchema = {
 
 export const isLivechatVisitorTokenRoomProps = ajv.compile<LivechatVisitorTokenRoom>(LivechatVisitorTokenRoomSchema);
 
-type LivechatVisitorCallStatus = {
-	token: string;
-	callStatus: string;
-	rid: string;
-	callId: string;
-};
-
-const LivechatVisitorCallStatusSchema = {
-	type: 'object',
-	properties: {
-		token: {
-			type: 'string',
-		},
-		callStatus: {
-			type: 'string',
-		},
-		rid: {
-			type: 'string',
-		},
-		callId: {
-			type: 'string',
-		},
-	},
-	required: ['token', 'callStatus', 'rid', 'callId'],
-	additionalProperties: false,
-};
-
-export const isLivechatVisitorCallStatusProps = ajv.compile<LivechatVisitorCallStatus>(LivechatVisitorCallStatusSchema);
-
 type LivechatVisitorStatus = {
 	token: string;
 	status: string;

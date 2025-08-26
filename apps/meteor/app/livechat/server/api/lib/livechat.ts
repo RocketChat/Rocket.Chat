@@ -79,7 +79,6 @@ export async function findOpenRoom(token: string, departmentId?: string, callerI
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,
-			callStatus: 1,
 		},
 	};
 

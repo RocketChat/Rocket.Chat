@@ -929,35 +929,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne({ _id: roomId, t: type }, options);
 	}
 
-	setCallStatus(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = {
-			_id,
-		};
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				callStatus: status,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	setCallStatusAndCallStartTime(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = {
-			_id,
-		};
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				callStatus: status,
-				webRtcCallStartTime: new Date(),
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	setReactionsInLastMessage(roomId: IRoom['_id'], reactions: IMessage['reactions']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': reactions } });
 	}
