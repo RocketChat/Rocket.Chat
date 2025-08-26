@@ -7,14 +7,16 @@ import { useTranslation } from 'react-i18next';
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
-import { useVoipItemsSection } from './useVoipItemsSection';
+// import { useVoipItemsSection } from './useVoipItemsSection';
+import { useMediaCallAction } from '../../../NavBarV2/NavBarVoipGroup/hooks/useMediaCallAction';
 
 export const useUserMenu = (user: IUser) => {
 	const { t } = useTranslation();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
-	const voipItemsSection = useVoipItemsSection();
+	// const voipItemsSection = useVoipItemsSection();
+	const mediaCallAction = useMediaCallAction();
 
 	const logout = useLogout();
 	const handleLogout = useEffectEvent(() => {
@@ -28,6 +30,13 @@ export const useUserMenu = (user: IUser) => {
 		onClick: handleLogout,
 	};
 
+	const mediaCallItem: GenericMenuItemProps = {
+		id: 'media-call',
+		icon: 'phone',
+		content: t('Voice_call'),
+		onClick: mediaCallAction.action,
+	};
+
 	return [
 		{
 			title: <UserMenuHeader user={user} />,
@@ -37,7 +46,9 @@ export const useUserMenu = (user: IUser) => {
 			title: t('Status'),
 			items: statusItems,
 		},
-		voipItemsSection,
+		{
+			items: [mediaCallItem],
+		},
 		{
 			title: t('Account'),
 			items: accountItems,
