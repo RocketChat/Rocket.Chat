@@ -7,14 +7,12 @@ import {
 	ajv,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
-	validateForbiddenErrorResponse,
 	isDmFileProps,
 	isDmMemberProps,
 	isDmMessagesProps,
 	isDmCreateProps,
 	isDmHistoryProps,
 } from '@rocket.chat/rest-typings';
-import type { ForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
@@ -103,6 +101,17 @@ type DmDeleteProps =
 
 type DmCloseProps = {
 	roomId: string;
+	userId: string;
+};
+
+const DmClosePropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		userId: { type: 'string' },
+	},
+	required: ['roomId', 'userId'],
+	additionalProperties: false,
 };
 
 const isDmDeleteProps = ajv.compile<DmDeleteProps>({
@@ -129,17 +138,6 @@ const isDmDeleteProps = ajv.compile<DmDeleteProps>({
 		},
 	],
 });
-
-const DmClosePropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
 
 const isDmCloseProps = ajv.compile<DmCloseProps>(DmClosePropsSchema);
 
@@ -169,7 +167,21 @@ const dmCloseEndpointsProps = {
 	response: {
 		400: validateBadRequestErrorResponse,
 		401: validateUnauthorizedErrorResponse,
-		403: validateForbiddenErrorResponse,
+		// TODO: The 403 Forbidden response is not handled as well as 400 responses.
+		//       Currently using `never` as a placeholder type. Replace it with the correct
+		//       schema once proper 403 error handling is implemented.
+		403: ajv.compile<never>({
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', enum: [false] },
+				status: { type: 'string' },
+				message: { type: 'string' },
+				error: { type: 'string' },
+				errorType: { type: 'string' },
+			},
+			required: ['success'],
+			additionalProperties: false,
+		}),
 		200: ajv.compile<void>({
 			type: 'object',
 			properties: {
@@ -216,7 +228,7 @@ const dmCloseAction = <Path extends string>(_path: Path): TypedAction<typeof dmC
 		} else {
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.forbidden<ForbiddenErrorResponse>();
+				return API.v1.forbidden();
 			}
 
 			const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
