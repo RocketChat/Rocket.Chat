@@ -13,7 +13,7 @@ export const useEncryptedRoomDescription = (roomType: 'channel' | 'team') => {
 			return t('Encrypted_not_available', { roomType: t(roomType) });
 		}
 		if (encrypted) {
-			return t('Encrypted_messages', { roomType });
+			return t('Encrypted_messages', { roomType: t(roomType) });
 		}
 		return t('Encrypted_messages_false');
 	};
