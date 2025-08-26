@@ -40,7 +40,6 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
 		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
 		"build": "rm -rf dist && tsc && yarn run copy-svg",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
