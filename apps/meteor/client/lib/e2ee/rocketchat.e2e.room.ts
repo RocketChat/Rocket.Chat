@@ -11,20 +11,26 @@ import {
 	joinVectorAndEcryptedData,
 	splitVectorAndEcryptedData,
 	encryptRSA,
-	encryptAES,
+	encryptAesCbc,
+	encryptAesGcm,
+	decryptAesGcm,
 	decryptRSA,
-	decryptAES,
-	generateAESKey,
+	decryptAesCbc,
 	exportJWKKey,
-	importAESKey,
+	importAesCbcKey,
 	importRSAKey,
 	readFileAsArrayBuffer,
 	encryptAESCTR,
 	generateAESCTRKey,
 	sha256HashFromArrayBuffer,
 	createSha256HashFromText,
+	generateAesGcmKey,
+	// generateAesCbcKey,
+	importAesGcmKey,
+	isJsonWebKey,
+	isAesCbc,
+	isAesGcm,
 } from './helper';
-import { log, logError } from './logger';
 import { e2e } from './rocketchat.e2e';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
@@ -114,11 +120,11 @@ export class E2ERoom extends Emitter {
 	}
 
 	log(...msg: unknown[]) {
-		log(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
+		e2e.log(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
 	}
 
 	error(...msg: unknown[]) {
-		logError(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
+		e2e.error(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
 	}
 
 	hasSessionKey() {
@@ -218,21 +224,21 @@ export class E2ERoom extends Emitter {
 		const subscription = Subscriptions.state.find((record) => record.rid === this.roomId);
 
 		if (subscription?.lastMessage?.t !== 'e2e') {
-			this.log('decryptSubscriptions nothing to do');
+			e2e.log('decryptSubscriptions nothing to do');
 			return;
 		}
 
 		const message = await this.decryptMessage(subscription.lastMessage);
 
 		if (message !== subscription.lastMessage) {
-			this.log('decryptSubscriptions updating lastMessage');
+			e2e.log('decryptSubscriptions updating lastMessage');
 			Subscriptions.state.store({
 				...subscription,
 				lastMessage: message,
 			});
 		}
 
-		this.log('decryptSubscriptions Done');
+		e2e.log('decryptSubscriptions Done');
 	}
 
 	async decryptOldRoomKeys() {
@@ -348,7 +354,17 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSessionKey(key: string) {
-		return importAESKey(JSON.parse(await this.exportSessionKey(key)));
+		const jwk = JSON.parse(await this.exportSessionKey(key));
+		try {
+			return await importAesGcmKey(jwk);
+		} catch (error) {
+			this.error(error);
+			try {
+				return await importAesCbcKey(jwk);
+			} catch (error) {
+				throw new Error('Failed to import session key', { cause: error });
+			}
+		}
 	}
 
 	async exportSessionKey(key: string) {
@@ -388,21 +404,44 @@ export class E2ERoom extends Emitter {
 			this.keyID = this.roomKeyId || (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);
 		}
 
-		// Import session key for use.
-		try {
-			const key = await importAESKey(JSON.parse(this.sessionKeyExportedString!));
-			// Key has been obtained. E2E is now in session.
-			this.groupSessionKey = key;
-		} catch (error) {
-			this.error('Error importing group key: ', error);
-			return false;
+		const jwk = (() => {
+			try {
+				const data: unknown = JSON.parse(this.sessionKeyExportedString);
+				if (isJsonWebKey(data)) {
+					return data;
+				}
+				throw new TypeError(`Invalid JWK: ${JSON.stringify(data)}`);
+			} catch (error) {
+				this.error('Error parsing JWK: ', error);
+				throw new Error('Failed to parse JWK');
+			}
+		})();
+
+		if (isAesCbc(jwk)) {
+			try {
+				const key = await importAesCbcKey(jwk);
+				this.groupSessionKey = key;
+				return true;
+			} catch (error) {
+				this.error('Error importing AES-CBC key: ', error);
+				return false;
+			}
 		}
 
-		return true;
+		if (isAesGcm(jwk)) {
+			try {
+				const key = await importAesGcmKey(jwk);
+				this.groupSessionKey = key;
+				return true;
+			} catch (error) {
+				this.error('Error importing AES-GCM key: ', error);
+				return false;
+			}
+		}
 	}
 
 	async createNewGroupKey() {
-		this.groupSessionKey = await generateAESKey();
+		this.groupSessionKey = await generateAesGcmKey();
 
 		const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
 		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
@@ -603,8 +642,22 @@ export class E2ERoom extends Emitter {
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
-			const result = await encryptAES(vector, this.groupSessionKey, data);
-			return this.keyID + Base64.encode(joinVectorAndEcryptedData(vector, result));
+
+			const algo = this.groupSessionKey.algorithm;
+
+			switch (algo.name) {
+				case 'AES-GCM': {
+					const result = await encryptAesGcm(vector, this.groupSessionKey, data);
+					return this.keyID + Base64.encode(joinVectorAndEcryptedData(vector, result));
+				}
+				case 'AES-CBC': {
+					const result = await encryptAesCbc(vector, this.groupSessionKey, data);
+					return this.keyID + Base64.encode(joinVectorAndEcryptedData(vector, result));
+				}
+				default: {
+					throw new Error(`Unsupported encryption algorithm: ${algo}`);
+				}
+			}
 		} catch (error) {
 			this.error('Error encrypting message: ', error);
 			throw error;
@@ -695,7 +748,11 @@ export class E2ERoom extends Emitter {
 	}
 
 	async doDecrypt(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, cipherText: Uint8Array<ArrayBuffer>) {
-		const result = await decryptAES(vector, key, cipherText);
+		if (key.algorithm.name === 'AES-GCM') {
+			const result = await decryptAesGcm(vector, key, cipherText);
+			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
+		}
+		const result = await decryptAesCbc(vector, key, cipherText);
 		return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 	}
 

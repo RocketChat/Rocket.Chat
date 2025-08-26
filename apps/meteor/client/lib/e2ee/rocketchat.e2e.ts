@@ -12,7 +12,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { E2EEState } from './E2EEState';
-import { log, logError } from './logger';
+// import { log, logError, logWarning } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { settings } from '../../../app/settings/client';
 import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
@@ -34,7 +34,39 @@ let failedToDecodeKey = false;
 
 const ROOM_KEY_EXCHANGE_SIZE = 10;
 
-//
+class Logger {
+	constructor(private level: 0 | 1 | 2 | 3 | 4) {}
+
+	log(...data: unknown[]) {
+		if (this.level <= 0) {
+			console.log('E2E', ...data);
+		}
+	}
+
+	info(...data: unknown[]) {
+		if (this.level <= 1) {
+			console.info('E2E', ...data);
+		}
+	}
+
+	warn(...data: unknown[]) {
+		if (this.level <= 2) {
+			console.warn('E2E', ...data);
+		}
+	}
+
+	error(...data: unknown[]) {
+		if (this.level <= 3) {
+			console.error('E2E', ...data);
+		}
+	}
+
+	debug(...data: unknown[]) {
+		if (this.level <= 4) {
+			console.debug('E2E', ...data);
+		}
+	}
+}
 
 class E2E extends Emitter<{
 	READY: void;
@@ -64,11 +96,14 @@ class E2E extends Emitter<{
 
 	private e2ee: E2EE;
 
+	private logger: Logger;
+
 	constructor() {
 		super();
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
+		this.logger = new Logger(3);
 		this.e2ee = E2EE.withLocalStorage(
 			{
 				userId: () => Promise.resolve(Meteor.userId()),
@@ -110,11 +145,15 @@ class E2E extends Emitter<{
 	}
 
 	log(...msg: unknown[]) {
-		log('E2E', ...msg);
+		this.logger.log('E2E', ...msg);
 	}
 
 	error(...msg: unknown[]) {
-		logError('E2E', ...msg);
+		this.logger.error('E2E', ...msg);
+	}
+
+	warn(...msg: unknown[]) {
+		this.logger.warn('E2E', ...msg);
 	}
 
 	getState() {
@@ -160,7 +199,7 @@ class E2E extends Emitter<{
 				await this.acceptSuggestedKey(sub.rid);
 				e2eRoom.keyReceived();
 			} else {
-				console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+				this.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
 				await this.rejectSuggestedKey(sub.rid);
 			}
 		}

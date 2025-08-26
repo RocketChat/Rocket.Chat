@@ -1,5 +1,42 @@
 import ByteBuffer from 'bytebuffer';
 
+export const isJsonWebKey = (data: unknown): data is JsonWebKey => {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const obj = data as Record<string, unknown>;
+	if (typeof obj.kty !== 'string') {
+		return false;
+	}
+
+	switch (obj.kty) {
+		case 'oct': {
+			// Symmetric key: must have "k"
+			return typeof obj.k === 'string';
+		}
+		case 'RSA': {
+			// RSA public/private key: must have "n" and "e"
+			return typeof obj.n === 'string' && typeof obj.e === 'string';
+		}
+		case 'EC': {
+			// EC public/private key: must have "crv", "x", "y"
+			return typeof obj.crv === 'string' && typeof obj.x === 'string' && typeof obj.y === 'string';
+		}
+		case 'OKP': {
+			// OKP (e.g., Ed25519): must have "crv" and "x"
+			return typeof obj.crv === 'string' && typeof obj.x === 'string';
+		}
+		default:
+			return false;
+	}
+};
+
+export const isAesGcm = (jwk: JsonWebKey): jwk is Omit<JsonWebKey, 'kty' | 'alg'> & { kty: 'oct'; alg: 'A256GCM' } =>
+	jwk.kty === 'oct' && jwk.alg === 'A256GCM';
+export const isAesCbc = (jwk: JsonWebKey): jwk is Omit<JsonWebKey, 'kty' | 'alg'> & { kty: 'oct'; alg: 'A128CBC' } =>
+	jwk.kty === 'oct' && jwk.alg === 'A128CBC';
+
 export function toString(thing: any) {
 	if (typeof thing === 'string') {
 		return thing;
@@ -44,8 +81,16 @@ export async function encryptRSA(key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
-export async function encryptAES(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
+export async function encryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
 	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
+}
+
+export async function encryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey, data: BufferSource) {
+	return crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+}
+
+export async function decryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
+	return crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
 }
 
 export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data: BufferSource) {
@@ -56,12 +101,20 @@ export async function decryptRSA(key: CryptoKey, data: Uint8Array<ArrayBuffer>) 
 	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
-export async function decryptAES(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
+export async function decryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
 	return crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
-export async function generateAESKey() {
+/**
+ * Generates a new AES-CBC key.
+ * @deprecated Use {@link generateAesGcmKey} instead.
+ */
+export async function generateAesCbcKey() {
 	return crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
+}
+
+export async function generateAesGcmKey() {
+	return crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
 }
 
 export async function generateAESCTRKey() {
@@ -100,8 +153,19 @@ export async function importRSAKey(keyData: JsonWebKey, keyUsages: ReadonlyArray
 	);
 }
 
-export async function importAESKey(keyData: any, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
+/**
+ * Imports an AES-CBC key from JWK format.
+ * @deprecated Use {@link importAesGcmKey} instead.
+ */
+export async function importAesCbcKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
 	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC' }, true, keyUsages);
+}
+
+/**
+ * Imports an AES-GCM key from JWK format.
+ */
+export async function importAesGcmKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
+	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-GCM' }, true, keyUsages);
 }
 
 export async function importRawKey(keyData: BufferSource, keyUsages: ReadonlyArray<KeyUsage> = ['deriveKey']) {

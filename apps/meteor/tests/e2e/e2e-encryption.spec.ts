@@ -446,8 +446,6 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.dismissToast();
 
-		// TODO: Fix the kebab menu disappearing flakiness
-		await expect(page.getByRole('button', { name: 'Send' })).toBeVisible();
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
@@ -943,7 +941,7 @@ test.describe.fixme('e2ee room setup', () => {
 		await poAccountProfile.securityE2EEncryptionSection.click();
 		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
-		await page.waitForURL('/home');
+		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin);
@@ -1162,7 +1160,7 @@ test.describe('e2ee support legacy formats', () => {
 			},
 		});
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Old format message', { timeout: 10000 });
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Old format message');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 });
