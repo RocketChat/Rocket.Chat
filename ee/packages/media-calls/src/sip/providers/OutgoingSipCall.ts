@@ -2,12 +2,12 @@ import type { IMediaCall, IMediaCallChannel, MediaCallSignedActor } from '@rocke
 import { MediaCalls } from '@rocket.chat/models';
 
 import { BaseSipCall } from './BaseSipCall';
-import type { SipServerSession } from './Session';
-import { SipError, SipErrorCodes } from './errorCodes';
-import type { InternalCallParams } from '../../../InternalCallProvider';
-import { MediaCallDirector } from '../../../global/CallDirector';
-import { SipActorAgent } from '../BaseSipAgent';
-import type { SipActorCalleeAgent } from '../CalleeAgent';
+import type { InternalCallParams } from '../../definition/common';
+import { MediaCallDirector } from '../../server/CallDirector';
+import type { SipServerSession } from '../Session';
+import { SipActorAgent } from '../agents/BaseSipAgent';
+import type { SipActorCalleeAgent } from '../agents/CalleeAgent';
+import { SipError, SipErrorCodes } from '../errorCodes';
 
 export class OutgoingSipCall extends BaseSipCall {
 	constructor(

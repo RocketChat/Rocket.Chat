@@ -2,7 +2,7 @@ import type { IMediaCall, IMediaCallChannel, MediaCallContact } from '@rocket.ch
 import type { ClientMediaSignal } from '@rocket.chat/media-signaling';
 import { MediaCallChannels } from '@rocket.chat/models';
 
-import { UserActorAgent } from './BaseAgent';
+import { UserActorAgent } from './BaseUserAgent';
 import { UserActorCalleeSignalProcessor } from './CalleeSignalProcessor';
 
 export class UserActorCalleeAgent extends UserActorAgent {

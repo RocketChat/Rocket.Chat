@@ -1,4 +1,5 @@
-import type { IUser, MediaCallActorType } from '@rocket.chat/core-typings';
+import type { IUser, MediaCallActor, MediaCallActorType, MediaCallSignedActor } from '@rocket.chat/core-typings';
+import type { CallService } from '@rocket.chat/media-signaling';
 
 export type AgentContractState = 'proposed' | 'signed' | 'ignored';
 
@@ -13,4 +14,11 @@ export type SipUserData = {
 export type GetActorContactOptions = {
 	requiredType?: MediaCallActorType;
 	preferredType?: MediaCallActorType;
+};
+
+export type InternalCallParams = {
+	caller: MediaCallSignedActor;
+	callee: MediaCallActor;
+	requestedCallId?: string;
+	requestedService?: CallService;
 };

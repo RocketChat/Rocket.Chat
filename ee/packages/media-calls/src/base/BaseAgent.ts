@@ -10,8 +10,8 @@ import type { CallContact, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallChannels } from '@rocket.chat/models';
 
+import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import { logger } from '../logger';
-import type { IMediaCallAgent } from './definition/IMediaCallAgent';
 
 export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 	public readonly actorType: MediaCallActorType;

@@ -1,8 +1,8 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
 
-import { gateway } from '../../global/SignalGateway';
+import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
-import { BaseMediaCallAgent } from '../BaseAgent';
+import { getMediaCallServer } from '../../server/injection';
 
 /**
  * This agent is used as a placeholder when a real agent can only exist in one specific server instance
@@ -50,6 +50,6 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 	}
 
 	protected reportCallUpdated(callId: string): void {
-		gateway.emitter.emit('callUpdated', callId);
+		getMediaCallServer().reportCallUpdate(callId);
 	}
 }

@@ -3,13 +3,13 @@ import { MediaCalls } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
 
-import type { BaseSipCall } from './BaseSipCall';
-import { IncomingSipCall } from './IncomingSipCall';
-import { OutgoingSipCall } from './OutgoingSipCall';
 import { SipError } from './errorCodes';
-import type { InternalCallParams } from '../../../InternalCallProvider';
-import { MediaCallDirector } from '../../../global/CallDirector';
-import { logger } from '../../../logger';
+import { logger } from '../logger';
+import type { BaseSipCall } from './providers/BaseSipCall';
+import { OutgoingSipCall } from './providers/OutgoingSipCall';
+import { MediaCallDirector } from '../server/CallDirector';
+import { IncomingSipCall } from './providers/IncomingSipCall';
+import type { InternalCallParams } from '../definition/common';
 
 export class SipServerSession {
 	private readonly _sessionId: string;

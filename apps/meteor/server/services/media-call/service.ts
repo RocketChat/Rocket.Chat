@@ -1,7 +1,7 @@
 import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { gateway, MediaCallDirector } from '@rocket.chat/media-calls';
+import { callServer } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
@@ -12,15 +12,15 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	constructor() {
 		super();
-		gateway.setSignalHandler(this.sendSignal.bind(this));
-		gateway.emitter.on('callUpdated', (callId) => api.broadcast('media-call.updated', callId));
-		this.onEvent('media-call.updated', (callId) => gateway.reactToCallUpdate(callId));
+		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
+		callServer.emitter.on('callUpdated', (callId) => api.broadcast('media-call.updated', callId));
+		this.onEvent('media-call.updated', (callId) => callServer.receiveCallUpdate(callId));
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		try {
 			logger.debug({ msg: 'new client signal', signal, uid });
-			gateway.receiveSignal(uid, signal);
+			callServer.receiveSignal(uid, signal);
 		} catch (error) {
 			logger.error({ msg: 'failed to process client signal', error, signal, uid });
 		}
@@ -32,19 +32,19 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 			const deserialized = await this.deserializeClientSignal(signal);
 
-			gateway.receiveSignal(uid, deserialized);
+			callServer.receiveSignal(uid, deserialized);
 		} catch (error) {
 			logger.error({ msg: 'failed to process client signal', error, signal, uid });
 		}
 	}
 
 	public async hangupExpiredCalls(): Promise<void> {
-		await MediaCallDirector.hangupExpiredCalls().catch((error) => {
-			logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error });
+		await callServer.hangupExpiredCalls().catch((error) => {
+			logger.error({ msg: 'Media Call Server failed to hangup expired calls', error });
 		});
 
 		if (await MediaCalls.hasUnfinishedCalls()) {
-			MediaCallDirector.scheduleExpirationCheck();
+			callServer.scheduleExpirationCheck();
 		}
 	}
 

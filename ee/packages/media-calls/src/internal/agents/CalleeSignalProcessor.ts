@@ -1,8 +1,8 @@
 import { MediaCallChannels, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './BaseSignalProcessor';
-import { MediaCallDirector } from '../../global/CallDirector';
 import { logger } from '../../logger';
+import { MediaCallDirector } from '../../server/CallDirector';
 
 export class UserActorCalleeSignalProcessor extends UserActorSignalProcessor {
 	protected async clientIsReachable(): Promise<void> {

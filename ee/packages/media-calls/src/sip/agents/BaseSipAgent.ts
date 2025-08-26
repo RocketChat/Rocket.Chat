@@ -1,8 +1,8 @@
 import type { IMediaCall, MediaCallSignedActor } from '@rocket.chat/core-typings';
 
-import { gateway } from '../../global/SignalGateway';
+import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
-import { BaseMediaCallAgent } from '../BaseAgent';
+import { getMediaCallServer } from '../../server/injection';
 
 export abstract class SipActorAgent extends BaseMediaCallAgent {
 	public setLocalDescription(localDescription: RTCSessionDescriptionInit): void {
@@ -35,7 +35,7 @@ export abstract class SipActorAgent extends BaseMediaCallAgent {
 
 	public async onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void> {
 		await super.onRemoteDescriptionChanged(callId, description);
-		gateway.emitter.emit('callUpdated', callId);
+		getMediaCallServer().reportCallUpdate(callId);
 	}
 
 	public async onWebrtcAnswer(callId: string): Promise<void> {

@@ -2,9 +2,9 @@ import type { AtLeast, IMediaCall, MediaCallActor, MediaCallSignedActor, ServerA
 import type { CallHangupReason, CallService } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
-import type { IMediaCallAgent } from '../agents/definition/IMediaCallAgent';
-import type { IMediaCallCastDirector } from '../agents/definition/IMediaCallCastDirector';
-import { getCastDirector } from '../agents/definition/IMediaCallCastDirector';
+import { getCastDirector } from './injection';
+import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
+import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import { logger } from '../logger';
 
 const EXPIRATION_TIME = 120000;

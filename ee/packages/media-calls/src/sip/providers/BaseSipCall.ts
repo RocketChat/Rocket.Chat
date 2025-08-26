@@ -1,9 +1,9 @@
 import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
 import { MediaCallChannels, MediaCalls } from '@rocket.chat/models';
 
-import type { SipServerSession } from './Session';
-import { BaseCallProvider } from '../../../BaseCallProvider';
-import type { SipActorAgent } from '../BaseSipAgent';
+import { BaseCallProvider } from '../../base/BaseCallProvider';
+import type { SipServerSession } from '../Session';
+import type { SipActorAgent } from '../agents/BaseSipAgent';
 
 export abstract class BaseSipCall extends BaseCallProvider {
 	protected lastCallState: IMediaCall['state'];

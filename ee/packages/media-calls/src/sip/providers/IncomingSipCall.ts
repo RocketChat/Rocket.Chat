@@ -10,12 +10,12 @@ import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
-import type { SipServerSession } from './Session';
-import { SipError, SipErrorCodes } from './errorCodes';
-import { MediaCallDirector } from '../../../global/CallDirector';
-import { logger } from '../../../logger';
-import { SipActorAgent } from '../BaseSipAgent';
-import type { SipActorCallerAgent } from '../CallerAgent';
+import { logger } from '../../logger';
+import { MediaCallDirector } from '../../server/CallDirector';
+import type { SipServerSession } from '../Session';
+import { SipActorAgent } from '../agents/BaseSipAgent';
+import type { SipActorCallerAgent } from '../agents/CallerAgent';
+import { SipError, SipErrorCodes } from '../errorCodes';
 
 type IncomingCallEvents = {
 	gotRemoteDescription: void;

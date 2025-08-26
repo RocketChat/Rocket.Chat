@@ -1,9 +1,9 @@
 import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
 import type { ClientMediaSignal, ServerMediaSignal, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 
-import { gateway } from '../../global/SignalGateway';
+import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
-import { BaseMediaCallAgent } from '../BaseAgent';
+import { getMediaCallServer } from '../../server/injection';
 
 export abstract class UserActorAgent extends BaseMediaCallAgent {
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
@@ -13,7 +13,7 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async sendSignal(signal: ServerMediaSignal): Promise<void> {
-		gateway.sendSignal(this.actorId, signal);
+		getMediaCallServer().sendSignal(this.actorId, signal);
 	}
 
 	public async onCallAccepted(callId: string, signedContractId: string): Promise<void> {

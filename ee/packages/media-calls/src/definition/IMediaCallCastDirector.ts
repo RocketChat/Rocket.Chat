@@ -30,17 +30,3 @@ export interface IMediaCallCastDirector {
 
 	getAgentForActorAndRole(actor: MediaCallContact, role: CallRole): Promise<IMediaCallAgent | null>;
 }
-
-let castDirectorInstance: IMediaCallCastDirector | null = null;
-
-export function setCastDirector(director: IMediaCallCastDirector): void {
-	castDirectorInstance = director;
-}
-
-export function getCastDirector(): IMediaCallCastDirector {
-	if (!castDirectorInstance) {
-		throw new Error('cast director instance was not set.');
-	}
-
-	return castDirectorInstance;
-}

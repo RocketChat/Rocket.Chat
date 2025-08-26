@@ -1,4 +1,5 @@
 import type { IMediaCall, IUser, MediaCallActor } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import type {
 	ClientMediaSignal,
 	ClientMediaSignalRegister,
@@ -8,17 +9,24 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
+import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
-import { MediaCallDirector } from './CallDirector';
-import type { InternalCallParams } from '../InternalCallProvider';
-import { UserActorAgent } from '../agents/users/BaseAgent';
+import { MediaCallDirector } from '../server/CallDirector';
+import { UserActorAgent } from './agents/BaseUserAgent';
 
-export abstract class GlobalSignalProcessor {
-	protected abstract sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void;
+export type SignalProcessorEvents = {
+	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
+	callRequest: { fromUid: IUser['_id']; params: InternalCallParams };
+};
 
-	public abstract createCall(params: InternalCallParams): Promise<IMediaCall>;
+export class GlobalSignalProcessor {
+	public readonly emitter: Emitter<SignalProcessorEvents>;
 
-	protected async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
+	constructor() {
+		this.emitter = new Emitter();
+	}
+
+	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		logger.debug({ msg: 'GlobalSignalProcessor.processSignal', signal, uid });
 
 		switch (signal.type) {
@@ -33,6 +41,14 @@ export abstract class GlobalSignalProcessor {
 		}
 
 		logger.error({ msg: 'Unrecognized media signal', signal });
+	}
+
+	protected sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
+		this.emitter.emit('signalRequest', { toUid, signal });
+	}
+
+	protected createCall(fromUid: IUser['_id'], params: InternalCallParams): void {
+		this.emitter.emit('callRequest', { fromUid, params });
 	}
 
 	private async processCallSignal(
@@ -109,25 +125,17 @@ export abstract class GlobalSignalProcessor {
 		const services = signal.supportedServices ?? [];
 		const requestedService = services.includes('webrtc') ? 'webrtc' : services.shift();
 
-		try {
-			await this.createCall({
-				caller: {
-					...caller,
-					contractId: signal.contractId,
-				},
-				callee,
-				requestedCallId: signal.callId,
-				...(requestedService && { requestedService }),
-			});
-		} catch (e) {
-			this.sendSignal(uid, {
-				type: 'rejected-call-request',
-				callId: signal.callId,
-				toContractId: signal.contractId,
-				reason: 'unsupported',
-			});
-			throw e;
-		}
+		const params: InternalCallParams = {
+			caller: {
+				...caller,
+				contractId: signal.contractId,
+			},
+			callee,
+			requestedCallId: signal.callId,
+			...(requestedService && { requestedService }),
+		};
+
+		this.emitter.emit('callRequest', { fromUid: uid, params });
 	}
 
 	private async getExistingRequestedCall(

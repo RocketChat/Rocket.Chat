@@ -9,17 +9,17 @@ import type {
 import type { CallRole } from '@rocket.chat/media-signaling';
 import { Users } from '@rocket.chat/models';
 
-import { BroadcastActorAgent } from './BroadcastAgent';
-import { logger } from '../../logger';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
-import { setCastDirector, type IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
+import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import type { GetActorContactOptions, MinimalUserData } from '../definition/common';
-import type { SipActorAgent } from '../sip/BaseSipAgent';
-import { SipActorCalleeAgent } from '../sip/CalleeAgent';
-import { SipActorCallerAgent } from '../sip/CallerAgent';
-import type { UserActorAgent } from '../users/BaseAgent';
-import { UserActorCalleeAgent } from '../users/CalleeAgent';
-import { UserActorCallerAgent } from '../users/CallerAgent';
+import type { UserActorAgent } from '../internal/agents/BaseUserAgent';
+import { UserActorCalleeAgent } from '../internal/agents/CalleeAgent';
+import { UserActorCallerAgent } from '../internal/agents/CallerAgent';
+import { logger } from '../logger';
+import type { SipActorAgent } from '../sip/agents/BaseSipAgent';
+import { BroadcastActorAgent } from '../sip/agents/BroadcastAgent';
+import { SipActorCalleeAgent } from '../sip/agents/CalleeAgent';
+import { SipActorCallerAgent } from '../sip/agents/CallerAgent';
 
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 
@@ -214,5 +214,3 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		return preferredActor || list.user || list.sip || null;
 	}
 }
-
-setCastDirector(new MediaCallCastDirector());

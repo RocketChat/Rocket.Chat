@@ -1,12 +1,11 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallActor, MediaCallActorType } from '@rocket.chat/core-typings';
 import type { CallAnswer, CallHangupReason, CallRole, ClientMediaSignal, ClientMediaSignalLocalState, ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { MediaCallChannels } from '@rocket.chat/models';
-
-import { MediaCallDirector } from '../../global/CallDirector';
-import { gateway } from '../../global/SignalGateway';
+import { AgentContractState } from '../../definition/common';
+import { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
-import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
-import type { AgentContractState } from '../definition/common';
+import { MediaCallDirector } from '../../server/CallDirector';
+import { getMediaCallServer } from '../../server/injection';
 
 export abstract class UserActorSignalProcessor {
 	public get contractId(): string {
@@ -155,7 +154,7 @@ export abstract class UserActorSignalProcessor {
 	}
 
 	protected async sendSignal(signal: ServerMediaSignal): Promise<void> {
-		gateway.sendSignal(this.actorId, signal);
+		getMediaCallServer().sendSignal(this.actorId, signal);
 	}
 
 	protected isCallPending(): boolean {

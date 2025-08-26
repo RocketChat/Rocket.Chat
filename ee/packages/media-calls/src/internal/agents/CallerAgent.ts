@@ -2,7 +2,7 @@ import type { IMediaCall, IMediaCallChannel, MediaCallContact } from '@rocket.ch
 import type { ClientMediaSignal, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
-import { UserActorAgent } from './BaseAgent';
+import { UserActorAgent } from './BaseUserAgent';
 import { UserActorCallerSignalProcessor } from './CallerSignalProcessor';
 import { logger } from '../../logger';
 
