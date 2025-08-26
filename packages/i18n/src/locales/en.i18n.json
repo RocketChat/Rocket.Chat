@@ -5981,6 +5981,7 @@
   "delete-team_description": "Permission to delete teams",
   "delete-user": "Delete User",
   "delete-user_description": "Permission to delete users",
+  "delete-livechat-contact": "Delete Omnichannel Contact",
   "different_values_found": "{{number}} different values found",
   "disabled": "disabled",
   "discussion-created": "{{message}}",
