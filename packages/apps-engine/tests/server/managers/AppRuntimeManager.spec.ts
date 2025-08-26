@@ -4,7 +4,7 @@ import { AppStatus } from '../../../src/definition/AppStatus';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppRuntimeManager } from '../../../src/server/managers/AppRuntimeManager';
-import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
+import type { IRuntimeController } from '../../../src/server/runtime/IRuntimeController';
 import type { IAppStorageItem } from '../../../src/server/storage';
 
 export class AppRuntimeManagerTestFixture {
@@ -16,7 +16,7 @@ export class AppRuntimeManagerTestFixture {
 
 	private mockStorageItem: IAppStorageItem;
 
-	private mockSubprocessController: DenoRuntimeSubprocessController;
+	private mockSubprocessController: IRuntimeController;
 
 	@SetupFixture
 	public setupFixture() {
@@ -80,7 +80,31 @@ export class AppRuntimeManagerTestFixture {
 			getAppId() {
 				return 'test-app';
 			},
-		} as DenoRuntimeSubprocessController;
+
+			async getStatus() {
+				return Promise.resolve(AppStatus.MANUALLY_ENABLED);
+			},
+
+			async sendRequest() {
+				return Promise.resolve(true);
+			},
+
+			on: () => this.mockSubprocessController,
+			once: () => this.mockSubprocessController,
+			off: () => this.mockSubprocessController,
+			emit: () => true,
+			addListener: () => this.mockSubprocessController,
+			removeListener: () => this.mockSubprocessController,
+			removeAllListeners: () => this.mockSubprocessController,
+			setMaxListeners: () => this.mockSubprocessController,
+			getMaxListeners: () => 10,
+			listeners: () => [],
+			rawListeners: () => [],
+			listenerCount: () => 0,
+			prependListener: () => this.mockSubprocessController,
+			prependOnceListener: () => this.mockSubprocessController,
+			eventNames: () => [],
+		} as IRuntimeController;
 	}
 
 	@Setup

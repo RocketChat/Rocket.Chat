@@ -28,7 +28,7 @@ export class AppVideoConfProviderManagerTestFixture {
 	public setupFixture() {
 		this.mockBridges = new TestsAppBridges();
 
-		this.mockApp = TestData.getMockApp('testing', 'testing');
+		this.mockApp = TestData.getMockApp({ id: 'testing', name: 'testing' }, this.mockManager);
 
 		const bri = this.mockBridges;
 		const app = this.mockApp;

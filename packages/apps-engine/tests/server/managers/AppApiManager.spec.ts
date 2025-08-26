@@ -1,15 +1,12 @@
 import type { FunctionSpy, RestorableFunctionSpy } from 'alsatian';
 import { AsyncTest, Expect, Setup, SetupFixture, SpyOn, Teardown, Test } from 'alsatian';
 
-import { AppStatus } from '../../../src/definition/AppStatus';
 import { RequestMethod } from '../../../src/definition/accessors';
 import type { IApi, IApiRequest } from '../../../src/definition/api';
-import type { AppMethod } from '../../../src/definition/metadata';
 import type { AppManager } from '../../../src/server/AppManager';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import { PathAlreadyExistsError } from '../../../src/server/errors';
-import { AppConsole } from '../../../src/server/logging';
 import type {
 	AppExternalComponentManager,
 	AppSchedulerManager,
@@ -19,8 +16,6 @@ import type {
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
 import { AppApi } from '../../../src/server/managers/AppApi';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { AppsEngineRuntime } from '../../../src/server/runtime/AppsEngineRuntime';
-import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { AppLogStorage } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
 import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
@@ -43,27 +38,7 @@ export class AppApiManagerTestFixture {
 	public setupFixture() {
 		this.mockBridges = new TestsAppBridges();
 
-		this.mockApp = {
-			getRuntime() {
-				return {
-					runInSandbox: () => Promise.resolve(true),
-				} as AppsEngineRuntime;
-			},
-			getDenoRuntime() {
-				return {
-					sendRequest: () => Promise.resolve(true),
-				} as unknown as DenoRuntimeSubprocessController;
-			},
-			getID() {
-				return 'testing';
-			},
-			getStatus() {
-				return Promise.resolve(AppStatus.AUTO_ENABLED);
-			},
-			setupLogger(method: AppMethod): AppConsole {
-				return new AppConsole(method);
-			},
-		} as ProxiedApp;
+		this.mockApp = TestData.getMockApp({ id: 'testing', name: 'TestApp' }, this.mockManager);
 
 		const bri = this.mockBridges;
 		const app = this.mockApp;

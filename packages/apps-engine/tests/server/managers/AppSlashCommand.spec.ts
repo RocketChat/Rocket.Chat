@@ -1,15 +1,17 @@
 import { Expect, SetupFixture, Test } from 'alsatian';
 
 import type { ISlashCommand } from '../../../src/definition/slashcommands';
+import type { AppManager } from '../../../src/server/AppManager';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand';
+import { TestData } from '../../test-data/utilities';
 
 export class AppSlashCommandRegistrationTestFixture {
 	private mockApp: ProxiedApp;
 
 	@SetupFixture
 	public setupFixture() {
-		this.mockApp = {} as ProxiedApp;
+		this.mockApp = TestData.getMockApp({ id: 'test', name: 'TestApp' }, {} as AppManager);
 	}
 
 	@Test()
