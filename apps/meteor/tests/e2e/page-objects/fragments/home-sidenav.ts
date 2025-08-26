@@ -19,7 +19,7 @@ export class HomeSidenav {
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create channel"] >> label >> text="Encrypted"');
+		return this.page.getByRole('dialog', { name: 'Create channel' }).getByRole('checkbox', { name: 'Encrypted' });
 	}
 
 	get checkboxReadOnly(): Locator {
@@ -222,11 +222,24 @@ export class HomeSidenav {
 	async createEncryptedChannel(name: string) {
 		const toastMessages = new ToastMessages(this.page);
 
+		// Open modal and ensure it's visible before interacting
 		await this.openNewByLabel('Channel');
+		const dialog = this.page.getByRole('dialog', { name: 'Create channel' });
+		await expect(dialog).toBeVisible();
+
 		await this.inputChannelName.fill(name);
+
+		// Expand and wait for checkbox to appear before clicking
 		await this.advancedSettingsAccordion.click();
-		await this.checkboxEncryption.click();
-		await this.btnCreate.click();
+		await expect(this.checkboxEncryption).toBeVisible();
+
+		await this.page.getByRole('button', { name: 'Advanced settings' }).click();
+		await this.page
+			.locator('span')
+			.filter({ hasText: /^Encrypted$/ })
+			.locator('i')
+			.click();
+		await this.page.getByRole('button', { name: 'Create', exact: true }).click();
 
 		await toastMessages.dismissToast('success');
 	}

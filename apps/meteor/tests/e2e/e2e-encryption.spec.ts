@@ -260,6 +260,8 @@ test.describe('basic features', () => {
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
+		await expect(sidenav.btnCreateNew).toBeVisible();
+
 		await sidenav.openChat(channelName);
 		await expect(encryptedRoomPage.encryptedIcon).toBeVisible();
 
@@ -446,9 +448,9 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.dismissToast();
 
-		await poHomeChannel.tabs.kebab.click({ force: true });
+		await poHomeChannel.tabs.kebab.click();
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
-		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await poHomeChannel.tabs.btnEnableE2E.click();
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
 		await page.getByRole('button', { name: 'Enable encryption' }).click();
 		await page.waitForTimeout(1000);
@@ -591,15 +593,9 @@ test.describe.serial('e2e-encryption', () => {
 			await test.step('create an encrypted channel', async () => {
 				const channelName = faker.string.uuid();
 
-				await poHomeChannel.sidenav.openNewByLabel('Channel');
-				await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-				await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-				await poHomeChannel.sidenav.checkboxEncryption.click();
-				await poHomeChannel.sidenav.btnCreate.click();
+				await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 				await expect(page).toHaveURL(`/group/${channelName}`);
-
-				await poHomeChannel.dismissToast();
 
 				await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 			});
@@ -620,15 +616,9 @@ test.describe.serial('e2e-encryption', () => {
 			await test.step('create an encrypted room', async () => {
 				const channelName = faker.string.uuid();
 
-				await poHomeChannel.sidenav.openNewByLabel('Channel');
-				await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-				await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-				await poHomeChannel.sidenav.checkboxEncryption.click();
-				await poHomeChannel.sidenav.btnCreate.click();
+				await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 				await expect(page).toHaveURL(`/group/${channelName}`);
-
-				await poHomeChannel.dismissToast();
 
 				await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 			});
@@ -690,15 +680,9 @@ test.describe.serial('e2e-encryption', () => {
 				await test.step('create an encrypted channel', async () => {
 					const channelName = faker.string.uuid();
 
-					await poHomeChannel.sidenav.openNewByLabel('Channel');
-					await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-					await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-					await poHomeChannel.sidenav.checkboxEncryption.click();
-					await poHomeChannel.sidenav.btnCreate.click();
+					await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 					await expect(page).toHaveURL(`/group/${channelName}`);
-
-					await poHomeChannel.dismissToast();
 
 					await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 				});
@@ -827,7 +811,7 @@ test.describe.serial('e2e-encryption', () => {
 		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
 
 		// Check last message in the sidebar
-		const sidebarChannel = await poHomeChannel.sidenav.getSidebarItemByName(channelName);
+		const sidebarChannel = poHomeChannel.sidenav.getSidebarItemByName(channelName);
 		await expect(sidebarChannel).toBeVisible();
 		await expect(sidebarChannel.locator('span')).toContainText(encriptedMessage1);
 	});
@@ -1110,6 +1094,25 @@ test.describe('e2ee support legacy formats', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		await page.goto('/home');
+
+		const loginPage = new LoginPage(page);
+
+		// Wait for either the app shell or login form to render
+		await Promise.race([
+			poHomeChannel.sidenav.btnCreateNew.waitFor({ state: 'visible' }),
+			loginPage.loginButton.waitFor({ state: 'visible' }),
+		]).catch(() => {
+			/* allow follow-up check below */
+		});
+
+		// If logged out, log back in and wait for the sidebar to be ready
+		if (await loginPage.loginButton.isVisible().catch(() => false)) {
+			await loginPage.loginByUserState(Users.userE2EE);
+		}
+
+		// Ensure the sidebar is ready before interacting
+		await expect(poHomeChannel.sidenav.btnCreateNew).toBeVisible();
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -1124,8 +1127,6 @@ test.describe('e2ee support legacy formats', () => {
 
 	//  ->>>>>>>>>>>Not testing upload since it was not implemented in the legacy format
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
-		await page.goto('/home');
-
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);

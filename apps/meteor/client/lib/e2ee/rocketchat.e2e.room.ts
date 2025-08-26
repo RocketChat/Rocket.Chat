@@ -27,10 +27,8 @@ import {
 	generateAesGcmKey,
 	// generateAesCbcKey,
 	importAesGcmKey,
-	isJsonWebKey,
-	isAesCbc,
-	isAesGcm,
 } from './helper';
+import { isAesCbc, isAesGcm, parseJsonWebKey } from './jwk';
 import { e2e } from './rocketchat.e2e';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
@@ -260,6 +258,7 @@ export class E2ERoom extends Emitter {
 			} catch (e) {
 				this.error(
 					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
+					e,
 				);
 				keys.push({ ...key, E2EKey: null });
 			}
@@ -291,6 +290,7 @@ export class E2ERoom extends Emitter {
 			} catch (e) {
 				this.error(
 					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
+					e,
 				);
 			}
 		}
@@ -344,7 +344,7 @@ export class E2ERoom extends Emitter {
 			this.log('Requesting room key');
 			sdk.publish('notify-room-users', [`${this.roomId}/e2ekeyRequest`, this.roomId, room.e2eKeyId]);
 		} catch (error) {
-			// this.error = error;
+			this.error('Error requesting room key: ', error);
 			this.setState('ERROR');
 		}
 	}
@@ -354,7 +354,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSessionKey(key: string) {
-		const jwk = JSON.parse(await this.exportSessionKey(key));
+		const jwk = parseJsonWebKey(await this.exportSessionKey(key));
 		try {
 			return await importAesGcmKey(jwk);
 		} catch (error) {
@@ -404,29 +404,7 @@ export class E2ERoom extends Emitter {
 			this.keyID = this.roomKeyId || (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);
 		}
 
-		const jwk = (() => {
-			try {
-				const data: unknown = JSON.parse(this.sessionKeyExportedString);
-				if (isJsonWebKey(data)) {
-					return data;
-				}
-				throw new TypeError(`Invalid JWK: ${JSON.stringify(data)}`);
-			} catch (error) {
-				this.error('Error parsing JWK: ', error);
-				throw new Error('Failed to parse JWK');
-			}
-		})();
-
-		if (isAesCbc(jwk)) {
-			try {
-				const key = await importAesCbcKey(jwk);
-				this.groupSessionKey = key;
-				return true;
-			} catch (error) {
-				this.error('Error importing AES-CBC key: ', error);
-				return false;
-			}
-		}
+		const jwk = parseJsonWebKey(this.sessionKeyExportedString);
 
 		if (isAesGcm(jwk)) {
 			try {
@@ -435,6 +413,17 @@ export class E2ERoom extends Emitter {
 				return true;
 			} catch (error) {
 				this.error('Error importing AES-GCM key: ', error);
+				return false;
+			}
+		}
+
+		if (isAesCbc(jwk)) {
+			try {
+				const key = await importAesCbcKey(jwk);
+				this.groupSessionKey = key;
+				return true;
+			} catch (error) {
+				this.error('Error importing AES-CBC key: ', error);
 				return false;
 			}
 		}
