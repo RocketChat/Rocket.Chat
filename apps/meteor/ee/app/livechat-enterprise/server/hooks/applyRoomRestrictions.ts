@@ -19,5 +19,5 @@ callbacks.add(
 		return restrictQuery({ originalQuery, unitsFilter, userId });
 	},
 	callbacks.priority.HIGH,
-	'livechat-apply-room-restrictions',
+	'livechat-apply-room-restrictionss',
 );
