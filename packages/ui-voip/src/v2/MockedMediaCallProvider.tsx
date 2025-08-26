@@ -98,7 +98,9 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		}
 	};
 
-	const onSelectPeer = () => undefined;
+	const onSelectPeer = (peerInfo: PeerInfo) => {
+		setPeerInfo(peerInfo);
+	};
 
 	const contextValue = {
 		state: widgetState,
