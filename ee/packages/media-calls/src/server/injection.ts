@@ -10,9 +10,8 @@ export function setCastDirector(director: IMediaCallCastDirector): void {
 }
 
 export function getCastDirector(): IMediaCallCastDirector {
-	logger.error({ msg: 'cast director instance was not set.', stack: new Error().stack });
-
 	if (!castDirectorInstance) {
+		logger.error({ msg: 'cast director instance was not set.', stack: new Error().stack });
 		throw new Error('cast director instance was not set.');
 	}
 
@@ -24,9 +23,8 @@ export function setMediaCallServer(server: IMediaCallServer): void {
 }
 
 export function getMediaCallServer(): IMediaCallServer {
-	logger.error({ msg: 'media call server instance was not set.', stack: new Error().stack });
-
 	if (!mediaCallServerInstance) {
+		logger.error({ msg: 'media call server instance was not set.', stack: new Error().stack });
 		throw new Error('media call server instance was not set.');
 	}
 
