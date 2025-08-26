@@ -13,24 +13,25 @@ export type Actions = 'update' | 'install' | 'purchase' | 'request';
 type appButtonResponseProps = {
 	action: Actions;
 	icon?: 'reload' | 'warning';
-	label: 'Update' | 'Install' | 'Subscribe' | 'See Pricing' | 'Try now' | 'Buy' | 'Request' | 'Requested';
+	label: 'Update' | 'Install' | 'Subscribe' | 'See_Pricing' | 'Try_now' | 'Buy' | 'Request' | 'Requested';
 };
 
 export type appStatusSpanResponseProps = {
-	type?: 'failed' | 'warning';
+	type?: 'primary' | 'failed' | 'warning' | 'danger';
 	icon?: 'warning' | 'checkmark-circled' | 'check';
 	label:
-		| 'Config Needed'
+		| 'Config_needed'
 		| 'Failed'
 		| 'Disabled'
 		| 'Disabled*'
-		| 'Trial period'
+		| 'Trial_period'
 		| 'Enabled'
 		| 'Enabled*'
 		| 'Incompatible'
 		| 'request'
 		| 'requests'
-		| 'Requested';
+		| 'Requested'
+		| 'Mixed_status';
 	tooltipText?: string;
 };
 
@@ -126,13 +127,13 @@ export const appButtonProps = ({
 		if (isTierBased) {
 			return {
 				action: 'purchase',
-				label: 'See Pricing',
+				label: 'See_Pricing',
 			};
 		}
 
 		return {
 			action: 'purchase',
-			label: 'Try now',
+			label: 'Try_now',
 		};
 	}
 
@@ -173,12 +174,23 @@ export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 });
 
 export const appStatusSpanProps = (
-	{ installed, status, subscriptionInfo, appRequestStats, migrated }: App,
+	{ installed, status, subscriptionInfo, appRequestStats, migrated, clusterStatus }: App,
 	isEnterprise?: boolean,
 	context?: string,
 	isAppDetailsPage?: boolean,
 ): appStatusSpanResponseProps | undefined => {
 	const isEnabled = status && appEnabledStatuses.includes(status);
+
+	const isMixedStatus = clusterStatus && !clusterStatus.every((item) => item.status === clusterStatus?.[0].status);
+
+	if (isMixedStatus) {
+		return {
+			type: 'warning',
+			icon: 'warning',
+			label: 'Mixed_status',
+			tooltipText: t('Mixed_status_tooltip'),
+		};
+	}
 
 	if (installed) {
 		if (isEnabled) {
@@ -196,9 +208,10 @@ export const appStatusSpanProps = (
 			? {
 					label: 'Disabled*',
 					tooltipText: t('Grandfathered_app'),
+					type: 'danger',
 				}
 			: {
-					type: 'warning',
+					type: 'danger',
 					label: 'Disabled',
 				};
 	}
@@ -208,7 +221,7 @@ export const appStatusSpanProps = (
 		return {
 			type: 'failed',
 			icon: 'warning',
-			label: status === AppStatus.INVALID_SETTINGS_DISABLED ? 'Config Needed' : 'Failed',
+			label: status === AppStatus.INVALID_SETTINGS_DISABLED ? 'Config_needed' : 'Failed',
 		};
 	}
 
@@ -216,7 +229,7 @@ export const appStatusSpanProps = (
 	if (isOnTrialPeriod) {
 		return {
 			icon: 'checkmark-circled',
-			label: 'Trial period',
+			label: 'Trial_period',
 		};
 	}
 
@@ -230,6 +243,7 @@ export const appStatusSpanProps = (
 		if (appRequestStats.totalUnseen) {
 			return {
 				label: appRequestStats.totalUnseen > 1 ? 'requests' : 'request',
+				type: 'primary',
 			};
 		}
 

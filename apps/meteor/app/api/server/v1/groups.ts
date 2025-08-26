@@ -301,7 +301,7 @@ API.v1.addRoute(
 			if (access || joined) {
 				msgs = room.msgs;
 				latest = lm;
-				members = room.usersCount;
+				members = await Users.countActiveUsersInNonDMRoom(room._id);
 			}
 
 			return API.v1.success({
@@ -1215,11 +1215,11 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			const moderators = (
-				await Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
-					projection: { u: 1 },
-				}).toArray()
-			).map((sub: any) => sub.u);
+			const moderators = await Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
+				projection: { u: 1, _id: 0 },
+			})
+				.map((sub) => sub.u)
+				.toArray();
 
 			return API.v1.success({
 				moderators,

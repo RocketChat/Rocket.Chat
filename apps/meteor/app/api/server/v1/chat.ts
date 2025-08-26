@@ -2,6 +2,7 @@ import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
+	ajv,
 	isChatReportMessageProps,
 	isChatGetURLPreviewProps,
 	isChatUpdateProps,
@@ -9,12 +10,10 @@ import {
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
-	isChatPinMessageProps,
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatStarMessageProps,
-	isChatUnpinMessageProps,
 	isChatUnstarMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
@@ -29,6 +28,8 @@ import {
 	isChatSyncThreadMessagesProps,
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -56,6 +57,7 @@ import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
@@ -172,11 +174,66 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'chat.pinMessage',
-	{ authRequired: true, validateParams: isChatPinMessageProps },
-	{
-		async post() {
+type ChatPinMessage = {
+	messageId: IMessage['_id'];
+};
+
+type ChatUnpinMessage = {
+	messageId: IMessage['_id'];
+};
+
+const ChatPinMessageSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnpinMessageSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
+
+const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+const chatEndpoints = API.v1
+	.post(
+		'chat.pinMessage',
+		{
+			authRequired: true,
+			body: isChatPinMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
@@ -191,8 +248,41 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
+	)
+	.post(
+		'chat.unPinMessage',
+		{
+			authRequired: true,
+			body: isChatUnpinMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await unpinMessage(this.userId, msg);
+
+			return API.v1.success();
+		},
+	);
 
 API.v1.addRoute(
 	'chat.postMessage',
@@ -216,7 +306,7 @@ API.v1.addRoute(
 
 			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
 
-			if (!messageReturn) {
+			if (!messageReturn?.message) {
 				return API.v1.failure('unknown-error');
 			}
 
@@ -303,24 +393,6 @@ API.v1.addRoute(
 				rid: msg.rid,
 				starred: true,
 			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unPinMessage',
-	{ authRequired: true, validateParams: isChatUnpinMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			await unpinMessage(this.userId, msg);
 
 			return API.v1.success();
 		},
@@ -845,3 +917,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ChatEndpoints {}
+}

@@ -13,10 +13,6 @@ export class Navbar {
 		return this.page.getByRole('navigation', { name: 'header' });
 	}
 
-	get btnSidebarToggler(): Locator {
-		return this.navbar.getByRole('button', { name: 'Open sidebar' });
-	}
-
 	get btnVoiceAndOmnichannel(): Locator {
 		return this.navbar.getByRole('button', { name: 'Voice and omnichannel' });
 	}
@@ -53,6 +49,24 @@ export class Navbar {
 		return this.navbarSearchSection.getByRole('listbox', { name: 'Channels' });
 	}
 
+	get workspaceGroup(): Locator {
+		return this.navbar.getByRole('group', { name: 'Workspace and user preferences' });
+	}
+
+	get manageWorkspaceButton(): Locator {
+		return this.workspaceGroup.getByRole('button', { name: 'Manage' });
+	}
+
+	btnSidebarToggler(closeSidebar?: boolean): Locator {
+		return this.navbar.getByRole('button', { name: closeSidebar ? 'Close sidebar' : 'Open sidebar' });
+	}
+
+	async openAdminPanel(): Promise<void> {
+		await this.manageWorkspaceButton.click();
+		await this.page.getByRole('menuitem', { name: 'Workspace' }).click();
+		await this.page.waitForURL(/\/admin/);
+	}
+
 	async typeSearch(name: string): Promise<void> {
 		return this.searchInput.fill(name);
 	}
@@ -67,18 +81,12 @@ export class Navbar {
 	}
 
 	getSearchRoomByName(name: string): Locator {
-		return this.searchList.getByRole('option', { name });
+		return this.searchList.getByRole('option', { name, exact: true });
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.typeSearch(name);
 		await this.getSearchRoomByName(name).click();
 		await this.waitForChannel();
-	}
-
-	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.pagesGroup.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.page.getByRole('menu', { name: 'Display' }).getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.page.keyboard.press('Escape');
 	}
 }

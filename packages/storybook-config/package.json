@@ -3,6 +3,9 @@
 	"version": "0.0.1",
 	"private": true,
 	"dependencies": {
+		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/fuselage-hooks": "^0.37.0",
+		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@storybook/addon-a11y": "^8.6.14",
 		"@storybook/addon-essentials": "^8.6.14",
@@ -12,18 +15,21 @@
 		"@storybook/preview-api": "^8.6.14",
 		"@storybook/react-webpack5": "^8.6.14",
 		"@storybook/theming": "^8.6.14",
-		"storybook-dark-mode": "^4.0.2"
+		"react-virtuoso": "^4.12.0",
+		"storybook": "^8.6.14",
+		"storybook-dark-mode": "^4.0.2",
+		"webpack": "~5.99.9"
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
-		"@rocket.chat/fuselage": "^0.64.0",
+		"@rocket.chat/fuselage": "^0.66.0",
 		"@rocket.chat/icons": "^0.43.0",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "^8.6.14",
 		"eslint": "~8.45.0",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
@@ -34,7 +40,6 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
 		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
 		"build": "rm -rf dist && tsc && yarn run copy-svg",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"

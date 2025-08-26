@@ -1,21 +1,27 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "19.0.1",
+	"version": "21.0.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage-hooks": "^0.36.0",
+		"@rocket.chat/fuselage-hooks": "^0.37.0",
+		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/i18n": "workspace:~",
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@types/react": "~18.3.17",
-		"@types/react-dom": "~18.3.5",
+		"@rocket.chat/tools": "workspace:~",
+		"@types/jest": "~30.0.0",
+		"@types/react": "~18.3.23",
+		"@types/react-dom": "~18.3.7",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react-hooks": "^5.0.0",
+		"i18next": "~23.4.9",
+		"jest": "~30.0.2",
 		"mongodb": "6.10.0",
 		"react": "~18.3.1",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
@@ -24,7 +30,7 @@
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"react": "~17.0.2"
+		"react": "*"
 	},
 	"dependencies": {
 		"@rocket.chat/password-policies": "workspace:^"
@@ -36,7 +42,9 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
-		"build": "rm -rf dist && tsc -p tsconfig.json"
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"test": "jest",
+		"testunit": "jest"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

@@ -3,6 +3,7 @@ import { Message } from '@rocket.chat/core-services';
 import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelRoom, IOmnichannelRoomClosingInfo } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, Users } from '@rocket.chat/models';
+import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
 import type { ClientSession } from 'mongodb';
 
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
@@ -12,6 +13,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { client, shouldRetryTransaction } from '../../../../server/database/utils';
 import {
 	notifyOnLivechatInquiryChanged,
+	notifyOnRoomChanged,
 	notifyOnRoomChangedById,
 	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
@@ -179,6 +181,9 @@ async function doCloseRoom(
 	if (!params.forceClose && removedInquiry && removedInquiry.deletedCount !== 1) {
 		throw new Error('Error removing inquiry');
 	}
+	if (removedInquiry.deletedCount) {
+		void notifyOnLivechatInquiryChanged(inquiry!, 'removed');
+	}
 
 	const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });
 	if (!params.forceClose && (!updatedRoom || updatedRoom.modifiedCount !== 1)) {
@@ -207,6 +212,7 @@ async function doCloseRoom(
 		throw new Error('Error: Room not found');
 	}
 
+	void notifyOnRoomChanged(newRoom, 'updated');
 	return { room: newRoom, closedBy: closeData.closedBy, removedInquiry: inquiry };
 }
 
@@ -278,7 +284,7 @@ export async function closeOpenChats(userId: string, comment?: string) {
 	logger.debug(`Closing open chats for user ${userId}`);
 	const user = await Users.findOneById(userId);
 
-	const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {}, { userId });
+	const extraQuery = await applyDepartmentRestrictions({}, userId);
 	const openChats = LivechatRooms.findOpenByAgent(userId, extraQuery);
 	const promises: Promise<void>[] = [];
 	await openChats.forEach((room) => {

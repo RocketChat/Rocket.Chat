@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/instance-status",
-	"version": "0.1.25",
+	"version": "0.1.33",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -8,7 +8,7 @@
 		"eslint": "~8.45.0",
 		"mongodb": "6.10.0",
 		"prettier": "~3.3.3",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -25,5 +25,8 @@
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

@@ -11,10 +11,6 @@ export class OmnichannelBusinessHours extends OmnichannelAdministration {
 		return this.page.locator('role=button[name="Save"]');
 	}
 
-	get btnCancel(): Locator {
-		return this.page.locator('role=button[name="Cancel"]');
-	}
-
 	get btnBack(): Locator {
 		return this.page.locator('role=button[name="Back"]');
 	}

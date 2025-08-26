@@ -11,13 +11,9 @@ import {
 	LivechatContacts,
 	Users,
 } from '@rocket.chat/models';
-import { wrapExceptions } from '@rocket.chat/tools';
 import UAParser from 'ua-parser-js';
 
-import { parseAgentCustomFields, validateEmail } from './Helper';
-import type { RegisterGuestType } from './Visitors';
-import { Visitors } from './Visitors';
-import { ContactMerger, type FieldAndValue } from './contacts/ContactMerger';
+import { parseAgentCustomFields } from './Helper';
 import type { ICRMData } from './localTypes';
 import { livechatLogger } from './logger';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -78,59 +74,38 @@ export async function saveGuest(
 	return ret;
 }
 
-export async function removeGuest({ _id, token }: { _id: string; token: string }) {
-	await cleanGuestHistory(token);
+async function removeGuest({ _id }: { _id: string }) {
+	await cleanGuestHistory(_id);
 	return LivechatVisitors.disableById(_id);
 }
 
-export async function registerGuest(newData: RegisterGuestType): Promise<ILivechatVisitor | null> {
-	const visitor = await Visitors.registerGuest(newData);
-	if (!visitor) {
-		return null;
+export async function removeContactsByVisitorId({ _id }: { _id: string }) {
+	// A visitor shouldn't have many contacts associated, so we can remove them like this
+	const contacts = await LivechatContacts.findAllByVisitorId(_id).toArray();
+	if (!contacts.length) {
+		livechatLogger.debug({ msg: 'No contacts found for visitor', visitorId: _id });
+		await removeGuest({ _id });
 	}
 
-	const { name, phone, email, username } = newData;
-
-	const validatedEmail =
-		email &&
-		wrapExceptions(() => {
-			const trimmedEmail = email.trim().toLowerCase();
-			validateEmail(trimmedEmail);
-			return trimmedEmail;
-		}).suppress();
-
-	const fields = [
-		{ type: 'name', value: name },
-		{ type: 'phone', value: phone?.number },
-		{ type: 'email', value: validatedEmail },
-		{ type: 'username', value: username || visitor.username },
-	].filter((field) => Boolean(field.value)) as FieldAndValue[];
-
-	if (!fields.length) {
-		return null;
-	}
-
-	// If a visitor was updated who already had contacts, load up the contacts and update that information as well
-	const contacts = await LivechatContacts.findAllByVisitorId(visitor._id).toArray();
+	// And a contact shouldn't have many channels associated, so we can do this
+	livechatLogger.debug({ msg: 'Removing channels for contacts', visitorId: _id, contacts: contacts.map(({ _id }) => _id) });
 	for await (const contact of contacts) {
-		await ContactMerger.mergeFieldsIntoContact({
-			fields,
-			contact,
-			conflictHandlingMode: contact.unknown ? 'overwrite' : 'conflict',
-		});
-	}
+		for await (const { visitor } of contact.channels) {
+			await removeGuest({ _id: visitor.visitorId });
+		}
 
-	return visitor;
+		await LivechatContacts.disableByVisitorId(_id);
+	}
 }
 
-async function cleanGuestHistory(token: string) {
+async function cleanGuestHistory(_id: string) {
 	// This shouldn't be possible, but just in case
-	if (!token) {
+	if (!_id) {
 		throw new Error('error-invalid-guest');
 	}
 
 	// TODO: optimize function => instead of removing one by one, fetch the _ids of the rooms and then remove them in bulk
-	const cursor = LivechatRooms.findByVisitorToken(token, { projection: { _id: 1 } });
+	const cursor = LivechatRooms.findByVisitorId(_id, { projection: { _id: 1 } });
 	for await (const room of cursor) {
 		await Promise.all([
 			Subscriptions.removeByRoomId(room._id, {
@@ -144,9 +119,9 @@ async function cleanGuestHistory(token: string) {
 		]);
 	}
 
-	await LivechatRooms.removeByVisitorToken(token);
+	await LivechatRooms.removeByVisitorId(_id);
 
-	const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
+	const livechatInquiries = await LivechatInquiry.findIdsByVisitorId(_id).toArray();
 	await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
 	void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 }

@@ -1,37 +1,37 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelPriorities } from './useOmnichannelPriorities';
+import { PRIORITIES_CONFIG } from './useOmnichannelPrioritiesConfig';
 import { roomsQueryKeys } from '../../lib/queryKeys';
-import { dispatchToastMessage } from '../../lib/toast';
-import { PRIORITY_ICONS } from '../priorities/PriorityIcon';
 
-export const useOmnichannelPrioritiesMenu = (rid: string) => {
+export const useOmnichannelPrioritiesMenu = (rid: IRoom['_id']) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const updateRoomPriority = useEndpoint('POST', '/v1/livechat/room/:rid/priority', { rid });
 	const removeRoomPriority = useEndpoint('DELETE', '/v1/livechat/room/:rid/priority', { rid });
 	const { data: priorities } = useOmnichannelPriorities();
-
-	const handlePriorityChange = useEffectEvent((priorityId: string) => async () => {
-		try {
-			priorityId ? await updateRoomPriority({ priorityId }) : await removeRoomPriority();
-			queryClient.invalidateQueries({ queryKey: ['current-chats'] });
-			queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(rid) });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMemo(() => {
+		const handlePriorityChange = (priorityId: string) => async () => {
+			try {
+				priorityId ? await updateRoomPriority({ priorityId }) : await removeRoomPriority();
+				queryClient.invalidateQueries({ queryKey: ['current-chats'] });
+				queryClient.invalidateQueries({ queryKey: roomsQueryKeys.info(rid) });
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		};
+
 		const unprioritizedOption = {
 			id: 'unprioritized',
-			icon: PRIORITY_ICONS[LivechatPriorityWeight.NOT_SPECIFIED].iconName,
-			iconColor: PRIORITY_ICONS[LivechatPriorityWeight.NOT_SPECIFIED].color,
+			icon: PRIORITIES_CONFIG[LivechatPriorityWeight.NOT_SPECIFIED].iconName,
+			iconColor: PRIORITIES_CONFIG[LivechatPriorityWeight.NOT_SPECIFIED].color,
 			content: t('Unprioritized'),
 			onClick: handlePriorityChange(''),
 		};
@@ -41,13 +41,13 @@ export const useOmnichannelPrioritiesMenu = (rid: string) => {
 
 			return {
 				id: priorityId,
-				icon: PRIORITY_ICONS[sortItem].iconName,
-				iconColor: PRIORITY_ICONS[sortItem].color,
+				icon: PRIORITIES_CONFIG[sortItem].iconName,
+				iconColor: PRIORITIES_CONFIG[sortItem].color,
 				content: label,
 				onClick: handlePriorityChange(priorityId),
 			};
 		});
 
 		return priorities.length ? [unprioritizedOption, ...options] : [];
-	}, [t, handlePriorityChange, priorities]);
+	}, [t, priorities, updateRoomPriority, removeRoomPriority, queryClient, rid]);
 };
