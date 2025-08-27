@@ -64,7 +64,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	if (user.username != null) {
 		let userToReplaceWhenUnlinking: IUser | null = null;
 		const nameAlias = i18n.t('Removed_User');
-		await relinquishRoomOwnerships(userId, subscribedRooms);
+		await relinquishRoomOwnerships(userId, subscribedRooms, true, deletedBy);
 
 		const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
 		switch (messageErasureType) {
