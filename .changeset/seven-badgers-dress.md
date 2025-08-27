@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": major
 ---
 
-Removes deprecated changeLivechatStatus meteor method
+Removes deprecated Realtime API method: `livechat:changeLivechatStatus`
