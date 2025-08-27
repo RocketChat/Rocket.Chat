@@ -7,8 +7,6 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 
-type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
-
 export type RoomID = string;
 export type ChannelName = string;
 interface IRequestTranscript {
@@ -46,7 +44,6 @@ export interface IRoom extends IRocketChatRecord {
 	lastMessage?: IMessage;
 	lm?: Date;
 	usersCount: number;
-	callStatus?: CallStatus;
 	webRtcCallStartTime?: Date;
 	servedBy?: {
 		_id: string;
