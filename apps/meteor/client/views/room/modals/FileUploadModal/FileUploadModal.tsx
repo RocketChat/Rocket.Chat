@@ -118,11 +118,11 @@ const FileUploadModal = ({
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
 						<FilePreview file={currentFile} onFileChange={setCurrentFile} startCropping={startCropping} />
 					</Box>
-					 {currentFile.type.startsWith('image/') && !startCropping && (
-            <Button small onClick={() => setStartCropping(true)} mbe={16}>
-              {('Crop')}
-            </Button>
-          )}
+					{currentFile.type.startsWith('image/') && !startCropping && (
+						<Button small onClick={() => setStartCropping(true)} mbe={16}>
+							Crop
+						</Button>
+					)}
 					<FieldGroup>
 						<Field>
 							<FieldLabel htmlFor={fileNameField}>{t('Upload_file_name')}</FieldLabel>
