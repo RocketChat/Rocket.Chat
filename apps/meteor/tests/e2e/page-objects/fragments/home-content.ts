@@ -106,15 +106,17 @@ export class HomeContent {
 		}
 	}
 
-	async updateMessage(text: string): Promise<void> {
+	async updateMessage(text: string, waitResponse = true): Promise<void> {
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
 		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 
-		await this.page.waitForResponse(
-			(response) =>
-				/api\/v1\/method.call\/updateMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-		);
+		if (waitResponse) {
+			await this.page.waitForResponse(
+				(response) =>
+					/api\/v1\/method.call\/updateMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+			);
+		}
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {

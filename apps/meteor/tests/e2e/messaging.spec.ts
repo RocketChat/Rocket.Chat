@@ -107,14 +107,28 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('stress test on message editions', async () => {
-				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c']) {
+				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'a', 'b', 'c']) {
 					// eslint-disable-next-line no-await-in-loop
 					await page.keyboard.press('ArrowUp');
 					// eslint-disable-next-line no-await-in-loop
-					await poHomeChannel.content.updateMessage(element);
+					await poHomeChannel.content.updateMessage(element, false);
 				}
 
-				await expect(await poHomeChannel.content.lastUserMessageBody).toHaveText('edited msg2 c');
+				let timeoutOccurred = false;
+
+				try {
+					await page.waitForSelector('.rcx-toastbar.rcx-toastbar--error', { timeout: 5000 });
+
+					timeoutOccurred = false;
+				} catch (error: unknown) {
+					if ((error as { name: string }).name === 'TimeoutError') {
+						timeoutOccurred = true;
+					} else {
+						throw error;
+					}
+				}
+
+				expect(timeoutOccurred).toBe(true);
 			});
 		});
 
