@@ -1,12 +1,12 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
 import type { ChangeEvent, FormEvent, ReactElement } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { InputError } from '../../../app/e2e/client/inputerror';
-import GenericModal from '../../components/GenericModal';
+import { InputError } from '../../lib/e2ee/inputerror';
 
 const EnterE2EPasswordModal = ({
 	onConfirm,
