@@ -29,7 +29,7 @@
     "@vitest/browser": "4.0.0-beta.8",
     "oxlint": "~1.12.0",
     "oxlint-tsgolint": "~0.0.4",
-    "playwright": "~1.54.2",
+    "playwright": "~1.55.0",
     "typescript": "~5.9.2",
     "vitest": "4.0.0-beta.8"
   },

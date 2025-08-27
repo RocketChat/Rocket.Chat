@@ -27,7 +27,7 @@
 	"devDependencies": {
 		"@babel/core": "~7.26.10",
 		"@faker-js/faker": "~8.0.2",
-		"@playwright/test": "~1.54.2",
+		"@playwright/test": "~1.55.0",
 		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
