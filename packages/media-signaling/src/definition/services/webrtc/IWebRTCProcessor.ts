@@ -26,7 +26,9 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 
 export type WebRTCProcessorConfig = {
 	mediaStreamFactory: MediaStreamFactory;
+	iceGatheringTimeout: number;
 	logger?: IMediaSignalLogger;
+	rtc?: RTCConfiguration;
 };
 
 export type WebRTCProcessorFactory = (config: WebRTCProcessorConfig) => IWebRTCProcessor;
