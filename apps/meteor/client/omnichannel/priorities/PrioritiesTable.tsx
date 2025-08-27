@@ -52,7 +52,7 @@ export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: Prioritie
 								<GenericTableCell withTruncatedText>
 									<PriorityIcon level={sortItem} />
 								</GenericTableCell>
-								<GenericTableCell withTruncatedText>{dirty ? name : i18n}</GenericTableCell>
+								<GenericTableCell withTruncatedText>{dirty ? name : t(i18n)}</GenericTableCell>
 							</GenericTableRow>
 						))}
 					</GenericTableBody>

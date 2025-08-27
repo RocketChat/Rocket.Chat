@@ -466,11 +466,11 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const moderators = (
-				await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
-					projection: { u: 1 },
-				}).toArray()
-			).map((sub: ISubscription) => sub.u);
+			const moderators = await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
+				projection: { u: 1, _id: 0 },
+			})
+				.map((sub) => sub.u)
+				.toArray();
 
 			return API.v1.success({
 				moderators,

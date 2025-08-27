@@ -215,6 +215,10 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					order: {
 						type: 'number',
 					},
+					departmentEnabled: { type: 'boolean' },
+					departmentId: { type: 'string' },
+					_id: { type: 'string' },
+					_updatedAt: { type: 'string' },
 				},
 				required: ['agentId', 'username'],
 				additionalProperties: false,
@@ -1384,6 +1388,36 @@ const POSTUpdateOmnichannelContactsSchema = {
 };
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
+
+type POSTOmnichannelContactDeleteProps = {
+	contactId: string;
+};
+
+const POSTOmnichannelContactDeleteSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isPOSTOmnichannelContactDeleteProps = ajv.compile<POSTOmnichannelContactDeleteProps>(POSTOmnichannelContactDeleteSchema);
+
+const POSTOmnichannelContactDeleteSuccess = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTOmnichannelContactDeleteSuccessSchema = ajv.compile<void>(POSTOmnichannelContactDeleteSuccess);
 
 type POSTOmnichannelContactsConflictsProps = {
 	contactId: string;
@@ -4078,7 +4112,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/priorities/:priorityId': {
-		GET: () => ILivechatPriority | void;
+		GET: () => ILivechatPriority;
 		PUT: (params: PUTLivechatPriority) => void;
 	};
 

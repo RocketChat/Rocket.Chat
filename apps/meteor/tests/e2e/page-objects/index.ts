@@ -1,5 +1,6 @@
 export * from './account-profile';
 export * from './admin-email-inboxes';
+export * from './admin-emojis';
 export * from './admin';
 export * from './auth';
 export * from './home-channel';
@@ -19,4 +20,5 @@ export * from './omnichannel-settings';
 export * from './omnichannel-business-hours';
 export * from './omnichannel-tags';
 export * from './utils';
+export * from './modal';
 export * from './marketplace';

@@ -16,10 +16,6 @@ export class OmnichannelTranscript {
 		return this.page.locator('//input[@name="transcriptPDF"]//following::i[1]');
 	}
 
-	get exportedPDF(): Locator {
-		return this.page.locator('//div[contains(text(),"PDF Transcript successfully generated")]');
-	}
-
 	get contactCenter(): Locator {
 		return this.page.locator('//button[@data-tooltip="Contact Center"]');
 	}

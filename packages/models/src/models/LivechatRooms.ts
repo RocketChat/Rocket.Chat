@@ -2409,6 +2409,15 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.deleteMany(query);
 	}
 
+	removeByVisitorId(_id: string) {
+		const query: Filter<IOmnichannelRoom> = {
+			't': 'l',
+			'v._id': _id,
+		};
+
+		return this.deleteMany(query);
+	}
+
 	removeById(_id: string) {
 		const query: Filter<IOmnichannelRoom> = {
 			_id,
@@ -2798,5 +2807,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
 		return this.find({ open: true, contactId }, options);
+	}
+
+	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null> {
+		return this.findOne({ contactId, open: true }, { projection: { _id: 1 } });
 	}
 }

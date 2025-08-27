@@ -36,6 +36,9 @@
 		"react.js"
 	],
 	"devDependencies": {
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

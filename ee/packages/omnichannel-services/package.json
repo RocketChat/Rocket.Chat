@@ -1,15 +1,15 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.22",
+	"version": "0.3.30",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~29.5.14",
+		"@types/jest": "~30.0.0",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.2",
-		"typescript": "~5.8.3"
+		"jest": "~30.0.5",
+		"typescript": "~5.9.2"
 	},
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
@@ -23,8 +23,8 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "~22.14.1",
-		"date-fns": "^2.30.0",
+		"@types/node": "~22.16.1",
+		"date-fns": "~4.1.0",
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"eventemitter3": "^5.0.1",
@@ -39,6 +39,7 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
+		"testunit": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},

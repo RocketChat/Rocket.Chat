@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { IRoomWithRetentionPolicy, SidepanelItem } from '@rocket.chat/core-typings';
+import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
@@ -21,10 +21,8 @@ import {
 	Box,
 	TextAreaInput,
 	AccordionItem,
-	Divider,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -60,10 +58,10 @@ type EditRoomInfoProps = {
 };
 
 const title = {
-	team: 'Edit_team' as TranslationKey,
-	channel: 'Edit_channel' as TranslationKey,
-	discussion: 'Edit_discussion' as TranslationKey,
-};
+	team: 'Edit_team',
+	channel: 'Edit_channel',
+	discussion: 'Edit_discussion',
+} as const;
 
 const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {
@@ -125,8 +123,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		retentionOverrideGlobal,
 		roomType: roomTypeP,
 		reactWhenReadOnly,
-		showChannels,
-		showDiscussions,
 	} = watch();
 
 	const {
@@ -169,21 +165,11 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		}: EditRoomInfoFormData) => {
 			const data = getDirtyFields<Partial<typeof defaultValues>>(formData, dirtyFields);
 			delete data.archived;
-			delete data.showChannels;
-			delete data.showDiscussions;
-
-			const sidepanelItems = [showChannels && 'channels', showDiscussions && 'discussions'].filter(Boolean) as [
-				SidepanelItem,
-				SidepanelItem?,
-			];
-
-			const sidepanel = sidepanelItems.length > 0 ? { items: sidepanelItems } : null;
 
 			try {
 				await saveAction({
 					rid: room._id,
 					...data,
-					...(roomType === 'team' ? { sidepanel } : null),
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 					...((data.systemMessages || !hideSysMes) && {
 						systemMessages: hideSysMes && data.systemMessages,
@@ -244,8 +230,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionExcludePinnedField = useId();
 	const retentionFilesOnlyField = useId();
 	const retentionIgnoreThreads = useId();
-	const showDiscussionsField = useId();
-	const showChannelsField = useId();
 
 	const showAdvancedSettings = canViewEncrypted || canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
 	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
@@ -377,49 +361,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						<Accordion>
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
-									{roomType === 'team' && (
-										<FeaturePreview feature='sidepanelNavigation'>
-											<FeaturePreviewOff>{null}</FeaturePreviewOff>
-											<FeaturePreviewOn>
-												<FieldGroup>
-													<Box is='h5' fontScale='h5' color='titles-labels'>
-														{t('Navigation')}
-													</Box>
-													<Field>
-														<FieldRow>
-															<FieldLabel htmlFor={showChannelsField}>{t('Channels')}</FieldLabel>
-															<Controller
-																control={control}
-																name='showChannels'
-																render={({ field: { value, ...field } }) => (
-																	<ToggleSwitch id={showChannelsField} checked={value} {...field} />
-																)}
-															/>
-														</FieldRow>
-														<FieldRow>
-															<FieldHint id={`${showChannelsField}-hint`}>{t('Show_channels_description')}</FieldHint>
-														</FieldRow>
-													</Field>
-													<Field>
-														<FieldRow>
-															<FieldLabel htmlFor={showDiscussionsField}>{t('Discussions')}</FieldLabel>
-															<Controller
-																control={control}
-																name='showDiscussions'
-																render={({ field: { value, ...field } }) => (
-																	<ToggleSwitch id={showDiscussionsField} checked={value} {...field} />
-																)}
-															/>
-														</FieldRow>
-														<FieldRow>
-															<FieldHint id={`${showDiscussionsField}-hint`}>{t('Show_discussions_description')}</FieldHint>
-														</FieldRow>
-													</Field>
-												</FieldGroup>
-												<Divider mb={24} />
-											</FeaturePreviewOn>
-										</FeaturePreview>
-									)}
 									<FieldGroup>
 										<Box is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}

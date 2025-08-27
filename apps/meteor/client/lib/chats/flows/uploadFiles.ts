@@ -1,12 +1,12 @@
 import type { IMessage, FileAttachmentProps, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { imperativeModal } from '@rocket.chat/ui-client';
 
-import { e2e } from '../../../../app/e2e/client';
 import { settings } from '../../../../app/settings/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
-import { imperativeModal } from '../../imperativeModal';
+import { e2e } from '../../e2ee';
 import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI } from '../ChatAPI';
 

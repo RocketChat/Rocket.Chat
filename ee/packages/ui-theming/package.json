@@ -5,8 +5,8 @@
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.64.0",
-		"@rocket.chat/fuselage-hooks": "^0.36.0",
+		"@rocket.chat/fuselage": "^0.66.0",
+		"@rocket.chat/fuselage-hooks": "^0.37.0",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "^0.43.0",
@@ -22,7 +22,7 @@
 		"react-docgen-typescript-plugin": "~1.0.8",
 		"react-dom": "~18.3.1",
 		"react-virtuoso": "^4.12.0",
-		"typescript": "~5.8.3",
+		"typescript": "~5.9.2",
 		"webpack": "~5.99.9"
 	},
 	"scripts": {

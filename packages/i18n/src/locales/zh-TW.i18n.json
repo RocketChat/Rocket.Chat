@@ -688,7 +688,9 @@
   "Caller": "呼叫者",
   "Caller_Id": "通話者 ID",
   "Calling": "正在通話",
-  "Calls_in_queue": "{{count}} 個通話在佇列中",
+  "Calls_in_queue": {
+    "other": "{{count}} 個通話在佇列中"
+  },
   "Cancel": "取消",
   "Cancel_message_input": "取消",
   "Canceled": "已取消",
@@ -4148,7 +4150,6 @@
   "error-message-editing-blocked": "訊息編輯已停用",
   "error-message-size-exceeded": "訊息大小超過 Message_MaxAllowedSize",
   "error-missing-unsubscribe-link": "您必須提供 [unsubscribe] 的網址。",
-  "error-no-agents-online-in-department": "部門內沒有客服在線上",
   "error-no-message-for-unread": "這裡沒有訊息是標示未讀取",
   "error-no-owner-channel": "只有擁有者才能將此頻道增加到團隊",
   "error-no-permission-team-channel": "您沒有權限將此頻道增加到團隊",
@@ -4289,15 +4290,19 @@
   "message": "訊息",
   "message-impersonate": "冒充其他使用者",
   "message-impersonate_description": "允許使用訊息別名模擬其他使用者",
-  "message_counter_other": "{{count}} 訊息",
   "message_pruned": "訊息已修剪",
+  "message_counter": {
+    "other": "{{count}} 訊息"
+  },
   "messages": "訊息",
   "messages_pruned": "訊息被修剪",
   "meteor_status_connected": "已連線",
   "meteor_status_connecting": "連線中...",
   "meteor_status_failed": "無法與伺服器連線",
   "meteor_status_offline": "離線模式。",
-  "meteor_status_reconnect_in_other": "在{{count}}秒鍾後再嘗試...",
+  "meteor_status_reconnect_in": {
+    "other": "在{{count}}秒鍾後再嘗試..."
+  },
   "meteor_status_try_now_offline": "重新連線",
   "meteor_status_try_now_waiting": "現在再試",
   "meteor_status_waiting": "等待與伺服器連線,",

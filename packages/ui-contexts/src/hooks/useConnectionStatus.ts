@@ -1,6 +1,8 @@
 import { useContext } from 'react';
 
-import type { ConnectionStatusContextValue } from '../ConnectionStatusContext';
-import { ConnectionStatusContext } from '../ConnectionStatusContext';
+import { ServerContext } from '../ServerContext';
 
-export const useConnectionStatus = (): ConnectionStatusContextValue => useContext(ConnectionStatusContext);
+export const useConnectionStatus = () => {
+	const { connected, retryTime, status, reconnect, disconnect } = useContext(ServerContext);
+	return { connected, retryTime, status, reconnect, disconnect };
+};

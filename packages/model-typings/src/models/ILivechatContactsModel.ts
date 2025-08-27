@@ -70,4 +70,9 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 	countContactsWithoutChannels(): Promise<number>;
 	getStatistics(): AggregationCursor<{ totalConflicts: number; avgChannelsPerContact: number }>;
 	updateByVisitorId(visitorId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<UpdateResult>;
+	disableByVisitorId(visitorId: string): Promise<UpdateResult | Document>;
+	disableByContactId(contactId: string): Promise<UpdateResult>;
+	findOneEnabledById(_id: ILivechatContact['_id'], options?: FindOptions<ILivechatContact>): Promise<ILivechatContact | null>;
+	findOneEnabledById<P extends Document = ILivechatContact>(_id: P['_id'], options?: FindOptions<P>): Promise<P | null>;
+	findOneEnabledById(_id: ILivechatContact['_id'], options?: any): Promise<ILivechatContact | null>;
 }
