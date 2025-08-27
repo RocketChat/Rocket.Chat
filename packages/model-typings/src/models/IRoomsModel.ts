@@ -165,8 +165,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
-	findCountOfRoomsWithActiveCalls(): Promise<number>;
-
 	findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined>;
 
 	findSmallestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined>;
@@ -176,8 +174,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
-	setCallStatus(_id: string, callStatus: IRoom['callStatus']): Promise<UpdateResult>;
-	setCallStatusAndCallStartTime(_id: string, callStatus: IRoom['callStatus']): Promise<UpdateResult>;
 	setReactionsInLastMessage(roomId: string, reactions: NonNullable<IRoom['lastMessage']>['reactions']): Promise<UpdateResult>;
 	unsetReactionsInLastMessage(roomId: string): Promise<UpdateResult>;
 	unsetAllImportIds(): Promise<Document | UpdateResult>;
