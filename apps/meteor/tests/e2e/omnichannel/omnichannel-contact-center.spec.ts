@@ -70,9 +70,8 @@ test.describe('Omnichannel Contact Center', () => {
 	let poOmniSection: OmnichannelSection;
 
 	test.beforeAll(async ({ api }) => {
-		// Add a contact
-		await api.post('/omnichannel/contacts', EXISTING_CONTACT);
-		await api.post('/omnichannel/contacts', DELETE_CONTACT);
+		// Add contacts
+		await Promise.all([api.post('/omnichannel/contacts', EXISTING_CONTACT), api.post('/omnichannel/contacts', DELETE_CONTACT)]);
 
 		if (IS_EE) {
 			await api.post('/livechat/custom.field', NEW_CUSTOM_FIELD);
@@ -80,9 +79,8 @@ test.describe('Omnichannel Contact Center', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// Remove added contact
-		await api.delete(`/livechat/visitor/${NEW_CONTACT.token}`);
-		await api.delete(`/livechat/visitor/${EXISTING_CONTACT.token}`);
+		// Remove added contacts
+		await Promise.all([api.delete(`/livechat/visitor/${NEW_CONTACT.token}`), api.delete(`/livechat/visitor/${EXISTING_CONTACT.token}`)])
 
 		if (IS_EE) {
 			await api.post('method.call/livechat:removeCustomField', { message: NEW_CUSTOM_FIELD.field });
