@@ -41,11 +41,15 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api: BaseTest['api'
 
 	// No need to create fixture users for basic login tests
 
+	// In CI, Rocket.Chat runs in a container and needs host.docker.internal to reach LDAP container
+	// In local dev, both services run on host so localhost works
+	const ldapHost = process.env.CI ? 'host.docker.internal' : 'localhost';
+
 	const settings = [
 		{ _id: 'Accounts_ManuallyApproveNewUsers', value: false },
 		{ _id: 'Show_Setup_Wizard', value: 'completed' },
 		{ _id: 'LDAP_Enable', value: true },
-		{ _id: 'LDAP_Host', value: 'localhost' },
+		{ _id: 'LDAP_Host', value: ldapHost },
 		{ _id: 'LDAP_Authentication', value: true },
 		{ _id: 'LDAP_Authentication_UserDN', value: 'cn=admin,dc=rcldap,dc=com,dc=br' },
 		{ _id: 'LDAP_Authentication_Password', value: 'password' },
@@ -101,9 +105,13 @@ test.describe('LDAP', () => {
 		});
 
 		// the compose CLI doesn't have any way to remove images, so try to remove it with a direct call to the docker cli, but ignore errors if it fails.
-		child_process.spawn('docker', ['rmi', 'ldap-testldap_idp'], {
-			cwd: containerPath,
-		});
+		try {
+			child_process.spawn('docker', ['rmi', 'ldap-testldap_idp'], {
+				cwd: containerPath,
+			});
+		} catch {
+			// ignore errors here
+		}
 
 		// Remove LDAP test users so they don't interfere with other tests
 		await resetTestData({ api, cleanupOnly: true });
@@ -135,7 +143,7 @@ test.describe('LDAP', () => {
 		});
 	});
 
-	test('Login', async ({ page, api }) => {
+	test('Login with LDAP user', async ({ page, api }) => {
 		await test.step('expect to have LDAP login available', async () => {
 			// LDAP login should be available through the standard login form
 			await expect(poRegistration.username).toBeVisible({ timeout: 10000 });
@@ -163,7 +171,7 @@ test.describe('LDAP', () => {
 		});
 	});
 
-	test('Basic Login with Different Users', async ({ page, api }) => {
+	test('Login with different LDAP users', async ({ page, api }) => {
 		await test.step('expect to login with ldapuser2 and verify user info', async () => {
 			await poRegistration.username.fill('ldapuser2');
 			await poRegistration.inputPassword.fill('password');
