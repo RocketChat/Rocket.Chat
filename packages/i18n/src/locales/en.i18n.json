@@ -667,7 +667,7 @@
   "Are_you_sure_you_want_to_disable_Facebook_integration": "Are you sure you want to disable Facebook integration?",
   "Are_you_sure_you_want_to_pin_this_message": "Are you sure you want to pin this message?",
   "Are_you_sure_you_want_to_reset_the_name_of_all_priorities": "Are you sure you want to reset the name of all priorities?",
-  "Are_you_sure_delete_contact": "Are you sure you want to delete {{contactName}} and all {{channelsCount}} of their conversation history? To confirm, type 'delete' in the field below.",
+  "Are_you_sure_delete_contact": "Are you sure you want to delete {{contactName}} and all {{channelsCount}} of their conversation history? To confirm, type '{{confirmationText}}' in the field below.",
   "Ask_enable_advanced_contact_profile": "Ask your workspace admin to enable advanced contact profile",
   "Asset_preview": "Asset preview",
   "Assets": "Assets",

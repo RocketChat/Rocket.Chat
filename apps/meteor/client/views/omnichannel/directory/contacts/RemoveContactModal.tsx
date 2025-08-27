@@ -28,6 +28,8 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 		removeContactMutation.mutate();
 	});
 
+	const confirmationText = t('Delete').toLowerCase();
+
 	const removeContactMutation = useMutation({
 		mutationFn: () => removeContact({ contactId: _id }),
 		onSuccess: async () => {
@@ -55,10 +57,10 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 			title={t('Delete_Contact')}
 			onClose={onClose}
 			variant='danger'
-			confirmDisabled={text !== t('Delete').toLowerCase()}
+			confirmDisabled={text !== confirmationText}
 		>
 			<Box is='p' id={`${contactDeleteModalId}-description`} mbe={16}>
-				{t('Are_you_sure_delete_contact', { contactName: name, channelsCount })}
+				{t('Are_you_sure_delete_contact', { contactName: name, channelsCount, confirmationText })}
 			</Box>
 			<Box mbe={16} display='flex' justifyContent='stretch'>
 				<Input
