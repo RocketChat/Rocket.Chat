@@ -89,10 +89,12 @@ export class HomeContent {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
+
 		const responsePromise = this.page.waitForResponse(
 			(response) =>
 				/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
 		);
+
 		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 
 		if (enforce) {
@@ -103,19 +105,6 @@ export class HomeContent {
 
 			await expect(messageLocator).toBeVisible();
 			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
-		}
-	}
-
-	async updateMessage(text: string, waitResponse = true): Promise<void> {
-		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').fill(text);
-		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
-
-		if (waitResponse) {
-			await this.page.waitForResponse(
-				(response) =>
-					/api\/v1\/method.call\/updateMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-			);
 		}
 	}
 

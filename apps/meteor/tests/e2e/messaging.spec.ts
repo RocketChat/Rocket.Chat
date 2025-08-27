@@ -102,7 +102,8 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('send edited message', async () => {
-				await poHomeChannel.content.updateMessage('edited msg2');
+				await poHomeChannel.content.sendMessage('edited msg2');
+
 				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('edited msg2');
 			});
 
@@ -111,7 +112,7 @@ test.describe('Messaging', () => {
 					// eslint-disable-next-line no-await-in-loop
 					await page.keyboard.press('ArrowUp');
 					// eslint-disable-next-line no-await-in-loop
-					await poHomeChannel.content.updateMessage(element, false);
+					await poHomeChannel.content.sendMessage(element, false);
 				}
 
 				let timeoutOccurred = false;
