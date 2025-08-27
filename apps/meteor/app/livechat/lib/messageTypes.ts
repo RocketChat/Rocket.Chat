@@ -1,6 +1,4 @@
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
-import { formatDistance } from 'date-fns';
-import moment from 'moment';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 import { t } from '../../utils/lib/i18n';
@@ -103,29 +101,6 @@ MessageTypes.registerType({
 	id: 'livechat_video_call',
 	system: true,
 	message: 'New_videocall_request',
-});
-
-MessageTypes.registerType({
-	id: 'livechat_webrtc_video_call',
-	message: 'room_changed_type',
-	data(message) {
-		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
-			return {
-				message: t('WebRTC_call_ended_message', {
-					callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
-					endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
-				}),
-			};
-		}
-		if (message.msg === 'declined' && message.webRtcCallEndTs) {
-			return {
-				message: t('WebRTC_call_declined_message'),
-			};
-		}
-		return {
-			message: message.msg,
-		};
-	},
 });
 
 MessageTypes.registerType({
