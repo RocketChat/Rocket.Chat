@@ -24,7 +24,11 @@ export type MediaCallContactInformation = {
 
 export type MediaCallContact<T extends MediaCallActor = MediaCallActor> = T & MediaCallContactInformation;
 
-export type MediaCallSignedContact = MediaCallContact<MediaCallSignedActor>;
+export type TypedMediaCallContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallContact<MediaCallActor<T>>;
+
+export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallContact<
+	MediaCallSignedActor<MediaCallActor<T>>
+>;
 
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
@@ -45,4 +49,7 @@ export interface IMediaCall extends IRocketChatRecord {
 	expiresAt: Date;
 
 	callerRequestedId?: string;
+
+	webrtcOffer?: RTCSessionDescriptionInit;
+	webrtcAnswer?: RTCSessionDescriptionInit;
 }

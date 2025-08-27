@@ -1,9 +1,11 @@
 import { api, ServiceClassInternal, type IMediaCallService } from '@rocket.chat/core-services';
-import type { IUser, IMediaCall } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { gateway, MediaCallMonitor } from '@rocket.chat/media-calls';
+import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
-import { Users, MediaCalls } from '@rocket.chat/models';
+import { MediaCalls } from '@rocket.chat/models';
+
+import { settings } from '../../../app/settings/server';
 
 const logger = new Logger('media-call service');
 
@@ -12,13 +14,21 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	constructor() {
 		super();
-		gateway.setSignalHandler(this.sendSignal.bind(this));
+		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
+
+		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
+			if (setting._id.startsWith('VoIP_TeamCollab_')) {
+				setImmediate(() => this.configureMediaCallServer());
+			}
+		});
+
+		this.configureMediaCallServer();
 	}
 
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		try {
 			logger.debug({ msg: 'new client signal', signal, uid });
-			gateway.receiveSignal(uid, signal);
+			callServer.receiveSignal(uid, signal);
 		} catch (error) {
 			logger.error({ msg: 'failed to process client signal', error, signal, uid });
 		}
@@ -30,60 +40,45 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 			const deserialized = await this.deserializeClientSignal(signal);
 
-			gateway.receiveSignal(uid, deserialized);
+			callServer.receiveSignal(uid, deserialized);
 		} catch (error) {
 			logger.error({ msg: 'failed to process client signal', error, signal, uid });
 		}
 	}
 
-	public async createInternalCall(caller: { uid: IUser['_id']; contractId: string }, callee: { uid: IUser['_id'] }): Promise<IMediaCall> {
-		const user = await Users.findOneActiveById(callee.uid, { projection: { _id: 1 } });
-		if (!user) {
-			throw new Error('invalid-user');
-		}
-
-		return gateway.createCall({
-			caller: {
-				type: 'user',
-				id: caller.uid,
-				contractId: caller.contractId,
-			},
-			callee: { type: 'user', id: callee.uid },
-		});
-	}
-
-	public async callExtension(caller: { uid: IUser['_id']; contractId: string }, extension: string): Promise<IMediaCall> {
-		const user = await Users.findOneByFreeSwitchExtension(extension, { projection: { _id: 1 } });
-		if (!user) {
-			throw new Error('invalid-user');
-		}
-
-		return gateway.createCall({
-			caller: {
-				type: 'user',
-				id: caller.uid,
-				contractId: caller.contractId,
-			},
-			callee: { type: 'user', id: user._id },
-		});
-	}
-
-	public async callUser(caller: { uid: IUser['_id']; contractId: string }, userId: IUser['_id']): Promise<IMediaCall> {
-		return this.createInternalCall(caller, { uid: userId });
-	}
-
 	public async hangupExpiredCalls(): Promise<void> {
-		await MediaCallMonitor.hangupExpiredCalls().catch((error) => {
-			logger.error({ msg: 'Media Call Monitor failed to hangup expired calls', error });
+		await callServer.hangupExpiredCalls().catch((error) => {
+			logger.error({ msg: 'Media Call Server failed to hangup expired calls', error });
 		});
 
 		if (await MediaCalls.hasUnfinishedCalls()) {
-			MediaCallMonitor.scheduleExpirationCheck();
+			callServer.scheduleExpirationCheck();
 		}
 	}
 
 	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
 		void api.broadcast('user.media-signal', { userId: toUid, signal });
+	}
+
+	private configureMediaCallServer(): void {
+		callServer.configure(this.getMediaServerSettings());
+	}
+
+	private getMediaServerSettings(): IMediaCallServerSettings {
+		const enabled = settings.get<boolean>('VoIP_TeamCollab_Enabled') ?? false;
+		const sipEnabled = false;
+		const forceSip = false;
+
+		return {
+			enabled,
+			internalCalls: {
+				requireExtensions: forceSip,
+				routeExternally: forceSip ? 'always' : 'never',
+			},
+			sip: {
+				enabled: sipEnabled,
+			},
+		};
 	}
 
 	private async deserializeClientSignal(serialized: string): Promise<ClientMediaSignal> {

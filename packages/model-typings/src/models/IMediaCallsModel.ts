@@ -16,4 +16,6 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<UpdateResult>;
 	findAllExpiredCalls<T extends Document = IMediaCall>(options: FindOptions<T> | undefined): FindCursor<T>;
 	hasUnfinishedCalls(): Promise<boolean>;
+	setWebrtcOfferById(callId: string, offer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult>;
+	setWebrtcAnswerById(callId: string, offer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult>;
 }

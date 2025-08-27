@@ -1,6 +1,6 @@
-import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallActor } from '@rocket.chat/core-typings';
+import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallSignedActor, MediaCallActor } from '@rocket.chat/core-typings';
 import type { IMediaCallChannelsModel, InsertionModel } from '@rocket.chat/model-typings';
-import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult } from 'mongodb';
+import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult, FindOptions, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -18,13 +18,20 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 		];
 	}
 
-	public async findOneByCallIdAndActor(callId: string, actor: Required<MediaCallActor>): Promise<IMediaCallChannel | null> {
-		return this.findOne({
-			callId,
-			actorType: actor.type,
-			actorId: actor.id,
-			contractId: actor.contractId,
-		});
+	public findOneByCallIdAndSignedActor<T extends Document = IMediaCallChannel>(
+		params: MediaCallSignedActor & { callId: string },
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		const { callId, type: actorType, id: actorId, contractId } = params;
+		return this.findOne(
+			{
+				callId,
+				actorType,
+				actorId,
+				contractId,
+			},
+			options,
+		);
 	}
 
 	public updateOneById(
@@ -74,5 +81,27 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 
 	public async setLocalDescription(_id: string, localDescription: RTCSessionDescriptionInit): Promise<UpdateResult> {
 		return this.updateOneById(_id, { $set: { localDescription } });
+	}
+
+	public async setRemoteDescription(_id: string, remoteDescription: RTCSessionDescriptionInit): Promise<UpdateResult> {
+		return this.updateOneById(_id, { $set: { remoteDescription } });
+	}
+
+	public async setRemoteDescriptionByCallIdAndActor(
+		callId: string,
+		actor: MediaCallActor,
+		remoteDescription: RTCSessionDescriptionInit,
+	): Promise<void> {
+		await this.updateMany(
+			{
+				callId,
+				actorId: actor.id,
+				actorType: actor.type,
+				...(actor.contractId && { contractId: actor.contractId }),
+			},
+			{
+				$set: { remoteDescription },
+			},
+		);
 	}
 }

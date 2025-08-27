@@ -23,7 +23,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		return [
 			{ key: { createdAt: 1 }, unique: false },
 			{ key: { state: 1, expiresAt: 1 }, unique: false },
-			{ key: { 'caller.type': 1, 'caller.id': 1, 'callerRequestedId': 1 }, unique: true, sparse: true },
+			{
+				key: { 'caller.type': 1, 'caller.id': 1, 'callerRequestedId': 1 },
+				sparse: true,
+			},
 		];
 	}
 
@@ -137,5 +140,29 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 	public async hasUnfinishedCalls(): Promise<boolean> {
 		const count = await this.countDocuments({ state: { $ne: 'hangup' } }, { limit: 1 });
 		return count > 0;
+	}
+
+	public async setWebrtcOfferById(callId: string, offer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				webrtcOffer: { $exists: false },
+			},
+			{
+				$set: { webrtcOffer: offer, expiresAt },
+			},
+		);
+	}
+
+	public async setWebrtcAnswerById(callId: string, offer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				webrtcAnswer: { $exists: false },
+			},
+			{
+				$set: { webrtcAnswer: offer, expiresAt },
+			},
+		);
 	}
 }
