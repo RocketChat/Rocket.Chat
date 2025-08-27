@@ -31,6 +31,7 @@ export type MediaSignalingSessionConfig = {
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
+	iceGatheringTimeout?: number;
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -154,6 +155,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
 	}
 
+	public setIceGatheringTimeout(newTimeout: number): void {
+		this.config.iceGatheringTimeout = newTimeout;
+	}
+
 	private createTemporaryCallId(): string {
 		this.callCount++;
 		return `${this._sessionId}-${this.callCount}-${Date.now().toString()}`;
@@ -240,6 +245,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,
 			mediaStreamFactory: this.config.mediaStreamFactory,
+			iceGatheringTimeout: this.config.iceGatheringTimeout || 500,
 		};
 
 		const call = new ClientMediaCall(config, callId);
