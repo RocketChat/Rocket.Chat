@@ -49,14 +49,16 @@ export const useIsSelecting = (): boolean => {
 	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
-export const useToggleSelect = (mid: string): ((event: FormEvent<HTMLElement>) => void) => {
+export const useToggleSelect = (mid: string): ((event?: FormEvent<HTMLElement>) => void) => {
 	const { selectedMessageStore } = useContext(SelectedMessageContext);
 
 	return useCallback(
 		(event) => {
 			selectedMessageStore.toggle(mid);
 
-			event.stopPropagation();
+			if (event) {
+				event.stopPropagation();
+			}
 		},
 		[mid, selectedMessageStore],
 	);
