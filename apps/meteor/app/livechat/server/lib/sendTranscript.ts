@@ -105,10 +105,9 @@ export async function sendTranscript({
 			author = showAgentInfo ? message.u.name || message.u.username : i18n.t('Agent', { lng: userLanguage });
 		}
 
-		const isSystemMessage = MessageTypes.isSystemMessage(message);
-		const messageType = isSystemMessage && MessageTypes.getType(message);
+		const messageType = MessageTypes.getType(message);
 
-		let messageContent = messageType
+		let messageContent = messageType?.system
 			? DOMPurify.sanitize(`
 				<i>${messageType.text(i18n.cloneInstance({ interpolation: { escapeValue: false } }).t, message)}}</i>`)
 			: escapeHtml(message.msg);

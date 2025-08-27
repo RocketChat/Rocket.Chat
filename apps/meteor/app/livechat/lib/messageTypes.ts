@@ -95,6 +95,7 @@ MessageTypes.registerType({
 
 MessageTypes.registerType({
 	id: 'livechat_webrtc_video_call',
+	system: false,
 	text: (t, message) => {
 		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
 			return t('room_changed_type', {
