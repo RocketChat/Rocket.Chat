@@ -44,6 +44,9 @@ test.describe('OC - Monitor Role', () => {
 		const responses = await Promise.all([
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: false }),
+			api.post('/settings/Omnichannel_enable_department_removal', { value: true }),
+			// This is required now we're sending a chat into a department with no agents and no default agent
+			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: true }),
 		]);
 		responses.forEach((res) => expect(res.status()).toBe(200));
 	});
@@ -121,6 +124,8 @@ test.describe('OC - Monitor Role', () => {
 			// Reset setting
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
+			api.post('/settings/Omnichannel_enable_department_removal', { value: false }),
+			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: true }),
 		]);
 	});
 
