@@ -52,7 +52,6 @@ const LivechatMessageTypesValues = [
 	'livechat_video_call',
 	'livechat_transfer_history_fallback',
 	'livechat-close',
-	'livechat_webrtc_video_call',
 	'livechat-started',
 	'omnichannel_priority_change_history',
 	'omnichannel_sla_change_history',

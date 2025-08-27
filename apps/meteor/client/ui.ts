@@ -30,7 +30,6 @@ import { useUploadedFilesListRoomAction } from './hooks/roomActions/useUploadedF
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
 import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction';
 import { useVideoCallRoomAction } from './hooks/roomActions/useVideoCallRoomAction';
-import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
 import { useCannedResponsesRoomAction } from './views/omnichannel/hooks/useCannedResponsesRoomAction';
 import { useContactProfileRoomAction } from './views/omnichannel/hooks/useContactProfileRoomAction';
 import { useOmnichannelExternalFrameRoomAction } from './views/omnichannel/hooks/useOmnichannelExternalFrameRoomAction';
@@ -66,7 +65,6 @@ export const roomActionHooks = [
 	useTeamChannelsRoomAction,
 	useUploadedFilesListRoomAction,
 	useVoIPRoomInfoRoomAction,
-	useWebRTCVideoRoomAction,
 	useAppsRoomStarActions,
 	useVideoCallRoomAction,
 	useMediaCallRoomAction,
