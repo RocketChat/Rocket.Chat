@@ -39,11 +39,8 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api: BaseTest['api'
 		return;
 	}
 
-	// No need to create fixture users for basic login tests
-
-	// In CI, Rocket.Chat runs in a container and needs host.docker.internal to reach LDAP container
-	// In local dev, both services run on host so localhost works
-	const ldapHost = process.env.CI ? 'host.docker.internal' : 'localhost';
+	// In CI: Use container name for container-to-container communication
+	const ldapHost = process.env.CI ? 'testldap_idp' : 'localhost';
 
 	const settings = [
 		{ _id: 'Accounts_ManuallyApproveNewUsers', value: false },
