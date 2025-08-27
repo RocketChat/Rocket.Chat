@@ -28,7 +28,7 @@ import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking
 import { useAutoupdate } from '../../hooks/useAutoupdate';
 import { useLoadRoomForAllowedAnonymousRead } from '../../hooks/useLoadRoomForAllowedAnonymousRead';
 import { appLayout } from '../../lib/appLayout';
-import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
+// import { useRedirectToSetupWizard } from '../../startup/useRedirectToSetupWizard';
 
 const AppLayout = () => {
 	useEffect(() => {
@@ -48,7 +48,7 @@ const AppLayout = () => {
 	useLoadRoomForAllowedAnonymousRead();
 	useNotificationPermission();
 	useEmojiOne();
-	useRedirectToSetupWizard();
+	// useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();
 	useLivechatEnterprise();
 	useNextcloudOAuth();
