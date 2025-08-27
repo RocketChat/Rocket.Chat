@@ -14,17 +14,19 @@ import MediaCallWidget from '../v2/MediaCallWidget';
 const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const userId = useUserId();
 
-	const instance = useMediaSessionInstance(userId ?? undefined);
+	const { instance, processor } = useMediaSessionInstance(userId ?? undefined);
 	// console.log('instance', instance);
-	const session = useMediaSession(instance);
+	const session = useMediaSession(instance, processor);
 
 	const remoteStreamRefCallback = useMediaStream(instance);
 
 	const onMute = () => session.toggleMute();
 	const onHold = () => session.toggleHold();
 
-	const onDeviceChange = (device: string) => {
-		session.changeDevice(device);
+	// TODO implement
+	const onDeviceChange = (deviceId: string) => {
+		console.log('onDeviceChange', deviceId);
+		// session.changeDevice(deviceId);
 	};
 
 	const onForward = () => {

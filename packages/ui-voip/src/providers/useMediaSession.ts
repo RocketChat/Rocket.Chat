@@ -8,9 +8,10 @@ import {
 	CallRole,
 	ClientMediaSignal,
 	ServerMediaSignal,
+	WebRTCProcessorConfig,
 } from '@rocket.chat/media-signaling';
 import { useStream, useUserAvatarPath, useWriteStream } from '@rocket.chat/ui-contexts';
-import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback } from 'react';
+import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback, useRef } from 'react';
 
 import { useCallSounds } from './useCallSounds';
 import type { PeerInfo, State } from '../v2/MediaCallContext';
@@ -22,6 +23,41 @@ export async function getUserMedia(constraints: MediaStreamConstraints): Promise
 	}
 
 	return navigator.mediaDevices.getUserMedia.call(navigator.mediaDevices, constraints);
+}
+
+class WebRTCProcessor extends MediaCallWebRTCProcessor {
+	constructor(config: WebRTCProcessorConfig) {
+		super(config);
+	}
+
+	public async replaceSenderTrack(track: MediaStreamTrack) {
+		// Not sure how we'd go about replacing the tracks, if there can be more than one track/sender.
+		const sender = this.peer.getSenders().find((sender) => sender.track?.kind === track.kind);
+		if (sender) {
+			await sender.replaceTrack(track);
+		}
+	}
+
+	public toggleSenderTracks(enable: boolean) {
+		const tracks = this.peer.getSenders().map((sender) => sender.track);
+		tracks.forEach((track) => {
+			if (!track) {
+				return;
+			}
+			track.enabled = enable;
+		});
+	}
+
+	public stopAllTracks() {
+		const senderTracks = this.peer.getSenders().map((sender) => sender.track);
+		const receiverTracks = this.peer.getReceivers().map((receiver) => receiver.track);
+		[...senderTracks, ...receiverTracks].forEach((track) => {
+			if (!track) {
+				return;
+			}
+			track.stop();
+		});
+	}
 }
 
 interface BaseSession {
@@ -61,7 +97,9 @@ type MediaSession = SessionInfo & {
 	endCall: () => void;
 	startCall: (id?: string, kind?: 'user' | 'sip') => Promise<void>;
 
-	changeDevice: (device: string) => void;
+	// changeDevice: (device: string) => void;
+	changeDevice: (newTrack: MediaStreamTrack) => void;
+	// changeDevice: (mediaStream: MediaStream) => void;
 	forwardCall: () => void;
 	sendTone: (tone: string) => void;
 };
@@ -73,6 +111,8 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 	private sendSignalFn: SignalTransport | null = null;
 
+	private _webrtcProcessorFactory: ((config: WebRTCProcessorConfig) => WebRTCProcessor) | null = null;
+
 	constructor() {
 		super();
 	}
@@ -83,6 +123,13 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 	public onChange(callback: () => void) {
 		return this.on('change', callback);
+	}
+
+	private webrtcProcessorFactory(config: WebRTCProcessorConfig) {
+		if (!this._webrtcProcessorFactory) {
+			throw new Error('WebRTC processor factory not set');
+		}
+		return this._webrtcProcessorFactory(config);
 	}
 
 	private sendSignal(signal: ClientMediaSignal) {
@@ -99,7 +146,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			userId,
 			transport: (signal: ClientMediaSignal) => this.sendSignal(signal),
 			processorFactories: {
-				webrtc: (config) => new MediaCallWebRTCProcessor(config),
+				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
 			mediaStreamFactory: getUserMedia,
 		});
@@ -128,6 +175,10 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			this.sendSignalFn = null;
 		};
 	}
+
+	public setWebRTCProcessorFactory(factory: (config: WebRTCProcessorConfig) => WebRTCProcessor) {
+		this._webrtcProcessorFactory = factory;
+	}
 }
 
 const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole): State | undefined => {
@@ -153,6 +204,8 @@ export const useMediaSessionInstance = (userId?: string) => {
 		}, [userId]),
 	);
 
+	const processor = useRef<WebRTCProcessor | undefined>(undefined);
+
 	const notifyUserStream = useStream('notify-user');
 	const writeStream = useWriteStream('notify-user');
 
@@ -175,7 +228,18 @@ export const useMediaSessionInstance = (userId?: string) => {
 		};
 	}, [instance, notifyUserStream]);
 
-	return instance ?? undefined;
+	useEffect(() => {
+		mediaSession.setWebRTCProcessorFactory((config) => {
+			const _processor = new WebRTCProcessor(config);
+			processor.current = _processor;
+			return _processor;
+		});
+	}, []);
+
+	return {
+		instance: instance ?? undefined,
+		processor: processor.current,
+	};
 };
 
 const reducer = (
@@ -228,10 +292,11 @@ const reducer = (
 	return reducerState;
 };
 
-export const useMediaSession = (instance?: MediaSignalingSession): MediaSession => {
+export const useMediaSession = (instance?: MediaSignalingSession, processor?: WebRTCProcessor): MediaSession => {
 	const [mediaSession, dispatch] = useReducer<typeof reducer>(reducer, defaultSessionInfo);
 
 	const getAvatarUrl = useUserAvatarPath();
+
 	useEffect(() => {
 		if (!instance) {
 			dispatch({ type: 'reset' });
@@ -285,14 +350,17 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 		const offCbs = [
 			instance.on('newCall', updateSessionState),
 			instance.on('acceptedCall', updateSessionState),
-			instance.on('endedCall', updateSessionState),
+			instance.on('endedCall', () => {
+				processor?.stopAllTracks();
+				updateSessionState();
+			}),
 			instance.on('callStateChange', updateSessionState),
 		];
 
 		return () => {
 			offCbs.forEach((off) => off());
 		};
-	}, [getAvatarUrl, instance]);
+	}, [getAvatarUrl, instance, processor]);
 
 	useCallSounds(
 		mediaSession.state,
@@ -306,6 +374,14 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			[instance],
 		),
 	);
+
+	useEffect(() => {
+		if (!processor) {
+			return;
+		}
+
+		processor.toggleSenderTracks(!mediaSession.muted);
+	}, [mediaSession.muted, processor]);
 
 	const cbs = useMemo(() => {
 		const toggleWidget = (peerInfo?: PeerInfo) => {
@@ -369,8 +445,13 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			}
 		};
 
-		const changeDevice = (_device: string) => {
-			// dispatch({ type: 'changeDevice', payload: { device } });
+		// TODO not sure between getting the track or device/stream.
+		const changeDevice = (newTrack: MediaStreamTrack) => {
+			try {
+				processor?.replaceSenderTrack(newTrack);
+			} catch (error) {
+				console.error(error);
+			}
 		};
 
 		const forwardCall = () => {
@@ -383,7 +464,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 
 		return {
 			toggleWidget,
-			toggleMute,
 			toggleHold,
 			endCall,
 			startCall,
@@ -391,8 +471,9 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			forwardCall,
 			sendTone,
 			selectPeer,
+			toggleMute,
 		};
-	}, [instance]);
+	}, [instance, processor]);
 
 	return {
 		...mediaSession,
