@@ -862,15 +862,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<IRoomFederated>(query, options);
 	}
 
-	findCountOfRoomsWithActiveCalls(): Promise<number> {
-		const query: Filter<IRoom> = {
-			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
-			callStatus: { $exists: true },
-		};
-
-		return this.countDocuments(query);
-	}
-
 	async findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined> {
 		const asc = false;
 
@@ -943,35 +934,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		options: FindOptions<T> = {} as FindOptions<T>,
 	): Promise<T | null> {
 		return this.findOne<T>({ _id: roomId, t: type }, options);
-	}
-
-	setCallStatus(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = {
-			_id,
-		};
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				callStatus: status,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	setCallStatusAndCallStartTime(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = {
-			_id,
-		};
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				callStatus: status,
-				webRtcCallStartTime: new Date(),
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	setReactionsInLastMessage(roomId: IRoom['_id'], reactions: IMessage['reactions']): Promise<UpdateResult> {

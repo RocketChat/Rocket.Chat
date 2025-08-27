@@ -67,11 +67,6 @@ export interface LivechatEndpoints {
 		args: OperationParams<'POST', '/v1/livechat/room.survey'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.survey'>>>;
 	updateVisitorStatus(status: string): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor.status'>['status']>>;
-	updateCallStatus(
-		callStatus: string,
-		rid: string,
-		callId: string,
-	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor.callStatus'>>>;
 	sendMessage(args: OperationParams<'POST', '/v1/livechat/message'>): Promise<Serialized<OperationResult<'POST', '/v1/livechat/message'>>>;
 	sendOfflineMessage(
 		args: OperationParams<'POST', '/v1/livechat/offline.message'>,
