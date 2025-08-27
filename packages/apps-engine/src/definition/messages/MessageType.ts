@@ -49,8 +49,6 @@ export type MessageType =
 	/** Sent when a livechat conversation is closed */
 	| 'livechat-close'
 	/** Sent when a livechat conversation is started */
-	| 'livechat_webrtc_video_call'
-	/** Sent when a livechat conversation is started */
 	| 'livechat-started'
 	/** Sent when the priority of omnichannel is changed */
 	| 'omnichannel_priority_change_history'
