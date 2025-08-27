@@ -637,7 +637,7 @@ API.v1.addRoute(
 			const { email } = this.bodyParams;
 
 			if (!isSMTPConfigured()) {
-				throw new Meteor.Error('error-email-send-failed', 'SMTP is not configured', {
+				throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
 					method: 'sendWelcomeEmail',
 				});
 			}
@@ -645,7 +645,7 @@ API.v1.addRoute(
 			const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
 
 			if (!user) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				throw new MeteorError('error-invalid-user', 'Invalid user', {
 					method: 'sendWelcomeEmail',
 				});
 			}
