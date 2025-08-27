@@ -1,8 +1,8 @@
-import type { ISubscription, ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
+import { type ISubscription, type ILivechatInquiryRecord, type IRoom, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { createContext, useContext, useEffect, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -246,4 +246,34 @@ export const useRedirectToDefaultTab = (shouldRedirect: boolean) => {
 			switchSidePanelTab('all');
 		}
 	}, [shouldRedirect, switchSidePanelTab]);
+};
+
+export const useRedirectToFilter = (room?: IRoom) => {
+	const switchSidePanelTab = useSwitchSidePanelTab();
+
+	const handleRedirect = useCallback(
+		(room: SubscriptionWithRoom | IRoom) => {
+			const roomId = 'rid' in room ? room.rid : room._id;
+			if (isTeamRoom(room)) {
+				switchSidePanelTab('teams', { parentRid: roomId });
+				return;
+			}
+
+			if (isDirectMessageRoom(room)) {
+				switchSidePanelTab('directMessages', { parentRid: roomId });
+				return;
+			}
+
+			switchSidePanelTab('channels', { parentRid: room.prid || roomId });
+		},
+		[switchSidePanelTab],
+	);
+
+	useEffect(() => {
+		if (room) {
+			handleRedirect(room);
+		}
+	}, [handleRedirect, room, switchSidePanelTab]);
+
+	return handleRedirect;
 };

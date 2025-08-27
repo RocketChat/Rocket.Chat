@@ -1,15 +1,15 @@
-import { isDirectMessageRoom, isOmnichannelRoom, isTeamRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 
 import SidebarItem from './SidebarItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useSwitchSidePanelTab, useRoomsListContext, useIsRoomFilter } from '../../contexts/RoomsNavigationContext';
+import { useRoomsListContext, useIsRoomFilter, useRedirectToFilter } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
@@ -66,28 +66,14 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 		</>
 	);
 
-	const switchSidePanelTab = useSwitchSidePanelTab();
 	const { parentRid } = useRoomsListContext();
 
 	const isRoomFilter = useIsRoomFilter();
 
 	const selected = isRoomFilter && room.rid === parentRid;
 
-	const handleClick = useCallback(() => {
-		if (isTeamRoom(room)) {
-			switchSidePanelTab('teams', { parentRid: room.rid });
-			return;
-		}
-
-		if (isDirectMessageRoom(room)) {
-			switchSidePanelTab('directMessages', { parentRid: room.rid });
-			return;
-		}
-
-		switchSidePanelTab('channels', { parentRid: room.rid });
-	}, [room, switchSidePanelTab]);
-
-	const buttonProps = useButtonPattern(handleClick);
+	const redirectToFilter = useRedirectToFilter();
+	const buttonProps = useButtonPattern(() => redirectToFilter(room));
 
 	return (
 		<SidebarItem
