@@ -59,6 +59,8 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api: BaseTest['api'
 };
 
 test.describe('LDAP', () => {
+	test.skip(!constants.IS_EE, 'Enterprise Only');
+
 	let poRegistration: Registration;
 
 	const containerPath = path.join(__dirname, 'containers', 'ldap');
@@ -78,7 +80,7 @@ test.describe('LDAP', () => {
 		const waitTime = process.env.CI ? 45000 : 15000;
 		await new Promise((resolve) => setTimeout(resolve, waitTime));
 
-		// Trigger LDAP sync
+		// Trigger LDAP sync to ensure users are synchronized
 		const syncResponse = await api.post('/ldap.syncNow', {});
 		expect(syncResponse.status()).toBe(200);
 

@@ -1,7 +1,7 @@
 version: '3'
 services:
   testldap_idp:
-    image: osixia/openldap:1.3.0
+    build: .
     environment:
       LDAP_ORGANISATION: "rcldap"
       LDAP_DOMAIN: "rcldap.com.br"
@@ -16,6 +16,4 @@ services:
     ports:
       - "389:389"
       - "636:636"
-    volumes:
-      - ./config/test_users.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif
     command: --copy-service
