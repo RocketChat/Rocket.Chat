@@ -40,11 +40,19 @@ export class MediaCallDirector {
 		const endedBy = { type: 'server', id: 'server' } as ServerActor;
 
 		const modified = await this.hangupCallById(call._id, { endedBy, reason: serverErrorCode });
-		// #ToDo: Report call without agent
+		if (!modified) {
+			return false;
+		}
 
-		// if (modified) {
-		// 	await AgentManager.runForAllAgents(call, (agent) => agent.onCallEnded(call._id));
-		// }
+		// Try to notify the agents but there's no guarantee they are reachable
+		try {
+			const agents = await this.cast.getAgentsFromCall(call);
+			for (const agent of Object.values(agents)) {
+				agent?.onCallEnded(call._id).catch(() => null);
+			}
+		} catch {
+			// Ignore errors on the ended event
+		}
 
 		return modified;
 	}
@@ -68,18 +76,6 @@ export class MediaCallDirector {
 		if (!stateResult.modifiedCount) {
 			return;
 		}
-
-		// const callerChannel = await MediaCallChannels.findOneByCallIdAndSignedActor({
-		// 	callId: call._id,
-		// 	type: call.caller.type,
-		// 	id: call.caller.id,
-		// 	contractId: call.caller.contractId,
-		// });
-
-		// if (!callerChannel?.localDescription) {
-		// 	// #ToDo: log and hangup
-		// 	return;
-		// }
 
 		await calleeAgent.onCallAccepted(call._id, contractId);
 		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
@@ -177,7 +173,7 @@ export class MediaCallDirector {
 			...(webrtcOffer && { webrtcOffer }),
 		};
 
-		console.log('creating call', call);
+		logger.debug({ msg: 'creating call', call });
 
 		const insertResult = await MediaCalls.insertOne(call);
 		if (!insertResult.insertedId) {

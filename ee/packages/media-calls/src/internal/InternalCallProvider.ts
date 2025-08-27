@@ -2,11 +2,12 @@ import type { IMediaCall } from '@rocket.chat/core-typings';
 
 import { BaseCallProvider } from '../base/BaseCallProvider';
 import type { InternalCallParams } from '../definition/common';
+import { logger } from '../logger';
 import { MediaCallDirector } from '../server/CallDirector';
 
 export class InternalCallProvider extends BaseCallProvider {
 	public static async createCall(params: InternalCallParams): Promise<IMediaCall> {
-		console.log('create internal call');
+		logger.debug({ msg: 'InternalCallProvider.createCall', params });
 		const callerAgent = await MediaCallDirector.cast.getAgentForActorAndRole(params.caller, 'caller');
 		const calleeAgent = await MediaCallDirector.cast.getAgentForActorAndRole(params.callee, 'callee');
 

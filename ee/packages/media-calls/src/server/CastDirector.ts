@@ -1,16 +1,9 @@
-import type {
-	IMediaCall,
-	IUser,
-	MediaCallActor,
-	MediaCallActorType,
-	MediaCallContact,
-	MediaCallContactInformation,
-} from '@rocket.chat/core-typings';
+import type { IUser, MediaCallActor, MediaCallActorType, MediaCallContact, MediaCallContactInformation } from '@rocket.chat/core-typings';
 import type { CallRole } from '@rocket.chat/media-signaling';
 import { Users } from '@rocket.chat/models';
 
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
-import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
+import type { IMediaCallCastDirector, MediaCallHeader } from '../definition/IMediaCallCastDirector';
 import type { GetActorContactOptions, MinimalUserData } from '../definition/common';
 import type { UserActorAgent } from '../internal/agents/BaseUserAgent';
 import { UserActorCalleeAgent } from '../internal/agents/CalleeAgent';
@@ -24,7 +17,7 @@ import { SipActorCallerAgent } from '../sip/agents/CallerAgent';
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 
 export class MediaCallCastDirector implements IMediaCallCastDirector {
-	public async getAgentsFromCall(call: IMediaCall): Promise<{ caller: IMediaCallAgent; callee: IMediaCallAgent }> {
+	public async getAgentsFromCall(call: MediaCallHeader): Promise<{ caller: IMediaCallAgent; callee: IMediaCallAgent }> {
 		logger.debug({ msg: 'MediaCallCastDirector.getAgentsFromCall', callId: call?._id });
 
 		const callerAgent = await this.getAgentFromCall(call, 'caller');
@@ -46,7 +39,7 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		};
 	}
 
-	public async getAgentFromCall(call: IMediaCall, role: CallRole): Promise<IMediaCallAgent | null> {
+	public async getAgentFromCall(call: MediaCallHeader, role: CallRole): Promise<IMediaCallAgent | null> {
 		logger.debug({ msg: 'MediaCallCastDirector.getAgentFromCall', callId: call?._id, role });
 
 		const { [role]: actor } = call;

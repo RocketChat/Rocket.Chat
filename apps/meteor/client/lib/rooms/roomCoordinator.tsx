@@ -3,7 +3,6 @@ import type { RouteName } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { Subscriptions } from '../../../app/models/client';
 import type {
 	RoomSettingsEnum,
 	RoomMemberActions,
@@ -15,6 +14,7 @@ import type {
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { router } from '../../providers/RouterProvider';
+import { Subscriptions } from '../../stores';
 import RoomRoute from '../../views/room/RoomRoute';
 import MainLayout from '../../views/root/MainLayout';
 import { appLayout } from '../appLayout';
@@ -42,17 +42,11 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getUiText(_context: ValueOf<typeof UiTextContext>): string {
 				return '';
 			},
-			condition(): boolean {
-				return true;
-			},
 			getAvatarPath(_room): string {
 				return '';
 			},
 			findRoom(_identifier: string): IRoom | undefined {
 				return undefined;
-			},
-			showJoinLink(_roomId: string): boolean {
-				return false;
 			},
 			isLivechatRoom(): boolean {
 				return false;

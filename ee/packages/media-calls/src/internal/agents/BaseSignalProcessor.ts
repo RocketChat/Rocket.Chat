@@ -1,8 +1,15 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallActor, MediaCallActorType } from '@rocket.chat/core-typings';
-import type { CallAnswer, CallHangupReason, CallRole, ClientMediaSignal, ClientMediaSignalLocalState, ServerMediaSignal } from '@rocket.chat/media-signaling';
+import type {
+	CallAnswer,
+	CallHangupReason,
+	CallRole,
+	ClientMediaSignal,
+	ClientMediaSignalLocalState,
+	ServerMediaSignal,
+} from '@rocket.chat/media-signaling';
 import { MediaCallChannels } from '@rocket.chat/models';
-import { AgentContractState } from '../../definition/common';
-import { IMediaCallAgent } from '../../definition/IMediaCallAgent';
+
+import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
 import { MediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
@@ -36,27 +43,19 @@ export abstract class UserActorSignalProcessor {
 		};
 	}
 
-	protected contractState: AgentContractState;
+	public readonly signed: boolean;
 
-	public get signed(): boolean {
-		return this.contractState === 'signed';
-	}
-
-	public get ignored(): boolean {
-		return this.contractState === 'ignored';
-	}
+	public readonly ignored: boolean;
 
 	constructor(
 		protected readonly agent: IMediaCallAgent,
 		protected readonly call: IMediaCall,
 		protected readonly channel: IMediaCallChannel,
 	) {
-		this.contractState = 'proposed';
-
 		const actor = call[channel.role];
-		if (actor.contractId) {
-			this.contractState = actor.contractId === channel.contractId ? 'signed' : 'ignored';
-		}
+
+		this.signed = Boolean(actor.contractId && actor.contractId === channel.contractId);
+		this.ignored = Boolean(actor.contractId && actor.contractId !== channel.contractId);
 	}
 
 	public async setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
@@ -83,7 +82,7 @@ export abstract class UserActorSignalProcessor {
 	}
 
 	public async requestWebRTCOffer(params: { iceRestart?: boolean }): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.requestOffer', actor: this.actor, contractState: this.contractState });
+		logger.debug({ msg: 'UserActorSignalProcessor.requestOffer', actor: this.actor });
 
 		await this.sendSignal({
 			callId: this.callId,
@@ -174,35 +173,4 @@ export abstract class UserActorSignalProcessor {
 			await this.clientIsActive();
 		}
 	}
-
-	// private async notify(notification: CallNotification, signedContractId?: string): Promise<void> {
-	// 	logger.debug({ msg: 'UserActorSignalProcessor.notify', callId: this.callId, notification, contractState: this.contractState });
-
-	// 	// If we have been ignored, we should not be notifying anyone
-	// 	if (this.ignored) {
-	// 		return;
-	// 	}
-
-	// 	// If we know we're signed, inject our contractId into all notifications we send to the client
-	// 	const signedId = signedContractId || (this.signed && this.contractId) || undefined;
-
-	// 	return this.sendSignal({
-	// 		callId: this.callId,
-	// 		type: 'notification',
-	// 		notification,
-	// 		...(signedId && { signedContractId: signedId }),
-	// 	});
-	// }
-
-	// private async getContactInfo(): Promise<CallContact> {
-	// 	const { _id: id, username, name: displayName, freeSwitchExtension: sipExtension } = this.user;
-
-	// 	return {
-	// 		type: 'user',
-	// 		id,
-	// 		username,
-	// 		displayName,
-	// 		sipExtension,
-	// 	};
-	// }
 }

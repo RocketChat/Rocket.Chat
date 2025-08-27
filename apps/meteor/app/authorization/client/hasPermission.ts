@@ -2,8 +2,9 @@ import type { IUser, IPermission } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { hasRole } from './hasRole';
-import { watch } from './watch';
-import { AuthzCachedCollection, Permissions, Users } from '../../models/client';
+import { PermissionsCachedStore } from '../../../client/cachedStores';
+import { watch } from '../../../client/lib/cachedStores';
+import { Permissions, Users } from '../../../client/stores';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
 const createPermissionValidator =
@@ -55,7 +56,7 @@ const validatePermissions = (
 		return false;
 	}
 
-	if (!AuthzCachedCollection.ready.get()) {
+	if (!PermissionsCachedStore.watchReady()) {
 		return false;
 	}
 

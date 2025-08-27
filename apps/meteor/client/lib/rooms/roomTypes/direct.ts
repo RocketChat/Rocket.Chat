@@ -1,17 +1,14 @@
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 
-import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { Subscriptions, Users, Rooms } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
-import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
 import { getUserAvatarURL } from '../../../../app/utils/client/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
+import { Users, Rooms, Subscriptions } from '../../../stores';
 import * as Federation from '../../federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
@@ -96,11 +93,6 @@ roomCoordinator.add(
 				default:
 					return '';
 			}
-		},
-
-		condition() {
-			const groupByType = getUserPreference(Meteor.userId(), 'sidebarGroupByType');
-			return groupByType && hasAtLeastOnePermission(['view-d-room', 'view-joined-room']);
 		},
 
 		getAvatarPath(room) {
