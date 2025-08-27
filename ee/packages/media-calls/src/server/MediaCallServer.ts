@@ -39,13 +39,12 @@ export class MediaCallServer implements IMediaCallServer {
 		logger.debug({ msg: 'MediaCallServer.receiveSignal', signal, fromUid });
 
 		if (!isClientMediaSignal(signal)) {
-			this.debugError('The Media Signal Server received an invalid client signal object', { signal });
+			logger.error({ msg: 'The Media Signal Server received an invalid client signal object' });
 			throw new Error('invalid-signal');
 		}
 
 		this.signalProcessor.processSignal(fromUid, signal).catch((error) => {
-			console.log(error);
-			this.debugError('Failed to process client signal', { signal }, { error, type: signal.type });
+			logger.error({ msg: 'Failed to process client signal', error, type: signal.type });
 		});
 	}
 
@@ -63,7 +62,6 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public async createCall(params: InternalCallParams): Promise<IMediaCall> {
 		logger.debug({ msg: 'MediaCallServer.createCall', params });
-		console.log('create call from signal', params);
 
 		if (params.callee.type === 'sip') {
 			return this.session.createOutgoingCall(params);
@@ -85,12 +83,9 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	public configure(settings: IMediaCallServerSettings): void {
+		logger.debug({ msg: 'Media Server Configuration', settings });
 		this.session.configure(settings);
-	}
-
-	private debugError(msg: string, debugInfo: Record<string, unknown>, errorInfo?: Record<string, unknown>): void {
-		logger.error({ msg, ...errorInfo });
-		logger.debug({ msg: `${msg} - debug info`, ...debugInfo });
+		this.signalProcessor.configure(settings);
 	}
 
 	private onCallRequest(fromUid: IUser['_id'], params: InternalCallParams): void {

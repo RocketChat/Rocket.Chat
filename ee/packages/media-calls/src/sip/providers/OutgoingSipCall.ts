@@ -3,6 +3,7 @@ import { MediaCalls } from '@rocket.chat/models';
 
 import { BaseSipCall } from './BaseSipCall';
 import type { InternalCallParams } from '../../definition/common';
+import { logger } from '../../logger';
 import { MediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipActorAgent } from '../agents/BaseSipAgent';
@@ -21,7 +22,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	}
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
-		console.log('create outgoing sip call');
+		logger.debug({ msg: 'OutgoingSipCall.createCall', params });
 
 		const { callee, ...extraParams } = params;
 
@@ -66,13 +67,14 @@ export class OutgoingSipCall extends BaseSipCall {
 	}
 
 	protected async reflectCall(call: IMediaCall): Promise<void> {
+		logger.debug({ msg: 'OutgoingSipCall.reflectCall', call, lastCallState: this.lastCallState });
 		if (call.state === 'hangup') {
 			// return this.processEndedCall();
 			return;
 		}
 
 		if (this.lastCallState === 'none') {
-			const remoteDescription = await this.getRemoteDescription();
+			const remoteDescription = call.webrtcOffer;
 			if (!remoteDescription) {
 				return;
 			}
@@ -86,6 +88,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	}
 
 	protected async startRingingById(callId: string, sdp: RTCSessionDescriptionInit): Promise<void> {
+		logger.debug('OutgoingSipCall.startRingingById');
 		const call = await MediaCalls.findOneById(callId);
 		if (!call) {
 			throw new Error('invalid-call');
@@ -102,18 +105,5 @@ export class OutgoingSipCall extends BaseSipCall {
 				// this.emitter.emit('callEnded');
 				this.lastCallState = 'hangup';
 			});
-	}
-
-	private async getRemoteDescription(): Promise<RTCSessionDescriptionInit | null> {
-		if (this.remoteDescription) {
-			return this.remoteDescription;
-		}
-
-		const remoteDescription = await this.getChannelRemoteDescription();
-		if (remoteDescription) {
-			this.remoteDescription = remoteDescription;
-		}
-
-		return remoteDescription;
 	}
 }

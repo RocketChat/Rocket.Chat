@@ -10,7 +10,6 @@ import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
-import { logger } from '../../logger';
 import { MediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipActorAgent } from '../agents/BaseSipAgent';
@@ -145,8 +144,8 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	protected async reflectCall(call: IMediaCall): Promise<void> {
-		if (call.state === 'accepted' && this.lastCallState !== 'accepted') {
-			return this.processAcceptedCall();
+		if (call.state === 'accepted' && this.lastCallState !== 'accepted' && call.webrtcAnswer) {
+			return this.flagAsAccepted(call.webrtcAnswer);
 		}
 
 		if (call.state === 'hangup') {
@@ -157,24 +156,6 @@ export class IncomingSipCall extends BaseSipCall {
 	protected async processEndedCall(): Promise<void> {
 		this.emitter.emit('callEnded');
 		this.lastCallState = 'hangup';
-	}
-
-	protected async processAcceptedCall(): Promise<void> {
-		logger.debug({ msg: 'IncomingSipCall.processAcceptedCall' });
-
-		if (this.remoteDescription) {
-			return this.flagAsAccepted(this.remoteDescription);
-		}
-
-		const remoteDescription = await this.getChannelRemoteDescription();
-
-		// If there's no remoteDescription on the channel yet, skip processing and retain the old call state.
-		// If we get a new update report, then this will all run again
-		if (!remoteDescription) {
-			return;
-		}
-
-		this.flagAsAccepted(remoteDescription);
 	}
 
 	private flagAsAccepted(remoteDescription: RTCSessionDescriptionInit): void {
