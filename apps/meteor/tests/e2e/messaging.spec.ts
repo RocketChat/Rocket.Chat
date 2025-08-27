@@ -104,7 +104,15 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('send edited message', async () => {
-				await poHomeChannel.content.sendMessage('edited msg2');
+				const editPromise = page.waitForResponse(
+					(response) =>
+						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
+						response.status() === 200 &&
+						response.request().method() === 'POST',
+				);
+
+				await poHomeChannel.content.sendMessage('edited msg2', false);
+				await editPromise;
 
 				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('edited msg2');
 			});
@@ -117,7 +125,7 @@ test.describe('Messaging', () => {
 						response.request().method() === 'POST',
 				);
 
-				for (const element of ['edited msg2 a', 'edited msg2 b']) {
+				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
 					// eslint-disable-next-line no-await-in-loop
 					await page.keyboard.press('ArrowUp');
 					// eslint-disable-next-line no-await-in-loop
