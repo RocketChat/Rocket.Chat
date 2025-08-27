@@ -7,29 +7,38 @@ import CannedResponse from './CannedResponse';
 import CreateCannedResponse from '../../modals/CreateCannedResponse';
 
 type WrapCannedResponseProps = {
-	allowUse: boolean;
+	canUseCannedResponses: boolean;
 	cannedItem: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
+	canSaveCannedResponses: boolean;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	onClose: () => void;
 	reload: () => void;
 };
 
-const WrapCannedResponse = ({ allowUse, cannedItem, onClickBack, onClose, onClickUse, reload }: WrapCannedResponseProps) => {
+const WrapCannedResponse = ({
+	canSaveCannedResponses,
+	canUseCannedResponses,
+	cannedItem,
+	onClickBack,
+	onClose,
+	onClickUse,
+	reload,
+}: WrapCannedResponseProps) => {
 	const setModal = useSetModal();
 	const onClickEdit = (): void => {
 		setModal(<CreateCannedResponse cannedResponseData={cannedItem} onClose={() => setModal(null)} reloadCannedList={reload} />);
 	};
 
-	const hasManagerPermission = usePermission('view-all-canned-responses');
-	const hasMonitorPermission = usePermission('save-department-canned-responses');
+	const canViewAllCannedResponses = usePermission('view-all-canned-responses');
 
-	const allowEdit = hasManagerPermission || (hasMonitorPermission && cannedItem.scope !== 'global') || cannedItem.scope === 'user';
+	const canEditCannedResponses =
+		canSaveCannedResponses || (canViewAllCannedResponses && cannedItem.scope !== 'global') || cannedItem.scope === 'user';
 
 	return (
 		<CannedResponse
-			allowEdit={allowEdit}
-			allowUse={allowUse}
+			allowEdit={canEditCannedResponses}
+			allowUse={canUseCannedResponses}
 			data={cannedItem}
 			onClickBack={onClickBack}
 			onClickEdit={onClickEdit}

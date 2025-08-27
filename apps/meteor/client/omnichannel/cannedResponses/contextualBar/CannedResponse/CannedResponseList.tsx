@@ -1,6 +1,7 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -57,6 +58,9 @@ const CannedResponseList = ({
 	const { t } = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
+	const saveCannedResponsesPermission = usePermission('save-canned-responses');
+	const saveDepartmentCannedResponsesPermission = usePermission('save-department-canned-responses');
+	const canSaveCannedResponses = saveCannedResponsesPermission || saveDepartmentCannedResponsesPermission;
 	const { context: cannedId } = useRoomToolbox();
 
 	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver<HTMLElement>({
@@ -68,7 +72,8 @@ const CannedResponseList = ({
 	if (cannedItem) {
 		return (
 			<WrapCannedResponse
-				allowUse={!isRoomOverMacLimit}
+				canUseCannedResponses={!isRoomOverMacLimit}
+				canSaveCannedResponses={canSaveCannedResponses}
 				cannedItem={cannedItem}
 				onClickBack={onClickItem}
 				onClickUse={onClickUse}
@@ -96,7 +101,7 @@ const CannedResponseList = ({
 								ref={inputRef}
 							/>
 							<Box w='x144'>
-								<Select onChange={(value) => setType(String(value))} value={type} options={options} />
+								<Select aria-label={t('Type')} onChange={(value) => setType(String(value))} value={type} options={options} />
 							</Box>
 						</Margins>
 					</Box>
@@ -127,9 +132,7 @@ const CannedResponseList = ({
 				)}
 			</ContextualbarContent>
 			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					<Button onClick={onClickCreate}>{t('Create')}</Button>
-				</ButtonGroup>
+				<ButtonGroup stretch>{canSaveCannedResponses && <Button onClick={onClickCreate}>{t('Create')}</Button>}</ButtonGroup>
 			</ContextualbarFooter>
 		</ContextualbarDialog>
 	);
