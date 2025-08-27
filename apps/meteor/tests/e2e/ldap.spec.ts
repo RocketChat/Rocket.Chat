@@ -74,9 +74,6 @@ test.describe('LDAP', () => {
 	test.beforeAll(async ({ api }) => {
 		await resetTestData({ api });
 
-		// Wait for LDAP service to initialize
-		await new Promise((resolve) => setTimeout(resolve, 2000));
-
 		await compose.buildOne('testldap_idp', {
 			cwd: containerPath,
 		});
@@ -85,14 +82,15 @@ test.describe('LDAP', () => {
 			cwd: containerPath,
 		});
 
-		// Wait for services to be ready
-		await new Promise((resolve) => setTimeout(resolve, 10000));
+		// Wait longer in CI for services to be ready
+		const waitTime = process.env.CI ? 45000 : 15000;
+		await new Promise((resolve) => setTimeout(resolve, waitTime));
 
-		// Trigger LDAP sync to ensure users are synchronized
+		// Trigger LDAP sync
 		const syncResponse = await api.post('/ldap.syncNow', {});
 		expect(syncResponse.status()).toBe(200);
 
-		// Wait a bit for sync to complete
+		// Wait for sync to complete
 		await new Promise((resolve) => setTimeout(resolve, 5000));
 	});
 
