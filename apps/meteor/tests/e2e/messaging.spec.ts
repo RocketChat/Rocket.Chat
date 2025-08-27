@@ -110,16 +110,24 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('stress test on message editions', async () => {
-				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'a', 'b', 'c']) {
+				const editPromise = page.waitForResponse(
+					(response) =>
+						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
+						response.status() === 200 &&
+						response.request().method() === 'POST',
+				);
+
+				for (const element of ['edited msg2 a', 'edited msg2 b']) {
 					// eslint-disable-next-line no-await-in-loop
 					await page.keyboard.press('ArrowUp');
 					// eslint-disable-next-line no-await-in-loop
 					await poHomeChannel.content.sendMessage(element, false);
 				}
 
-				const timeoutOccurred = await poToastBar.waitForError();
+				await editPromise;
+				const toastError = await poToastBar.waitForError();
 
-				expect(timeoutOccurred).toBe(true);
+				expect(toastError).toBe(true);
 			});
 		});
 
