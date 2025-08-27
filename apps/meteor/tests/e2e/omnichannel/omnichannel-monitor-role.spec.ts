@@ -125,7 +125,7 @@ test.describe('OC - Monitor Role', () => {
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
 			api.post('/settings/Omnichannel_enable_department_removal', { value: false }),
-			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: true }),
+			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: false }),
 		]);
 	});
 
