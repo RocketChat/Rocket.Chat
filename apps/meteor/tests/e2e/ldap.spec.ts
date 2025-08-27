@@ -27,20 +27,12 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api: BaseTest['api'
 			},
 		});
 
-	// Also clear any LDAP-related users that might exist
-	await connection
-		.db()
-		.collection('users')
-		.deleteMany({
-			'services.ldap': { $exists: true },
-		});
-
 	if (cleanupOnly) {
 		return;
 	}
 
 	// In CI: Use container name for container-to-container communication
-	const ldapHost = process.env.CI ? 'testldap_idp' : 'localhost';
+	const ldapHost = process.env.CI ? 'host.docker.internal' : 'localhost';
 
 	const settings = [
 		{ _id: 'Accounts_ManuallyApproveNewUsers', value: false },
