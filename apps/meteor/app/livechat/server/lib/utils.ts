@@ -1,13 +1,11 @@
-import { VideoConf } from '@rocket.chat/core-services';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import type { ILivechatAgent, ILivechatVisitor, IUser } from '@rocket.chat/core-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 
 import { RoutingManager } from './RoutingManager';
 import type { AKeyOf } from './localTypes';
 import { callbacks } from '../../../../lib/callbacks';
-import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { businessHourManager } from '../business-hour';
 
@@ -61,15 +59,4 @@ export async function allowAgentChangeServiceStatus(statusLivechat: ILivechatAge
 	}
 
 	return businessHourManager.allowAgentChangeServiceStatus(agentId);
-}
-
-export async function updateCallStatus(callId: string, rid: string, status: 'ended' | 'declined', user: IUser | ILivechatVisitor) {
-	await Rooms.setCallStatus(rid, status);
-	if (status === 'ended' || status === 'declined') {
-		if (await VideoConf.declineLivechatCall(callId)) {
-			return;
-		}
-
-		return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date(), rid }, user as unknown as IUser);
-	}
 }
