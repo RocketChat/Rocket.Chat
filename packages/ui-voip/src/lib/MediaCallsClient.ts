@@ -34,6 +34,7 @@ export type MediaCallsCallee = {
 export type MediaCallsClientConfig = {
 	userId: IUser['_id'];
 	sendSignalFn: (signal: ClientMediaSignal) => void;
+	iceServers: RTCIceServer[];
 };
 
 class MediaCallsClient extends Emitter<VoipEvents> {
@@ -57,15 +58,15 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 	private session: MediaSignalingSession;
 
-	constructor(config: MediaCallsClientConfig) {
+	constructor(clientConfig: MediaCallsClientConfig) {
 		super();
 
 		this.session = new MediaSignalingSession({
-			userId: config.userId,
+			userId: clientConfig.userId,
 			logger: console,
-			transport: (signal: ClientMediaSignal) => config.sendSignalFn(signal),
+			transport: (signal: ClientMediaSignal) => clientConfig.sendSignalFn(signal),
 			processorFactories: {
-				webrtc: (config) => new MediaCallWebRTCProcessor(config),
+				webrtc: (config) => new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers: clientConfig.iceServers } }),
 			},
 			mediaStreamFactory: getUserMedia,
 		});

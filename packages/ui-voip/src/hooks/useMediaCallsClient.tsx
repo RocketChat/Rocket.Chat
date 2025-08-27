@@ -9,6 +9,7 @@ import MediaCallsClient, { type MediaCallsClientConfig } from '../lib/MediaCalls
 
 type MediaCallsClientParams = {
 	enabled?: boolean;
+	iceServers?: RTCIceServer[];
 };
 
 type MediaCallsClientResult = {
@@ -16,7 +17,7 @@ type MediaCallsClientResult = {
 	error: Error | null;
 };
 
-export const useMediaCallsClient = ({ enabled = true }: MediaCallsClientParams = {}): MediaCallsClientResult => {
+export const useMediaCallsClient = ({ enabled = true, iceServers = [] }: MediaCallsClientParams = {}): MediaCallsClientResult => {
 	const { _id: userId } = useUser() || {};
 	const mediaCallsClientRef = useRef<MediaCallsClient | null>(null);
 
@@ -44,6 +45,7 @@ export const useMediaCallsClient = ({ enabled = true }: MediaCallsClientParams =
 			const config: MediaCallsClientConfig = {
 				userId,
 				sendSignalFn,
+				iceServers,
 			};
 
 			const mediaCallsClient = await MediaCallsClient.create(config);

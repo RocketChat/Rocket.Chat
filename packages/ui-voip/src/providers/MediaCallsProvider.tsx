@@ -17,6 +17,7 @@ import { VoipPopupDraggable } from '../components';
 import VoipPopupPortal from '../components/VoipPopupPortal';
 import type { VoipContextValue } from '../contexts/VoipContext';
 import { VoipContext } from '../contexts/VoipContext';
+import { useIceServers } from '../hooks/useIceServers';
 import { useMediaCallsClient } from '../hooks/useMediaCallsClient';
 
 const MediaCallsProvider = ({ children }: { children: ReactNode }) => {
@@ -24,12 +25,14 @@ const MediaCallsProvider = ({ children }: { children: ReactNode }) => {
 	const isVoipSettingEnabled = useSetting('VoIP_TeamCollab_Enabled', false);
 	const canViewVoipRegistrationInfo = usePermission('view-user-voip-extension');
 	const isVoipEnabled = isVoipSettingEnabled && canViewVoipRegistrationInfo;
+	const iceServers = useIceServers();
 
 	// Hooks
 	const { t } = useTranslation();
 	const { voipSounds } = useCustomSound();
 	const { mediaCallsClient, error } = useMediaCallsClient({
 		enabled: isVoipEnabled,
+		iceServers,
 	});
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
