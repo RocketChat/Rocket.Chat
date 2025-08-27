@@ -10,12 +10,8 @@ import { MessageTypes } from '../lib/MessageTypes';
 export const Message = {
 	parse(msg: IMessage, language: string) {
 		const messageType = MessageTypes.getType(msg);
-		if (messageType?.message) {
-			if (!language) {
-				language = Accounts.storageLocation.getItem('userLanguage') || 'en';
-			}
-			const data = (typeof messageType.data === 'function' && messageType.data(msg)) || {};
-			return i18n.t(messageType.message, { ...data, lng: language });
+		if (messageType) {
+			return messageType.text(i18n.getFixedT(language || Accounts.storageLocation.getItem('userLanguage') || 'en'), msg);
 		}
 		if (msg.u && msg.u.username === settings.get('Chatops_Username')) {
 			msg.html = msg.msg;

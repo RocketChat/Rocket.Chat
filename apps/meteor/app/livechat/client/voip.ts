@@ -2,72 +2,59 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isVoipMessage } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
-import type { MessageType } from '../../ui-utils/client';
 import { MessageTypes } from '../../ui-utils/client';
 
-type IMessageFuncReturn = { comment: string } | { duration: string } | { reason: string };
+MessageTypes.registerType({
+	id: 'voip-call-started',
+	system: true,
+	text: (t) => t('Voip_call_started'),
+});
 
-const messageTypes: MessageType[] = [
-	{
-		id: 'voip-call-started',
-		system: true,
-		message: 'Voip_call_started',
+MessageTypes.registerType({
+	id: 'voip-call-duration',
+	system: true,
+	text: (t, message: IMessage) => {
+		if (!isVoipMessage(message)) {
+			return t('Voip_call_duration', { duration: '' });
+		}
+		const seconds = (message.voipData.callDuration || 0) / 1000;
+		const duration = moment.duration(seconds, 'seconds').humanize();
+		return t('Voip_call_duration', { duration });
 	},
-	{
-		id: 'voip-call-duration',
-		system: true,
-		message: 'Voip_call_duration',
-		data(message: IMessage): IMessageFuncReturn {
-			if (!isVoipMessage(message)) {
-				return { duration: '' };
-			}
-			const seconds = (message.voipData.callDuration || 0) / 1000;
-			const duration = moment.duration(seconds, 'seconds').humanize();
-			return {
-				duration,
-			};
-		},
-	},
-	{
-		id: 'voip-call-declined',
-		system: true,
-		message: 'Voip_call_declined',
-	},
-	{
-		id: 'voip-call-on-hold',
-		system: true,
-		message: 'Voip_call_on_hold',
-	},
-	{
-		id: 'voip-call-unhold',
-		system: true,
-		message: 'Voip_call_unhold',
-	},
-	{
-		id: 'voip-call-ended',
-		system: true,
-		message: 'Voip_call_ended',
-	},
-	{
-		id: 'voip-call-ended-unexpectedly',
-		system: true,
-		message: 'Voip_call_ended_unexpectedly',
-		data(message: IMessage): IMessageFuncReturn {
-			return {
-				reason: message.msg,
-			};
-		},
-	},
-	{
-		id: 'voip-call-wrapup',
-		system: true,
-		message: 'Voip_call_wrapup',
-		data(message: IMessage): IMessageFuncReturn {
-			return {
-				comment: message.msg,
-			};
-		},
-	},
-];
+});
 
-messageTypes.map((e) => MessageTypes.registerType(e));
+MessageTypes.registerType({
+	id: 'voip-call-declined',
+	system: true,
+	text: (t) => t('Voip_call_declined'),
+});
+
+MessageTypes.registerType({
+	id: 'voip-call-on-hold',
+	system: true,
+	text: (t) => t('Voip_call_on_hold'),
+});
+
+MessageTypes.registerType({
+	id: 'voip-call-unhold',
+	system: true,
+	text: (t) => t('Voip_call_unhold'),
+});
+
+MessageTypes.registerType({
+	id: 'voip-call-ended',
+	system: true,
+	text: (t) => t('Voip_call_ended'),
+});
+
+MessageTypes.registerType({
+	id: 'voip-call-ended-unexpectedly',
+	system: true,
+	text: (t, message) => t('Voip_call_ended_unexpectedly', { reason: message.msg }),
+});
+
+MessageTypes.registerType({
+	id: 'voip-call-wrapup',
+	system: true,
+	text: (t, message) => t('Voip_call_wrapup', { comment: message.msg }),
+});

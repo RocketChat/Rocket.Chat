@@ -138,7 +138,7 @@ it('should return false if message is from system', () => {
 	MessageTypes.registerType({
 		id: 'au',
 		system: true,
-		message: 'User_added_by',
+		text: (t) => t('User_added_by'),
 	});
 	const previous: IMessage = {
 		...baseMessage,

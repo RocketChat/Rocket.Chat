@@ -110,12 +110,7 @@ export async function sendTranscript({
 
 		let messageContent = messageType
 			? DOMPurify.sanitize(`
-				<i>${i18n.t(
-					messageType.message,
-					messageType.data
-						? { ...messageType.data(message), interpolation: { escapeValue: false } }
-						: { interpolation: { escapeValue: false } },
-				)}</i>`)
+				<i>${messageType.text(i18n.cloneInstance({ interpolation: { escapeValue: false } }).t, message)}}</i>`)
 			: escapeHtml(message.msg);
 
 		let filesHTML = '';

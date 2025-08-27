@@ -107,7 +107,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 									)}
 								</>
 							)}
-							{messageType && t(messageType.message, messageType.data ? messageType.data(message) : {})}
+							{messageType?.text(t, message)}
 							{parentMessage.isLoading && <Skeleton />}
 						</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />

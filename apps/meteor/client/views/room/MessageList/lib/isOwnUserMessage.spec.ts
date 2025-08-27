@@ -23,7 +23,7 @@ const baseMessage: IMessage = {
 MessageTypes.registerType({
 	id: 'au',
 	system: true,
-	message: 'User_added_to',
+	text: (t) => t('User_added_to'),
 });
 
 it('should return true if the message is from user', () => {

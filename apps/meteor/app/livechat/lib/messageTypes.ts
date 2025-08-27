@@ -3,30 +3,25 @@ import { formatDistance } from 'date-fns';
 import moment from 'moment';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
-import { t } from '../../utils/lib/i18n';
 
 MessageTypes.registerType({
 	id: 'livechat_navigation_history',
 	system: true,
-	message: 'New_visitor_navigation',
-	data(message: IOmnichannelSystemMessage) {
-		return {
+	text: (t, message: IOmnichannelSystemMessage) => {
+		return t('New_visitor_navigation', {
 			history: message.navigation
 				? `${(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') + message.navigation.page.location.href}`
 				: '',
-		};
+		});
 	},
 });
 
 MessageTypes.registerType({
 	id: 'livechat_transfer_history',
 	system: true,
-	message: 'New_chat_transfer',
-	data(message: IOmnichannelSystemMessage) {
+	text: (t, message: IOmnichannelSystemMessage) => {
 		if (!message.transferData) {
-			return {
-				transfer: '',
-			};
+			return t('New_chat_transfer', { transfer: '' });
 		}
 
 		const { comment } = message.transferData;
@@ -63,21 +58,16 @@ MessageTypes.registerType({
 					duration: comment,
 				}),
 		};
-		return {
-			transfer: transferTypes[message.transferData.scope](),
-		};
+		return t('New_chat_transfer', { transfer: transferTypes[message.transferData.scope]() });
 	},
 });
 
 MessageTypes.registerType({
 	id: 'livechat_transcript_history',
 	system: true,
-	message: 'Livechat_chat_transcript_sent',
-	data(message: IOmnichannelSystemMessage) {
+	text: (t, message: IOmnichannelSystemMessage) => {
 		if (!message.requestData) {
-			return {
-				transcript: '',
-			};
+			return t('Livechat_chat_transcript_sent', { transcript: '' });
 		}
 
 		const { requestData: { type, visitor, user } = { type: 'user' } } = message;
@@ -93,59 +83,48 @@ MessageTypes.registerType({
 				}),
 		};
 
-		return {
-			transcript: requestTypes[type](),
-		};
+		return t('Livechat_chat_transcript_sent', { transcript: requestTypes[type]() });
 	},
 });
 
 MessageTypes.registerType({
 	id: 'livechat_video_call',
 	system: true,
-	message: 'New_videocall_request',
+	text: (t) => t('New_videocall_request'),
 });
 
 MessageTypes.registerType({
 	id: 'livechat_webrtc_video_call',
-	message: 'room_changed_type',
-	data(message) {
+	text: (t, message) => {
 		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
-			return {
+			return t('room_changed_type', {
 				message: t('WebRTC_call_ended_message', {
 					callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
 					endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
 				}),
-			};
+			});
 		}
 		if (message.msg === 'declined' && message.webRtcCallEndTs) {
-			return {
+			return t('room_changed_type', {
 				message: t('WebRTC_call_declined_message'),
-			};
+			});
 		}
-		return {
+		return t('room_changed_type', {
 			message: message.msg,
-		};
+		});
 	},
 });
 
 MessageTypes.registerType({
 	id: 'omnichannel_placed_chat_on_hold',
 	system: true,
-	message: 'Omnichannel_placed_chat_on_hold',
-	data(message: IOmnichannelSystemMessage) {
-		return {
-			comment: message.comment ? message.comment : 'No comment provided',
-		};
-	},
+	text: (t, message: IOmnichannelSystemMessage) =>
+		t('Omnichannel_placed_chat_on_hold', { comment: message.comment ? message.comment : 'No comment provided' }),
 });
 
 MessageTypes.registerType({
 	id: 'omnichannel_on_hold_chat_resumed',
 	system: true,
-	message: 'Omnichannel_on_hold_chat_resumed',
-	data(message: IOmnichannelSystemMessage) {
-		return {
-			comment: message.comment ? message.comment : 'No comment provided',
-		};
-	},
+	text: (t, message: IOmnichannelSystemMessage) =>
+		t('Omnichannel_on_hold_chat_resumed', { comment: message.comment ? message.comment : 'No comment provided' }),
 });

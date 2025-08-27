@@ -53,9 +53,8 @@ export const useExportMessagesAsPDFMutation = () => {
 		mutationFn: async (messageIds: IMessage['_id'][]) => {
 			const parseMessage = (msg: IMessage) => {
 				const messageType = MessageTypes.getType(msg);
-				if (messageType?.message) {
-					const data = (typeof messageType.data === 'function' && messageType.data(msg)) || {};
-					return t(messageType.message, data);
+				if (messageType) {
+					return messageType.text(t, msg);
 				}
 				if (msg.u && msg.u.username === chatopsUsername) {
 					msg.html = msg.msg;

@@ -89,11 +89,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							</>
 						)}
 					</MessageNameContainer>
-					{messageType && (
-						<MessageSystemBody data-qa-type='system-message-body'>
-							{t(messageType.message, messageType.data ? messageType.data(message) : {})}
-						</MessageSystemBody>
-					)}
+					{messageType && <MessageSystemBody data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (

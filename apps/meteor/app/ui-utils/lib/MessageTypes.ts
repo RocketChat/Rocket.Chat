@@ -1,11 +1,10 @@
 import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 
 export type MessageType = {
 	id: MessageTypesValues;
 	system?: boolean;
-	message: TranslationKey;
-	data?: (message: IMessage) => Record<string, string>;
+	text: (t: TFunction, message: IMessage) => string;
 };
 
 class MessageTypes {
