@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
+import { HomeChannel, ToastBar } from './page-objects';
 import { createTargetChannel, deleteChannel } from './utils';
 import { expect, test } from './utils/test';
 
@@ -11,6 +11,7 @@ test.use({ storageState: Users.user1.state });
 
 test.describe('Messaging', () => {
 	let poHomeChannel: HomeChannel;
+	let poToastBar: ToastBar;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
@@ -19,6 +20,7 @@ test.describe('Messaging', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
+		poToastBar = new ToastBar(page);
 
 		await page.goto('/home');
 	});
@@ -115,19 +117,7 @@ test.describe('Messaging', () => {
 					await poHomeChannel.content.sendMessage(element, false);
 				}
 
-				let timeoutOccurred = false;
-
-				try {
-					await page.waitForSelector('.rcx-toastbar.rcx-toastbar--error', { timeout: 5000 });
-
-					timeoutOccurred = false;
-				} catch (error: unknown) {
-					if ((error as { name: string }).name === 'TimeoutError') {
-						timeoutOccurred = true;
-					} else {
-						throw error;
-					}
-				}
+				const timeoutOccurred = await poToastBar.waitForError();
 
 				expect(timeoutOccurred).toBe(true);
 			});

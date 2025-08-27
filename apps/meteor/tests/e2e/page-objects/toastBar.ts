@@ -18,4 +18,22 @@ export class ToastBar {
 	get dismiss(): Locator {
 		return this.content.getByRole('button', { name: 'Dismiss alert', exact: true });
 	}
+
+	async waitForError(): Promise<boolean> {
+		let timeoutOccurred = false;
+
+		try {
+			await this.page.waitForSelector('.rcx-toastbar.rcx-toastbar--error', { timeout: 5000 });
+
+			timeoutOccurred = false;
+		} catch (error: unknown) {
+			if ((error as { name: string }).name === 'TimeoutError') {
+				timeoutOccurred = true;
+			} else {
+				throw error;
+			}
+		}
+
+		return timeoutOccurred;
+	}
 }
