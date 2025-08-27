@@ -30,7 +30,7 @@ export interface IClientMediaCallConfig {
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
 
-	iceGatheringTimeout?: number;
+	iceGatheringTimeout: number;
 }
 
 const TIMEOUT_TO_ACCEPT = 30000;
@@ -872,7 +872,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			mediaStreamFactory,
 			logger,
 			processorFactories: { webrtc: webrtcFactory },
-			iceGatheringTimeout = 500,
+			iceGatheringTimeout,
 		} = this.config;
 
 		if (!webrtcFactory) {
