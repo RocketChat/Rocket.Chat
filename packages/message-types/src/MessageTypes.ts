@@ -1,4 +1,4 @@
-import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { MessageTypesValues, IMessage } from '@rocket.chat/core-typings';
 import type { TFunction } from 'i18next';
 
 type MessageType = {
@@ -7,7 +7,7 @@ type MessageType = {
 	readonly text: (t: TFunction, message: IMessage) => string;
 };
 
-class MessageTypes {
+export class MessageTypes {
 	private types = new Map<MessageTypesValues, MessageType>();
 
 	registerType(options: MessageType): void {
@@ -22,7 +22,3 @@ class MessageTypes {
 		return this.getType(message)?.system ?? false;
 	}
 }
-
-const instance = new MessageTypes();
-
-export { instance as MessageTypes };

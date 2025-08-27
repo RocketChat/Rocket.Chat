@@ -11,6 +11,7 @@ import {
 } from '@rocket.chat/core-typings';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Logger } from '@rocket.chat/logger';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
@@ -21,7 +22,6 @@ import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { MessageTypes } from '../../../ui-utils/lib/MessageTypes';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 
 const logger = new Logger('Livechat-SendTranscript');

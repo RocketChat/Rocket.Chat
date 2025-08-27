@@ -1,11 +1,11 @@
 import { Document, Image, Page, pdf, StyleSheet, Text, View } from '@react-pdf/renderer';
 import type { IMessage, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { Messages } from '../../../../stores';
 

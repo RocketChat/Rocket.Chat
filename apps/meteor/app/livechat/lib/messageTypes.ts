@@ -1,8 +1,7 @@
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { formatDistance } from 'date-fns';
 import moment from 'moment';
-
-import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 
 MessageTypes.registerType({
 	id: 'livechat_navigation_history',

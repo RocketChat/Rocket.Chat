@@ -1,8 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isVoipMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import moment from 'moment';
-
-import { MessageTypes } from '../../ui-utils/client';
 
 MessageTypes.registerType({
 	id: 'voip-call-started',

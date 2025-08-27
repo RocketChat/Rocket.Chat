@@ -1,4 +1,4 @@
-import { MessageTypes } from '../../ui-utils/client';
+import { MessageTypes } from '@rocket.chat/message-types';
 
 MessageTypes.registerType({
 	id: 'livechat-close',

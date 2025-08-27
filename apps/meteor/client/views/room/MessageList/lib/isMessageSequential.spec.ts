@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 
 import { isMessageSequential } from './isMessageSequential';
-import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 
 const TIME_RANGE_IN_SECONDS = 300;
 

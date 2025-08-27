@@ -1,7 +1,7 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 
 import { isOwnUserMessage } from './isOwnUserMessage';
-import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 
 const date = new Date('2021-10-27T00:00:00.000Z');
 

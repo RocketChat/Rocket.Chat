@@ -1,7 +1,6 @@
 import type { MessageTypesValues as MessageTypesValuesType } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { Meteor } from 'meteor/meteor';
-
-import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 
 Meteor.startup(() => {
 	MessageTypes.registerType({

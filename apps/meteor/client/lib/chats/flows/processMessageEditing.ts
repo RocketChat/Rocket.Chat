@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 

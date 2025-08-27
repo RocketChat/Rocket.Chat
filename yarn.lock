@@ -7845,6 +7845,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/message-types@workspace:packages/message-types, @rocket.chat/message-types@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/message-types@workspace:packages/message-types"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:~"
+    "@rocket.chat/eslint-config": "workspace:~"
+    eslint: "npm:~8.45.0"
+    i18next: "npm:~23.4.9"
+    jest: "npm:~30.0.5"
+    typescript: "npm:~5.9.2"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/meteor@workspace:apps/meteor":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/meteor@workspace:apps/meteor"
@@ -7911,6 +7924,7 @@ __metadata:
     "@rocket.chat/logo": "npm:^0.32.2"
     "@rocket.chat/memo": "npm:~0.31.25"
     "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/message-types": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"

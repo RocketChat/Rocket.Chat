@@ -1,6 +1,6 @@
+import { MessageTypes } from '@rocket.chat/message-types';
 import { Meteor } from 'meteor/meteor';
 
-import { MessageTypes } from '../../ui-utils/client';
 import { otrSystemMessages } from '../lib/constants';
 
 Meteor.startup(() => {

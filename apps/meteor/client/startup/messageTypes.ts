@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { Meteor } from 'meteor/meteor';
-
-import { MessageTypes } from '../../app/ui-utils/client';
 
 Meteor.startup(() => {
 	MessageTypes.registerType({
