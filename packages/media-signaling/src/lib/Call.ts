@@ -29,6 +29,8 @@ export interface IClientMediaCallConfig {
 	transporter: MediaSignalTransportWrapper;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
+
+	iceGatheringTimeout?: number;
 }
 
 const TIMEOUT_TO_ACCEPT = 30000;
@@ -870,13 +872,14 @@ export class ClientMediaCall implements IClientMediaCall {
 			mediaStreamFactory,
 			logger,
 			processorFactories: { webrtc: webrtcFactory },
+			iceGatheringTimeout = 500,
 		} = this.config;
 
 		if (!webrtcFactory) {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger });
+		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger, iceGatheringTimeout });
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 	}
 

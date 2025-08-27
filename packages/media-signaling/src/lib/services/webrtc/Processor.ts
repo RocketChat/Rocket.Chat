@@ -41,7 +41,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.localStream = new LocalStream(this.localMediaStream);
 		this.remoteStream = new RemoteStream(this.remoteMediaStream);
 
-		this.peer = new RTCPeerConnection();
+		this.peer = new RTCPeerConnection(config.rtc);
 		this.emitter = new Emitter();
 		this.registerPeerEvents();
 	}
@@ -162,7 +162,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				this.iceGatheringTimedOut = true;
 				this.changeInternalState('iceUntrickler');
 			}
-		}, 500);
+		}, this.config.iceGatheringTimeout);
 
 		this.iceGatheringWaiters.add(iceGatheringData);
 		this.changeInternalState('iceUntrickler');
