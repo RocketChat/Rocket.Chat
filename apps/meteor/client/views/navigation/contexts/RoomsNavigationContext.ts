@@ -1,4 +1,4 @@
-import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
+import type { ISubscription, ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -48,15 +48,23 @@ export const sidePanelFiltersConfig: { [Key in AllGroupsKeys]: { title: Translat
 		title: 'Direct_Messages',
 		icon: 'at',
 	},
+	unread: {
+		title: 'Unread',
+		icon: 'flag',
+	},
+	conversations: {
+		title: 'Conversations',
+		icon: 'chat',
+	},
 };
 
 export type SidePanelFiltersKeys = 'all' | 'mentions' | 'favorites' | 'discussions' | 'inProgress' | 'queue' | 'onHold';
 
-export const collapsibleFilters: SideBarFiltersKeys[] = ['teams', 'channels', 'directMessages'];
+export const collapsibleFilters: SideBarFiltersKeys[] = ['unread', 'conversations', 'teams', 'channels', 'directMessages'];
 export type SidePanelFiltersUnreadKeys = `${SidePanelFiltersKeys}_unread`;
 export type SidePanelFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
-export type SideBarFiltersKeys = 'teams' | 'channels' | 'directMessages';
+export type SideBarFiltersKeys = 'teams' | 'channels' | 'directMessages' | 'conversations' | 'unread';
 export type SideBarFiltersUnreadKeys = `${SideBarFiltersKeys}_unread`;
 export type SideBarFilters = SidePanelFiltersKeys | SidePanelFiltersUnreadKeys;
 
@@ -156,16 +164,49 @@ export const useSideBarRoomsList = (): {
 	};
 };
 
+export const isUnreadSubscription = (subscription: Partial<ISubscription>) => {
+	if (subscription.hideUnreadStatus) {
+		return false;
+	}
+
+	return Boolean(
+		subscription.userMentions ||
+			subscription.groupMentions ||
+			subscription.tunread?.length ||
+			subscription.tunreadUser?.length ||
+			subscription.unread ||
+			subscription.alert,
+	);
+};
+
 export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
 	const [, unread] = useSidePanelFilter();
-	const roomSet = useRoomsListContext().groups.get(getFilterKey(tab, unread));
+	const roomSet = useRoomsListContext().groups.get(tab);
+
 	const roomsList = useMemo(() => {
 		if (!roomSet) {
 			return [];
 		}
 
-		return Array.from(roomSet);
-	}, [roomSet]);
+		if (!unread) {
+			return Array.from(roomSet);
+		}
+
+		return Array.from(roomSet)
+			.reduce(
+				(result, room) => {
+					if (isUnreadSubscription(room)) {
+						result[0].push(room);
+						return result;
+					}
+
+					result[1].push(room);
+					return result;
+				},
+				[[], []] as [Array<SubscriptionWithRoom | ILivechatInquiryRecord>, Array<SubscriptionWithRoom | ILivechatInquiryRecord>],
+			)
+			.flat();
+	}, [roomSet, unread]);
 	return roomsList;
 };
 

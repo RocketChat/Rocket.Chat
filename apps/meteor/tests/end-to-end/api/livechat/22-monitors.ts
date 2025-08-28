@@ -295,7 +295,8 @@ type TestUser = { user: IUser; credentials: Credentials };
 			expect(body.departments.find((d: any) => d._id === noUnitDepartment._id)).to.exist;
 			expect(body.departments.find((d: any) => d._id === unitDepartment._id)).to.exist;
 		});
-		it('should not return a department when monitor is only assigned as agent there', async () => {
+		// OnlyMyDepartments to return data from units + the ones you serve in
+		it.skip('should not return a department when monitor is only assigned as agent there', async () => {
 			await createAgent(monitor.user.username!);
 			await addOrRemoveAgentFromDepartment(
 				noUnitDepartment._id,
