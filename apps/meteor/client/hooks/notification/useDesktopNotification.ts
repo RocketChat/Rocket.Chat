@@ -4,7 +4,7 @@ import { useUser } from '@rocket.chat/ui-contexts';
 
 import { useNotification } from './useNotification';
 import { RoomManager } from '../../lib/RoomManager';
-import { e2e } from '../../lib/e2ee';
+import { decryptNotification } from '../../lib/e2ee';
 import { getAvatarAsPng } from '../../lib/utils/getAvatarAsPng';
 
 export const useDesktopNotification = () => {
@@ -22,12 +22,7 @@ export const useDesktopNotification = () => {
 			return;
 		}
 
-		if (notification.payload.message?.t === 'e2e') {
-			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
-			if (e2eRoom) {
-				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
-			}
-		}
+		await decryptNotification(notification.payload);
 
 		return getAvatarAsPng(notification.payload.sender?.username, (avatarAsPng) => {
 			notification.icon = avatarAsPng;

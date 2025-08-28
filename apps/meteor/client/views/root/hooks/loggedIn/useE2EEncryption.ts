@@ -18,20 +18,20 @@ export const useE2EEncryption = () => {
 
 	useEffect(() => {
 		if (!userId) {
-			e2e.log('Not logged in');
+			// e2e.log('Not logged in');
 			return;
 		}
 
 		if (!window.crypto) {
-			e2e.error('No crypto support');
+			// e2e.error('No crypto support');
 			return;
 		}
 
 		if (enabled && !adminEmbedded) {
-			e2e.log('E2E enabled starting client');
+			// e2e.log('E2E enabled starting client');
 			e2e.startClient();
 		} else {
-			e2e.log('E2E disabled');
+			// e2e.log('E2E disabled');
 			e2e.setState('DISABLED');
 			e2e.closeAlert();
 		}
@@ -48,12 +48,12 @@ export const useE2EEncryption = () => {
 
 	useEffect(() => {
 		if (!ready) {
-			e2e.log('Not ready');
+			// e2e.log('Not ready');
 			return;
 		}
 
 		if (listenersAttachedRef.current) {
-			e2e.log('Listeners already attached');
+			// e2e.log('Listeners already attached');
 			return;
 		}
 
@@ -120,10 +120,10 @@ export const useE2EEncryption = () => {
 		});
 
 		listenersAttachedRef.current = true;
-		e2e.log('Listeners attached');
+		// e2e.log('Listeners attached');
 
 		return () => {
-			e2e.log('Not ready');
+			// e2e.log('Not ready');
 			offClientMessageReceived();
 			offClientBeforeSendMessage();
 			listenersAttachedRef.current = false;

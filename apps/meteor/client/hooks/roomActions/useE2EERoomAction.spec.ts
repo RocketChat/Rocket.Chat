@@ -72,7 +72,7 @@ describe('useE2EERoomAction', () => {
 		(useE2EEState as jest.Mock).mockReturnValue('READY');
 		(usePermission as jest.Mock).mockReturnValue(true);
 		(useEndpoint as jest.Mock).mockReturnValue(jest.fn().mockResolvedValue({ success: true }));
-		(e2e.isReady as jest.Mock).mockReturnValue(true);
+		(e2e.getState as jest.Mock).mockReturnValue('READY');
 	});
 
 	afterEach(() => {

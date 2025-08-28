@@ -13,8 +13,6 @@ export type SessionState =
 	| 'READY'
 	| 'ERROR';
 
-export type Event = 'E2E_STATE_CHANGED';
-
 let currentState: State = 'NOT_STARTED';
 
 export const setState = (state: State) => {
@@ -24,22 +22,21 @@ export const setState = (state: State) => {
 const sessions: Record<string, SessionState> = {};
 
 export const e2e = {
-	...console,
 	startClient: () => {
-		throw new Error('Function not implemented.');
+		// Implementation for starting the client
+		console.trace('startClient called');
 	},
 	closeAlert: () => {
 		throw new Error('Function not implemented.');
 	},
-	isReady: () => currentState === 'READY',
 	getState: () => currentState,
 	setState: (state: State) => {
 		currentState = state;
 	},
 	onStateChanged: (callback: () => void) => {
-		// Implementation for state change subscription
+		callback;
 		return () => {
-			callback;
+			throw new Error('Function not implemented.');
 		};
 	},
 	async decryptPinnedMessage<T extends { rid: string; attachments?: { text?: string }[] }>(message: T) {
@@ -110,8 +107,8 @@ export const e2e = {
 	},
 	getInstanceByRoomId: async (rid: string) => ({
 		decrypt: (data: string) => Promise.resolve({ rid, text: typeof data === 'string' ? data : JSON.stringify(data) }),
-		encryptMessage: (_message: unknown) => {
-			throw new Error('Function not implemented.');
+		encryptMessage: (message: unknown) => {
+			throw new Error('Function not implemented.', { cause: message });
 		},
 		encryptMessageContent: async (contentToBeEncrypted: unknown) => {
 			throw new Error('Function not implemented.', { cause: contentToBeEncrypted });
@@ -146,12 +143,10 @@ export const e2e = {
 		pause: () => {
 			throw new Error('Function not implemented.');
 		},
-		async decryptContent<T extends { content?: { algorithm: string; ciphertext: string } }>(data: T) {
-			if (data.content && data.content.algorithm === 'rc.v1.aes-sha2') {
-				const content = await this.decrypt(data.content.ciphertext);
-				Object.assign(data, content);
+		decryptContent: async <T extends { content?: { algorithm: string; ciphertext: string } }>(data: T) => {
+			if (data.content) {
+				throw new Error('Function not implemented.');
 			}
-
 			return data;
 		},
 		resetRoomKey: async () => ({
@@ -160,3 +155,12 @@ export const e2e = {
 		}),
 	}),
 };
+
+export async function decryptNotification(payload: { rid: string; message?: { t?: string; msg: string } }) {
+	if (payload.message?.t === 'e2e') {
+		const e2eRoom = await e2e.getInstanceByRoomId(payload.rid);
+		if (e2eRoom) {
+			return e2eRoom.decrypt(payload.message.msg);
+		}
+	}
+}
