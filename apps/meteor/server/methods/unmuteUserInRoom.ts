@@ -1,12 +1,9 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById } from '../../app/lib/server/lib/notifyListener';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
@@ -82,27 +79,3 @@ export const unmuteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']
 
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async unmuteUserInRoom(data) {
-		methodDeprecationLogger.method('unmuteUserInRoom', '8.0.0', '/v1/rooms.unmuteUser');
-
-		const fromId = Meteor.userId();
-
-		check(
-			data,
-			Match.ObjectIncluding({
-				rid: String,
-				username: String,
-			}),
-		);
-
-		if (!fromId) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'unmuteUserInRoom',
-			});
-		}
-
-		return unmuteUserInRoom(fromId, data);
-	},
-});
