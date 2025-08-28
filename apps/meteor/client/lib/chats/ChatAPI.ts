@@ -158,6 +158,7 @@ export type ChatAPI = {
 			previewUrls?: string[],
 		) => Promise<boolean>;
 		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;
+		readonly requestEditMessageDeletion: (message: IMessage) => Promise<boolean>;
 		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
 		readonly replyBroadcast: (message: IMessage) => Promise<void>;
 	};
