@@ -44,7 +44,6 @@ import './sendConfirmationEmail';
 import './sendForgotPasswordEmail';
 import './setAvatarFromService';
 import './setUserActiveStatus';
-import './setUserPassword';
 import './toggleFavorite';
 import './unmuteUserInRoom';
 import './userPresence';
