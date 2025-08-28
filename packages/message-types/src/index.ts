@@ -159,14 +159,14 @@ instance.registerType({
 	id: 'omnichannel_placed_chat_on_hold',
 	system: true,
 	text: (t, message: IOmnichannelSystemMessage) =>
-		t('Omnichannel_placed_chat_on_hold', { comment: message.comment ? message.comment : 'No comment provided' }), // TODO: missing translation
+		t('Omnichannel_placed_chat_on_hold', { comment: message.comment ? message.comment : t('No_comment_provided') }),
 });
 
 instance.registerType({
 	id: 'omnichannel_on_hold_chat_resumed',
 	system: true,
 	text: (t, message: IOmnichannelSystemMessage) =>
-		t('Omnichannel_on_hold_chat_resumed', { comment: message.comment ? message.comment : 'No comment provided' }), // TODO: missing translation
+		t('Omnichannel_on_hold_chat_resumed', { comment: message.comment ? message.comment : t('No_comment_provided') }),
 });
 
 instance.registerType({
