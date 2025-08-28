@@ -1,12 +1,9 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoomChangedById } from '../../app/lib/server/lib/notifyListener';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
@@ -81,27 +78,3 @@ export const muteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']; 
 
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async muteUserInRoom(data) {
-		methodDeprecationLogger.method('muteUserInRoom', '8.0.0', '/v1/rooms.muteUser');
-
-		check(
-			data,
-			Match.ObjectIncluding({
-				rid: String,
-				username: String,
-			}),
-		);
-
-		const fromId = Meteor.userId();
-
-		if (!fromId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'muteUserInRoom',
-			});
-		}
-
-		return muteUserInRoom(fromId, data);
-	},
-});
