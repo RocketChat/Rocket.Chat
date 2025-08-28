@@ -1,4 +1,4 @@
-import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallSignedActor, MediaCallActor } from '@rocket.chat/core-typings';
+import type { IMediaCallChannel, RocketChatRecordDeleted, MediaCallSignedActor } from '@rocket.chat/core-typings';
 import type { IMediaCallChannelsModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { IndexDescription, Collection, Db, UpdateFilter, UpdateOptions, UpdateResult, FindOptions, Document } from 'mongodb';
 
@@ -43,14 +43,6 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 	}
 
 	public createOrUpdateChannel(channel: InsertionModel<IMediaCallChannel>): Promise<IMediaCallChannel | null> {
-		const { acknowledged, localDescription, ...channelData } = channel;
-
-		const dataToUpdate = {
-			// once acknowledged, a channel never unsets this flag
-			...(acknowledged && { acknowledged: true }),
-			...(localDescription && { localDescription }),
-		} as const;
-
 		return this.findOneAndUpdate(
 			{
 				callId: channel.callId,
@@ -60,9 +52,8 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 			},
 			{
 				$setOnInsert: {
-					...channelData,
+					...channel,
 				},
-				...(Object.keys(dataToUpdate).length > 0 && { $set: dataToUpdate }),
 			},
 			{
 				upsert: true,
@@ -77,31 +68,5 @@ export class MediaCallChannelsRaw extends BaseRaw<IMediaCallChannel> implements 
 
 	public async setActiveById(_id: string): Promise<UpdateResult> {
 		return this.updateOne({ _id, activeAt: { $exists: false } }, { $set: { state: 'active', activeAt: new Date() } });
-	}
-
-	public async setLocalDescription(_id: string, localDescription: RTCSessionDescriptionInit): Promise<UpdateResult> {
-		return this.updateOneById(_id, { $set: { localDescription } });
-	}
-
-	public async setRemoteDescription(_id: string, remoteDescription: RTCSessionDescriptionInit): Promise<UpdateResult> {
-		return this.updateOneById(_id, { $set: { remoteDescription } });
-	}
-
-	public async setRemoteDescriptionByCallIdAndActor(
-		callId: string,
-		actor: MediaCallActor,
-		remoteDescription: RTCSessionDescriptionInit,
-	): Promise<void> {
-		await this.updateMany(
-			{
-				callId,
-				actorId: actor.id,
-				actorType: actor.type,
-				...(actor.contractId && { contractId: actor.contractId }),
-			},
-			{
-				$set: { remoteDescription },
-			},
-		);
 	}
 }

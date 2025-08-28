@@ -6,12 +6,11 @@ import type {
 	MediaCallContact,
 	MediaCallSignedActor,
 } from '@rocket.chat/core-typings';
-import type { CallContact, CallRole } from '@rocket.chat/media-signaling';
+import type { CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallChannels } from '@rocket.chat/models';
 
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
-import { logger } from '../logger';
 
 export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 	public readonly actorType: MediaCallActorType;
@@ -68,48 +67,29 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 
 	public abstract onCallEnded(callId: string): Promise<void>;
 
-	public abstract onWebrtcAnswer(callId: string): Promise<void>;
-
-	public async getOrCreateChannel(
-		call: IMediaCall,
-		contractId: string,
-		params?: Pick<IMediaCallChannel, 'acknowledged' | 'localDescription'>,
-	): Promise<IMediaCallChannel> {
-		return this.createOrUpdateChannel(call, this.getSignedActor(contractId), this.getMyCallActor(call), params);
+	public async getOrCreateChannel(call: IMediaCall, contractId: string): Promise<IMediaCallChannel> {
+		return this.createOrUpdateChannel(call, contractId);
 	}
 
 	public abstract onCallCreated(call: IMediaCall): Promise<void>;
 
-	public async onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void> {
-		logger.debug({ msg: 'BaseMediaCallAgent.onRemoteDescriptionChanged', callId, description });
-		await MediaCallChannels.setRemoteDescriptionByCallIdAndActor(callId, this.actor, description);
-	}
+	public abstract onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void>;
 
-	protected async createOrUpdateChannel(
-		call: IMediaCall,
-		actor: MediaCallSignedActor,
-		contact: CallContact,
-		params?: Pick<IMediaCallChannel, 'acknowledged' | 'localDescription'>,
-	): Promise<IMediaCallChannel> {
-		if (!actor.contractId) {
+	protected async createOrUpdateChannel(call: IMediaCall, contractId: string): Promise<IMediaCallChannel> {
+		if (!contractId) {
 			throw new Error('error-invalid-contract');
 		}
-
-		const localDescription = params?.localDescription || this.localDescription || undefined;
 
 		const newChannel: InsertionModel<IMediaCallChannel> = {
 			callId: call._id,
 			state: 'none',
 			role: this.role,
-			acknowledged: Boolean(params?.acknowledged) ?? false,
-			...(localDescription && { localDescription }),
-			contact,
-			contractId: actor.contractId,
-			actorType: actor.type,
-			actorId: actor.id,
+			contractId,
+			actorType: this.actorType,
+			actorId: this.actorId,
 		};
 
-		// Create this channel if it doesn't yet exist, or update ack/sdp if it does and needs it
+		// Create this channel if it doesn't yet exist
 		const insertedChannel = await MediaCallChannels.createOrUpdateChannel(newChannel);
 		if (!insertedChannel) {
 			throw new Error('failed-to-insert-channel');
@@ -121,32 +101,5 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 		}
 
 		return insertedChannel;
-	}
-
-	protected async autoDetectRemoteDescription(call: IMediaCall, localChannel: IMediaCallChannel): Promise<void> {
-		// If our channel already has a remote description, we don't need to check anything
-		if (localChannel.remoteDescription) {
-			return;
-		}
-
-		// If the other actor is not signed, we don't know what channel to check
-		const otherActor = this.getOtherCallActor(call);
-		if (!otherActor.contractId) {
-			return;
-		}
-
-		const remoteChannel = await MediaCallChannels.findOneByCallIdAndSignedActor(
-			{
-				...(otherActor as MediaCallSignedActor),
-				callId: call._id,
-			},
-			{ projection: { localDescription: 1 } },
-		);
-
-		if (!remoteChannel?.localDescription) {
-			return;
-		}
-
-		await this.onRemoteDescriptionChanged(call._id, remoteChannel.localDescription);
 	}
 }

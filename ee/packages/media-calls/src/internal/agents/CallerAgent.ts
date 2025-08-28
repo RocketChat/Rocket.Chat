@@ -1,9 +1,8 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallContact } from '@rocket.chat/core-typings';
-import type { ClientMediaSignal, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
+import type { IMediaCall, MediaCallContact } from '@rocket.chat/core-typings';
+import type { ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
 import { UserActorAgent } from './BaseUserAgent';
-import { UserActorCallerSignalProcessor } from './CallerSignalProcessor';
 import { logger } from '../../logger';
 
 export class UserActorCallerAgent extends UserActorAgent {
@@ -33,12 +32,7 @@ export class UserActorCallerAgent extends UserActorAgent {
 		};
 	}
 
-	protected doProcessSignal(call: IMediaCall, channel: IMediaCallChannel, signal: ClientMediaSignal): Promise<void> {
-		const signalProcessor = new UserActorCallerSignalProcessor(this, call, channel);
-		return signalProcessor.processSignal(signal);
-	}
-
-	public async onWebrtcAnswer(callId: string): Promise<void> {
+	public async onRemoteDescriptionChanged(callId: string, _description: RTCSessionDescriptionInit): Promise<void> {
 		const call = await MediaCalls.findOneById(callId);
 
 		if (call?.state !== 'accepted' || !call.webrtcAnswer) {

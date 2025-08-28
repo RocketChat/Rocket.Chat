@@ -87,7 +87,7 @@ export class MediaCallDirector {
 		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
 
 		if (data.webrtcAnswer) {
-			await this.onWebRtcAnswer(call._id, calleeAgent, data.webrtcAnswer);
+			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, data.webrtcAnswer);
 		}
 
 		return true;
@@ -102,10 +102,18 @@ export class MediaCallDirector {
 		}
 	}
 
-	public static async saveWebrtcSession(call: IMediaCall, fromAgent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void> {
+	public static async saveWebrtcSession(
+		call: IMediaCall,
+		fromAgent: IMediaCallAgent,
+		sdp: RTCSessionDescriptionInit,
+		contractId: string,
+	): Promise<void> {
 		if (sdp.type === 'offer') {
 			if (fromAgent.role !== 'caller') {
 				throw new Error('invalid-sdp');
+			}
+			if (contractId !== call.caller.contractId) {
+				throw new Error('invalid-contract');
 			}
 
 			return this.saveWebrtcOffer(call, fromAgent, sdp);
@@ -113,6 +121,9 @@ export class MediaCallDirector {
 
 		if (fromAgent.role !== 'callee') {
 			throw new Error('invalid-sdp');
+		}
+		if (contractId !== call.callee.contractId || !call.callee.contractId) {
+			throw new Error('invalid-contract');
 		}
 
 		return this.saveWebrtcAnswer(call, fromAgent, sdp);
@@ -122,6 +133,14 @@ export class MediaCallDirector {
 		logger.debug({ msg: 'MediaCallDirector.saveWebrtcOffer', callId: call?._id });
 		const result = await MediaCalls.setWebrtcOfferById(call._id, sdp, this.getNewExpirationTime());
 		if (!result.modifiedCount) {
+			return;
+		}
+
+		// If the call was already accepted in the old data, we need to trigger the event
+		// If the call was not yet accepted then but is now flagged as accepted on mongo, we may also need to trigger the event,
+		//   if the state and the offer were saved at the same time, the event may end up being called twice, but that's better than risk never calling it
+		const isAccepted = call.state === 'accepted' || (await MediaCalls.isInStateById(call._id, 'accepted'));
+		if (!isAccepted) {
 			return;
 		}
 
@@ -135,14 +154,7 @@ export class MediaCallDirector {
 			return;
 		}
 
-		await this.onWebRtcAnswer(call._id, fromAgent, sdp);
-	}
-
-	private static async onWebRtcAnswer(callId: string, fromAgent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void> {
-		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(callId, sdp);
-
-		fromAgent.onWebrtcAnswer(callId);
-		await fromAgent.oppositeAgent?.onWebrtcAnswer(callId);
+		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, sdp);
 	}
 
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
