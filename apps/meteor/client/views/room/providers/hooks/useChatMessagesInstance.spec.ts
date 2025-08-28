@@ -6,7 +6,6 @@ import { renderHook } from '@testing-library/react';
 import { useChatMessagesInstance } from './useChatMessagesInstance';
 import { ChatMessages } from '../../../../../app/ui/client/lib/ChatMessages';
 import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
-import { E2ERoomState } from '../../../../lib/e2ee/E2ERoomState';
 import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useRoomSubscription } from '../../contexts/RoomContext';
 import { useE2EERoomState } from '../../hooks/useE2EERoomState';
@@ -46,7 +45,7 @@ describe('useChatMessagesInstance', () => {
 	let mockUid: string;
 	let mockSubscription: Pick<ISubscription, 'u' | 't' | 'rid'>;
 	let mockActionManager: IActionManager | undefined;
-	let mockE2EERoomState: E2ERoomState;
+	let mockE2EERoomState: 'READY' | 'WAITING_KEYS';
 	let mockEmojiPicker: {
 		open: jest.Mock;
 		isOpen: boolean;
@@ -67,7 +66,7 @@ describe('useChatMessagesInstance', () => {
 			rid: 'roomId',
 		};
 		mockActionManager = undefined;
-		mockE2EERoomState = E2ERoomState.READY;
+		mockE2EERoomState = 'READY';
 		mockEmojiPicker = {
 			open: jest.fn(),
 			isOpen: false,
@@ -162,7 +161,7 @@ describe('useChatMessagesInstance', () => {
 		expect(ChatMessages).toHaveBeenCalledTimes(1);
 		expect(updateSubscriptionMock).toHaveBeenCalledTimes(1);
 
-		(useE2EERoomState as jest.Mock).mockReturnValue(E2ERoomState.WAITING_KEYS);
+		(useE2EERoomState as jest.Mock).mockReturnValue('WAITING_KEYS');
 
 		rerender();
 

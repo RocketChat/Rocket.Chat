@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useScrollableRecordList } from '../../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
-import { e2e } from '../../../../lib/e2ee/rocketchat.e2e';
+import { e2e } from '../../../../lib/e2ee';
 import { ImagesList } from '../../../../lib/lists/ImagesList';
 
 export const useImagesList = (

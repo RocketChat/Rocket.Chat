@@ -6,7 +6,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { useId, useCallback, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
+import { e2e } from '../../../lib/e2ee';
 
 const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const t = useTranslation();

@@ -6,8 +6,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
-import { E2EEState } from '../../lib/e2ee/E2EEState';
-import { E2ERoomState } from '../../lib/e2ee/E2ERoomState';
 import { getRoomTypeTranslation } from '../../lib/getRoomTypeTranslation';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
@@ -23,7 +21,7 @@ export const useE2EERoomAction = () => {
 	const subscription = useRoomSubscription();
 	const e2eeState = useE2EEState();
 	const e2eeRoomState = useE2EERoomState(room._id);
-	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
+	const isE2EEReady = e2eeState === 'READY' || e2eeState === 'SAVE_PASSWORD';
 	const readyToEncrypt = isE2EEReady || room.encrypted;
 	const permittedToToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id);
 	const permittedToEditRoom = usePermission('edit-room', room._id);
@@ -35,11 +33,11 @@ export const useE2EERoomAction = () => {
 
 	const isE2EERoomNotReady = () => {
 		if (
-			e2eeRoomState === E2ERoomState.NO_PASSWORD_SET ||
-			e2eeRoomState === E2ERoomState.NOT_STARTED ||
-			e2eeRoomState === E2ERoomState.DISABLED ||
-			e2eeRoomState === E2ERoomState.ERROR ||
-			e2eeRoomState === E2ERoomState.WAITING_KEYS
+			e2eeRoomState === 'NO_PASSWORD_SET' ||
+			e2eeRoomState === 'NOT_STARTED' ||
+			e2eeRoomState === 'DISABLED' ||
+			e2eeRoomState === 'ERROR' ||
+			e2eeRoomState === 'WAITING_KEYS'
 		) {
 			return true;
 		}

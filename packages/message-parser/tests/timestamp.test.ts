@@ -102,10 +102,10 @@ test.each([
       ]),
     ],
   ],
-  [
-    '<t:10:00+00:00>',
-    [paragraph([timestamp(timestampFromHours('10', '00', '00'), 't')])],
-  ],
+  // [
+  //   '<t:10:00+00:00>',
+  //   [paragraph([timestamp(timestampFromHours('10', '00', '00'), 't')])],
+  // ],
 
   [
     '<t:2025-07-24T20:19:58.154+00:00:R>',

@@ -3,7 +3,6 @@ import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
-import { E2ERoomState } from '../../../../lib/e2ee/E2ERoomState';
 import { useRoom } from '../../contexts/RoomContext';
 import { useE2EERoomState } from '../../hooks/useE2EERoomState';
 
@@ -25,8 +24,8 @@ const MessageBoxHint = ({ isEditing, e2eEnabled, unencryptedMessagesAllowed, isM
 		e2eEnabled &&
 		unencryptedMessagesAllowed &&
 		e2eRoomState &&
-		e2eRoomState !== E2ERoomState.READY &&
-		e2eRoomState !== E2ERoomState.DISABLED &&
+		e2eRoomState !== 'READY' &&
+		e2eRoomState !== 'DISABLED' &&
 		!isEditing &&
 		!isReadOnly;
 

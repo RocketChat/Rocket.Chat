@@ -4,7 +4,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { e2e } from '../lib/e2ee/rocketchat.e2e';
+import { e2e } from '../lib/e2ee';
 
 export const useDecryptedMessage = (message: IMessage): string => {
 	const { t } = useTranslation();
