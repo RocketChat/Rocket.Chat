@@ -1,8 +1,8 @@
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 
 export const useLoginSendEmailConfirmation = () => {
 	return useMutation({
-		mutationFn: useMethod('sendConfirmationEmail'),
+		mutationFn: useEndpoint('POST', '/v1/users.sendConfirmationEmail'),
 	});
 };
