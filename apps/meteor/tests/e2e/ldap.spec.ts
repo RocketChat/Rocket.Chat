@@ -49,8 +49,6 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api: BaseTest['api'
 		{ _id: 'LDAP_Email_Field', value: 'mail' },
 		{ _id: 'LDAP_Name_Field', value: 'cn' },
 		{ _id: 'LDAP_Sync_User_Data', value: true },
-		{ _id: 'LDAP_Background_Sync', value: true },
-		{ _id: 'LDAP_Sync_User_Active_State', value: 'disable' },
 	];
 
 	await Promise.all(settings.map(({ _id, value }) => setSettingValueById(api, _id, value)));
