@@ -37,8 +37,6 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 	}
 
 	public async getAgentFromCall(call: MediaCallHeader, role: CallRole): Promise<IMediaCallAgent | null> {
-		logger.debug({ msg: 'MediaCallCastDirector.getAgentFromCall', callId: call?._id, role });
-
 		const { [role]: actor } = call;
 
 		return this.getAgentForActorAndRole(actor, role);

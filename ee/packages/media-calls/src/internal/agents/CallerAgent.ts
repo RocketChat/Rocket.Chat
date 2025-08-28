@@ -33,10 +33,10 @@ export class UserActorCallerAgent extends UserActorAgent {
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, _description: RTCSessionDescriptionInit): Promise<void> {
+		logger.debug({ msg: 'UserActorCallerAgent.onRemoteDescriptionChanged', callId });
 		const call = await MediaCalls.findOneById(callId);
 
 		if (call?.state !== 'accepted' || !call.webrtcAnswer) {
-			logger.error({ msg: 'Invalid call state', call });
 			return;
 		}
 

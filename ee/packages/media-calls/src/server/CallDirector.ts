@@ -136,14 +136,6 @@ export class MediaCallDirector {
 			return;
 		}
 
-		// If the call was already accepted in the old data, we need to trigger the event
-		// If the call was not yet accepted then but is now flagged as accepted on mongo, we may also need to trigger the event,
-		//   if the state and the offer were saved at the same time, the event may end up being called twice, but that's better than risk never calling it
-		const isAccepted = call.state === 'accepted' || (await MediaCalls.isInStateById(call._id, 'accepted'));
-		if (!isAccepted) {
-			return;
-		}
-
 		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, sdp);
 	}
 
