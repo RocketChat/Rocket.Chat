@@ -22,5 +22,4 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	hasUnfinishedCalls(): Promise<boolean>;
 	setWebrtcOfferById(callId: string, offer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult>;
 	setWebrtcAnswerById(callId: string, answer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult>;
-	isInStateById(callId: string, state: IMediaCall['state']): Promise<boolean>;
 }

@@ -14,6 +14,7 @@ export class UserActorCalleeAgent extends UserActorAgent {
 
 		const call = await MediaCalls.findOneById(callId);
 		if (!call?.webrtcOffer) {
+			logger.debug('The call was accepted but the webrtc offer is not yet available.');
 			return;
 		}
 
@@ -26,9 +27,10 @@ export class UserActorCalleeAgent extends UserActorAgent {
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void> {
+		logger.debug({ msg: 'UserActorCalleeAgent.onRemoteDescriptionChanged', callId });
+
 		const call = await MediaCalls.findOneById(callId);
 		if (call?.state !== 'accepted' || !call.webrtcOffer || !call.callee.contractId) {
-			logger.error({ msg: 'Invalid call state', call });
 			return;
 		}
 
