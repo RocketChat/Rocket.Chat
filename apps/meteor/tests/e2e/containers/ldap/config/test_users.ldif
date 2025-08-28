@@ -4,34 +4,10 @@ ou: people
 
 dn: uid=ldapuser1,ou=people,dc=rcldap,dc=com,dc=br
 objectClass: inetOrgPerson
-objectClass: posixAccount
-objectClass: shadowAccount
 uid: ldapuser1
 sn: User
 givenName: LDAP
 cn: LDAP User 1
 displayName: LDAP User 1
-uidNumber: 10001
-gidNumber: 5000
 userPassword: password
-gecos: LDAP User 1
-loginShell: /bin/bash
-homeDirectory: /home/ldapuser1
 mail: ldapuser1@example.com
-
-dn: uid=ldapuser2,ou=people,dc=rcldap,dc=com,dc=br
-objectClass: inetOrgPerson
-objectClass: posixAccount
-objectClass: shadowAccount
-uid: ldapuser2
-sn: User
-givenName: LDAP
-cn: LDAP User 2
-displayName: LDAP User 2
-uidNumber: 10002
-gidNumber: 5000
-userPassword: password
-gecos: LDAP User 2
-loginShell: /bin/bash
-homeDirectory: /home/ldapuser2
-mail: user_for_ldap_merge@email.com
