@@ -3,4 +3,4 @@
 "@rocket.chat/rest-typings": major
 ---
 
-Removes `banners.getnew` deprecated endpoint
+Removes `/api/v1/banners.getnew` deprecated endpoint
