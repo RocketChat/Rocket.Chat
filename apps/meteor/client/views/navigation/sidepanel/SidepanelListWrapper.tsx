@@ -1,4 +1,4 @@
-import { Box, SidepanelList } from '@rocket.chat/fuselage';
+import { SidepanelList } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,11 +11,7 @@ const SidepanelListWrapper: Components['List'] = forwardRef(function SidepanelLi
 	const { sidebarListRef } = useSidebarListNavigation();
 	const mergedRefs = useMergedRefs(ref, sidebarListRef);
 
-	return (
-		<Box mb={4}>
-			<SidepanelList aria-label={t('Channels')} ref={mergedRefs} {...props} />
-		</Box>
-	);
+	return <SidepanelList aria-label={t('Channels')} ref={mergedRefs} {...props} />;
 });
 
 export default SidepanelListWrapper;

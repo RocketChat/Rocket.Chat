@@ -1,4 +1,4 @@
-import { Divider, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { forwardRef } from 'react';
 import type { Components } from 'react-virtuoso';
 
@@ -12,7 +12,6 @@ const RoomListFilters: Components['Header'] = forwardRef(function RoomListWrappe
 	return (
 		<Box ref={ref} display='flex' flexDirection='column'>
 			<TeamCollabFilters />
-			<Divider borderColor='stroke-light' mb={4} mi={16} />
 			{showOmnichannel && <OmnichannelFilters />}
 		</Box>
 	);
