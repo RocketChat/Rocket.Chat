@@ -37,7 +37,7 @@ jest.mock('../useOTR', () => ({
 
 jest.mock('../../lib/e2ee', () => ({
 	e2e: {
-		isReady: jest.fn(),
+		getState: jest.fn(),
 	},
 }));
 

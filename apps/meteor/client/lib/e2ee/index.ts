@@ -27,61 +27,26 @@ export const e2e = {
 		console.trace('startClient called');
 	},
 	closeAlert: () => {
-		throw new Error('Function not implemented.');
+		console.trace('closeAlert called');
 	},
-	getState: () => currentState,
+	getState: () => {
+		console.trace('getState called');
+		return currentState;
+	},
 	setState: (state: State) => {
 		currentState = state;
 	},
 	onStateChanged: (callback: () => void) => {
-		callback;
+		console.trace('onStateChanged called', callback);
 		return () => {
-			throw new Error('Function not implemented.');
+			console.trace('onStateChanged cleanup called');
 		};
 	},
 	async decryptPinnedMessage<T extends { rid: string; attachments?: { text?: string }[] }>(message: T) {
-		if (!message.attachments) {
-			return message;
-		}
-
-		if (!message.attachments[0]) {
-			return message;
-		}
-
-		if (!message.attachments[0].text) {
-			return message;
-		}
-
-		const pinnedMessage = message.attachments[0].text;
-
-		const e2eRoom = await this.getInstanceByRoomId(message.rid);
-
-		if (!e2eRoom) {
-			return message;
-		}
-
-		const data = await e2eRoom.decrypt(pinnedMessage);
-
-		if (!data) {
-			return message;
-		}
-
-		return { ...message, attachments: [data, ...message.attachments.slice(1)] };
+		console.trace('decryptPinnedMessage called', message);
 	},
 	async decryptMessage<T extends { rid: string; msg: string }>(message: T) {
-		const e2eRoom = await this.getInstanceByRoomId(message.rid);
-
-		if (!e2eRoom) {
-			return message;
-		}
-
-		const data = await e2eRoom.decrypt(message.msg);
-
-		if (!data) {
-			return message;
-		}
-
-		return { ...message, msg: data };
+		console.trace('decryptMessage called', message);
 	},
 	async decryptFileContent<T extends { rid?: string; content?: { algorithm: string; ciphertext: string } }>(file: T): Promise<T> {
 		if (!file.rid) {
@@ -122,25 +87,21 @@ export const e2e = {
 			};
 		},
 		getState: () => sessions[rid],
-		onStateChange: (callback: () => void) => {
-			const sessionId = rid;
-			if (!sessions[sessionId]) {
-				sessions[sessionId] = 'NOT_STARTED';
-			}
+		onStateChange: (_callback: () => void): (() => void) => {
 			return () => {
-				callback;
+				throw new Error('Function not implemented.');
 			};
 		},
 		shouldConvertReceivedMessages: () => {
 			throw new Error('Function not implemented.');
 		},
-		shouldConvertSentMessages: async (message: { msg: string }) => {
+		shouldConvertSentMessages: async (message: { msg: string }): Promise<boolean> => {
 			throw new Error('Function not implemented.', { cause: message });
 		},
-		resume: () => {
+		resume: (): void => {
 			throw new Error('Function not implemented.');
 		},
-		pause: () => {
+		pause: (): void => {
 			throw new Error('Function not implemented.');
 		},
 		decryptContent: async <T extends { content?: { algorithm: string; ciphertext: string } }>(data: T) => {
@@ -155,12 +116,3 @@ export const e2e = {
 		}),
 	}),
 };
-
-export async function decryptNotification(payload: { rid: string; message?: { t?: string; msg: string } }) {
-	if (payload.message?.t === 'e2e') {
-		const e2eRoom = await e2e.getInstanceByRoomId(payload.rid);
-		if (e2eRoom) {
-			return e2eRoom.decrypt(payload.message.msg);
-		}
-	}
-}
