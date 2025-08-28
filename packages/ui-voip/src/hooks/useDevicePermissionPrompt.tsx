@@ -121,3 +121,71 @@ export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actio
 		[state, setModal, actionType, queryClient, _onAccept, setInputMediaDevice, requestDevice, onReject],
 	);
 };
+
+export const useDevicePermissionPrompt2 = ({ actionType }: Pick<UseDevicePermissionPromptProps, 'actionType'>) => {
+	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
+	const setModal = useSetModal();
+	const setInputMediaDevice = useSetInputMediaDevice();
+	const queryClient = useQueryClient();
+
+	return useCallback(
+		async (constraints?: MediaStreamConstraints) => {
+			return new Promise((resolve, reject) => {
+				const onAccept = (stream: MediaStream) => {
+					// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
+					// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
+					queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
+
+					stream.getTracks().forEach((track) => {
+						const { deviceId } = track.getSettings();
+						if (!deviceId) {
+							return;
+						}
+
+						if (track.kind === 'audio' && navigator.mediaDevices.enumerateDevices) {
+							navigator.mediaDevices.enumerateDevices().then((devices) => {
+								const device = devices.find((device) => device.deviceId === deviceId);
+								if (!device) {
+									return;
+								}
+								setInputMediaDevice({
+									id: device.deviceId,
+									label: device.label,
+									type: 'audioinput',
+								});
+							});
+						}
+					});
+					resolve(stream);
+				};
+
+				if (state === 'granted') {
+					requestDevice({
+						onAccept,
+						onReject: reject,
+						constraints,
+					});
+					return;
+				}
+
+				const onConfirm = () => {
+					requestDevice?.({
+						onReject: reject,
+						onAccept: (...args) => {
+							onAccept(...args);
+							setModal(null);
+						},
+						constraints,
+					});
+				};
+
+				const onCancel = () => {
+					reject();
+					setModal(null);
+				};
+				setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
+			});
+		},
+		[state, setModal, actionType, queryClient, setInputMediaDevice, requestDevice],
+	);
+};

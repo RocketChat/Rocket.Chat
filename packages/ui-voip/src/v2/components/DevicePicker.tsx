@@ -1,12 +1,14 @@
 import { Box, RadioButton } from '@rocket.chat/fuselage';
+import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useAvailableDevices, useSelectedDevices } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent } from 'react';
-import { forwardRef } from 'react';
+import { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionButton } from '.';
+import { useDevicePermissionPrompt } from '../../hooks/useDevicePermissionPrompt';
 import { useMediaCallContext } from '../MediaCallContext';
 
 type DevicePickerButtonProps = {
@@ -70,6 +72,30 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 
 	const disabled = !micSection.items.length || !speakerSection.items.length;
 
+	const [isOpen, setIsOpen] = useSafely(useState(false));
+
+	const _onOpenChange = useDevicePermissionPrompt({
+		actionType: 'device-change',
+		onAccept: () => {
+			setIsOpen(true);
+		},
+		onReject: () => {
+			setIsOpen(false);
+		},
+	});
+
+	const onOpenChange = useCallback(
+		(isOpen: boolean) => {
+			if (isOpen) {
+				_onOpenChange();
+				return;
+			}
+
+			setIsOpen(isOpen);
+		},
+		[_onOpenChange, setIsOpen],
+	);
+
 	return (
 		<GenericMenu
 			title={disabled ? t('Device_settings_not_supported_by_browser') : t('Device_settings')}
@@ -77,6 +103,8 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 			disabled={disabled}
 			placement='top-end'
 			selectionMode='multiple'
+			isOpen={isOpen}
+			onOpenChange={onOpenChange}
 			button={<DevicePickerButton secondary={secondary} tiny={!secondary} />}
 		/>
 	);
