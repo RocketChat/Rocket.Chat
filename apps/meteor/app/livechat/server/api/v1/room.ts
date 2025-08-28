@@ -1,7 +1,14 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatAgent, IOmnichannelInquiryExtraData, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	IOmnichannelInquiryExtraData,
+	IUser,
+	SelectedAgent,
+	TransferByData,
+	TransferData,
+} from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -222,43 +229,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'livechat/room.transfer',
-	{ validateParams: isPOSTLivechatRoomTransferParams, deprecation: { version: '7.0.0' } },
-	{
-		async post() {
-			const { rid, token, department } = this.bodyParams;
-
-			const guest = await findGuest(token);
-			if (!guest) {
-				throw new Error('invalid-token');
-			}
-
-			let room = await findRoom(token, rid);
-			if (!room) {
-				throw new Error('invalid-room');
-			}
-
-			// update visited page history to not expire
-			await Messages.keepHistoryForToken(token);
-
-			const { _id, username, name } = guest;
-			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
-
-			if (!(await transfer(room, guest, { departmentId: department, transferredBy }))) {
-				return API.v1.failure();
-			}
-
-			room = await findRoom(token, rid);
-			if (!room) {
-				throw new Error('invalid-room');
-			}
-
-			return API.v1.success({ room });
-		},
-	},
-);
-
-API.v1.addRoute(
 	'livechat/room.survey',
 	{ validateParams: isPOSTLivechatRoomSurveyParams },
 	{
@@ -343,6 +313,54 @@ API.v1.addRoute(
 			const chatForwardedResult = await transfer(room, guest, transferData);
 			if (!chatForwardedResult) {
 				throw new Error('error-forwarding-chat');
+			}
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/visitor.department.transfer',
+	{ validateParams: isPOSTLivechatRoomTransferParams },
+	{
+		async post() {
+			const { rid, token, department } = this.bodyParams;
+
+			const visitor = await findGuest(token);
+			if (!visitor) {
+				throw new Error('invalid-token');
+			}
+			const room = await LivechatRooms.findOneById(rid);
+
+			if (!room || room.t !== 'l') {
+				throw new Error('error-invalid-room');
+			}
+
+			if (!room.open) {
+				throw new Error('This_conversation_is_already_closed');
+			}
+
+			// As this is a visitor endpoint, we should not show the mac limit error
+			if (!(await Omnichannel.isWithinMACLimit(room))) {
+				throw new Error('error-transefing-chat');
+			}
+
+			const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
+			if (!guest) {
+				throw new Error('error-invalid-visitor');
+			}
+
+			const transferredBy = normalizeTransferredByData(
+				{ _id: guest._id, username: guest.username, name: guest.name, userType: 'visitor' },
+				room,
+			);
+
+			const transferData: TransferData = { transferredBy, departmentId: department };
+
+			const chatForwardedResult = await transfer(room, guest, transferData);
+			if (!chatForwardedResult) {
+				throw new Error('error-transfering-chat');
 			}
 
 			return API.v1.success();
