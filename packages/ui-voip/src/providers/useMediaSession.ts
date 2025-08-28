@@ -48,6 +48,17 @@ class WebRTCProcessor extends MediaCallWebRTCProcessor {
 		});
 	}
 
+	// TODO: This is to implement "hold", but we also need to send a signal which is not sent yet.
+	public toggleReceiverTracks(enable: boolean) {
+		const tracks = this.peer.getReceivers().map((receiver) => receiver.track);
+		tracks.forEach((track) => {
+			if (!track) {
+				return;
+			}
+			track.enabled = enable;
+		});
+	}
+
 	public stopAllTracks() {
 		const senderTracks = this.peer.getSenders().map((sender) => sender.track);
 		const receiverTracks = this.peer.getReceivers().map((receiver) => receiver.track);
@@ -355,6 +366,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 				updateSessionState();
 			}),
 			instance.on('callStateChange', updateSessionState),
+			instance.on('callContactUpdate', updateSessionState),
 		];
 
 		return () => {
@@ -380,8 +392,11 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			return;
 		}
 
-		processor.toggleSenderTracks(!mediaSession.muted);
-	}, [mediaSession.muted, processor]);
+		const micMuted = mediaSession.muted || mediaSession.held;
+
+		processor.toggleSenderTracks(!micMuted);
+		processor.toggleReceiverTracks(!mediaSession.held);
+	}, [mediaSession.muted, mediaSession.held, processor]);
 
 	const cbs = useMemo(() => {
 		const toggleWidget = (peerInfo?: PeerInfo) => {
