@@ -12,11 +12,18 @@ export type LayoutContextValue = {
 	isMobile: boolean;
 	roomToolboxExpanded: boolean;
 	sidebar: {
+		overlayed: boolean;
+		setOverlayed: (value: boolean) => void;
 		isCollapsed: boolean;
 		toggle: () => void;
 		collapse: () => void;
 		expand: () => void;
 		close: () => void;
+	};
+	sidePanel: {
+		displaySidePanel: boolean;
+		closeSidePanel: () => void;
+		openSidePanel: () => void;
 	};
 	navbar: {
 		searchExpanded: boolean;
@@ -46,14 +53,21 @@ export const LayoutContext = createContext<LayoutContextValue>({
 		collapseSearch: () => undefined,
 	},
 	sidebar: {
+		overlayed: false,
+		setOverlayed: () => undefined,
 		isCollapsed: false,
 		toggle: () => undefined,
 		collapse: () => undefined,
 		expand: () => undefined,
 		close: () => undefined,
 	},
+	sidePanel: {
+		displaySidePanel: true,
+		closeSidePanel: () => undefined,
+		openSidePanel: () => undefined,
+	},
 	size: {
-		sidebar: '380px',
+		sidebar: '240px',
 		contextualBar: '380px',
 	},
 	contextualBarPosition: 'relative',

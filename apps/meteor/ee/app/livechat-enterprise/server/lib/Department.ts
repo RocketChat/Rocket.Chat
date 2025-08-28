@@ -1,9 +1,8 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
+import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Filter } from 'mongodb';
-
-import { callbacks } from '../../../../../lib/callbacks';
 
 export const findAllDepartmentsAvailable = async (
 	uid: string,
@@ -22,7 +21,7 @@ export const findAllDepartmentsAvailable = async (
 	};
 
 	if (onlyMyDepartments) {
-		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId: uid });
+		query = await applyDepartmentRestrictions(query, uid);
 	}
 
 	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, { limit: count, offset, sort: { name: 1 } });

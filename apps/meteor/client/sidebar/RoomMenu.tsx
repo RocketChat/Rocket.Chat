@@ -4,7 +4,7 @@ import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 
-import { useRoomMenuActions } from '../hooks/useRoomMenuActions';
+import { useRoomMenuActions } from './hooks/useRoomMenuActions';
 
 type RoomMenuProps = {
 	rid: string;
