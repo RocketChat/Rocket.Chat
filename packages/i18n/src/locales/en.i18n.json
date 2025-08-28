@@ -2510,6 +2510,8 @@
   "Ignore": "Ignore",
   "Ignore_Two_Factor_Authentication": "Ignore Two Factor Authentication",
   "Ignored": "Ignored",
+  "Image_crop_preview": "Image Crop Preview",
+  "Image_crop_preview_description": "Enable cropping of images before sending in chat",
   "Image_gallery": "Image gallery",
   "Images": "Images",
   "Impersonate_next_agent_from_queue": "Impersonate next agent from queue",

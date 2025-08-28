@@ -16,12 +16,14 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
 import type { ReactElement, ComponentProps } from 'react';
 import { memo, useEffect, useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import CropFilePreview from './CropFilePreview';
 import FilePreview from './FilePreview';
 
 type FileUploadModalProps = {
@@ -55,6 +57,7 @@ const FileUploadModal = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxMsgSize = useSetting('Message_MaxAllowedSize', 5000);
 	const maxFileSize = useSetting('FileUpload_MaxFileSize', 104857600);
+	const enablePreview = useFeaturePreview('imageCropPreview');
 
 	const isDescriptionValid = (description: string) =>
 		description.length >= maxMsgSize ? t('Cannot_upload_file_character_limit', { count: maxMsgSize }) : true;
@@ -116,10 +119,19 @@ const FileUploadModal = ({
 				</ModalHeader>
 				<ModalContent>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						<FilePreview file={currentFile} onFileChange={setCurrentFile} startCropping={startCropping} />
+						{enablePreview ? (
+							<CropFilePreview
+								file={currentFile}
+								onFileChange={setCurrentFile}
+								startCropping={startCropping}
+								onCropDone={() => setStartCropping(false)}
+							/>
+						) : (
+							<FilePreview file={currentFile} />
+						)}
 					</Box>
-					{currentFile.type.startsWith('image/') && !startCropping && (
-						<Button small onClick={() => setStartCropping(true)} mbe={16}>
+					{enablePreview && currentFile.type.startsWith('image/') && !startCropping && (
+						<Button small onClick={() => setStartCropping(true)} mb={16}>
 							Crop
 						</Button>
 					)}
