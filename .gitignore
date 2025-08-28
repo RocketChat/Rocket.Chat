@@ -59,3 +59,9 @@ registration.yaml
 
 storybook-static
 development/tempo-data/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

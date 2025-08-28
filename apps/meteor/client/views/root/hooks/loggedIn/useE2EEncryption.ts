@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 
 import { MentionsParser } from '../../../../../app/mentions/lib/MentionsParser';
 import { e2e } from '../../../../lib/e2ee';
+import { logger } from '../../../../lib/e2ee/logger';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
 import { Rooms } from '../../../../stores';
@@ -18,20 +19,18 @@ export const useE2EEncryption = () => {
 
 	useEffect(() => {
 		if (!userId) {
-			e2e.log('Not logged in');
+			logger.log('Not logged in');
 			return;
 		}
 
 		if (!window.crypto) {
-			e2e.error('No crypto support');
+			logger.error('No crypto support');
 			return;
 		}
 
 		if (enabled && !adminEmbedded) {
-			e2e.log('E2E enabled starting client');
 			e2e.startClient();
 		} else {
-			e2e.log('E2E disabled');
 			e2e.setState('DISABLED');
 			e2e.closeAlert();
 		}
@@ -48,12 +47,12 @@ export const useE2EEncryption = () => {
 
 	useEffect(() => {
 		if (!ready) {
-			e2e.log('Not ready');
+			logger.log('Not ready');
 			return;
 		}
 
 		if (listenersAttachedRef.current) {
-			e2e.log('Listeners already attached');
+			logger.log('Listeners already attached');
 			return;
 		}
 
@@ -120,10 +119,10 @@ export const useE2EEncryption = () => {
 		});
 
 		listenersAttachedRef.current = true;
-		e2e.log('Listeners attached');
+		logger.log('Listeners attached');
 
 		return () => {
-			e2e.log('Not ready');
+			logger.log('Not ready');
 			offClientMessageReceived();
 			offClientBeforeSendMessage();
 			listenersAttachedRef.current = false;

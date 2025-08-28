@@ -1,84 +1,86 @@
 {
-	"name": "rocket.chat",
-	"version": "7.10.0-develop",
-	"description": "Rocket.Chat Monorepo",
-	"main": "index.js",
-	"private": true,
-	"scripts": {
-		"build": "turbo run build",
-		"build:services": "turbo run build --filter=rocketchat-services...",
-		"build:ci": "turbo run build:ci",
-		"testunit": "turbo run testunit",
-		"typecheck": "turbo run typecheck",
-		"test-storybook": "turbo run test-storybook",
-		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
-		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
-		"tsv": "TEST_MODE=true yarn dsv",
-		"lint": "turbo run lint",
-		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
-		"fuselage": "./fuselage.sh",
-		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
-	},
-	"devDependencies": {
-		"@changesets/cli": "^2.27.11",
-		"turbo": "~2.5.5"
-	},
-	"workspaces": [
-		"apps/*",
-		"packages/*",
-		"ee/apps/*",
-		"ee/packages/*",
-		"apps/meteor/ee/server/services"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
-	},
-	"author": "",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
-	},
-	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
-	"engines": {
-		"yarn": "4.9.2",
-		"node": "22.16.0"
-	},
-	"packageManager": "yarn@4.9.2",
-	"houston": {
-		"minTag": "0.55.0-rc.0",
-		"updateFiles": [
-			"package.json",
-			"apps/meteor/app/utils/rocketchat.info"
-		]
-	},
-	"volta": {
-		"node": "22.16.0",
-		"yarn": "4.9.2"
-	},
-	"resolutions": {
-		"@react-pdf/fns": "2.0.1",
-		"@react-pdf/font": "2.3.7",
-		"@react-pdf/image": "2.2.2",
-		"@react-pdf/layout": "3.6.3",
-		"@react-pdf/pdfkit": "3.0.2",
-		"@react-pdf/png-js": "2.2.0",
-		"@react-pdf/primitives": "3.0.1",
-		"@react-pdf/render": "3.2.7",
-		"@react-pdf/renderer": "3.1.14",
-		"@react-pdf/stylesheet": "4.1.8",
-		"@react-pdf/textkit": "4.2.0",
-		"@react-pdf/types": "2.3.4",
-		"@react-pdf/yoga": "4.1.2",
-		"minimist": "1.2.6",
-		"adm-zip": "0.5.9",
-		"underscore": "1.13.7",
-		"lodash": "4.17.21",
-		"mongodb": "6.10.0",
-		"cross-spawn": "7.0.6"
-	},
-	"dependencies": {
-		"@types/stream-buffers": "^3.0.7",
-		"node-gyp": "^10.2.0"
-	}
+  "name": "rocket.chat",
+  "version": "7.10.0-develop",
+  "description": "Rocket.Chat Monorepo",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "build:services": "turbo run build --filter=rocketchat-services...",
+    "build:ci": "turbo run build:ci",
+    "testunit": "turbo run testunit",
+    "typecheck": "turbo run typecheck",
+    "test-storybook": "turbo run test-storybook",
+    "dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
+    "dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
+    "tsv": "TEST_MODE=true yarn dsv",
+    "lint": "turbo run lint",
+    "storybook": "yarn workspace @rocket.chat/meteor run storybook",
+    "fuselage": "./fuselage.sh",
+    "fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.11",
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.0",
+    "turbo": "~2.5.5"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "ee/apps/*",
+    "ee/packages/*",
+    "apps/meteor/ee/server/services"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RocketChat/Rocket.Chat/issues"
+  },
+  "homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+  "engines": {
+    "yarn": "4.9.2",
+    "node": "22.16.0"
+  },
+  "packageManager": "yarn@4.9.2",
+  "houston": {
+    "minTag": "0.55.0-rc.0",
+    "updateFiles": [
+      "package.json",
+      "apps/meteor/app/utils/rocketchat.info"
+    ]
+  },
+  "volta": {
+    "node": "22.16.0",
+    "yarn": "4.9.2"
+  },
+  "resolutions": {
+    "@react-pdf/fns": "2.0.1",
+    "@react-pdf/font": "2.3.7",
+    "@react-pdf/image": "2.2.2",
+    "@react-pdf/layout": "3.6.3",
+    "@react-pdf/pdfkit": "3.0.2",
+    "@react-pdf/png-js": "2.2.0",
+    "@react-pdf/primitives": "3.0.1",
+    "@react-pdf/render": "3.2.7",
+    "@react-pdf/renderer": "3.1.14",
+    "@react-pdf/stylesheet": "4.1.8",
+    "@react-pdf/textkit": "4.2.0",
+    "@react-pdf/types": "2.3.4",
+    "@react-pdf/yoga": "4.1.2",
+    "minimist": "1.2.6",
+    "adm-zip": "0.5.9",
+    "underscore": "1.13.7",
+    "lodash": "4.17.21",
+    "mongodb": "6.10.0",
+    "cross-spawn": "7.0.6"
+  },
+  "dependencies": {
+    "@types/stream-buffers": "^3.0.7",
+    "node-gyp": "^10.2.0"
+  }
 }

@@ -29,6 +29,7 @@ import {
 	importAesGcmKey,
 } from './helper';
 import { isAesCbc, isAesGcm, parseJsonWebKey } from './jwk';
+import { logger } from './logger';
 import { e2e } from './rocketchat.e2e';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../app/utils/lib/i18n';
@@ -109,20 +110,12 @@ export class E2ERoom extends Emitter {
 		this.once('READY', () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === RoomManager.opened) {
-				this.log(`[PREV: ${prev}]`, 'State CHANGED');
+				logger.log(`[PREV: ${prev}]`, 'State CHANGED');
 			}
 		});
 		this.on('STATE_CHANGED', () => this.handshake());
 
 		this.setState('NOT_STARTED');
-	}
-
-	log(...msg: unknown[]) {
-		e2e.log(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
-	}
-
-	error(...msg: unknown[]) {
-		e2e.error(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
 	}
 
 	hasSessionKey() {
@@ -138,12 +131,12 @@ export class E2ERoom extends Emitter {
 		const nextState = filterMutation(currentState, requestedState);
 
 		if (!nextState) {
-			this.error(`invalid state ${currentState} -> ${requestedState}`);
+			logger.error(`invalid state ${currentState} -> ${requestedState}`);
 			return;
 		}
 
 		this.state = nextState;
-		this.log(currentState, '->', nextState);
+		logger.log(currentState, '->', nextState);
 		this.emit('STATE_CHANGED', currentState);
 		this.emit(nextState, this);
 	}
@@ -169,13 +162,13 @@ export class E2ERoom extends Emitter {
 	}
 
 	pause() {
-		this.log('PAUSED', this[PAUSED], '->', true);
+		logger.log('PAUSED', this[PAUSED], '->', true);
 		this[PAUSED] = true;
 		this.emit('PAUSED', true);
 	}
 
 	resume() {
-		this.log('PAUSED', this[PAUSED], '->', false);
+		logger.log('PAUSED', this[PAUSED], '->', false);
 		this[PAUSED] = false;
 		this.emit('PAUSED', false);
 	}
@@ -222,28 +215,28 @@ export class E2ERoom extends Emitter {
 		const subscription = Subscriptions.state.find((record) => record.rid === this.roomId);
 
 		if (subscription?.lastMessage?.t !== 'e2e') {
-			e2e.log('decryptSubscriptions nothing to do');
+			logger.log('decryptSubscriptions nothing to do');
 			return;
 		}
 
 		const message = await this.decryptMessage(subscription.lastMessage);
 
 		if (message !== subscription.lastMessage) {
-			e2e.log('decryptSubscriptions updating lastMessage');
+			logger.log('decryptSubscriptions updating lastMessage');
 			Subscriptions.state.store({
 				...subscription,
 				lastMessage: message,
 			});
 		}
 
-		e2e.log('decryptSubscriptions Done');
+		logger.log('decryptSubscriptions Done');
 	}
 
 	async decryptOldRoomKeys() {
 		const sub = Subscriptions.state.find((record) => record.rid === this.roomId);
 
 		if (!sub?.oldRoomKeys || sub?.oldRoomKeys.length === 0) {
-			this.log('decryptOldRoomKeys nothing to do');
+			logger.log('decryptOldRoomKeys nothing to do');
 			return;
 		}
 
@@ -256,7 +249,7 @@ export class E2ERoom extends Emitter {
 					E2EKey: k,
 				});
 			} catch (e) {
-				this.error(
+				logger.error(
 					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
 					e,
 				);
@@ -265,13 +258,13 @@ export class E2ERoom extends Emitter {
 		}
 
 		this.oldKeys = keys;
-		this.log('decryptOldRoomKeys Done');
+		logger.log('decryptOldRoomKeys Done');
 	}
 
 	async exportOldRoomKeys(oldKeys: ISubscription['oldRoomKeys']) {
-		this.log('exportOldRoomKeys starting');
+		logger.log('exportOldRoomKeys starting');
 		if (!oldKeys || oldKeys.length === 0) {
-			this.log('exportOldRoomKeys nothing to do');
+			logger.log('exportOldRoomKeys nothing to do');
 			return;
 		}
 
@@ -288,14 +281,14 @@ export class E2ERoom extends Emitter {
 					E2EKey: k,
 				});
 			} catch (e) {
-				this.error(
+				logger.error(
 					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
 					e,
 				);
 			}
 		}
 
-		this.log(`exportOldRoomKeys Done: ${keys.length} keys exported`);
+		logger.log(`exportOldRoomKeys Done: ${keys.length} keys exported`);
 		return keys;
 	}
 
@@ -327,7 +320,7 @@ export class E2ERoom extends Emitter {
 			}
 		} catch (error) {
 			this.setState('ERROR');
-			this.error('Error fetching group key: ', error);
+			logger.error('Error fetching group key: ', error);
 			return;
 		}
 
@@ -341,10 +334,10 @@ export class E2ERoom extends Emitter {
 			}
 
 			this.setState('WAITING_KEYS');
-			this.log('Requesting room key');
+			logger.log('Requesting room key');
 			sdk.publish('notify-room-users', [`${this.roomId}/e2ekeyRequest`, this.roomId, room.e2eKeyId]);
 		} catch (error) {
-			this.error('Error requesting room key: ', error);
+			logger.error('Error requesting room key: ', error);
 			this.setState('ERROR');
 		}
 	}
@@ -358,7 +351,7 @@ export class E2ERoom extends Emitter {
 		try {
 			return await importAesGcmKey(jwk);
 		} catch (error) {
-			this.error(error);
+			logger.error(error);
 			try {
 				return await importAesCbcKey(jwk);
 			} catch (error) {
@@ -380,7 +373,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async importGroupKey(groupKey: string) {
-		this.log('Importing room key ->', this.roomId);
+		logger.log('Importing room key ->', this.roomId);
 		// Get existing group key
 		// const keyID = groupKey.slice(0, 12);
 		groupKey = groupKey.slice(12);
@@ -394,7 +387,7 @@ export class E2ERoom extends Emitter {
 			const decryptedKey = await decryptRSA(e2e.privateKey, decodedGroupKey);
 			this.sessionKeyExportedString = toString(decryptedKey);
 		} catch (error) {
-			this.error('Error decrypting group key: ', error);
+			logger.error('Error decrypting group key: ', error);
 			return false;
 		}
 
@@ -412,7 +405,7 @@ export class E2ERoom extends Emitter {
 				this.groupSessionKey = key;
 				return true;
 			} catch (error) {
-				this.error('Error importing AES-GCM key: ', error);
+				logger.error('Error importing AES-GCM key: ', error);
 				return false;
 			}
 		}
@@ -423,7 +416,7 @@ export class E2ERoom extends Emitter {
 				this.groupSessionKey = key;
 				return true;
 			} catch (error) {
-				this.error('Error importing AES-CBC key: ', error);
+				logger.error('Error importing AES-CBC key: ', error);
 				return false;
 			}
 		}
@@ -438,12 +431,17 @@ export class E2ERoom extends Emitter {
 	}
 
 	async createGroupKey() {
-		this.log('Creating room key');
+		logger.log('Creating room key');
 		try {
 			await this.createNewGroupKey();
 
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
-			const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
+
+			if (!e2e.publicKey) {
+				throw new Error('No public key found');
+			}
+
+			const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey);
 			if (myKey) {
 				await sdk.rest.post('/v1/e2e.updateGroupKey', {
 					rid: this.roomId,
@@ -453,15 +451,15 @@ export class E2ERoom extends Emitter {
 				await this.encryptKeyForOtherParticipants();
 			}
 		} catch (error) {
-			this.error('Error exporting group key: ', error);
+			logger.error('Error exporting group key: ', error);
 			throw error;
 		}
 	}
 
 	async resetRoomKey() {
-		this.log('Resetting room key');
+		logger.log('Resetting room key');
 		if (!e2e.publicKey) {
-			this.error('Cannot reset room key. No public key found.');
+			logger.error('Cannot reset room key. No public key found.');
 			return;
 		}
 
@@ -472,17 +470,17 @@ export class E2ERoom extends Emitter {
 			const e2eNewKeys = { e2eKeyId: this.keyID, e2eKey: await this.encryptGroupKeyForParticipant(e2e.publicKey) };
 
 			this.setState('READY');
-			this.log(`Room key reset done for room ${this.roomId}`);
+			logger.log(`Room key reset done for room ${this.roomId}`);
 
 			return e2eNewKeys;
 		} catch (error) {
-			this.error('Error resetting group key: ', error);
+			logger.error('Error resetting group key: ', error);
 			throw error;
 		}
 	}
 
 	onRoomKeyReset(keyID: string) {
-		this.log(`Room keyID was reset. New keyID: ${keyID} Previous keyID: ${this.keyID}`);
+		logger.log(`Room keyID was reset. New keyID: ${keyID} Previous keyID: ${this.keyID}`);
 		this.setState('WAITING_KEYS');
 		this.keyID = keyID;
 		this.groupSessionKey = undefined;
@@ -511,12 +509,16 @@ export class E2ERoom extends Emitter {
 				}[]
 			> = { [this.roomId]: [] };
 			for await (const user of users) {
-				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(JSON.parse(user.e2e!.public_key!));
+				const publicKey = user.e2e?.public_key;
+				if (!publicKey) {
+					return;
+				}
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(JSON.parse(publicKey));
 				if (!encryptedGroupKey) {
 					return;
 				}
 				if (decryptedOldGroupKeys) {
-					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key!, decryptedOldGroupKeys);
+					const oldKeys = await this.encryptOldKeysForParticipant(publicKey, decryptedOldGroupKeys);
 					if (oldKeys) {
 						usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys });
 						continue;
@@ -527,7 +529,7 @@ export class E2ERoom extends Emitter {
 
 			await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys });
 		} catch (error) {
-			return this.error('Error getting room users: ', error);
+			return logger.error('Error getting room users: ', error);
 		}
 	}
 
@@ -541,7 +543,7 @@ export class E2ERoom extends Emitter {
 		try {
 			userKey = await importRSAKey(JSON.parse(publicKey), ['encrypt']);
 		} catch (error) {
-			return this.error('Error importing user key: ', error);
+			return logger.error('Error importing user key: ', error);
 		}
 
 		try {
@@ -557,7 +559,7 @@ export class E2ERoom extends Emitter {
 			}
 			return keys;
 		} catch (error) {
-			return this.error('Error encrypting user key: ', error);
+			return logger.error('Error encrypting user key: ', error);
 		}
 	}
 
@@ -566,7 +568,7 @@ export class E2ERoom extends Emitter {
 		try {
 			userKey = await importRSAKey(publicKey, ['encrypt']);
 		} catch (error) {
-			return this.error('Error importing user key: ', error);
+			return logger.error('Error importing user key: ', error);
 		}
 		// const vector = crypto.getRandomValues(new Uint8Array(16));
 
@@ -576,7 +578,7 @@ export class E2ERoom extends Emitter {
 			const encryptedUserKeyToString = this.keyID + Base64.encode(new Uint8Array(encryptedUserKey));
 			return encryptedUserKeyToString;
 		} catch (error) {
-			return this.error('Error encrypting user key: ', error);
+			return logger.error('Error encrypting user key: ', error);
 		}
 	}
 
@@ -597,7 +599,7 @@ export class E2ERoom extends Emitter {
 			result = await encryptAESCTR(vector, key, fileArrayBuffer);
 		} catch (error) {
 			console.log(error);
-			return this.error('Error encrypting group key: ', error);
+			return logger.error('Error encrypting group key: ', error);
 		}
 
 		const exportedKey = await window.crypto.subtle.exportKey('jwk', key);
@@ -648,7 +650,7 @@ export class E2ERoom extends Emitter {
 				}
 			}
 		} catch (error) {
-			this.error('Error encrypting message: ', error);
+			logger.error('Error encrypting message: ', error);
 			throw error;
 		}
 	}
@@ -766,7 +768,7 @@ export class E2ERoom extends Emitter {
 					}
 					return await this.doDecrypt(vector, this.groupSessionKey, cipherText);
 				} catch (error) {
-					this.error('Error decrypting message: ', error, message);
+					logger.error('Error decrypting message: ', error, message);
 					return { msg: t('E2E_indecipherable') };
 				}
 			}
@@ -782,7 +784,7 @@ export class E2ERoom extends Emitter {
 			}
 			return await this.doDecrypt(vector, this.groupSessionKey, cipherText);
 		} catch (error) {
-			this.error('Error decrypting message: ', error, message);
+			logger.error('Error decrypting message: ', error, message);
 			return { msg: t('E2E_Key_Error') };
 		}
 	}
