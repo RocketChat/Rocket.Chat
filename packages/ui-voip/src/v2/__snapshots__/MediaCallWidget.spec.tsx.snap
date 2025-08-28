@@ -4,7 +4,7 @@ exports[`renders Calling without crashing 1`] = `
 <body>
   <div>
     <article
-      class="rcx-css-gy0p46"
+      class="rcx-css-9uh1y2"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-19jf8qg"
@@ -114,7 +114,7 @@ exports[`renders IncomingCall without crashing 1`] = `
 <body>
   <div>
     <article
-      class="rcx-css-gy0p46"
+      class="rcx-css-9uh1y2"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-19jf8qg"
@@ -268,7 +268,7 @@ exports[`renders NewCall without crashing 1`] = `
 <body>
   <div>
     <article
-      class="rcx-css-gy0p46"
+      class="rcx-css-9uh1y2"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-19jf8qg"
@@ -448,7 +448,7 @@ exports[`renders OngoingCall without crashing 1`] = `
 <body>
   <div>
     <article
-      class="rcx-css-gy0p46"
+      class="rcx-css-9uh1y2"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-k50kn1 rcx-css-19jf8qg"
@@ -601,9 +601,9 @@ exports[`renders OngoingCall without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-xb06ut"
+              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
             >
-              
+              
             </i>
           </button>
         </div>
