@@ -15,10 +15,11 @@ export interface IMediaCallAgent {
 	onCallAccepted(callId: string, signedContractId: string): Promise<void>;
 	onCallActive(callId: string): Promise<void>;
 	onCallCreated(call: IMediaCall): Promise<void>;
-	/* Called when the opposite agent has a webrtc description available, even if the call was not yet accepted */
+	/*
+	 * Called when the sdp of the other actor is available AND the call has been accepted
+	 * The server will automatically delay this event if the sdp becomes available before the call is accepted
+	 */
 	onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void>;
-	/* Called when the call was accepted and the webrtc answer is available */
-	onWebrtcAnswer(callId: string): Promise<void>;
 
 	getMyCallActor(call: IMediaCall): MediaCallActor;
 }

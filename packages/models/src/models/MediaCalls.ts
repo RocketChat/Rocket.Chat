@@ -177,4 +177,9 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			},
 		);
 	}
+
+	public async isInStateById(callId: string, state: IMediaCall['state']): Promise<boolean> {
+		const count = await this.countDocuments({ _id: callId, state }, { limit: 1 });
+		return count > 0;
+	}
 }

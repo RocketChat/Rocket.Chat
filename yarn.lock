@@ -7825,7 +7825,7 @@ __metadata:
     drachtio-srf: "npm:^5.0.10"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -7840,7 +7840,7 @@ __metadata:
     ajv: "npm:^8.17.1"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.0.5"
-    typescript: "npm:~5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 

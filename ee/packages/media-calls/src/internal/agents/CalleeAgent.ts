@@ -1,39 +1,42 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallContact } from '@rocket.chat/core-typings';
-import type { ClientMediaSignal } from '@rocket.chat/media-signaling';
-import { MediaCallChannels } from '@rocket.chat/models';
+import type { MediaCallContact } from '@rocket.chat/core-typings';
+import { MediaCalls } from '@rocket.chat/models';
 
 import { UserActorAgent } from './BaseUserAgent';
-import { UserActorCalleeSignalProcessor } from './CalleeSignalProcessor';
+import { logger } from '../../logger';
 
 export class UserActorCalleeAgent extends UserActorAgent {
 	constructor(contact: MediaCallContact) {
 		super(contact, 'callee');
 	}
 
-	protected doProcessSignal(call: IMediaCall, channel: IMediaCallChannel, signal: ClientMediaSignal): Promise<void> {
-		const signalProcessor = new UserActorCalleeSignalProcessor(this, call, channel);
-		return signalProcessor.processSignal(signal);
-	}
-
 	public async onCallAccepted(callId: string, signedContractId: string): Promise<void> {
 		await super.onCallAccepted(callId, signedContractId);
 
-		const channel = await MediaCallChannels.findOneByCallIdAndSignedActor({ callId, ...this.actor, contractId: signedContractId });
-		if (!channel) {
+		const call = await MediaCalls.findOneById(callId);
+		if (!call?.webrtcOffer) {
 			return;
 		}
 
-		if (channel.remoteDescription) {
-			await this.sendSignal({
-				callId,
-				toContractId: signedContractId,
-				type: 'remote-sdp',
-				sdp: channel.remoteDescription,
-			});
-		}
+		await this.sendSignal({
+			callId,
+			toContractId: signedContractId,
+			type: 'remote-sdp',
+			sdp: call.webrtcOffer,
+		});
 	}
 
-	public async onWebrtcAnswer(_callId: string): Promise<void> {
-		// The callee doesn't need to do anything when the answer is ready
+	public async onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void> {
+		const call = await MediaCalls.findOneById(callId);
+		if (call?.state !== 'accepted' || !call.webrtcOffer || !call.callee.contractId) {
+			logger.error({ msg: 'Invalid call state', call });
+			return;
+		}
+
+		await this.sendSignal({
+			callId,
+			toContractId: call.callee.contractId,
+			type: 'remote-sdp',
+			sdp: description,
+		});
 	}
 }
