@@ -14,6 +14,7 @@ import { useStream, useUserAvatarPath, useWriteStream } from '@rocket.chat/ui-co
 import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback, useRef } from 'react';
 
 import { useCallSounds } from './useCallSounds';
+import { useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import type { PeerInfo, State } from '../v2/MediaCallContext';
 
 // TODO remove this once the permission flow PR is merged
@@ -398,6 +399,9 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 		processor.toggleReceiverTracks(!mediaSession.held);
 	}, [mediaSession.muted, mediaSession.held, processor]);
 
+	const requestDeviceIncoming = useDevicePermissionPrompt2({ actionType: 'incoming' });
+	const requestDeviceOutgoing = useDevicePermissionPrompt2({ actionType: 'outgoing' });
+
 	const cbs = useMemo(() => {
 		const toggleWidget = (peerInfo?: PeerInfo) => {
 			dispatch({ type: 'toggleWidget', payload: { peerInfo } });
@@ -445,6 +449,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			// console.log({ ...call });
 			if (call && call.state === 'ringing') {
 				// console.log('accepting call');
+				await requestDeviceIncoming();
 				call.accept();
 				return;
 			}
@@ -454,6 +459,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			}
 
 			try {
+				await requestDeviceOutgoing();
 				await instance.startCall(kind, id);
 			} catch (error) {
 				console.error(error);
@@ -488,7 +494,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			selectPeer,
 			toggleMute,
 		};
-	}, [instance, processor]);
+	}, [instance, processor, requestDeviceIncoming, requestDeviceOutgoing]);
 
 	return {
 		...mediaSession,
