@@ -17,6 +17,7 @@ const Widget = styled('article')`
 		0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
 	background-color: ${Palette.surface['surface-tint'].toString()};
+	color: ${Palette.text['font-default'].toString()};
 	z-index: 100;
 	overflow: hidden;
 `;
