@@ -12,13 +12,13 @@ import type { IMessage, IUpload, ILivechatAgent, AtLeast, IOmnichannelRoom, IUse
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { MessageData, Quote, WorkerData } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 import type { TFunction, i18n } from 'i18next';
 
-import { getSystemMessage } from './livechatSystemMessages';
 import type { WorkDetailsWithSource } from './localTypes';
 import { isPromiseRejectedResult } from './localTypes';
 
@@ -118,17 +118,13 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	private getSystemMessage(message: IMessage, t: TFunction): MessageData | undefined {
 		if (!message.t) return undefined;
 
-		const systemMessageDefinition = getSystemMessage(message.t);
+		const systemMessageDefinition = MessageTypes.getType(message);
 
 		if (!systemMessageDefinition) return undefined;
 
-		const systemMessage = t(systemMessageDefinition.message, systemMessageDefinition.data?.(message, t));
-
 		return {
 			...message,
-			msg: systemMessage,
-			files: [],
-			quotes: [],
+			msg: systemMessageDefinition.text(t, message),
 		};
 	}
 

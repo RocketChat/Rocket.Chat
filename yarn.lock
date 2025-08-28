@@ -7851,10 +7851,15 @@ __metadata:
   dependencies:
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/eslint-config": "workspace:~"
+    date-fns: "npm:~4.1.0"
     eslint: "npm:~8.45.0"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.0.5"
+    moment: "npm:^2.30.1"
     typescript: "npm:~5.9.2"
+  peerDependencies:
+    date-fns: ~4.1.0
+    moment: ^2.30.1
   languageName: unknown
   linkType: soft
 
@@ -8414,6 +8419,7 @@ __metadata:
     "@rocket.chat/i18n": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/logger": "workspace:^"
+    "@rocket.chat/message-types": "workspace:~"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/pdf-worker": "workspace:^"

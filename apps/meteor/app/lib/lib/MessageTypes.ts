@@ -29,11 +29,6 @@ Meteor.startup(() => {
 		text: (t, message) => t('Removed__username__from_the_team', { user_removed: message.msg }),
 	});
 	MessageTypes.registerType({
-		id: 'ul',
-		system: true,
-		text: (t) => t('User_left_this_channel'),
-	});
-	MessageTypes.registerType({
 		id: 'ult',
 		system: true,
 		text: (t) => t('User_left_this_team'),
@@ -62,11 +57,6 @@ Meteor.startup(() => {
 		id: 'user-added-room-to-team',
 		system: true,
 		text: (t, message) => t('Added__roomName__to_this_team', { roomName: message.msg }),
-	});
-	MessageTypes.registerType({
-		id: 'uj',
-		system: true,
-		text: (t, message) => t('User_joined_the_channel', { user: message.u.username }),
 	});
 	MessageTypes.registerType({
 		id: 'ujt',
