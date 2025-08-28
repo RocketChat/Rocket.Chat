@@ -701,15 +701,15 @@ describe('miscellaneous', () => {
 			const populateLogsPromises = [];
 			populateLogsPromises.push(
 				request
-					.post(methodCall('getRoomRoles'))
+					.post(methodCall('loadHistory'))
 					.set(credentials)
 					.set('Cookie', `rc_token=${credentials['X-Auth-Token']}`)
 					.send({
 						message: JSON.stringify({
-							method: 'getRoomRoles',
-							params: ['GENERAL'],
 							id: 'id',
 							msg: 'method',
+							method: 'loadHistory',
+							params: ['GENERAL'],
 						}),
 					}),
 			);
