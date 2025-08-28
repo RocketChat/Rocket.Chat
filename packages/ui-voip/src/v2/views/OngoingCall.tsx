@@ -46,7 +46,7 @@ const OngoingCall = () => {
 					<ToggleButton label='mute' icons={['mic', 'mic-off']} pressed={muted} onToggle={onMute} />
 					<ToggleButton label='hold' icons={['pause-shape-unfilled', 'pause-shape-unfilled']} pressed={held} onToggle={onHold} />
 					<ActionButton label='forward' icon='arrow-forward' onClick={onForward} />
-					<ActionButton label='phone' icon='phone' danger onClick={onEndCall} />
+					<ActionButton label='phone' icon='phone-off' danger onClick={onEndCall} />
 				</ButtonGroup>
 			</WidgetFooter>
 		</Widget>
