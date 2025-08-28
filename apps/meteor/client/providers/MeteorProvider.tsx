@@ -7,7 +7,6 @@ import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvi
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import { CallProvider as OmnichannelCallProvider } from './CallProvider';
-import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
@@ -30,53 +29,51 @@ type MeteorProviderProps = {
 };
 
 const MeteorProvider = ({ children }: MeteorProviderProps) => (
-	<ConnectionStatusProvider>
-		<ServerProvider>
-			<RouterProvider>
-				<SettingsProvider>
-					<TranslationProvider>
-						<SessionProvider>
-							<TooltipProvider>
-								<ToastMessagesProvider>
-									<AvatarUrlProvider>
-										<UserProvider>
-											<LayoutProvider>
-												<AuthenticationProvider>
-													<CustomSoundProvider>
-														<DeviceProvider>
-															<ModalProvider>
-																<AuthorizationProvider>
-																	<EmojiPickerProvider>
-																		<OmnichannelRoomIconProvider>
-																			<UserPresenceProvider>
-																				<ActionManagerProvider>
-																					<VideoConfProvider>
-																						<MediaCallsProvider>
-																							<OmnichannelCallProvider>
-																								<OmnichannelProvider>{children}</OmnichannelProvider>
-																							</OmnichannelCallProvider>
-																						</MediaCallsProvider>
-																					</VideoConfProvider>
-																				</ActionManagerProvider>
-																			</UserPresenceProvider>
-																		</OmnichannelRoomIconProvider>
-																	</EmojiPickerProvider>
-																</AuthorizationProvider>
-															</ModalProvider>
-														</DeviceProvider>
-													</CustomSoundProvider>
-												</AuthenticationProvider>
-											</LayoutProvider>
-										</UserProvider>
-									</AvatarUrlProvider>
-								</ToastMessagesProvider>
-							</TooltipProvider>
-						</SessionProvider>
-					</TranslationProvider>
-				</SettingsProvider>
-			</RouterProvider>
-		</ServerProvider>
-	</ConnectionStatusProvider>
+	<ServerProvider>
+		<RouterProvider>
+			<SettingsProvider>
+				<TranslationProvider>
+					<SessionProvider>
+						<TooltipProvider>
+							<ToastMessagesProvider>
+								<AvatarUrlProvider>
+									<UserProvider>
+										<LayoutProvider>
+											<AuthenticationProvider>
+												<CustomSoundProvider>
+													<DeviceProvider>
+														<ModalProvider>
+															<AuthorizationProvider>
+																<EmojiPickerProvider>
+																	<OmnichannelRoomIconProvider>
+																		<UserPresenceProvider>
+																			<ActionManagerProvider>
+																				<VideoConfProvider>
+																					<MediaCallsProvider>
+																						<OmnichannelCallProvider>
+																							<OmnichannelProvider>{children}</OmnichannelProvider>
+																						</OmnichannelCallProvider>
+																					</MediaCallsProvider>
+																				</VideoConfProvider>
+																			</ActionManagerProvider>
+																		</UserPresenceProvider>
+																	</OmnichannelRoomIconProvider>
+																</EmojiPickerProvider>
+															</AuthorizationProvider>
+														</ModalProvider>
+													</DeviceProvider>
+												</CustomSoundProvider>
+											</AuthenticationProvider>
+										</LayoutProvider>
+									</UserProvider>
+								</AvatarUrlProvider>
+							</ToastMessagesProvider>
+						</TooltipProvider>
+					</SessionProvider>
+				</TranslationProvider>
+			</SettingsProvider>
+		</RouterProvider>
+	</ServerProvider>
 );
 
 export default MeteorProvider;

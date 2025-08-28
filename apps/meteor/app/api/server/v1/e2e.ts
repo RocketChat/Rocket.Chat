@@ -1,7 +1,9 @@
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
 	ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	ise2eSetRoomKeyIDParamsPOST,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
 	isE2EProvideUsersGroupKeyProps,
@@ -20,11 +22,60 @@ import { setRoomKeyIDMethod } from '../../../e2e/server/methods/setRoomKeyID';
 import { setUserPublicAndPrivateKeysMethod } from '../../../e2e/server/methods/setUserPublicAndPrivateKeys';
 import { updateGroupKey } from '../../../e2e/server/methods/updateGroupKey';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
 // After 10s the room lock will expire, meaning that if for some reason the process never completed
 // The next reset will be available 10s after
 const LockMap = new ExpiryMap<string, boolean>(10000);
+
+type E2eSetRoomKeyIdProps = {
+	rid: string;
+	keyID: string;
+};
+
+const E2eSetRoomKeyIdSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		keyID: {
+			type: 'string',
+		},
+	},
+	required: ['rid', 'keyID'],
+	additionalProperties: false,
+};
+
+const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
+
+const e2eEndpoints = API.v1.post(
+	'e2e.setRoomKeyID',
+	{
+		authRequired: true,
+		body: isE2eSetRoomKeyIdProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+			}),
+		},
+	},
+
+	async function action() {
+		const { rid, keyID } = this.bodyParams;
+
+		await setRoomKeyIDMethod(this.userId, rid, keyID);
+
+		return API.v1.success();
+	},
+);
 
 API.v1.addRoute(
 	'e2e.fetchMyKeys',
@@ -53,55 +104,6 @@ API.v1.addRoute(
 			const result = await getUsersOfRoomWithoutKeyMethod(this.userId, rid);
 
 			return API.v1.success(result);
-		},
-	},
-);
-
-/**
- * @openapi
- *  /api/v1/e2e.setRoomKeyID:
- *    post:
- *      description: Sets the end-to-end encryption key ID for a room
- *      security:
- *        - autenticated: {}
- *      requestBody:
- *        description: A tuple containing the room ID and the key ID
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                rid:
- *                  type: string
- *                keyID:
- *                  type: string
- *      responses:
- *        200:
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiSuccessV1'
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
-
-API.v1.addRoute(
-	'e2e.setRoomKeyID',
-	{
-		authRequired: true,
-		validateParams: ise2eSetRoomKeyIDParamsPOST,
-	},
-	{
-		async post() {
-			const { rid, keyID } = this.bodyParams;
-
-			await setRoomKeyIDMethod(this.userId, rid, keyID);
-
-			return API.v1.success();
 		},
 	},
 );
@@ -323,3 +325,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends E2eEndpoints {}
+}

@@ -1,19 +1,19 @@
-import type { StreamNames } from '@rocket.chat/ddp-client';
+import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { useCallback, useContext } from 'react';
 
 import { ServerContext } from '../ServerContext';
 
-export function useWriteStream<N extends StreamNames>(streamName: N): (...args: unknown[]) => void {
+type WriteStreamCallback<N extends StreamNames> = <K extends StreamKeys<N>>(eventName: K, ...args: StreamerCallbackArgs<N, K>) => void;
+
+export function useWriteStream<N extends StreamNames>(streamName: N): WriteStreamCallback<N> {
 	const { writeStream } = useContext(ServerContext);
 
-	return useCallback(
-		(...args: unknown[]) => {
-			if (!writeStream) {
-				throw new Error(`cannot use useMethod(${streamName}) hook without a wrapping ServerContext`);
-			}
+	if (!writeStream) {
+		throw new Error(`cannot use useWriteStream(${streamName}) hook without a wrapping ServerContext`);
+	}
 
-			return writeStream(streamName, ...args);
-		},
+	return useCallback(
+		<K extends StreamKeys<N>>(eventName: K, ...args: StreamerCallbackArgs<N, K>) => writeStream(streamName, eventName, ...args),
 		[writeStream, streamName],
 	);
 }
