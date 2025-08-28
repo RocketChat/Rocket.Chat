@@ -1,19 +1,18 @@
 import type {
 	MediaCallSignedContact,
 	IMediaCall,
-	IMediaCallChannel,
 	MediaCallContactInformation,
 	MediaCallContact,
+	IMediaCallChannel,
 } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
+import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { MediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
-import { SipActorAgent } from '../agents/BaseSipAgent';
-import type { SipActorCallerAgent } from '../agents/CallerAgent';
 import { SipError, SipErrorCodes } from '../errorCodes';
 
 type IncomingCallEvents = {
@@ -25,14 +24,21 @@ type IncomingCallEvents = {
 export class IncomingSipCall extends BaseSipCall {
 	private readonly emitter: Emitter<IncomingCallEvents>;
 
+	protected localDescription: RTCSessionDescriptionInit;
+
+	protected remoteDescription: RTCSessionDescriptionInit | null;
+
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
-		protected readonly agent: SipActorCallerAgent,
+		protected readonly agent: BroadcastActorAgent,
 		channel: IMediaCallChannel,
+		localDescription: RTCSessionDescriptionInit,
 	) {
 		super(session, call, agent, channel);
 		this.emitter = new Emitter();
+		this.localDescription = localDescription;
+		this.remoteDescription = null;
 	}
 
 	public static async processInvite(session: SipServerSession, req: SrfRequest): Promise<IncomingSipCall> {
@@ -46,14 +52,14 @@ export class IncomingSipCall extends BaseSipCall {
 		console.log('callee', callee);
 
 		const caller = await this.getCallerContactFromInvite(session.sessionId, req);
-		const localDescription = { type: 'offer', sdp: req.body } as const;
+		const webrtcOffer = { type: 'offer', sdp: req.body } as const;
 
 		const callerAgent = await MediaCallDirector.cast.getAgentForActorAndRole(caller, 'caller');
 		if (!callerAgent) {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Caller agent not found');
 		}
 
-		if (!(callerAgent instanceof SipActorAgent)) {
+		if (!(callerAgent instanceof BroadcastActorAgent)) {
 			throw new SipError(SipErrorCodes.INTERNAL_SERVER_ERROR, 'Caller agent not valid');
 		}
 
@@ -69,15 +75,14 @@ export class IncomingSipCall extends BaseSipCall {
 			callerAgent,
 			calleeAgent,
 
-			webrtcOffer: localDescription,
+			webrtcOffer,
 		});
 
-		const channel = await callerAgent.getOrCreateChannel(call, session.sessionId, {
-			acknowledged: true,
-			localDescription,
-		});
+		const channel = await callerAgent.getOrCreateChannel(call, session.sessionId);
 
-		const sipCall = new IncomingSipCall(session, call, callerAgent, channel);
+		const sipCall = new IncomingSipCall(session, call, callerAgent, channel, webrtcOffer);
+
+		callerAgent.provider = sipCall;
 
 		// Send the call to the callee client
 		await calleeAgent.onCallCreated(call);
@@ -144,12 +149,12 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	protected async reflectCall(call: IMediaCall): Promise<void> {
-		if (call.state === 'accepted' && this.lastCallState !== 'accepted' && call.webrtcAnswer) {
-			return this.flagAsAccepted(call.webrtcAnswer);
-		}
-
 		if (call.state === 'hangup') {
 			return this.processEndedCall();
+		}
+
+		if (call.state === 'accepted' && this.lastCallState !== 'accepted' && call.webrtcAnswer) {
+			return this.flagAsAccepted(call.webrtcAnswer);
 		}
 	}
 

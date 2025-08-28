@@ -6,10 +6,9 @@ import type Srf from 'drachtio-srf';
 import { BaseSipCall } from './BaseSipCall';
 import type { InternalCallParams } from '../../definition/common';
 import { logger } from '../../logger';
+import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { MediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
-import { SipActorAgent } from '../agents/BaseSipAgent';
-import type { SipActorCalleeAgent } from '../agents/CalleeAgent';
 import { SipError, SipErrorCodes } from '../errorCodes';
 
 type OutgoingSipCallEvents = {
@@ -25,7 +24,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
-		protected readonly agent: SipActorCalleeAgent,
+		protected readonly agent: BroadcastActorAgent,
 		channel: IMediaCallChannel,
 	) {
 		super(session, call, agent, channel);
@@ -49,7 +48,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.NOT_FOUND, 'Callee agent not found');
 		}
 
-		if (!(calleeAgent instanceof SipActorAgent)) {
+		if (!(calleeAgent instanceof BroadcastActorAgent)) {
 			throw new SipError(SipErrorCodes.INTERNAL_SERVER_ERROR, 'Caller agent not valid');
 		}
 
@@ -65,12 +64,11 @@ export class OutgoingSipCall extends BaseSipCall {
 			callerAgent,
 		});
 
-		const channel = await calleeAgent.getOrCreateChannel(call, session.sessionId, {
-			acknowledged: true,
-		});
+		const channel = await calleeAgent.getOrCreateChannel(call, session.sessionId);
 
 		const sipCall = new OutgoingSipCall(session, call, calleeAgent, channel);
 		session.registerCall(sipCall);
+		calleeAgent.provider = sipCall;
 
 		// report to the caller that the call was created
 		await callerAgent.onCallCreated(call);

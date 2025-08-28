@@ -9,10 +9,7 @@ import type { UserActorAgent } from '../internal/agents/BaseUserAgent';
 import { UserActorCalleeAgent } from '../internal/agents/CalleeAgent';
 import { UserActorCallerAgent } from '../internal/agents/CallerAgent';
 import { logger } from '../logger';
-import type { SipActorAgent } from '../sip/agents/BaseSipAgent';
-import { BroadcastActorAgent } from '../sip/agents/BroadcastAgent';
-import { SipActorCalleeAgent } from '../sip/agents/CalleeAgent';
-import { SipActorCallerAgent } from '../sip/agents/CallerAgent';
+import { BroadcastActorAgent } from './BroadcastAgent';
 
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 
@@ -43,11 +40,6 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		logger.debug({ msg: 'MediaCallCastDirector.getAgentFromCall', callId: call?._id, role });
 
 		const { [role]: actor } = call;
-
-		// For existing calls, sip agents are replaced with a special agent that broadcast call updates to all server instances instead of processing it directly
-		if (actor.type === 'sip') {
-			return new BroadcastActorAgent(actor, role);
-		}
 
 		return this.getAgentForActorAndRole(actor, role);
 	}
@@ -142,16 +134,8 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		return null;
 	}
 
-	protected async getAgentForSipActorAndRole(actor: MediaCallContact, role: CallRole): Promise<SipActorAgent | null> {
-		if (role === 'caller') {
-			return new SipActorCallerAgent(actor);
-		}
-
-		if (role === 'callee') {
-			return new SipActorCalleeAgent(actor);
-		}
-
-		return null;
+	protected async getAgentForSipActorAndRole(actor: MediaCallContact, role: CallRole): Promise<BroadcastActorAgent | null> {
+		return new BroadcastActorAgent(actor, role);
 	}
 
 	protected buildContactListForUser(user: MinimalUserData, defaultContactInfo?: MediaCallContactInformation): ContactList {

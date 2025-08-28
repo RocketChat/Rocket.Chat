@@ -1,15 +1,18 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
 
-import { BaseMediaCallAgent } from '../../base/BaseAgent';
-import { logger } from '../../logger';
-import { getMediaCallServer } from '../../server/injection';
+import { BaseMediaCallAgent } from '../base/BaseAgent';
+import { logger } from '../logger';
+import { getMediaCallServer } from './injection';
+import type { BaseCallProvider } from '../base/BaseCallProvider';
 
 /**
- * This agent is used as a placeholder when a real agent can only exist in one specific server instance
+ * This agent doesn't implement any logic
  * What it does is send a notification to other instances reporting that a call has been updated;
- * The event will make every other instance check if they have an agent for this call in there and tell it to refresh its own state
+ * Then if any server instance is keeping track of this call, it'll load its data from mongo and check what changed
  */
 export class BroadcastActorAgent extends BaseMediaCallAgent {
+	public provider: BaseCallProvider | null = null;
+
 	public async onCallAccepted(callId: string, _signedContractId: string): Promise<void> {
 		logger.debug({ msg: 'BroadcastActorAgent.onCallAccepted', callId });
 
@@ -30,26 +33,23 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
 		logger.debug({ msg: 'BroadcastActorAgent.onCallCreated', call });
-
-		throw new Error('A new call may not be created through a broadcast agent.');
+		// there's no point in broadcasting onCallCreated as it can only be called from within the call provider
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void> {
 		logger.debug({ msg: 'BroadcastActorAgent.onRemoteDescriptionChanged', callId, description });
 
-		// Save the description to this actor's channels before notifying the update
-		await super.onRemoteDescriptionChanged(callId, description);
-
-		this.reportCallUpdated(callId);
-	}
-
-	public async onWebrtcAnswer(callId: string): Promise<void> {
-		logger.debug({ msg: 'BroadcastActorAgent.onWebrtcAnswer', callId });
-
 		this.reportCallUpdated(callId);
 	}
 
 	protected reportCallUpdated(callId: string): void {
+		if (this.provider?.callId === callId) {
+			this.provider.reactToCallChanges().catch(() => {
+				getMediaCallServer().reportCallUpdate(callId);
+			});
+			return;
+		}
+
 		getMediaCallServer().reportCallUpdate(callId);
 	}
 }

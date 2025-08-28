@@ -1,28 +1,21 @@
 import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
-import { MediaCallChannels, MediaCalls } from '@rocket.chat/models';
+import { MediaCalls } from '@rocket.chat/models';
 
 import { BaseCallProvider } from '../../base/BaseCallProvider';
+import type { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import type { SipServerSession } from '../Session';
-import type { SipActorAgent } from '../agents/BaseSipAgent';
 
 export abstract class BaseSipCall extends BaseCallProvider {
 	protected lastCallState: IMediaCall['state'];
 
-	protected remoteDescription: RTCSessionDescriptionInit | null;
-
 	constructor(
 		protected readonly session: SipServerSession,
 		call: IMediaCall,
-		protected readonly agent: SipActorAgent,
+		protected readonly agent: BroadcastActorAgent,
 		protected readonly channel: IMediaCallChannel,
 	) {
 		super(call);
 		this.lastCallState = 'none';
-		this.remoteDescription = null;
-
-		if (channel.remoteDescription) {
-			this.remoteDescription = channel.remoteDescription;
-		}
 	}
 
 	public async updateCall(_call: IMediaCall): Promise<void> {
@@ -48,19 +41,6 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		}
 
 		return this.reflectCall(freshCall);
-	}
-
-	protected async getChannelRemoteDescription(): Promise<RTCSessionDescriptionInit | null> {
-		if (this.channel.remoteDescription) {
-			return this.channel.remoteDescription;
-		}
-
-		const channel = await MediaCallChannels.findOneById(this.channel._id, { projection: { remoteDescription: 1 } });
-		if (!channel?.remoteDescription) {
-			return null;
-		}
-
-		return channel.remoteDescription;
 	}
 
 	protected abstract reflectCall(call: IMediaCall): Promise<void>;
