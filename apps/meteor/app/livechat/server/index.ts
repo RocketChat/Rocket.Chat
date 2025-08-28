@@ -15,7 +15,6 @@ import './hooks/saveLastMessageToInquiry';
 import './hooks/afterUserActions';
 import './hooks/afterAgentRemoved';
 import './hooks/afterSaveOmnichannelMessage';
-import './methods/closeRoom';
 import './methods/getAnalyticsChartData';
 import './methods/getRoutingConfig';
 import './methods/removeAllClosedRooms';
