@@ -31,16 +31,22 @@ export const restrictQuery = async ({
 		// IF user is trying to filter by a unit he doens't have access to, apply empty filter (no matches)
 		userUnits = [...userUnit.intersection(filteredUnits)];
 	}
-	// TODO: units is meant to include units and departments, however, here were only using them as units
-	// We have to change the filter to something like { $or: [{ ancestors: {$in: units }}, {_id: {$in: units}}] }
-	const departments = await LivechatDepartment.find({ ancestors: { $in: userUnits } }, { projection: { _id: 1 } }).toArray();
+
+	const departments = await LivechatDepartment.find(
+		{ $or: [{ ancestors: { $in: userUnits } }, { _id: { $in: userUnits } }] },
+		{ projection: { _id: 1 } },
+	).toArray();
 
 	const expressions = query.$and || [];
 	const condition = {
-		$or: [{ departmentAncestors: { $in: userUnits } }, { departmentId: { $in: departments.map(({ _id }) => _id) } }],
+		$or: [
+			{ departmentAncestors: { $in: userUnits } },
+			{ departmentId: { $in: departments.map(({ _id }) => _id) } },
+			{ departmentId: { $exists: false } },
+		],
 	};
 	query.$and = [condition, ...expressions];
 
-	cbLogger.debug({ msg: 'Applying room query restrictions', userUnits });
+	cbLogger.debug({ msg: 'Applying room query restrictions', userUnits, query });
 	return query;
 };
