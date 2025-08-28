@@ -1,14 +1,12 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import { MediaCalls } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
 
 import { SipError, SipErrorCodes } from './errorCodes';
 import { logger } from '../logger';
 import type { BaseSipCall } from './providers/BaseSipCall';
-import { OutgoingSipCall } from './providers/OutgoingSipCall';
-import { MediaCallDirector } from '../server/CallDirector';
 import { IncomingSipCall } from './providers/IncomingSipCall';
+import { OutgoingSipCall } from './providers/OutgoingSipCall';
 import type { IMediaCallServerSettings } from '../definition/IMediaCallServer';
 import type { InternalCallParams } from '../definition/common';
 import { getDefaultSettings } from '../server/getDefaultSettings';
@@ -73,41 +71,20 @@ export class SipServerSession {
 		return OutgoingSipCall.createCall(this, params);
 	}
 
-	public async makeOutboundCall(call: IMediaCall, sdp: RTCSessionDescriptionInit): Promise<void> {
-		if (call.callee.type !== 'sip') {
-			throw new Error('invalid-callee');
-		}
-
+	public async createSipDialog(
+		sipExtension: string,
+		opts: Srf.CreateUACOptions,
+		progressCallbacks?: { cbRequest?: (req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Srf.SrfResponse) => void },
+	): Promise<Srf.Dialog> {
 		const { host, port } = this.settings.sip.sipServer;
 		if (!host) {
 			throw new Error('Sip Server Host is not configured');
 		}
 
-		const updateResult = await MediaCalls.startRingingById(call._id, MediaCallDirector.getNewExpirationTime());
-		if (!updateResult.modifiedCount) {
-			return;
-		}
-
 		const portStr = port ? `:${port}` : '';
+		const uri = `sip:${sipExtension}@${host}${portStr}`;
 
-		const uri = `sip:${call.callee.id}@${host}${portStr}`;
-
-		console.log('calling ', uri);
-
-		const uac = await this.srf.createUAC(uri, {
-			localSdp: sdp.sdp,
-		});
-
-		if (!uac) {
-			console.log('failed');
-			return;
-		}
-
-		console.log(`dialog established, call-id is ${uac.sip.callId}`);
-
-		uac.on('destroy', () => {
-			console.log('uac.destroy');
-		});
+		return this.srf.createUAC(uri, opts, progressCallbacks);
 	}
 
 	private isEnabledOnSettings(settings: IMediaCallServerSettings): boolean {

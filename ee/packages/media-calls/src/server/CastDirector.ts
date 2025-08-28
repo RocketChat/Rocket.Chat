@@ -3,8 +3,8 @@ import type { CallRole } from '@rocket.chat/media-signaling';
 import { Users } from '@rocket.chat/models';
 
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
-import type { IMediaCallCastDirector, MediaCallHeader } from '../definition/IMediaCallCastDirector';
-import type { GetActorContactOptions, MinimalUserData } from '../definition/common';
+import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
+import type { GetActorContactOptions, MinimalUserData, MediaCallHeader } from '../definition/common';
 import type { UserActorAgent } from '../internal/agents/BaseUserAgent';
 import { UserActorCalleeAgent } from '../internal/agents/CalleeAgent';
 import { UserActorCallerAgent } from '../internal/agents/CallerAgent';

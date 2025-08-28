@@ -150,6 +150,9 @@ declare module 'drachtio-srf' {
 			localSdp?: string;
 			proxy?: string;
 			auth?: { username: string; password: string };
+
+			callingName?: string;
+			callingNumber?: string;
 		}
 
 		export interface CreateB2BUAOptions {
