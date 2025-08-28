@@ -108,8 +108,7 @@ export const sendMessage = async (
 				return false;
 			}
 
-			await chat.currentEditing?.reset();
-			await chat.flows.requestMessageDeletion(originalMessage);
+			await chat.flows.requestEditMessageDeletion(originalMessage);
 			return false;
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

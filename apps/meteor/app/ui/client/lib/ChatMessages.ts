@@ -10,6 +10,7 @@ import { processSetReaction } from '../../../../client/lib/chats/flows/processSe
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
 import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
+import { requestEditMessageDeletion } from '../../../../client/lib/chats/flows/requestEditMessageDeletion';
 import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
@@ -181,6 +182,7 @@ export class ChatMessages implements ChatAPI {
 			processMessageEditing: processMessageEditing.bind(null, this),
 			processSetReaction: processSetReaction.bind(null, this),
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
+			requestEditMessageDeletion: requestEditMessageDeletion.bind(this, this),
 			replyBroadcast: replyBroadcast.bind(null, this),
 		};
 	}
