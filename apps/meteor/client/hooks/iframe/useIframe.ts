@@ -76,7 +76,7 @@ export const useIframe = () => {
 	}, [tryLogin]);
 
 	return {
-		enabled: Boolean(iframeEnabled && accountIframeUrl && apiUrl && apiMethod),
+		enabled,
 		tryLogin,
 		loginWithToken,
 		iframeLoginUrl,
