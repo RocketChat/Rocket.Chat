@@ -46,7 +46,6 @@ import './methods/setUsername';
 import './methods/unarchiveRoom';
 import './methods/unblockUser';
 import './methods/updateMessage';
-import './methods/saveCustomFields';
 import './methods/checkFederationConfiguration';
 
 export * from './lib';
