@@ -650,6 +650,9 @@ export class AppManager {
 
 		await this.installApp(created, app, user);
 
+		// Register commands immediately after installation, regardless of enable status
+		await this.commandManager.registerCommands(app.getID());
+
 		// Should enable === true, then we go through the entire start up process
 		// Otherwise, we only initialize it.
 		if (enable) {
@@ -694,6 +697,8 @@ export class AppManager {
 		}
 
 		await this.purgeAppConfig(app);
+		// Unregister commands only during app removal/uninstallation
+		await this.commandManager.unregisterCommands(app.getID());
 		this.listenerManager.releaseEssentialEvents(app);
 		await this.removeAppUser(app);
 		await (this.bridges.getPersistenceBridge() as IInternalPersistenceBridge & PersistenceBridge).purge(app.getID());
@@ -833,11 +838,15 @@ export class AppManager {
 
 	public async updateAndStartupLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
 		const app = await this.updateLocal(stored, appPackageOrInstance);
+		// Register commands immediately after update, regardless of enable status
+		await this.commandManager.registerCommands(app.getID());
 		await this.runStartUpProcess(stored, app, false, true);
 	}
 
 	public async updateAndInitializeLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
 		const app = await this.updateLocal(stored, appPackageOrInstance);
+		// Register commands immediately after update, regardless of enable status
+		await this.commandManager.registerCommands(app.getID());
 		await this.initializeApp(stored, app, true, true);
 	}
 
@@ -1087,7 +1096,8 @@ export class AppManager {
 		}
 		this.listenerManager.unregisterListeners(app);
 		this.listenerManager.lockEssentialEvents(app);
-		await this.commandManager.unregisterCommands(app.getID());
+		// NOTE: Commands are NOT unregistered here anymore - they remain visible even when app is disabled
+		// await this.commandManager.unregisterCommands(app.getID());
 		this.externalComponentManager.unregisterExternalComponents(app.getID());
 		await this.apiManager.unregisterApis(app.getID());
 		this.accessorManager.purifyApp(app.getID());
@@ -1161,7 +1171,8 @@ export class AppManager {
 		}
 
 		if (enable) {
-			await this.commandManager.registerCommands(app.getID());
+			// NOTE: Commands are now registered during installation, not enabling
+			// await this.commandManager.registerCommands(app.getID());
 			this.externalComponentManager.registerExternalComponents(app.getID());
 			await this.apiManager.registerApis(app.getID());
 			this.listenerManager.registerListeners(app);
