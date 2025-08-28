@@ -369,20 +369,20 @@ const chatEndpoints = API.v1
 				return API.v1.failure('The "msgId" query parameter must be provided.');
 			}
 
-			const msg = await getSingleMessage(this.userId, this.queryParams.msgId);
+			const msg: IMessage | null = await getSingleMessage(this.userId, this.queryParams.msgId);
 
 			if (!msg) {
 				return API.v1.failure();
 			}
 
-			const [message] = await normalizeMessagesForUser([msg], this.userId);
+			const [message]: IMessage[] = await normalizeMessagesForUser([msg], this.userId);
 
 			return API.v1.success({
 				message,
 			});
 		},
 	);
-	
+
 API.v1.addRoute(
 	'chat.postMessage',
 	{ authRequired: true, validateParams: isChatPostMessageProps },
