@@ -134,7 +134,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const systemMessage = this.getSystemMessage(message, t);
 
 			if (systemMessage) {
-				messagesData.push(systemMessage);
+				messagesData.push({
+					...systemMessage,
+					files: systemMessage.files ?? [],
+					quotes: systemMessage.quotes ?? [],
+				});
 				continue;
 			}
 
