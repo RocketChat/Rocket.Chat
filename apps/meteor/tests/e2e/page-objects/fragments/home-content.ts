@@ -89,13 +89,15 @@ export class HomeContent {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').fill(text);
-		const responsePromise = this.page.waitForResponse(
-			(response) =>
-				/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
-		);
-		await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 
 		if (enforce) {
+			const responsePromise = this.page.waitForResponse(
+				(response) =>
+					/api\/v1\/method.call\/sendMessage/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
+			);
+
+			await this.page.getByRole('button', { name: 'Send', exact: true }).click();
+
 			const response = await (await responsePromise).json();
 
 			const mid = JSON.parse(response.message).result._id;
@@ -103,6 +105,8 @@ export class HomeContent {
 
 			await expect(messageLocator).toBeVisible();
 			await expect(messageLocator).not.toHaveClass('rcx-message--pending');
+		} else {
+			await this.page.getByRole('button', { name: 'Send', exact: true }).click();
 		}
 	}
 
