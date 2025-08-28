@@ -1,12 +1,13 @@
 import type { IOmnichannelSystemMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { formatDistance } from 'date-fns/formatDistance';
+import type { TFunction } from 'i18next';
 import moment from 'moment';
 
 const livechatSystemMessagesMap = new Map<
 	MessageTypesValues,
 	{
 		message: string;
-		data?: (message: IOmnichannelSystemMessage, t: (k: string, obj?: Record<string, string>) => string) => Record<string, string>;
+		data?: (message: IOmnichannelSystemMessage, t: TFunction) => Record<string, string>;
 	}
 >();
 
@@ -14,13 +15,11 @@ const addType = (
 	id: MessageTypesValues,
 	options: {
 		message: string;
-		data?: (message: IOmnichannelSystemMessage, t: (k: string, obj?: Record<string, string>) => string) => Record<string, string>;
+		data?: (message: IOmnichannelSystemMessage, t: TFunction) => Record<string, string>;
 	},
 ) => livechatSystemMessagesMap.set(id, options);
 
 export const getSystemMessage = (t: MessageTypesValues) => livechatSystemMessagesMap.get(t);
-
-export const getAllSystemMessagesKeys = () => Array.from(livechatSystemMessagesMap.values()).map((item) => item.message);
 
 addType('livechat-started', { message: 'Chat_started' });
 

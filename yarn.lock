@@ -7814,7 +7814,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/message-parser@workspace:^, @rocket.chat/message-parser@workspace:packages/message-parser":
+"@rocket.chat/message-parser@workspace:^, @rocket.chat/message-parser@workspace:packages/message-parser, @rocket.chat/message-parser@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/message-parser@workspace:packages/message-parser"
   dependencies:
@@ -8540,6 +8540,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/message-parser": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@storybook/addon-essentials": "npm:^8.6.14"
     "@storybook/addon-webpack5-compiler-babel": "npm:^3.0.6"
@@ -8555,11 +8556,13 @@ __metadata:
     emoji-assets: "npm:^7.0.1"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~8.45.0"
+    i18next: "npm:~23.4.9"
     jest: "npm:~30.0.5"
     moment: "npm:^2.30.1"
     moment-timezone: "npm:^0.5.48"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
+    react-i18next: "npm:~13.2.2"
     storybook: "npm:^8.6.14"
     typescript: "npm:~5.9.2"
   languageName: unknown
