@@ -1,6 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { UserStatus, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -12,7 +11,6 @@ import { getUserInfo } from '../../app/api/server/helpers/getUserInfo';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
-import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
 import { setEmailFunction } from '../../app/lib/server/methods/setEmail';
@@ -239,17 +237,3 @@ export function executeSaveUserProfile(
 
 	return saveUserProfile.call(this, settings, customFields, ...args);
 }
-
-Meteor.methods<ServerMethods>({
-	async saveUserProfile(settings, customFields, ...args) {
-		methodDeprecationLogger.method('saveUserProfile', '8.0.0', 'Use the endpoint /v1/users.updateOwnBasicInfo instead');
-		check(settings, Object);
-		check(customFields, Match.Maybe(Object));
-
-		if (settings.email || settings.newPassword) {
-			return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
-		}
-
-		return saveUserProfile.call(this, settings, customFields, ...args);
-	},
-});
