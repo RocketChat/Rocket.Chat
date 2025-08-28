@@ -3,20 +3,25 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useAvailableDevices, useSelectedDevices } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent } from 'react';
+import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionButton } from '.';
 import { useMediaCallContext } from '../MediaCallContext';
 
+type DevicePickerButtonProps = {
+	secondary?: boolean;
+	small?: boolean;
+} & Omit<ComponentProps<typeof ActionButton>, 'label' | 'icon'>;
+
 // GenericMenu for some reason passes `small: true` when the button is disabled (??).
 // so this is just a wrapper to stop that from happening.
-const DevicePickerButton = ({
-	secondary = false,
-	small: _small,
-	...props
-}: { secondary?: boolean; small?: boolean } & Omit<ComponentProps<typeof ActionButton>, 'label' | 'icon'>) => {
-	return <ActionButton secondary={secondary} {...props} label='customize' icon='customize' />;
-};
+const DevicePickerButton = forwardRef<HTMLButtonElement, DevicePickerButtonProps>(function DevicePickerButton(
+	{ secondary = false, small: _small, ...props },
+	ref,
+) {
+	return <ActionButton secondary={secondary} {...props} label='customize' icon='customize' ref={ref} />;
+});
 
 // eslint-disable-next-line react/no-multi-comp
 const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
@@ -70,6 +75,7 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 			title={disabled ? t('Device_settings_not_supported_by_browser') : t('Device_settings')}
 			sections={[micSection, speakerSection]}
 			disabled={disabled}
+			placement='top-end'
 			selectionMode='multiple'
 			button={<DevicePickerButton secondary={secondary} tiny={!secondary} />}
 		/>
