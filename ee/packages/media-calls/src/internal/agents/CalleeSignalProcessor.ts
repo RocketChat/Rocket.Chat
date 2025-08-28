@@ -38,7 +38,7 @@ export class UserActorCalleeSignalProcessor extends UserActorSignalProcessor {
 			return;
 		}
 
-		await MediaCallDirector.acceptCall(this.call, this.agent, this.contractId);
+		await MediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId });
 	}
 
 	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit): Promise<void> {

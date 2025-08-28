@@ -5,6 +5,7 @@ import { MediaCalls } from '@rocket.chat/models';
 import { getCastDirector } from './injection';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
+import type { MediaCallHeader } from '../definition/common';
 import { logger } from '../logger';
 
 const EXPIRATION_TIME = 120000;
@@ -34,27 +35,28 @@ export class MediaCallDirector {
 		}
 	}
 
-	public static async hangupByServer(call: AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>, serverErrorCode: string): Promise<boolean> {
+	public static async hangupByServer(call: AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>, serverErrorCode: string): Promise<void> {
 		logger.debug({ msg: 'MediaCallDirector.hangupByServer', callId: call._id, serverErrorCode });
-
-		const endedBy = { type: 'server', id: 'server' } as ServerActor;
-
-		const modified = await this.hangupCallById(call._id, { endedBy, reason: serverErrorCode });
-		if (!modified) {
-			return false;
-		}
-
-		// Try to notify the agents but there's no guarantee they are reachable
 		try {
-			const agents = await this.cast.getAgentsFromCall(call);
-			for (const agent of Object.values(agents)) {
-				agent?.onCallEnded(call._id).catch(() => null);
-			}
-		} catch {
-			// Ignore errors on the ended event
-		}
+			const endedBy = { type: 'server', id: 'server' } as ServerActor;
 
-		return modified;
+			const modified = await this.hangupCallById(call._id, { endedBy, reason: serverErrorCode });
+			if (!modified) {
+				return;
+			}
+
+			// Try to notify the agents but there's no guarantee they are reachable
+			try {
+				const agents = await this.cast.getAgentsFromCall(call);
+				for (const agent of Object.values(agents)) {
+					agent?.onCallEnded(call._id).catch(() => null);
+				}
+			} catch {
+				// Ignore errors on the ended event
+			}
+		} catch (error) {
+			logger.error({ msg: 'Failed to terminate call.', error, callId: call._id, serverErrorCode });
+		}
 	}
 
 	public static async activate(call: IMediaCall, actorAgent: IMediaCallAgent): Promise<void> {
@@ -68,17 +70,27 @@ export class MediaCallDirector {
 		return actorAgent.oppositeAgent?.onCallActive(call._id);
 	}
 
-	public static async acceptCall(call: IMediaCall, calleeAgent: IMediaCallAgent, contractId: string): Promise<void> {
+	public static async acceptCall(
+		call: MediaCallHeader,
+		calleeAgent: IMediaCallAgent,
+		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit },
+	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
-		const stateResult = await MediaCalls.acceptCallById(call._id, contractId, this.getNewExpirationTime());
+		const stateResult = await MediaCalls.acceptCallById(call._id, data, this.getNewExpirationTime());
 		// If nothing changed, the call was no longer ringing
 		if (!stateResult.modifiedCount) {
-			return;
+			return false;
 		}
 
-		await calleeAgent.onCallAccepted(call._id, contractId);
+		await calleeAgent.onCallAccepted(call._id, data.calleeContractId);
 		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
+
+		if (data.webrtcAnswer) {
+			await this.onWebRtcAnswer(call._id, calleeAgent, data.webrtcAnswer);
+		}
+
+		return true;
 	}
 
 	public static get cast(): IMediaCallCastDirector {
@@ -123,10 +135,14 @@ export class MediaCallDirector {
 			return;
 		}
 
-		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, sdp);
+		await this.onWebRtcAnswer(call._id, fromAgent, sdp);
+	}
 
-		fromAgent.onWebrtcAnswer(call._id);
-		await fromAgent.oppositeAgent?.onWebrtcAnswer(call._id);
+	private static async onWebRtcAnswer(callId: string, fromAgent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void> {
+		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(callId, sdp);
+
+		fromAgent.onWebrtcAnswer(callId);
+		await fromAgent.oppositeAgent?.onWebrtcAnswer(callId);
 	}
 
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
