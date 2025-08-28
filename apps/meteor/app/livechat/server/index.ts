@@ -30,7 +30,6 @@ import './methods/takeInquiry';
 import './methods/returnAsInquiry';
 import './methods/sendTranscript';
 import './methods/getFirstRoomMessage';
-import './methods/getTagsList';
 import './methods/getDepartmentForwardRestrictions';
 import './lib/QueueManager';
 import './lib/RoutingManager';
