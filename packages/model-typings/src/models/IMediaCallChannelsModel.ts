@@ -1,4 +1,4 @@
-import type { IMediaCallChannel, MediaCallActor, MediaCallSignedActor } from '@rocket.chat/core-typings';
+import type { IMediaCallChannel, MediaCallSignedActor } from '@rocket.chat/core-typings';
 import type { Document, FindOptions, UpdateResult } from 'mongodb';
 
 import type { IBaseModel, InsertionModel } from './IBaseModel';
@@ -11,7 +11,4 @@ export interface IMediaCallChannelsModel extends IBaseModel<IMediaCallChannel> {
 	): Promise<T | null>;
 	setState(_id: string, state: IMediaCallChannel['state']): Promise<UpdateResult>;
 	setActiveById(_id: string): Promise<UpdateResult>;
-	setLocalDescription(_id: string, localDescription: RTCSessionDescriptionInit): Promise<UpdateResult>;
-	setRemoteDescription(_id: string, remoteDescription: RTCSessionDescriptionInit): Promise<UpdateResult>;
-	setRemoteDescriptionByCallIdAndActor(callId: string, actor: MediaCallActor, remoteDescription: RTCSessionDescriptionInit): Promise<void>;
 }

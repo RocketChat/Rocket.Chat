@@ -66,14 +66,26 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async acceptCallById(callId: string, calleeContractId: string, expiresAt: Date): Promise<UpdateResult> {
+	public async acceptCallById(
+		callId: string,
+		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit },
+		expiresAt: Date,
+	): Promise<UpdateResult> {
+		const { calleeContractId, webrtcAnswer } = data;
+
 		return this.updateOne(
 			{
-				'_id': callId,
-				'state': { $in: ['none', 'ringing'] },
-				'callee.contractId': { $exists: false },
+				_id: callId,
+				state: { $in: ['none', 'ringing'] },
 			},
-			{ $set: { 'state': 'accepted', 'callee.contractId': calleeContractId, expiresAt } },
+			{
+				$set: {
+					'state': 'accepted',
+					'callee.contractId': calleeContractId,
+					expiresAt,
+					...(webrtcAnswer && { webrtcAnswer }),
+				},
+			},
 		);
 	}
 
@@ -154,15 +166,20 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async setWebrtcAnswerById(callId: string, offer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult> {
+	public async setWebrtcAnswerById(callId: string, answer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: callId,
 				webrtcAnswer: { $exists: false },
 			},
 			{
-				$set: { webrtcAnswer: offer, expiresAt },
+				$set: { webrtcAnswer: answer, expiresAt },
 			},
 		);
+	}
+
+	public async isInStateById(callId: string, state: IMediaCall['state']): Promise<boolean> {
+		const count = await this.countDocuments({ _id: callId, state }, { limit: 1 });
+		return count > 0;
 	}
 }

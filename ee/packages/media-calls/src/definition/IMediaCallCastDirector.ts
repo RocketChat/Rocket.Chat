@@ -1,10 +1,8 @@
-import type { AtLeast, IMediaCall, MediaCallActor, MediaCallContact, MediaCallContactInformation } from '@rocket.chat/core-typings';
+import type { MediaCallActor, MediaCallContact, MediaCallContactInformation } from '@rocket.chat/core-typings';
 import type { CallRole } from '@rocket.chat/media-signaling';
 
 import type { IMediaCallAgent } from './IMediaCallAgent';
-import type { GetActorContactOptions, MinimalUserData } from './common';
-
-export type MediaCallHeader = AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>;
+import type { GetActorContactOptions, MediaCallHeader, MinimalUserData } from './common';
 
 export interface IMediaCallCastDirector {
 	getAgentsFromCall(call: MediaCallHeader): Promise<{ caller: IMediaCallAgent; callee: IMediaCallAgent }>;

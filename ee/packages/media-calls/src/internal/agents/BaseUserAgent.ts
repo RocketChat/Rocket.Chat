@@ -1,15 +1,17 @@
-import type { IMediaCall, IMediaCallChannel } from '@rocket.chat/core-typings';
+import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { ClientMediaSignal, ServerMediaSignal, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 
+import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
 import { getMediaCallServer } from '../../server/injection';
 
 export abstract class UserActorAgent extends BaseMediaCallAgent {
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
-		const channel = await this.getOrCreateChannel(call, signal.contractId, { acknowledged: true });
+		const channel = await this.getOrCreateChannel(call, signal.contractId);
 
-		return this.doProcessSignal(call, channel, signal);
+		const signalProcessor = new UserActorSignalProcessor(this, call, channel);
+		return signalProcessor.processSignal(signal);
 	}
 
 	public async sendSignal(signal: ServerMediaSignal): Promise<void> {
@@ -52,8 +54,6 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 
 		await this.sendSignal(this.buildNewCallSignal(call));
 	}
-
-	protected abstract doProcessSignal(call: IMediaCall, channel: IMediaCallChannel, signal: ClientMediaSignal): Promise<void>;
 
 	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {
 		return {

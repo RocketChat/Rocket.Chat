@@ -7,14 +7,14 @@ import type {
 	ClientMediaSignalLocalState,
 	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
-import { MediaCallChannels } from '@rocket.chat/models';
+import { MediaCallChannels, MediaCalls } from '@rocket.chat/models';
 
 import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
 import { MediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
 
-export abstract class UserActorSignalProcessor {
+export class UserActorSignalProcessor {
 	public get contractId(): string {
 		return this.channel.contractId;
 	}
@@ -66,19 +66,6 @@ export abstract class UserActorSignalProcessor {
 			type: 'remote-sdp',
 			sdp,
 		});
-
-		try {
-			await MediaCallChannels.setRemoteDescription(this.channel._id, sdp);
-		} catch (error) {
-			logger.error('Failed to save remote SDP on call channel.');
-		}
-	}
-
-	public async getLocalDescription(): Promise<RTCSessionDescriptionInit | null> {
-		logger.debug({ msg: 'UserActorSignalProcessor.getRemoteDescription' });
-
-		const channel = await MediaCallChannels.findOneById(this.channel._id);
-		return channel?.localDescription ?? null;
 	}
 
 	public async requestWebRTCOffer(params: { iceRestart?: boolean }): Promise<void> {
@@ -118,8 +105,7 @@ export abstract class UserActorSignalProcessor {
 	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdp });
 
-		await MediaCallChannels.setLocalDescription(this.channel._id, sdp);
-		await MediaCallDirector.saveWebrtcSession(this.call, this.agent, sdp);
+		await MediaCallDirector.saveWebrtcSession(this.call, this.agent, sdp, this.contractId);
 	}
 
 	private async processAnswer(answer: CallAnswer): Promise<void> {
@@ -137,13 +123,46 @@ export abstract class UserActorSignalProcessor {
 		}
 	}
 
-	protected abstract clientIsReachable(): Promise<void>;
+	protected async clientIsReachable(): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.clientIsReachable', role: this.role, uid: this.actorId });
 
-	protected abstract clientHasRejected(): Promise<void>;
+		if (this.role === 'callee' && this.call.state === 'none') {
+			// Change the call state from 'none' to 'ringing' when any callee session is found
+			await MediaCalls.startRingingById(this.call._id, MediaCallDirector.getNewExpirationTime());
+		}
 
-	protected abstract clientHasAccepted(): Promise<void>;
+		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
+		if (this.role === 'caller' && this.signed) {
+			// When the signed caller's client is reached, we immediatelly send the first offer request
+			await this.requestWebRTCOffer({ iceRestart: false });
+		}
+	}
 
-	protected abstract clientIsUnavailable(): Promise<void>;
+	protected async clientHasRejected(): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.clientHasRejected', role: this.role, uid: this.actorId });
+		if (!this.isCallPending()) {
+			return;
+		}
+
+		if (this.role === 'callee') {
+			return MediaCallDirector.hangup(this.call, this.agent, 'rejected');
+		}
+	}
+
+	protected async clientIsUnavailable(): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.clientIsUnavailable', role: this.role, uid: this.actorId });
+	}
+
+	protected async clientHasAccepted(): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.clientHasAccepted', role: this.role, uid: this.actorId });
+		if (!this.isCallPending()) {
+			return;
+		}
+
+		if (this.role === 'callee') {
+			await MediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId });
+		}
+	}
 
 	protected async clientIsActive(): Promise<void> {
 		const result = await MediaCallChannels.setActiveById(this.channel._id);

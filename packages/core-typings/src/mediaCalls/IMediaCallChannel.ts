@@ -1,5 +1,5 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type { MediaCallActorType, MediaCallContact } from './IMediaCall';
+import type { MediaCallActorType } from './IMediaCall';
 
 export interface IMediaCallChannel extends IRocketChatRecord {
 	callId: string;
@@ -9,8 +9,6 @@ export interface IMediaCallChannel extends IRocketChatRecord {
 	actorType: MediaCallActorType;
 
 	actorId: string;
-
-	contact: Partial<MediaCallContact>;
 
 	role: 'caller' | 'callee';
 
@@ -22,10 +20,4 @@ export interface IMediaCallChannel extends IRocketChatRecord {
 	activeAt?: Date;
 	// The moment when the user left the call or hanged up
 	leftAt?: Date;
-
-	localDescription?: RTCSessionDescriptionInit;
-	remoteDescription?: RTCSessionDescriptionInit;
-
-	// for rocket.chat users, acknowledged means that a client user session was reached by the signaling
-	acknowledged: boolean;
 }
