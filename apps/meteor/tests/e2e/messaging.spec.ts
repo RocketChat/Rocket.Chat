@@ -94,51 +94,6 @@ test.describe('Messaging', () => {
 			});
 		});
 
-		test('should edit messages', async ({ page }) => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
-
-			await test.step('focus on the second message', async () => {
-				await page.keyboard.press('ArrowUp');
-
-				expect(await poHomeChannel.composer.inputValue()).toBe('msg2');
-			});
-
-			await test.step('send edited message', async () => {
-				const editPromise = page.waitForResponse(
-					(response) =>
-						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
-						response.status() === 200 &&
-						response.request().method() === 'POST',
-				);
-
-				await poHomeChannel.content.sendMessage('edited msg2', false);
-				await editPromise;
-
-				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('edited msg2');
-			});
-
-			await test.step('stress test on message editions', async () => {
-				const editPromise = page.waitForResponse(
-					(response) =>
-						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
-						response.status() === 200 &&
-						response.request().method() === 'POST',
-				);
-
-				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
-					// eslint-disable-next-line no-await-in-loop
-					await page.keyboard.press('ArrowUp');
-					// eslint-disable-next-line no-await-in-loop
-					await poHomeChannel.content.sendMessage(element, false);
-				}
-
-				await editPromise;
-				const toastError = await poToastBar.waitForError();
-
-				expect(toastError).toBe(true);
-			});
-		});
-
 		test('should navigate properly on the user card', async ({ page }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
@@ -202,6 +157,53 @@ test.describe('Messaging', () => {
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+			});
+		});
+	});
+
+	test.describe.serial('Message edition', () => {
+		test('should edit messages', async ({ page }) => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+
+			await test.step('focus on the second message', async () => {
+				await page.keyboard.press('ArrowUp');
+
+				expect(await poHomeChannel.composer.inputValue()).toBe('msg2');
+			});
+
+			await test.step('send edited message', async () => {
+				const editPromise = page.waitForResponse(
+					(response) =>
+						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
+						response.status() === 200 &&
+						response.request().method() === 'POST',
+				);
+
+				await poHomeChannel.content.sendMessage('edited msg2', false);
+				await editPromise;
+
+				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('edited msg2');
+			});
+
+			await test.step('stress test on message editions', async () => {
+				const editPromise = page.waitForResponse(
+					(response) =>
+						/api\/v1\/method.call\/updateMessage/.test(response.url()) &&
+						response.status() === 200 &&
+						response.request().method() === 'POST',
+				);
+
+				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
+					// eslint-disable-next-line no-await-in-loop
+					await page.keyboard.press('ArrowUp');
+					// eslint-disable-next-line no-await-in-loop
+					await poHomeChannel.content.sendMessage(element, false);
+				}
+
+				await editPromise;
+				const toastError = await poToastBar.waitForError();
+
+				expect(toastError).toBe(true);
 			});
 		});
 	});
