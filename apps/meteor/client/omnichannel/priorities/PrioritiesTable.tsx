@@ -2,13 +2,11 @@ import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { PriorityIcon } from './PriorityIcon';
+import PrioritiesTableRow from './PrioritiesTableRow';
 import GenericNoResults from '../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeaderCell,
-	GenericTableCell,
-	GenericTableRow,
 	GenericTableHeader,
 	GenericTableBody,
 	GenericTableLoadingTable,
@@ -48,12 +46,15 @@ export const PrioritiesTable = ({ priorities, onRowClick, isLoading }: Prioritie
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						{priorities?.map(({ _id, name, i18n, sortItem, dirty }) => (
-							<GenericTableRow key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id)} action qa-row-id={_id}>
-								<GenericTableCell withTruncatedText>
-									<PriorityIcon level={sortItem} />
-								</GenericTableCell>
-								<GenericTableCell withTruncatedText>{dirty ? name : t(i18n)}</GenericTableCell>
-							</GenericTableRow>
+							<PrioritiesTableRow
+								key={_id}
+								id={_id}
+								name={name}
+								i18n={i18n}
+								sortItem={sortItem}
+								dirty={dirty}
+								onClick={() => onRowClick(_id)}
+							/>
 						))}
 					</GenericTableBody>
 				</GenericTable>
