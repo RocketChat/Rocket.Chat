@@ -1,8 +1,8 @@
-import type { ISubscription, ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { type ISubscription, type ILivechatInquiryRecord, type IRoom, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { createContext, useContext, useEffect, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -101,7 +101,7 @@ export const useRoomsListContext = () => {
 };
 
 // Helper functions
-const splitFilter = (currentFilter: AllGroupsKeysWithUnread): [SidePanelFiltersKeys, boolean] => {
+export const splitFilter = (currentFilter: AllGroupsKeysWithUnread): [SidePanelFiltersKeys, boolean] => {
 	const [currentTab, unread] = currentFilter.split('_');
 	return [currentTab as SidePanelFiltersKeys, unread === 'unread'];
 };
@@ -210,9 +210,9 @@ export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
 	return roomsList;
 };
 
-export const useSidePanelFilter = (): [AllGroupsKeys, boolean, AllGroupsKeysWithUnread] => {
-	const { currentFilter } = useRoomsListContext();
-	return [...splitFilter(currentFilter), currentFilter];
+export const useSidePanelFilter = (): [AllGroupsKeys, boolean, AllGroupsKeysWithUnread, (filter: AllGroupsKeysWithUnread) => void] => {
+	const [currentFilter, setCurrentFilter] = useLocalStorage<AllGroupsKeysWithUnread>('sidePanelFilters', getFilterKey('all', false));
+	return [...splitFilter(currentFilter), currentFilter, setCurrentFilter];
 };
 
 export const useUnreadOnlyToggle = (): [boolean, () => void] => {
@@ -246,4 +246,28 @@ export const useRedirectToDefaultTab = (shouldRedirect: boolean) => {
 			switchSidePanelTab('all');
 		}
 	}, [shouldRedirect, switchSidePanelTab]);
+};
+
+export const useRedirectToFilter = () => {
+	const switchSidePanelTab = useSwitchSidePanelTab();
+
+	const handleRedirect = useCallback(
+		(room: SubscriptionWithRoom | IRoom) => {
+			const roomId = 'rid' in room ? room.rid : room._id;
+			if (isTeamRoom(room)) {
+				switchSidePanelTab('teams', { parentRid: roomId });
+				return;
+			}
+
+			if (isDirectMessageRoom(room)) {
+				switchSidePanelTab('directMessages', { parentRid: roomId });
+				return;
+			}
+
+			switchSidePanelTab('channels', { parentRid: room.prid || roomId });
+		},
+		[switchSidePanelTab],
+	);
+
+	return handleRedirect;
 };

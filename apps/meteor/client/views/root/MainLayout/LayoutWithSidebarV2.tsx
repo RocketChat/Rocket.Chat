@@ -52,20 +52,20 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 				id='rocket-chat'
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
-				<MainLayoutStyleTags />
-				{!removeSidenav && (
-					<FeaturePreview feature='secondarySidebar'>
-						<FeaturePreviewOn>
-							<RoomsNavigationProvider>
-								<NavigationRegion />
-							</RoomsNavigationProvider>
-						</FeaturePreviewOn>
-						<FeaturePreviewOff>
-							<Sidebar />
-						</FeaturePreviewOff>
-					</FeaturePreview>
-				)}
-				<MainContent>{children}</MainContent>
+				<FeaturePreview feature='secondarySidebar'>
+					<FeaturePreviewOn>
+						<RoomsNavigationProvider>
+							<MainLayoutStyleTags />
+							{!removeSidenav && <NavigationRegion />}
+							<MainContent>{children}</MainContent>
+						</RoomsNavigationProvider>
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>
+						<MainLayoutStyleTags />
+						{!removeSidenav && <Sidebar />}
+						<MainContent>{children}</MainContent>
+					</FeaturePreviewOff>
+				</FeaturePreview>
 			</Box>
 		</>
 	);
