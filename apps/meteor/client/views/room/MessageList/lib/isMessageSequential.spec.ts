@@ -1,5 +1,4 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { MessageTypes } from '@rocket.chat/message-types';
 
 import { isMessageSequential } from './isMessageSequential';
 
@@ -135,11 +134,6 @@ it("should return false if both messages don't have the same alias", () => {
 });
 
 it('should return false if message is from system', () => {
-	MessageTypes.registerType({
-		id: 'au',
-		system: true,
-		text: (t) => t('User_added_by'),
-	});
 	const previous: IMessage = {
 		...baseMessage,
 	};

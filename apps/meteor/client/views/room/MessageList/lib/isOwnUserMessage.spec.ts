@@ -1,5 +1,4 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { MessageTypes } from '@rocket.chat/message-types';
 
 import { isOwnUserMessage } from './isOwnUserMessage';
 
@@ -18,13 +17,6 @@ const baseMessage: IMessage = {
 	_updatedAt: date,
 	urls: [],
 };
-
-// Register a system message
-MessageTypes.registerType({
-	id: 'au',
-	system: true,
-	text: (t) => t('User_added_to'),
-});
 
 it('should return true if the message is from user', () => {
 	const message: IMessage = {
