@@ -9,9 +9,9 @@ import { ping } from './ping';
 import { reaction } from './reaction';
 import { room } from './room';
 
-export function registerEvents(emitter: Emitter<HomeserverEventSignatures>) {
+export function registerEvents(emitter: Emitter<HomeserverEventSignatures>, serverName: string) {
 	ping(emitter);
-	message(emitter);
+	message(emitter, serverName);
 	invite(emitter);
 	reaction(emitter);
 	member(emitter);
