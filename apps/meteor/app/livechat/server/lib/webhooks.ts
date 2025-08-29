@@ -5,6 +5,8 @@ import { webhooksLogger } from './logger';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 
+const isRetryable = (status: number): boolean => status >= 500 || status === 429;
+
 export async function sendRequest(
 	postData: {
 		type: string;
@@ -13,10 +15,6 @@ export async function sendRequest(
 	attempts = 5,
 	cb?: (response: Response) => Promise<void>,
 ) {
-	if (!attempts) {
-		webhooksLogger.error({ msg: 'Omnichannel webhook call failed. Max attempts reached' });
-		return;
-	}
 	const timeout = settings.get<number>('Livechat_http_timeout');
 	const secretToken = settings.get<string>('Livechat_secret_token');
 	const webhookUrl = settings.get<string>('Livechat_webhookUrl');
@@ -37,14 +35,31 @@ export async function sendRequest(
 			return result;
 		}
 
+		if (!isRetryable(result.status)) {
+			webhooksLogger.error({
+				msg: `Non-retryable error response from webhook`,
+				webhookUrl,
+				status: result.status,
+				response: await result.text(),
+			});
+			metrics.totalLivechatWebhooksFailures.inc();
+			return;
+		}
+
 		metrics.totalLivechatWebhooksFailures.inc();
 		throw new Error(await result.text());
 	} catch (err) {
 		const retryAfter = timeout * 4;
-		webhooksLogger.error({ msg: `Error response on ${6 - attempts} try ->`, err, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
+		webhooksLogger.debug({ msg: `Error response on ${6 - attempts} try ->`, err, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
+		const remainingAttempts = attempts - 1;
 		// try 5 times after 20 seconds each
+		if (!remainingAttempts) {
+			webhooksLogger.error({ msg: 'Omnichannel webhook call failed. Max attempts reached' });
+			return;
+		}
+
 		setTimeout(async () => {
-			await sendRequest(postData, attempts - 1, cb);
+			await sendRequest(postData, remainingAttempts, cb);
 		}, retryAfter);
 	}
 }
