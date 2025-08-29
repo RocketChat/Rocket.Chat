@@ -111,12 +111,8 @@ export class AdminFlextabUsers {
 		return this.page.getByRole('menuitem', { name: 'Remove Admin' });
 	}
 
-	get openDialog(): Locator {
+	get userInfoDialog(): Locator {
 		return this.page.getByRole('dialog');
-	}
-
-	get toastMessage(): Locator {
-		return this.page.getByRole('alert');
 	}
 
 	getUserRowByUsername(username: string): Locator {
