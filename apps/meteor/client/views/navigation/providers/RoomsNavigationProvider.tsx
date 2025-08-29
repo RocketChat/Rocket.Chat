@@ -210,8 +210,8 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 		}
 
 		if (room.prid) {
-			const prid = Rooms.use.getState().find((r) => Boolean(r._id === room.prid))?._id;
-			setFilter('channels', unread, prid);
+			const parentRoom = Rooms.use.getState().find((r) => Boolean(r._id === room.prid));
+			setFilter(parentRoom?.teamMain ? 'teams' : 'channels', unread, parentRoom?._id);
 			return;
 		}
 
