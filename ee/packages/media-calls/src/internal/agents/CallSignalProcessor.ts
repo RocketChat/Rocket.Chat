@@ -250,29 +250,4 @@ export class UserActorSignalProcessor {
 		});
 		await MediaCallDirector.hangup(this.call, this.agent, 'error');
 	}
-
-	private async onSignalingError(errorMessage?: string): Promise<void> {
-		logger.error({ msg: 'Client reported a signaling error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
-		await MediaCallDirector.hangup(this.call, this.agent, 'service-error');
-	}
-
-	private async onServiceError(errorMessage?: string): Promise<void> {
-		logger.error({ msg: 'Client reported a service error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
-		if (this.isPastNegotiation()) {
-			return;
-		}
-
-		await MediaCallDirector.hangup(this.call, this.agent, 'service-error');
-	}
-
-	private async onUnexpectedError(errorMessage?: string): Promise<void> {
-		logger.error({
-			msg: 'Client reported an unexpected error',
-			errorMessage,
-			callId: this.callId,
-			role: this.role,
-			state: this.call.state,
-		});
-		await MediaCallDirector.hangup(this.call, this.agent, 'error');
-	}
 }
