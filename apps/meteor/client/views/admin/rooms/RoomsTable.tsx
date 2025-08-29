@@ -72,52 +72,32 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
+			<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t'>
 				{t('Type')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell
-				key='users'
-				direction={sortDirection}
-				active={sortBy === 'usersCount'}
-				onClick={setSort}
-				sort='usersCount'
-				w='x80'
-			>
+			<GenericTableHeaderCell key='users' direction={sortDirection} active={sortBy === 'usersCount'} onClick={setSort} sort='usersCount'>
 				{t('Users')}
 			</GenericTableHeaderCell>
 			{mediaQuery && (
 				<>
-					<GenericTableHeaderCell key='messages' direction={sortDirection} active={sortBy === 'msgs'} onClick={setSort} sort='msgs' w='x80'>
+					<GenericTableHeaderCell key='messages' direction={sortDirection} active={sortBy === 'msgs'} onClick={setSort} sort='msgs'>
 						{t('Msgs')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='default'
-						direction={sortDirection}
-						active={sortBy === 'default'}
-						onClick={setSort}
-						sort='default'
-						w='x80'
-					>
+					<GenericTableHeaderCell key='default' direction={sortDirection} active={sortBy === 'default'} onClick={setSort} sort='default'>
 						{t('Default')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='featured'
-						direction={sortDirection}
-						active={sortBy === 'featured'}
-						onClick={setSort}
-						sort='featured'
-						w='x80'
-					>
+					<GenericTableHeaderCell key='featured' direction={sortDirection} active={sortBy === 'featured'} onClick={setSort} sort='featured'>
 						{t('Featured')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' w='x120'>
+					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts'>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
 				</>
 			)}
+			<GenericTableHeaderCell key='actions' w='x50' />
 		</>
 	);
 
@@ -128,7 +108,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={mediaQuery ? 7 : 4} />
+						<GenericTableLoadingTable headerCells={mediaQuery ? 8 : 5} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
