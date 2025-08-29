@@ -29,7 +29,6 @@ import './methods/setUpConnection';
 import './methods/takeInquiry';
 import './methods/returnAsInquiry';
 import './methods/sendTranscript';
-import './methods/getDepartmentForwardRestrictions';
 import './lib/QueueManager';
 import './lib/RoutingManager';
 import './lib/routing/External';
