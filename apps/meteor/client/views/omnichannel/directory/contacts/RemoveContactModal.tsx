@@ -45,7 +45,8 @@ const RemoveContactModal = ({ _id, name, channelsCount, onClose }: RemoveContact
 			onClose();
 		},
 		onError: (error) => {
-			dispatchToast({ type: 'error', message: t(error.message, { defaultValue: t('error-contact-something-went-wrong') }) });
+			dispatchToast({ type: 'error', message: error });
+			onClose();
 		},
 	});
 

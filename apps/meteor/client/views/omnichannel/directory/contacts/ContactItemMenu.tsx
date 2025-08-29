@@ -41,7 +41,7 @@ const ContactItemMenu = ({ _id, name, channels }: ContactItemMenuProps): ReactEl
 		{
 			id: 'edit',
 			icon: 'edit',
-			content: t('edit'),
+			content: t('Edit'),
 			onClick: () => handleContactEdit(),
 			disabled: !canEditContact,
 		},
