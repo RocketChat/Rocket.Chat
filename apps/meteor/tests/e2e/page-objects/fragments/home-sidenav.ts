@@ -109,6 +109,10 @@ export class HomeSidenav {
 		return this.page.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
+	getSidebarListItemByName(name: string): Locator {
+		return this.sidebarChannelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
+	}
+
 	getSearchItemByName(name: string): Locator {
 		return this.searchList.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
 	}
