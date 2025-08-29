@@ -5,6 +5,7 @@ import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,6 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getAnalyticsChartData'(options) {
+		methodDeprecationLogger.method('livechat:getAnalyticsChartData', '8.0.0', '/v1/livechat/agent.status');
 		const userId = Meteor.userId();
 		if (!userId || !(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
