@@ -1,5 +1,46 @@
 # @rocket.chat/meteor
 
+## 7.10.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36802](https://github.com/RocketChat/Rocket.Chat/pull/36802)) Fixes an error on apps loading that would cause an unhandled promise rejection crash during startup in some cases
+
+- <details><summary>Updated dependencies [128b228fcb0b2fda2967c88b07340be4b34a5470]:</summary>
+
+  - @rocket.chat/apps-engine@1.55.0-rc.1
+  - @rocket.chat/presence@0.2.34-rc.3
+  - @rocket.chat/apps@0.5.13-rc.3
+  - @rocket.chat/core-services@0.10.0-rc.3
+  - @rocket.chat/core-typings@7.10.0-rc.3
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.3
+  - @rocket.chat/rest-typings@7.10.0-rc.3
+  - @rocket.chat/license@1.0.25-rc.3
+  - @rocket.chat/omnichannel-services@0.3.31-rc.3
+  - @rocket.chat/pdf-worker@0.3.13-rc.3
+  - @rocket.chat/api-client@0.2.34-rc.3
+  - @rocket.chat/cron@0.1.34-rc.3
+  - @rocket.chat/freeswitch@1.2.21-rc.3
+  - @rocket.chat/gazzodown@22.0.0-rc.3
+  - @rocket.chat/http-router@7.9.1-rc.3
+  - @rocket.chat/model-typings@1.7.0-rc.3
+  - @rocket.chat/ui-avatar@18.0.0-rc.3
+  - @rocket.chat/ui-client@22.0.0-rc.3
+  - @rocket.chat/ui-contexts@22.0.0-rc.3
+  - @rocket.chat/web-ui-registration@22.0.0-rc.3
+  - @rocket.chat/models@1.6.0-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.13-rc.3
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.3
+  - @rocket.chat/ui-voip@12.0.0-rc.3
+  - @rocket.chat/omni-core-ee@0.0.2-rc.3
+  - @rocket.chat/instance-status@0.1.34-rc.3
+  - @rocket.chat/omni-core@0.0.2-rc.3
+  </details>
+
 ## 7.10.0-rc.2
 
 ### Patch Changes

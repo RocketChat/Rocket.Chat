@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.3.13-rc.2",
+	"version": "0.3.13-rc.3",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

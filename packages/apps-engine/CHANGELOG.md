@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.55.0-rc.1
+
+### Patch Changes
+
+- ([#36802](https://github.com/RocketChat/Rocket.Chat/pull/36802)) Fixes an error on apps loading that would cause an unhandled promise rejection crash during startup in some cases
+
 ## 1.55.0-rc.0
 
 ### Minor Changes
