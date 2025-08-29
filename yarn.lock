@@ -9387,7 +9387,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.3
-    "@rocket.chat/ui-contexts": 22.0.0-rc.2
+    "@rocket.chat/ui-contexts": 22.0.0-rc.3
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
