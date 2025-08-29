@@ -12,7 +12,7 @@ export const is = (data: unknown): data is Jwk => {
 		return false;
 	}
 
-	if ('kty' in data === false) {
+	if (!('kty' in data)) {
 		return false;
 	}
 
@@ -61,7 +61,7 @@ export const isAesCbc = (jwk: Jwk): jwk is Jwk<'oct', 'A128CBC'> => isKey('oct',
 export const parse = (json: string): Jwk => {
 	const obj = JSON.parse(json);
 	if (!is(obj)) {
-		throw new Error('Invalid JSON Web Key');
+		throw new TypeError('Invalid JSON Web Key');
 	}
 	return obj;
 };
