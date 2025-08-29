@@ -1,7 +1,7 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
@@ -15,6 +15,7 @@ type SlaPoliciesSelectProps = {
 export const SlaPoliciesSelect = ({ value, label, options, onChange }: SlaPoliciesSelectProps) => {
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const optionsSelect = useMemo<SelectOption[]>(() => options?.map((option) => [option._id, option.name]), [options]);
+	const fieldId = useId();
 
 	if (!hasLicense) {
 		return null;
@@ -22,9 +23,9 @@ export const SlaPoliciesSelect = ({ value, label, options, onChange }: SlaPolici
 
 	return (
 		<Field>
-			<FieldLabel>{label}</FieldLabel>
+			<FieldLabel id={fieldId}>{label}</FieldLabel>
 			<FieldRow>
-				<Select value={value} options={optionsSelect} onChange={(value) => onChange(String(value))} />
+				<Select aria-labelledby={fieldId} value={value} options={optionsSelect} onChange={(value) => onChange(String(value))} />
 			</FieldRow>
 		</Field>
 	);

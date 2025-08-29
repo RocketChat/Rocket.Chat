@@ -172,13 +172,15 @@ const MessageBox = ({
 	});
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
-		if (chat.currentEditing) {
+		const mid = chat.currentEditingMessage.getMID();
+		if (mid) {
 			event.preventDefault();
 			event.stopPropagation();
 
-			chat.currentEditing.reset().then((reset) => {
+			chat.currentEditingMessage.reset().then((reset) => {
 				if (!reset) {
-					chat.currentEditing?.cancel();
+					chat.currentEditingMessage.cancel();
+					chat.currentEditingMessage.stop();
 				}
 			});
 		}

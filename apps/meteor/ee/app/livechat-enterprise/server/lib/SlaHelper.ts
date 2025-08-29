@@ -2,7 +2,11 @@ import { Message } from '@rocket.chat/core-services';
 import type { IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { notifyOnRoomChangedById, notifyOnLivechatInquiryChangedByRoom } from '../../../../../app/lib/server/lib/notifyListener';
+import {
+	notifyOnRoomChangedById,
+	notifyOnLivechatInquiryChangedByRoom,
+	notifyOnLivechatInquiryChanged,
+} from '../../../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../../../../../lib/callbacks';
 
 export const removeSLAFromRooms = async (slaId: string, userId: string) => {
@@ -19,7 +23,7 @@ export const removeSLAFromRooms = async (slaId: string, userId: string) => {
 };
 
 export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
-	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { rid: 1, ts: 1 } });
+	const inquiry = await LivechatInquiry.findOneByRoomId(roomId);
 	if (!inquiry) {
 		return;
 	}
@@ -32,6 +36,8 @@ export const updateInquiryQueueSla = async (roomId: string, sla: Pick<IOmnichann
 		slaId,
 		estimatedWaitingTimeQueue,
 	});
+
+	void notifyOnLivechatInquiryChanged({ ...inquiry, slaId, estimatedWaitingTimeQueue, _updatedAt: new Date() }, 'updated');
 };
 
 export const updateRoomSlaWeights = async (roomId: string, sla: Pick<IOmnichannelServiceLevelAgreements, 'dueTimeInMinutes' | '_id'>) => {
