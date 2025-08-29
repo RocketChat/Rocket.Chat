@@ -36,14 +36,14 @@ export class SipServerSession {
 	}
 
 	public reactToCallUpdate(callId: string): void {
-		const call = this.knownCalls.get(callId);
-		if (!call) {
+		const sipCall = this.knownCalls.get(callId);
+		if (!sipCall) {
 			// If we don't know this call, then it's probably being handled by a session in some other server instance
 			return;
 		}
 
-		call.reactToCallChanges().catch((error) => {
-			logger.error({ msg: 'Failed to react to call changes', error, callId });
+		sipCall.reactToCallChanges().catch((error) => {
+			logger.error({ msg: 'Failed to react to call changes', error, call: sipCall.call });
 		});
 	}
 
@@ -143,14 +143,12 @@ export class SipServerSession {
 			return;
 		}
 
-		const sipCall = await IncomingSipCall.processInvite(this, req).catch((e) => {
+		const sipCall = await IncomingSipCall.processInvite(this, this.srf, req, res).catch((e) => {
 			this.forwardSipExceptionToResponse(e, res);
 			throw e;
 		});
 
 		this.registerCall(sipCall);
-
-		await sipCall.createDialog(this.srf, req, res);
 	}
 
 	private forwardSipExceptionToResponse(exception: unknown, res: SrfResponse): void {

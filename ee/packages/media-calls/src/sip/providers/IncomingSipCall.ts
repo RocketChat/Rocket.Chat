@@ -5,53 +5,52 @@ import type {
 	MediaCallContact,
 	IMediaCallChannel,
 } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
 import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
+import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { MediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
 
-type IncomingCallEvents = {
-	gotRemoteDescription: void;
-	callEnded: void;
-	callFailed: void;
-};
-
 export class IncomingSipCall extends BaseSipCall {
-	private readonly emitter: Emitter<IncomingCallEvents>;
-
 	protected localDescription: RTCSessionDescriptionInit;
 
 	protected remoteDescription: RTCSessionDescriptionInit | null;
+
+	private sipDialog: Srf.Dialog | null;
+
+	private responseSent = false;
 
 	constructor(
 		session: SipServerSession,
 		call: IMediaCall,
 		protected readonly agent: BroadcastActorAgent,
 		channel: IMediaCallChannel,
+		private readonly srf: Srf,
+		private readonly req: SrfRequest,
+		private readonly res: SrfResponse,
 		localDescription: RTCSessionDescriptionInit,
 	) {
 		super(session, call, agent, channel);
-		this.emitter = new Emitter();
 		this.localDescription = localDescription;
 		this.remoteDescription = null;
+		this.sipDialog = null;
 	}
 
-	public static async processInvite(session: SipServerSession, req: SrfRequest): Promise<IncomingSipCall> {
-		console.log('process incoming sip call');
+	public static async processInvite(session: SipServerSession, srf: Srf, req: SrfRequest, res: SrfResponse): Promise<IncomingSipCall> {
+		logger.debug({ msg: 'IncomingSipCall.processInvite' });
 		if (!req.isNewInvite) {
 			throw new SipError(SipErrorCodes.NOT_IMPLEMENTED, 'not-a-new-invite');
 		}
 
 		const callee = await this.getCalleeFromInvite(req);
-
-		console.log('callee', callee);
+		logger.debug({ msg: 'incoming call to', callee });
 
 		const caller = await this.getCallerContactFromInvite(session.sessionId, req);
+		logger.debug({ msg: 'incoming call from', caller });
 		const webrtcOffer = { type: 'offer', sdp: req.body } as const;
 
 		const callerAgent = await MediaCallDirector.cast.getAgentForActorAndRole(caller, 'caller');
@@ -80,7 +79,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		const channel = await callerAgent.getOrCreateChannel(call, session.sessionId);
 
-		const sipCall = new IncomingSipCall(session, call, callerAgent, channel, webrtcOffer);
+		const sipCall = new IncomingSipCall(session, call, callerAgent, channel, srf, req, res, webrtcOffer);
 
 		callerAgent.provider = sipCall;
 
@@ -90,67 +89,31 @@ export class IncomingSipCall extends BaseSipCall {
 		return sipCall;
 	}
 
-	public async createDialog(srf: Srf, req: SrfRequest, res: SrfResponse): Promise<Srf.Dialog> {
-		const uas = await srf.createUAS(req, res, {
-			localSdp: () => this.getRemoteDescription(),
+	public async createDialog(localSdp: string): Promise<void> {
+		logger.debug({ msg: 'IncomingSipCall.createDialog' });
+
+		const uas = await this.srf.createUAS(this.req, this.res, {
+			localSdp,
 		});
 
-		uas.on('destroy', () => {
-			console.log('uas.destroy');
-		});
-
-		return uas;
-	}
-
-	private async getRemoteDescription(): Promise<string> {
-		if (this.remoteDescription) {
-			if (!this.remoteDescription.sdp) {
-				throw new Error('invalid-description');
-			}
-
-			return this.remoteDescription.sdp;
+		if (!uas) {
+			logger.debug({ msg: 'IncomingSipCall.createDialog - dialog creation failed' });
+			void MediaCallDirector.hangupByServer(this.call, 'failed-to-create-sip-dialog');
 		}
 
-		let eventPromiseResolved = false;
-
-		const eventPromise: Promise<string> = new Promise((resolve, reject) => {
-			this.emitter.on('gotRemoteDescription', () => {
-				console.log('gotRemoteDescription');
-				if (eventPromiseResolved) {
-					return;
-				}
-				eventPromiseResolved = true;
-				if (!this.remoteDescription?.sdp) {
-					return reject();
-				}
-
-				resolve(this.remoteDescription.sdp);
-			});
-
-			this.emitter.on('callFailed', () => {
-				console.log('callFailed');
-				if (eventPromiseResolved) {
-					return;
-				}
-				eventPromiseResolved = true;
-				reject('call-failed');
-			});
-			this.emitter.on('callEnded', () => {
-				console.log('callEnded');
-				if (eventPromiseResolved) {
-					return;
-				}
-				eventPromiseResolved = true;
-				reject('call-ended');
-			});
+		uas.on('destroy', () => {
+			logger.debug({ msg: 'IncomingSipCall - uas.destroy' });
+			this.sipDialog = null;
+			// This will only terminate the call "by server" if it hasn't already ended by an user action
+			void MediaCallDirector.hangupByServer(this.call, 'sip-dialog-destroyed');
 		});
 
-		return eventPromise;
+		this.sipDialog = uas;
 	}
 
 	protected async reflectCall(call: IMediaCall): Promise<void> {
 		if (call.state === 'hangup') {
-			return this.processEndedCall();
+			return this.processEndedCall(call);
 		}
 
 		if (call.state === 'accepted' && this.lastCallState !== 'accepted' && call.webrtcAnswer) {
@@ -158,18 +121,57 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 	}
 
-	protected async processEndedCall(): Promise<void> {
-		this.emitter.emit('callEnded');
+	protected async processEndedCall(call: IMediaCall): Promise<void> {
+		logger.debug({ msg: 'IncomingSipCall.processEndedCall' });
+
+		if (call.hangupReason === 'service-error') {
+			this.hangupPendingCall(SipErrorCodes.NOT_ACCEPTABLE_HERE);
+		}
+
+		if (this.lastCallState === 'hangup') {
+			return;
+		}
+
+		const { sipDialog } = this;
+		this.sipDialog = null;
 		this.lastCallState = 'hangup';
+
+		if (sipDialog) {
+			sipDialog.destroy();
+		}
 	}
 
 	private flagAsAccepted(remoteDescription: RTCSessionDescriptionInit): void {
+		logger.debug({ msg: 'IncomingSipCall.flagAsAccepted' });
 		this.remoteDescription = remoteDescription;
-		this.emitter.emit('gotRemoteDescription');
-		this.lastCallState = 'accepted';
+		if (remoteDescription.sdp) {
+			this.lastCallState = 'accepted';
+
+			void this.createDialog(remoteDescription.sdp).catch(() => {
+				logger.error('Failed to create incoming call dialog.');
+				this.hangupPendingCall(SipErrorCodes.INTERNAL_SERVER_ERROR);
+			});
+		}
+	}
+
+	private hangupPendingCall(errorCode: number): void {
+		logger.debug({
+			msg: 'IncomingSipCall.hangupPendingCall',
+			errorCode,
+			responseSent: this.responseSent,
+			hasDialog: Boolean(this.sipDialog),
+		});
+
+		if (!this.responseSent && !this.sipDialog) {
+			this.responseSent = true;
+			this.res.send(errorCode);
+		}
+
+		void MediaCallDirector.hangupByServer(this.call, `sip-error-${errorCode}`);
 	}
 
 	private static async getCalleeFromInvite(req: SrfRequest): Promise<MediaCallContact> {
+		logger.debug({ msg: 'IncomingSipCall.getCalleeFromInvite' });
 		let foundAnyIdentifier = false;
 
 		if (req.has('X-RocketChat-To-Uid')) {
@@ -202,6 +204,7 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	private static async getRocketChatCallerFromInvite(req: SrfRequest): Promise<MediaCallContact | null> {
+		logger.debug({ msg: 'IncomingSipCall.getRocketChatCallerFromInvite' });
 		if (req.has('X-RocketChat-From-Uid')) {
 			const userId = req.get('X-RocketChat-From-Uid');
 
@@ -225,6 +228,7 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	private static async getCallerContactFromInvite(sessionId: string, req: SrfRequest): Promise<MediaCallSignedContact<'sip'>> {
+		logger.debug({ msg: 'IncomingSipCall.getCallerContactFromInvite' });
 		const callerBase = await this.getRocketChatCallerFromInvite(req);
 
 		const displayNameFromHeader = req.has('X-RocketChat-Caller-Name') && req.get('X-RocketChat-Caller-Name');

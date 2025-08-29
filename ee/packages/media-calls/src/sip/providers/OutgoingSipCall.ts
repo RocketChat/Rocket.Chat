@@ -92,59 +92,69 @@ export class OutgoingSipCall extends BaseSipCall {
 	}
 
 	protected async createDialog(call: IMediaCall): Promise<void> {
-		if (this.lastCallState !== 'none' || !call.webrtcOffer) {
+		logger.debug({ msg: 'OutgoingSipCall.createDialog', call });
+		if (this.lastCallState !== 'none' || !call.webrtcOffer || this.sipDialog) {
+			logger.debug({ msg: 'invalid state to create an outgoing dialog' });
 			return;
 		}
 
 		const updateResult = await MediaCalls.startRingingById(call._id, MediaCallDirector.getNewExpirationTime());
 		if (!updateResult.modifiedCount) {
+			logger.debug({ msg: 'unable to set call state to ringing; skipping dialog creation.' });
 			return;
 		}
 
 		this.lastCallState = 'ringing';
-		console.log('calling');
 
-		const uac = await this.session.createSipDialog(
-			this.call.callee.id,
-			{
-				localSdp: call.webrtcOffer.sdp,
-				callingName: call.caller.displayName,
-				callingNumber: call.caller.sipExtension,
-			},
-			{
-				cbProvisional: (provRes) => {
-					console.log('provisional response', provRes);
-					this.emitter.emit('provisionalResponse');
+		try {
+			this.sipDialog = await this.session.createSipDialog(
+				this.call.callee.id,
+				{
+					localSdp: call.webrtcOffer.sdp,
+					callingName: call.caller.displayName,
+					callingNumber: call.caller.sipExtension,
 				},
-				cbRequest: (req) => {
-					console.log('request', req);
-					this.emitter.emit('request');
+				{
+					cbProvisional: (provRes) => {
+						logger.debug({ msg: 'OutgoingSipCall.createDialog - got provisional response', provRes });
+						this.emitter.emit('provisionalResponse');
+					},
+					cbRequest: (req) => {
+						logger.debug({ msg: 'OutgoingSipCall.createDialog - request initiated', req });
+						this.emitter.emit('request');
+					},
 				},
-			},
-		);
+			);
+		} catch (error) {
+			this.sipDialog = null;
+			logger.debug({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', error });
+			const errorCode = this.getSipErrorCode(error);
+			if (errorCode) {
+				void MediaCallDirector.hangupByServer(call, `sip-error-${errorCode}`);
+				return;
+			}
+		}
 
-		if (!uac) {
-			console.log('failed');
+		if (!this.sipDialog) {
+			logger.debug({ msg: 'OutgoingSipCall.createDialog - no dialog' });
 			void MediaCallDirector.hangupByServer(call, 'failed-to-create-sip-dialog');
 			return;
 		}
 
-		console.log(`dialog established, call-id is ${uac?.sip?.callId}`);
-		uac.on('destroy', () => {
-			console.log('uac.destroy');
+		logger.debug({ msg: 'OutgoingSipCall.createDialog - dialog created', callId: this.sipDialog.sip?.callId });
+		this.sipDialog.on('destroy', () => {
+			logger.debug({ msg: 'OutgoingSipCall - uac.destroy' });
 			this.sipDialog = null;
 			// This will only terminate the call "by server" if it hasn't already ended by an user action
 			void MediaCallDirector.hangupByServer(call, 'sip-dialog-destroyed');
 		});
 
-		this.sipDialog = uac;
-
-		console.log('remote', uac.remote);
+		logger.debug({ msg: 'OutgoingSipCall.createDialog - remote data', data: this.sipDialog.remote });
 
 		// This will not do anything if the call is no longer waiting to be accepted.
 		await MediaCallDirector.acceptCall(call, this.agent, {
 			calleeContractId: this.session.sessionId,
-			webrtcAnswer: { type: 'answer', sdp: uac.remote.sdp },
+			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
 		});
 	}
 
@@ -160,5 +170,21 @@ export class OutgoingSipCall extends BaseSipCall {
 		if (sipDialog) {
 			sipDialog.destroy();
 		}
+	}
+
+	private getSipErrorCode(error: unknown): number | null {
+		if (!error || typeof error !== 'object') {
+			return null;
+		}
+
+		if (!('name' in error) || error.name !== 'SipError') {
+			return null;
+		}
+
+		if (!('status' in error) || typeof error.status !== 'number') {
+			return null;
+		}
+
+		return error.status;
 	}
 }

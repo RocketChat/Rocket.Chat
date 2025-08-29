@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
-import type { IServiceProcessorFactoryList } from '../definition';
+import type { ClientMediaSignalError, IServiceProcessorFactoryList } from '../definition';
 import type {
 	IClientMediaCall,
 	CallEvents,
@@ -534,7 +534,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (this.shouldIgnoreWebRTC()) {
-			this.sendError('invalid-service');
+			this.sendError({ errorType: 'service', errorCode: 'invalid-service' });
 			return;
 		}
 
@@ -544,12 +544,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		try {
 			offer = await this.webrtcProcessor.createOffer(signal);
 		} catch (e) {
-			this.sendError('failed-to-create-offer');
+			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-offer' });
 			throw e;
 		}
 
 		if (!offer) {
-			this.sendError('implementation-error');
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error' });
 		}
 
 		await this.deliverSdp(offer);
@@ -582,12 +582,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		try {
 			answer = await this.webrtcProcessor.createAnswer(signal);
 		} catch (e) {
-			this.sendError('failed-to-create-answer');
+			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer' });
 			throw e;
 		}
 
 		if (!answer) {
-			this.sendError('implementation-error');
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error' });
 			return;
 		}
 
@@ -595,14 +595,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		await this.deliverSdp(answer);
 	}
 
-	protected sendError(errorCode: string): void {
-		this.config.logger?.debug('ClientMediaCall.sendError', errorCode);
+	protected sendError(error: Partial<ClientMediaSignalError>): void {
+		this.config.logger?.debug('ClientMediaCall.sendError', error);
 
 		if (this.hidden) {
 			return;
 		}
 
-		this.config.transporter.sendError(this.callId, errorCode);
+		this.config.transporter.sendError(this.callId, error);
 	}
 
 	protected async processRemoteSDP(signal: ServerMediaSignalRemoteSDP): Promise<void> {
@@ -709,7 +709,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (!this.acceptedLocally) {
-			this.config.transporter.sendError(this.callId, 'not-accepted');
+			this.config.transporter.sendError(this.callId, { errorType: 'signaling', errorCode: 'not-accepted' });
 			this.config.logger?.error('Trying to activate a call that was not yet accepted locally.');
 			return;
 		}
@@ -887,7 +887,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		try {
 			this.prepareWebRtcProcessor();
 		} catch (e) {
-			this.sendError('webrtc-not-implemented');
+			this.sendError({ errorType: 'service', errorCode: 'webrtc-not-implemented' });
 			throw e;
 		}
 	}

@@ -4,6 +4,7 @@ import type {
 	CallHangupReason,
 	CallRole,
 	ClientMediaSignal,
+	ClientMediaSignalError,
 	ClientMediaSignalLocalState,
 	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
@@ -95,6 +96,8 @@ export class UserActorSignalProcessor {
 				return this.hangup(signal.reason);
 			case 'local-state':
 				return this.reviewLocalState(signal);
+			case 'error':
+				return this.processError(signal.errorType, signal.errorCode);
 		}
 	}
 
@@ -123,12 +126,27 @@ export class UserActorSignalProcessor {
 		}
 	}
 
+	private async processError(errorType: ClientMediaSignalError['errorType'], errorCode?: string): Promise<void> {
+		if (!this.signed) {
+			return;
+		}
+
+		switch (errorType) {
+			case 'signaling':
+				return this.onSignalingError(errorCode);
+			case 'service':
+				return this.onServiceError(errorCode);
+			default:
+				return this.onUnexpectedError(errorCode);
+		}
+	}
+
 	protected async clientIsReachable(): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.clientIsReachable', role: this.role, uid: this.actorId });
 
 		if (this.role === 'callee' && this.call.state === 'none') {
 			// Change the call state from 'none' to 'ringing' when any callee session is found
-			await MediaCalls.startRingingById(this.call._id, MediaCallDirector.getNewExpirationTime());
+			await MediaCalls.startRingingById(this.callId, MediaCallDirector.getNewExpirationTime());
 		}
 
 		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
@@ -179,6 +197,10 @@ export class UserActorSignalProcessor {
 		return ['none', 'ringing'].includes(this.call.state);
 	}
 
+	protected isPastNegotiation(): boolean {
+		return ['active', 'hangup'].includes(this.call.state);
+	}
+
 	private async reviewLocalState(signal: ClientMediaSignalLocalState): Promise<void> {
 		if (!this.signed) {
 			return;
@@ -191,5 +213,41 @@ export class UserActorSignalProcessor {
 
 			await this.clientIsActive();
 		}
+
+		// if (this.call.service !== 'webrtc') {
+		// 	return;
+		// }
+
+		// // If we have a webrtc offer but the client doesn't, send it to them
+		// if (this.role === 'callee' this.call.webrtcOffer) {
+		// 	if (!signal.serviceStates.signaling || signal.serviceStates.signaling === 'closed') {
+
+		// 	}
+		// }
+	}
+
+	private async onSignalingError(errorMessage?: string): Promise<void> {
+		logger.error({ msg: 'Client reported a signaling error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
+		await MediaCallDirector.hangup(this.call, this.agent, 'service-error');
+	}
+
+	private async onServiceError(errorMessage?: string): Promise<void> {
+		logger.error({ msg: 'Client reported a service error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
+		if (this.isPastNegotiation()) {
+			return;
+		}
+
+		await MediaCallDirector.hangup(this.call, this.agent, 'service-error');
+	}
+
+	private async onUnexpectedError(errorMessage?: string): Promise<void> {
+		logger.error({
+			msg: 'Client reported an unexpected error',
+			errorMessage,
+			callId: this.callId,
+			role: this.role,
+			state: this.call.state,
+		});
+		await MediaCallDirector.hangup(this.call, this.agent, 'error');
 	}
 }
