@@ -7,7 +7,7 @@ export const useShortcutOpenMenu = (ref: RefObject<Element>): void => {
 	useEffect(() => {
 		const unsubscribe = tinykeys(ref.current as HTMLElement, {
 			Alt: (event) => {
-				if (!(event.target as HTMLElement).className.includes('rcx-sidebar-item')) {
+				if (!(event.target as HTMLElement).className.includes('rcx-sidebar-v2-item')) {
 					return;
 				}
 				event.preventDefault();

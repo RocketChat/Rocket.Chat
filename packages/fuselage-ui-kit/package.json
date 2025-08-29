@@ -53,7 +53,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage": "^0.66.0",
+		"@rocket.chat/fuselage": "^0.66.3",
 		"@rocket.chat/fuselage-hooks": "^0.37.0",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
