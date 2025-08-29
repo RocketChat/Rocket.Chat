@@ -252,19 +252,18 @@ export const useRedirectToFilter = () => {
 	const switchSidePanelTab = useSwitchSidePanelTab();
 
 	const handleRedirect = useCallback(
-		(room: SubscriptionWithRoom | IRoom) => {
-			const roomId = 'rid' in room ? room.rid : room._id;
+		(room: SubscriptionWithRoom) => {
 			if (isTeamRoom(room)) {
-				switchSidePanelTab('teams', { parentRid: roomId });
+				switchSidePanelTab('teams', { parentRid: room.rid });
 				return;
 			}
 
 			if (isDirectMessageRoom(room)) {
-				switchSidePanelTab('directMessages', { parentRid: roomId });
+				switchSidePanelTab('directMessages', { parentRid: room.rid });
 				return;
 			}
 
-			switchSidePanelTab('channels', { parentRid: room.prid || roomId });
+			switchSidePanelTab('channels', { parentRid: room.prid || room.rid });
 		},
 		[switchSidePanelTab],
 	);
