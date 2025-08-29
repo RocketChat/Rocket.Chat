@@ -1,5 +1,5 @@
 import { type ISubscription, type ILivechatInquiryRecord, type IRoom, isTeamRoom, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
@@ -101,7 +101,7 @@ export const useRoomsListContext = () => {
 };
 
 // Helper functions
-const splitFilter = (currentFilter: AllGroupsKeysWithUnread): [SidePanelFiltersKeys, boolean] => {
+export const splitFilter = (currentFilter: AllGroupsKeysWithUnread): [SidePanelFiltersKeys, boolean] => {
 	const [currentTab, unread] = currentFilter.split('_');
 	return [currentTab as SidePanelFiltersKeys, unread === 'unread'];
 };
@@ -210,9 +210,9 @@ export const useSidePanelRoomsListTab = (tab: AllGroupsKeys) => {
 	return roomsList;
 };
 
-export const useSidePanelFilter = (): [AllGroupsKeys, boolean, AllGroupsKeysWithUnread] => {
-	const { currentFilter } = useRoomsListContext();
-	return [...splitFilter(currentFilter), currentFilter];
+export const useSidePanelFilter = (): [AllGroupsKeys, boolean, AllGroupsKeysWithUnread, (filter: AllGroupsKeysWithUnread) => void] => {
+	const [currentFilter, setCurrentFilter] = useLocalStorage<AllGroupsKeysWithUnread>('sidePanelFilters', getFilterKey('all', false));
+	return [...splitFilter(currentFilter), currentFilter, setCurrentFilter];
 };
 
 export const useUnreadOnlyToggle = (): [boolean, () => void] => {

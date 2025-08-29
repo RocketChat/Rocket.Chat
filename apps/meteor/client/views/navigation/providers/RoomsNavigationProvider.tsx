@@ -7,10 +7,10 @@ import {
 	isPublicRoom,
 	isTeamRoom,
 } from '@rocket.chat/core-typings';
-import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { ILivechatInquiryRecord, IRoom } from '@rocket.chat/core-typings';
+import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserPreference, useUserSubscriptions, useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 
@@ -20,8 +20,14 @@ import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import { RoomManager } from '../../../lib/RoomManager';
 import { Rooms } from '../../../stores';
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
-import { RoomsNavigationContext, getEmptyUnreadInfo, isUnreadSubscription } from '../contexts/RoomsNavigationContext';
-import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
+import {
+	RoomsNavigationContext,
+	getEmptyUnreadInfo,
+	getFilterKey,
+	isUnreadSubscription,
+	useSidePanelFilter,
+} from '../contexts/RoomsNavigationContext';
+import { useSidePanelParentRid } from '../hooks/useSidePanelParentRid';
 
 const query = { open: { $ne: false } };
 
@@ -157,49 +163,62 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 };
 
 const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) => {
-	const { currentFilter, setFilter, parentRid } = useSidePanelFilters();
+	const {
+		sidePanel: { openSidePanel },
+	} = useLayout();
+	const { setParentRoom, parentRid } = useSidePanelParentRid();
+
+	const [currentFilter, unread, , setCurrentFilter] = useSidePanelFilter();
+
+	const setFilter = useEffectEvent((filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => {
+		openSidePanel();
+		setCurrentFilter(getFilterKey(filter, unread));
+		setParentRoom(filter, parentRid);
+	});
 
 	const [groups, unreadGroupData] = useRoomsGroups();
 
-	useEffect(
-		() =>
-			RoomManager.on('opened', (rid) => {
-				const room = Rooms.use.getState().find((r) => r._id === rid);
+	const handleRoomOpened = useEffectEvent((rid: string) => {
+		const room = Rooms.use.getState().find((r) => r._id === rid);
 
-				if (!room) {
-					return;
-				}
+		if (!room) {
+			return;
+		}
 
-				if (isTeamRoom(room)) {
-					setFilter('teams', false, rid);
-					return;
-				}
+		if (isTeamRoom(room)) {
+			setFilter('teams', unread, rid);
+			return;
+		}
 
-				if (isDirectMessageRoom(room)) {
-					setFilter('directMessages', false, rid);
-					return;
-				}
+		if (isDirectMessageRoom(room)) {
+			setFilter('directMessages', unread, rid);
+			return;
+		}
 
-				if (room.teamId && currentFilter === 'teams') {
-					const teamRid = Rooms.use.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
+		if (room.teamId && currentFilter === 'teams') {
+			const teamRid = Rooms.use.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
 
-					if (parentRid === teamRid) {
-						return;
-					}
-					setFilter('teams', false, teamRid);
-					return;
-				}
+			/**
+			 * if the room is the parent rid is still the same, don't change the filter
+			 * the filter decision is going to be done by `useRedirectToFilter` when the item is clicked
+			 **/
+			if (parentRid === teamRid) {
+				return;
+			}
+			setFilter('teams', unread, teamRid);
+			return;
+		}
 
-				if (room.prid) {
-					const prid = Rooms.use.getState().find((r) => Boolean(r._id === room.prid))?._id;
-					setFilter('channels', false, prid);
-					return;
-				}
+		if (room.prid) {
+			const prid = Rooms.use.getState().find((r) => Boolean(r._id === room.prid))?._id;
+			setFilter('channels', unread, prid);
+			return;
+		}
 
-				setFilter('channels', false, rid);
-			}),
-		[setFilter, currentFilter, parentRid],
-	);
+		setFilter('channels', false, rid);
+	});
+
+	useEffect(() => RoomManager.on('opened', handleRoomOpened), [handleRoomOpened]);
 
 	const contextValue = useMemo(() => {
 		return {
