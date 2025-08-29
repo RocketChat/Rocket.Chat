@@ -10,7 +10,7 @@ export const useSidePanelFilters = () => {
 	const {
 		sidePanel: { openSidePanel },
 	} = useLayout();
-	const { setParentRoom } = useSidePanelParentRid();
+	const { setParentRoom, parentRid } = useSidePanelParentRid();
 	const [currentFilter, setCurrentFilter] = useLocalStorage<AllGroupsKeysWithUnread>('sidePanelFilters', getFilterKey('all', false));
 
 	const setFilter = useEffectEvent((filter: AllGroupsKeys, unread: boolean, parentRid?: IRoom['_id']) => {
@@ -19,5 +19,5 @@ export const useSidePanelFilters = () => {
 		setParentRoom(filter, parentRid);
 	});
 
-	return { currentFilter, setFilter };
+	return { currentFilter, setFilter, parentRid };
 };

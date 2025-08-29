@@ -12,15 +12,16 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useOmnichannelEnabled } from '../../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../../hooks/omnichannel/useQueuedInquiries';
 import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
+import { RoomManager } from '../../../lib/RoomManager';
+import { Rooms } from '../../../stores';
 import type { GroupedUnreadInfoData, AllGroupsKeys, AllGroupsKeysWithUnread } from '../contexts/RoomsNavigationContext';
 import { RoomsNavigationContext, getEmptyUnreadInfo, isUnreadSubscription } from '../contexts/RoomsNavigationContext';
 import { useSidePanelFilters } from '../hooks/useSidePanelFilters';
-import { useSidePanelParentRid } from '../hooks/useSidePanelParentRid';
 
 const query = { open: { $ne: false } };
 
@@ -156,10 +157,49 @@ const useRoomsGroups = (): [GroupMap, UnreadGroupDataMap] => {
 };
 
 const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) => {
-	const { currentFilter, setFilter } = useSidePanelFilters();
-	const { parentRid } = useSidePanelParentRid();
+	const { currentFilter, setFilter, parentRid } = useSidePanelFilters();
 
 	const [groups, unreadGroupData] = useRoomsGroups();
+
+	useEffect(
+		() =>
+			RoomManager.on('opened', (rid) => {
+				const room = Rooms.use.getState().find((r) => r._id === rid);
+
+				if (!room) {
+					return;
+				}
+
+				if (isTeamRoom(room)) {
+					setFilter('teams', false, rid);
+					return;
+				}
+
+				if (isDirectMessageRoom(room)) {
+					setFilter('directMessages', false, rid);
+					return;
+				}
+
+				if (room.teamId && currentFilter === 'teams') {
+					const teamRid = Rooms.use.getState().find((r) => Boolean(r.teamId === room.teamId && r.teamMain))?._id;
+
+					if (parentRid === teamRid) {
+						return;
+					}
+					setFilter('teams', false, teamRid);
+					return;
+				}
+
+				if (room.prid) {
+					const prid = Rooms.use.getState().find((r) => Boolean(r._id === room.prid))?._id;
+					setFilter('channels', false, prid);
+					return;
+				}
+
+				setFilter('channels', false, rid);
+			}),
+		[setFilter, currentFilter, parentRid],
+	);
 
 	const contextValue = useMemo(() => {
 		return {

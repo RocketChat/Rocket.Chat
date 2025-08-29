@@ -18,7 +18,6 @@ import RoomAnnouncement from '../RoomAnnouncement';
 import ComposerContainer from '../composer/ComposerContainer';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
-import { useRedirectToFilter } from '../../navigation/contexts/RoomsNavigationContext';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
@@ -191,7 +190,6 @@ const RoomBody = (): ReactElement => {
 	useGoToHomeOnRemoved(room, user?._id);
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
-	useRedirectToFilter(room);
 
 	return (
 		<>

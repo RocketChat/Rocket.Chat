@@ -248,7 +248,7 @@ export const useRedirectToDefaultTab = (shouldRedirect: boolean) => {
 	}, [shouldRedirect, switchSidePanelTab]);
 };
 
-export const useRedirectToFilter = (room?: IRoom) => {
+export const useRedirectToFilter = () => {
 	const switchSidePanelTab = useSwitchSidePanelTab();
 
 	const handleRedirect = useCallback(
@@ -268,12 +268,6 @@ export const useRedirectToFilter = (room?: IRoom) => {
 		},
 		[switchSidePanelTab],
 	);
-
-	useEffect(() => {
-		if (room) {
-			handleRedirect(room);
-		}
-	}, [handleRedirect, room, switchSidePanelTab]);
 
 	return handleRedirect;
 };
