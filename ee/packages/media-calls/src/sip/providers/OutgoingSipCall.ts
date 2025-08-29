@@ -1,7 +1,7 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallSignedActor } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
 import { MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
+import type { SrfRequest } from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
 import type { InternalCallParams } from '../../definition/common';
@@ -11,15 +11,10 @@ import { MediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
 
-type OutgoingSipCallEvents = {
-	request: void;
-	provisionalResponse: void;
-};
-
 export class OutgoingSipCall extends BaseSipCall {
-	public readonly emitter: Emitter<OutgoingSipCallEvents>;
-
 	private sipDialog: Srf.Dialog | null;
+
+	private sipDialogReq: SrfRequest | null;
 
 	constructor(
 		session: SipServerSession,
@@ -28,8 +23,8 @@ export class OutgoingSipCall extends BaseSipCall {
 		channel: IMediaCallChannel,
 	) {
 		super(session, call, agent, channel);
-		this.emitter = new Emitter();
 		this.sipDialog = null;
+		this.sipDialogReq = null;
 	}
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
@@ -117,26 +112,34 @@ export class OutgoingSipCall extends BaseSipCall {
 				{
 					cbProvisional: (provRes) => {
 						logger.debug({ msg: 'OutgoingSipCall.createDialog - got provisional response', provRes });
-						this.emitter.emit('provisionalResponse');
 					},
-					cbRequest: (req) => {
+					// #ToDo: fix types, check for errors
+					// @ts-expect-error: package exports invalid types
+					cbRequest: (_error: unknown, req: any) => {
 						logger.debug({ msg: 'OutgoingSipCall.createDialog - request initiated', req });
-						this.emitter.emit('request');
+						if (req) {
+							this.sipDialogReq = req;
+							req.on('response', (res: any, ack: any) => {
+								logger.debug({ msg: 'OutgoingSipCall - request got a response', req, res, ack });
+							});
+						}
 					},
 				},
 			);
 		} catch (error) {
 			this.sipDialog = null;
-			logger.debug({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', error });
+			logger.error({ msg: 'OutgoingSipCall.createDialog - failed to create sip dialog', error });
 			const errorCode = this.getSipErrorCode(error);
 			if (errorCode) {
 				void MediaCallDirector.hangupByServer(call, `sip-error-${errorCode}`);
+				this.cancelAnyPendingRequest();
 				return;
 			}
 		}
 
 		if (!this.sipDialog) {
 			logger.debug({ msg: 'OutgoingSipCall.createDialog - no dialog' });
+			this.cancelAnyPendingRequest();
 			void MediaCallDirector.hangupByServer(call, 'failed-to-create-sip-dialog');
 			return;
 		}
@@ -145,8 +148,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		this.sipDialog.on('destroy', () => {
 			logger.debug({ msg: 'OutgoingSipCall - uac.destroy' });
 			this.sipDialog = null;
-			// This will only terminate the call "by server" if it hasn't already ended by an user action
-			void MediaCallDirector.hangupByServer(call, 'sip-dialog-destroyed');
+			void MediaCallDirector.hangup(call, this.agent, 'remote');
 		});
 
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - remote data', data: this.sipDialog.remote });
@@ -162,6 +164,8 @@ export class OutgoingSipCall extends BaseSipCall {
 		if (this.lastCallState === 'hangup') {
 			return;
 		}
+
+		this.cancelAnyPendingRequest();
 
 		const { sipDialog } = this;
 		this.sipDialog = null;
@@ -186,5 +190,20 @@ export class OutgoingSipCall extends BaseSipCall {
 		}
 
 		return error.status;
+	}
+
+	private cancelAnyPendingRequest(): void {
+		if (!this.sipDialogReq) {
+			return;
+		}
+
+		const req = this.sipDialogReq;
+		this.sipDialogReq = null;
+
+		try {
+			req.cancel(() => null);
+		} catch {
+			// ignore errors on cancel
+		}
 	}
 }

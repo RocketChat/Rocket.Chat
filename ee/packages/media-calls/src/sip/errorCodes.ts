@@ -18,6 +18,8 @@ export const SipErrorCodes = {
 	INTERNAL_SERVER_ERROR: 500,
 	NOT_IMPLEMENTED: 501,
 	SERVICE_NOT_AVAILABLE: 503,
+
+	DECLINED: 603,
 } as const;
 
 export class SipError extends Error {

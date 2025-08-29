@@ -5,7 +5,7 @@ import type {
 	MediaCallContact,
 	IMediaCallChannel,
 } from '@rocket.chat/core-typings';
-import type { SrfRequest, SrfResponse } from 'drachtio-srf';
+import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
@@ -46,6 +46,12 @@ export class IncomingSipCall extends BaseSipCall {
 			throw new SipError(SipErrorCodes.NOT_IMPLEMENTED, 'not-a-new-invite');
 		}
 
+		let sipCall: IncomingSipCall | null = null;
+
+		req.on('cancel', (message) => {
+			sipCall?.cancel(message);
+		});
+
 		const callee = await this.getCalleeFromInvite(req);
 		logger.debug({ msg: 'incoming call to', callee });
 
@@ -79,7 +85,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 		const channel = await callerAgent.getOrCreateChannel(call, session.sessionId);
 
-		const sipCall = new IncomingSipCall(session, call, callerAgent, channel, srf, req, res, webrtcOffer);
+		sipCall = new IncomingSipCall(session, call, callerAgent, channel, srf, req, res, webrtcOffer);
 
 		callerAgent.provider = sipCall;
 
@@ -104,11 +110,16 @@ export class IncomingSipCall extends BaseSipCall {
 		uas.on('destroy', () => {
 			logger.debug({ msg: 'IncomingSipCall - uas.destroy' });
 			this.sipDialog = null;
-			// This will only terminate the call "by server" if it hasn't already ended by an user action
-			void MediaCallDirector.hangupByServer(this.call, 'sip-dialog-destroyed');
+			void MediaCallDirector.hangup(this.call, this.agent, 'remote');
 		});
 
 		this.sipDialog = uas;
+	}
+
+	protected cancel(res: SipMessage): void {
+		logger.debug({ msg: 'IncomingSipCall.cancel', res });
+
+		void MediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
 	}
 
 	protected async reflectCall(call: IMediaCall): Promise<void> {
@@ -124,8 +135,16 @@ export class IncomingSipCall extends BaseSipCall {
 	protected async processEndedCall(call: IMediaCall): Promise<void> {
 		logger.debug({ msg: 'IncomingSipCall.processEndedCall' });
 
-		if (call.hangupReason === 'service-error') {
-			this.hangupPendingCall(SipErrorCodes.NOT_ACCEPTABLE_HERE);
+		switch (call.hangupReason) {
+			case 'service-error':
+				this.cancelPendingCall(SipErrorCodes.NOT_ACCEPTABLE_HERE);
+				break;
+			case 'rejected':
+				this.cancelPendingCall(SipErrorCodes.DECLINED);
+				break;
+			default:
+				this.cancelPendingCall(SipErrorCodes.TEMPORARILY_UNAVAILABLE);
+				break;
 		}
 
 		if (this.lastCallState === 'hangup') {
@@ -154,19 +173,26 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 	}
 
-	private hangupPendingCall(errorCode: number): void {
+	private cancelPendingCall(errorCode: number): void {
 		logger.debug({
-			msg: 'IncomingSipCall.hangupPendingCall',
+			msg: 'IncomingSipCall.cancelPendingCall',
 			errorCode,
 			responseSent: this.responseSent,
 			hasDialog: Boolean(this.sipDialog),
 		});
 
-		if (!this.responseSent && !this.sipDialog) {
-			this.responseSent = true;
-			this.res.send(errorCode);
+		if (this.responseSent || this.sipDialog) {
+			return;
 		}
 
+		this.responseSent = true;
+		this.res.send(errorCode);
+	}
+
+	private hangupPendingCall(errorCode: number): void {
+		logger.debug('IncomingSipCall.hangupPendingCall');
+
+		this.cancelPendingCall(errorCode);
 		void MediaCallDirector.hangupByServer(this.call, `sip-error-${errorCode}`);
 	}
 
