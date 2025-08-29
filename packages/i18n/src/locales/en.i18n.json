@@ -2009,7 +2009,7 @@
   "Execute_Synchronization_Now": "Execute Synchronization Now",
   "Exit_Full_Screen": "Exit Full Screen",
   "Expand": "Expand",
-  "Expand_group":"Expand {{group}}",
+  "Expand_group": "Expand {{group}}",
   "Expand_all": "Expand all",
   "Expand_view": "Expand view",
   "Experimental_Feature_Alert": "This is an experimental feature! Please be aware that it may change, break, or even be removed in the future without any notice.",
@@ -5981,6 +5981,7 @@
   "delete-team_description": "Permission to delete teams",
   "delete-user": "Delete User",
   "delete-user_description": "Permission to delete users",
+  "delete-livechat-contact": "Delete Omnichannel Contact",
   "different_values_found": "{{number}} different values found",
   "disabled": "disabled",
   "discussion-created": "{{message}}",
@@ -6966,4 +6967,5 @@
   "timestamps.fullDateTimeDescription": "December 31, 2020 12:00 AM",
   "timestamps.fullDateTimeLongDescription": "Thursday, December 31, 2020 12:00:00 AM",
   "timestamps.relativeTimeDescription": "1 year ago"
+  "__usersCount__people_will_be_invited": "{{usersCount}} people will be invited"
 }

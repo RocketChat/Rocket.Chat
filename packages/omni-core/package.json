@@ -32,8 +32,5 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/patch-injection": "workspace:^",
 		"mongodb": "6.10.0"
-	},
-	"volta": {
-		"extends": "../../package.json"
 	}
 }

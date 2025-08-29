@@ -554,6 +554,21 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	// Manually changes the language in the i18next instance
+	// To be used with languages other than the default one
+	withDefaultLanguage(lng: string): this {
+		if (this.i18n.isInitialized) {
+			this.i18n.changeLanguage(lng);
+			return this;
+		}
+
+		this.i18n.on('initialized', () => {
+			this.i18n.changeLanguage(lng);
+		});
+
+		return this;
+	}
+
 	withServerContext(partial: Partial<ServerContextValue>): this {
 		this.server = { ...this.server, ...partial };
 		return this;

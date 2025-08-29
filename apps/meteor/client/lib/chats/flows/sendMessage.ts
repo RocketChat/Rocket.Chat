@@ -11,6 +11,8 @@ import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 
 const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
+	const mid = chat.currentEditingMessage.getMID();
+
 	if (await processSetReaction(chat, message)) {
 		return;
 	}
@@ -23,7 +25,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 		return;
 	}
 
-	message = (await onClientBeforeSendMessage({ ...message, isEditing: !!chat.currentEditing })) as IMessage & { isEditing?: boolean };
+	message = (await onClientBeforeSendMessage({ ...message, isEditing: !!mid })) as IMessage & { isEditing?: boolean };
 
 	// e2e should be a client property only
 	delete message.e2e;
@@ -57,8 +59,8 @@ export const sendMessage = async (
 	chat.readStateManager.clearUnreadMark();
 
 	text = text.trim();
-
-	if (!text && !chat.currentEditing) {
+	const mid = chat.currentEditingMessage.getMID();
+	if (!text && !mid) {
 		// Nothing to do
 		return false;
 	}
@@ -67,11 +69,11 @@ export const sendMessage = async (
 		const message = await chat.data.composeMessage(text, {
 			sendToChannel: tshow,
 			quotedMessages: chat.composer?.quotedMessages.get() ?? [],
-			originalMessage: chat.currentEditing ? await chat.data.findMessageByID(chat.currentEditing.mid) : null,
+			originalMessage: mid ? await chat.data.findMessageByID(mid) : null,
 		});
 
-		if (chat.currentEditing) {
-			const originalMessage = await chat.data.findMessageByID(chat.currentEditing.mid);
+		if (mid) {
+			const originalMessage = await chat.data.findMessageByID(mid);
 
 			if (
 				originalMessage?.t === 'e2e' &&
@@ -94,8 +96,8 @@ export const sendMessage = async (
 		return true;
 	}
 
-	if (chat.currentEditing) {
-		const originalMessage = await chat.data.findMessageByID(chat.currentEditing.mid);
+	if (mid) {
+		const originalMessage = await chat.data.findMessageByID(mid);
 
 		if (!originalMessage) {
 			dispatchToastMessage({ type: 'warning', message: t('Message_not_found') });
@@ -104,11 +106,11 @@ export const sendMessage = async (
 
 		try {
 			if (await chat.flows.processMessageEditing({ ...originalMessage, msg: '' }, previewUrls)) {
-				chat.currentEditing.stop();
+				chat.currentEditingMessage.stop();
 				return false;
 			}
 
-			await chat.currentEditing?.reset();
+			await chat.currentEditingMessage.reset();
 			await chat.flows.requestMessageDeletion(originalMessage);
 			return false;
 		} catch (error) {
