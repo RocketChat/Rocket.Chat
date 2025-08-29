@@ -215,7 +215,7 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 			return;
 		}
 
-		setFilter('channels', false, rid);
+		setFilter('channels', unread, rid);
 	});
 
 	useEffect(() => RoomManager.on('opened', handleRoomOpened), [handleRoomOpened]);
