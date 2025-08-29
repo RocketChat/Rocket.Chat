@@ -51,12 +51,12 @@ export const is = (data: unknown): data is Jwk => {
 };
 
 const isKey =
-	<const Kty extends string, const Alg extends string>(kty: Kty, alg: Alg): ((jwk: Jwk) => jwk is Jwk<Kty, Alg>) =>
+	<const Kty extends string, const Alg extends string>(kty: Kty, alg: Alg): ((jwk: Partial<Jwk>) => jwk is Jwk<Kty, Alg>) =>
 	(jwk): jwk is Jwk<Kty, Alg> =>
 		jwk.kty === kty && jwk.alg === alg;
 
-export const isAesGcm = (jwk: Jwk): jwk is Jwk<'oct', 'A256GCM'> => isKey('oct', 'A256GCM')(jwk);
-export const isAesCbc = (jwk: Jwk): jwk is Jwk<'oct', 'A128CBC'> => isKey('oct', 'A128CBC')(jwk);
+export const isAesGcm = (jwk: Partial<Jwk>): jwk is Jwk<'oct', 'A256GCM'> => isKey('oct', 'A256GCM')(jwk);
+export const isAesCbc = (jwk: Partial<Jwk>): jwk is Jwk<'oct', 'A128CBC'> => isKey('oct', 'A128CBC')(jwk);
 
 export const parse = (json: string): Jwk => {
 	const obj = JSON.parse(json);

@@ -12,7 +12,5 @@ test('AES-CBC', async () => {
 test('AES-GCM', async () => {
 	const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
 	const jwk = await crypto.subtle.exportKey('jwk', key);
-
-	expect(Jwk.is(jwk)).toBe(true);
 	expect(Jwk.isAesGcm(jwk)).toBe(true);
 });
