@@ -232,8 +232,6 @@ export class HomeSidenav {
 		// Expand and wait for checkbox to appear before clicking
 		await this.advancedSettingsAccordion.click();
 		await expect(this.checkboxEncryption).toBeVisible();
-
-		await this.page.getByRole('button', { name: 'Advanced settings' }).click();
 		await this.page
 			.locator('span')
 			.filter({ hasText: /^Encrypted$/ })

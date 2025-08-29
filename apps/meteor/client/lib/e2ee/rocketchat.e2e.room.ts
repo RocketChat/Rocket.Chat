@@ -1,5 +1,6 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, AtLeast } from '@rocket.chat/core-typings';
+import { Jwk } from '@rocket.chat/e2ee';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
@@ -25,10 +26,9 @@ import {
 	sha256HashFromArrayBuffer,
 	createSha256HashFromText,
 	generateAesGcmKey,
-	// generateAesCbcKey,
+	generateAesCbcKey,
 	importAesGcmKey,
 } from './helper';
-import { isAesCbc, isAesGcm, parseJsonWebKey } from './jwk';
 import { logger } from './logger';
 import { e2e } from './rocketchat.e2e';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -347,7 +347,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSessionKey(key: string) {
-		const jwk = parseJsonWebKey(await this.exportSessionKey(key));
+		const jwk = Jwk.parse(await this.exportSessionKey(key));
 		try {
 			return await importAesGcmKey(jwk);
 		} catch (error) {
@@ -397,9 +397,9 @@ export class E2ERoom extends Emitter {
 			this.keyID = this.roomKeyId || (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);
 		}
 
-		const jwk = parseJsonWebKey(this.sessionKeyExportedString);
+		const jwk = Jwk.parse(this.sessionKeyExportedString);
 
-		if (isAesGcm(jwk)) {
+		if (Jwk.isAesGcm(jwk)) {
 			try {
 				const key = await importAesGcmKey(jwk);
 				this.groupSessionKey = key;
@@ -410,7 +410,7 @@ export class E2ERoom extends Emitter {
 			}
 		}
 
-		if (isAesCbc(jwk)) {
+		if (Jwk.isAesCbc(jwk)) {
 			try {
 				const key = await importAesCbcKey(jwk);
 				this.groupSessionKey = key;
@@ -422,9 +422,19 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
+	/**
+	 * @deprecated
+	 * Use {@link createNewGroupKey} instead.
+	 */
+	async createOldGroupKey() {
+		this.groupSessionKey = await generateAesCbcKey();
+		const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
+		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
+		this.keyID = (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);
+	}
+
 	async createNewGroupKey() {
 		this.groupSessionKey = await generateAesGcmKey();
-
 		const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
 		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
 		this.keyID = (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);

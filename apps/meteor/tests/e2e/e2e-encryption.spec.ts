@@ -938,15 +938,9 @@ test.describe.fixme('e2ee room setup', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-		await poHomeChannel.sidenav.checkboxEncryption.click();
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
-
-		await poHomeChannel.dismissToast();
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
 		await expect(poHomeChannel.btnRoomSaveE2EEPassword).toBeVisible();
@@ -988,11 +982,7 @@ test.describe.fixme('e2ee room setup', () => {
 
 		const channelName = faker.string.uuid();
 
-		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
-		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
-		await poHomeChannel.sidenav.checkboxEncryption.click();
-		await poHomeChannel.sidenav.btnCreate.click();
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 

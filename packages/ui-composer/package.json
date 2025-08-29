@@ -51,6 +51,7 @@
 		"react-dom": "~18.3.1",
 		"react-virtuoso": "^4.12.0",
 		"storybook": "^8.6.14",
+		"ts-node": "~10.9.2",
 		"typescript": "~5.9.2",
 		"webpack": "~5.99.9"
 	},

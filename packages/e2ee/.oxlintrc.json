@@ -12,6 +12,10 @@
 		"oxc/no-map-spread": "error",
 		"oxc/no-async-await": "allow",
 		"eslint/id-length": "allow",
+		"eslint/no-undef": "allow",
+		"eslint/sort-keys": "allow",
+		"eslint/no-plusplus": "allow",
+		"eslint/no-magic-numbers": "allow",
 		"unicorn/prefer-code-point": "allow"
 	}
 }

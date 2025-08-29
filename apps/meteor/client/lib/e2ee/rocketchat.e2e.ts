@@ -4,7 +4,7 @@ import URL from 'url';
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { LocalKeyPair, RemoteKeyPair } from '@rocket.chat/e2ee';
-import E2EE from '@rocket.chat/e2ee-web';
+import E2EE from '@rocket.chat/e2ee';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import _ from 'lodash';
@@ -67,18 +67,15 @@ class E2E extends Emitter<{
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
-		this.e2ee = E2EE.withLocalStorage(
-			{
-				userId: () => Promise.resolve(Meteor.userId()),
-				fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
-				persistKeys: (keys, force) =>
-					sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
-						...keys,
-						force,
-					}),
-			},
-			Accounts.storageLocation,
-		);
+		this.e2ee = new E2EE({
+			userId: () => Promise.resolve(Meteor.userId()),
+			fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
+			persistKeys: (keys, force) =>
+				sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
+					...keys,
+					force,
+				}),
+		});
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			logger.log(`${prevState} -> ${nextState}`);

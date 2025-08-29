@@ -1,3 +1,5 @@
+// oxlint-disable sort-keys
+// oxlint-disable explicit-function-return-type
 import type { CryptoProvider } from './crypto.ts';
 
 export interface JsonWebKeyPair {
@@ -20,15 +22,73 @@ export interface EncodedPrivateKeyV1 {
 }
 
 export type AnyEncodedPrivateKey = EncodedPrivateKeyV1; // forward compatible discriminated union
-export abstract class BaseKeyCodec {
+
+const provider = {
+	exportJsonWebKey: (key) => crypto.subtle.exportKey('jwk', key),
+	getRandomUint8Array: (array) => crypto.getRandomValues(array),
+	getRandomUint16Array: (array) => crypto.getRandomValues(array),
+	getRandomUint32Array: (array) => crypto.getRandomValues(array),
+	importRawKey: (raw) => crypto.subtle.importKey('raw', raw, { name: 'PBKDF2' }, false, ['deriveKey']),
+	importRsaDecryptKey: (key) => crypto.subtle.importKey('jwk', key, { name: 'RSA-OAEP', hash: 'SHA-256' }, false, ['decrypt']),
+	generateRsaOaepKeyPair: () =>
+		crypto.subtle.generateKey({ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, [
+			'encrypt',
+			'decrypt',
+		]),
+
+	deriveKeyWithPbkdf2: (salt, baseKey) =>
+		crypto.subtle.deriveKey(
+			{
+				name: 'PBKDF2',
+				salt,
+				iterations: 1000,
+				hash: 'SHA-256',
+			},
+			baseKey,
+			{
+				name: 'AES-CBC',
+				length: 256,
+			},
+			false,
+			['encrypt', 'decrypt'],
+		),
+	decryptAesCbc: (key, iv, data) => crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data),
+	encryptAesCbc: (key, iv, data) => crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, data),
+	decodeBase64: (input) => {
+		const binaryString = atob(input);
+		const len = binaryString.length;
+		const bytes = new Uint8Array(len);
+		for (let i = 0; i < len; i++) {
+			bytes[i] = binaryString.charCodeAt(i);
+		}
+		return bytes;
+	},
+	encodeBase64: (input) => {
+		const bytes = new Uint8Array(input);
+		let binaryString = '';
+		for (let i = 0; i < bytes.byteLength; i++) {
+			binaryString += String.fromCharCode(bytes[i] ?? 0);
+		}
+		return btoa(binaryString);
+	},
+	encodeBinary: (input) => {
+		const encoder = new TextEncoder();
+		const dest = new Uint8Array(input.length);
+		encoder.encodeInto(input, dest);
+		return dest;
+	},
+	encodeUtf8: (input) => new TextEncoder().encode(input),
+	decodeUtf8: (input) => new TextDecoder().decode(input),
+} satisfies CryptoProvider;
+export default class KeyCodec {
 	#crypto: CryptoProvider;
 
 	get crypto(): CryptoProvider {
 		return this.#crypto;
 	}
 
-	constructor(crypto: CryptoProvider) {
-		this.#crypto = crypto;
+	constructor() {
+		this.#crypto = provider;
 	}
 
 	async generateRsaOaepKeyPair(): Promise<JsonWebKeyPair> {
@@ -169,8 +229,11 @@ export abstract class BaseKeyCodec {
 	}
 
 	parseUint8Array(json: string): Uint8Array<ArrayBuffer> {
-		const { $binary } = JSON.parse(json);
-		const binaryString = this.#crypto.decodeBase64($binary);
+		const parsed = JSON.parse(json);
+		if (typeof parsed !== 'object' || parsed === null || !('$binary' in parsed) || typeof parsed.$binary !== 'string') {
+			throw new TypeError('Invalid JSON format, expected {"$binary":"..."}');
+		}
+		const binaryString = this.#crypto.decodeBase64(parsed.$binary);
 		return new Uint8Array(binaryString);
 	}
 }
