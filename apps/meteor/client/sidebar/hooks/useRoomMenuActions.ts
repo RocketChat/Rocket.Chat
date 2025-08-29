@@ -58,7 +58,7 @@ export const useRoomMenuActions = ({
 	const menuOptions = useMemo(
 		() =>
 			!hideDefaultOptions
-				? [
+				? ([
 						!isOmnichannelRoom && {
 							id: 'hideRoom',
 							icon: 'eye-off',
@@ -83,7 +83,7 @@ export const useRoomMenuActions = ({
 							content: t('Leave_room'),
 							onClick: handleLeave,
 						},
-					]
+					].filter(Boolean) as GenericMenuItemProps[])
 				: [],
 		[
 			hideDefaultOptions,
@@ -102,10 +102,10 @@ export const useRoomMenuActions = ({
 
 	if (isOmnichannelRoom && prioritiesMenu.length > 0) {
 		return [
-			{ title: '', items: menuOptions.filter(Boolean) as GenericMenuItemProps[] },
-			{ title: t('Priorities'), items: prioritiesMenu },
+			...(menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : []),
+			...(prioritiesMenu.length > 0 ? [{ title: t('Priorities'), items: prioritiesMenu }] : []),
 		];
 	}
 
-	return [{ title: '', items: menuOptions.filter(Boolean) as GenericMenuItemProps[] }];
+	return menuOptions.length > 0 ? [{ title: '', items: menuOptions }] : [];
 };
