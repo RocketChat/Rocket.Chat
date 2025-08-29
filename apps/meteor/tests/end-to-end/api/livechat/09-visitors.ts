@@ -13,6 +13,9 @@ import {
 	createVisitor,
 	startANewLivechatRoomAndTakeIt,
 	closeOmnichannelRoom,
+	createVisitorWithCustomData,
+	sendAgentMessage,
+	sendMessage,
 } from '../../../data/livechat/rooms';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
@@ -1312,6 +1315,7 @@ describe('LIVECHAT - visitors', () => {
 			expect(res.body.visitors[0]).to.have.property('visitorEmails');
 		});
 	});
+
 	describe('omnichannel/contact', () => {
 		let contact: ILivechatVisitor;
 		it('should fail if user doesnt have view-l-room permission', async () => {
@@ -1431,6 +1435,175 @@ describe('LIVECHAT - visitors', () => {
 			contact = await getLivechatVisitorByToken(contact.token);
 			expect(contact).to.have.property('livechatData');
 			expect(contact.livechatData).to.have.property(cfName, 'test');
+		});
+	});
+
+	describe('lead capture', () => {
+		let visitor: ILivechatVisitor;
+		let room: IOmnichannelRoom;
+
+		before(async () => {
+			visitor = await createVisitorWithCustomData({
+				ignoreEmail: true,
+				ignorePhone: true,
+			});
+			room = await createLivechatRoom(visitor.token);
+			await createAgent();
+		});
+		after(async () => {
+			await closeOmnichannelRoom(room._id);
+		});
+
+		it('should capture the data matching the email regex and add it to the visitor', async () => {
+			await sendMessage(room._id, 'My email is random@email.com', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(1);
+			expect(visitor.visitorEmails?.[0].address).to.be.equal('random@email.com');
+		});
+
+		it('should capture more emails when the visitor sends the message', async () => {
+			await sendMessage(room._id, 'Another email is test@teste.com', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(2);
+			const emails = visitor.visitorEmails?.map((e) => e.address);
+			expect(emails).to.include('test@teste.com');
+		});
+
+		it('should capture multiple emails', async () => {
+			await sendMessage(room._id, 'My emails are test@123.com notest@1234.com', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(4);
+			const emails = visitor.visitorEmails?.map((e) => e.address);
+			expect(emails).to.include('test@123.com');
+			expect(emails).to.include('notest@1234.com');
+		});
+
+		it('should not add an email thats already registered', async () => {
+			await sendMessage(room._id, 'My email is test@123.com', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(4);
+		});
+
+		it('should not save emails the agent sends', async () => {
+			await sendAgentMessage(room._id, 'Confirming your email is test@12345.com?', credentials);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(4);
+		});
+
+		it('should save phone numbers matching the regex', async () => {
+			await sendMessage(room._id, 'My phone number is 12345678', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(1);
+			expect(visitor.phone?.[0].phoneNumber).to.be.equal('12345678');
+		});
+
+		it('should capture more phone numbers when the visitor sends the message', async () => {
+			await sendMessage(room._id, 'Another phone number is 87654321 87654323', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(3);
+			const phones = visitor.phone?.map((p) => p.phoneNumber);
+			expect(phones).to.include('87654321');
+			expect(phones).to.include('87654323');
+		});
+
+		it('should not add a phone number thats already registered', async () => {
+			await sendMessage(room._id, 'My phone number is 12345678', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(3);
+		});
+
+		it('should not save phone numbers the agent sends', async () => {
+			await sendAgentMessage(room._id, 'Confirming your phone number is 99999999?', credentials);
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(3);
+		});
+
+		it('should capture both phones & emails when sent on the same message', async () => {
+			await sendMessage(room._id, 'My email is zardw@asdf.com and my phone is 11223344', visitor.token);
+
+			visitor = await getLivechatVisitorByToken(visitor.token);
+			expect(visitor.visitorEmails).to.be.an('array');
+			expect(visitor.visitorEmails).to.have.lengthOf(5);
+			const emails = visitor.visitorEmails?.map((e) => e.address);
+			expect(emails).to.include('zardw@asdf.com');
+
+			expect(visitor.phone).to.be.an('array');
+			expect(visitor.phone).to.have.lengthOf(4);
+			const phones = visitor.phone?.map((p) => p.phoneNumber);
+			expect(phones).to.include('11223344');
+		});
+
+		describe('when settings are empty', () => {
+			before(async () => {
+				await updateSetting('Livechat_lead_phone_regex', '');
+				await updateSetting('Livechat_lead_email_regex', '');
+			});
+
+			after(async () => {
+				// reset settings
+				await updateSetting('Livechat_lead_email_regex', '\\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\\.)+[A-Z]{2,4}\\b');
+				await updateSetting(
+					'Livechat_lead_phone_regex',
+					'((?:\\([0-9]{1,3}\\)|[0-9]{2})[ \\-]*?[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))',
+				);
+			});
+
+			it('should not capture any email or phone no matter what the visitor sends', async () => {
+				await sendMessage(room._id, 'Now my email is this@shalnotpass.com', visitor.token);
+
+				await sendMessage(room._id, 'And my phone number is 55667788', visitor.token);
+
+				visitor = await getLivechatVisitorByToken(visitor.token);
+				const emails = visitor.visitorEmails?.map((e) => e.address);
+				expect(emails || []).to.not.include('this@shalnotpass.com');
+
+				const phones = visitor.phone?.map((p) => p.phoneNumber);
+				expect(phones || []).to.not.include('55667788');
+			});
+		});
+
+		describe('when the visitor has emails & phones already', () => {
+			let newVisitor: ILivechatVisitor;
+			let newRoom: IOmnichannelRoom;
+			before(async () => {
+				newVisitor = await createVisitor();
+				newRoom = await createLivechatRoom(newVisitor.token);
+			});
+			after(async () => {
+				await closeOmnichannelRoom(newRoom._id);
+			});
+
+			it('should capture new emails & phones and add them to the existing ones', async () => {
+				await sendMessage(newRoom._id, 'My email is 1234@12344.com and my phone is 11223344', newVisitor.token);
+
+				newVisitor = await getLivechatVisitorByToken(newVisitor.token);
+				expect(newVisitor.visitorEmails).to.be.an('array');
+				expect(newVisitor.visitorEmails).to.have.lengthOf(2);
+				const emails = newVisitor.visitorEmails?.map((e) => e.address);
+				expect(emails).to.include('1234@12344.com');
+
+				expect(newVisitor.phone).to.be.an('array');
+				expect(newVisitor.phone).to.have.lengthOf(2);
+				const phones = newVisitor.phone?.map((p) => p.phoneNumber);
+				expect(phones).to.include('11223344');
+			});
 		});
 	});
 });
