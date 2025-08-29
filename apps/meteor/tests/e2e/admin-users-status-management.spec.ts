@@ -1,4 +1,4 @@
-import type { BrowserContext, Page } from 'playwright-core';
+import type { BrowserContext, Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
@@ -50,15 +50,6 @@ test.describe.serial('Admin > Users', () => {
 	});
 
 	test.describe('Admin > Users Status Management', () => {
-		// test.beforeAll('Create a new user', async ({ api }) => {
-		// 	user = await createTestUser(api);
-		// });
-
-		// test.afterAll('Delete the new user', async () => {
-		// 	await user.delete();
-		// });
-
-		// test.describe('New user tab visibility on deactivation', () => {
 		test.use({ storageState: Users.admin.state });
 
 		test.beforeEach('Go to /admin/users', async ({ page }) => {

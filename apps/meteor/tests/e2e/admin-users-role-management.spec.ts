@@ -5,19 +5,19 @@ import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser } from './utils/user-helpers';
 
-let user: ITestUser;
+let userWithoutAdminAccess: ITestUser;
 let userWithAdminAccess: ITestUser;
 let admin: Admin;
 let poToastBar: ToastBar;
 
 test.describe('Admin > Users Role Management', () => {
 	test.beforeAll('Create test users', async ({ api }) => {
-		user = await createTestUser(api);
+		userWithoutAdminAccess = await createTestUser(api);
 		userWithAdminAccess = await createTestUser(api, { roles: ['admin'] });
 	});
 
 	test.afterAll('Delete test users', async () => {
-		await user.delete();
+		await userWithoutAdminAccess.delete();
 		await userWithAdminAccess.delete();
 	});
 
@@ -31,22 +31,22 @@ test.describe('Admin > Users Role Management', () => {
 		});
 
 		test('Make a newly created user as admin', async () => {
-			await admin.tabs.users.inputSearch.fill(user.data.username);
+			await admin.tabs.users.inputSearch.fill(userWithoutAdminAccess.data.username);
 
 			await test.step('should be visible in the All tab', async () => {
 				await admin.tabs.users.tabAll.click();
-				await expect(admin.getUserRowByUsername(user.data.username)).toBeVisible();
+				await expect(admin.getUserRowByUsername(userWithoutAdminAccess.data.username)).toBeVisible();
 			});
 
 			await test.step('make a user admin', async () => {
-				await admin.tabs.users.openUserActionMenu(user.data.username);
+				await admin.tabs.users.openUserActionMenu(userWithoutAdminAccess.data.username);
 				await admin.tabs.users.menuItemMakeAdmin.click();
 				await expect(poToastBar.alert).toBeVisible();
 				await expect(poToastBar.alert).toHaveText('User is now an admin');
 			});
 
 			await test.step('verify user is admin', async () => {
-				await admin.tabs.users.getUserRowByUsername(user.data.username).click();
+				await admin.getUserRowByUsername(userWithoutAdminAccess.data.username).click();
 				await expect(admin.tabs.users.userInfoDialog).toBeVisible();
 				await expect(admin.tabs.users.userInfoDialog).toContainText('Admin');
 			});
@@ -67,7 +67,7 @@ test.describe('Admin > Users Role Management', () => {
 			});
 
 			await test.step('verify user role as admin is removed', async () => {
-				await admin.tabs.users.getUserRowByUsername(userWithAdminAccess.data.username).click();
+				await admin.getUserRowByUsername(userWithAdminAccess.data.username).click();
 				await expect(admin.tabs.users.userInfoDialog).toBeVisible();
 				await expect(admin.tabs.users.userInfoDialog).not.toHaveText('Admin');
 			});
