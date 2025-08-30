@@ -3,7 +3,8 @@ export default defineConfig({
 	test: {
 		coverage: {
 			provider: 'v8',
-			exclude: ['**/__tests__/**'],
+			include: ['src/*.ts'],
+			exclude: ['src/__tests__/**'],
 		},
 		browser: {
 			screenshotFailures: false,

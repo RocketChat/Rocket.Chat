@@ -1,9 +1,15 @@
 import { expect, test } from 'vitest';
 import E2EE from '../index.ts';
 import { createDb } from './helpers/db.ts';
-import { unwrap } from '../result.ts';
+import type { Result } from '../result.ts';
 
 const db = createDb();
+export const unwrap = <V, E>(result: Result<V, E>): V => {
+	if (result.isOk) {
+		return result.value;
+	}
+	throw new Error('Unwrapped a failed result');
+};
 
 const bob = new E2EE({
 	fetchMyKeys: async () => {
@@ -21,6 +27,9 @@ test('load user keys', async () => {
 	expect(keys).toHaveProperty('privateKey');
 	const password = await bob.createRandomPassword(5);
 	expect(password.split(' ').length).toBe(5);
+	expect(bob.getRandomPassword()).toBe(password);
+	bob.removeRandomPassword();
+	expect(bob.getRandomPassword()).toBeFalsy();
 	const localKeys = bob.getKeysFromLocalStorage();
 	expect(localKeys.private_key).toBeDefined();
 	expect(localKeys.public_key).toBeDefined();
@@ -44,6 +53,10 @@ test('load user keys', async () => {
 	);
 
 	expect(privateKey).toBeInstanceOf(CryptoKey);
+
+	// Remove keys from local storage
+	bob.removeKeysFromLocalStorage();
+	expect(bob.getKeysFromLocalStorage()).toMatchObject({ private_key: null, public_key: null });
 });
 
 // test('E2EE createRandomPassword deterministic generation with 5 words', async () => {

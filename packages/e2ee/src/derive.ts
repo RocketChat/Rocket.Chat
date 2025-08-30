@@ -15,14 +15,5 @@ export const derivePbkdf2Key = (salt: string, baseKey: CryptoKey): Promise<Crypt
 		['encrypt', 'decrypt'],
 	);
 
-export const importPbkdf2Key = (password: string): Promise<CryptoKey> => {
-	if (!password) {
-		throw new Error('Password is required');
-	}
-
-	const encoder = new TextEncoder();
-	const dest = new Uint8Array(password.length);
-	encoder.encodeInto(password, dest);
-
-	return crypto.subtle.importKey('raw', dest, { name: 'PBKDF2' }, false, ['deriveKey']);
-};
+export const importPbkdf2Key = (password: string): Promise<CryptoKey> =>
+	crypto.subtle.importKey('raw', new TextEncoder().encode(password), { name: 'PBKDF2' }, false, ['deriveKey']);

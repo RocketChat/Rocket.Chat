@@ -16,13 +16,12 @@ export const toString = (data: ArrayBuffer): string => {
 // Returns undefined if input is undefined; passes through existing ArrayBuffer; copies TypedArray/DataView.
 export const toArrayBuffer = (data: string): Uint8Array<ArrayBuffer> => {
 	const BYTE_RANGE = 0x1_00; // 256 possible byte values
-	const FALLBACK_CODE_POINT = 0;
 	const INCREMENT = 1;
 	const len = data.length;
 	const u8 = new Uint8Array(len);
 	for (let i = 0; i < len; i += INCREMENT) {
 		// Mimic old ByteBuffer 'binary' behavior: low 8 bits only
-		const code = data.codePointAt(i) ?? FALLBACK_CODE_POINT;
+		const code = data.charCodeAt(i);
 		u8[i] = code % BYTE_RANGE;
 	}
 	return u8;

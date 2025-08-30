@@ -171,10 +171,6 @@ export default class E2EE {
 	}
 
 	async getMasterKey(password: string): AsyncResult<CryptoKey, Error> {
-		if (!password) {
-			return err(new Error('You should provide a password'));
-		}
-
 		// First, create a PBKDF2 "key" containing the password
 		const baseKey = await (async () => {
 			try {
