@@ -18,7 +18,7 @@
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.27.11",
+		"@changesets/cli": "^2.29.6",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.16.1",
