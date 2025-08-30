@@ -6,7 +6,7 @@ export * as Jwk from './jwk.ts';
 import * as Jwk from './jwk.ts';
 
 import { stringifyUint8Array, parseUint8Array } from './base64.ts';
-import { importPbkdf2Key, deriveKeyWithPbkdf2 } from './derive.ts';
+import { importPbkdf2Key, derivePbkdf2Key } from './derive.ts';
 import { generateRsaOaepKeyPair } from './crypto.ts';
 
 const generateMnemonicPhrase = async (length: number): Promise<string> => {
@@ -34,6 +34,11 @@ export interface LocalKeyPair {
 	private_key: string | null | undefined;
 }
 
+export interface EncryptedKeyPair {
+	private_key: ArrayBuffer;
+	public_key: string;
+}
+
 export interface KeyPair {
 	privateKey: CryptoKey;
 	publicKey: JsonWebKey;
@@ -46,13 +51,14 @@ export default class E2EE {
 		this.#service = service;
 	}
 
-	async loadKeys({ public_key, private_key }: RemoteKeyPair): AsyncResult<CryptoKey, Error> {
+	async loadKeys(keys: EncryptedKeyPair): AsyncResult<CryptoKey, Error> {
 		try {
-			const res = await crypto.subtle.importKey('jwk', Jwk.parse(private_key), { name: 'RSA-OAEP', hash: { name: 'SHA-256' } }, false, [
+			const privKey = toString(keys.private_key);
+			const res = await crypto.subtle.importKey('jwk', Jwk.parse(privKey), { name: 'RSA-OAEP', hash: { name: 'SHA-256' } }, false, [
 				'decrypt',
 			]);
-			localStorage.setItem('public_key', public_key);
-			localStorage.setItem('private_key', private_key);
+			localStorage.setItem('public_key', keys.public_key);
+			localStorage.setItem('private_key', privKey);
 			return ok(res);
 		} catch (error) {
 			return err(new Error('Error loading keys', { cause: error }));
@@ -78,14 +84,6 @@ export default class E2EE {
 			}
 		} catch (error) {
 			return err(new Error('Error creating and loading keys', { cause: error }));
-		}
-	}
-
-	async loadKeysFromDB(): AsyncResult<RemoteKeyPair, Error> {
-		try {
-			return ok(await this.#service.fetchMyKeys());
-		} catch (error) {
-			return err(new Error('Error loading keys from service', { cause: error }));
 		}
 	}
 
@@ -128,7 +126,7 @@ export default class E2EE {
 		}
 	}
 
-	async decodePrivateKey(privateKey: string, password: string): AsyncResult<string, Error> {
+	async decodePrivateKey(privateKey: string, password: string): AsyncResult<ArrayBuffer, Error> {
 		const masterKey = await this.getMasterKey(password);
 		if (!masterKey.isOk) {
 			return masterKey;
@@ -138,9 +136,18 @@ export default class E2EE {
 
 		try {
 			const privKey = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, masterKey.value, cipherText);
-			return ok(toString(privKey));
+			return ok(privKey);
 		} catch (error) {
 			return err(new Error('Error decrypting private key', { cause: error }));
+		}
+	}
+
+	async loadKeysFromDB(): AsyncResult<RemoteKeyPair, Error> {
+		try {
+			const keys = await this.#service.fetchMyKeys();
+			return ok(keys);
+		} catch (error) {
+			return err(new Error('Error loading keys from service', { cause: error }));
 		}
 	}
 
@@ -189,7 +196,7 @@ export default class E2EE {
 
 		// Derive a key from the password
 		try {
-			return ok(await deriveKeyWithPbkdf2(userId, baseKey.value));
+			return ok(await derivePbkdf2Key(userId, baseKey.value));
 		} catch (error) {
 			return err(new Error(`Error deriving baseKey: ${error}`));
 		}

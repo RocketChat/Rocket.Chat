@@ -1,9 +1,9 @@
-export const deriveKeyWithPbkdf2 = (salt: string, baseKey: CryptoKey): Promise<CryptoKey> =>
+export const derivePbkdf2Key = (salt: string, baseKey: CryptoKey): Promise<CryptoKey> =>
 	crypto.subtle.deriveKey(
 		{
 			name: 'PBKDF2',
 			salt: new TextEncoder().encode(salt),
-			iterations: 1000,
+			iterations: 10_000,
 			hash: 'SHA-256',
 		},
 		baseKey,
