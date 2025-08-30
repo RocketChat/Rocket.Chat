@@ -55,8 +55,11 @@ const isKey =
 	(jwk): jwk is Jwk<Kty, Alg> =>
 		jwk.kty === kty && jwk.alg === alg;
 
+/** {@link !CryptoKey} */
 export const isAesGcm = (jwk: Partial<Jwk>): jwk is Jwk<'oct', 'A256GCM'> => isKey('oct', 'A256GCM')(jwk);
 export const isAesCbc = (jwk: Partial<Jwk>): jwk is Jwk<'oct', 'A128CBC'> => isKey('oct', 'A128CBC')(jwk);
+
+export const isRsaOaep = (jwk: Partial<Jwk>): jwk is Jwk<'RSA', 'RSA-OAEP-256'> => isKey('RSA', 'RSA-OAEP-256')(jwk);
 
 export const parse = (json: string): Jwk => {
 	const obj = JSON.parse(json);

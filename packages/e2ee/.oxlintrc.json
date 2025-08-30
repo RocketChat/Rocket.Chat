@@ -1,4 +1,7 @@
 {
+	"env": {
+		"shared-node-browser": true
+	},
 	"categories": {
 		"correctness": "error",
 		"suspicious": "error",
@@ -16,6 +19,6 @@
 		"eslint/sort-keys": "allow",
 		"eslint/no-plusplus": "allow",
 		"eslint/no-magic-numbers": "allow",
-		"unicorn/prefer-code-point": "allow"
+		"eslint/no-ternary": "allow"
 	}
 }

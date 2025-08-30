@@ -23,12 +23,12 @@
     "testunit": "vitest run"
   },
   "devDependencies": {
-    "@vitest/browser": "4.0.0-beta.8",
-    "oxlint": "~1.13.0",
-    "oxlint-tsgolint": "~0.1.2",
-    "playwright": "~1.55.0",
+    "@vitest/browser": "4.0.0-beta.9",
+    "oxlint": "~1.14.0",
+    "oxlint-tsgolint": "~0.1.5",
+    "playwright": "^1.55.0",
     "typescript": "~5.9.2",
-    "vitest": "4.0.0-beta.8"
+    "vitest": "4.0.0-beta.9"
   },
   "license": "MIT",
   "publishConfig": {

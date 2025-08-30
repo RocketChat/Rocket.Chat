@@ -12,5 +12,24 @@ test('AES-CBC', async () => {
 test('AES-GCM', async () => {
 	const key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
 	const jwk = await crypto.subtle.exportKey('jwk', key);
+	expect(Jwk.is(jwk)).toBe(true);
 	expect(Jwk.isAesGcm(jwk)).toBe(true);
+});
+
+test('RSA-OAEP', async () => {
+	const key = await crypto.subtle.generateKey(
+		{ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' },
+		true,
+		['encrypt', 'decrypt'],
+	);
+
+	const publicJwk = await crypto.subtle.exportKey('jwk', key.publicKey);
+
+	expect(Jwk.is(publicJwk)).toBe(true);
+	expect(Jwk.isRsaOaep(publicJwk)).toBe(true);
+
+	const privateJwk = await crypto.subtle.exportKey('jwk', key.privateKey);
+
+	expect(Jwk.is(privateJwk)).toBe(true);
+	expect(Jwk.isRsaOaep(privateJwk)).toBe(true);
 });

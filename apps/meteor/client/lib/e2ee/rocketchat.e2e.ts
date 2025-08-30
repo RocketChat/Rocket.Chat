@@ -71,10 +71,12 @@ class E2E extends Emitter<{
 			userId: () => Promise.resolve(Meteor.userId()),
 			fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
 			persistKeys: (keys, force) =>
-				sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
-					...keys,
-					force,
-				}),
+				sdk.rest
+					.post('/v1/e2e.setUserPublicAndPrivateKeys', {
+						...keys,
+						force,
+					})
+					.then((response) => response ?? undefined),
 		});
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {

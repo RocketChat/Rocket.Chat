@@ -1,15 +1,24 @@
 import { type AsyncResult, err, ok } from './result.ts';
 import { joinVectorAndEncryptedData, splitVectorAndEncryptedData } from './vector.ts';
 import { toArrayBuffer, toString } from './binary.ts';
-import KeyCodec from './codec.ts';
 
 export * as Jwk from './jwk.ts';
 import * as Jwk from './jwk.ts';
 
+import { stringifyUint8Array, parseUint8Array } from './base64.ts';
+import { importPbkdf2Key, deriveKeyWithPbkdf2 } from './derive.ts';
+import { generateRsaOaepKeyPair } from './crypto.ts';
+
+const generateMnemonicPhrase = async (length: number): Promise<string> => {
+	const { v1 } = await import('./word-list.ts');
+	const randomBuffer = crypto.getRandomValues(new Uint8Array(length));
+	return Array.from(randomBuffer, (value) => v1[value % v1.length]).join(' ');
+};
+
 export interface KeyService {
 	userId: () => Promise<string | null>;
 	fetchMyKeys: () => Promise<RemoteKeyPair>;
-	persistKeys: (keys: RemoteKeyPair, force: boolean) => Promise<void | null>;
+	persistKeys: (keys: RemoteKeyPair, force: boolean) => Promise<void>;
 }
 
 export type PrivateKey = string;
@@ -32,11 +41,9 @@ export interface KeyPair {
 
 export default class E2EE {
 	#service: KeyService;
-	#codec: KeyCodec;
 
 	constructor(service: KeyService) {
 		this.#service = service;
-		this.#codec = new KeyCodec();
 	}
 
 	async loadKeys({ public_key, private_key }: RemoteKeyPair): AsyncResult<CryptoKey, Error> {
@@ -54,7 +61,7 @@ export default class E2EE {
 
 	async createAndLoadKeys(): AsyncResult<KeyPair, Error> {
 		try {
-			const keys = await this.#codec.crypto.generateRsaOaepKeyPair();
+			const keys = await generateRsaOaepKeyPair();
 			try {
 				const publicKey = await this.setPublicKey(keys.publicKey);
 				try {
@@ -109,11 +116,13 @@ export default class E2EE {
 			return masterKey;
 		}
 		const IV_LENGTH = 16;
-		const vector = this.#codec.getRandomUint8Array(IV_LENGTH);
+		const vector = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
 		try {
-			const encodedPrivateKey = await this.#codec.crypto.encryptAesCbc(masterKey.value, vector, toArrayBuffer(privateKey));
-
-			return ok(this.#codec.stringifyUint8Array(joinVectorAndEncryptedData(vector, encodedPrivateKey)));
+			const privateKeyBuffer = toArrayBuffer(privateKey);
+			const encryptedPrivateKey = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, masterKey.value, privateKeyBuffer);
+			const joined = joinVectorAndEncryptedData(vector, encryptedPrivateKey);
+			const stringified = stringifyUint8Array(joined);
+			return ok(stringified);
 		} catch (error) {
 			return err(new Error('Error encrypting encodedPrivateKey', { cause: error }));
 		}
@@ -125,10 +134,10 @@ export default class E2EE {
 			return masterKey;
 		}
 
-		const [vector, cipherText] = splitVectorAndEncryptedData(this.#codec.parseUint8Array(privateKey));
+		const [vector, cipherText] = splitVectorAndEncryptedData(parseUint8Array(privateKey));
 
 		try {
-			const privKey = await this.#codec.crypto.decryptAesCbc(masterKey.value, vector, cipherText);
+			const privKey = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, masterKey.value, cipherText);
 			return ok(toString(privKey));
 		} catch (error) {
 			return err(new Error('Error decrypting private key', { cause: error }));
@@ -142,14 +151,14 @@ export default class E2EE {
 	 * @param key The public key to store.
 	 */
 	async setPublicKey(key: CryptoKey): Promise<JsonWebKey> {
-		const exported = await this.#codec.crypto.exportJsonWebKey(key);
+		const exported = await crypto.subtle.exportKey('jwk', key);
 		const stringified = JSON.stringify(exported);
 		localStorage.setItem('public_key', stringified);
 		return exported;
 	}
 
 	async setPrivateKey(key: CryptoKey): Promise<void> {
-		const exported = await this.#codec.crypto.exportJsonWebKey(key);
+		const exported = await crypto.subtle.exportKey('jwk', key);
 		const stringified = JSON.stringify(exported);
 		localStorage.setItem('private_key', stringified);
 	}
@@ -162,7 +171,7 @@ export default class E2EE {
 		// First, create a PBKDF2 "key" containing the password
 		const baseKey = await (async () => {
 			try {
-				return ok(await this.#codec.createBaseKey(password));
+				return ok(await importPbkdf2Key(password));
 			} catch (error) {
 				return err(new Error(`Error creating a key based on user password: ${error}`));
 			}
@@ -180,7 +189,7 @@ export default class E2EE {
 
 		// Derive a key from the password
 		try {
-			return ok(await this.#codec.deriveKey(userId, baseKey.value));
+			return ok(await deriveKeyWithPbkdf2(userId, baseKey.value));
 		} catch (error) {
 			return err(new Error(`Error deriving baseKey: ${error}`));
 		}
@@ -222,8 +231,8 @@ export default class E2EE {
 		return localStorage.removeItem('e2e.random_password');
 	}
 	async createRandomPassword(length: number): Promise<string> {
-		const randomPassword = await this.#codec.generateMnemonicPhrase(length);
-		await this.storeRandomPassword(randomPassword);
+		const randomPassword = await generateMnemonicPhrase(length);
+		this.storeRandomPassword(randomPassword);
 		return randomPassword;
 	}
 }

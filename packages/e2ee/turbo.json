@@ -1,0 +1,10 @@
+{
+	"$schema": "https://turborepo.org/schema.json",
+	"extends": ["//"],
+	"tasks": {
+		"testunit": {
+			"dependsOn": [],
+			"outputs": ["coverage/**"]
+		}
+	}
+}
