@@ -18,7 +18,7 @@ const generateMnemonicPhrase = async (length: number): Promise<string> => {
 export interface KeyService {
 	userId: () => Promise<string | null>;
 	fetchMyKeys: () => Promise<RemoteKeyPair>;
-	persistKeys: (keys: RemoteKeyPair, force: boolean) => Promise<void>;
+	persistKeys: (keys: RemoteKeyPair, force: boolean) => Promise<unknown>;
 }
 
 export type PrivateKey = string;
@@ -83,13 +83,13 @@ export default class E2EE {
 
 	async loadKeysFromDB(): AsyncResult<RemoteKeyPair, Error> {
 		try {
-			return ok(await this.getKeysFromService());
+			return ok(await this.#service.fetchMyKeys());
 		} catch (error) {
 			return err(new Error('Error loading keys from service', { cause: error }));
 		}
 	}
 
-	async persistKeys(localKeyPair: LocalKeyPair, password: string, force: boolean): AsyncResult<void | null, Error> {
+	async persistKeys(localKeyPair: LocalKeyPair, password: string, force: boolean): AsyncResult<unknown, Error> {
 		if (typeof localKeyPair.public_key !== 'string' || typeof localKeyPair.private_key !== 'string') {
 			return err(new TypeError('Failed to persist keys as they are not strings.'));
 		}
@@ -207,16 +207,6 @@ export default class E2EE {
 	removeKeysFromLocalStorage(): void {
 		localStorage.removeItem('public_key');
 		localStorage.removeItem('private_key');
-	}
-
-	async getKeysFromService(): Promise<RemoteKeyPair> {
-		const keys = await this.#service.fetchMyKeys();
-
-		if (!keys) {
-			throw new Error('Failed to retrieve keys from service');
-		}
-
-		return keys;
 	}
 
 	storeRandomPassword(randomPassword: string): void {

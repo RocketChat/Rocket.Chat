@@ -3,12 +3,14 @@ export default defineConfig({
 	test: {
 		browser: {
 			fileParallelism: false,
-			screenshotFailures: false,
 			enabled: true,
 			provider: 'playwright',
-			headless: true,
 			// https://vitest.dev/guide/browser/playwright
-			instances: [{ browser: 'chromium' }, { browser: 'firefox' }, { browser: 'webkit' }],
+			instances: [
+				{ browser: 'chromium', headless: true },
+				{ browser: 'firefox', headless: true },
+				{ browser: 'webkit', headless: true },
+			],
 		},
 	},
 });
