@@ -31,6 +31,9 @@ test('load user keys', async () => {
 	expect(recoveredKeys).toHaveProperty('public_key');
 	expect(recoveredKeys).toHaveProperty('private_key');
 
+	// Wrong password
+	expect(await bob.decodePrivateKey(recoveredKeys.private_key, 'wrong password')).toHaveProperty('error');
+
 	// Load keys
 	const decodedKey = unwrap(await bob.decodePrivateKey(recoveredKeys.private_key, password));
 	const privateKey = unwrap(

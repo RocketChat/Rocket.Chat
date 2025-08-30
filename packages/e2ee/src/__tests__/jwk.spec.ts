@@ -1,6 +1,13 @@
 import * as Jwk from '../jwk.ts';
 import { expect, test } from 'vitest';
 
+test('invalid JWK', async () => {
+	const jwk = {
+		kty: 'oct',
+	};
+	expect(Jwk.is(jwk)).toBe(false);
+});
+
 test('AES-CBC', async () => {
 	const key = await crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
 	const jwk = await crypto.subtle.exportKey('jwk', key);

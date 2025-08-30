@@ -20,11 +20,12 @@
     "postbuild": "node --experimental-strip-types ./scripts/postbuild.ts",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "oxlint --type-aware",
-    "testunit": "vitest run",
+    "testunit": "vitest run --coverage",
     "test": "vitest"
   },
   "devDependencies": {
     "@vitest/browser": "4.0.0-beta.9",
+    "@vitest/coverage-v8": "4.0.0-beta.9",
     "oxlint": "~1.14.0",
     "oxlint-tsgolint": "~0.1.5",
     "playwright": "^1.55.0",

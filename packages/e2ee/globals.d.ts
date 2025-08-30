@@ -12,7 +12,7 @@ interface Uint8ArrayConstructor {
 	 * @throws {SyntaxError} If the input string contains characters outside the specified alphabet, or if the last
 	 * chunk is inconsistent with the `lastChunkHandling` option.
 	 */
-	fromBase64(
+	fromBase64?(
 		string: string,
 		options?: {
 			alphabet?: 'base64' | 'base64url';
@@ -33,7 +33,7 @@ interface Uint8Array<TArrayBuffer extends ArrayBufferLike> {
 	 * @param options If provided, sets the alphabet and padding behavior used.
 	 * @returns A base64-encoded string.
 	 */
-	toBase64(options?: { alphabet?: 'base64' | 'base64url'; omitPadding?: boolean }): string;
+	toBase64?(options?: { alphabet?: 'base64' | 'base64url'; omitPadding?: boolean }): string;
 
 	/**
 	 * Sets the `Uint8Array` from a base64-encoded string.
@@ -43,7 +43,7 @@ interface Uint8Array<TArrayBuffer extends ArrayBufferLike> {
 	 * @throws {SyntaxError} If the input string contains characters outside the specified alphabet, or if the last
 	 * chunk is inconsistent with the `lastChunkHandling` option.
 	 */
-	setFromBase64(
+	setFromBase64?(
 		string: string,
 		options?: {
 			alphabet?: 'base64' | 'base64url';
