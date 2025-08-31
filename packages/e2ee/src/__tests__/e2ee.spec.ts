@@ -8,7 +8,7 @@ export const unwrap = <V, E>(result: Result<V, E>): V => {
 	if (result.isOk) {
 		return result.value;
 	}
-	throw new Error('Unwrapped a failed result');
+	throw result;
 };
 
 const bob = new E2EE({

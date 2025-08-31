@@ -1,7 +1,3 @@
-export interface BaseKey {
-	key: CryptoKey;
-}
-
 /**
  * Derives a non-extractable 256-bit AES-CBC key using PBKDF2.
  *
@@ -14,7 +10,7 @@ export interface BaseKey {
  * @remarks Requires a Web Crypto SubtleCrypto implementation (e.g., in modern browsers).
  * @see https://developer.mozilla.org/docs/Web/API/SubtleCrypto/deriveKey
  */
-export const derivePbkdf2Key = async (salt: string, baseKey: BaseKey): Promise<CryptoKey> => {
+export const derivePbkdf2Key = async (salt: string, baseKey: CryptoKey): Promise<CryptoKey> => {
 	const derivedKey = await crypto.subtle.deriveKey(
 		{
 			name: 'PBKDF2',
@@ -22,7 +18,7 @@ export const derivePbkdf2Key = async (salt: string, baseKey: BaseKey): Promise<C
 			iterations: 100_000,
 			hash: 'SHA-256',
 		},
-		baseKey.key,
+		baseKey,
 		{
 			name: 'AES-CBC',
 			length: 256,
@@ -44,7 +40,7 @@ export const derivePbkdf2Key = async (salt: string, baseKey: BaseKey): Promise<C
  * @remarks Pair this with {@link derivePbkdf2Key} to derive an encryption key.
  * @see https://w3c.github.io/webcrypto/#pbkdf2-operations-import-key
  */
-export const importPbkdf2Key = async (passphrase: string): Promise<BaseKey> => {
+export const importPbkdf2Key = async (passphrase: string): Promise<CryptoKey> => {
 	const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(passphrase), { name: 'PBKDF2' }, false, ['deriveKey']);
-	return { key };
+	return key;
 };

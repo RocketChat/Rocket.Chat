@@ -48,6 +48,10 @@ export async function encryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: Crypto
 	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
+export async function decryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
+	return crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, key, data);
+}
+
 export async function encryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
 }
@@ -64,14 +68,6 @@ export async function decryptRSA(key: CryptoKey, data: Uint8Array<ArrayBuffer>) 
 	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
-export async function decryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
-	return crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, key, data);
-}
-
-/**
- * Generates a new AES-CBC key.
- * @deprecated Use {@link generateAesGcmKey} instead.
- */
 export async function generateAesCbcKey() {
 	return crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
 }
