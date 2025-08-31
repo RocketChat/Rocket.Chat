@@ -69,7 +69,7 @@ export default class E2EE {
 
 	async createAndLoadKeys(): AsyncResult<KeyPair, Error> {
 		try {
-			const keys = await generateRsaOaepKeyPair();
+			const { rsa: keys } = await generateRsaOaepKeyPair();
 			try {
 				const publicKey = await this.setPublicKey(keys.publicKey);
 				try {

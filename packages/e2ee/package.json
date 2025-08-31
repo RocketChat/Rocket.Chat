@@ -20,8 +20,8 @@
     "postbuild": "node --experimental-strip-types ./scripts/postbuild.ts",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "oxlint --type-aware",
-    "testunit": "vitest run --coverage",
-    "test": "vitest"
+    "testunit": "vitest run --browser=chromium --coverage",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@vitest/browser": "4.0.0-beta.9",
