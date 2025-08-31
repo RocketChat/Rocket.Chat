@@ -1,4 +1,5 @@
-export type BaseKey = CryptoKey & { __pbkdf2?: true };
+declare const brand: unique symbol;
+export type BaseKey = CryptoKey & { [brand]: 'pbkdf2' };
 
 /**
  * Derives a non-extractable 256-bit AES-CBC key using PBKDF2.
@@ -37,7 +38,7 @@ export const derivePbkdf2Key = (salt: string, baseKey: BaseKey): Promise<CryptoK
  * @param passphrase - Human-readable secret to be used as PBKDF2 input.
  * @returns A promise that resolves to a PBKDF2 CryptoKey with usage ['deriveKey'].
  * @remarks Pair this with {@link derivePbkdf2Key} to derive an encryption key.
- * @see https://developer.mozilla.org/docs/Web/API/SubtleCrypto/importKey
+ * @see https://w3c.github.io/webcrypto/#pbkdf2-operations-import-key
  */
 export const importPbkdf2Key = (passphrase: string): Promise<BaseKey> =>
 	crypto.subtle.importKey('raw', new TextEncoder().encode(passphrase), { name: 'PBKDF2' }, false, ['deriveKey']) as Promise<BaseKey>;

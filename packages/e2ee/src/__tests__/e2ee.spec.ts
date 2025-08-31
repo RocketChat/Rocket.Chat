@@ -58,12 +58,3 @@ test('load user keys', async () => {
 	bob.removeKeysFromLocalStorage();
 	expect(bob.getKeysFromLocalStorage()).toMatchObject({ private_key: null, public_key: null });
 });
-
-// test('E2EE createRandomPassword deterministic generation with 5 words', async () => {
-// 	// Inject custom word list by temporarily defining dynamic import.
-// 	// Instead, we monkey patch global import for wordList path using dynamic import map isn't trivial here.
-// 	// So we skip testing exact phrase (depends on wordList) and just assert shape.
-// 	const pwd = await bob.createRandomPassword(5);
-// 	expect(pwd.split(' ').length).toBe(5);
-// 	expect(bob.getRandomPassword()).toBe(pwd);
-// });

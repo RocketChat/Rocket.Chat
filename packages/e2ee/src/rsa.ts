@@ -3,3 +3,6 @@ export const generateRsaOaepKeyPair = (): Promise<CryptoKeyPair> =>
 		'encrypt',
 		'decrypt',
 	]);
+
+export const importRsaOaepKey = (jwk: JsonWebKey & { kty: 'RSA'; alg: 'RSA-OAEP-256' }): Promise<CryptoKey> =>
+	crypto.subtle.importKey('jwk', jwk, { name: 'RSA-OAEP', hash: { name: 'SHA-256' } }, false, ['decrypt']);

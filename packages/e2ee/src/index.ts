@@ -6,8 +6,8 @@ export * as Jwk from './jwk.ts';
 import * as Jwk from './jwk.ts';
 
 import { stringifyUint8Array, parseUint8Array } from './base64.ts';
-import { importPbkdf2Key, derivePbkdf2Key, type BaseKey } from './pbkdf2.ts';
-import { generateRsaOaepKeyPair } from './rsa.ts';
+import { importPbkdf2Key, derivePbkdf2Key } from './pbkdf2.ts';
+import { generateRsaOaepKeyPair, importRsaOaepKey } from './rsa.ts';
 
 const generateMnemonicPhrase = async (length: number): Promise<string> => {
 	const { v1 } = await import('./word-list.ts');
@@ -54,9 +54,11 @@ export default class E2EE {
 	async loadKeys(keys: EncryptedKeyPair): AsyncResult<CryptoKey, Error> {
 		try {
 			const privKey = toString(keys.private_key);
-			const res = await crypto.subtle.importKey('jwk', Jwk.parse(privKey), { name: 'RSA-OAEP', hash: { name: 'SHA-256' } }, false, [
-				'decrypt',
-			]);
+			const privKeyJwk = Jwk.parse(privKey);
+			if (!Jwk.isRsaOaep(privKeyJwk)) {
+				return err(new TypeError('Private key is not a valid RSA-OAEP JWK'));
+			}
+			const res = await importRsaOaepKey(privKeyJwk);
 			localStorage.setItem('public_key', keys.public_key);
 			localStorage.setItem('private_key', privKey);
 			return ok(res);
@@ -170,7 +172,7 @@ export default class E2EE {
 		localStorage.setItem('private_key', stringified);
 	}
 
-	async getMasterKey(password: string): AsyncResult<BaseKey, Error> {
+	async getMasterKey(password: string): AsyncResult<CryptoKey, Error> {
 		// First, create a PBKDF2 "key" containing the password
 		const baseKey = await (async () => {
 			try {
@@ -194,7 +196,7 @@ export default class E2EE {
 		try {
 			return ok(await derivePbkdf2Key(userId, baseKey.value));
 		} catch (error) {
-			return err(new Error(`Error deriving baseKey: ${error}`));
+			return err(new Error('Error deriving baseKey', { cause: error }));
 		}
 	}
 
