@@ -20,7 +20,7 @@ export const derivePbkdf2Key = async (salt: string, baseKey: CryptoKey): Promise
 		},
 		baseKey,
 		{
-			name: 'AES-CBC',
+			name: 'AES-GCM',
 			length: 256,
 		},
 		false,

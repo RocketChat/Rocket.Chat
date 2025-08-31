@@ -1,14 +1,10 @@
-export interface RsaKeyPair {
-	rsa: CryptoKeyPair;
-}
-
-export const generateRsaOaepKeyPair = async (): Promise<RsaKeyPair> => {
+export const generateRsaOaepKeyPair = async (): Promise<CryptoKeyPair> => {
 	const keyPair = await crypto.subtle.generateKey(
 		{ name: 'RSA-OAEP', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' },
 		true,
-		['encrypt', 'decrypt'],
+		['encrypt', 'decrypt', 'wrapKey', 'unwrapKey'],
 	);
-	return { rsa: keyPair };
+	return keyPair;
 };
 
 export const importRsaOaepKey = async (jwk: JsonWebKey): Promise<CryptoKey> => {

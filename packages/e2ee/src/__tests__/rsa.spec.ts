@@ -5,8 +5,7 @@ const encode = (s: string) => new TextEncoder().encode(s);
 const decode = (b: ArrayBuffer | Uint8Array) => new TextDecoder().decode(b instanceof Uint8Array ? b : new Uint8Array(b));
 
 test('generate, encrypt with public key, and decrypt with private key', async () => {
-	const { rsa } = await generateRsaOaepKeyPair();
-	const { publicKey, privateKey } = rsa;
+	const { publicKey, privateKey } = await generateRsaOaepKeyPair();
 
 	const plaintext = 'Hello RSA-OAEP';
 	const data = encode(plaintext);
@@ -21,8 +20,7 @@ test('generate, encrypt with public key, and decrypt with private key', async ()
 }, 20000);
 
 test('export private key to JWK, import back, imported key is non-extractable and usable', async () => {
-	const { rsa } = await generateRsaOaepKeyPair();
-	const { publicKey, privateKey } = rsa;
+	const { publicKey, privateKey } = await generateRsaOaepKeyPair();
 
 	const jwk = await exportRsaOaepKey(privateKey);
 	expect(jwk.kty).toBe('RSA');
@@ -41,8 +39,7 @@ test('export private key to JWK, import back, imported key is non-extractable an
 }, 20000);
 
 test('importRsaOaepKey rejects when given a public JWK for decrypt usage', async () => {
-	const { rsa } = await generateRsaOaepKeyPair();
-	const { publicKey } = rsa;
+	const { publicKey } = await generateRsaOaepKeyPair();
 
 	const publicJwk = await exportRsaOaepKey(publicKey);
 	expect(publicJwk.kty).toBe('RSA');
@@ -52,8 +49,7 @@ test('importRsaOaepKey rejects when given a public JWK for decrypt usage', async
 }, 10000);
 
 test('encrypt with private key rejects; decrypt with public key rejects', async () => {
-	const { rsa } = await generateRsaOaepKeyPair();
-	const { publicKey, privateKey } = rsa;
+	const { publicKey, privateKey } = await generateRsaOaepKeyPair();
 
 	const data = encode('invalid ops');
 
@@ -64,8 +60,7 @@ test('encrypt with private key rejects; decrypt with public key rejects', async 
 }, 15000);
 
 test('tampering with ciphertext causes decryption to fail', async () => {
-	const { rsa } = await generateRsaOaepKeyPair();
-	const { publicKey, privateKey } = rsa;
+	const { publicKey, privateKey } = await generateRsaOaepKeyPair();
 
 	const data = encode('Do not tamper');
 
