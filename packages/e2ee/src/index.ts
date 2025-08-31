@@ -8,6 +8,7 @@ import * as Jwk from './jwk.ts';
 import { stringifyUint8Array, parseUint8Array } from './base64.ts';
 import { importPbkdf2Key, derivePbkdf2Key } from './pbkdf2.ts';
 import { generateRsaOaepKeyPair, importRsaOaepKey } from './rsa.ts';
+import { decryptAesCbc, encryptAesCbc } from './aes.ts';
 
 const generateMnemonicPhrase = async (length: number): Promise<string> => {
 	const { v1 } = await import('./word-list.ts');
@@ -119,7 +120,7 @@ export default class E2EE {
 		const vector = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
 		try {
 			const privateKeyBuffer = toArrayBuffer(privateKey);
-			const encryptedPrivateKey = await crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, masterKey.value, privateKeyBuffer);
+			const encryptedPrivateKey = await encryptAesCbc(vector, masterKey.value, privateKeyBuffer);
 			const joined = joinVectorAndEncryptedData(vector, encryptedPrivateKey);
 			const stringified = stringifyUint8Array(joined);
 			return ok(stringified);
@@ -137,7 +138,7 @@ export default class E2EE {
 		const [vector, cipherText] = splitVectorAndEncryptedData(parseUint8Array(privateKey));
 
 		try {
-			const privKey = await crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, masterKey.value, cipherText);
+			const privKey = await decryptAesCbc(vector, masterKey.value, cipherText);
 			return ok(privKey);
 		} catch (error) {
 			return err(new Error('Error decrypting private key', { cause: error }));

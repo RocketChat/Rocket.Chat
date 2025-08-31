@@ -1,8 +1,3 @@
-export const generateAesCbcKey = async (): Promise<CryptoKey> => {
-	const key = await crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
-	return key;
-};
-
 export const encryptAesCbc = async (
 	vector: Uint8Array<ArrayBuffer>,
 	key: CryptoKey,
