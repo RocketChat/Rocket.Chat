@@ -6,8 +6,8 @@ export * as Jwk from './jwk.ts';
 import * as Jwk from './jwk.ts';
 
 import { stringifyUint8Array, parseUint8Array } from './base64.ts';
-import { importPbkdf2Key, derivePbkdf2Key } from './derive.ts';
-import { generateRsaOaepKeyPair } from './crypto.ts';
+import { importPbkdf2Key, derivePbkdf2Key } from './pbkdf2.ts';
+import { generateRsaOaepKeyPair } from './rsa.ts';
 
 const generateMnemonicPhrase = async (length: number): Promise<string> => {
 	const { v1 } = await import('./word-list.ts');
