@@ -178,7 +178,7 @@ export default class E2EE {
 			try {
 				return ok(await importPbkdf2Key(password));
 			} catch (error) {
-				return err(new Error(`Error creating a key based on user password: ${error}`));
+				return err(new Error('Error creating a key based on user password', { cause: error }));
 			}
 		})();
 
@@ -215,7 +215,7 @@ export default class E2EE {
 	}
 
 	storeRandomPassword(randomPassword: string): void {
-		return localStorage.setItem('e2e.random_password', randomPassword);
+		localStorage.setItem('e2e.random_password', randomPassword);
 	}
 
 	getRandomPassword(): string | null {
@@ -223,7 +223,7 @@ export default class E2EE {
 	}
 
 	removeRandomPassword(): void {
-		return localStorage.removeItem('e2e.random_password');
+		localStorage.removeItem('e2e.random_password');
 	}
 	async createRandomPassword(length: number): Promise<string> {
 		const randomPassword = await generateMnemonicPhrase(length);

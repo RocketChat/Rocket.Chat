@@ -19,6 +19,7 @@
 		"eslint/no-plusplus": "allow",
 		"eslint/no-magic-numbers": "allow",
 		"eslint/no-ternary": "allow",
-		"unicorn/prefer-code-point": "allow"
+		"unicorn/prefer-code-point": "allow",
+		"eslint/max-lines": "allow"
 	}
 }

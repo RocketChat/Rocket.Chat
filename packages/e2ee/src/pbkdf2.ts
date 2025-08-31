@@ -1,5 +1,6 @@
-declare const brand: unique symbol;
-export type BaseKey = CryptoKey & { [brand]: 'pbkdf2' };
+export interface BaseKey {
+	key: CryptoKey;
+}
 
 /**
  * Derives a non-extractable 256-bit AES-CBC key using PBKDF2.
@@ -13,15 +14,15 @@ export type BaseKey = CryptoKey & { [brand]: 'pbkdf2' };
  * @remarks Requires a Web Crypto SubtleCrypto implementation (e.g., in modern browsers).
  * @see https://developer.mozilla.org/docs/Web/API/SubtleCrypto/deriveKey
  */
-export const derivePbkdf2Key = (salt: string, baseKey: BaseKey): Promise<CryptoKey> =>
-	crypto.subtle.deriveKey(
+export const derivePbkdf2Key = async (salt: string, baseKey: BaseKey): Promise<CryptoKey> => {
+	const derivedKey = await crypto.subtle.deriveKey(
 		{
 			name: 'PBKDF2',
 			salt: new TextEncoder().encode(salt),
 			iterations: 100_000,
 			hash: 'SHA-256',
 		},
-		baseKey,
+		baseKey.key,
 		{
 			name: 'AES-CBC',
 			length: 256,
@@ -29,6 +30,9 @@ export const derivePbkdf2Key = (salt: string, baseKey: BaseKey): Promise<CryptoK
 		false,
 		['encrypt', 'decrypt'],
 	);
+
+	return derivedKey;
+};
 
 /**
  * Imports a passphrase as a non-extractable PBKDF2 base {@link CryptoKey}.
@@ -40,5 +44,7 @@ export const derivePbkdf2Key = (salt: string, baseKey: BaseKey): Promise<CryptoK
  * @remarks Pair this with {@link derivePbkdf2Key} to derive an encryption key.
  * @see https://w3c.github.io/webcrypto/#pbkdf2-operations-import-key
  */
-export const importPbkdf2Key = (passphrase: string): Promise<BaseKey> =>
-	crypto.subtle.importKey('raw', new TextEncoder().encode(passphrase), { name: 'PBKDF2' }, false, ['deriveKey']) as Promise<BaseKey>;
+export const importPbkdf2Key = async (passphrase: string): Promise<BaseKey> => {
+	const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(passphrase), { name: 'PBKDF2' }, false, ['deriveKey']);
+	return { key };
+};

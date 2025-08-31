@@ -13,6 +13,7 @@ interface Uint8ArrayConstructor {
 	 * chunk is inconsistent with the `lastChunkHandling` option.
 	 */
 	fromBase64?(
+		this: void,
 		string: string,
 		options?: {
 			alphabet?: 'base64' | 'base64url';
@@ -33,7 +34,7 @@ interface Uint8Array<TArrayBuffer extends ArrayBufferLike> {
 	 * @param options If provided, sets the alphabet and padding behavior used.
 	 * @returns A base64-encoded string.
 	 */
-	toBase64?(options?: { alphabet?: 'base64' | 'base64url'; omitPadding?: boolean }): string;
+	toBase64?(this: void, options?: { alphabet?: 'base64' | 'base64url'; omitPadding?: boolean }): string;
 
 	/**
 	 * Sets the `Uint8Array` from a base64-encoded string.

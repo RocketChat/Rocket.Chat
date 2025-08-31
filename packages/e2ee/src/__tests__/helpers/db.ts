@@ -16,11 +16,11 @@ class Db<Data> {
 	}
 
 	async set(userId: string, data: Data, force: boolean): Promise<void> {
-		return await new Promise((resolve, reject) => {
+		await new Promise<void>((resolve, reject) => {
 			setTimeout(() => {
 				if (this.data.has(userId)) {
 					if (!force) {
-						return reject(new Error('User already exists'));
+						reject(new Error('User already exists'));
 					} else {
 						this.data.set(userId, data);
 						resolve();

@@ -1,4 +1,3 @@
-// oxlint-disable no-undef
 use('meteor');
 db.getCollection('rocketchat_message').find({
 	// 'content.algorithm': { $exists: true },
