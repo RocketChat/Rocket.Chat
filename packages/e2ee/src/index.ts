@@ -6,7 +6,7 @@ export * as Jwk from './jwk.ts';
 import * as Jwk from './jwk.ts';
 
 import { stringifyUint8Array, parseUint8Array } from './base64.ts';
-import { importPbkdf2Key, derivePbkdf2Key } from './pbkdf2.ts';
+import { importPbkdf2Key, derivePbkdf2Key, type BaseKey } from './pbkdf2.ts';
 import { generateRsaOaepKeyPair } from './rsa.ts';
 
 const generateMnemonicPhrase = async (length: number): Promise<string> => {
@@ -170,7 +170,7 @@ export default class E2EE {
 		localStorage.setItem('private_key', stringified);
 	}
 
-	async getMasterKey(password: string): AsyncResult<CryptoKey, Error> {
+	async getMasterKey(password: string): AsyncResult<BaseKey, Error> {
 		// First, create a PBKDF2 "key" containing the password
 		const baseKey = await (async () => {
 			try {

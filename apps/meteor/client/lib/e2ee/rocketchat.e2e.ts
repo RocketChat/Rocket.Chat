@@ -3,7 +3,7 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import type { LocalKeyPair, RemoteKeyPair } from '@rocket.chat/e2ee';
+import type { EncryptedKeyPair, LocalKeyPair, RemoteKeyPair } from '@rocket.chat/e2ee';
 import E2EE from '@rocket.chat/e2ee';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
@@ -195,8 +195,8 @@ class E2E extends Emitter<{
 		});
 	}
 
-	async shouldAskForE2EEPassword() {
-		const { private_key } = await this.e2ee.getKeysFromLocalStorage();
+	shouldAskForE2EEPassword() {
+		const { private_key } = this.e2ee.getKeysFromLocalStorage();
 		return this.db_private_key && !private_key;
 	}
 
@@ -341,20 +341,22 @@ class E2E extends Emitter<{
 
 		this.started = true;
 
-		let { public_key, private_key } = await this.e2ee.getKeysFromLocalStorage();
+		const localKeys = this.e2ee.getKeysFromLocalStorage();
 
 		const dbKeys = await this.loadKeysFromDB();
 		this.db_private_key = dbKeys.private_key;
 		this.db_public_key = dbKeys.public_key;
 
-		if (!public_key && this.db_public_key) {
-			public_key = this.db_public_key;
+		if (!localKeys.public_key && this.db_public_key) {
+			localKeys.public_key = this.db_public_key;
 		}
 
-		if (await this.shouldAskForE2EEPassword()) {
+		let privateKey;
+
+		if (this.shouldAskForE2EEPassword()) {
 			try {
 				this.setState('ENTER_PASSWORD');
-				private_key = await this.decodePrivateKey(this.db_private_key as string);
+				privateKey = await this.decodePrivateKey(this.db_private_key);
 			} catch {
 				this.started = false;
 				failedToDecodeKey = true;
@@ -373,8 +375,8 @@ class E2E extends Emitter<{
 			}
 		}
 
-		if (public_key && private_key) {
-			await this.loadKeys({ public_key, private_key });
+		if (localKeys.public_key && privateKey) {
+			await this.loadKeys({ public_key: localKeys.public_key, private_key: privateKey });
 			this.setState('READY');
 		} else {
 			await this.createAndLoadKeys();
@@ -383,10 +385,10 @@ class E2E extends Emitter<{
 
 		if (!this.db_public_key || !this.db_private_key) {
 			this.setState('LOADING_KEYS');
-			await this.persistKeys(await this.e2ee.getKeysFromLocalStorage(), await this.e2ee.createRandomPassword(5));
+			await this.persistKeys(this.e2ee.getKeysFromLocalStorage(), await this.e2ee.createRandomPassword(5));
 		}
 
-		const randomPassword = await this.e2ee.getRandomPassword();
+		const randomPassword = this.e2ee.getRandomPassword();
 		if (randomPassword) {
 			this.setState('SAVE_PASSWORD');
 			this.openAlert({
@@ -404,7 +406,7 @@ class E2E extends Emitter<{
 		logger.log('-> Stop Client');
 		this.closeAlert();
 
-		await this.e2ee.removeKeysFromLocalStorage();
+		this.e2ee.removeKeysFromLocalStorage();
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.publicKey = undefined;
@@ -436,7 +438,7 @@ class E2E extends Emitter<{
 		return result.value;
 	}
 
-	async loadKeys(keys: RemoteKeyPair): Promise<void> {
+	async loadKeys(keys: EncryptedKeyPair): Promise<void> {
 		this.publicKey = JSON.parse(keys.public_key);
 		const res = await this.e2ee.loadKeys(keys);
 		if (!res.isOk) {
@@ -552,7 +554,7 @@ class E2E extends Emitter<{
 		this.setState('READY');
 	}
 
-	async decodePrivateKey(privateKey: string): Promise<string> {
+	async decodePrivateKey(privateKey: string): Promise<ArrayBuffer> {
 		const password = await this.requestPasswordAlert();
 		const res = await this.e2ee.decodePrivateKey(privateKey, password);
 		if (res.isOk) {
