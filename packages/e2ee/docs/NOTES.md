@@ -8,6 +8,7 @@
 - [feat!: Allow E2EE rooms to reset its room key](https://github.com/RocketChat/Rocket.Chat/pull/33328)
 - [refactor!: Room's Key ID generation](https://github.com/RocketChat/Rocket.Chat/pull/33329)
 - [feat: E2EE rom key reset modal](https://github.com/RocketChat/Rocket.Chat/pull/33503)
+- [chore: Update types of `e2e.room` file](https://github.com/RocketChat/Rocket.Chat/pull/34944)
 
 ## Tasks
 
