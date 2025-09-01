@@ -1,8 +1,8 @@
 import { defaultFeaturesPreview, FeaturePreviewBadge } from '@rocket.chat/ui-client';
 
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/client';
-import { settings } from '../../../app/settings/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
+import { settings } from '../../lib/settings';
 
 export const {
 	registerSidebarItem: registerAccountSidebarItem,

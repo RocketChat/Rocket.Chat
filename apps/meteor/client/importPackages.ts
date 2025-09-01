@@ -23,6 +23,6 @@ import '../app/slashcommands-unarchiveroom/client';
 import '../app/webrtc/client';
 import '../app/wordpress/client';
 import '../app/utils/client';
-import '../app/settings/client';
+import './lib/settings';
 import '../app/ui-utils/client';
 import '../app/reactions/client';

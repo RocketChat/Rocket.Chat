@@ -1,5 +1,5 @@
 import { fireGlobalEventBase } from './fireGlobalEventBase';
-import { settings } from '../../../app/settings/client';
+import { settings } from '../settings';
 
 export const fireGlobalEvent = (eventName: string, detail?: unknown): void => {
 	const dispatchIframeMessage = fireGlobalEventBase(eventName, detail);

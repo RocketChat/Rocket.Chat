@@ -2,7 +2,7 @@ import type { SettingValue } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { sdk } from '../../utils/client/lib/SDKClient';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 
 type SettingComposedValue<T extends SettingValue = SettingValue> = { key: string; value: T };
 type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;

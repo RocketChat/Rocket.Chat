@@ -11,13 +11,13 @@ import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { settings } from '../../../../client/lib/settings';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
 import { hasPermission } from '../../../authorization/client';
-import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 let userLanguage = 'en';

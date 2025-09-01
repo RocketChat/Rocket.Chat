@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { hasPermission } from '../../../app/authorization/client';
-import { settings } from '../../../app/settings/client';
 import { callbacks } from '../../../lib/callbacks';
+import { settings } from '../../lib/settings';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../app/settings/client';
+import { settings } from './settings';
 
 const openCenteredPopup = (url: string, width: number, height: number) => {
 	const screenX = window.screenX ?? window.screenLeft;

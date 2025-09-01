@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
+import { settings } from '../../../../client/lib/settings';
 import { Users } from '../../../../client/stores';
-import { settings } from '../../../settings/client';
 
 /**
  * Get a user preference

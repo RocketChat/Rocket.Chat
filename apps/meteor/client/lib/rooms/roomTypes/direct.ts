@@ -2,7 +2,6 @@ import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
-import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/client/getAvatarURL';
 import { getUserAvatarURL } from '../../../../app/utils/client/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
@@ -10,6 +9,7 @@ import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { Users, Rooms, Subscriptions } from '../../../stores';
 import * as Federation from '../../federation/Federation';
+import { settings } from '../../settings';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);

@@ -3,13 +3,13 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../app/settings/client';
 import { AccountBox } from '../../app/ui-utils/client/lib/AccountBox';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../lib/callbacks/afterLogoutCleanUpCallback';
 import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
 import { baseURI } from '../lib/baseURI';
 import { loginServices } from '../lib/loginServices';
+import { settings } from '../lib/settings';
 import { router } from '../providers/RouterProvider';
 
 const commands = {

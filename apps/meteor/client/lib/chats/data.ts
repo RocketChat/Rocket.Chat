@@ -12,9 +12,9 @@ import moment from 'moment';
 
 import type { DataAPI } from './ChatAPI';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
-import { settings } from '../../../app/settings/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { settings } from '../settings';
 import { prependReplies } from '../utils/prependReplies';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {

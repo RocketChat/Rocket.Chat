@@ -1,6 +1,6 @@
 import { OAuth } from 'meteor/oauth';
 
-import { settings } from '../../settings/client';
+import { settings } from '../../../client/lib/settings';
 
 OAuth.launchLogin = ((func) =>
 	function (options) {

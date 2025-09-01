@@ -27,7 +27,6 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
-import { settings } from '../../../app/settings/client';
 import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -40,6 +39,7 @@ import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
+import { settings } from '../settings';
 import { dispatchToastMessage } from '../toast';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 

@@ -6,9 +6,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChromeScreenShare } from './screenShare';
+import { settings } from '../../../client/lib/settings';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Subscriptions, Users } from '../../../client/stores';
-import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import { WEB_RTC_EVENTS } from '../lib/constants';

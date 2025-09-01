@@ -3,9 +3,9 @@ import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent, Se
 import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechatInquiryStore';
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { roomsQueryKeys } from '../../../../../client/lib/queryKeys';
+import { settings } from '../../../../../client/lib/settings';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { mapMessageFromApi } from '../../../../../client/lib/utils/mapMessageFromApi';
-import { settings } from '../../../../settings/client';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
 
 const departments = new Set();

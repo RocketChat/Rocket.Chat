@@ -3,8 +3,8 @@ import { Emitter } from '@rocket.chat/emitter';
 import { debounce } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 
+import { settings } from '../../../../client/lib/settings';
 import { Users } from '../../../../client/stores';
-import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const TIMEOUT = 15000;

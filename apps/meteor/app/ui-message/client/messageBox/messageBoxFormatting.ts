@@ -5,7 +5,7 @@ import { flushSync } from 'react-dom';
 
 import AddLinkComposerActionModal from './AddLinkComposerActionModal';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import { settings } from '../../../settings/client';
+import { settings } from '../../../../client/lib/settings';
 
 type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
 

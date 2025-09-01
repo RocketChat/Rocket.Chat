@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { watch } from '../../../../client/lib/cachedStores';
-import { PublicSettings } from '../../../../client/stores';
-import { SettingsBase } from '../../lib/settings';
+import { watch } from '../cachedStores';
+import { SettingsBase } from './SettingsBase';
+import { PublicSettings } from '../../stores';
 
 class Settings extends SettingsBase {
 	private readonly store = PublicSettings.use;
@@ -39,6 +39,7 @@ class Settings extends SettingsBase {
 	}
 }
 
+/** @deprecated prefer consuming settings from `SettingsContext` instead */
 export const settings = new Settings();
 
 settings.init();
