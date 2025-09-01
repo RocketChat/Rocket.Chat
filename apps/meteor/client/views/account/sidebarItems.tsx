@@ -14,7 +14,7 @@ export const {
 		href: '/account/profile',
 		i18nLabel: 'Profile',
 		icon: 'user',
-		permissionGranted: (): boolean => settings.watch('Accounts_AllowUserProfileChange'),
+		permissionGranted: (): boolean => settings.watch('Accounts_AllowUserProfileChange') ?? true,
 	},
 	{
 		href: '/account/preferences',
@@ -26,15 +26,15 @@ export const {
 		i18nLabel: 'Security',
 		icon: 'lock',
 		permissionGranted: (): boolean =>
-			settings.watch('Accounts_TwoFactorAuthentication_Enabled') ||
-			settings.watch('E2E_Enable') ||
-			settings.watch('Accounts_AllowPasswordChange'),
+			(settings.watch('Accounts_TwoFactorAuthentication_Enabled') ?? true) ||
+			(settings.watch('E2E_Enable') ?? false) ||
+			(settings.watch('Accounts_AllowPasswordChange') ?? true),
 	},
 	{
 		href: '/account/integrations',
 		i18nLabel: 'Integrations',
 		icon: 'code',
-		permissionGranted: (): boolean => settings.watch('Webdav_Integration_Enabled'),
+		permissionGranted: (): boolean => settings.watch('Webdav_Integration_Enabled') ?? false,
 	},
 	{
 		href: '/account/tokens',

@@ -1035,13 +1035,13 @@ const WebRTC = new (class {
 			}
 			switch (subscription.t) {
 				case 'd':
-					enabled = settings.watch('WebRTC_Enable_Direct');
+					enabled = settings.watch('WebRTC_Enable_Direct') ?? false;
 					break;
 				case 'p':
-					enabled = settings.watch('WebRTC_Enable_Private');
+					enabled = settings.watch('WebRTC_Enable_Private') ?? false;
 					break;
 				case 'c':
-					enabled = settings.watch('WebRTC_Enable_Channel');
+					enabled = settings.watch('WebRTC_Enable_Channel') ?? false;
 					break;
 				case 'l':
 					enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
@@ -1049,7 +1049,7 @@ const WebRTC = new (class {
 		} else {
 			enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
 		}
-		enabled = enabled && settings.watch('WebRTC_Enabled');
+		enabled = enabled && (settings.watch('WebRTC_Enabled') ?? false);
 		if (enabled === false) {
 			return;
 		}
