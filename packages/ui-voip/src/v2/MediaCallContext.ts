@@ -1,4 +1,5 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { Device } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { createContext, useContext, useState } from 'react';
 
@@ -30,14 +31,15 @@ type MediaCallContextType = {
 	onMute: () => void;
 	onHold: () => void;
 
-	onDeviceChange: (device: string) => void;
+	onDeviceChange: (device: Device) => void;
 	onForward: () => void;
 	onTone: (tone: string) => void;
 
 	// onCall and onEndCall are used to start/accept and reject/end a call
 	onEndCall: () => void;
 	// TODO: Not sure if we need to pass the peerId to the callback, or if it should be a state stored somewhere else in the context.
-	onCall: (peerId?: string, kind?: 'user' | 'sip') => Promise<void>;
+	onCall: (peerId: string, kind: 'user' | 'sip') => Promise<void>;
+	onAccept: () => Promise<void>;
 
 	onToggleWidget: (peerInfo?: PeerInfo) => void;
 
@@ -64,6 +66,7 @@ const MediaCallContext = createContext<MediaCallContextType>({
 
 	onEndCall: () => undefined,
 	onCall: () => Promise.resolve(undefined),
+	onAccept: () => Promise.resolve(undefined),
 
 	onToggleWidget: () => undefined,
 

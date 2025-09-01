@@ -26,7 +26,7 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		setHeld(false);
 	};
 
-	const onDeviceChange = (device: string) => {
+	const onDeviceChange = (device: any) => {
 		console.log('device', device);
 	};
 
@@ -114,6 +114,7 @@ const MediaCallProviderMock = ({ children, state = 'closed' }: { children: React
 		onTone,
 		onEndCall,
 		onCall,
+		onAccept: onCall,
 		onToggleWidget,
 		onSelectPeer,
 		getAutocompleteOptions,

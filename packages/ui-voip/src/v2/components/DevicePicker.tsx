@@ -8,7 +8,7 @@ import { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionButton } from '.';
-import { useDevicePermissionPrompt } from '../../hooks/useDevicePermissionPrompt';
+import { useDevicePermissionPrompt2, stopTracks } from '../../hooks/useDevicePermissionPrompt';
 import { useMediaCallContext } from '../MediaCallContext';
 
 type DevicePickerButtonProps = {
@@ -25,6 +25,16 @@ const DevicePickerButton = forwardRef<HTMLButtonElement, DevicePickerButtonProps
 	return <ActionButton secondary={secondary} {...props} label='customize' icon='customize' ref={ref} />;
 });
 
+const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
+	content: (
+		<Box is='span' title={label} fontSize={14}>
+			{label}
+		</Box>
+	),
+	addon: <RadioButton onChange={() => undefined} checked={true} disabled />,
+	id: `default-${type}`,
+});
+
 // eslint-disable-next-line react/no-multi-comp
 const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 	const { t } = useTranslation();
@@ -35,30 +45,42 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 	const selectedAudioDevices = useSelectedDevices();
 
 	const availableInputDevice =
-		availableDevices?.audioInput?.map<GenericMenuItemProps>((device) => ({
-			id: device.id,
-			content: (
-				<Box is='span' title={device.label} fontSize={14}>
-					{device.label}
-				</Box>
-			),
-			addon: <RadioButton onChange={() => onDeviceChange(device.id)} checked={device.id === selectedAudioDevices?.audioInput?.id} />,
-		})) || [];
+		availableDevices?.audioInput?.map<GenericMenuItemProps>((device) => {
+			if (!device.id || !device.label) {
+				return getDefaultDeviceItem(t('Default'), 'input');
+			}
+
+			return {
+				id: `${device.id}-input`,
+				content: (
+					<Box is='span' title={device.label} fontSize={14}>
+						{device.label}
+					</Box>
+				),
+				addon: <RadioButton onChange={() => onDeviceChange(device)} checked={device.id === selectedAudioDevices?.audioInput?.id} />,
+			};
+		}) || [];
 
 	const availableOutputDevice =
-		availableDevices?.audioOutput?.map<GenericMenuItemProps>((device) => ({
-			id: device.id,
-			content: (
-				<Box is='span' title={device.label} fontSize={14}>
-					{device.label}
-				</Box>
-			),
-			addon: <RadioButton onChange={() => onDeviceChange(device.id)} checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
-			onClick(e?: MouseEvent<HTMLElement>) {
-				e?.preventDefault();
-				e?.stopPropagation();
-			},
-		})) || [];
+		availableDevices?.audioOutput?.map<GenericMenuItemProps>((device) => {
+			if (!device.id || !device.label) {
+				return getDefaultDeviceItem(t('Default'), 'output');
+			}
+
+			return {
+				id: `${device.id}-output`,
+				content: (
+					<Box is='span' title={device.label} fontSize={14}>
+						{device.label}
+					</Box>
+				),
+				addon: <RadioButton onChange={() => onDeviceChange(device)} checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
+				onClick(e?: MouseEvent<HTMLElement>) {
+					e?.preventDefault();
+					e?.stopPropagation();
+				},
+			};
+		}) || [];
 
 	const micSection = {
 		title: t('Microphone'),
@@ -74,26 +96,23 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 
 	const [isOpen, setIsOpen] = useSafely(useState(false));
 
-	const _onOpenChange = useDevicePermissionPrompt({
-		actionType: 'device-change',
-		onAccept: () => {
-			setIsOpen(true);
-		},
-		onReject: () => {
-			setIsOpen(false);
-		},
-	});
+	const requestPermission = useDevicePermissionPrompt2();
 
 	const onOpenChange = useCallback(
 		(isOpen: boolean) => {
-			if (isOpen) {
-				_onOpenChange();
+			if (!isOpen) {
+				setIsOpen(false);
 				return;
 			}
 
-			setIsOpen(isOpen);
+			void requestPermission({
+				actionType: 'device-change',
+			}).then((stream) => {
+				stopTracks(stream);
+				setIsOpen(true);
+			});
 		},
-		[_onOpenChange, setIsOpen],
+		[requestPermission, setIsOpen],
 	);
 
 	return (
