@@ -723,9 +723,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			await addUserToRoom(team.roomId, user, createdBy, { skipSystemMessage: false });
 
 			if (member.roles) {
-				await this.addRolesToMember(teamId, member.userId, member.roles);
-				await this.addRolesToSubscription(team.roomId, member.userId, member.roles);
-				if (settings.get<boolean>('UI_DisplayRoles')) {
+				const isRoleAddedToTeam = await this.addRolesToMember(teamId, member.userId, member.roles);
+				const isRoleAddedToSubscription = await this.addRolesToSubscription(team.roomId, member.userId, member.roles);
+				if (settings.get<boolean>('UI_DisplayRoles') && isRoleAddedToTeam && isRoleAddedToSubscription) {
 					member.roles.forEach((role) => {
 						void api.broadcast('user.roleUpdate', {
 							type: 'added',
@@ -961,7 +961,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			return false;
 		}
 
-		return !!(await Promise.all(roles.map((role) => Subscriptions.addRoleById(subscription._id, role))));
+		return (await Promise.all(roles.map((role) => Subscriptions.addRoleById(subscription._id, role)))).every(Boolean);
 	}
 
 	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {

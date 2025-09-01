@@ -1,4 +1,5 @@
 ---
+'@rocket.chat/core-services': patch
 '@rocket.chat/meteor': patch
 ---
 
