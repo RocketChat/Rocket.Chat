@@ -16,7 +16,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getAnalyticsChartData'(options) {
-		methodDeprecationLogger.method('livechat:getAnalyticsChartData', '8.0.0', '/v1/livechat/agent.status');
+		methodDeprecationLogger.method('livechat:getAnalyticsChartData', '8.0.0', '/v1/livechat/analytics/dashboards/charts-data');
 		const userId = Meteor.userId();
 		if (!userId || !(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
