@@ -16,6 +16,7 @@ import emojione from 'emojione';
 import { getWellKnownRoutes } from './api/.well-known/server';
 import { getMatrixInviteRoutes } from './api/_matrix/invite';
 import { getKeyServerRoutes } from './api/_matrix/key/server';
+import { getMatrixMediaRoutes } from './api/_matrix/media';
 import { getMatrixProfilesRoutes } from './api/_matrix/profiles';
 import { getMatrixRoomsRoutes } from './api/_matrix/rooms';
 import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
@@ -26,9 +27,17 @@ import { isLicenseEnabledMiddleware } from './api/middlewares/isLicenseEnabled';
 import { registerEvents } from './events';
 import { saveExternalUserIdForLocalUser } from './helpers/identifiers';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
+import { MatrixMediaService } from './services/MatrixMediaService';
 
 export class FederationMatrix extends ServiceClass implements IFederationMatrixService {
 	protected name = 'federation-matrix';
+
+	// Media related constants
+	private static readonly FETCH_TIMEOUT = 30000;
+
+	private static readonly CACHE_MAX_AGE = 86400;
+
+	private static readonly USER_AGENT = 'RocketChat-Federation/1.0';
 
 	private eventHandler: Emitter<HomeserverEventSignatures>;
 
@@ -170,7 +179,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			.use(getMatrixSendJoinRoutes(this.homeserverServices))
 			.use(getMatrixTransactionsRoutes(this.homeserverServices))
 			.use(getKeyServerRoutes(this.homeserverServices))
-			.use(getFederationVersionsRoutes(this.homeserverServices));
+			.use(getFederationVersionsRoutes(this.homeserverServices))
+			.use(getMatrixMediaRoutes(this.homeserverServices));
 
 		wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes(this.homeserverServices));
 
@@ -395,6 +405,211 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw error;
 		}
 	}
+	private determineFileMessageType(fileType?: string): 'm.image' | 'm.file' | 'm.video' | 'm.audio' {
+		if (!fileType) return 'm.file';
+
+		if (fileType.startsWith('image/')) return 'm.image';
+		if (fileType.startsWith('video/')) return 'm.video';
+		if (fileType.startsWith('audio/')) return 'm.audio';
+
+		return 'm.file';
+	}
+
+	private async prepareFileForMatrix(file: NonNullable<IMessage['files']>[0], matrixDomain: string): Promise<string> {
+		return MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
+	}
+
+	private buildFileMessageContent(
+		file: NonNullable<IMessage['files']>[0],
+		mxcUri: string,
+	): {
+		body: string;
+		msgtype: 'm.image' | 'm.file' | 'm.video' | 'm.audio';
+		url: string;
+		info: {
+			mimetype?: string;
+			size?: number;
+			// TODO: Add thumbnail support when RC provides thumbnail metadata
+			// thumbnail_url?: string;
+			// thumbnail_info?: {
+			//   mimetype?: string;
+			//   size?: number;
+			//   w?: number;
+			//   h?: number;
+			// };
+		};
+	} {
+		const msgtype = this.determineFileMessageType(file.type);
+
+		const content: ReturnType<typeof this.buildFileMessageContent> = {
+			body: file.name || 'file',
+			msgtype,
+			url: mxcUri,
+			info: {
+				mimetype: file.type,
+				size: file.size,
+			},
+		};
+
+		// Note: Rocket.Chat doesn't provide separate thumbnail metadata in the file object
+		// If we need thumbnail support, we'd need to either:
+		// 1. Generate thumbnails on-the-fly for images/videos
+		// 2. Use a pre-generated thumbnail if RC provides it in the future
+		// 3. Link to RC's thumbnail endpoint if available
+
+		return content;
+	}
+
+	private async handleFileMessage(
+		message: IMessage,
+		matrixRoomId: string,
+		matrixUserId: string,
+		matrixDomain: string,
+	): Promise<{ eventId: string } | null> {
+		if (!message.files || message.files.length === 0) {
+			return null;
+		}
+
+		try {
+			// For now, handle only the first file since RC typically sends one file per message
+			// If multiple files need to be sent, each should be a separate Matrix message
+			const file = message.files[0];
+
+			const mxcUri = await this.prepareFileForMatrix(file, matrixDomain);
+
+			const fileContent = this.buildFileMessageContent(file, mxcUri);
+
+			const result = await this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
+
+			if (result) {
+				this.logger.info('Successfully sent file message to Matrix', {
+					messageId: message._id,
+					fileId: file._id,
+					fileName: file.name,
+					mxcUri,
+					eventId: result.eventId,
+				});
+			}
+
+			if (message.files.length > 1) {
+				this.logger.warn('Message contains multiple files, but only the first was sent to Matrix', {
+					messageId: message._id,
+					totalFiles: message.files.length,
+					sentFile: file.name,
+				});
+			}
+
+			return result;
+		} catch (error) {
+			this.logger.error('Failed to handle file message', {
+				messageId: message._id,
+				error,
+			});
+			throw error;
+		}
+	}
+
+	private async handleTextMessage(
+		message: IMessage,
+		matrixRoomId: string,
+		matrixUserId: string,
+		matrixDomain: string,
+	): Promise<{ eventId: string } | null> {
+		const parsedMessage = await toExternalMessageFormat({
+			message: message.msg,
+			externalRoomId: matrixRoomId,
+			homeServerDomain: matrixDomain,
+		});
+
+		// Check if this is a threaded message
+		if (message.tmid) {
+			return this.handleThreadedMessage(message, matrixRoomId, matrixUserId, matrixDomain, parsedMessage);
+		}
+
+		// Check if this is a quote/reply message
+		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+			return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+		}
+
+		// Send regular message
+		return this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, matrixUserId);
+	}
+
+	private async handleThreadedMessage(
+		message: IMessage,
+		matrixRoomId: string,
+		matrixUserId: string,
+		matrixDomain: string,
+		parsedMessage: string,
+	): Promise<{ eventId: string } | null> {
+		const threadRootMessage = await Messages.findOneById(message.tmid!);
+		const threadRootEventId = threadRootMessage?.federation?.eventId;
+
+		if (!threadRootEventId) {
+			this.logger.warn('Thread root event ID not found, sending as regular message');
+			// Fall back to regular message or quote message
+			if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+				return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+			}
+			return this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, matrixUserId);
+		}
+
+		// Get the latest thread message for proper threading
+		const latestThreadMessage = await Messages.findOne(
+			{
+				'tmid': message.tmid,
+				'federation.eventId': { $exists: true },
+				'_id': { $ne: message._id },
+			},
+			{ sort: { ts: -1 } },
+		);
+		const latestThreadEventId = latestThreadMessage?.federation?.eventId;
+
+		// Check if this is a quote within a thread
+		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
+			const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+			if (!quoteMessage) {
+				throw new Error('Failed to retrieve quote message');
+			}
+			return this.homeserverServices.message.sendReplyToInsideThreadMessage(
+				matrixRoomId,
+				quoteMessage.rawMessage,
+				quoteMessage.formattedMessage,
+				matrixUserId,
+				threadRootEventId,
+				quoteMessage.eventToReplyTo,
+			);
+		}
+
+		// Send regular thread message
+		return this.homeserverServices.message.sendThreadMessage(
+			matrixRoomId,
+			message.msg,
+			parsedMessage,
+			matrixUserId,
+			threadRootEventId,
+			latestThreadEventId,
+		);
+	}
+
+	private async handleQuoteMessage(
+		message: IMessage,
+		matrixRoomId: string,
+		matrixUserId: string,
+		matrixDomain: string,
+	): Promise<{ eventId: string } | null> {
+		const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
+		if (!quoteMessage) {
+			throw new Error('Failed to retrieve quote message');
+		}
+		return this.homeserverServices.message.sendReplyToMessage(
+			matrixRoomId,
+			quoteMessage.rawMessage,
+			quoteMessage.formattedMessage,
+			quoteMessage.eventToReplyTo,
+			matrixUserId,
+		);
+	}
 
 	async sendMessage(message: IMessage, room: IRoom, user: IUser): Promise<void> {
 		try {
@@ -417,84 +632,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const actualMatrixUserId = existingMatrixUserId || matrixUserId;
 
 			let result;
-
-			const parsedMessage = await toExternalMessageFormat({
-				message: message.msg,
-				externalRoomId: matrixRoomId,
-				homeServerDomain: this.serverName,
-			});
-			if (!message.tmid) {
-				if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-					const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
-					if (!quoteMessage) {
-						throw new Error('Failed to retrieve quote message');
-					}
-					result = await this.homeserverServices.message.sendReplyToMessage(
-						matrixRoomId,
-						quoteMessage.rawMessage,
-						quoteMessage.formattedMessage,
-						quoteMessage.eventToReplyTo,
-						actualMatrixUserId,
-					);
-				} else {
-					result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
-				}
+			if (message.files && message.files.length > 0) {
+				result = await this.handleFileMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
 			} else {
-				const threadRootMessage = await Messages.findOneById(message.tmid);
-				const threadRootEventId = threadRootMessage?.federation?.eventId;
-
-				if (threadRootEventId) {
-					const latestThreadMessage = await Messages.findOne(
-						{
-							'tmid': message.tmid,
-							'federation.eventId': { $exists: true },
-							'_id': { $ne: message._id }, // Exclude the current message
-						},
-						{ sort: { ts: -1 } },
-					);
-					const latestThreadEventId = latestThreadMessage?.federation?.eventId;
-
-					if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
-						if (!quoteMessage) {
-							throw new Error('Failed to retrieve quote message');
-						}
-						result = await this.homeserverServices.message.sendReplyToInsideThreadMessage(
-							matrixRoomId,
-							quoteMessage.rawMessage,
-							quoteMessage.formattedMessage,
-							actualMatrixUserId,
-							threadRootEventId,
-							quoteMessage.eventToReplyTo,
-						);
-					} else {
-						result = await this.homeserverServices.message.sendThreadMessage(
-							matrixRoomId,
-							message.msg,
-							parsedMessage,
-							actualMatrixUserId,
-							threadRootEventId,
-							latestThreadEventId,
-						);
-					}
-				} else {
-					this.logger.warn('Thread root event ID not found, sending as regular message');
-					if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
-						if (!quoteMessage) {
-							throw new Error('Failed to retrieve quote message');
-						}
-						result = await this.homeserverServices.message.sendReplyToMessage(
-							matrixRoomId,
-							quoteMessage.rawMessage,
-							quoteMessage.formattedMessage,
-							quoteMessage.eventToReplyTo,
-							actualMatrixUserId,
-						);
-					} else {
-						result = await this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, actualMatrixUserId);
-					}
-				}
+				result = await this.handleTextMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
 			}
 
 			if (!result) {
@@ -933,5 +1074,215 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			powerLevel = 50;
 		}
 		await this.homeserverServices.room.setPowerLevelForUser(matrixRoomId, senderMatrixUserId, matrixUserId, powerLevel);
+	}
+
+	private validateRemoteFile(file: any): {
+		isValid: boolean;
+		error?: string;
+		mxcUri?: string;
+		serverName?: string;
+		mediaId?: string;
+	} {
+		const mxcUri = file.federation?.mxcUri;
+		const serverName = file.federation?.serverName;
+		const mediaId = file.federation?.mediaId;
+
+		if (!mxcUri || !serverName || !mediaId) {
+			return {
+				isValid: false,
+				error: 'Remote file metadata missing',
+			};
+		}
+
+		return {
+			isValid: true,
+			mxcUri,
+			serverName,
+			mediaId,
+		};
+	}
+
+	private parseMxcUri(
+		mxcUri: string,
+		serverName: string,
+		mediaId: string,
+	): {
+		originServer: string;
+		actualMediaId: string;
+	} {
+		const mxcParts = mxcUri.match(/^mxc:\/\/([^\/]+)\/(.+)$/);
+		return {
+			originServer: mxcParts ? mxcParts[1] : serverName,
+			actualMediaId: mxcParts ? mxcParts[2] : mediaId,
+		};
+	}
+
+	private buildMatrixMediaEndpoints(
+		originServer: string,
+		mediaId: string,
+	): Array<{
+		url: string;
+		name: string;
+		headers: Record<string, string>;
+	}> {
+		const endpoints = [
+			{
+				url: `https://${originServer}/_matrix/media/v1/download/${originServer}/${mediaId}`,
+				name: 'media_v1_https',
+				headers: { 'User-Agent': FederationMatrix.USER_AGENT, 'Accept': '*/*' },
+			},
+			{
+				url: `https://${originServer}/_matrix/media/v3/download/${originServer}/${mediaId}`,
+				name: 'media_v3_https',
+				headers: { 'User-Agent': FederationMatrix.USER_AGENT, 'Accept': '*/*' },
+			},
+			{
+				url: `http://${originServer}/_matrix/media/v3/download/${originServer}/${mediaId}`,
+				name: 'media_v3_http',
+				headers: { 'User-Agent': FederationMatrix.USER_AGENT, 'Accept': '*/*' },
+			},
+			{
+				url: `https://${originServer}/_matrix/media/r0/download/${originServer}/${mediaId}`,
+				name: 'media_r0_https',
+				headers: { 'User-Agent': FederationMatrix.USER_AGENT, 'Accept': '*/*' },
+			},
+			{
+				url: `http://${originServer}/_matrix/media/r0/download/${originServer}/${mediaId}`,
+				name: 'media_r0_http',
+				headers: { 'User-Agent': FederationMatrix.USER_AGENT, 'Accept': '*/*' },
+			},
+			{
+				url: `https://${originServer}/_matrix/client/v1/media/download/${originServer}/${mediaId}`,
+				name: 'client_v1_https',
+				headers: { 'User-Agent': FederationMatrix.USER_AGENT, 'Accept': '*/*' },
+			},
+			{
+				url: `http://${originServer}/_matrix/client/v1/media/download/${originServer}/${mediaId}`,
+				name: 'client_v1_http',
+				headers: { 'User-Agent': FederationMatrix.USER_AGENT, 'Accept': '*/*' },
+			},
+		];
+
+		return endpoints;
+	}
+
+	private async createHttpAgent(isHttps: boolean): Promise<any> {
+		if (isHttps) {
+			return {
+				agent: new (await import('https')).Agent({
+					rejectUnauthorized: false,
+				}),
+			};
+		}
+		return {
+			agent: new (await import('http')).Agent({
+				keepAlive: true,
+			}),
+		};
+	}
+
+	private async fetchFromEndpoints(endpoints: Array<{ url: string; name: string; headers: Record<string, string> }>): Promise<{
+		response: any | null;
+		lastError: any;
+	}> {
+		const fetch = (await import('node-fetch')).default;
+		let response: any = null;
+		let lastError: any = null;
+
+		for await (const endpoint of endpoints) {
+			this.logger.info(`Trying ${endpoint.name} endpoint`, {
+				url: endpoint.url,
+				method: 'GET',
+				headers: endpoint.headers,
+			});
+
+			try {
+				const isHttps = endpoint.url.startsWith('https://');
+				const agentOptions = await this.createHttpAgent(isHttps);
+
+				response = await fetch(endpoint.url, {
+					method: 'GET',
+					headers: endpoint.headers,
+					timeout: FederationMatrix.FETCH_TIMEOUT,
+					...agentOptions,
+				});
+
+				if (response.ok) {
+					this.logger.info(`Successfully fetched file via ${endpoint.name}`, {
+						status: response.status,
+						endpoint: endpoint.name,
+						url: endpoint.url,
+					});
+					break;
+				}
+
+				lastError = `${endpoint.name}: ${response.status} ${response.statusText}`;
+			} catch (fetchError: any) {
+				this.logger.warn(`Failed to fetch from ${endpoint.name}`, {
+					error: fetchError.message,
+					code: fetchError.code,
+				});
+				lastError = fetchError;
+			}
+		}
+
+		return { response, lastError };
+	}
+
+	private streamResponseToClient(response: any, res: any, file: any): void {
+		const contentType = response.headers.get('content-type') || file.type || 'application/octet-stream';
+		const contentLength = response.headers.get('content-length');
+
+		res.setHeader('Content-Type', contentType);
+		if (contentLength) {
+			res.setHeader('Content-Length', contentLength);
+		}
+		res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(file.name || '')}"`);
+		res.setHeader('Cache-Control', `public, max-age=${FederationMatrix.CACHE_MAX_AGE}`);
+
+		response.body?.pipe(res);
+	}
+
+	/**
+	 * Download and stream a remote Matrix file to the client
+	 * This method handles proxying remote Matrix files to Rocket.Chat clients
+	 */
+	async downloadRemoteFile(file: any, _req: any, res: any): Promise<void> {
+		try {
+			const validation = this.validateRemoteFile(file);
+			if (!validation.isValid) {
+				this.logger.error('Invalid remote file metadata', {
+					error: validation.error,
+					federation: file.federation,
+				});
+				res.writeHead(404);
+				res.end(validation.error);
+				return;
+			}
+
+			const { mxcUri, serverName, mediaId } = validation;
+			const { originServer, actualMediaId } = this.parseMxcUri(mxcUri!, serverName!, mediaId!);
+
+			const endpoints = this.buildMatrixMediaEndpoints(originServer, actualMediaId);
+
+			const { response, lastError } = await this.fetchFromEndpoints(endpoints);
+			if (!response || !response.ok) {
+				this.logger.error('Failed to fetch remote file from all endpoints', {
+					lastError,
+					mxcUri,
+					originServer,
+					actualMediaId,
+				});
+				res.writeHead(404);
+				res.end(`Failed to fetch remote file: ${lastError}`);
+				return;
+			}
+
+			this.streamResponseToClient(response, res, file);
+		} catch (error) {
+			this.logger.error('Error handling remote Matrix file download:', error);
+			res.writeHead(500);
+			res.end('Internal server error');
+		}
 	}
 }
