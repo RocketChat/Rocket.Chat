@@ -8,7 +8,7 @@ type RestrictQueryParams = {
 	userId?: string;
 };
 
-describe.only('restrictQuery', () => {
+describe('restrictQuery', () => {
 	const modulePath = '../../../../../app/livechat-enterprise/server/lib/restrictQuery';
 
 	// Helper to require the SUT with injected stubs
