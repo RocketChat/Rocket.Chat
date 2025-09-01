@@ -52,7 +52,7 @@ const commands = {
 			);
 		};
 
-		const siteUrl = `${Meteor.settings.Site_Url}/`;
+		const siteUrl = `${settings.peek('Site_Url') ?? ''}/`;
 		if (typeof data.redirectUrl !== 'string' || !data.redirectUrl.startsWith(siteUrl)) {
 			data.redirectUrl = null;
 		}

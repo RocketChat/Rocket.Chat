@@ -1,5 +1,4 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { PublicSettings } from '../../stores';
 import { watch } from '../cachedStores';
@@ -20,17 +19,15 @@ class Settings {
 	}
 
 	init(): void {
-		this.store.subscribe((state) => {
-			const removedIds = new Set(Object.keys(Meteor.settings)).difference(new Set(state.records.keys()));
+		this.store.subscribe((state, prevState) => {
+			const removedIds = new Set(prevState.records.keys()).difference(new Set(state.records.keys()));
 
 			for (const _id of removedIds) {
-				delete Meteor.settings[_id];
 				this.handleChange(_id, undefined);
 			}
 
 			for (const setting of state.records.values()) {
-				if (setting.value !== Meteor.settings[setting._id]) {
-					Meteor.settings[setting._id] = setting.value;
+				if (setting.value !== prevState.get(setting._id)?.value) {
 					this.handleChange(setting._id, setting.value);
 				}
 			}
