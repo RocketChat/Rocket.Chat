@@ -47,6 +47,13 @@ const getModalType = (
 	return 'incomingPrompt';
 };
 
+export const stopTracks = (stream: MediaStream) => {
+	stream.getTracks().forEach((track) => {
+		track.stop();
+	});
+};
+
+// TODO: Remove this hook
 export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actionType }: UseDevicePermissionPromptProps) => {
 	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
 	const setModal = useSetModal();
@@ -122,15 +129,21 @@ export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actio
 	);
 };
 
-export const useDevicePermissionPrompt2 = ({ actionType }: Pick<UseDevicePermissionPromptProps, 'actionType'>) => {
+export const useDevicePermissionPrompt2 = () => {
 	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
 	const setModal = useSetModal();
 	const setInputMediaDevice = useSetInputMediaDevice();
 	const queryClient = useQueryClient();
 
 	return useCallback(
-		async (constraints?: MediaStreamConstraints) => {
-			return new Promise((resolve, reject) => {
+		async ({
+			constraints,
+			actionType,
+		}: {
+			constraints?: MediaStreamConstraints;
+			actionType: 'outgoing' | 'incoming' | 'device-change';
+		}) => {
+			return new Promise<MediaStream>((resolve, reject) => {
 				const onAccept = (stream: MediaStream) => {
 					// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
 					// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
@@ -161,7 +174,7 @@ export const useDevicePermissionPrompt2 = ({ actionType }: Pick<UseDevicePermiss
 
 				if (state === 'granted') {
 					requestDevice({
-						onAccept,
+						onAccept: resolve,
 						onReject: reject,
 						constraints,
 					});
@@ -186,6 +199,6 @@ export const useDevicePermissionPrompt2 = ({ actionType }: Pick<UseDevicePermiss
 				setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
 			});
 		},
-		[state, setModal, actionType, queryClient, setInputMediaDevice, requestDevice],
+		[state, setModal, queryClient, setInputMediaDevice, requestDevice],
 	);
 };

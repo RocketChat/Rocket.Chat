@@ -1,15 +1,22 @@
 import { AnchorPortal } from '@rocket.chat/ui-client';
-import { useEndpoint, useUserAvatarPath, useUserId } from '@rocket.chat/ui-contexts';
-// import { useQuery } from '@tanstack/react-query';
+import {
+	useEndpoint,
+	useUserAvatarPath,
+	useUserId,
+	useSetOutputMediaDevice,
+	useSetInputMediaDevice,
+	Device,
+	// useSelectedDevices,
+} from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
+import { useCallSounds } from './useCallSounds';
 import { useMediaSessionInstance, useMediaSession } from './useMediaSession';
 import useMediaStream from './useMediaStream';
+import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermissionPrompt';
 import MediaCallContext, { PeerInfo } from '../v2/MediaCallContext';
 import MediaCallWidget from '../v2/MediaCallWidget';
-
-// const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z`;
-// const myData: any[] = Array.from({ length: 100 }, (_, i) => ({ value: `user-${i}`, label: `User ${i}`, identifier: `000${i}`, avatarUrl }));
 
 const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const userId = useUserId();
@@ -18,15 +25,99 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	// console.log('instance', instance);
 	const session = useMediaSession(instance, processor);
 
-	const remoteStreamRefCallback = useMediaStream(instance);
+	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
+
+	const setOutputMediaDevice = useSetOutputMediaDevice();
+	const setInputMediaDevice = useSetInputMediaDevice();
+
+	const requestDevice = useDevicePermissionPrompt2();
+
+	useCallSounds(
+		session.state,
+		useCallback(
+			(callback) => {
+				if (!instance) {
+					return;
+				}
+				return instance.on('endedCall', () => callback());
+			},
+			[instance],
+		),
+	);
+
+	// mute/hold
+	useEffect(() => {
+		if (!processor) {
+			return;
+		}
+
+		const micMuted = session.muted || session.held;
+
+		processor.toggleSenderTracks(!micMuted);
+		processor.toggleReceiverTracks(!session.held);
+	}, [processor, session.muted, session.held]);
 
 	const onMute = () => session.toggleMute();
 	const onHold = () => session.toggleHold();
 
-	// TODO implement
-	const onDeviceChange = (deviceId: string) => {
-		console.log('onDeviceChange', deviceId);
-		// session.changeDevice(deviceId);
+	const onCall = async (_id: string, kind: 'user' | 'sip') => {
+		console.log('onCall', _id, kind);
+		if (session.state !== 'new') {
+			console.error('Cannot start call in state', session.state);
+			return;
+		}
+		stopTracks(
+			await requestDevice({
+				actionType: 'outgoing',
+				constraints: {
+					audio: true,
+				},
+			}),
+		);
+		session.startCall(_id, kind);
+	};
+
+	const onAccept = async () => {
+		console.log('onAccept');
+		if (session.state !== 'ringing') {
+			console.error('Cannot accept call in state', session.state);
+			return;
+		}
+		stopTracks(
+			await requestDevice({
+				actionType: 'incoming',
+				constraints: {
+					audio: true,
+				},
+			}),
+		);
+		session.acceptCall();
+	};
+
+	const onDeviceChange = (device: Device) => {
+		console.log('onDeviceChange', device);
+		if (device.type === 'audiooutput') {
+			if (!audioElement.current) return;
+			setOutputMediaDevice({ outputDevice: device, HTMLAudioElement: audioElement.current });
+		} else {
+			void requestDevice({
+				actionType: 'device-change',
+				constraints: {
+					audio: {
+						deviceId: {
+							exact: device.id,
+						},
+					},
+				},
+			})
+				.then((stream) => {
+					setInputMediaDevice(device);
+					session.changeDevice(stream.getTracks()[0]);
+				})
+				.catch((error) => {
+					console.error('Error changing device', error);
+				});
+		}
 	};
 
 	const onForward = () => {
@@ -71,47 +162,9 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		);
 	};
 
-	const onCall = async (_id?: string, kind?: 'user' | 'sip') => {
-		console.log('onCall', _id, kind);
-		session.startCall(_id, kind || 'user');
-	};
-
 	const onToggleWidget = (peerInfo?: PeerInfo) => {
 		session.toggleWidget(peerInfo);
 	};
-
-	// const { data } = useQuery({
-	// 	queryKey: ['users.info', session.peerInfo?.id],
-	// 	queryFn: async () => {
-	// 		const id = session.peerInfo?.id;
-	// 		if (!id) {
-	// 			return;
-	// 		}
-
-	// 		const peerInfo = myData.find((item) => item.value === id);
-	// 		if (peerInfo) {
-	// 			return peerInfo;
-	// 		}
-
-	// 		const { user } = await usersInfoEndpoint({ userId: id });
-
-	// 		if (user) {
-	// 			return {
-	// 				name: user.name || user.username || '',
-	// 				avatarUrl: getAvatarPath({ username: user.username || '', etag: user.avatarETag }),
-	// 				identifier: user.freeSwitchExtension || '',
-	// 			};
-	// 		}
-
-	// 		throw new Error('User not found');
-	// 	},
-	// 	placeholderData: {
-	// 		displayName: session.peerInfo?.displayName || '',
-	// 		avatarUrl: session.peerInfo?.avatarUrl || '',
-	// 		callerId: session.peerInfo?.sipExtension || '',
-	// 	},
-	// 	enabled: !!session.peerInfo,
-	// });
 
 	const contextValue = {
 		state: session.state,
@@ -125,6 +178,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		onTone,
 		onEndCall,
 		onCall,
+		onAccept,
 		onToggleWidget,
 		onSelectPeer,
 		getAutocompleteOptions,

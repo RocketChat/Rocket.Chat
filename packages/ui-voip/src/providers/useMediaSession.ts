@@ -13,8 +13,6 @@ import {
 import { useStream, useUserAvatarPath, useWriteStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback, useRef } from 'react';
 
-import { useCallSounds } from './useCallSounds';
-import { useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import type { PeerInfo, State } from '../v2/MediaCallContext';
 
 // TODO remove this once the permission flow PR is merged
@@ -107,7 +105,8 @@ type MediaSession = SessionInfo & {
 	selectPeer: (peerInfo: PeerInfo) => void;
 
 	endCall: () => void;
-	startCall: (id?: string, kind?: 'user' | 'sip') => Promise<void>;
+	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
+	acceptCall: () => Promise<void>;
 
 	// changeDevice: (device: string) => void;
 	changeDevice: (newTrack: MediaStreamTrack) => void;
@@ -360,47 +359,22 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 		};
 
 		const offCbs = [
+			instance.on('callContactUpdate', updateSessionState),
+			instance.on('callStateChange', updateSessionState),
+			// instance.on('callClientStateChange', updateSessionState),
 			instance.on('newCall', updateSessionState),
 			instance.on('acceptedCall', updateSessionState),
+			instance.on('activeCall', updateSessionState),
 			instance.on('endedCall', () => {
 				processor?.stopAllTracks();
 				updateSessionState();
 			}),
-			instance.on('callStateChange', updateSessionState),
-			instance.on('callContactUpdate', updateSessionState),
 		];
 
 		return () => {
 			offCbs.forEach((off) => off());
 		};
 	}, [getAvatarUrl, instance, processor]);
-
-	useCallSounds(
-		mediaSession.state,
-		useCallback(
-			(callback) => {
-				if (!instance) {
-					return;
-				}
-				return instance.on('endedCall', () => callback());
-			},
-			[instance],
-		),
-	);
-
-	useEffect(() => {
-		if (!processor) {
-			return;
-		}
-
-		const micMuted = mediaSession.muted || mediaSession.held;
-
-		processor.toggleSenderTracks(!micMuted);
-		processor.toggleReceiverTracks(!mediaSession.held);
-	}, [mediaSession.muted, mediaSession.held, processor]);
-
-	const requestDeviceIncoming = useDevicePermissionPrompt2({ actionType: 'incoming' });
-	const requestDeviceOutgoing = useDevicePermissionPrompt2({ actionType: 'outgoing' });
 
 	const cbs = useMemo(() => {
 		const toggleWidget = (peerInfo?: PeerInfo) => {
@@ -439,40 +413,33 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			mainCall.reject();
 		};
 
-		const startCall = async (id?: string, kind?: 'user' | 'sip') => {
-			// console.log('startCall', id, kind, instance);
+		const acceptCall = async () => {
 			if (!instance) {
 				return;
 			}
 
 			const call = instance.getMainCall();
-			// console.log({ ...call });
-			if (call && call.state === 'ringing') {
-				// console.log('accepting call');
-				await requestDeviceIncoming();
-				call.accept();
+			if (!call || call.state !== 'ringing') {
 				return;
 			}
 
-			if (!id || !kind) {
-				throw new Error('ID and kind are required');
+			call.accept();
+		};
+
+		const startCall = async (id: string, kind: 'user' | 'sip') => {
+			if (!instance) {
+				return;
 			}
 
 			try {
-				await requestDeviceOutgoing();
 				await instance.startCall(kind, id);
 			} catch (error) {
 				console.error(error);
 			}
 		};
 
-		// TODO not sure between getting the track or device/stream.
 		const changeDevice = (newTrack: MediaStreamTrack) => {
-			try {
-				processor?.replaceSenderTrack(newTrack);
-			} catch (error) {
-				console.error(error);
-			}
+			processor?.replaceSenderTrack(newTrack).catch((error) => console.error(error));
 		};
 
 		const forwardCall = () => {
@@ -493,8 +460,9 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			sendTone,
 			selectPeer,
 			toggleMute,
+			acceptCall,
 		};
-	}, [instance, processor, requestDeviceIncoming, requestDeviceOutgoing]);
+	}, [instance, processor]);
 
 	return {
 		...mediaSession,
