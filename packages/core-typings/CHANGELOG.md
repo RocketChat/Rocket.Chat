@@ -21,6 +21,12 @@
 
 - ([#36598](https://github.com/RocketChat/Rocket.Chat/pull/36598) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat oauth-apps.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
 
+## 7.9.3
+
+## 7.9.2
+
+## 7.9.1
+
 ## 7.9.0
 
 ### Minor Changes

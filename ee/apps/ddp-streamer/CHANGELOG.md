@@ -1,11 +1,10 @@
 # @rocket.chat/ddp-streamer
 
-## 0.3.34-rc.5
+## 0.3.37-rc.5
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.5
   - @rocket.chat/rest-typings@7.10.0-rc.5
   - @rocket.chat/core-services@0.10.0-rc.5
@@ -20,7 +19,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.4
   - @rocket.chat/rest-typings@7.10.0-rc.4
   - @rocket.chat/core-services@0.10.0-rc.4
@@ -35,7 +33,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-services@0.10.0-rc.3
   - @rocket.chat/core-typings@7.10.0-rc.3
   - @rocket.chat/rest-typings@7.10.0-rc.3
@@ -88,6 +85,48 @@
   - @rocket.chat/core-services@0.10.0-rc.0
   - @rocket.chat/instance-status@0.1.34-rc.0
   - @rocket.chat/network-broker@0.2.13-rc.0
+    </details>
+
+## 0.3.36
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.3
+  - @rocket.chat/rest-typings@7.9.3
+  - @rocket.chat/core-services@0.9.15
+  - @rocket.chat/model-typings@1.6.15
+  - @rocket.chat/models@1.5.15
+  - @rocket.chat/network-broker@0.2.15
+  - @rocket.chat/instance-status@0.1.36
+  </details>
+
+## 0.3.35
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.2
+  - @rocket.chat/rest-typings@7.9.2
+  - @rocket.chat/core-services@0.9.14
+  - @rocket.chat/model-typings@1.6.14
+  - @rocket.chat/models@1.5.14
+  - @rocket.chat/network-broker@0.2.14
+  - @rocket.chat/instance-status@0.1.35
+  </details>
+
+## 0.3.34
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.1
+  - @rocket.chat/rest-typings@7.9.1
+  - @rocket.chat/core-services@0.9.13
+  - @rocket.chat/model-typings@1.6.13
+  - @rocket.chat/models@1.5.13
+  - @rocket.chat/network-broker@0.2.13
+  - @rocket.chat/instance-status@0.1.34
   </details>
 
 ## 0.3.33

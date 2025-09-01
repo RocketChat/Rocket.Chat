@@ -1,11 +1,10 @@
 # @rocket.chat/license
 
-## 1.0.25-rc.5
+## 1.0.28-rc.5
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.5
   </details>
 
@@ -14,7 +13,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.4
   </details>
 
@@ -23,7 +21,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.3
   </details>
 
@@ -53,6 +50,30 @@
 
   - @rocket.chat/core-typings@7.10.0-rc.0
   </details>
+
+## 1.0.27
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.3
+  </details>
+
+## 1.0.26
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.2
+  </details>
+
+## 1.0.25
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/core-typings@7.9.1
+</details>
 
 ## 1.0.24
 

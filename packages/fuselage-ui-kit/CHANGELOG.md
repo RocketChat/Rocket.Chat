@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.5
   - @rocket.chat/gazzodown@22.0.0-rc.5
   - @rocket.chat/ui-avatar@18.0.0-rc.5
@@ -18,7 +17,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.4
   - @rocket.chat/gazzodown@22.0.0-rc.4
   - @rocket.chat/ui-avatar@18.0.0-rc.4
@@ -45,8 +43,7 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
-  - @rocket.chat/core-typings@7.10.0-rc.2
+- @rocket.chat/core-typings@7.10.0-rc.2
   - @rocket.chat/gazzodown@22.0.0-rc.2
   - @rocket.chat/ui-avatar@18.0.0-rc.2
   - @rocket.chat/ui-contexts@22.0.0-rc.2
@@ -79,6 +76,42 @@
   - @rocket.chat/ui-avatar@18.0.0-rc.0
   - @rocket.chat/ui-video-conf@22.0.0-rc.0
   </details>
+
+## 21.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.3
+  - @rocket.chat/gazzodown@21.0.3
+  - @rocket.chat/ui-avatar@17.0.3
+  - @rocket.chat/ui-contexts@21.0.3
+  - @rocket.chat/ui-video-conf@21.0.3
+  </details>
+
+## 21.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.2
+  - @rocket.chat/gazzodown@21.0.2
+  - @rocket.chat/ui-avatar@17.0.2
+  - @rocket.chat/ui-contexts@21.0.2
+  - @rocket.chat/ui-video-conf@21.0.2
+  </details>
+
+## 21.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.1
+  - @rocket.chat/gazzodown@21.0.1
+  - @rocket.chat/ui-avatar@17.0.1
+  - @rocket.chat/ui-contexts@21.0.1
+  - @rocket.chat/ui-video-conf@21.0.1
+    </details>
 
 ## 21.0.0
 

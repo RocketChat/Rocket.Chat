@@ -5,7 +5,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@22.0.0-rc.5
   </details>
 
@@ -14,7 +13,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@22.0.0-rc.4
   </details>
 
@@ -23,7 +21,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/ui-contexts@22.0.0-rc.3
   </details>
 
@@ -59,6 +56,30 @@
   - @rocket.chat/i18n@1.10.0-rc.0
   - @rocket.chat/ui-contexts@22.0.0-rc.0
   </details>
+
+## 0.2.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@21.0.3
+  </details>
+
+## 0.2.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@21.0.2
+  </details>
+
+## 0.2.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/ui-contexts@21.0.1
+</details>
 
 ## 0.2.12
 

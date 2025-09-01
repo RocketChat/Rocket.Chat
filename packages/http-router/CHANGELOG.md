@@ -1,11 +1,10 @@
 # @rocket.chat/http-router
 
-## 7.9.1-rc.5
+## 7.9.4-rc.5
 
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.5
   - @rocket.chat/rest-typings@7.10.0-rc.5
   </details>
@@ -15,8 +14,7 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
-  - @rocket.chat/core-typings@7.10.0-rc.4
+- @rocket.chat/core-typings@7.10.0-rc.4
   - @rocket.chat/rest-typings@7.10.0-rc.4
   </details>
 
@@ -25,7 +23,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.3
   - @rocket.chat/rest-typings@7.10.0-rc.3
   </details>
@@ -60,6 +57,34 @@
 
   - @rocket.chat/rest-typings@7.10.0-rc.0
   - @rocket.chat/core-typings@7.10.0-rc.0
+
+  </details>
+
+## 7.9.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.3
+  - @rocket.chat/rest-typings@7.9.3
+  </details>
+
+## 7.9.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.2
+  - @rocket.chat/rest-typings@7.9.2
+  </details>
+
+## 7.9.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+    - @rocket.chat/core-typings@7.9.1
+    - @rocket.chat/rest-typings@7.9.1
   </details>
 
 ## 7.9.0
