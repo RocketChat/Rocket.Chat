@@ -10,8 +10,8 @@ import {
 	sidePanelFiltersConfig,
 	useSidePanelFilter,
 	useSwitchSidePanelTab,
-} from '../../views/navigation/contexts/RoomsNavigationContext';
-import { useUnreadGroupData } from '../../views/navigation/contexts/RoomsNavigationContext';
+} from '../../contexts/RoomsNavigationContext';
+import { useUnreadGroupData } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type SidebarFiltersItemProps = {
