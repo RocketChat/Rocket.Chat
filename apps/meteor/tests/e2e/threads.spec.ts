@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel } from './utils';
@@ -45,6 +47,35 @@ test.describe.serial('Threads', () => {
 		await expect(page).toHaveURL(/.*thread/);
 		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 	});
+
+	test('expect to highlight the correct message in the thread contextual bar', async ({ page }) => {
+		await poHomeChannel.content.lastThreadMessagePreviewText.click();
+		await expect(page).toHaveURL(/.*thread/);
+
+		await expect(poHomeChannel.content.lastThreadMessageText).toHaveAttribute('data-qa-editing', 'true');
+	});
+
+	test('expect highlight the correct message in the thread contextual bar after a non sequential message', async ({ page }) => {
+		const threadMessage = `thread_${faker.string.uuid()}`;
+		await poHomeChannel.content.sendMessage(threadMessage);
+		await poHomeChannel.content.sendMessage('this message should break the thread sequence');
+		await poHomeChannel.content.getMessageByText(threadMessage).hover();
+		await page.locator('role=button[name="Reply in thread"]').click();
+
+		await expect(page).toHaveURL(/.*thread/);
+
+		await poHomeChannel.content.toggleAlsoSendThreadToChannel(true);
+		await page.getByRole('dialog').locator('[name="msg"]').last().fill('This is a thread message also sent in channel');
+		await page.keyboard.press('Enter');
+		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
+		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is a thread message also sent in channel');
+
+		await poHomeChannel.content.lastThreadMessagePreviewText.click();
+		await expect(page).toHaveURL(/.*thread/);
+
+		await expect(poHomeChannel.content.lastThreadMessageText).toHaveAttribute('data-qa-editing', 'true');
+	});
+
 	test.describe('hideFlexTab Preference enabled for threads', () => {
 		test.beforeAll(async ({ api }) => {
 			await expect(
