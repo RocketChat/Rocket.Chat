@@ -1,127 +1,264 @@
 import type { HomeserverEventSignatures } from '@hs/federation-sdk';
 import { FederationMatrix, Message, MeteorService } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import { Logger } from '@rocket.chat/logger';
 import { Users, MatrixBridgedUser, MatrixBridgedRoom, Rooms, Subscriptions, Messages } from '@rocket.chat/models';
 
 import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../helpers/message.parsers';
+import { MatrixMediaService } from '../services/MatrixMediaService';
 
 const logger = new Logger('federation-matrix:message');
 
-export function message(emitter: Emitter<HomeserverEventSignatures>, serverName: string) {
+async function getOrCreateFederatedUser(matrixUserId: string): Promise<IUser | null> {
+	const [userPart, domain] = matrixUserId.split(':');
+	if (!userPart || !domain) {
+		logger.error('Invalid Matrix sender ID format:', matrixUserId);
+		return null;
+	}
+	const username = userPart.substring(1);
+
+	let user = await Users.findOneByUsername(matrixUserId);
+
+	if (!user) {
+		logger.info('Creating new federated user:', { username: matrixUserId, externalId: matrixUserId });
+
+		const userData: Partial<IUser> = {
+			username: matrixUserId,
+			name: username, // TODO: Fetch display name from Matrix profile
+			type: 'user',
+			status: UserStatus.ONLINE,
+			active: true,
+			roles: ['user'],
+			requirePasswordChange: false,
+			federated: true,
+			createdAt: new Date(),
+			_updatedAt: new Date(),
+		};
+
+		const { insertedId } = await Users.insertOne(userData as IUser);
+
+		await MatrixBridgedUser.createOrUpdateByLocalId(
+			insertedId,
+			matrixUserId,
+			true, // isRemote = true for external Matrix users
+			domain,
+		);
+
+		user = await Users.findOneById(insertedId);
+		if (!user) {
+			logger.error('Failed to create user:', matrixUserId);
+			return null;
+		}
+
+		logger.info('Successfully created federated user:', { userId: user._id, username });
+	} else {
+		await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, false, domain);
+	}
+
+	return user;
+}
+
+async function getRoomAndEnsureSubscription(matrixRoomId: string, user: IUser): Promise<IRoom | null> {
+	const internalRoomId = await MatrixBridgedRoom.getLocalRoomId(matrixRoomId);
+	if (!internalRoomId) {
+		logger.error('Room not found in bridge mapping:', matrixRoomId);
+		// TODO: Handle room creation for unknown federated rooms
+		return null;
+	}
+
+	const room = await Rooms.findOneById(internalRoomId);
+	if (!room) {
+		logger.error('Room not found:', internalRoomId);
+		return null;
+	}
+
+	if (!room.federated) {
+		logger.error('Room is not marked as federated:', { roomId: room._id, matrixRoomId });
+		// TODO: Should we update the room to be federated?
+	}
+
+	const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+
+	if (!existingSubscription) {
+		logger.info('Creating subscription for federated user in room:', { userId: user._id, roomId: room._id });
+
+		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
+			ts: new Date(),
+			open: false,
+			alert: false,
+			unread: 0,
+			userMentions: 0,
+			groupMentions: 0,
+		});
+
+		if (insertedId) {
+			logger.debug('Successfully created subscription:', insertedId);
+			// TODO: Import and use notifyOnSubscriptionChangedById if needed
+		}
+	}
+
+	return room;
+}
+
+async function getThreadMessageId(threadRootEventId: string | undefined): Promise<string | undefined> {
+	if (!threadRootEventId) {
+		return undefined;
+	}
+
+	const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
+	if (threadRootMessage) {
+		logger.debug('Found thread root message:', { tmid: threadRootMessage._id, threadRootEventId });
+		return threadRootMessage._id;
+	}
+	logger.warn('Thread root message not found for event:', threadRootEventId);
+	return undefined;
+}
+
+async function handleMediaMessage(
+	content: any,
+	msgtype: string,
+	messageBody: string,
+	user: IUser,
+	room: IRoom,
+	eventId: string,
+	tmid?: string,
+): Promise<{
+	fromId: string;
+	rid: string;
+	msg: string;
+	federation_event_id: string;
+	tmid?: string;
+	file: any;
+	files: any[];
+	attachments: any[];
+}> {
+	const fileInfo = content.info || {};
+	const mimeType = fileInfo.mimetype;
+
+	const fileRefId = await MatrixMediaService.createRemoteFileReference(content.url, {
+		name: messageBody,
+		size: fileInfo.size,
+		type: mimeType,
+		roomId: room._id,
+		userId: user._id,
+	});
+
+	const fileName = messageBody;
+	const fileExtension = fileName.includes('.') ? fileName.split('.').pop()?.toLowerCase() || '' : mimeType.split('/')[1] || '';
+
+	const fileUrl = `/file-upload/${fileRefId}/${encodeURIComponent(fileName)}`;
+	const attachment: any = {
+		title: fileName,
+		type: 'file',
+		title_link: fileUrl,
+		title_link_download: true,
+	};
+
+	if (msgtype === 'm.image') {
+		attachment.image_url = fileUrl;
+		attachment.image_type = mimeType;
+		attachment.image_size = fileInfo.size || 0;
+		attachment.description = '';
+		if (fileInfo.w && fileInfo.h) {
+			attachment.image_dimensions = {
+				width: fileInfo.w,
+				height: fileInfo.h,
+			};
+		}
+	} else if (msgtype === 'm.video') {
+		attachment.video_url = fileUrl;
+		attachment.video_type = mimeType;
+		attachment.video_size = fileInfo.size || 0;
+		attachment.description = '';
+	} else if (msgtype === 'm.audio') {
+		attachment.audio_url = fileUrl;
+		attachment.audio_type = mimeType;
+		attachment.audio_size = fileInfo.size || 0;
+		attachment.description = '';
+	} else {
+		attachment.description = '';
+	}
+
+	const fileData = {
+		_id: fileRefId,
+		name: fileName,
+		type: mimeType,
+		size: fileInfo.size || 0,
+		format: fileExtension,
+	};
+
+	logger.info('Sending attachment data to saveMessageWithAttachmentFromFederation', {
+		attachment: JSON.stringify(attachment, null, 2),
+		fileData: JSON.stringify(fileData, null, 2),
+		msgtype,
+	});
+
+	return {
+		fromId: user._id,
+		rid: room._id,
+		msg: '',
+		federation_event_id: eventId,
+		tmid,
+		file: fileData,
+		files: [fileData],
+		attachments: [attachment],
+	};
+}
+
+export function message(emitter: Emitter<HomeserverEventSignatures>) {
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
-			const message = data.content?.body?.toString();
-			if (!message) {
-				logger.debug('No message found in event content');
-				return;
-			}
+			console.log('on homeserver.matrix.message', data);
 
 			const content = data.content as any;
-			const replyToRelation = content?.['m.relates_to'];
-			const isThreadMessage = replyToRelation?.rel_type === 'm.thread';
-			const isQuoteMessage = replyToRelation?.['m.in_reply_to']?.event_id && !replyToRelation?.is_falling_back;
-			const threadRootEventId = isThreadMessage ? replyToRelation.event_id : undefined;
+			const msgtype = content?.msgtype;
+			const messageBody = content?.body?.toString();
 
-			const [userPart, domain] = data.sender.split(':');
-			if (!userPart || !domain) {
-				logger.error('Invalid Matrix sender ID format:', data.sender);
+			logger.info('[federation-matrix:message] Received Matrix message event', {
+				eventId: data.event_id,
+				sender: data.sender,
+				roomId: data.room_id,
+				msgtype,
+				body: messageBody,
+				hasUrl: !!content?.url,
+				url: content?.url,
+				hasInfo: !!content?.info,
+				infoSize: content?.info?.size,
+				infoMimetype: content?.info?.mimetype,
+			});
+
+			if (!messageBody && !msgtype) {
+				logger.debug('No message content found in event');
 				return;
 			}
-			const username = userPart.substring(1);
 
-			const internalUsername = data.sender;
-			let user = await Users.findOneByUsername(internalUsername);
-
+			// Get or create the federated user
+			const user = await getOrCreateFederatedUser(data.sender);
 			if (!user) {
-				logger.info('Creating new federated user:', { username: internalUsername, externalId: data.sender });
-
-				const userData: Partial<IUser> = {
-					username: internalUsername,
-					name: username, // TODO: Fetch display name from Matrix profile
-					type: 'user',
-					status: UserStatus.ONLINE,
-					active: true,
-					roles: ['user'],
-					requirePasswordChange: false,
-					federated: true, // Mark as federated user
-					createdAt: new Date(),
-					_updatedAt: new Date(),
-				};
-
-				const { insertedId } = await Users.insertOne(userData as IUser);
-
-				await MatrixBridgedUser.createOrUpdateByLocalId(
-					insertedId,
-					data.sender,
-					true, // isRemote = true for external Matrix users
-					domain,
-				);
-
-				user = await Users.findOneById(insertedId);
-				if (!user) {
-					logger.error('Failed to create user:', internalUsername);
-					return;
-				}
-
-				logger.info('Successfully created federated user:', { userId: user._id, username });
-			} else {
-				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, data.sender, false, domain);
-			}
-
-			const internalRoomId = await MatrixBridgedRoom.getLocalRoomId(data.room_id);
-			if (!internalRoomId) {
-				logger.error('Room not found in bridge mapping:', data.room_id);
-				// TODO: Handle room creation for unknown federated rooms
 				return;
 			}
 
-			const room = await Rooms.findOneById(internalRoomId);
+			// Get room and ensure subscription exists
+			const room = await getRoomAndEnsureSubscription(data.room_id, user);
 			if (!room) {
-				logger.error('Room not found:', internalRoomId);
 				return;
 			}
 
-			if (!room.federated) {
-				logger.error('Room is not marked as federated:', { roomId: room._id, matrixRoomId: data.room_id });
-				// TODO: Should we update the room to be federated?
-			}
+			// Handle thread messages and relations
+			const replyToRelation = content?.['m.relates_to'];
+			const threadRelation = content?.['m.relates_to'];
+			const isThreadMessage = threadRelation?.rel_type === 'm.thread';
+			const isQuoteMessage = replyToRelation?.['m.in_reply_to']?.event_id && !replyToRelation?.is_falling_back;
+			const threadRootEventId = isThreadMessage ? threadRelation.event_id : undefined;
+			const tmid = await getThreadMessageId(threadRootEventId);
 
-			const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+			// Process the message based on type
+			const isMediaMessage = ['m.image', 'm.file', 'm.video', 'm.audio'].includes(msgtype);
 
-			if (!existingSubscription) {
-				logger.info('Creating subscription for federated user in room:', { userId: user._id, roomId: room._id });
-
-				const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
-					ts: new Date(),
-					open: false,
-					alert: false,
-					unread: 0,
-					userMentions: 0,
-					groupMentions: 0,
-					// Federation status is inherited from room.federated and user.federated
-				});
-
-				if (insertedId) {
-					logger.debug('Successfully created subscription:', insertedId);
-					// TODO: Import and use notifyOnSubscriptionChangedById if needed
-					// void notifyOnSubscriptionChangedById(insertedId, 'inserted');
-				}
-			}
-
-			let tmid: string | undefined;
-			if (isThreadMessage && threadRootEventId) {
-				const threadRootMessage = await Messages.findOneByFederationId(threadRootEventId);
-				if (threadRootMessage) {
-					tmid = threadRootMessage._id;
-					logger.debug('Found thread root message:', { tmid, threadRootEventId });
-				} else {
-					logger.warn('Thread root message not found for event:', threadRootEventId);
-				}
-			}
-
+			// Handle message editing
+			const localDomain = await getMatrixLocalDomain();
 			const isEditedMessage = data.content['m.relates_to']?.rel_type === 'm.replace';
 			if (isEditedMessage && data.content['m.relates_to']?.event_id && data.content['m.new_content']) {
 				logger.debug('Received edited message from Matrix, updating existing message');
@@ -148,8 +285,8 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 					const formatted = await toInternalQuoteMessageFormat({
 						messageToReplyToUrl,
 						formattedMessage: data.content.formatted_body || '',
-						rawMessage: message,
-						homeServerDomain: serverName,
+						rawMessage: messageBody,
+						homeServerDomain: localDomain,
 						senderExternalId: data.sender,
 					});
 					await Message.updateMessage(
@@ -179,23 +316,25 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				);
 				return;
 			}
+
+			// Handle quote messages
 			if (isQuoteMessage && room.name) {
 				const originalMessage = await Messages.findOneByFederationId(replyToRelation?.['m.in_reply_to']?.event_id);
 				if (!originalMessage) {
-					logger.error('Original message not found for edit:', replyToRelation?.['m.in_reply_to']?.event_id);
+					logger.error('Original message not found for quote:', replyToRelation?.['m.in_reply_to']?.event_id);
 					return;
 				}
 				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, room.name, originalMessage._id);
 				const formatted = await toInternalQuoteMessageFormat({
 					messageToReplyToUrl,
 					formattedMessage: data.content.formatted_body || '',
-					rawMessage: message,
-					homeServerDomain: serverName,
+					rawMessage: messageBody,
+					homeServerDomain: localDomain,
 					senderExternalId: data.sender,
 				});
 				await Message.saveMessageFromFederation({
 					fromId: user._id,
-					rid: internalRoomId,
+					rid: room._id,
 					msg: formatted,
 					federation_event_id: data.event_id,
 					tmid,
@@ -203,19 +342,32 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				return;
 			}
 
-			const formatted = await toInternalMessageFormat({
-				rawMessage: message,
-				formattedMessage: data.content.formatted_body || '',
-				homeServerDomain: serverName,
-				senderExternalId: data.sender,
-			});
-			await Message.saveMessageFromFederation({
-				fromId: user._id,
-				rid: internalRoomId,
-				msg: formatted,
-				federation_event_id: data.event_id,
-				tmid,
-			});
+			// Handle media and plain messages
+			if (isMediaMessage && content?.url) {
+				logger.info('Processing media message from Matrix', {
+					eventId: data.event_id,
+					msgtype,
+					url: content.url,
+					body: messageBody,
+					hasInfo: !!content.info,
+				});
+				const result = await handleMediaMessage(content, msgtype, messageBody, user, room, data.event_id, tmid);
+				await Message.saveMessageFromFederation(result);
+			} else {
+				const formatted = toInternalMessageFormat({
+					rawMessage: messageBody,
+					formattedMessage: data.content.formatted_body || '',
+					homeServerDomain: localDomain,
+					senderExternalId: data.sender,
+				});
+				await Message.saveMessageFromFederation({
+					fromId: user._id,
+					rid: room._id,
+					msg: formatted,
+					federation_event_id: data.event_id,
+					tmid,
+				});
+			}
 		} catch (error) {
 			logger.error('Error processing Matrix message:', error);
 		}

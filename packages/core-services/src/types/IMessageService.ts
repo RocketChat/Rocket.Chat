@@ -15,12 +15,18 @@ export interface IMessageService {
 		msg,
 		federation_event_id,
 		tmid,
+		file,
+		files,
+		attachments,
 	}: {
 		fromId: string;
 		rid: string;
 		msg: string;
 		federation_event_id: string;
 		tmid?: string;
+		file?: IMessage['file'];
+		files?: IMessage['files'];
+		attachments?: IMessage['attachments'];
 	}): Promise<IMessage>;
 	saveSystemMessageAndNotifyUser<T = IMessage>(
 		type: MessageTypesValues,
