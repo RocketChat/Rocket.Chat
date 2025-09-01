@@ -45,6 +45,9 @@ const RepliesForm = (props: RepliesFormProps) => {
 	const { t } = useTranslation();
 	const repliesFormId = useId();
 	const canAssignAllDepartments = usePermission('outbound.can-assign-queues');
+	const canAssignAgentSelfOnly = usePermission('outbound.can-assign-self-only');
+	const canAssignAgentAny = usePermission('outbound.can-assign-any-agent');
+	const canAssignAgent = canAssignAllDepartments || canAssignAgentAny;
 
 	const {
 		control,
@@ -169,8 +172,9 @@ const RepliesForm = (props: RepliesFormProps) => {
 									error={!!errors.agentId}
 									id={`${repliesFormId}-agent`}
 									agents={agents}
+									canAssignSelfOnly={canAssignAgentSelfOnly}
 									placeholder={isFetchingDepartment ? t('Loading...') : t('Select_agent')}
-									disabled={!departmentId}
+									disabled={!departmentId || !canAssignAgent}
 									value={field.value}
 									onChange={field.onChange}
 								/>
@@ -182,7 +186,9 @@ const RepliesForm = (props: RepliesFormProps) => {
 							{errors.agentId.message}
 						</FieldError>
 					)}
-					<FieldHint id={`${repliesFormId}-agent-hint`}>{t('Outbound_message_agent_hint')}</FieldHint>
+					<FieldHint id={`${repliesFormId}-agent-hint`}>
+						{canAssignAgent ? t('Outbound_message_agent_hint') : t('Outbound_message_agent_hint_no_permission')}
+					</FieldHint>
 				</Field>
 			</FieldGroup>
 

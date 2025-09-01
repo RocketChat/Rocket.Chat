@@ -2,20 +2,21 @@ import type { ILivechatDepartmentAgents, Serialized } from '@rocket.chat/core-ty
 import { AutoComplete, Box, Chip, Option, OptionAvatar, OptionContent } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 
 type AutoCompleteDepartmentAgentProps = Omit<AllHTMLAttributes<HTMLInputElement>, 'onChange'> & {
 	error?: boolean;
 	value: string;
+	canAssignSelfOnly?: boolean;
 	onChange(value: string): void;
 	agents?: Serialized<ILivechatDepartmentAgents>[];
 };
 
-const AutoCompleteDepartmentAgent = ({ value, onChange, agents, ...props }: AutoCompleteDepartmentAgentProps) => {
+const AutoCompleteDepartmentAgent = ({ value, onChange, agents, canAssignSelfOnly, ...props }: AutoCompleteDepartmentAgentProps) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
-	const canAssignSelfOnly = usePermission('outbound.can-assign-self-only');
 	const userId = useUserId();
 
 	const options = useMemo(() => {
