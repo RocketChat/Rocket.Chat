@@ -22,7 +22,9 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!(await resetUserE2EEncriptionKey(userId, false))) {
-			return false;
+			throw new Meteor.Error('failed-reset-e2e-password', 'Failed to reset E2E password', {
+				method: 'resetOwnE2EKey',
+			});
 		}
 		return true;
 	}),
