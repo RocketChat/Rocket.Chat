@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser/providers/playwright';
 export default defineConfig({
 	test: {
+		includeTaskLocation: true,
 		coverage: {
 			provider: 'v8',
 			include: ['src/*.ts'],
