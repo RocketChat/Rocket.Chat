@@ -9,8 +9,14 @@ type SettingCallback = (key: string, value: SettingValue) => void;
 class Settings {
 	private readonly store = PublicSettings.use;
 
+	/** Get a setting value Tracker-reactively */
 	watch<TValue = any>(_id: string): TValue {
 		return watch(this.store, (state) => state.get(_id)?.value) as TValue;
+	}
+
+	/** Get a setting value non-reactively */
+	peek<TValue = any>(_id: string): TValue | undefined {
+		return this.store.getState().get(_id)?.value as TValue | undefined;
 	}
 
 	init(): void {

@@ -53,7 +53,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 	const { command, params } = match;
 
 	if (typeof command === 'string') {
-		if (!settings.watch('Message_AllowUnrecognizedSlashCommand')) {
+		if (!settings.peek('Message_AllowUnrecognizedSlashCommand')) {
 			await warnUnrecognizedSlashCommand(chat, t('No_such_command', { command: escapeHTML(command) }));
 			return true;
 		}

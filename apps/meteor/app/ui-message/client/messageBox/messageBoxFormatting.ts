@@ -90,13 +90,13 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		label: 'KaTeX' as TranslationKey,
 		icon: 'katex',
 		text: () => {
-			if (!settings.watch('Katex_Enabled')) {
+			if (!settings.peek('Katex_Enabled')) {
 				return;
 			}
-			if (settings.watch('Katex_Dollar_Syntax')) {
+			if (settings.peek('Katex_Dollar_Syntax')) {
 				return '$$KaTeX$$';
 			}
-			if (settings.watch('Katex_Parenthesis_Syntax')) {
+			if (settings.peek('Katex_Parenthesis_Syntax')) {
 				return '\\[KaTeX\\]';
 			}
 		},

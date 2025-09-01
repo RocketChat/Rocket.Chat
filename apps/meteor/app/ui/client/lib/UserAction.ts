@@ -32,7 +32,7 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 	if (!user) {
 		return;
 	}
-	if (settings.watch('UI_Use_Real_Name')) {
+	if (settings.peek('UI_Use_Real_Name')) {
 		return user.name;
 	}
 	return user.username;

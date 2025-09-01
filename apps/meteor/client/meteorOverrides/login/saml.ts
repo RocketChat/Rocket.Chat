@@ -47,18 +47,18 @@ const { logout } = Meteor;
 Meteor.logout = async function (...args) {
 	const standardLogout = () => logout.apply(Meteor, args);
 
-	if (!settings.watch('SAML_Custom_Default')) {
+	if (!settings.peek('SAML_Custom_Default')) {
 		return standardLogout();
 	}
 
-	if (settings.watch('SAML_Custom_Default_logout_behaviour') === 'Local') {
+	if (settings.peek('SAML_Custom_Default_logout_behaviour') === 'Local') {
 		console.info('SAML session not terminated, only the Rocket.Chat session is going to be killed');
 		return standardLogout();
 	}
 
-	const provider = settings.watch('SAML_Custom_Default_provider');
+	const provider = settings.peek('SAML_Custom_Default_provider');
 
-	if (provider && settings.watch('SAML_Custom_Default_idp_slo_redirect_url')) {
+	if (provider && settings.peek('SAML_Custom_Default_idp_slo_redirect_url')) {
 		console.info('SAML session terminated via SLO');
 
 		const { sdk } = await import('../../../app/utils/client/lib/SDKClient');

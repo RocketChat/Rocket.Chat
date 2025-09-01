@@ -753,9 +753,11 @@ class E2E extends Emitter {
 		}
 		const urls = message.msg.match(getMessageUrlRegex()) || [];
 
+		const siteUrl = settings.peek<string>('Site_Url');
+
 		await Promise.all(
 			urls.map(async (url) => {
-				if (!url.includes(settings.watch('Site_Url'))) {
+				if (siteUrl && !url.includes(siteUrl)) {
 					return;
 				}
 
@@ -782,7 +784,7 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
-				const useRealName = settings.watch('UI_Use_Real_Name');
+				const useRealName = settings.peek('UI_Use_Real_Name');
 				const quoteAttachment = createQuoteAttachment(
 					decryptedQuoteMessage,
 					url,
@@ -790,7 +792,7 @@ class E2E extends Emitter {
 					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
 				);
 
-				message.attachments.push(limitQuoteChain(quoteAttachment, settings.watch('Message_QuoteChainLimit') ?? 2));
+				message.attachments.push(limitQuoteChain(quoteAttachment, settings.peek('Message_QuoteChainLimit') ?? 2));
 			}),
 		);
 

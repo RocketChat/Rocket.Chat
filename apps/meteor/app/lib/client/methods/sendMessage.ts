@@ -31,7 +31,7 @@ Meteor.methods<ServerMethods>({
 			name: user.name || '',
 		};
 		message.temp = true;
-		if (settings.watch('Message_Read_Receipt_Enabled')) {
+		if (settings.peek('Message_Read_Receipt_Enabled')) {
 			message.unread = true;
 		}
 

@@ -265,7 +265,7 @@ class WebRTCClass {
 		};
 		this.debug = false;
 		this.TransportClass = WebRTCTransportClass;
-		let servers = settings.watch<string>('WebRTC_Servers');
+		let servers = settings.peek<string>('WebRTC_Servers');
 		if (servers && servers.trim() !== '') {
 			servers = servers.replace(/\s/g, '');
 

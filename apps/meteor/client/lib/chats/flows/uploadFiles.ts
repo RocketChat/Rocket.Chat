@@ -84,7 +84,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						return;
 					}
 
-					if (!settings.watch('E2E_Enable_Encrypt_Files')) {
+					if (!settings.peek('E2E_Enable_Encrypt_Files')) {
 						uploadFile(file, { description });
 						return;
 					}

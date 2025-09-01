@@ -52,7 +52,7 @@ export class AudioRecorder {
 		}
 
 		const input = this.audioContext?.createMediaStreamSource(this.stream);
-		this.encoder = new AudioEncoder(input, { bitRate: settings.watch('Message_Audio_bitRate') || 32 });
+		this.encoder = new AudioEncoder(input, { bitRate: settings.peek('Message_Audio_bitRate') || 32 });
 	}
 
 	destroyEncoder() {
