@@ -25,7 +25,6 @@
   "API_Shield_Types": "Врсте штитова",
   "API_Shield_Types_Description": "Врсте омогућених штитова у облику листе раздвојене зарезима, изаберите `online`,`channel` или `*` за све",
   "API_Token": "АПИ токен",
-  "API_Tokenpass_URL_Description": "Пример: `https://domain.com` (искључујући крајњу косу црту)",
   "API_Upper_Count_Limit": "Максимално записа",
   "Accept": "Прихвати",
   "Access_Token_URL": "УРЛ адреса приступног токена",
