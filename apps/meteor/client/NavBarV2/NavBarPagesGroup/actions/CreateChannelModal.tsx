@@ -315,7 +315,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 										)}
 									/>
 								</FieldRow>
-								<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
+								<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, encrypted })}</FieldDescription>
 							</Field>
 							<Field>
 								<FieldRow>

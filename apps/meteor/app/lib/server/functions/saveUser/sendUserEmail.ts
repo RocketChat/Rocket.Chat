@@ -28,7 +28,7 @@ export async function sendUserEmail(subject: string, html: string, userData: Sav
 		html,
 		data: {
 			email: userData.email,
-			password: userData.password,
+			password: userData.password ?? '******',
 			...(typeof userData.name !== 'undefined' ? { name: userData.name } : {}),
 		},
 	};
@@ -45,10 +45,10 @@ export async function sendUserEmail(subject: string, html: string, userData: Sav
 	}
 }
 
-export async function sendWelcomeEmail(userData: SaveUserData) {
+export async function sendWelcomeEmail(userData: Pick<SaveUserData, 'email' | 'name' | 'password'>) {
 	return sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
 }
 
-export async function sendPasswordEmail(userData: SaveUserData) {
+export async function sendPasswordEmail(userData: Pick<SaveUserData, 'email' | 'name' | 'password'>) {
 	return sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 }

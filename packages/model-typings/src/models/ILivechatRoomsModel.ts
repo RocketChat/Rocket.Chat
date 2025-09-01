@@ -294,4 +294,5 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,
 	): Promise<UpdateResult | Document>;
 	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null>;
 }

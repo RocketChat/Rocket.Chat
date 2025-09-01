@@ -825,7 +825,10 @@
   "Caller_Id": "कॉलर आईडी",
   "Calling": "कॉलिंग",
   "Calls": "कॉल",
-  "Calls_in_queue": "{{calls}} कतार में कॉल करें",
+  "Calls_in_queue": {
+    "one": "कतार में {{calls}} कॉल करें",
+    "other": "{{calls}} कतार में कॉल करें"
+  },
   "Cam_off": "कैम बंद",
   "Cam_on": "कैम ऑन",
   "Camera_access_not_allowed": "कैमरा एक्सेस की अनुमति नहीं थी, कृपया अपनी ब्राउज़र सेटिंग जांचें।",

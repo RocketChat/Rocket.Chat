@@ -6,13 +6,13 @@ import {
 	type IRoom,
 	type ISubscription,
 } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
 import type { DataAPI } from './ChatAPI';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { settings } from '../../../app/settings/client';
-import { MessageTypes } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
 import { prependReplies } from '../utils/prependReplies';

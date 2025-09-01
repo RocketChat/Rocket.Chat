@@ -1,7 +1,5 @@
 import { Tracker } from 'meteor/tracker';
 
-import { queueMicrotask } from './utils/queueMicrotask';
-
 interface ISubscriptionFactory<T> {
 	(...args: any[]): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => T];
 }

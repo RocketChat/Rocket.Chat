@@ -6,4 +6,5 @@ export function patchOmniCore(): void {
 	applyDepartmentRestrictionsPatch();
 }
 
+export * from './outbound-communication';
 export * from './units/getUnitsFromUser';

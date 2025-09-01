@@ -1073,6 +1073,105 @@ describe('LIVECHAT - contacts', () => {
 		});
 	});
 
+	describe('[POST] omnichannel/contacts.delete', () => {
+		let contactId: string;
+		let roomId: string;
+
+		const email = faker.internet.email().toLowerCase();
+		const phone = faker.phone.number();
+
+		const contact = {
+			name: faker.person.fullName(),
+			emails: [email],
+			phones: [phone],
+			contactManager: agentUser?._id,
+		};
+
+		before(async () => {
+			await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', true);
+
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({ ...contact });
+			contactId = body.contactId;
+
+			const visitor = await createVisitor(undefined, contact.name, email, phone);
+
+			const room = await createLivechatRoom(visitor.token);
+			roomId = room._id;
+		});
+
+		after(async () => {
+			await closeOmnichannelRoom(roomId);
+		});
+
+		it('should be able to disable a contact by its id', async () => {
+			const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
+
+			expect(response.status).to.be.equal(200);
+			expect(response.body).to.have.property('success', true);
+		});
+
+		it('should return an error if the contact is not found', async () => {
+			const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
+
+			expect(response.status).to.be.equal(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body.error).to.be.equal('error-contact-not-found');
+		});
+
+		describe('[PERMISSIONS] omnichannel/contacts.delete', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('delete-livechat-contact');
+			});
+
+			after(async () => {
+				await restorePermissionToRoles('delete-livechat-contact');
+			});
+
+			it("should return an error if user doesn't have 'delete-livechat-contact' permission", async () => {
+				const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
+
+				expect(response.status).to.be.equal(403);
+				expect(response.body).to.have.property('success', false);
+				expect(response.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			});
+		});
+
+		describe('[GDPR Setting] omnichannel/contacts.delete', () => {
+			before(async () => {
+				await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', false);
+
+				const { body } = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({ ...contact });
+				contactId = body.contactId;
+
+				const visitor = await createVisitor(undefined, contact.name, email, phone);
+
+				const room = await createLivechatRoom(visitor.token);
+				roomId = room._id;
+			});
+
+			after(async () => {
+				await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', true);
+			});
+
+			it("should not delete the contact if the GDPR setting isn't enabled and contact has open rooms", async () => {
+				const response = await request.post(api(`omnichannel/contacts.delete`)).set(credentials).send({ contactId });
+
+				expect(response.status).to.be.equal(400);
+				expect(response.body).to.have.property('success', false);
+				expect(response.body.error).to.be.equal('error-contact-has-open-rooms');
+
+				const contactCheck = await request.get(api('omnichannel/contacts.get')).set(credentials).query({ contactId });
+				expect(contactCheck.status).to.be.equal(200);
+			});
+		});
+	});
+
 	describe('[GET] omnichannel/contacts.checkExistence', () => {
 		let contactId: string;
 		let roomId: string;

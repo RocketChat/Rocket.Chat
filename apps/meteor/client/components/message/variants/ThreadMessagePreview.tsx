@@ -12,12 +12,12 @@ import {
 	CheckBox,
 	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MessageTypes } from '../../../../app/ui-utils/client';
 import {
 	useIsSelecting,
 	useToggleSelect,
@@ -107,7 +107,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 									)}
 								</>
 							)}
-							{messageType && t(messageType.message, messageType.data ? messageType.data(message) : {})}
+							{messageType?.text(t, message)}
 							{parentMessage.isLoading && <Skeleton />}
 						</ThreadMessageOrigin>
 						<ThreadMessageUnfollow />

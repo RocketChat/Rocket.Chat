@@ -15,7 +15,21 @@ export class ToastBar {
 		return this.content.getByRole('alert');
 	}
 
+	get error(): Locator {
+		return this.page.locator('.rcx-toastbar.rcx-toastbar--error');
+	}
+
 	get dismiss(): Locator {
 		return this.content.getByRole('button', { name: 'Dismiss alert', exact: true });
+	}
+
+	async waitForError(): Promise<boolean> {
+		try {
+			await this.error.waitFor({ timeout: 1000 });
+
+			return false;
+		} catch (error) {
+			return true;
+		}
 	}
 }

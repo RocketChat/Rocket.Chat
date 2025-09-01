@@ -1,8 +1,7 @@
 import { useCallback } from 'react';
 import { useFocusManager } from 'react-aria';
 
-const isListItem = (node: EventTarget) =>
-	(node as HTMLElement).classList.contains('rcx-sidebar-v2-item') && (node as HTMLElement).parentElement?.role === 'listitem';
+const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-item');
 const isCollapseGroup = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-collapse-group__bar');
 const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-item__menu');
 
