@@ -281,6 +281,10 @@ export class AppManager {
 					getStatus() {
 						return Promise.resolve(AppStatus.COMPILER_ERROR_DISABLED);
 					},
+
+					on(): void {
+						return undefined;
+					},
 				} as unknown as DenoRuntimeSubprocessController);
 
 				this.apps.set(item.id, prl);

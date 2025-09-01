@@ -15,7 +15,7 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 	const fileUploadsEnabled = settings.get('FileUpload_Enabled');
 	const convertLongMessagesToAttachment = settings.get('Message_AllowConvertLongMessagesToAttachment');
 
-	if (chat.currentEditing || !fileUploadsEnabled || !convertLongMessagesToAttachment) {
+	if (chat.currentEditingMessage.getMID() || !fileUploadsEnabled || !convertLongMessagesToAttachment) {
 		dispatchToastMessage({ type: 'error', message: new Error(t('Message_too_long')) });
 		chat.composer?.setText(msg);
 		return true;
