@@ -113,13 +113,11 @@ export class OutgoingSipCall extends BaseSipCall {
 					cbProvisional: (provRes) => {
 						logger.debug({ msg: 'OutgoingSipCall.createDialog - got provisional response', provRes });
 					},
-					// #ToDo: fix types, check for errors
-					// @ts-expect-error: package exports invalid types
-					cbRequest: (_error: unknown, req: any) => {
+					cbRequest: (_error: unknown, req: SrfRequest) => {
 						logger.debug({ msg: 'OutgoingSipCall.createDialog - request initiated', req });
 						if (req) {
 							this.sipDialogReq = req;
-							req.on('response', (res: any, ack: any) => {
+							req.on('response', (res, ack) => {
 								logger.debug({ msg: 'OutgoingSipCall - request got a response', req, res, ack });
 							});
 						}

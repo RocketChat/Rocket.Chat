@@ -1,3 +1,5 @@
+import type { Socket } from 'net';
+
 import type { IMediaCall } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import Srf, { type SrfResponse, type SrfRequest } from 'drachtio-srf';
@@ -48,7 +50,7 @@ export class SipServerSession {
 	}
 
 	public reportInternalCallUpdate(callId: string): void {
-		console.log(callId);
+		logger.debug({ msg: 'SipServerSession.reportInternalCallUpdate', callId });
 	}
 
 	public registerCall(call: BaseSipCall): void {
@@ -74,7 +76,10 @@ export class SipServerSession {
 	public async createSipDialog(
 		sipExtension: string,
 		opts: Srf.CreateUACOptions,
-		progressCallbacks?: { cbRequest?: (req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Srf.SrfResponse) => void },
+		progressCallbacks?: {
+			cbRequest?: (error: unknown, req: Srf.SrfRequest) => void;
+			cbProvisional?: (provisionalRes: Srf.SrfResponse) => void;
+		},
 	): Promise<Srf.Dialog> {
 		const { host, port } = this.settings.sip.sipServer;
 		if (!host) {
@@ -92,33 +97,28 @@ export class SipServerSession {
 	}
 
 	private initializeDrachtio(): void {
-		console.log('initializeDrachtio');
+		logger.debug('Initializing Drachtio');
 		this.srf.on('connect', (err, hostport) => {
 			if (err) {
-				console.error('connection failed', err);
+				logger.error({ msg: 'Drachtio Connection Failed', err });
 				return;
 			}
 
-			console.log(`connected to a drachtio server listening on: ${hostport}`);
+			logger.info({ msg: 'Connected to a drachtio server', hostport });
 		});
 
-		// @ts-expect-error: The package is exporting wrong types
-		this.srf.on('error', (err: Error, socket: unknown) => this.onDrachtioError(err, socket));
+		this.srf.on('error', (err: unknown, socket?: Socket) => this.onDrachtioError(err, socket));
 
 		this.srf.use((req, _res, next) => {
-			console.log(`incoming ${req.method} from ${req.source_address}`);
+			logger.info({ msg: 'Incoming message from Drachtio', method: req.method, source: req.source_address });
 			next();
 		});
 
-		// this.srf.options((req, res) => {
-		// 	res.send(200);
-		// });
-
 		this.srf.invite((req, res) => {
-			console.log('received call on drachtio');
+			logger.info('Received a call on drachtio.');
 
 			void this.processInvite(req, res).catch((error) => {
-				console.error(error);
+				logger.error({ msg: 'Error processing Drachtio Invite', error });
 			});
 		});
 	}
@@ -128,12 +128,15 @@ export class SipServerSession {
 			return;
 		}
 
-		console.log('connecting to drachtio');
+		const { host, port = 9022, secret } = this.settings.sip.drachtio;
+
+		logger.info({ msg: 'Connecting to drachtio', host, port });
+
 		this.wasEverEnabled = true;
 		this.srf.connect({
-			host: this.settings.sip.drachtio.host,
-			port: this.settings.sip.drachtio.port ?? 9022,
-			secret: this.settings.sip.drachtio.secret,
+			host,
+			port,
+			secret,
 		});
 	}
 
@@ -163,16 +166,14 @@ export class SipServerSession {
 		res.send(exception.sipErrorCode);
 	}
 
-	private onDrachtioError(error: Error, socket: unknown): void {
-		console.error('error');
-		console.error(error);
+	private onDrachtioError(error: unknown, socket?: Socket): void {
+		logger.error({ msg: 'Drachtio Service Error', error });
 
 		if (this.isEnabledOnSettings(this.settings)) {
 			return;
 		}
 
 		try {
-			// @ts-expect-error: The package is exporting wrong types
 			this.srf.disconnect(socket);
 		} catch {
 			// Supress errors on socket disconnection
