@@ -87,7 +87,7 @@ const UpdateOAuthAppParamsSchema = {
 
 const isUpdateOAuthAppParams = ajv.compile<UpdateOAuthAppParams>(UpdateOAuthAppParamsSchema);
 
-type OauthAppsGetParams = { clientId: string } | { appId: string } | { _id: string };
+type OauthAppsGetParams = { clientId: string } | { _id: string };
 
 const oauthAppsGetParamsSchema = {
 	oneOf: [
@@ -109,16 +109,6 @@ const oauthAppsGetParamsSchema = {
 				},
 			},
 			required: ['clientId'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				appId: {
-					type: 'string',
-				},
-			},
-			required: ['appId'],
 			additionalProperties: false,
 		},
 	],
