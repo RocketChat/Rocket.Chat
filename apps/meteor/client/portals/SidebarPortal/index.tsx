@@ -6,7 +6,7 @@ import SidebarPortalV2 from './SidebarPortalV2';
 
 const SidebarPortal = ({ children }: { children: ReactNode }) => {
 	return (
-		<FeaturePreview feature='newNavigation'>
+		<FeaturePreview feature='secondarySidebar'>
 			<FeaturePreviewOff>
 				<SidebarPortalV1 children={children} />
 			</FeaturePreviewOff>
