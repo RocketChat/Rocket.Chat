@@ -54,11 +54,8 @@ export const useToggleSelect = (mid: string): ((event?: FormEvent<HTMLElement>) 
 
 	return useCallback(
 		(event) => {
+			event?.stopPropagation();
 			selectedMessageStore.toggle(mid);
-
-			if (event) {
-				event.stopPropagation();
-			}
 		},
 		[mid, selectedMessageStore],
 	);
