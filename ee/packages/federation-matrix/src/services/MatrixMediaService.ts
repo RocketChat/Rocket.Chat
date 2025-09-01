@@ -100,7 +100,7 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async createI(
+	static async createRemoteFileReference(
 		mxcUri: string,
 		metadata: {
 			name: string;
@@ -189,7 +189,7 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async getRemoteFileInfo(fileId: string): Promise<I | null> {
+	static async getRemoteFileInfo(fileId: string): Promise<IRemoteFileReference | null> {
 		try {
 			const file = (await Uploads.findOneById(fileId)) as IUploadWithFederation | null;
 			if (!file || !(file as any)?.federation?.isRemote) {
