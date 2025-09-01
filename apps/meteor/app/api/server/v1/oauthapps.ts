@@ -8,7 +8,6 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
 import { deleteOAuthApp } from '../../../oauth2-server-config/server/admin/methods/deleteOAuthApp';
 import { updateOAuthApp } from '../../../oauth2-server-config/server/admin/methods/updateOAuthApp';
@@ -290,10 +289,6 @@ const oauthAppsEndpoints = API.v1
 
 			if (!oauthApp) {
 				return API.v1.failure('OAuth app not found.');
-			}
-
-			if ('appId' in this.queryParams) {
-				apiDeprecationLogger.parameter(this.route, 'appId', '7.0.0', this.response);
 			}
 
 			return API.v1.success({
