@@ -118,14 +118,13 @@ export type ChatAPI = {
 		editMessage(message: IMessage, options?: { cursorAtStart?: boolean }): Promise<void>;
 	};
 
-	readonly currentEditing:
-		| {
-				readonly mid: IMessage['_id'];
-				reset(): Promise<boolean>;
-				stop(): Promise<void>;
-				cancel(): Promise<void>;
-		  }
-		| undefined;
+	readonly currentEditingMessage: {
+		setMID(mid: IMessage['_id']): void;
+		getMID(): string | undefined;
+		reset(): Promise<boolean>;
+		stop(): Promise<void>;
+		cancel(): Promise<void>;
+	};
 
 	readonly emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;

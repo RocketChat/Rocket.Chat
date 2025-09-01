@@ -23,7 +23,7 @@
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.16.1",
 		"ts-node": "^10.9.2",
-		"turbo": "~2.5.5",
+		"turbo": "~2.5.6",
 		"typescript": "~5.9.2"
 	},
 	"workspaces": [
@@ -44,10 +44,10 @@
 	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"engines": {
-		"yarn": "4.9.2",
+		"yarn": "4.9.3",
 		"node": "22.16.0"
 	},
-	"packageManager": "yarn@4.9.2",
+	"packageManager": "yarn@4.9.3",
 	"houston": {
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
@@ -57,7 +57,7 @@
 	},
 	"volta": {
 		"node": "22.16.0",
-		"yarn": "4.9.2"
+		"yarn": "4.9.3"
 	},
 	"resolutions": {
 		"@react-pdf/fns": "2.0.1",

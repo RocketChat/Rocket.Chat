@@ -9,7 +9,8 @@ export const processMessageEditing = async (
 	message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>,
 	previewUrls?: string[],
 ): Promise<boolean> => {
-	if (!chat.currentEditing) {
+	const mid = chat.currentEditingMessage.getMID();
+	if (!mid) {
 		return false;
 	}
 
@@ -22,12 +23,12 @@ export const processMessageEditing = async (
 	}
 
 	try {
-		await chat.data.updateMessage({ ...message, _id: chat.currentEditing.mid }, previewUrls);
+		await chat.data.updateMessage({ ...message, _id: mid }, previewUrls);
 	} catch (error) {
 		dispatchToastMessage({ type: 'error', message: error });
 	}
 
-	chat.currentEditing.stop();
+	chat.currentEditingMessage.stop();
 
 	return true;
 };
