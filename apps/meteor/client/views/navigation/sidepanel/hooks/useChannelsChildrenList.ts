@@ -1,11 +1,9 @@
-import type { ISubscription } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useShallow } from 'zustand/shallow';
 
 import { pipe } from '../../../../lib/cachedStores';
 import { Subscriptions } from '../../../../stores';
-
-const filterUnread = (subscription: ISubscription, unreadOnly: boolean) => !unreadOnly || subscription.unread > 0;
+import { isUnreadSubscription } from '../../contexts/RoomsNavigationContext';
 
 const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
 
@@ -13,9 +11,31 @@ const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
  * This helper function is used to ensure that the main room (main team room or parent's discussion room)
  * is always at the top of the list.
  */
-const getMainRoomAndSort = (records: SubscriptionWithRoom[]) => {
-	const [mainRoom, ...rest] = records;
-	return [mainRoom, ...sortByLmPipe.apply(rest)];
+const getMainRoomAndSort = (records: SubscriptionWithRoom[], unreadOnly: boolean) => {
+	const mainRoom = records.find((record) => record.teamMain || (!record.prid && !record.teamId));
+	const filteredRecords = records.filter((record) => mainRoom?.rid !== record.rid);
+	const sortedRecords = sortByLmPipe.apply(filteredRecords);
+	const rest = !unreadOnly
+		? sortedRecords
+		: sortedRecords
+				.reduce(
+					(result, record) => {
+						if (isUnreadSubscription(record)) {
+							result[0].push(record);
+							return result;
+						}
+						result[1].push(record);
+						return result;
+					},
+					[[] as SubscriptionWithRoom[], [] as SubscriptionWithRoom[]],
+				)
+				.flat();
+
+	if (mainRoom) {
+		rest.unshift(mainRoom);
+	}
+
+	return rest;
 };
 
 export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, teamId?: string) => {
@@ -23,19 +43,15 @@ export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, 
 		useShallow((state) => {
 			const records = state.filter((subscription) => {
 				if (parentRid === subscription.prid || parentRid === subscription.rid) {
-					return filterUnread(subscription, unreadOnly);
+					return true;
 				}
 				if (teamId && subscription.teamId === teamId) {
-					return filterUnread(subscription, unreadOnly);
+					return true;
 				}
 				return false;
 			});
 
-			if (!records.length) {
-				return [];
-			}
-
-			return getMainRoomAndSort(records);
+			return getMainRoomAndSort(records, unreadOnly);
 		}),
 	);
 };

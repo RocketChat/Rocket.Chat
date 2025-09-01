@@ -12,7 +12,6 @@ const TeamCollabFilters = () => {
 	return (
 		<Box role='tablist' aria-label={t('Team_collaboration_filters')} aria-orientation='vertical' mbs={8}>
 			<RoomListFiltersItem group='all' icon={sidePanelFiltersConfig.all.icon} />
-			<RoomListFiltersItem group='mentions' icon={sidePanelFiltersConfig.mentions.icon} />
 			<RoomListFiltersItem group='favorites' icon={sidePanelFiltersConfig.favorites.icon} />
 			{isDiscussionEnabled && <RoomListFiltersItem group='discussions' icon={sidePanelFiltersConfig.discussions.icon} />}
 		</Box>

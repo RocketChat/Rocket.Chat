@@ -14,7 +14,6 @@ import {
 	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatStarMessageProps,
-	isChatUnpinMessageProps,
 	isChatUnstarMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
@@ -179,7 +178,23 @@ type ChatPinMessage = {
 	messageId: IMessage['_id'];
 };
 
+type ChatUnpinMessage = {
+	messageId: IMessage['_id'];
+};
+
 const ChatPinMessageSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnpinMessageSchema = {
 	type: 'object',
 	properties: {
 		messageId: {
@@ -193,44 +208,81 @@ const ChatPinMessageSchema = {
 
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
-const chatPinMessageEndpoints = API.v1.post(
-	'chat.pinMessage',
-	{
-		authRequired: true,
-		body: isChatPinMessageProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{ message: IMessage }>({
-				type: 'object',
-				properties: {
-					message: { $ref: '#/components/schemas/IMessage' },
-					success: {
-						type: 'boolean',
-						enum: [true],
+const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+const chatEndpoints = API.v1
+	.post(
+		'chat.pinMessage',
+		{
+			authRequired: true,
+			body: isChatPinMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
 					},
-				},
-				required: ['message', 'success'],
-				additionalProperties: false,
-			}),
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
 		},
-	},
-	async function action() {
-		const msg = await Messages.findOneById(this.bodyParams.messageId);
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
-		if (!msg) {
-			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-		}
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
 
-		const pinnedMessage = await pinMessage(msg, this.userId);
+			const pinnedMessage = await pinMessage(msg, this.userId);
 
-		const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
+			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
 
-		return API.v1.success({
-			message,
-		});
-	},
-);
+			return API.v1.success({
+				message,
+			});
+		},
+	)
+	.post(
+		'chat.unPinMessage',
+		{
+			authRequired: true,
+			body: isChatUnpinMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await unpinMessage(this.userId, msg);
+
+			return API.v1.success();
+		},
+	);
 
 API.v1.addRoute(
 	'chat.postMessage',
@@ -341,24 +393,6 @@ API.v1.addRoute(
 				rid: msg.rid,
 				starred: true,
 			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unPinMessage',
-	{ authRequired: true, validateParams: isChatUnpinMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			await unpinMessage(this.userId, msg);
 
 			return API.v1.success();
 		},
@@ -884,11 +918,9 @@ API.v1.addRoute(
 	},
 );
 
-type ChatPinMessageEndpoints = ExtractRoutesFromAPI<typeof chatPinMessageEndpoints>;
-
-export type ChatEndpoints = ChatPinMessageEndpoints;
+export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChatPinMessageEndpoints {}
+	interface Endpoints extends ChatEndpoints {}
 }

@@ -449,25 +449,6 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.favoritesTeamCollabFilter).toHaveAttribute('aria-selected', 'true');
 		});
 
-		test('should open parent team when clicking button on sidepanel discussion item', async ({ page }) => {
-			await page.goto(`/group/${sidepanelTeam}`);
-
-			const discussionName = faker.string.uuid();
-			await poHomeChannel.content.btnMenuMoreActions.click();
-			await page.getByRole('menuitem', { name: 'Discussion' }).click();
-			await poHomeChannel.content.inputDiscussionName.fill(discussionName);
-			await poHomeChannel.content.btnCreateDiscussionModal.click();
-
-			await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
-
-			await expect(poHomeChannel.sidepanel.getItemByName(discussionName).getByRole('button', { name: sidepanelTeam })).toBeVisible();
-
-			await poHomeChannel.sidepanel.getItemByName(discussionName).getByRole('button', { name: sidepanelTeam }).click();
-
-			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
-			await expect(page.getByRole('heading', { name: sidepanelTeam })).toBeVisible();
-		});
-
 		test('should show all filters and tablist on sidepanel', async ({ page }) => {
 			await page.goto('/home');
 
@@ -475,7 +456,6 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidebar.omnichannelFilters).toBeVisible();
 
 			await expect(poHomeChannel.sidebar.allTeamCollabFilter).toBeVisible();
-			await expect(poHomeChannel.sidebar.mentionsTeamCollabFilter).toBeVisible();
 			await expect(poHomeChannel.sidebar.favoritesTeamCollabFilter).toBeVisible();
 			await expect(poHomeChannel.sidebar.discussionsTeamCollabFilter).toBeVisible();
 		});
@@ -555,7 +535,6 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.sidepanel.unreadToggleLabel.click();
 
 			await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-			await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
 
 			await test.step('send a thread message from another user', async () => {
 				await user1Page.goto(`/channel/${targetChannel}`);
@@ -565,7 +544,6 @@ test.describe.serial('feature preview', () => {
 				await user1Channel.content.sendMessageInThread('hello thread');
 			});
 
-			await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).not.toBeVisible();
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			await expect(
 				poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 unread threaded message' }),
@@ -574,15 +552,12 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.sidepanel.getItemByName(targetChannel).click();
 			await poHomeChannel.content.waitForChannel();
 
-			await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).not.toBeVisible();
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 			await expect(
 				poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 unread threaded message' }),
 			).toBeVisible();
 
 			await poHomeChannel.content.openReplyInThread();
-
-			await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
 			await user1Page.close();
 		});
 
@@ -613,17 +588,10 @@ test.describe.serial('feature preview', () => {
 				await poHomeChannel.sidepanel.unreadToggleLabel.click();
 
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
-
-				await poHomeChannel.sidebar.mentionsTeamCollabFilter.click();
-
-				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread mentions' })).toBeVisible();
 
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread favorite rooms' })).toBeVisible();
 			});
 
 			await poHomeChannel.navbar.homeButton.click();
@@ -637,19 +605,11 @@ test.describe.serial('feature preview', () => {
 			await test.step('unread mentions badge should be visible on all filters', async () => {
 				await poHomeChannel.sidebar.allTeamCollabFilter.click();
 
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).not.toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 mention' })).toBeVisible();
 				await expect(poHomeChannel.sidebar.allTeamCollabFilter.getByRole('status', { name: '1 mention from All' })).toBeVisible();
 
-				await poHomeChannel.sidebar.mentionsTeamCollabFilter.click();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread mentions' })).not.toBeVisible();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 mention' })).toBeVisible();
-				await expect(poHomeChannel.sidebar.mentionsTeamCollabFilter.getByRole('status', { name: '1 mention from Mentions' })).toBeVisible();
-
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread favorite rooms' })).not.toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 mention' })).toBeVisible();
 				await expect(
@@ -664,25 +624,14 @@ test.describe.serial('feature preview', () => {
 
 			await test.step('unread mentions badge should not be visible on any filters', async () => {
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
-
-				await poHomeChannel.sidebar.mentionsTeamCollabFilter.click();
-
-				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread mentions' })).toBeVisible();
 
 				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread favorite rooms' })).toBeVisible();
 
 				await poHomeChannel.sidebar.allTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.unreadCheckbox).toBeChecked();
-				await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).not.toBeVisible();
-				await expect(poHomeChannel.sidepanel.sidepanel.getByRole('heading', { name: 'No unread rooms' })).toBeVisible();
 			});
 
 			await user1Page.close();
@@ -744,10 +693,10 @@ test.describe.serial('feature preview', () => {
 				await expect(poHomeChannel.sidebar.sidebar).toBeVisible();
 				await expect(poHomeChannel.sidepanel.sidepanel).not.toBeVisible();
 
-				await poHomeChannel.sidebar.mentionsTeamCollabFilter.click();
+				await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 				await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
-				await expect(poHomeChannel.sidepanel.getSidepanelHeader('Mentions')).toBeVisible();
+				await expect(poHomeChannel.sidepanel.getSidepanelHeader('Favorites')).toBeVisible();
 			});
 
 			test('should close nav region when clicking outside of it', async ({ page }) => {
@@ -805,21 +754,19 @@ test.describe.serial('feature preview', () => {
 			});
 		});
 
-		test('should not open rooms when clicking on sidebar filters', async ({ page }) => {
+		test('should open rooms when clicking on sidebar filter', async ({ page }) => {
 			await page.goto('/home');
 
 			await poHomeChannel.sidenav.waitForHome();
 
 			await expect(poHomeChannel.sidebar.channelsList).toBeVisible();
-			// TODO: flaky without force click, for some reason opens 2nd channel in list
 			await poHomeChannel.sidebar.getSearchRoomByName(sidepanelTeam).click({ force: true });
 
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
 
 			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
-			await expect(page).toHaveURL('/home');
-			await expect(poHomeChannel.sidenav.homepageHeader).toBeVisible();
+			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 		});
 
 		test('should open room when clicking on sidepanel item', async ({ page }) => {

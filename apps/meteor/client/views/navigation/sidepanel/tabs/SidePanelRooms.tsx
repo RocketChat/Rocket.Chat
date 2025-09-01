@@ -1,5 +1,6 @@
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
 
+import SidePanelAll from './SidePanelAll';
 import SidePanelChannels from './SidePanelChannels';
 import SidePanelTeams from './SidePanelTeams';
 import { withErrorBoundary } from '../../../../components/withErrorBoundary';
@@ -10,7 +11,7 @@ const SidePanelRooms = ({ parentRid }: { parentRid: string }) => {
 	const subscription = useUserSubscription(parentRid);
 
 	if (!subscription) {
-		return null;
+		return <SidePanelAll />;
 	}
 
 	switch (currentTab) {
@@ -19,8 +20,6 @@ const SidePanelRooms = ({ parentRid }: { parentRid: string }) => {
 		case 'channels':
 		case 'directMessages':
 			return <SidePanelChannels parentRid={parentRid} subscription={subscription} />;
-		default:
-			return null;
 	}
 };
 

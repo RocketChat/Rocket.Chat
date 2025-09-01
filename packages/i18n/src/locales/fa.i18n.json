@@ -3110,8 +3110,10 @@
   "your_message": "پیام شما",
   "your_message_optional": "پیام شما(انتخابی)",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} اتاق خالی به طور خودکار حذف خواهد شد.",
-  "__count__message_pruned_one": "{{count}} پیام حذف شد",
-  "__count__message_pruned_other": "{{count}} پیام‌ حذف شد",
+  "__count__message_pruned": {
+    "one": "{{count}} پیام حذف شد",
+    "other": "{{count}} پیام‌ حذف شد"
+  },
   "__roomName__was_added_to_favorites": "{{roomName}} به موارد دلخواه اضافه شد",
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} دیگر توسط {{user_by}} {{role}} نمی شود",
   "__username__was_set__role__by__user_by_": "{{username}} توسط {{user_by}} به عنوان {{role}} تعیین شد"

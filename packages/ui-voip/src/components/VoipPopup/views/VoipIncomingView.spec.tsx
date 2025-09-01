@@ -5,9 +5,21 @@ import userEvent from '@testing-library/user-event';
 import VoipIncomingView from './VoipIncomingView';
 import { createMockFreeSwitchExtensionDetails, createMockVoipIncomingSession } from '../../../tests/mocks';
 
-const appRoot = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails());
+const appRoot = mockAppRoot()
+	.withEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails', () => createMockFreeSwitchExtensionDetails())
+	.withMicrophonePermissionState({ state: 'granted' } as PermissionStatus);
 
 const incomingSession = createMockVoipIncomingSession();
+
+Object.defineProperty(global.navigator, 'mediaDevices', {
+	value: {
+		getUserMedia: jest.fn().mockImplementation(() => {
+			return Promise.resolve({
+				getTracks: () => [],
+			});
+		}),
+	},
+});
 
 it('should properly render incoming view', async () => {
 	render(<VoipIncomingView session={incomingSession} />, { wrapper: appRoot.build() });

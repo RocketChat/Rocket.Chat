@@ -486,8 +486,10 @@
   "App_Url_to_Install_From_File": "Installera från fil",
   "App_author_homepage": "författarens hemsida",
   "App_cannot_be_enabled_without_add-on": "Appen kan inte aktiveras utan tillägg.",
-  "App_has_been_disabled_addon_message_one": "Appen {{appNames}} har inaktiverats på grund av ett ogiltigt tillägg. En giltig tilläggsprenumeration krävs för att återaktivera den",
-  "App_has_been_disabled_addon_message_other": "Apparna {{appNames}} har inaktiverats på grund av ogiltiga tillägg. En giltig tilläggsprenumeration krävs för att återaktivera dem",
+  "App_has_been_disabled_addon_message": {
+    "one": "Appen {{appNames}} har inaktiverats på grund av ett ogiltigt tillägg. En giltig tilläggsprenumeration krävs för att återaktivera den",
+    "other": "Apparna {{appNames}} har inaktiverats på grund av ogiltiga tillägg. En giltig tilläggsprenumeration krävs för att återaktivera dem"
+  },
   "App_id": "App-ID",
   "App_limit_exceeded": "App-gränsen har överskridits",
   "App_limit_reached": "App-gränsen har nåtts",
@@ -521,8 +523,10 @@
   "Apply_filters": "Tillämpa filter",
   "Apps": "Appar",
   "Apps_Cannot_Be_Updated": "Appen kan inte uppdateras",
-  "Apps_Count_Enabled_one": "{{count}} app aktiverad",
-  "Apps_Count_Enabled_other": "{{count}} appar aktiverade",
+  "Apps_Count_Enabled": {
+    "one": "{{count}} app aktiverad",
+    "other": "{{count}} appar aktiverade"
+  },
   "Apps_Count_Enabled_tooltip": "Arbetsytorna i Community Edition kan aktivera upp till {{number}} {{context}} appar",
   "Apps_Currently_Enabled": "{{enabled}} av {{limit}} {{context}}-appar är för närvarande aktiverade.",
   "Apps_Engine_Version": "App Engine-version",
@@ -913,10 +917,11 @@
   "Calling": "Ringer upp",
   "Calling__roomName__": "Uppringning {{roomName}}",
   "Calls": "Samtal",
-  "Calls_in_queue": "{{calls}} samtal i kö",
-  "Calls_in_queue_one": "{{count}} samtal i kö",
-  "Calls_in_queue_other": "{{count}} samtal i kö",
-  "Calls_in_queue_zero": "Kön är tom",
+  "Calls_in_queue": {
+    "zero": "Kön är tom",
+    "one": "{{count}} samtal i kö",
+    "other": "{{count}} samtal i kö"
+  },
   "Cam_off": "Kamera av",
   "Cam_on": "Kamera på",
   "Camera_access_not_allowed": "Kameraåtkomst är inte tillåten, kontrollera inställningarna i din webbläsare.",
@@ -2251,8 +2256,10 @@
   "Flags": "Flaggor",
   "Follow_message": "Följ meddelandet",
   "Follow_social_profiles": "Följ våra sociala mediakonton, forka oss på github och dela med dig av dina tankar om rocket.chatt på vår Trello.",
-  "Follower_one": "Följare",
-  "Follower_other": "Följare",
+  "Follower": {
+    "one": "Följare",
+    "other": "Följare"
+  },
   "Following": "Följer",
   "Font_size": "Teckenstorlek",
   "Fonts": "Typsnitt",
@@ -4020,8 +4027,10 @@
   "Privacy_summary": "Integritetsöversikt",
   "Private": "Privat",
   "Private_Apps": "Privata appar",
-  "Private_Apps_Count_Enabled_one": "{{count}} privat app aktiverad",
-  "Private_Apps_Count_Enabled_other": "{{count}} privata appar aktiverade",
+  "Private_Apps_Count_Enabled": {
+    "one": "{{count}} privat app aktiverad",
+    "other": "{{count}} privata appar aktiverade"
+  },
   "Private_Channel": "Privat kanal",
   "Private_Channels": "Privata kanaler",
   "Private_Chats": "Privata chattar",
@@ -6193,8 +6202,10 @@
   "get-server-info_description": "Behörighet att hämta serverinformation",
   "github_HEAD": "HEAD",
   "github_no_public_email": "Du har inte någon publik epostadress i ditt GitHub-konto",
-  "group_mentions_counter_one": "{{count}} gruppomnämnande",
-  "group_mentions_counter_other": "{{count}} gruppomnämnanden",
+  "group_mentions_counter": {
+    "one": "{{count}} gruppomnämnande",
+    "other": "{{count}} gruppomnämnanden"
+  },
   "hours": "timmar",
   "if_they_are_from": "(om de är från %s)",
   "importer_status_done": "Slutfört",
@@ -6322,13 +6333,17 @@
   "mention-all_description": "Tillstånd att använda @all ",
   "mention-here": "Nämna här",
   "mention-here_description": "Tillstånd att använda @here ",
-  "mentions_counter_one": "{{count}} omnämnande",
-  "mentions_counter_other": "{{count}} omnämnanden",
+  "mentions_counter": {
+    "one": "{{count}} omnämnande",
+    "other": "{{count}} omnämnanden"
+  },
   "message": "meddelande",
   "message-impersonate": "Utge sig för att vara andra användare",
   "message-impersonate_description": "Behörighet att utge sig för att vara andra med hjälp av alias för meddelanden",
-  "message_counter_one": "{{count}} meddelande",
-  "message_counter_other": "{{count}} meddelanden",
+  "message_counter": {
+    "one": "{{count}} meddelande",
+    "other": "{{count}} meddelanden"
+  },
   "message_pruned": "meddelande beskuret",
   "messages": "Meddelanden",
   "messages_pruned": "meddelanden beskurna",
@@ -6336,8 +6351,10 @@
   "meteor_status_connecting": "Ansluter...",
   "meteor_status_failed": "Det gick inte att ansluta till servern",
   "meteor_status_offline": "Offlineläge.",
-  "meteor_status_reconnect_in_one": "Försöker återansluta om {{count}} sekunder",
-  "meteor_status_reconnect_in_other": "försöker igen om {{count}} sekunder...",
+  "meteor_status_reconnect_in": {
+    "one": "Försöker återansluta om {{count}} sekunder",
+    "other": "försöker igen om {{count}} sekunder..."
+  },
   "meteor_status_try_again_later": "Försök igen senare eller be din administratör för arbetsytan om hjälp",
   "meteor_status_try_now_offline": "Anslut igen",
   "meteor_status_try_now_waiting": "Försök nu",
@@ -6613,10 +6630,14 @@
   "subscription.callout.activeUsers": "platser",
   "subscription.callout.allPremiumCapabilitiesDisabled": "Alla premiumfunktioner inaktiverade",
   "subscription.callout.capabilitiesDisabled": "Funktioner inaktiverade",
-  "subscription.callout.description.limitsExceeded_one": "Din arbetsyta har överskridit <1>{{val}}</1> licensgränsen. <3>Hantera din prenumeration</3> för att öka gränserna.",
-  "subscription.callout.description.limitsExceeded_other": "Din arbetsyta överskred licensgränserna <1>{{val, list}}</1> licensgränserna. <3>Hantera din prenumeration</3> för att öka gränserna.",
-  "subscription.callout.description.limitsReached_one": "Din arbetsyta har nått <1>{{val}}</1> licensgräns. <3>Hantera din prenumeration</3> för att öka gränserna.",
-  "subscription.callout.description.limitsReached_other": "Din arbetsyta har nått <1>{{val, list}}</1> licensgränser. <3>Hantera din prenumeration</3> för att öka gränserna.",
+  "subscription.callout.description.limitsExceeded": {
+    "one": "Din arbetsyta har överskridit <1>{{val}}</1> licensgränsen. <3>Hantera din prenumeration</3> för att öka gränserna.",
+    "other": "Din arbetsyta överskred licensgränserna <1>{{val, list}}</1> licensgränserna. <3>Hantera din prenumeration</3> för att öka gränserna."
+  },
+  "subscription.callout.description.limitsReached": {
+    "one": "Din arbetsyta har nått <1>{{val}}</1> licensgräns. <3>Hantera din prenumeration</3> för att öka gränserna.",
+    "other": "Din arbetsyta har nått <1>{{val, list}}</1> licensgränser. <3>Hantera din prenumeration</3> för att öka gränserna."
+  },
   "subscription.callout.guestUsers": "gäster",
   "subscription.callout.marketplaceApps": "installerade marknadsplatsappar",
   "subscription.callout.monthlyActiveContacts": "aktiva kontakter varje månad",
@@ -6689,8 +6710,10 @@
   "thread_message": "trådmeddelande",
   "thread_messages": "Trådade meddelanden",
   "thread_message_preview": "förhandsgranskning av trådmeddelande",
-  "threads_counter_one": "{{count}} oläst trådat meddelande",
-  "threads_counter_other": "{{count}} olästa trådade meddelanden",
+  "threads_counter": {
+    "one": "{{count}} oläst trådat meddelande",
+    "other": "{{count}} olästa trådade meddelanden"
+  },
   "to_see_more_details_on_how_to_integrate": "för att se mer information om hur man kan integrera.",
   "toggle-room-e2e-encryption": "Växla Rummets E2E-kryptering",
   "toggle-room-e2e-encryption_description": "Behörighet att växla rummets E2E-kryptering",
@@ -6708,8 +6731,10 @@
   "unauthorized": "ej tillåtet",
   "unblock-livechat-contact": "Avblockera kontaktkanalen Omnichannel",
   "unpinning-not-allowed": "Det är inte tillåtet att lossa",
-  "unread_messages_counter_one": "{{count}} oläst meddelande",
-  "unread_messages_counter_other": "{{count}} olästa meddelanden",
+  "unread_messages_counter": {
+    "one": "{{count}} oläst meddelande",
+    "other": "{{count}} olästa meddelanden"
+  },
   "update-livechat-contact": "Uppdatera Omnichannel-kontakter",
   "used_limit": "{{used, number}} / {{limit, number}}",
   "used_limit_infinite": "{{used, number}} / ∞",
@@ -6845,12 +6870,18 @@
   "__count__conversations__period__": "{{count}} samtal, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} tomma rum tas bort automatiskt.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> tomma rum tas bort automatiskt:<br/> {{rooms}}.",
-  "__count__file_pruned_one": "{{count}} fil gallrad",
-  "__count__file_pruned_other": "{{count}} filer gallrade",
-  "__count__follower_one": "+{{count}} följare",
-  "__count__follower_other": "+{{count}} följare",
-  "__count__message_pruned_one": "{{count}} meddelande rensat",
-  "__count__message_pruned_other": "{{count}} meddelanden rensade",
+  "__count__file_pruned": {
+    "one": "{{count}} fil gallrad",
+    "other": "{{count}} filer gallrade"
+  },
+  "__count__follower": {
+    "one": "+{{count}} följare",
+    "other": "+{{count}} följare"
+  },
+  "__count__message_pruned": {
+    "one": "{{count}} meddelande rensat",
+    "other": "{{count}} meddelanden rensade"
+  },
   "__count__messages_selected": "{{count}} valda meddelanden",
   "__count__replies": "{{count}} svar",
   "__count__replies__date__": "{{count}} svar, {{date}}",
