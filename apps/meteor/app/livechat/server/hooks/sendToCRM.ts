@@ -143,14 +143,13 @@ export async function sendToCRM(
 
 	// do not wait for the request to be answered
 	// this will avoid blocking the process of saving the message
-	setTimeout(async () => {
-		await sendRequest(responseData, 5, async (response: Response) => {
-			if (response) {
-				const responseData = await response.text();
-				await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
-			}
-		});
-	}, 0);
+	void sendRequest(responseData, 5, async (response: Response) => {
+		if (!response) {
+			return;
+		}
+		const responseData = await response.text();
+		await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
+	});
 
 	return room;
 }
