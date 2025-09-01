@@ -265,7 +265,7 @@ class WebRTCClass {
 		};
 		this.debug = false;
 		this.TransportClass = WebRTCTransportClass;
-		let servers = settings.get<string>('WebRTC_Servers');
+		let servers = settings.watch<string>('WebRTC_Servers');
 		if (servers && servers.trim() !== '') {
 			servers = servers.replace(/\s/g, '');
 
@@ -1035,21 +1035,21 @@ const WebRTC = new (class {
 			}
 			switch (subscription.t) {
 				case 'd':
-					enabled = settings.get('WebRTC_Enable_Direct');
+					enabled = settings.watch('WebRTC_Enable_Direct');
 					break;
 				case 'p':
-					enabled = settings.get('WebRTC_Enable_Private');
+					enabled = settings.watch('WebRTC_Enable_Private');
 					break;
 				case 'c':
-					enabled = settings.get('WebRTC_Enable_Channel');
+					enabled = settings.watch('WebRTC_Enable_Channel');
 					break;
 				case 'l':
-					enabled = settings.get<string>('Omnichannel_call_provider') === 'WebRTC';
+					enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
 			}
 		} else {
-			enabled = settings.get<string>('Omnichannel_call_provider') === 'WebRTC';
+			enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
 		}
-		enabled = enabled && settings.get('WebRTC_Enabled');
+		enabled = enabled && settings.watch('WebRTC_Enabled');
 		if (enabled === false) {
 			return;
 		}

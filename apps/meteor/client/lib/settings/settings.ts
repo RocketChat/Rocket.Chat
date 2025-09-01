@@ -1,41 +1,58 @@
+import type { SettingValue } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { watch } from '../cachedStores';
-import { SettingsBase } from './SettingsBase';
 import { PublicSettings } from '../../stores';
+import { watch } from '../cachedStores';
 
-class Settings extends SettingsBase {
+type SettingCallback = (key: string, value: SettingValue) => void;
+
+class Settings {
 	private readonly store = PublicSettings.use;
 
-	override get<TValue = any>(_id: string | RegExp, ...args: []): TValue {
-		if (_id instanceof RegExp) {
-			throw new Error('RegExp Settings.get(RegExp)');
-		}
-		if (args.length > 0) {
-			throw new Error('settings.get(String, callback) only works on backend');
-		}
-
+	watch<TValue = any>(_id: string): TValue {
 		return watch(this.store, (state) => state.get(_id)?.value) as TValue;
 	}
 
 	init(): void {
-		let initialLoad = true;
 		this.store.subscribe((state) => {
 			const removedIds = new Set(Object.keys(Meteor.settings)).difference(new Set(state.records.keys()));
 
 			for (const _id of removedIds) {
 				delete Meteor.settings[_id];
-				this.load(_id, undefined, initialLoad);
+				this.load(_id, undefined);
 			}
 
 			for (const setting of state.records.values()) {
 				if (setting.value !== Meteor.settings[setting._id]) {
 					Meteor.settings[setting._id] = setting.value;
-					this.load(setting._id, setting.value, initialLoad);
+					this.load(setting._id, setting.value);
 				}
 			}
 		});
-		initialLoad = false;
+	}
+
+	private callbacks = new Map<string, SettingCallback[]>();
+
+	load(key: string, value: SettingValue): void {
+		['*', key].forEach((item) => {
+			const callbacks = this.callbacks.get(item);
+			if (callbacks) {
+				callbacks.forEach((callback) => callback(key, value));
+			}
+		});
+	}
+
+	onload(key: string, callback: SettingCallback): void {
+		// if key is '*'
+		// 	for key, value in Meteor.settings
+		// 		callback key, value, false
+		// else if Meteor.settings?[_id]?
+		// 	callback key, Meteor.settings[_id], false
+
+		if (!this.callbacks.has(key)) {
+			this.callbacks.set(key, []);
+		}
+		this.callbacks.get(key)?.push(callback);
 	}
 }
 

@@ -43,5 +43,5 @@ export function getUserPreference<TValue>(
 	defaultValue?: TValue,
 ): TValue {
 	const user = typeof userIdOrUser === 'string' ? Users.state.get(userIdOrUser) : userIdOrUser;
-	return user?.settings?.preferences?.[key] ?? defaultValue ?? settings.get(`Accounts_Default_User_Preferences_${key}`);
+	return user?.settings?.preferences?.[key] ?? defaultValue ?? settings.watch(`Accounts_Default_User_Preferences_${key}`);
 }

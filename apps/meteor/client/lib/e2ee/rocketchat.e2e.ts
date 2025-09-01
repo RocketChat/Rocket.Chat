@@ -755,7 +755,7 @@ class E2E extends Emitter {
 
 		await Promise.all(
 			urls.map(async (url) => {
-				if (!url.includes(settings.get('Site_Url'))) {
+				if (!url.includes(settings.watch('Site_Url'))) {
 					return;
 				}
 
@@ -782,7 +782,7 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
-				const useRealName = settings.get('UI_Use_Real_Name');
+				const useRealName = settings.watch('UI_Use_Real_Name');
 				const quoteAttachment = createQuoteAttachment(
 					decryptedQuoteMessage,
 					url,
@@ -790,7 +790,7 @@ class E2E extends Emitter {
 					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
 				);
 
-				message.attachments.push(limitQuoteChain(quoteAttachment, settings.get('Message_QuoteChainLimit') ?? 2));
+				message.attachments.push(limitQuoteChain(quoteAttachment, settings.watch('Message_QuoteChainLimit') ?? 2));
 			}),
 		);
 

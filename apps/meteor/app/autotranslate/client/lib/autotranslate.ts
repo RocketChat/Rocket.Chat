@@ -103,7 +103,7 @@ export const AutoTranslate = {
 
 		Tracker.autorun(async (c) => {
 			const uid = Meteor.userId();
-			if (!settings.get('AutoTranslate_Enabled') || !uid || !hasPermission('auto-translate')) {
+			if (!settings.watch('AutoTranslate_Enabled') || !uid || !hasPermission('auto-translate')) {
 				return;
 			}
 

@@ -58,7 +58,7 @@ const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
 };
 
 const getInquiriesFromAPI = async () => {
-	const count = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
+	const count = settings.watch('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
 	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', { count });
 	return inquiries;
 };

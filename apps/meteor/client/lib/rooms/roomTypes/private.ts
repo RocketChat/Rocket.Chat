@@ -32,7 +32,7 @@ roomCoordinator.add(
 				case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
 					return Boolean(!room.broadcast && room.ro);
 				case RoomSettingsEnum.E2E:
-					return settings.get('E2E_Enable') === true;
+					return settings.watch('E2E_Enable') === true;
 				case RoomSettingsEnum.SYSTEM_MESSAGES:
 				default:
 					return true;
@@ -55,7 +55,7 @@ roomCoordinator.add(
 			if (roomData.prid || isRoomFederated(roomData)) {
 				return roomData.fname;
 			}
-			if (settings.get('UI_Allow_room_names_with_special_chars')) {
+			if (settings.watch('UI_Allow_room_names_with_special_chars')) {
 				return roomData.fname || roomData.name;
 			}
 

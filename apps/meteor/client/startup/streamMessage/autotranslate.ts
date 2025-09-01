@@ -7,7 +7,7 @@ import { settings } from '../../lib/settings';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {
-		const isEnabled = settings.get('AutoTranslate_Enabled') && hasPermission('auto-translate');
+		const isEnabled = settings.watch('AutoTranslate_Enabled') && hasPermission('auto-translate');
 
 		if (!isEnabled) {
 			callbacks.remove('streamMessage', 'autotranslate-stream');

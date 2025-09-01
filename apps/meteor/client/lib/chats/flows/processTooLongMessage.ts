@@ -7,13 +7,13 @@ import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
 export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
-	const maxAllowedSize = settings.get('Message_MaxAllowedSize');
+	const maxAllowedSize = settings.watch('Message_MaxAllowedSize');
 
 	if (msg.length <= maxAllowedSize) {
 		return false;
 	}
-	const fileUploadsEnabled = settings.get('FileUpload_Enabled');
-	const convertLongMessagesToAttachment = settings.get('Message_AllowConvertLongMessagesToAttachment');
+	const fileUploadsEnabled = settings.watch('FileUpload_Enabled');
+	const convertLongMessagesToAttachment = settings.watch('Message_AllowConvertLongMessagesToAttachment');
 
 	if (chat.currentEditingMessage.getMID() || !fileUploadsEnabled || !convertLongMessagesToAttachment) {
 		dispatchToastMessage({ type: 'error', message: new Error(t('Message_too_long')) });

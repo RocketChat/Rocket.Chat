@@ -94,7 +94,7 @@ type CommandMessage<TCommandName extends keyof typeof commands = keyof typeof co
 } & Parameters<(typeof commands)[TCommandName]>[0];
 
 window.addEventListener('message', <TCommandMessage extends CommandMessage>(e: MessageEvent<TCommandMessage>) => {
-	if (!settings.get<boolean>('Iframe_Integration_receive_enable')) {
+	if (!settings.watch<boolean>('Iframe_Integration_receive_enable')) {
 		return;
 	}
 
@@ -102,7 +102,7 @@ window.addEventListener('message', <TCommandMessage extends CommandMessage>(e: M
 		return;
 	}
 
-	const origins = settings.get<string>('Iframe_Integration_receive_origin');
+	const origins = settings.watch<string>('Iframe_Integration_receive_origin');
 
 	if (origins !== '*' && origins.split(',').indexOf(e.origin) === -1) {
 		console.error('Origin not allowed', e.origin);

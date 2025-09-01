@@ -16,8 +16,8 @@ export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 		}
 		const uid = Meteor.userId();
 		const me = (uid && Users.state.get(uid)?.username) || '';
-		const pattern = settings.get('UTF8_User_Names_Validation');
-		const useRealName = settings.get('UI_Use_Real_Name');
+		const pattern = settings.watch('UTF8_User_Names_Validation');
+		const useRealName = settings.watch('UI_Use_Real_Name');
 
 		const instance = new MentionsParser({
 			pattern: () => pattern,
