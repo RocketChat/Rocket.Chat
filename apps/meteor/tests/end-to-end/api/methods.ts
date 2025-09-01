@@ -1314,52 +1314,6 @@ describe('Meteor.methods', () => {
 		});
 	});
 
-	describe('[@getUserRoles]', () => {
-		it('should fail if not logged in', (done) => {
-			void request
-				.post(methodCall('getUserRoles'))
-				.send({
-					message: JSON.stringify({
-						method: 'getUserRoles',
-						params: [],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
-		});
-
-		it('should return the roles for the current user', (done) => {
-			void request
-				.post(methodCall('getUserRoles'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'getUserRoles',
-						params: [],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-				})
-				.end(done);
-		});
-	});
-
 	describe('[@listCustomUserStatus]', () => {
 		it('should fail if not logged in', (done) => {
 			void request
@@ -3248,80 +3202,6 @@ describe('Meteor.methods', () => {
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'Invalid setting value -Infinity');
 				});
-		});
-	});
-
-	describe('@insertOrUpdateUser', () => {
-		let testUser: TestUser<IUser>;
-		let testUserCredentials: Credentials;
-
-		before(async () => {
-			testUser = await createUser();
-			testUserCredentials = await login(testUser.username, password);
-		});
-
-		after(() => Promise.all([deleteUser(testUser)]));
-
-		it('should fail if user tries to verify their own email via insertOrUpdateUser', (done) => {
-			void request
-				.post(methodCall('insertOrUpdateUser'))
-				.set(testUserCredentials)
-				.send({
-					message: JSON.stringify({
-						method: 'insertOrUpdateUser',
-						params: [
-							{
-								_id: testUserCredentials['X-User-Id'],
-								email: 'manager@rocket.chat',
-								verified: true,
-							},
-						],
-						id: '52',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('msg', 'result');
-					expect(data).to.have.a.property('id', '52');
-					expect(data.error).to.have.property('error', 'error-action-not-allowed');
-				})
-				.end(done);
-		});
-
-		it('should pass if a user with the right permissions tries to verify the email of another user', (done) => {
-			void request
-				.post(methodCall('insertOrUpdateUser'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'insertOrUpdateUser',
-						params: [
-							{
-								_id: testUserCredentials['X-User-Id'],
-								email: 'testuser@rocket.chat',
-								verified: true,
-							},
-						],
-						id: '52',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('msg', 'result');
-					expect(data).to.have.a.property('id', '52');
-					expect(data).to.have.a.property('result', true);
-				})
-				.end(done);
 		});
 	});
 

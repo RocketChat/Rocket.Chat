@@ -1,7 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { api, Message } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -11,7 +10,6 @@ import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
-import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 
 export const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
@@ -159,28 +157,3 @@ declare module '@rocket.chat/ddp-client' {
 		setReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): boolean | undefined;
 	}
 }
-
-Meteor.methods<ServerMethods>({
-	async setReaction(reaction, messageId, shouldReact) {
-		methodDeprecationLogger.method('setReaction', '8.0.0', '/v1/chat.react');
-
-		const uid = Meteor.userId();
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
-		}
-
-		try {
-			await executeSetReaction(uid, reaction, messageId, shouldReact);
-		} catch (e: any) {
-			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
-				void api.broadcast('notify.ephemeralMessage', uid, e.details.rid, {
-					msg: e.reason,
-				});
-
-				return false;
-			}
-
-			throw e;
-		}
-	},
-});

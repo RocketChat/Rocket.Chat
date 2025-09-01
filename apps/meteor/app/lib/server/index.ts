@@ -27,8 +27,6 @@ import './methods/getSingleMessage';
 import './methods/getMessages';
 import './methods/getSlashCommandPreviews';
 import './methods/getUsernameSuggestion';
-import './methods/getUserRoles';
-import './methods/insertOrUpdateUser';
 import './methods/joinDefaultChannels';
 import './methods/joinRoom';
 import './methods/leaveRoom';
