@@ -608,7 +608,6 @@ export class E2ERoom extends Emitter {
 		try {
 			result = await encryptAESCTR(vector, key, fileArrayBuffer);
 		} catch (error) {
-			console.log(error);
 			return logger.error('Error encrypting group key: ', error);
 		}
 
@@ -797,15 +796,6 @@ export class E2ERoom extends Emitter {
 			logger.error('Error decrypting message: ', error, message);
 			return { msg: t('E2E_Key_Error') };
 		}
-	}
-
-	provideKeyToUser(keyId: string) {
-		if (this.keyID !== keyId) {
-			return;
-		}
-
-		void this.encryptKeyForOtherParticipants();
-		this.setState('READY');
 	}
 
 	onStateChange(cb: () => void) {
