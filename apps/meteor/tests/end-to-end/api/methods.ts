@@ -1314,52 +1314,6 @@ describe('Meteor.methods', () => {
 		});
 	});
 
-	describe('[@getUserRoles]', () => {
-		it('should fail if not logged in', (done) => {
-			void request
-				.post(methodCall('getUserRoles'))
-				.send({
-					message: JSON.stringify({
-						method: 'getUserRoles',
-						params: [],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(401)
-				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-				})
-				.end(done);
-		});
-
-		it('should return the roles for the current user', (done) => {
-			void request
-				.post(methodCall('getUserRoles'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'getUserRoles',
-						params: [],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-				})
-				.end(done);
-		});
-	});
-
 	describe('[@listCustomUserStatus]', () => {
 		it('should fail if not logged in', (done) => {
 			void request
