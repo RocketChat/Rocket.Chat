@@ -9,7 +9,6 @@ import { useDrupalOAuth } from './hooks/customOAuth/useDrupalOAuth';
 import { useGitHubEnterpriseOAuth } from './hooks/customOAuth/useGitHubEnterpriseOAuth';
 import { useGitLabOAuth } from './hooks/customOAuth/useGitLabOAuth';
 import { useNextcloudOAuth } from './hooks/customOAuth/useNextcloudOAuth';
-import { useTokenpassOAuth } from './hooks/customOAuth/useTokenpassOAuth';
 import { useWordPressOAuth } from './hooks/customOAuth/useWordPressOAuth';
 import { useAnalytics } from './hooks/useAnalytics';
 import { useAnalyticsEventTracking } from './hooks/useAnalyticsEventTracking';
@@ -60,7 +59,6 @@ const AppLayout = () => {
 	useGitHubEnterpriseOAuth();
 	useDrupalOAuth();
 	useDolphinOAuth();
-	useTokenpassOAuth();
 	useAppleOAuth();
 	useWordPressOAuth();
 	useCustomOAuth();
