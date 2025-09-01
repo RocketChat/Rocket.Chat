@@ -210,7 +210,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 		},
 		messages: {
 			offlineMessage: initExternalSettings.omnichannelOfflineOfflineMessage,
-			offlineSuccessMessage: initSettings.Livechat_offline_success_message,
+			offlineSuccessMessage: initExternalSettings.omnichannelOfflineOfflineSuccessMessage,
 			offlineUnavailableMessage: initExternalSettings.omnichannelOfflineOfflineFormUnavailableMessage,
 			conversationFinishedMessage: initExternalSettings.conversationFinishedConversationFinishedMessage,
 			conversationFinishedText: initExternalSettings.conversationFinishedConversationFinishedText,
