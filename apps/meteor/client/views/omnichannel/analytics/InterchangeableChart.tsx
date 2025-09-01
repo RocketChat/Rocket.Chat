@@ -1,5 +1,5 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useEndpoint, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type * as chartjs from 'chart.js';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,6 @@ const InterchangeableChart = ({
 
 	const { start, end } = dateRange;
 
-	// const loadData = useMethod('livechat:getAnalyticsChartData');
 	const loadData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts-data');
 
 	const draw = useEffectEvent(
