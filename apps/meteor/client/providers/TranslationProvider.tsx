@@ -111,6 +111,17 @@ const useI18next = (lng: string): typeof i18next => {
 				escapeValue: false,
 			},
 		});
+
+		// In some cases, the language will require a word to be in a different position than the default
+		// This enables the capitalization of words that are moved to the start of the sentence directly in the translation file
+		i18n.on('initialized', () => {
+			i18n.services.formatter?.add('capitalize', (value) => {
+				if (typeof value !== 'string') {
+					return value;
+				}
+				return value.charAt(0).toUpperCase() + value.slice(1);
+			});
+		});
 	}
 
 	useEffect(() => {
