@@ -1,7 +1,7 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type * as chartjs from 'chart.js';
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { drawLineChart } from '../../../../app/livechat/client/lib/chartHandler';
@@ -55,7 +55,7 @@ const InterchangeableChart = ({
 
 	const { start, end } = dateRange;
 
-	const loadData = useMethod('livechat:getAnalyticsChartData');
+	const loadData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts-data');
 
 	const draw = useEffectEvent(
 		async (params: {
@@ -72,7 +72,7 @@ const InterchangeableChart = ({
 				if (!params?.daterange?.from || !params?.daterange?.to) {
 					return;
 				}
-				const result = await loadData(params);
+				const result = await loadData({ start: params.daterange.from, end: params.daterange.to, chart: chartName });
 				if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
 					throw new Error('Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data');
 				}

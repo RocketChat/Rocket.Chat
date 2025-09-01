@@ -72,6 +72,8 @@ export const omnichannelQueryKeys = {
 			[...omnichannelQueryKeys.analytics.all(departmentId), 'conversation-totals', dateRange] as const,
 		productivityTotals: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }) =>
 			[...omnichannelQueryKeys.analytics.all(departmentId), 'productivity-totals', dateRange] as const,
+		analyticsChartData: (departmentId: ILivechatDepartment['_id'], dateRange: { start: string; end: string }, chart: string) =>
+			[...omnichannelQueryKeys.analytics.all(departmentId), 'analytics-chart-data', dateRange, chart] as const,
 	},
 };
 

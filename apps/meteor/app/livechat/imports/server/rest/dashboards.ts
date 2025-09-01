@@ -282,6 +282,10 @@ const livechatAnalyticsEndpoints = API.v1.get(
 			executedBy: this.userId,
 		});
 
+		if (!chartData) {
+			return API.v1.failure('No data available');
+		}
+
 		return API.v1.success(chartData);
 	},
 );
