@@ -58,6 +58,6 @@ export type AnalyticsOverviewDataResult = {
 
 export interface IOmnichannelAnalyticsService extends IServiceClass {
 	getAgentOverviewData(options: AgentOverviewDataOptions): Promise<ConversationData | void>;
-	getAnalyticsChartData(options: ChartDataOptions): Promise<ChartDataResult | void>;
+	getAnalyticsChartData(options: ChartDataOptions): Promise<ChartDataResult>;
 	getAnalyticsOverviewData(options: AnalyticsOverviewDataOptions): Promise<AnalyticsOverviewDataResult[] | void>;
 }

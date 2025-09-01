@@ -1,7 +1,17 @@
+import { OmnichannelAnalytics } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
-import { isGETDashboardTotalizerParams, isGETDashboardsAgentStatusParams } from '@rocket.chat/rest-typings';
+import {
+	isGETDashboardTotalizerParams,
+	isGETDashboardsAgentStatusParams,
+	isGETLivechatAnalyticsDashboardsChartDataParams,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	GETLivechatAnalyticsDashboardsChartDataSuccessSchema,
+} from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import {
 	getProductivityMetricsAsyncCached,
 	getConversationsMetricsAsyncCached,
@@ -238,3 +248,47 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const livechatAnalyticsEndpoints = API.v1.get(
+	'livechat/analytics/dashboards/charts-data',
+	{
+		response: {
+			200: GETLivechatAnalyticsDashboardsChartDataSuccessSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+		authRequired: true,
+		permissionsRequired: ['view-livechat-manager'],
+		validateParams: isGETLivechatAnalyticsDashboardsChartDataParams,
+	},
+	async function action() {
+		const { start, end, chart } = this.queryParams;
+
+		const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+
+		const chartData = await OmnichannelAnalytics.getAnalyticsChartData({
+			daterange: {
+				from: start,
+				to: end,
+			},
+			chartOptions: {
+				name: chart,
+			},
+			utcOffset: user?.utcOffset,
+			executedBy: this.userId,
+		});
+
+		return API.v1.success(chartData);
+	},
+);
+
+type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatAnalyticsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatAnalyticsEndpoints {}
+}

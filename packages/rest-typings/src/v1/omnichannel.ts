@@ -39,6 +39,7 @@ import { ajv } from './Ajv';
 import type { Deprecated } from '../helpers/Deprecated';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
+import { ChartDataResult } from '@rocket.chat/core-services';
 
 type booleanString = 'true' | 'false';
 
@@ -3395,6 +3396,59 @@ const GETLivechatAnalyticsDashboardsAgentStatusParamsSchema = {
 
 export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentStatusParams>(
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
+);
+
+type GETLivechatAnalyticsDashboardsChartDataParams = {
+	start: string;
+	end: string;
+	chart: string;
+};
+
+const GETLivechatAnalyticsDashboardsChartDataParamsSchema = {
+	type: 'object',
+	properties: {
+		start: {
+			type: 'string',
+		},
+		end: {
+			type: 'string',
+		},
+		chart: {
+			type: 'string',
+		},
+	},
+	additionalProperties: false,
+	required: ['chart'],
+};
+
+export const isGETLivechatAnalyticsDashboardsChartDataParams = ajv.compile<GETLivechatAnalyticsDashboardsChartDataParams>(
+	GETLivechatAnalyticsDashboardsChartDataParamsSchema,
+);
+
+const GETLivechatAnalyticsDashboardsChartDataSuccess = {
+	type: 'object',
+	properties: {
+		chartLabel: {
+			type: 'string',
+		},
+		dataLabels: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		dataPoints: {
+			type: 'array',
+			items: {
+				type: 'number',
+			},
+		},
+	},
+	additionalProperties: false,
+};
+
+export const GETLivechatAnalyticsDashboardsChartDataSuccessSchema = ajv.compile<ChartDataResult>(
+	GETLivechatAnalyticsDashboardsChartDataSuccess,
 );
 
 type PUTLivechatPriority = { name: string } | { reset: boolean };
