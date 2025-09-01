@@ -1,16 +1,20 @@
+export interface KeychainState {
+	userId: string;
+	db: IDBDatabase;
+}
+
 export class Keychain {
-	private db: { userId: string; db: IDBDatabase } | false;
+	private state: KeychainState | false;
 
 	constructor() {
-		this.db = false;
+		this.state = false;
 	}
 
-	public init(userId: string): Promise<IDBDatabase> {
-		return new Promise((resolve, reject) => {
+	public async init(userId: string): Promise<void> {
+		const db = await new Promise<IDBDatabase>((resolve, reject) => {
 			const request = indexedDB.open(`E2eeChatDB_${userId}`, 1);
 			request.onerror = (): void => reject(request.error);
 			request.onsuccess = (): void => {
-				this.db = { userId, db: request.result };
 				resolve(request.result);
 			};
 			request.onupgradeneeded = (): void => {
@@ -20,17 +24,19 @@ export class Keychain {
 				}
 			};
 		});
+
+		this.state = { userId, db };
 	}
 
-	private getDb(): { userId: string; db: IDBDatabase } {
-		if (!this.db) {
+	private getState(): KeychainState {
+		if (!this.state) {
 			throw new Error('Keychain is not initialized.');
 		}
-		return this.db;
+		return this.state;
 	}
 
 	public async savePrivateKey(privateKey: CryptoKey): Promise<boolean> {
-		const { userId, db } = await this.getDb();
+		const { db, userId } = this.getState();
 
 		const res = await new Promise<boolean>((resolve, reject) => {
 			const transaction = db.transaction('CryptoKeys', 'readwrite');
@@ -48,8 +54,9 @@ export class Keychain {
 	}
 
 	public async getPrivateKey(): Promise<CryptoKey | false> {
-		const { db, userId } = await this.getDb();
-		return new Promise((resolve, reject) => {
+		const { db, userId } = this.getState();
+
+		const privateKey = await new Promise<CryptoKey | false>((resolve, reject) => {
 			const transaction = db.transaction('CryptoKeys', 'readonly');
 			const store = transaction.objectStore('CryptoKeys');
 			const request = store.get(userId);
@@ -58,11 +65,14 @@ export class Keychain {
 			};
 			request.onerror = (): void => reject(new Error('Failed to get private key', { cause: request.error }));
 		});
+
+		return privateKey;
 	}
 
 	public async deletePrivateKey(): Promise<void> {
-		const { db, userId } = await this.getDb();
-		return new Promise<void>((resolve, reject) => {
+		const { db, userId } = this.getState();
+
+		await new Promise<void>((resolve, reject) => {
 			const transaction = db.transaction('CryptoKeys', 'readwrite');
 			const store = transaction.objectStore('CryptoKeys');
 			const request = store.delete(userId);
