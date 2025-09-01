@@ -65,7 +65,6 @@ import '../app/slashcommands-unarchiveroom/server';
 import '../app/smarsh-connector/server';
 import '../app/theme/server';
 import '../app/threads/server';
-import '../app/tokenpass/server';
 import '../app/ui-master/server';
 import '../app/webdav/server';
 import '../app/wordpress/server';
