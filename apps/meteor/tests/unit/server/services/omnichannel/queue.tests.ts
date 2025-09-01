@@ -62,7 +62,7 @@ const { OmnichannelQueue } = p.noCallThru().load('../../../../../server/services
 			timeToQueueProcessingByQueue: { observe: Sinon.stub() },
 			totalItemsProcessedByQueue: { inc: Sinon.stub() },
 			totalItemsProcessedByReconciliationQueue: { inc: Sinon.stub() },
-			totalItemsFailedByQueue: { observe: Sinon.stub() },
+			totalItemsFailedByQueue: { inc: Sinon.stub() },
 		},
 	},
 });
