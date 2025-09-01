@@ -24,13 +24,14 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@vitest/browser": "4.0.0-beta.9",
-    "@vitest/coverage-v8": "4.0.0-beta.9",
+    "@vitest/browser": "4.0.0-beta.10",
+    "@vitest/coverage-v8": "4.0.0-beta.10",
+    "@vitest/ui": "4.0.0-beta.10",
     "oxlint": "~1.14.0",
     "oxlint-tsgolint": "~0.1.5",
     "playwright": "^1.55.0",
     "typescript": "~5.9.2",
-    "vitest": "4.0.0-beta.9"
+    "vitest": "4.0.0-beta.10"
   },
   "license": "MIT",
   "publishConfig": {

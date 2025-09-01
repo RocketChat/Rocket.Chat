@@ -68,7 +68,7 @@ class E2E extends Emitter<{
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
 		this.e2ee = new E2EE({
-			userId: () => Promise.resolve(Meteor.userId()),
+			userId: () => Meteor.userId(),
 			fetchMyKeys: () => sdk.rest.get('/v1/e2e.fetchMyKeys'),
 			persistKeys: (keys, force) =>
 				sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {

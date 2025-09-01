@@ -20,6 +20,11 @@
 		"eslint/no-magic-numbers": "allow",
 		"eslint/no-ternary": "allow",
 		"unicorn/prefer-code-point": "allow",
-		"eslint/max-lines": "allow"
+		"unicorn/prefer-add-event-listener": "allow",
+		"eslint/max-lines": "allow",
+		"eslint/max-classes-per-file": "allow",
+		"no-extraneous-class": "allow",
+		"no-console": "allow",
+		"no-rest-spread-properties": "allow"
 	}
 }

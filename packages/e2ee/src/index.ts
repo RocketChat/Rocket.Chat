@@ -8,7 +8,7 @@ import * as Jwk from './jwk.ts';
 import { stringifyUint8Array, parseUint8Array } from './base64.ts';
 import { importPbkdf2Key, derivePbkdf2Key } from './pbkdf2.ts';
 import { generateRsaOaepKeyPair, importRsaOaepKey } from './rsa.ts';
-import { decryptAesCbc, encryptAesCbc, encryptAesGcm, decryptAesGcm } from './aes.ts';
+import { /** decryptAesCbc, encryptAesCbc, **/ encryptAesGcm, decryptAesGcm } from './aes.ts';
 
 const generateMnemonicPhrase = async (length: number): Promise<string> => {
 	const { v1 } = await import('./word-list.ts');
@@ -17,7 +17,7 @@ const generateMnemonicPhrase = async (length: number): Promise<string> => {
 };
 
 export interface KeyService {
-	userId: () => Promise<string | null>;
+	userId: () => string;
 	fetchMyKeys: () => Promise<RemoteKeyPair>;
 	persistKeys: (keys: RemoteKeyPair, force: boolean) => Promise<unknown>;
 }
@@ -47,9 +47,11 @@ export interface KeyPair {
 
 export default class E2EE {
 	#service: KeyService;
+	// #client: EncryptionClient;
 
 	constructor(service: KeyService) {
 		this.#service = service;
+		// this.#client = new EncryptionClient();
 	}
 
 	async loadKeys(keys: EncryptedKeyPair): AsyncResult<CryptoKey, Error> {
