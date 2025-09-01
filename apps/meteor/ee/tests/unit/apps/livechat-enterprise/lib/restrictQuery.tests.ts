@@ -39,7 +39,7 @@ describe('restrictQuery', () => {
 			'@rocket.chat/models': {
 				LivechatDepartment: { find: findStub },
 			},
-			'../methods/getUnitsFromUserRoles': {
+			'@rocket.chat/omni-core-ee': {
 				getUnitsFromUser: getUnitsFromUserStub,
 			},
 			'./logger': {
