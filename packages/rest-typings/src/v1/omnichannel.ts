@@ -3407,18 +3407,21 @@ type GETLivechatAnalyticsDashboardsChartDataParams = {
 const GETLivechatAnalyticsDashboardsChartDataParamsSchema = {
 	type: 'object',
 	properties: {
+		departmentId: {
+			type: 'string',
+		},
 		start: {
 			type: 'string',
 		},
 		end: {
 			type: 'string',
 		},
-		chart: {
+		chartName: {
 			type: 'string',
 		},
 	},
 	additionalProperties: false,
-	required: ['chart'],
+	required: ['chartName'],
 };
 
 export const isGETLivechatAnalyticsDashboardsChartDataParams = ajv.compile<GETLivechatAnalyticsDashboardsChartDataParams>(

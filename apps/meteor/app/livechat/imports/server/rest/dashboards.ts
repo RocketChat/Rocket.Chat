@@ -263,7 +263,7 @@ const livechatAnalyticsEndpoints = API.v1.get(
 		validateParams: isGETLivechatAnalyticsDashboardsChartDataParams,
 	},
 	async function action() {
-		const { start, end, chart } = this.queryParams;
+		const { chartName, start, end, departmentId } = this.queryParams;
 
 		const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
 		if (!user) {
@@ -276,10 +276,11 @@ const livechatAnalyticsEndpoints = API.v1.get(
 				to: end,
 			},
 			chartOptions: {
-				name: chart,
+				name: chartName,
 			},
 			utcOffset: user?.utcOffset,
 			executedBy: this.userId,
+			departmentId,
 		});
 
 		if (!chartData) {
