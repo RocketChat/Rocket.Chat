@@ -185,6 +185,10 @@ const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) =
 			return;
 		}
 
+		if (!['teams', 'channels', 'directMessages'].includes(currentFilter)) {
+			return;
+		}
+
 		if (isTeamRoom(room)) {
 			setFilter('teams', unread, rid);
 			return;
