@@ -39,7 +39,6 @@ import { ajv } from './Ajv';
 import type { Deprecated } from '../helpers/Deprecated';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
-import { ChartDataResult } from '@rocket.chat/core-services';
 
 type booleanString = 'true' | 'false';
 
@@ -3450,9 +3449,11 @@ const GETLivechatAnalyticsDashboardsChartDataSuccess = {
 	additionalProperties: false,
 };
 
-export const GETLivechatAnalyticsDashboardsChartDataSuccessSchema = ajv.compile<ChartDataResult>(
-	GETLivechatAnalyticsDashboardsChartDataSuccess,
-);
+export const GETLivechatAnalyticsDashboardsChartDataSuccessSchema = ajv.compile<{
+	chartLabel: string;
+	dataLabels: string[];
+	dataPoints: number[];
+}>(GETLivechatAnalyticsDashboardsChartDataSuccess);
 
 type PUTLivechatPriority = { name: string } | { reset: boolean };
 const PUTLivechatPrioritySchema = {
