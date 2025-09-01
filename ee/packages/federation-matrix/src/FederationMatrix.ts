@@ -22,7 +22,6 @@ import { getMatrixSendJoinRoutes } from './api/_matrix/send-join';
 import { getMatrixTransactionsRoutes } from './api/_matrix/transactions';
 import { getFederationVersionsRoutes } from './api/_matrix/versions';
 import { registerEvents } from './events';
-import { getMatrixLocalDomain } from './helpers/domain.builder';
 import { saveExternalUserIdForLocalUser } from './helpers/identifiers';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 
@@ -33,7 +32,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private homeserverServices: HomeserverServices;
 
-	private matrixDomain: string;
+	private serverName: string;
 
 	private readonly logger = new Logger(this.name);
 
@@ -51,6 +50,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const siteUrl = await Settings.get<string>('Site_Url');
 
 		const serverHostname = new URL(siteUrl).hostname;
+
+		instance.serverName = serverHostname;
 
 		const mongoUri = process.env.MONGO_URL || 'mongodb://localhost:3001/meteor';
 
@@ -154,20 +155,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async created(): Promise<void> {
 		try {
-			registerEvents(this.eventHandler);
+			registerEvents(this.eventHandler, this.serverName);
 		} catch (error) {
 			this.logger.warn('Homeserver module not available, running in limited mode');
 		}
-	}
-
-	async getMatrixDomain(): Promise<string> {
-		if (this.matrixDomain) {
-			return this.matrixDomain;
-		}
-
-		this.matrixDomain = await getMatrixLocalDomain();
-
-		return this.matrixDomain;
 	}
 
 	getAllRoutes() {
@@ -185,8 +176,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 
 		try {
-			const matrixDomain = await this.getMatrixDomain();
-			const matrixUserId = `@${owner.username}:${matrixDomain}`;
+			const matrixUserId = `@${owner.username}:${this.serverName}`;
 			const roomName = room.name || room.fname || 'Untitled Room';
 
 			// canonical alias computed from name
@@ -194,7 +184,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Matrix room created:', matrixRoomResult);
 
-			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, matrixDomain);
+			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, matrixRoomResult.room_id, this.serverName);
 
 			await saveExternalUserIdForLocalUser(owner, matrixUserId);
 
@@ -207,7 +197,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					// TODO: Check if it is external user - split domain etc
 					const localUserId = await Users.findOneByUsername(member);
 					if (localUserId) {
-						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, false, matrixDomain);
+						await MatrixBridgedUser.createOrUpdateByLocalId(localUserId._id, member, false, this.serverName);
 						// continue;
 					}
 				} catch (error) {
@@ -221,7 +211,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			this.logger.debug('Room creation completed successfully', room._id);
 		} catch (error) {
-			console.log(error);
 			this.logger.error('Failed to create room:', error);
 			throw error;
 		}
@@ -234,11 +223,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix room mapping found for room ${room._id}`);
 			}
 
-			const matrixDomain = await this.getMatrixDomain();
-			const matrixUserId = `@${user.username}:${matrixDomain}`;
+			const matrixUserId = `@${user.username}:${this.serverName}`;
 			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
 			if (!existingMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, this.serverName);
 			}
 
 			if (!this.homeserverServices) {
@@ -253,11 +241,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const parsedMessage = await toExternalMessageFormat({
 				message: message.msg,
 				externalRoomId: matrixRoomId,
-				homeServerDomain: await this.getMatrixDomain(),
+				homeServerDomain: await this.serverName,
 			});
 			if (!message.tmid) {
 				if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-					const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
+					const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
 					if (!quoteMessage) {
 						throw new Error('Failed to retrieve quote message');
 					}
@@ -287,7 +275,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					const latestThreadEventId = latestThreadMessage?.federation?.eventId;
 
 					if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
+						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
 						if (!quoteMessage) {
 							throw new Error('Failed to retrieve quote message');
 						}
@@ -312,7 +300,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				} else {
 					this.logger.warn('Thread root event ID not found, sending as regular message');
 					if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
-						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
+						const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
 						if (!quoteMessage) {
 							throw new Error('Failed to retrieve quote message');
 						}
@@ -391,11 +379,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			if (!matrixRoomId) {
 				throw new Error(`No Matrix room mapping found for room ${message.rid}`);
 			}
-			const matrixDomain = await this.getMatrixDomain();
-			const matrixUserId = `@${message.u.username}:${matrixDomain}`;
+			const matrixUserId = `@${message.u.username}:${this.serverName}`;
 			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(message.u._id);
 			if (!existingMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(message.u._id, matrixUserId, true, matrixDomain);
+				await MatrixBridgedUser.createOrUpdateByLocalId(message.u._id, matrixUserId, true, this.serverName);
 			}
 
 			if (!this.homeserverServices) {
@@ -422,8 +409,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix room mapping found for room ${room._id}`);
 			}
 
-			const matrixDomain = await this.getMatrixDomain();
-			const inviterUserId = `@${inviter.username}:${matrixDomain}`;
+			const inviterUserId = `@${inviter.username}:${this.serverName}`;
 
 			await Promise.all(
 				usersUserName.map(async (username) => {
@@ -443,8 +429,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						await Room.addUserToRoom(room._id, localUser, { _id: inviter._id, username: inviter.username });
 						let externalUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(localUser._id);
 						if (!externalUserId) {
-							externalUserId = `@${username}:${matrixDomain}`;
-							await MatrixBridgedUser.createOrUpdateByLocalId(localUser._id, externalUserId, false, matrixDomain);
+							externalUserId = `@${username}:${this.serverName}`;
+							await MatrixBridgedUser.createOrUpdateByLocalId(localUser._id, externalUserId, false, this.serverName);
 						}
 						await this.homeserverServices.invite.inviteUserToRoom(externalUserId, matrixRoomId, inviterUserId);
 					}
@@ -577,13 +563,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const matrixDomain = await this.getMatrixDomain();
-			const matrixUserId = `@${user.username}:${matrixDomain}`;
+			const matrixUserId = `@${user.username}:${this.serverName}`;
 			const existingMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(user._id);
 
 			if (!existingMatrixUserId) {
 				// User might not have been bridged yet if they never sent a message
-				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, matrixDomain);
+				await MatrixBridgedUser.createOrUpdateByLocalId(user._id, matrixUserId, true, this.serverName);
 			}
 
 			if (!this.homeserverServices) {
@@ -616,19 +601,17 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const matrixDomain = await this.getMatrixDomain();
-
-			const kickedMatrixUserId = `@${removedUser.username}:${matrixDomain}`;
+			const kickedMatrixUserId = `@${removedUser.username}:${this.serverName}`;
 			const existingKickedMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(removedUser._id);
 			if (!existingKickedMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(removedUser._id, kickedMatrixUserId, true, matrixDomain);
+				await MatrixBridgedUser.createOrUpdateByLocalId(removedUser._id, kickedMatrixUserId, true, this.serverName);
 			}
 			const actualKickedMatrixUserId = existingKickedMatrixUserId || kickedMatrixUserId;
 
-			const senderMatrixUserId = `@${userWhoRemoved.username}:${matrixDomain}`;
+			const senderMatrixUserId = `@${userWhoRemoved.username}:${this.serverName}`;
 			const existingSenderMatrixUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userWhoRemoved._id);
 			if (!existingSenderMatrixUserId) {
-				await MatrixBridgedUser.createOrUpdateByLocalId(userWhoRemoved._id, senderMatrixUserId, true, matrixDomain);
+				await MatrixBridgedUser.createOrUpdateByLocalId(userWhoRemoved._id, senderMatrixUserId, true, this.serverName);
 			}
 			const actualSenderMatrixUserId = existingSenderMatrixUserId || senderMatrixUserId;
 
@@ -677,7 +660,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const parsedMessage = await toExternalMessageFormat({
 				message: newContent,
 				externalRoomId: matrixRoomId,
-				homeServerDomain: await this.getMatrixDomain(),
+				homeServerDomain: await this.serverName,
 			});
 			const eventId = await this.homeserverServices.message.updateMessage(
 				matrixRoomId,
