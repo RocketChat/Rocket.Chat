@@ -1,4 +1,4 @@
-import { Room, Authorization, Message, ServiceClassInternal } from '@rocket.chat/core-services';
+import { Room, Authorization, Message, ServiceClassInternal, api } from '@rocket.chat/core-services';
 import type {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
@@ -724,6 +724,20 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			if (member.roles) {
 				await this.addRolesToMember(teamId, member.userId, member.roles);
+				await this.addRolesToSubscription(team.roomId, member.userId, member.roles);
+				if (settings.get<boolean>('UI_DisplayRoles')) {
+					member.roles.forEach((role) => {
+						void api.broadcast('user.roleUpdate', {
+							type: 'added',
+							_id: role,
+							u: {
+								_id: user._id,
+								username: user.username,
+							},
+							scope: team.roomId,
+						});
+					});
+				}
 			}
 		}
 	}
@@ -937,6 +951,17 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		return !!(await TeamMember.updateRolesByTeamIdAndUserId(teamId, userId, roles));
+	}
+
+	async addRolesToSubscription(roomId: string, userId: string, roles: Array<string>): Promise<boolean> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
+
+		if (!subscription) {
+			// TODO should this throw an error instead?
+			return false;
+		}
+
+		return !!(await Promise.all(roles.map((role) => Subscriptions.addRoleById(subscription._id, role))));
 	}
 
 	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
