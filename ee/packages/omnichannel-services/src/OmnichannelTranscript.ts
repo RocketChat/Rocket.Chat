@@ -1,4 +1,4 @@
-import type { Readable } from 'stream';
+import { Readable } from 'stream';
 
 import {
 	ServiceClass,
@@ -217,7 +217,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				try {
-					const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
+					const stream = await uploadService.streamUploadedFile({ file: uploadedFile, imageResizeOpts: { width: 400, height: 240 } });
+					const fileBuffer = await streamToBuffer(stream);
+
 					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
 				} catch (e: unknown) {
 					this.log.error(`Failed to get file ${file._id}`, e);
@@ -362,13 +364,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		const transcriptText = this.translator.t('Transcript', { lng: data.serverLanguage });
 
 		const stream = await this.worker.renderToStream({ data });
-		const outBuff = await streamToBuffer(stream as Readable);
 
 		try {
 			const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
 			const [rocketCatFile, transcriptFile] = await this.uploadFiles({
-				details,
-				buffer: outBuff,
+				// From NodeJS.ReadableStream to Stream.Readable
+				stream: Readable.from(stream),
 				roomIds: [rid, details.rid],
 				data,
 				transcriptText,
@@ -409,23 +410,20 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async uploadFiles({
-		details,
-		buffer,
+		stream,
 		roomIds,
 		data,
 		transcriptText,
 	}: {
-		details: WorkDetailsWithSource;
-		buffer: Buffer;
+		stream: Readable;
 		roomIds: string[];
 		data: any;
 		transcriptText: string;
 	}): Promise<IUpload[]> {
 		return Promise.all(
 			roomIds.map((roomId) => {
-				return uploadService.uploadFile({
-					userId: details.userId,
-					buffer,
+				return uploadService.uploadFileFromStream({
+					stream,
 					details: {
 						// transcript_{company-name}_{date}_{hour}.pdf
 						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replace(/\//g, '-')}_${
@@ -435,7 +433,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 						rid: roomId,
 						// Rocket.cat is the goat
 						userId: 'rocket.cat',
-						size: buffer.length,
+						// We don't have the file size from the stream unless we read it, so we'll not set and let the receiver do the calculation.
 					},
 				});
 			}),

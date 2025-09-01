@@ -1,3 +1,5 @@
+import type Stream from 'stream';
+
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import type { IMessage, IUpload, IUser, FilesAndAttachments } from '@rocket.chat/core-typings';
 
@@ -27,4 +29,12 @@ export interface IUploadService {
 	getFileBuffer({ file }: { file: IUpload }): Promise<Buffer>;
 	extractMetadata(file: IUpload): Promise<{ height?: number; width?: number; format?: string }>;
 	parseFileIntoMessageAttachments(file: Partial<IUpload>, roomId: string, user: IUser): Promise<FilesAndAttachments>;
+	streamUploadedFile({
+		file,
+		imageResizeOpts,
+	}: {
+		file: IUpload;
+		imageResizeOpts?: { width: number; height: number };
+	}): Promise<Stream.Readable>;
+	uploadFileFromStream({ stream, details }: { stream: Stream.Readable; details: any }): Promise<IUpload>;
 }

@@ -1,5 +1,8 @@
 import type { Readable } from 'stream';
 
+/**
+ * @deprecated Use `streamToBuffer` from `@rocket.chat/tools` instead.
+ */
 export const streamToBuffer = (stream: Readable): Promise<Buffer> =>
 	new Promise((resolve, reject) => {
 		const chunks: Array<Buffer> = [];

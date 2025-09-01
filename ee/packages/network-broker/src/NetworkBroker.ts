@@ -40,6 +40,13 @@ export class NetworkBroker implements IBroker {
 		const context = asyncLocalStorage.getStore();
 
 		if (context?.ctx?.call) {
+			if (data?.[0]?.stream) {
+				// If the first item on the data is an stream, pass the stream as the whole `params` and the rest of data on `meta.details`
+				return context.ctx.call(method, data[0].stream, {
+					...options,
+					meta: { ...((options as any)?.meta || {}), details: data[0].details },
+				});
+			}
 			return context.ctx.call(method, data, options);
 		}
 
@@ -51,6 +58,16 @@ export class NetworkBroker implements IBroker {
 			return new Error('method-not-available');
 		}
 
+		// We're assuming that if Data is an object containing an `stream` key, the intent is to pass an stream or to receive an stream.
+		if (data?.[0]?.stream) {
+			return this.broker.call(method, data[0].stream, {
+				...options,
+				meta: {
+					optl: injectCurrentContext(),
+					details: data?.[0]?.details,
+				},
+			});
+		}
 		return this.broker.call(method, data, {
 			...options,
 			meta: {
@@ -134,25 +151,50 @@ export class NetworkBroker implements IBroker {
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[], { optl?: unknown }>): Promise<any> => {
-				return tracerSpan(
-					`action ${name}:${method}`,
-					{},
-					() => {
-						return asyncLocalStorage.run(
-							{
-								id: ctx.id,
-								nodeID: ctx.nodeID,
-								requestID: ctx.requestID,
-								broker: this,
-								ctx,
-							},
-							() => serviceInstance[method](...ctx.params),
-						);
-					},
-					ctx.meta?.optl,
-				);
-			};
+			// TODO: better convention for these names
+			if (method.includes('Stream')) {
+				service.actions[method] = async (ctx: Context<[], { optl?: unknown; details?: unknown }>): Promise<any> => {
+					return tracerSpan(
+						`action ${name}:${method}:stream`,
+						{},
+						() => {
+							return asyncLocalStorage.run(
+								{
+									id: ctx.id,
+									nodeID: ctx.nodeID,
+									requestID: ctx.requestID,
+									broker: this,
+									ctx,
+								},
+								// Moleculer expects the whole `ctx.params` to be the stream only, so we pass the stream there
+								// and any extra information as `details` in the context meta.
+								() => serviceInstance[method]({ stream: ctx.params, details: ctx.meta.details }),
+							);
+						},
+						ctx.meta?.optl,
+					);
+				};
+			} else {
+				service.actions[method] = async (ctx: Context<[], { optl?: unknown }>): Promise<any> => {
+					return tracerSpan(
+						`action ${name}:${method}`,
+						{},
+						() => {
+							return asyncLocalStorage.run(
+								{
+									id: ctx.id,
+									nodeID: ctx.nodeID,
+									requestID: ctx.requestID,
+									broker: this,
+									ctx,
+								},
+								() => serviceInstance[method](...ctx.params),
+							);
+						},
+						ctx.meta?.optl,
+					);
+				};
+			}
 		}
 
 		this.broker.createService(service);
