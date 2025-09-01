@@ -19,30 +19,28 @@ class Settings {
 
 			for (const _id of removedIds) {
 				delete Meteor.settings[_id];
-				this.load(_id, undefined);
+				this.handleChange(_id, undefined);
 			}
 
 			for (const setting of state.records.values()) {
 				if (setting.value !== Meteor.settings[setting._id]) {
 					Meteor.settings[setting._id] = setting.value;
-					this.load(setting._id, setting.value);
+					this.handleChange(setting._id, setting.value);
 				}
 			}
 		});
 	}
 
-	private callbacks = new Map<string, SettingCallback[]>();
+	private callbacks = new Map<string, Set<SettingCallback>>();
 
-	load(key: string, value: SettingValue): void {
-		['*', key].forEach((item) => {
-			const callbacks = this.callbacks.get(item);
-			if (callbacks) {
-				callbacks.forEach((callback) => callback(key, value));
-			}
-		});
+	private handleChange(key: string, value: SettingValue): void {
+		for (const _key of ['*', key]) {
+			const callbacks = this.callbacks.get(_key);
+			callbacks?.forEach((callback) => callback(_key, value));
+		}
 	}
 
-	onload(key: string, callback: SettingCallback): void {
+	observe(key: string, callback: SettingCallback): () => void {
 		// if key is '*'
 		// 	for key, value in Meteor.settings
 		// 		callback key, value, false
@@ -50,9 +48,16 @@ class Settings {
 		// 	callback key, Meteor.settings[_id], false
 
 		if (!this.callbacks.has(key)) {
-			this.callbacks.set(key, []);
+			this.callbacks.set(key, new Set());
 		}
-		this.callbacks.get(key)?.push(callback);
+		this.callbacks.get(key)?.add(callback);
+
+		return () => {
+			this.callbacks.get(key)?.delete(callback);
+			if (this.callbacks.get(key)?.size === 0) {
+				this.callbacks.delete(key);
+			}
+		};
 	}
 }
 
