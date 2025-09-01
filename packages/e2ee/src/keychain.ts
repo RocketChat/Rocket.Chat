@@ -22,7 +22,7 @@ export class Keychain {
 		});
 	}
 
-	private async getDb(): Promise<{ userId: string; db: IDBDatabase }> {
+	private getDb(): { userId: string; db: IDBDatabase } {
 		if (!this.db) {
 			throw new Error('Keychain is not initialized.');
 		}

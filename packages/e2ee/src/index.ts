@@ -17,7 +17,7 @@ const generateMnemonicPhrase = async (length: number): Promise<string> => {
 };
 
 export interface KeyService {
-	userId: () => string;
+	userId: () => string | null;
 	fetchMyKeys: () => Promise<RemoteKeyPair>;
 	persistKeys: (keys: RemoteKeyPair, force: boolean) => Promise<unknown>;
 }
@@ -189,7 +189,7 @@ export default class E2EE {
 			return baseKey;
 		}
 
-		const userId = await this.#service.userId();
+		const userId = this.#service.userId();
 
 		if (!userId) {
 			return err(new Error('User not found'));
