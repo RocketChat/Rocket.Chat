@@ -9,8 +9,6 @@ type RestrictQueryParams = {
 };
 
 describe('restrictQuery', () => {
-	const modulePath = '../../../../../app/livechat-enterprise/server/lib/restrictQuery';
-
 	// Helper to require the SUT with injected stubs
 	const loadSut = ({
 		getUnitsFromUserResult,
@@ -35,7 +33,7 @@ describe('restrictQuery', () => {
 
 		const debugStub = sinon.stub();
 
-		const { restrictQuery } = proxyquire.noCallThru().load(modulePath, {
+		const { restrictQuery } = proxyquire.noCallThru().load('../../../../../app/livechat-enterprise/server/lib/restrictQuery', {
 			'@rocket.chat/models': {
 				LivechatDepartment: { find: findStub },
 			},
