@@ -10,10 +10,10 @@ import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
-import { watch } from './watch';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { watch } from '../../meteor/watch';
 import { getConfig } from '../utils/getConfig';
 
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
