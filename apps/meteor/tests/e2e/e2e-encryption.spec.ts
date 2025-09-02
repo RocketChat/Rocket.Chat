@@ -342,7 +342,7 @@ test.describe('basic features', () => {
 	});
 });
 
-test.describe.serial('e2e-encryption', () => {
+test.describe('e2e-encryption', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.use({ storageState: Users.userE2EE.state });

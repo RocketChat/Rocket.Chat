@@ -388,13 +388,15 @@ export class E2ERoom extends Emitter {
 			this.keyID = this.roomKeyId || (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);
 		}
 
+		const jwk = JSON.parse(this.sessionKeyExportedString!);
+
 		// Import session key for use.
 		try {
-			const key = await importAesGcmKey(JSON.parse(this.sessionKeyExportedString!));
+			const key = await importAesGcmKey(jwk);
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 		} catch (error) {
-			this.error('Error importing group key: ', error);
+			this.error('Error importing group key: ', error, JSON.stringify(jwk));
 			return false;
 		}
 
@@ -534,10 +536,10 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	async encryptGroupKeyForParticipant(publicKey: JsonWebKey) {
+	async encryptGroupKeyForParticipant(publicKey: string) {
 		let userKey;
 		try {
-			userKey = await importRSAKey(publicKey, ['encrypt']);
+			userKey = await importRSAKey(JSON.parse(publicKey), ['encrypt']);
 		} catch (error) {
 			return this.error('Error importing user key: ', error);
 		}
