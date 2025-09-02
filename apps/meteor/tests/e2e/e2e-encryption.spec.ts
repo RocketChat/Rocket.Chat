@@ -19,7 +19,7 @@ import {
 import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
 import { FileUploadModal } from './page-objects/fragments/file-upload-modal';
 import { LoginPage } from './page-objects/login';
-import { deleteRoom, getSettingValueById } from './utils';
+import { getSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 const settings = {
