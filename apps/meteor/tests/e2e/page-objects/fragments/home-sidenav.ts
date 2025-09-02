@@ -155,12 +155,12 @@ export class HomeSidenav {
 	}
 
 	async openSearch(): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+		await this.page.getByRole('navigation').getByRole('button', { name: 'Search' }).click();
 	}
 
 	async searchRoom(name: string): Promise<void> {
 		await this.openSearch();
-		await this.page.locator('role=search >> role=searchbox').fill(name);
+		await this.page.getByRole('searchbox').fill(name);
 	}
 
 	async logout(): Promise<void> {
