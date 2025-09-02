@@ -44,6 +44,14 @@ export async function encryptRSA(key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.encrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
+/**
+ * Encrypts data using AES-CBC.
+ * @param vector The initialization vector.
+ * @param key The encryption key.
+ * @param data The data to encrypt.
+ * @returns The encrypted data.
+ * @deprecated Use {@link encryptAesGcm} instead.
+ */
 export async function encryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
 	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
@@ -133,9 +141,9 @@ export async function importRawKey(keyData: BufferSource, keyUsages: ReadonlyArr
 
 export async function deriveKey(salt: Uint8Array<ArrayBuffer>, baseKey: CryptoKey) {
 	return crypto.subtle.deriveKey(
-		{ name: 'PBKDF2', salt, iterations: 1000, hash: 'SHA-256' },
+		{ name: 'PBKDF2', salt, iterations: 100_000, hash: 'SHA-256' },
 		baseKey,
-		{ name: 'AES-CBC', length: 256 },
+		{ name: 'AES-GCM', length: 256 },
 		true,
 		['encrypt', 'decrypt'],
 	);

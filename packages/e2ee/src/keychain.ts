@@ -4,15 +4,15 @@ export interface KeychainState {
 }
 
 export class Keychain {
-	private state: KeychainState | false;
+	private state: KeychainState;
 
-	constructor() {
-		this.state = false;
+	constructor(state: KeychainState) {
+		this.state = state;
 	}
 
-	public async init(userId: string): Promise<void> {
+	public static async init(userId: string): Promise<Keychain> {
 		const db = await new Promise<IDBDatabase>((resolve, reject) => {
-			const request = indexedDB.open(`E2eeChatDB_${userId}`, 1);
+			const request = indexedDB.open(`E2eeChatDB`, 1);
 			request.onerror = (): void => reject(request.error);
 			request.onsuccess = (): void => {
 				resolve(request.result);
@@ -25,7 +25,7 @@ export class Keychain {
 			};
 		});
 
-		this.state = { userId, db };
+		return new Keychain({ userId, db });
 	}
 
 	private getState(): KeychainState {

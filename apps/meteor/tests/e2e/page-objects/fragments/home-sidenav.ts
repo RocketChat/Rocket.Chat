@@ -236,11 +236,17 @@ export class HomeSidenav {
 		// Expand and wait for checkbox to appear before clicking
 		await this.advancedSettingsAccordion.click();
 		await expect(this.checkboxEncryption).toBeVisible();
-		await this.page
-			.locator('span')
-			.filter({ hasText: /^Encrypted$/ })
-			.locator('i')
-			.click();
+
+		const encryptedField = this.page.locator('fieldset > div', { hasText: 'Encrypted' });
+		const encryptedFieldText = await encryptedField.textContent();
+		if (!encryptedFieldText?.includes('End-to-end encrypted channel')) {
+			await this.page
+				.locator('span')
+				.filter({ hasText: /^Encrypted$/ })
+				.locator('i')
+				.click();
+		}
+
 		await this.page.getByRole('button', { name: 'Create', exact: true }).click();
 
 		await toastMessages.dismissToast('success');

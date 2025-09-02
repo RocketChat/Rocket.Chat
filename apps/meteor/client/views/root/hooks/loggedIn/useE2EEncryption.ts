@@ -29,6 +29,7 @@ export const useE2EEncryption = () => {
 		}
 
 		if (enabled && !adminEmbedded) {
+			logger.log('enabled starting client');
 			e2e.startClient();
 		} else {
 			e2e.setState('DISABLED');

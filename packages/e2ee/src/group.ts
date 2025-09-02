@@ -37,23 +37,24 @@ export interface ChatService {
 }
 
 export class EncryptionClient {
-	private userId: string | false;
+	private userId: string;
 	private privateKey: CryptoKey | false;
 	private groupKeys: Map<string, CryptoKey>;
 	private keychain: Keychain;
 	private chatService: ChatService;
 
-	constructor(chatService: ChatService) {
-		this.userId = false;
+	constructor(userId: string, chatService: ChatService, keychain: Keychain) {
+		this.userId = userId;
 		this.privateKey = false;
 		this.groupKeys = new Map();
 		this.chatService = chatService;
-		this.keychain = new Keychain();
+		this.keychain = keychain;
 	}
 
-	public async initialize(userId: string): Promise<void> {
-		this.userId = userId;
-		await this.keychain.init(userId);
+	public static async initialize(userId: string, chatService: ChatService): Promise<EncryptionClient> {
+		const keychain = await Keychain.init(userId);
+		const client = new EncryptionClient(userId, chatService, keychain);
+		return client;
 	}
 
 	/**
@@ -213,7 +214,7 @@ export class EncryptionClient {
 	 * to allow for easier login next time.
 	 */
 	public logout(): void {
-		this.userId = false;
+		this.userId = '';
 		this.privateKey = false;
 		this.groupKeys.clear();
 	}

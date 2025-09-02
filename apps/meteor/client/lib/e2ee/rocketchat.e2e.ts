@@ -131,7 +131,6 @@ class E2E extends Emitter<{
 	}
 
 	async onSubscriptionChanged(sub: ISubscription) {
-		logger.log('Subscription changed', sub);
 		if (!sub.encrypted && !sub.E2EKey) {
 			this.removeInstanceByRoomId(sub.rid);
 			return;
@@ -189,6 +188,7 @@ class E2E extends Emitter<{
 				excess.forEach((rid) => this.removeInstanceByRoomId(rid));
 			}
 
+			logger.table(subscriptions);
 			for (const sub of subscriptions) {
 				void this.onSubscriptionChanged(sub);
 			}

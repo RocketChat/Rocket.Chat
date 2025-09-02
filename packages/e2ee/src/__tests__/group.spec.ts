@@ -13,13 +13,11 @@ describe('EncryptionClient', () => {
 
 	describe('User Management', () => {
 		it('should register a new user and store their data via the service', async () => {
-			const user = new EncryptionClient(mockService);
 			const userId = 'alice@example.com';
 			const password = 'password123';
+			const user = await EncryptionClient.initialize(userId, mockService);
 
 			const spy = vi.spyOn(mockService, 'registerUser');
-
-			await user.initialize(userId);
 			await user.register(password);
 
 			// Check that the library called the service correctly
@@ -30,18 +28,16 @@ describe('EncryptionClient', () => {
 		});
 
 		it('should log in a user with a passphrase if key is not local', async () => {
-			const registrationService = new MockChatService();
-			const registrant = new EncryptionClient(registrationService);
+			const chatService = new MockChatService();
 			const userId = 'bob@example.com';
 			const password = 'password-bob';
+			const registrant = await EncryptionClient.initialize(userId, chatService);
 
 			// 1. Bob registers on one device, populating the service.
-			await registrant.initialize(userId);
 			await registrant.register(password);
 
 			// 2. Bob tries to log in on a *new device* (simulated by a new instance and empty IndexedDB).
-			const loginUser = new EncryptionClient(registrationService);
-			await loginUser.initialize(userId);
+			const loginUser = await EncryptionClient.initialize(userId, chatService);
 			await loginUser.login(password);
 
 			// @ts-expect-error - Accessing private property for test verification
@@ -51,20 +47,18 @@ describe('EncryptionClient', () => {
 		});
 
 		it('should permanently delete the account from the device storage', async () => {
-			const user = new EncryptionClient(mockService);
 			const userId = 'frank@example.com';
-			await user.initialize(userId);
+			const user = await EncryptionClient.initialize(userId, mockService);
 			await user.register('password-frank');
 
 			await user.deleteAccountFromDevice();
 
 			// Verify in-memory session is cleared
 			// @ts-expect-error
-			expect(user.userId).toBe(false);
+			expect(user.userId).toBe('');
 
 			// Verify login fails without a passphrase, proving the key is gone
-			const userInNewSession = new EncryptionClient(mockService);
-			await userInNewSession.initialize(userId);
+			const userInNewSession = await EncryptionClient.initialize(userId, mockService);
 			await expect(userInNewSession.login()).rejects.toThrow('Private key not found locally. Passphrase is required for recovery.');
 		});
 	});
@@ -73,13 +67,9 @@ describe('EncryptionClient', () => {
 		it('should allow users to create groups, send messages, and for new users to decrypt history', async () => {
 			// --- SETUP ---
 			// 1. Alice, Bob, and Carol register with the same chat service.
-			const alice = new EncryptionClient(mockService);
-			const bob = new EncryptionClient(mockService);
-			const carol = new EncryptionClient(mockService);
-
-			await alice.initialize('alice');
-			await bob.initialize('bob');
-			await carol.initialize('carol');
+			const alice = await EncryptionClient.initialize('alice', mockService);
+			const bob = await EncryptionClient.initialize('bob', mockService);
+			const carol = await EncryptionClient.initialize('carol', mockService);
 
 			await alice.register('alice-pass');
 			await bob.register('bob-pass');

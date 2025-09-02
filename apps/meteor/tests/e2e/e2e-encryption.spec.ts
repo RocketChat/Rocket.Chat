@@ -19,10 +19,32 @@ import {
 import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
 import { FileUploadModal } from './page-objects/fragments/file-upload-modal';
 import { LoginPage } from './page-objects/login';
+import { getSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
-test.beforeAll(async () => {
+const settings = {
+	E2E_Enable: false as unknown,
+	E2E_Allow_Unencrypted_Messages: false as unknown,
+	E2E_Enable_Encrypt_Files: false as unknown,
+	E2E_Enabled_Default_DirectRooms: false as unknown,
+	E2E_Enabled_Default_PrivateRooms: false as unknown,
+};
+
+test.beforeAll(async ({ api }) => {
 	await injectInitialData();
+	settings.E2E_Enable = await getSettingValueById(api, 'E2E_Enable');
+	settings.E2E_Allow_Unencrypted_Messages = await getSettingValueById(api, 'E2E_Allow_Unencrypted_Messages');
+	settings.E2E_Enable_Encrypt_Files = await getSettingValueById(api, 'E2E_Enable_Encrypt_Files');
+	settings.E2E_Enabled_Default_DirectRooms = await getSettingValueById(api, 'E2E_Enabled_Default_DirectRooms');
+	settings.E2E_Enabled_Default_PrivateRooms = await getSettingValueById(api, 'E2E_Enabled_Default_PrivateRooms');
+});
+
+test.afterAll(async ({ api }) => {
+	await api.post('/settings/E2E_Enable', { value: settings.E2E_Enable });
+	await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: settings.E2E_Allow_Unencrypted_Messages });
+	await api.post('/settings/E2E_Enable_Encrypt_Files', { value: settings.E2E_Enable_Encrypt_Files });
+	await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: settings.E2E_Enabled_Default_DirectRooms });
+	await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: settings.E2E_Enabled_Default_PrivateRooms });
 });
 
 test.describe('initial setup', () => {
@@ -31,11 +53,13 @@ test.describe('initial setup', () => {
 	test.beforeAll(async ({ api }) => {
 		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
+		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
+		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: false });
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/E2E_Enable', { value: false });
-		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
+		await api.post('/settings/E2E_Enable', { value: settings.E2E_Enable });
+		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: settings.E2E_Allow_Unencrypted_Messages });
 	});
 
 	test.beforeEach(async ({ api, page }) => {
@@ -140,8 +164,8 @@ test.describe('basic features', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/E2E_Enable', { value: false });
-		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
+		await api.post('/settings/E2E_Enable', { value: settings.E2E_Enable });
+		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: settings.E2E_Allow_Unencrypted_Messages });
 	});
 
 	test.beforeEach(async ({ api, page }) => {
@@ -326,11 +350,15 @@ test.describe.serial('e2e-encryption', () => {
 	test.beforeAll(async ({ api }) => {
 		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
+		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
+		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: false });
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/E2E_Enable', { value: false });
-		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
+		await api.post('/settings/E2E_Enable', { value: settings.E2E_Enable });
+		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: settings.E2E_Allow_Unencrypted_Messages });
+		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: settings.E2E_Enabled_Default_DirectRooms });
+		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: settings.E2E_Enabled_Default_PrivateRooms });
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -672,7 +700,7 @@ test.describe.serial('e2e-encryption', () => {
 			});
 
 			test.afterAll(async ({ api }) => {
-				await api.post('/settings/E2E_Enable_Encrypt_Files', { value: true });
+				await api.post('/settings/E2E_Enable_Encrypt_Files', { value: settings.E2E_Enable_Encrypt_Files });
 				await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' });
 			});
 
@@ -747,7 +775,7 @@ test.describe.serial('e2e-encryption', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
+			await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: settings.E2E_Allow_Unencrypted_Messages });
 		});
 
 		test('expect slash commands to be disabled in an e2ee room', async ({ page }) => {
@@ -953,8 +981,8 @@ test.describe.fixme('e2ee room setup', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/E2E_Enable', { value: false });
-		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
+		await api.post('/settings/E2E_Enable', { value: settings.E2E_Enable });
+		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: settings.E2E_Allow_Unencrypted_Messages });
 	});
 
 	test.afterEach(async ({ api }) => {
