@@ -4,6 +4,7 @@
 - [[NEW] Support for end to end encryption](https://github.com/RocketChat/Rocket.Chat/pull/10094)
 - [Improve: Decrypt last message](https://github.com/RocketChat/Rocket.Chat/pull/12173)
 - [[NEW] Encrypted Discussions and new Encryption Permissions](https://github.com/RocketChat/Rocket.Chat/pull/20201)
+- [[FIX] Ensure E2E is enabled/disabled on sending message](https://github.com/RocketChat/Rocket.Chat/pull/21084)
 - [[NEW] E2E password generator](github.com/RocketChat/Rocket.Chat/pull/24114)
 - [[IMPROVE] Require acceptance when setting new E2E Encryption key for another user](https://github.com/RocketChat/Rocket.Chat/pull/27556)
 - [feat: Un-encrypted messages not allowed in E2EE rooms](https://github.com/RocketChat/Rocket.Chat/pull/32040)
