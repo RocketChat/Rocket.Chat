@@ -12,9 +12,9 @@ import moment from 'moment';
 
 import type { DataAPI } from './ChatAPI';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
-import { settings } from '../../../app/settings/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { Messages, Rooms, Subscriptions } from '../../stores';
+import { settings } from '../settings';
 import { prependReplies } from '../utils/prependReplies';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
@@ -77,14 +77,14 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
-		const editAllowed = (settings.get('Message_AllowEditing') as boolean | undefined) ?? false;
+		const editAllowed = (settings.peek('Message_AllowEditing') as boolean | undefined) ?? false;
 		const editOwn = message?.u && message.u._id === Meteor.userId();
 
 		if (!canEditMessage && (!editAllowed || !editOwn)) {
 			return false;
 		}
 
-		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
+		const blockEditInMinutes = settings.peek('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
@@ -194,7 +194,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return true;
 		}
 
-		const deletionEnabled = settings.get('Message_AllowDeleting') as boolean | undefined;
+		const deletionEnabled = settings.peek('Message_AllowDeleting') as boolean | undefined;
 		if (!deletionEnabled) {
 			return false;
 		}
@@ -207,7 +207,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
-		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
+		const blockDeleteInMinutes = settings.peek('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
 		const onTimeForDelete = bypassBlockTimeLimit || !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
