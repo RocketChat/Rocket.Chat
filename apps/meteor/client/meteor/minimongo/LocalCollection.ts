@@ -14,9 +14,9 @@ import type { Options } from './Cursor';
 import { DiffSequence } from './DiffSequence';
 import type { IdMap } from './IdMap';
 import { MinimongoError } from './MinimongoError';
-import type { Query } from './Query';
 import { SynchronousQueue } from './SynchronousQueue';
 import { clone, assertHasValidFieldNames } from './common';
+import type { Query } from './queries';
 
 /**
  * Forked from Meteor's Mongo.Collection, this class implements a local collection over a Zustand store.

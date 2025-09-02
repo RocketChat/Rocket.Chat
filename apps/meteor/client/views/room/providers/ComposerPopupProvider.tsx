@@ -26,7 +26,7 @@ import type { ComposerBoxPopupUserProps } from '../composer/ComposerBoxPopupUser
 import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext';
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
-import { pipe } from '../../../lib/cachedStores';
+import { pipe } from '../../../lib/cachedStores/pipe';
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
 

@@ -1,6 +1,6 @@
 import { getBSONType } from '@rocket.chat/mongo-adapter';
 
-import { entriesOf } from '../objectUtils';
+import { entriesOf } from '../../lib/objectUtils';
 
 export const hasOwn = Object.prototype.hasOwnProperty;
 
