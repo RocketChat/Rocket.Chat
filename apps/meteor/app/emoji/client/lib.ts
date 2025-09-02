@@ -1,7 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 import emojione from 'emojione';
 
-import { queueMicrotask } from '../../../client/lib/utils/queueMicrotask';
 import type { EmojiPackages } from '../lib/rocketchat';
 
 export const emojiEmitter = new Emitter<{ updated: void }>();
