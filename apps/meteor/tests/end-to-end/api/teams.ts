@@ -430,11 +430,6 @@ describe('/teams.addMembers', () => {
 	let testUser: TestUser<IUser>;
 	let testUser2: TestUser<IUser>;
 
-	before(async () => {
-		testUser = await createUser();
-		testUser2 = await createUser();
-	});
-
 	before('Create test team', (done) => {
 		void request
 			.post(api('teams.create'))
@@ -449,7 +444,14 @@ describe('/teams.addMembers', () => {
 			});
 	});
 
-	after(() => Promise.all([deleteUser(testUser), deleteUser(testUser2), deleteTeam(credentials, teamName)]));
+	after(() => deleteTeam(credentials, teamName));
+
+	beforeEach(async () => {
+		testUser = await createUser();
+		testUser2 = await createUser();
+	});
+
+	afterEach(() => Promise.all([deleteUser(testUser), deleteUser(testUser2)]));
 
 	it('should add members to a public team', (done) => {
 		void request
@@ -512,6 +514,72 @@ describe('/teams.addMembers', () => {
 								roles: ['member'],
 							});
 						}),
+			)
+			.then(() => done())
+			.catch(done);
+	});
+
+	it('should add members and assign roles to them properly', (done) => {
+		void request
+			.post(api('teams.addMembers'))
+			.set(credentials)
+			.send({
+				teamName: testTeam.name,
+				members: [
+					{
+						userId: testUser._id,
+						roles: ['owner', 'leader'],
+					},
+					{
+						userId: testUser2._id,
+						roles: ['moderator'],
+					},
+				],
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			})
+			.then(() =>
+				request
+					.get(api('rooms.membersOrderedByRole'))
+					.set(credentials)
+					.query({
+						roomId: testTeam.roomId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((response) => {
+						expect(response.body).to.have.property('success', true);
+						expect(response.body).to.have.property('members');
+						expect(response.body.members).to.have.length(3);
+						expect(response.body.members[1]).to.have.property('_id');
+						expect(response.body.members[1]).to.have.property('roles');
+						expect(response.body.members[1]).to.have.property('username');
+						expect(response.body.members[1]).to.have.property('name');
+
+						const members = (response.body.members as IUser[]).map(({ _id, username, name, roles }) => ({
+							_id,
+							username,
+							name,
+							roles,
+						}));
+
+						expect(members).to.deep.own.include({
+							_id: testUser._id,
+							username: testUser.username,
+							name: testUser.name,
+							roles: ['owner', 'leader'],
+						});
+
+						expect(members).to.deep.own.include({
+							_id: testUser2._id,
+							username: testUser2.username,
+							name: testUser2.name,
+							roles: ['moderator'],
+						});
+					}),
 			)
 			.then(() => done())
 			.catch(done);
