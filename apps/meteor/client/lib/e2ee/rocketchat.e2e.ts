@@ -8,7 +8,6 @@ import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { E2EEState } from './E2EEState';
 import {
@@ -41,6 +40,7 @@ import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
 import { settings } from '../settings';
 import { dispatchToastMessage } from '../toast';
+import { getUserId } from '../user';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 
 let failedToDecodeKey = false;
@@ -269,7 +269,7 @@ class E2E extends Emitter {
 			return null;
 		}
 
-		const userId = Meteor.userId();
+		const userId = getUserId();
 		if (!this.instancesByRoomId[rid] && userId) {
 			this.instancesByRoomId[rid] = new E2ERoom(userId, room);
 		}
@@ -553,7 +553,7 @@ class E2E extends Emitter {
 
 		// Derive a key from the password
 		try {
-			return await deriveKey(toArrayBuffer(Meteor.userId()), baseKey);
+			return await deriveKey(toArrayBuffer(getUserId()), baseKey);
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			return this.error('Error deriving baseKey: ', error);
@@ -853,7 +853,7 @@ class E2E extends Emitter {
 		}
 
 		const predicate = (record: IRoom) =>
-			Boolean('usersWaitingForE2EKeys' in record && record.usersWaitingForE2EKeys?.every((user) => user.userId !== Meteor.userId()));
+			Boolean('usersWaitingForE2EKeys' in record && record.usersWaitingForE2EKeys?.every((user) => user.userId !== getUserId()));
 
 		const keyDistribution = async () => {
 			const roomIds = Rooms.state.filter(predicate).map((room) => room._id);
