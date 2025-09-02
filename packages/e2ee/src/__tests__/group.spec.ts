@@ -8,7 +8,6 @@ describe('EncryptionClient', () => {
 	beforeEach(() => {
 		// Reset the mock service and IndexedDB before each test
 		mockService = new MockChatService();
-		indexedDB.deleteDatabase('e2ee-chat-db');
 	});
 
 	describe('User Management', () => {

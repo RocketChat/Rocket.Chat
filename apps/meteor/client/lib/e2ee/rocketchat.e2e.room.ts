@@ -67,6 +67,9 @@ const filterMutation = (currentState: E2ERoomState | undefined, nextState: E2ERo
 	return false;
 };
 
+export type EncryptedGroupKey = { E2EKey: string; e2eKeyId: string; ts: Date };
+export type DecryptedGroupKey = { E2EKey: CryptoKey | null; e2eKeyId: string; ts: Date };
+
 export class E2ERoom extends Emitter {
 	state: E2ERoomState | undefined = undefined;
 
@@ -243,7 +246,7 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		const keys = [];
+		const keys: DecryptedGroupKey[] = [];
 		for await (const key of sub.oldRoomKeys) {
 			try {
 				const k = await this.decryptSessionKey(key.E2EKey);
@@ -506,7 +509,7 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	async encryptOldKeysForParticipant(publicKey: JsonWebKey, oldRoomKeys: { E2EKey: string; e2eKeyId: string; ts: Date }[]) {
+	async encryptOldKeysForParticipant(publicKey: JsonWebKey, oldRoomKeys: EncryptedGroupKey[]) {
 		if (!oldRoomKeys || oldRoomKeys.length === 0) {
 			return;
 		}
@@ -520,7 +523,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
-			const keys = [];
+			const keys: EncryptedGroupKey[] = [];
 			for await (const oldRoomKey of oldRoomKeys) {
 				if (!oldRoomKey.E2EKey) {
 					continue;
