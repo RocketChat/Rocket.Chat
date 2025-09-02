@@ -260,7 +260,7 @@ const livechatAnalyticsEndpoints = API.v1.get(
 		},
 		authRequired: true,
 		permissionsRequired: ['view-livechat-manager'],
-		validateParams: isGETLivechatAnalyticsDashboardsChartDataParams,
+		query: isGETLivechatAnalyticsDashboardsChartDataParams,
 	},
 	async function action() {
 		const { chartName, start, end, departmentId } = this.queryParams;
