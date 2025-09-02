@@ -63,14 +63,19 @@ export interface IClientMediaCall {
 	ignored: boolean;
 	signed: boolean;
 	hidden: boolean;
+	muted: boolean;
+	onHold: boolean;
 
 	contact: CallContact;
 
 	emitter: Emitter<CallEvents>;
 
+	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
 	getRemoteMediaStream(): MediaStream;
 
 	accept(): void;
 	reject(): void;
 	hangup(): void;
+	setMuted(muted: boolean): void;
+	setOnHold(onHold: boolean): void;
 }

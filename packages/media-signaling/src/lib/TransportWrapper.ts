@@ -6,6 +6,7 @@ import type {
 	ClientMediaSignalBody,
 	GenericClientMediaSignal,
 	ClientMediaSignal,
+	ClientMediaSignalError,
 } from '../definition/signals';
 
 export class MediaSignalTransportWrapper {
@@ -25,8 +26,8 @@ export class MediaSignalTransportWrapper {
 		} as GenericClientMediaSignal<T>);
 	}
 
-	public sendError(callId: string, errorCode: string) {
-		this.sendToServer(callId, 'error', { errorCode });
+	public sendError(callId: string, { errorType, errorCode }: Partial<ClientMediaSignalError>) {
+		this.sendToServer(callId, 'error', { errorType: errorType || 'other', ...(errorCode && { errorCode }) });
 	}
 
 	public answer(callId: string, answer: CallAnswer) {

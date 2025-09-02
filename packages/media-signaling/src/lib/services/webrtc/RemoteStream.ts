@@ -1,20 +1,19 @@
 import { Stream } from './Stream';
 
 export class RemoteStream extends Stream {
+	public get onHold(): boolean {
+		return !this.enabled;
+	}
+
+	public setOnHold(onHold: boolean): void {
+		if (onHold) {
+			this.disable();
+		} else {
+			this.enable();
+		}
+	}
+
 	public setTrack(newTrack: MediaStreamTrack, _peer: RTCPeerConnection): void {
-		if (this.mediaStream.getTrackById(newTrack.id)) {
-			return;
-		}
-
-		if (newTrack.kind !== 'audio') {
-			return;
-		}
-
-		this.mediaStream.getAudioTracks().forEach((track) => {
-			track.stop();
-			this.mediaStream.removeTrack(track);
-		});
-
-		this.mediaStream.addTrack(newTrack);
+		this.setAudioTrack(newTrack);
 	}
 }

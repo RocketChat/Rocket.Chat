@@ -4,6 +4,7 @@ import type { CallState } from './IClientMediaCall';
 export type CallEvents = {
 	stateChange: CallState;
 	clientStateChange: ClientState;
+	trackStateChange: void;
 	contactUpdate: void;
 
 	initialized: void;

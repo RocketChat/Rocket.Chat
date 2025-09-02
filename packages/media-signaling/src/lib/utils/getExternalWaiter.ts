@@ -1,0 +1,65 @@
+export type PromiseWaiterData = {
+	done: boolean;
+	promise: Promise<void>;
+	promiseReject: (error: Error) => void;
+	promiseResolve: () => void;
+	timeout: ReturnType<typeof setTimeout> | null;
+};
+
+export type PromiseWaiterParams = {
+	timeout?: number;
+	timeoutFn?: () => void;
+	cleanupFn?: () => void;
+};
+
+export function getExternalWaiter({ timeout, timeoutFn, cleanupFn }: PromiseWaiterParams): PromiseWaiterData {
+	const data: Partial<PromiseWaiterData> = {
+		timeout: null,
+		done: false,
+	};
+
+	const flagAsDone = () => {
+		if (data.timeout) {
+			clearTimeout(data.timeout);
+			data.timeout = null;
+		}
+		data.done = true;
+		cleanupFn?.();
+	};
+
+	data.promise = new Promise((resolve, reject) => {
+		data.promiseResolve = (...args: unknown[]) => {
+			if (data.done) {
+				return;
+			}
+
+			flagAsDone();
+			resolve(...(args as any));
+		};
+		data.promiseReject = (...args: unknown[]) => {
+			if (data.done) {
+				return;
+			}
+			flagAsDone();
+			reject(...args);
+		};
+	});
+
+	if (timeout) {
+		data.timeout = setTimeout(() => {
+			data.timeout = null;
+			if (data.done) {
+				return;
+			}
+			flagAsDone();
+
+			if (timeoutFn) {
+				timeoutFn();
+			} else if (data.promiseReject) {
+				data.promiseReject(new Error('timeout'));
+			}
+		}, timeout);
+	}
+
+	return data as PromiseWaiterData;
+}

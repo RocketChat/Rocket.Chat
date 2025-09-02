@@ -6,7 +6,8 @@ export type ClientMediaSignalError = {
 	contractId: string;
 	type: 'error';
 
-	errorCode: string;
+	errorType?: 'signaling' | 'service' | 'other';
+	errorCode?: string;
 };
 
 export const clientMediaSignalErrorSchema: JSONSchemaType<ClientMediaSignalError> = {
@@ -24,11 +25,15 @@ export const clientMediaSignalErrorSchema: JSONSchemaType<ClientMediaSignalError
 			type: 'string',
 			const: 'error',
 		},
+		errorType: {
+			type: 'string',
+			nullable: true,
+		},
 		errorCode: {
 			type: 'string',
-			nullable: false,
+			nullable: true,
 		},
 	},
 	additionalProperties: false,
-	required: ['callId', 'contractId', 'type', 'errorCode'],
+	required: ['callId', 'contractId', 'type'],
 };
