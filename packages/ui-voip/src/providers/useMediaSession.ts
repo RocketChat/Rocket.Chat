@@ -10,9 +10,10 @@ import {
 	ServerMediaSignal,
 	WebRTCProcessorConfig,
 } from '@rocket.chat/media-signaling';
-import { useStream, useUserAvatarPath, useWriteStream } from '@rocket.chat/ui-contexts';
+import { useSetting, useStream, useUserAvatarPath, useWriteStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback, useRef } from 'react';
 
+import { useIceServers } from '../hooks/useIceServers';
 import type { PeerInfo, State } from '../v2/MediaCallContext';
 
 // TODO remove this once the permission flow PR is merged
@@ -33,7 +34,10 @@ class WebRTCProcessor extends MediaCallWebRTCProcessor {
 		// Not sure how we'd go about replacing the tracks, if there can be more than one track/sender.
 		const sender = this.peer.getSenders().find((sender) => sender.track?.kind === track.kind);
 		if (sender) {
+			const oldTrack = sender.track;
 			await sender.replaceTrack(track);
+
+			oldTrack?.stop();
 		}
 	}
 
@@ -109,7 +113,7 @@ type MediaSession = SessionInfo & {
 	acceptCall: () => Promise<void>;
 
 	// changeDevice: (device: string) => void;
-	changeDevice: (newTrack: MediaStreamTrack) => void;
+	changeDevice: (newTrack: MediaStreamTrack) => Promise<void>;
 	// changeDevice: (mediaStream: MediaStream) => void;
 	forwardCall: () => void;
 	sendTone: (tone: string) => void;
@@ -215,6 +219,9 @@ export const useMediaSessionInstance = (userId?: string) => {
 		}, [userId]),
 	);
 
+	const iceServers = useIceServers();
+	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
+
 	const processor = useRef<WebRTCProcessor | undefined>(undefined);
 
 	const notifyUserStream = useStream('notify-user');
@@ -241,11 +248,11 @@ export const useMediaSessionInstance = (userId?: string) => {
 
 	useEffect(() => {
 		mediaSession.setWebRTCProcessorFactory((config) => {
-			const _processor = new WebRTCProcessor(config);
+			const _processor = new WebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout });
 			processor.current = _processor;
 			return _processor;
 		});
-	}, []);
+	}, [iceServers, iceGatheringTimeout]);
 
 	return {
 		instance: instance ?? undefined,
@@ -438,8 +445,8 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			}
 		};
 
-		const changeDevice = (newTrack: MediaStreamTrack) => {
-			processor?.replaceSenderTrack(newTrack).catch((error) => console.error(error));
+		const changeDevice = async (newTrack: MediaStreamTrack) => {
+			await processor?.replaceSenderTrack(newTrack);
 		};
 
 		const forwardCall = () => {
