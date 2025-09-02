@@ -85,7 +85,7 @@ export class E2ERoom extends Emitter {
 
 	groupSessionKey: CryptoKey | undefined;
 
-	oldKeys: { E2EKey: CryptoKey | null; ts: Date; e2eKeyId: string }[] | undefined;
+	oldKeys: DecryptedGroupKey[] | undefined;
 
 	sessionKeyExportedString: string | undefined;
 
@@ -113,23 +113,23 @@ export class E2ERoom extends Emitter {
 		this.setState('NOT_STARTED');
 	}
 
-	log(...msg: unknown[]) {
+	log(...msg: unknown[]): void {
 		logger.log(`[${this.roomId} (${this.state})]`, ...msg);
 	}
 
-	error(...msg: unknown[]) {
+	error(...msg: unknown[]): void {
 		logger.error(`[${this.roomId} (${this.state})]`, ...msg);
 	}
 
-	hasSessionKey() {
+	hasSessionKey(): boolean {
 		return !!this.groupSessionKey;
 	}
 
-	getState() {
+	getState(): E2ERoomState | undefined {
 		return this.state;
 	}
 
-	setState(requestedState: E2ERoomState) {
+	setState(requestedState: E2ERoomState): void {
 		const currentState = this.state;
 		const nextState = filterMutation(currentState, requestedState);
 
@@ -301,7 +301,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Initiates E2E Encryption
-	async handshake() {
+	async handshake(): Promise<void> {
 		if (!e2e.isReady()) {
 			return;
 		}
@@ -343,15 +343,15 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	isSupportedRoomType(type: string) {
+	isSupportedRoomType(type: string): boolean {
 		return roomCoordinator.getRoomDirectives(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
 	}
 
-	async decryptSessionKey(key: string) {
+	async decryptSessionKey(key: string): Promise<CryptoKey> {
 		return importAesGcmKey(JSON.parse(await this.exportSessionKey(key)));
 	}
 
-	async exportSessionKey(key: string) {
+	async exportSessionKey(key: string): Promise<string> {
 		key = key.slice(12);
 		const decodedKey = Base64.decode(key);
 
@@ -363,7 +363,7 @@ export class E2ERoom extends Emitter {
 		return toString(decryptedKey);
 	}
 
-	async importGroupKey(groupKey: string) {
+	async importGroupKey(groupKey: string): Promise<boolean> {
 		this.log('Importing room key ->', this.roomId);
 		// Get existing group key
 		const keyID = groupKey.slice(0, 12);
