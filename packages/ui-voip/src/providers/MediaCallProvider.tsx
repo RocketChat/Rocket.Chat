@@ -109,14 +109,17 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 						},
 					},
 				},
-			})
-				.then((stream) => {
+			}).then(async (stream) => {
+				try {
+					await session.changeDevice(stream.getTracks()[0]);
 					setInputMediaDevice(device);
-					session.changeDevice(stream.getTracks()[0]);
-				})
-				.catch((error) => {
+				} catch (error) {
+					stream.getTracks().forEach((track) => {
+						track.stop();
+					});
 					console.error('Error changing device', error);
-				});
+				}
+			});
 		}
 	};
 
