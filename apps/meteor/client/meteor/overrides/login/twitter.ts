@@ -5,8 +5,8 @@ import { OAuth } from 'meteor/oauth';
 import { Twitter } from 'meteor/twitter-oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+import { overrideLoginMethod } from '../../../lib/2fa/overrideLoginMethod';
+import { wrapRequestCredentialFn } from '../../../lib/wrapRequestCredentialFn';
 
 const { loginWithTwitter } = Meteor;
 const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(Twitter);
