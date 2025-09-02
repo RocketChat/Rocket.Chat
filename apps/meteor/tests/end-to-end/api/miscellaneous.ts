@@ -670,7 +670,7 @@ describe('miscellaneous', () => {
 			// populate the logs by sending method calls
 			const populateLogsPromises = [];
 			populateLogsPromises.push(
-				request.get(api('rooms.roles')).set(credentials).set('Cookie', `rc_token=${credentials['X-Auth-Token']}`).query({
+				request.get(api('rooms.roles')).set(credentials).query({
 					rid: 'GENERAL',
 				}),
 			);
