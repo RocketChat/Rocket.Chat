@@ -24,7 +24,7 @@ import { useIdleConnection } from '../../hooks/useIdleConnection';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { userIdStore } from '../../lib/userId';
+import { userIdStore } from '../../lib/user';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
