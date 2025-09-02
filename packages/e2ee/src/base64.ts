@@ -1,4 +1,5 @@
 const { fromBase64 } = globalThis.Uint8Array;
+/* oxlint-disable-next-line typescript/unbound-method */
 const { toBase64 } = globalThis.Uint8Array.prototype;
 
 export const fromB64Fallback = (string: string): Uint8Array<ArrayBuffer> => {

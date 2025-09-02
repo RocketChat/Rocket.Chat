@@ -13,7 +13,9 @@ export class Keychain {
 	public static async init(userId: string): Promise<Keychain> {
 		const db = await new Promise<IDBDatabase>((resolve, reject) => {
 			const request = indexedDB.open(`E2eeChatDB`, 1);
-			request.onerror = (): void => reject(request.error);
+			request.onerror = (): void => {
+				reject(request.error ?? new Error('Unknown error'));
+			};
 			request.onsuccess = (): void => {
 				resolve(request.result);
 			};
@@ -61,9 +63,16 @@ export class Keychain {
 			const store = transaction.objectStore('CryptoKeys');
 			const request = store.get(userId);
 			request.onsuccess = (): void => {
-				resolve(request.result ? request.result.privateKey : false);
+				const result = request.result as unknown;
+				if (typeof result === 'object' && result !== null && 'privateKey' in result && result.privateKey instanceof CryptoKey) {
+					resolve(result.privateKey);
+				} else {
+					resolve(false);
+				}
 			};
-			request.onerror = (): void => reject(new Error('Failed to get private key', { cause: request.error }));
+			request.onerror = (): void => {
+				reject(new Error('Failed to get private key', { cause: request.error }));
+			};
 		});
 
 		return privateKey;
@@ -76,8 +85,12 @@ export class Keychain {
 			const transaction = db.transaction('CryptoKeys', 'readwrite');
 			const store = transaction.objectStore('CryptoKeys');
 			const request = store.delete(userId);
-			request.onsuccess = (): void => resolve();
-			request.onerror = (): void => reject(new Error('Failed to delete private key', { cause: request.error }));
+			request.onsuccess = (): void => {
+				resolve();
+			};
+			request.onerror = (): void => {
+				reject(new Error('Failed to delete private key', { cause: request.error }));
+			};
 		});
 	}
 }

@@ -113,24 +113,24 @@ export class EncryptionClient {
 
 		const allMemberIds = [...new Set([this.userId, ...memberUserIds])];
 		const groupKey = await generateAesKey();
-		const encryptedKeyInfos: EncryptedGroupKeyInfo[] = [];
+
 		const publicKeyInfos = await this.chatService.findUsersPublicKeys(allMemberIds);
 
-		for await (const memberId of allMemberIds) {
-			const publicKeyInfo = publicKeyInfos.get(memberId);
-			if (!publicKeyInfo) {
-				throw new Error(`Could not find public key for user ${memberId}`);
-			}
-
-			const memberPublicKey = await importPublicKey(publicKeyInfo);
-			const encryptedGroupKey = await rsaEncrypt(groupKey, memberPublicKey);
-
-			encryptedKeyInfos.push({
-				userId: memberId,
-				encryptedKey: encryptedGroupKey,
-				keyAlgorithm: publicKeyInfo.algorithm,
-			});
-		}
+		const encryptedKeyInfos: EncryptedGroupKeyInfo[] = await Promise.all(
+			allMemberIds.map(async (memberId) => {
+				const publicKeyInfo = publicKeyInfos.get(memberId);
+				if (!publicKeyInfo) {
+					throw new Error(`Could not find public key for user ${memberId}`);
+				}
+				const memberPublicKey = await importPublicKey(publicKeyInfo);
+				const encryptedGroupKey = await rsaEncrypt(groupKey, memberPublicKey);
+				return {
+					userId: memberId,
+					encryptedKey: encryptedGroupKey,
+					keyAlgorithm: publicKeyInfo.algorithm,
+				};
+			}),
+		);
 
 		await this.chatService.createGroup(groupId, encryptedKeyInfos);
 		this.groupKeys.set(groupId, groupKey);
@@ -260,7 +260,12 @@ export class EncryptionClient {
 		const encryptedMessages = await this.chatService.getMessages(groupId);
 
 		// Decrypt all messages in parallel
-		const decryptedMessages = await Promise.all(encryptedMessages.map((msg) => aesDecrypt(msg, groupKey)));
+		const decryptedMessages = await Promise.all(
+			encryptedMessages.map(async (msg) => {
+				const decryptedMessage = await aesDecrypt(msg, groupKey);
+				return decryptedMessage;
+			}),
+		);
 
 		return decryptedMessages;
 	}

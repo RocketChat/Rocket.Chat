@@ -25,6 +25,7 @@
 		"eslint/max-classes-per-file": "allow",
 		"no-extraneous-class": "allow",
 		"no-console": "allow",
-		"no-rest-spread-properties": "allow"
+		"no-rest-spread-properties": "allow",
+		"typescript/unbound-method": "allow"
 	}
 }
