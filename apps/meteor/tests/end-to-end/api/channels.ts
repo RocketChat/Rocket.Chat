@@ -2842,10 +2842,8 @@ describe('[Channels]', () => {
 		let defaultChannel2: IRoom;
 		let nonDefaultChannel: IRoom;
 		let userWithJoin: TestUser<IUser>;
-		let userForNonDefault: TestUser<IUser>;
 		let userWithoutJoin: TestUser<IUser>;
 		let userWithJoinCredentials: Credentials;
-		let userForNonDefaultCredentials: Credentials;
 		let userWithoutJoinCredentials: Credentials;
 
 		before(async () => {
@@ -2859,15 +2857,13 @@ describe('[Channels]', () => {
 				request.post(api('channels.setDefault')).set(credentials).send({ roomId: defaultChannel2._id, default: true }).expect(200),
 			]);
 
-			[userWithJoin, userForNonDefault, userWithoutJoin] = await Promise.all([
-				createUser({ joinDefaultChannels: true }),
+			[userWithJoin, userWithoutJoin] = await Promise.all([
 				createUser({ joinDefaultChannels: true }),
 				createUser({ joinDefaultChannels: false }),
 			]);
 
-			[userWithJoinCredentials, userForNonDefaultCredentials, userWithoutJoinCredentials] = await Promise.all([
+			[userWithJoinCredentials, userWithoutJoinCredentials] = await Promise.all([
 				login(userWithJoin.username, password),
-				login(userForNonDefault.username, password),
 				login(userWithoutJoin.username, password),
 			]);
 		});
@@ -2875,7 +2871,6 @@ describe('[Channels]', () => {
 		after(async () => {
 			await Promise.all([
 				deleteUser(userWithJoin),
-				deleteUser(userForNonDefault),
 				deleteUser(userWithoutJoin),
 				deleteRoom({ type: 'c', roomId: defaultChannel1._id }),
 				deleteRoom({ type: 'c', roomId: defaultChannel2._id }),
@@ -2901,7 +2896,7 @@ describe('[Channels]', () => {
 		it('should not auto-join new users to non-default channels', async () => {
 			const subscriptionResponse = await request
 				.get(api('subscriptions.getOne'))
-				.set(userForNonDefaultCredentials)
+				.set(userWithJoinCredentials)
 				.query({ roomId: nonDefaultChannel._id })
 				.expect(200);
 

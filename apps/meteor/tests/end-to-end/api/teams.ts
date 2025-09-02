@@ -2258,21 +2258,13 @@ describe('/teams.updateRoom', () => {
 		let testUser2Credentials: Credentials;
 
 		before(async () => {
-			const [testUser1Result, testUser2Result, memberTestUser1Result] = await Promise.all([createUser(), createUser(), createUser()]);
+			[testUser1, testUser2, memberTestUser1] = await Promise.all([createUser(), createUser(), createUser()]);
 
-			testUser1 = testUser1Result;
-			testUser2 = testUser2Result;
-			memberTestUser1 = memberTestUser1Result;
-
-			const [memberTestUser1CredentialsResult, testUser1CredentialsResult, testUser2CredentialsResult] = await Promise.all([
+			[memberTestUser1Credentials, testUser1Credentials, testUser2Credentials] = await Promise.all([
 				login(memberTestUser1.username, password),
 				login(testUser1.username, password),
 				login(testUser2.username, password),
 			]);
-
-			memberTestUser1Credentials = memberTestUser1CredentialsResult;
-			testUser1Credentials = testUser1CredentialsResult;
-			testUser2Credentials = testUser2CredentialsResult;
 		});
 
 		beforeEach(async () => {
