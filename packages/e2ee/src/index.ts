@@ -217,15 +217,15 @@ export default class E2EE {
 	}
 
 	storeRandomPassword(randomPassword: string): void {
-		localStorage.setItem('e2e.random_password', randomPassword);
+		localStorage.setItem('e2e.randomPassword', randomPassword);
 	}
 
 	getRandomPassword(): string | null {
-		return localStorage.getItem('e2e.random_password');
+		return localStorage.getItem('e2e.randomPassword');
 	}
 
 	removeRandomPassword(): void {
-		localStorage.removeItem('e2e.random_password');
+		localStorage.removeItem('e2e.randomPassword');
 	}
 	async createRandomPassword(length: number): Promise<string> {
 		const randomPassword = await generateMnemonicPhrase(length);
