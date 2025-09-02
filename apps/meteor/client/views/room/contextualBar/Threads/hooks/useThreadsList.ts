@@ -10,7 +10,7 @@ import { getConfig } from '../../../../../lib/utils/getConfig';
 
 export const useThreadsList = (
 	options: ThreadsListOptions,
-	uid: IUser['_id'] | null,
+	uid: IUser['_id'] | undefined,
 ): {
 	threadsList: ThreadsList;
 	initialItemCount: number;
