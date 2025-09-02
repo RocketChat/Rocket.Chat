@@ -961,7 +961,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			return false;
 		}
 
-		return (await Promise.all(roles.map((role) => Subscriptions.addRoleById(subscription._id, role)))).every(Boolean);
+		return !!(await Subscriptions.addRolesByUserId(userId, roles, roomId));
 	}
 
 	async removeRolesFromMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
