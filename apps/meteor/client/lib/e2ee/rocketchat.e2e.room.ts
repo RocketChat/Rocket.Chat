@@ -708,7 +708,7 @@ export class E2ERoom extends Emitter {
 
 		let oldKey = null;
 		if (keyID !== this.keyID) {
-			const oldRoomKey = this.oldKeys?.find((key: any) => key.e2eKeyId === keyID);
+			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === keyID);
 			// Messages already contain a keyID stored with them
 			// That means that if we cannot find a keyID for the key the message has preppended to
 			// The message is indecipherable.
