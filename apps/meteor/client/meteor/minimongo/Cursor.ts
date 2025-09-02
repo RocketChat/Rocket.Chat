@@ -8,9 +8,9 @@ import type { LocalCollection } from './LocalCollection';
 import { MinimongoError } from './MinimongoError';
 import { ObserveHandle, ReactiveObserveHandle } from './ObserveHandle';
 import { OrderedDict } from './OrderedDict';
-import type { Query, OrderedQuery, UnorderedQuery } from './Query';
 import { isPlainObject, clone, hasOwn } from './common';
 import type { OrderedObserver, UnorderedObserver } from './observers';
+import type { Query, OrderedQuery, UnorderedQuery } from './queries';
 
 type Transform<T> = ((doc: T) => any) | null | undefined;
 

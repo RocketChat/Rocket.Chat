@@ -1,6 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { createDocumentMapStore, createGlobalStore } from '../lib/cachedStores';
+import { createDocumentMapStore } from '../lib/cachedStores/DocumentMapStore';
+import { createGlobalStore } from '../lib/cachedStores/createGlobalStore';
 
 export const PublicSettings = createGlobalStore(createDocumentMapStore<ISetting>());
 
