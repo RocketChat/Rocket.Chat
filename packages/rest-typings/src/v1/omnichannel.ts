@@ -3398,15 +3398,16 @@ export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentSt
 );
 
 type GETLivechatAnalyticsDashboardsChartDataParams = {
+	chartName: string;
 	start: string;
 	end: string;
-	chart: string;
+	departmentId?: string;
 };
 
 const GETLivechatAnalyticsDashboardsChartDataParamsSchema = {
 	type: 'object',
 	properties: {
-		departmentId: {
+		chartName: {
 			type: 'string',
 		},
 		start: {
@@ -3415,12 +3416,12 @@ const GETLivechatAnalyticsDashboardsChartDataParamsSchema = {
 		end: {
 			type: 'string',
 		},
-		chartName: {
+		departmentId: {
 			type: 'string',
 		},
 	},
 	additionalProperties: false,
-	required: ['chartName'],
+	required: ['chartName', 'start', 'end'],
 };
 
 export const isGETLivechatAnalyticsDashboardsChartDataParams = ajv.compile<GETLivechatAnalyticsDashboardsChartDataParams>(

@@ -75,10 +75,10 @@ const InterchangeableChart = ({
 				}
 
 				const result = await loadData({
-					start: params.daterange.from,
-					end: params.daterange.to,
 					chartName,
-				...(params.departmentId && { departmentId }),
+					start,
+					end,
+					...(departmentId && { departmentId }),
 				});
 
 				if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
