@@ -44,10 +44,6 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 	private remoteStream: RemoteStream | undefined;
 
-	private held = false;
-
-	private muted = false;
-
 	private online = true;
 
 	private error: SessionError | null = null;
@@ -153,12 +149,28 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		return call.hangup();
 	}
 
-	public async setMute(_mute: boolean): Promise<void> {
-		//
+	public async setMute(mute: boolean): Promise<void> {
+		console.log('setMute');
+
+		const call = this.session.getMainCall();
+		if (!call) {
+			throw new Error('No call available to mute');
+		}
+
+		call.setMuted(mute);
+		this.emit('stateChanged');
 	}
 
-	public async setHold(_hold: boolean): Promise<void> {
-		//
+	public async setHold(hold: boolean): Promise<void> {
+		console.log('setHold');
+
+		const call = this.session.getMainCall();
+		if (!call) {
+			throw new Error('No call available to hold');
+		}
+
+		call.setOnHold(hold);
+		this.emit('stateChanged');
 	}
 
 	public async sendDTMF(_tone: string): Promise<void> {
@@ -289,11 +301,21 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 	}
 
 	public isMuted(): boolean {
-		return this.muted;
+		const call = this.session.getMainCall();
+		if (!call || call.hidden) {
+			return false;
+		}
+
+		return call.muted;
 	}
 
 	public isHeld(): boolean {
-		return this.held;
+		const call = this.session.getMainCall();
+		if (!call || call.hidden) {
+			return false;
+		}
+
+		return call.onHold;
 	}
 
 	public getError() {
