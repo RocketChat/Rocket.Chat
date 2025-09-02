@@ -4,10 +4,10 @@ export const isMutedUnmuted = (messageType: string): boolean => {
 	return messageType === 'user-muted' || messageType === 'user-unmuted';
 };
 
-export const isMessageRemove = (messageType: string): boolean => messageType === 'rm';
+export const isMessageRemoved = (messageType: string): boolean => messageType === 'rm';
 
 export const shouldHideSystemMessage = (messageType: MessageTypesValues, hideSystemMessage?: MessageTypesValues[]): boolean => {
-	if (!hideSystemMessage?.length || isMessageRemove(messageType)) {
+	if (!hideSystemMessage?.length || isMessageRemoved(messageType)) {
 		return false;
 	}
 
