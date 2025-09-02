@@ -28,7 +28,7 @@ export interface IClientMediaCallConfig {
 	logger?: IMediaSignalLogger;
 	transporter: MediaSignalTransportWrapper;
 	processorFactories: IServiceProcessorFactoryList;
-	mediaStreamFactory: MediaStreamFactory;
+	mediaStreamFactory?: MediaStreamFactory;
 
 	iceGatheringTimeout: number;
 }
@@ -91,6 +91,22 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.ignored || this.contractState === 'ignored';
 	}
 
+	public get muted(): boolean {
+		if (!this.webrtcProcessor) {
+			return false;
+		}
+
+		return this.webrtcProcessor.muted;
+	}
+
+	public get onHold(): boolean {
+		if (!this.webrtcProcessor) {
+			return false;
+		}
+
+		return this.webrtcProcessor.onHold;
+	}
+
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
 
 	private acceptedLocally: boolean;
@@ -123,6 +139,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private contractState: ClientContractState;
 
+	private inputTrack: MediaStreamTrack | null;
+
 	// localCallId will only be different on calls initiated by this session
 	private localCallId: string;
 
@@ -148,6 +166,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.serviceStates = new Map();
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
+		this.inputTrack = null;
 
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
@@ -287,6 +306,13 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	public async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
+		this.inputTrack = newInputTrack;
+		if (this.webrtcProcessor) {
+			await this.webrtcProcessor.setInputTrack(newInputTrack);
+		}
+	}
+
 	public getRemoteMediaStream(): MediaStream {
 		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream');
 		if (this.shouldIgnoreWebRTC()) {
@@ -416,6 +442,38 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.mayReportStates = false;
 	}
 
+	public setMuted(muted: boolean): void {
+		if (this.isOver()) {
+			return;
+		}
+		if (!this.webrtcProcessor && !muted) {
+			return;
+		}
+
+		this.requireWebRTC();
+		const wasMuted = this.webrtcProcessor.muted;
+		this.webrtcProcessor.setMuted(muted);
+		if (wasMuted !== this.webrtcProcessor.muted) {
+			this.emitter.emit('trackStateChange');
+		}
+	}
+
+	public setOnHold(onHold: boolean): void {
+		if (this.isOver()) {
+			return;
+		}
+		if (!this.webrtcProcessor && !onHold) {
+			return;
+		}
+
+		this.requireWebRTC();
+		const wasOnHold = this.webrtcProcessor.onHold;
+		this.webrtcProcessor.setOnHold(onHold);
+		if (wasOnHold !== this.webrtcProcessor.onHold) {
+			this.emitter.emit('trackStateChange');
+		}
+	}
+
 	public setContractState(state: 'signed' | 'ignored') {
 		if (this.contractState === state) {
 			return;
@@ -447,6 +505,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.hidden && !wasHidden) {
 			this.emitter.emit('hidden');
 		}
+		this.maybeStopWebRTC();
 	}
 
 	public reportStates(): void {
@@ -478,6 +537,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const oldState = this._state;
 		this._state = newState;
+		this.maybeStopWebRTC();
 		this.updateClientState();
 
 		this.emitter.emit('stateChange', oldState);
@@ -512,6 +572,16 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.requestStateReport();
 		this.oldClientState = clientState;
 		this.emitter.emit('clientStateChange', oldClientState);
+	}
+
+	private maybeStopWebRTC(): void {
+		if (!this.webrtcProcessor) {
+			return;
+		}
+
+		if (this.isOver() || this.hidden) {
+			this.webrtcProcessor.stop();
+		}
 	}
 
 	private changeContact(contact: CallContact | null, { prioritizeExisting }: { prioritizeExisting?: boolean } = {}): void {
@@ -804,6 +874,15 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	private onWebRTCInternalError({ critical, error }: { critical: boolean; error: string | Error }): void {
+		const errorCode = typeof error === 'object' ? error.message : error;
+		this.sendError({ errorType: 'service', errorCode });
+
+		if (critical) {
+			this.hangup('service-error');
+		}
+	}
+
 	private onWebRTCConnectionStateChange(stateValue: RTCPeerConnectionState): void {
 		if (this.hidden) {
 			return;
@@ -879,7 +958,8 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger, iceGatheringTimeout });
+		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
+		this.webrtcProcessor.emitter.on('internalError', (event) => this.onWebRTCInternalError(event));
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 	}
 

@@ -29,7 +29,7 @@ export type MediaSignalingSessionConfig = {
 	oldSessionId?: string;
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
-	mediaStreamFactory: MediaStreamFactory;
+	mediaStreamFactory?: MediaStreamFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
 };
