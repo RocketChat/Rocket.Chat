@@ -1,5 +1,45 @@
 # @rocket.chat/meteor
 
+## 7.10.0-rc.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#36815](https://github.com/RocketChat/Rocket.Chat/pull/36815)) Fixes queued conversations not being sorted in real time based on the room's SLA policy
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.6
+  - @rocket.chat/rest-typings@7.10.0-rc.6
+  - @rocket.chat/license@1.0.28-rc.6
+  - @rocket.chat/omnichannel-services@0.3.34-rc.6
+  - @rocket.chat/pdf-worker@0.3.16-rc.6
+  - @rocket.chat/presence@0.2.37-rc.6
+  - @rocket.chat/api-client@0.2.37-rc.6
+  - @rocket.chat/apps@0.5.16-rc.6
+  - @rocket.chat/core-services@0.10.0-rc.6
+  - @rocket.chat/cron@0.1.37-rc.6
+  - @rocket.chat/freeswitch@1.2.24-rc.6
+  - @rocket.chat/fuselage-ui-kit@22.0.0-rc.6
+  - @rocket.chat/gazzodown@22.0.0-rc.6
+  - @rocket.chat/http-router@7.9.4-rc.6
+  - @rocket.chat/model-typings@1.7.0-rc.6
+  - @rocket.chat/ui-avatar@18.0.0-rc.6
+  - @rocket.chat/ui-client@22.0.0-rc.6
+  - @rocket.chat/ui-contexts@22.0.0-rc.6
+  - @rocket.chat/web-ui-registration@22.0.0-rc.6
+  - @rocket.chat/models@1.6.0-rc.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.16-rc.6
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.6
+  - @rocket.chat/ui-voip@12.0.0-rc.6
+  - @rocket.chat/omni-core-ee@0.0.2-rc.6
+  - @rocket.chat/instance-status@0.1.37-rc.6
+  - @rocket.chat/omni-core@0.0.2-rc.6
+  </details>
+
 ## 7.10.0-rc.5
 
 ### Patch Changes
