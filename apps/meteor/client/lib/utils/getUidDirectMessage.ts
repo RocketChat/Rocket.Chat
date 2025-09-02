@@ -3,7 +3,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../stores';
 
-export const getUidDirectMessage = (rid: IRoom['_id'], uid: IUser['_id'] | null = Meteor.userId()): string | undefined => {
+export const getUidDirectMessage = (
+	rid: IRoom['_id'],
+	uid: IUser['_id'] | undefined = Meteor.userId() ?? undefined,
+): string | undefined => {
 	const room = Rooms.state.get(rid);
 
 	if (!room || room.t !== 'd' || !room.uids || room.uids.length > 2) {

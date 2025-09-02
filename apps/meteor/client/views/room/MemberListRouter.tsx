@@ -6,7 +6,7 @@ import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import RoomMembers from './contextualBar/RoomMembers';
 import UserInfo from './contextualBar/UserInfo';
 
-const getUid = (room: IRoom, ownUserId: string | null) => {
+const getUid = (room: IRoom, ownUserId: string | undefined) => {
 	if (room.uids?.length === 1) {
 		return room.uids[0];
 	}
