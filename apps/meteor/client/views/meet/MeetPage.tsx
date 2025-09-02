@@ -1,7 +1,6 @@
 import { Button, Box, Flex } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
+import { useRouteParameter, useSearchParameter, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +22,7 @@ const MeetPage = () => {
 	const [visitorName, setVisitorName] = useState('');
 	const [agentName, setAgentName] = useState('');
 	const [callStartTime, setCallStartTime] = useState(undefined);
+	const userId = useUserId();
 
 	const isMobileDevice = (): boolean => window.innerWidth <= 450;
 	const closeCallTab = (): void => window.close();
@@ -52,14 +52,14 @@ const MeetPage = () => {
 		}
 
 		const room = (await sdk.rest.get('/v1/rooms.info', { roomId })) as any;
-		if (room?.room?.servedBy?._id === Meteor.userId()) {
+		if (room?.room?.servedBy?._id === userId) {
 			setVisitorName(room.room.fname);
 			room?.room?.responseBy?.username ? setAgentName(room.room.responseBy.username) : setAgentName(room.room.servedBy.username);
 			setStatus(room?.room?.callStatus || 'ended');
 			setCallStartTime(room.room.webRtcCallStartTime);
 			return setIsRoomMember(true);
 		}
-	}, [roomId]);
+	}, [roomId, userId]);
 
 	useEffect(() => {
 		if (visitorToken) {

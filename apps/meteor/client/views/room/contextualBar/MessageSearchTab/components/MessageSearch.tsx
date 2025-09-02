@@ -1,10 +1,10 @@
 import { Box, MessageDivider } from '@rocket.chat/fuselage';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { Fragment, memo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
-import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
 import { VirtualizedScrollbars } from '../../../../../components/CustomScrollbars';
 import RoomMessage from '../../../../../components/message/variants/RoomMessage';
