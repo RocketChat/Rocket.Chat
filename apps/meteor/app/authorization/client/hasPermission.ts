@@ -47,10 +47,10 @@ const validatePermissions = (
 		userId: IUser['_id'],
 		scopedRoles?: IPermission['_id'][],
 	) => boolean,
-	userId?: IUser['_id'] | null,
+	userId?: IUser['_id'],
 	scopedRoles?: IPermission['_id'][],
 ): boolean => {
-	userId = userId ?? Meteor.userId();
+	userId = userId ?? Meteor.userId() ?? undefined;
 
 	if (!userId) {
 		return false;
@@ -75,7 +75,7 @@ export const hasAtLeastOnePermission = (permissions: IPermission['_id'] | IPermi
 export const userHasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
 	scope?: string,
-	userId?: IUser['_id'] | null,
+	userId?: IUser['_id'],
 ): boolean => validatePermissions(permissions, scope, all, userId);
 
 export const hasPermission = hasAllPermission;
