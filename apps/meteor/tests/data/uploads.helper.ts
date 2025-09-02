@@ -167,7 +167,7 @@ export async function testFileUploads(
 
 	it('should not return thumbnails', async () => {
 		await request
-			.post(api(`rooms.upload/${testRoom._id}`))
+			.post(api(`rooms.media/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
@@ -201,7 +201,7 @@ export async function testFileUploads(
 		let fileId: string;
 
 		await request
-			.post(api(`rooms.upload/${testRoom._id}`))
+			.post(api(`rooms.media/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
