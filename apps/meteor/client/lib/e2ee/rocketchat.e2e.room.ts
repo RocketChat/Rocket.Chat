@@ -471,7 +471,7 @@ export class E2ERoom extends Emitter {
 		try {
 			const mySub = Subscriptions.state.find((record) => record.rid === this.roomId);
 			const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
-			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
+			const { users } = await sdk.rest.get('/v1/e2e.getUsersOfRoomWithoutKey', { rid: this.roomId });
 
 			if (!users.length) {
 				return;
