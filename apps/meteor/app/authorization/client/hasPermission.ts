@@ -1,8 +1,8 @@
 import type { IUser, IPermission } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { hasRole } from './hasRole';
 import { PermissionsCachedStore } from '../../../client/cachedStores';
+import { watchUserId } from '../../../client/meteor/user';
 import { watch } from '../../../client/meteor/watch';
 import { Permissions, Users } from '../../../client/stores';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
@@ -50,7 +50,7 @@ const validatePermissions = (
 	userId?: IUser['_id'],
 	scopedRoles?: IPermission['_id'][],
 ): boolean => {
-	userId = userId ?? Meteor.userId() ?? undefined;
+	userId = userId ?? watchUserId() ?? undefined;
 
 	if (!userId) {
 		return false;
