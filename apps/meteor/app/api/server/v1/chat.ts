@@ -1,5 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
@@ -55,7 +56,6 @@ import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
-import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
