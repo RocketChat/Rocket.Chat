@@ -83,8 +83,6 @@ export class E2ERoom extends Emitter {
 
 	typeOfRoom: string;
 
-	roomKeyId: string | undefined;
-
 	groupSessionKey: CryptoKey | undefined;
 
 	oldKeys: { E2EKey: CryptoKey | null; ts: Date; e2eKeyId: string }[] | undefined;
@@ -99,7 +97,6 @@ export class E2ERoom extends Emitter {
 		this.userId = userId;
 		this.roomId = room._id;
 		this.typeOfRoom = room.t;
-		this.roomKeyId = room.e2eKeyId;
 
 		this.once('READY', async () => {
 			await this.decryptOldRoomKeys();
@@ -117,11 +114,11 @@ export class E2ERoom extends Emitter {
 	}
 
 	log(...msg: unknown[]) {
-		logger.log(`ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
+		logger.log(`[${this.roomId} (${this.state})]`, ...msg);
 	}
 
 	error(...msg: unknown[]) {
-		logger.error(`ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
+		logger.error(`[${this.roomId} (${this.state})]`, ...msg);
 	}
 
 	hasSessionKey() {
@@ -266,14 +263,14 @@ export class E2ERoom extends Emitter {
 		this.log('decryptOldRoomKeys Done');
 	}
 
-	async exportOldRoomKeys(oldKeys: ISubscription['oldRoomKeys']) {
+	async exportOldRoomKeys(oldKeys: ISubscription['oldRoomKeys']): Promise<EncryptedGroupKey[] | undefined> {
 		this.log('exportOldRoomKeys starting');
 		if (!oldKeys || oldKeys.length === 0) {
 			this.log('exportOldRoomKeys nothing to do');
 			return;
 		}
 
-		const keys = [];
+		const keys: EncryptedGroupKey[] = [];
 		for await (const key of oldKeys) {
 			try {
 				if (!key.E2EKey) {
@@ -369,7 +366,13 @@ export class E2ERoom extends Emitter {
 	async importGroupKey(groupKey: string) {
 		this.log('Importing room key ->', this.roomId);
 		// Get existing group key
-		// const keyID = groupKey.slice(0, 12);
+		const keyID = groupKey.slice(0, 12);
+
+		if (this.keyID === keyID) {
+			this.log('Group key is already imported');
+			return true;
+		}
+
 		groupKey = groupKey.slice(12);
 		const decodedGroupKey = Base64.decode(groupKey);
 
@@ -388,7 +391,7 @@ export class E2ERoom extends Emitter {
 		// When a new e2e room is created, it will be initialized without an e2e key id
 		// This will prevent new rooms from storing `undefined` as the keyid
 		if (!this.keyID) {
-			this.keyID = this.roomKeyId || (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);
+			this.keyID = (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);
 		}
 
 		const jwk = JSON.parse(this.sessionKeyExportedString!);
@@ -420,13 +423,14 @@ export class E2ERoom extends Emitter {
 			await this.createNewGroupKey();
 
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
+			this.keyID;
 			const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
 			if (myKey) {
-				await sdk.rest.post('/v1/e2e.updateGroupKey', {
-					rid: this.roomId,
-					uid: this.userId,
-					key: myKey,
-				});
+				// await sdk.rest.post('/v1/e2e.updateGroupKey', {
+				// 	rid: this.roomId,
+				// 	uid: this.userId,
+				// 	key: myKey,
+				// });
 				await this.encryptKeyForOtherParticipants();
 			}
 		} catch (error) {
@@ -488,13 +492,12 @@ export class E2ERoom extends Emitter {
 				}[]
 			> = { [this.roomId]: [] };
 			for await (const user of users) {
-				const jwk = JSON.parse(user.e2e!.public_key!);
-				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(jwk);
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key!);
 				if (!encryptedGroupKey) {
 					return;
 				}
 				if (decryptedOldGroupKeys) {
-					const oldKeys = await this.encryptOldKeysForParticipant(jwk, decryptedOldGroupKeys);
+					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key!, decryptedOldGroupKeys);
 					if (oldKeys) {
 						usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys });
 						continue;
@@ -509,7 +512,7 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	async encryptOldKeysForParticipant(publicKey: JsonWebKey, oldRoomKeys: EncryptedGroupKey[]) {
+	async encryptOldKeysForParticipant(publicKey: string, oldRoomKeys: { E2EKey: string; e2eKeyId: string; ts: Date }[]) {
 		if (!oldRoomKeys || oldRoomKeys.length === 0) {
 			return;
 		}
@@ -517,13 +520,13 @@ export class E2ERoom extends Emitter {
 		let userKey;
 
 		try {
-			userKey = await importRSAKey(publicKey, ['encrypt']);
+			userKey = await importRSAKey(JSON.parse(publicKey), ['encrypt']);
 		} catch (error) {
 			return this.error('Error importing user key: ', error);
 		}
 
 		try {
-			const keys: EncryptedGroupKey[] = [];
+			const keys = [];
 			for await (const oldRoomKey of oldRoomKeys) {
 				if (!oldRoomKey.E2EKey) {
 					continue;

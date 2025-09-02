@@ -19,7 +19,7 @@ import {
 import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
 import { FileUploadModal } from './page-objects/fragments/file-upload-modal';
 import { LoginPage } from './page-objects/login';
-import { getSettingValueById } from './utils';
+import { deleteRoom, getSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 const settings = {
@@ -352,6 +352,7 @@ test.describe('e2e-encryption', () => {
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
 		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: false });
+		await api.post('/im.delete', { roomId: `user2${Users.userE2EE.data.username}` });
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -585,15 +586,13 @@ test.describe('e2e-encryption', () => {
 		await expect(page).toHaveURL(`/direct/user2${Users.userE2EE.data.username}`);
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
-
-		// Disable encryption if enabled
 		if (await poHomeChannel.tabs.btnDisableE2E.isVisible()) {
 			await poHomeChannel.tabs.btnDisableE2E.click({ force: true });
+			await expect(page.getByRole('dialog', { name: 'Disable encryption' })).toBeVisible();
 			await page.getByRole('button', { name: 'Disable encryption' }).click();
-			await page.getByRole('button', { name: 'Dismiss alert' }).click();
+			await poHomeChannel.dismissToast();
 			await poHomeChannel.tabs.kebab.click({ force: true });
 		}
-
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
 		await expect(page.getByRole('dialog', { name: 'Enable encryption' })).toBeVisible();
