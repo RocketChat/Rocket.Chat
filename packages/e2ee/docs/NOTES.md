@@ -7,6 +7,7 @@
 - [[IMPROVE] Require acceptance when setting new E2E Encryption key for another user](https://github.com/RocketChat/Rocket.Chat/pull/27556)
 - [feat: Un-encrypted messages not allowed in E2EE rooms](https://github.com/RocketChat/Rocket.Chat/pull/32040)
 - [feat(E2EE): Async E2EE keys exchange](https://github.com/RocketChat/Rocket.Chat/pull/32197)
+- [feat(E2EEncryption): File encryption support](https://github.com/RocketChat/Rocket.Chat/pull/32316)
 - [feat!: Allow E2EE rooms to reset its room key](https://github.com/RocketChat/Rocket.Chat/pull/33328)
 - [refactor!: Room's Key ID generation](https://github.com/RocketChat/Rocket.Chat/pull/33329)
 - [feat: E2EE rom key reset modal](https://github.com/RocketChat/Rocket.Chat/pull/33503)

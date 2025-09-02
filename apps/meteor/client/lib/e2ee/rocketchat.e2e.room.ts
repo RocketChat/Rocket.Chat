@@ -590,14 +590,6 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
-	// Decrypt uploaded encrypted files. I/O is in arraybuffers.
-	async decryptFile(file: Uint8Array<ArrayBuffer>, key: JsonWebKey, iv: string) {
-		const ivArray = Base64.decode(iv);
-		const cryptoKey = await window.crypto.subtle.importKey('jwk', key, { name: 'AES-CTR' }, true, ['encrypt', 'decrypt']);
-
-		return window.crypto.subtle.decrypt({ name: 'AES-CTR', counter: ivArray, length: 64 }, cryptoKey, file);
-	}
-
 	// Encrypts messages
 	async encryptText(data: Uint8Array<ArrayBuffer>) {
 		const vector = crypto.getRandomValues(new Uint8Array(16));
