@@ -138,7 +138,7 @@ class RoomHistoryManagerClass extends Emitter {
 				({ ls } = subscription);
 			}
 
-			const showThreadsInMainChannel = getUserPreference(Meteor.userId(), 'showThreadsInMainChannel', false);
+			const showThreadsInMainChannel = getUserPreference(Meteor.userId() ?? undefined, 'showThreadsInMainChannel', false);
 			const result = await callWithErrorHandling(
 				'loadHistory',
 				rid,

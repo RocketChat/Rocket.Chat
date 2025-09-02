@@ -30,7 +30,7 @@ import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken'
 
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
 
-const getUserId = (): string | null => Meteor.userId();
+const getUserId = () => Meteor.userId() ?? undefined;
 
 type UserProviderProps = {
 	children: ReactNode;
