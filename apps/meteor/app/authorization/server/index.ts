@@ -4,7 +4,6 @@ import { getUsersInRole } from './functions/getUsersInRole';
 import { subscriptionHasRole } from './functions/hasRole';
 import './methods/addPermissionToRole';
 import './methods/addUserToRole';
-import './methods/deleteRole';
 import './methods/removeRoleFromPermission';
 import './streamer/permissions';
 
