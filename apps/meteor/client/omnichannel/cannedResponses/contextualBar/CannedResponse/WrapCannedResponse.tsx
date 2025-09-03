@@ -1,9 +1,10 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
+import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, MouseEventHandler } from 'react';
 import { memo } from 'react';
 
 import CannedResponse from './CannedResponse';
+import { useCanEditCannedResponse } from '../../hooks/useCanEditCannedResponse';
 import CreateCannedResponse from '../../modals/CreateCannedResponse';
 
 type WrapCannedResponseProps = {
@@ -16,24 +17,13 @@ type WrapCannedResponseProps = {
 	reload: () => void;
 };
 
-const WrapCannedResponse = ({
-	canSaveCannedResponses,
-	canUseCannedResponses,
-	cannedItem,
-	onClickBack,
-	onClose,
-	onClickUse,
-	reload,
-}: WrapCannedResponseProps) => {
+const WrapCannedResponse = ({ canUseCannedResponses, cannedItem, onClickBack, onClose, onClickUse, reload }: WrapCannedResponseProps) => {
 	const setModal = useSetModal();
 	const onClickEdit = (): void => {
 		setModal(<CreateCannedResponse cannedResponseData={cannedItem} onClose={() => setModal(null)} reloadCannedList={reload} />);
 	};
 
-	const canViewAllCannedResponses = usePermission('view-all-canned-responses');
-
-	const canEditCannedResponses =
-		canSaveCannedResponses || (canViewAllCannedResponses && cannedItem.scope !== 'global') || cannedItem.scope === 'user';
+	const canEditCannedResponses = useCanEditCannedResponse(cannedItem);
 
 	return (
 		<CannedResponse
