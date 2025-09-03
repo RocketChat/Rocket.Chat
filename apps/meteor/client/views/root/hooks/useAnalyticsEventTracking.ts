@@ -1,7 +1,7 @@
 import { useRouter, useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { callbacks } from '../../lib/callbacks';
+import { callbacks } from '../../../../lib/callbacks';
 
 function trackEvent(category: string, action: string, label?: unknown) {
 	const { _paq, ga } = window;
