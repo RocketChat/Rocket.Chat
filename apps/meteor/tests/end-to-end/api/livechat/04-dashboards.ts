@@ -1408,4 +1408,10 @@ describe('LIVECHAT - dashboards', function () {
 			},
 		);
 	});
+
+	describe('livechat/analytics/dashboards/charts-data', () => {
+		it('should return the correct data for the charts', async () => {
+
+		});
+	});
 });
