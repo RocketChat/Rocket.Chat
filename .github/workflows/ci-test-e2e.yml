@@ -293,6 +293,14 @@ jobs:
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
 
+      - name: Store test summary
+        if: inputs.type == 'ui' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/test-summary.md
+          if-no-files-found: ignore
+
       - name: Show server logs if E2E test failed
         if: failure() && inputs.release == 'ee'
         run: docker compose -f docker-compose-ci.yml logs

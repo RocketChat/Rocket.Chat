@@ -536,10 +536,42 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
+  test-summary:
+    name: 📊 Generate Test Summary
+    runs-on: ubuntu-24.04
+    needs: [test-ui, test-ui-ee, test-ui-ee-watcher]
+    if: always() && (needs.test-ui.result != 'skipped' || needs.test-ui-ee.result != 'skipped' || needs.test-ui-ee-watcher.result != 'skipped')
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Download all test summaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: test-summary-*
+          merge-multiple: true
+          
+      # No external dependencies needed - using native Node.js APIs
+        
+      - name: Merge test summaries
+        run: node .github/scripts/merge-test-summaries.js
+        
+      - name: Upload merged summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-test-summary
+          path: merged-test-summary.md
+          if-no-files-found: ignore
+
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-watcher, test-summary]
     if: always()
     steps:
       - name: Test finish aggregation

@@ -22,6 +22,13 @@ export default {
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
 		['list'],
+		// GitHub Summary Reporter - always enabled in CI
+		process.env.CI && [
+			'./reporters/github-summary.ts',
+			{
+				outputPath: process.env.GITHUB_SUMMARY_PATH || 'test-summary.md',
+			},
+		],
 		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
 			'./reporters/rocketchat.ts',
 			{
