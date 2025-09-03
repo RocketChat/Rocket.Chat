@@ -157,7 +157,14 @@ class GitHubSummaryReporter implements Reporter {
 		markdown += `- **Total Tests**: ${totals.total}\n`;
 		markdown += `- **✅ Passed**: ${totals.passed}\n`;
 		markdown += `- **❌ Failed**: ${totals.failed}\n`;
-		markdown += `- **⏭️ Skipped**: ${totals.skipped}\n\n`;
+		markdown += `- **⏭️ Skipped**: ${totals.skipped}\n`;
+
+		if (totals.total > 0) {
+			const passRate = ((totals.passed / totals.total) * 100).toFixed(1);
+			markdown += `- **📈 Pass Rate**: ${passRate}%\n`;
+		}
+
+		markdown += '\n';
 
 		// Test suites breakdown
 		markdown += '### 📋 Test Suites\n\n';

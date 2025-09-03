@@ -114,38 +114,97 @@ function generateMergedSummary(allSuites) {
 
 async function main() {
   try {
-    // Find all test summary files using native Node.js
-    const summaryFiles = fs.readdirSync('.')
-      .filter(file => file.startsWith('test-summary-') && file.endsWith('.md'));
+    // Find all test summary files using native Node.js (check current dir and subdirs)
+    let summaryFiles = [];
+    
+    // Function to find files recursively
+    function findSummaryFiles(dir = '.') {
+      const files = [];
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isFile()) {
+            // Match various test summary file patterns
+            if ((entry.name.includes('test-summary') || entry.name.startsWith('test-summary-')) && 
+                entry.name.endsWith('.md')) {
+              files.push(fullPath);
+            }
+          } else if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
+            // Recursively search subdirectories (but skip hidden dirs and node_modules)
+            files.push(...findSummaryFiles(fullPath));
+          }
+        }
+      } catch (error) {
+        console.log(`Could not read directory ${dir}:`, error.message);
+      }
+      return files;
+    }
+    
+    summaryFiles = findSummaryFiles();
     
     if (summaryFiles.length === 0) {
-      console.log('No test summary files found');
+      console.log('❌ No test summary files found');
+      console.log('Expected patterns: test-summary*.md or *test-summary*.md');
+      
+      // List all .md files for debugging
+      try {
+        const allMdFiles = fs.readdirSync('.').filter(f => f.endsWith('.md'));
+        if (allMdFiles.length > 0) {
+          console.log('📄 Found .md files in current directory:');
+          allMdFiles.forEach(file => console.log(`  - ${file}`));
+        }
+      } catch (error) {
+        console.log('Could not list .md files for debugging:', error.message);
+      }
+      
+      // Create empty summary to avoid CI failure
+      const emptySummary = generateMergedSummary(new Map());
+      fs.writeFileSync('merged-test-summary.md', emptySummary);
+      console.log('✅ Created empty merged test summary');
       return;
     }
     
-    console.log(`Found ${summaryFiles.length} test summary files`);
+    console.log(`📊 Found ${summaryFiles.length} test summary files:`);
+    summaryFiles.forEach(file => console.log(`  - ${file}`));
     
     const allSuites = new Map();
+    let filesProcessed = 0;
     
     // Parse each summary file
     for (const file of summaryFiles) {
-      console.log(`Processing ${file}`);
-      const content = fs.readFileSync(file, 'utf8');
-      const suites = parseMarkdownTable(content);
-      
-      // Merge suites
-      for (const [name, suite] of suites) {
-        if (!allSuites.has(name)) {
-          allSuites.set(name, { ...suite });
+      try {
+        console.log(`🔍 Processing ${file}`);
+        const content = fs.readFileSync(file, 'utf8');
+        const suites = parseMarkdownTable(content);
+        
+        if (suites.size === 0) {
+          console.log(`  ⚠️ No test suites found in ${file}`);
         } else {
-          const existing = allSuites.get(name);
-          existing.passed += suite.passed;
-          existing.failed += suite.failed;
-          existing.skipped += suite.skipped;
-          existing.total += suite.total;
+          console.log(`  ✅ Found ${suites.size} test suites in ${file}`);
         }
+        
+        // Merge suites
+        for (const [name, suite] of suites) {
+          if (!allSuites.has(name)) {
+            allSuites.set(name, { ...suite });
+          } else {
+            const existing = allSuites.get(name);
+            existing.passed += suite.passed;
+            existing.failed += suite.failed;
+            existing.skipped += suite.skipped;
+            existing.total += suite.total;
+          }
+        }
+        
+        filesProcessed++;
+      } catch (error) {
+        console.error(`❌ Error processing ${file}:`, error.message);
+        // Continue processing other files
       }
     }
+    
+    console.log(`📈 Summary: Processed ${filesProcessed}/${summaryFiles.length} files, found ${allSuites.size} unique test suites`);
     
     // Generate merged summary
     const mergedSummary = generateMergedSummary(allSuites);
@@ -161,11 +220,24 @@ async function main() {
     console.log('✅ Merged test summary written to merged-test-summary.md');
     
     // Log test results summary (don't exit with error code for failed tests - that's handled elsewhere)
-    const hasFailed = Array.from(allSuites.values()).some(suite => suite.failed > 0);
-    if (hasFailed) {
+    const totals = Array.from(allSuites.values()).reduce(
+      (acc, suite) => ({
+        passed: acc.passed + suite.passed,
+        failed: acc.failed + suite.failed,
+        skipped: acc.skipped + suite.skipped,
+        total: acc.total + suite.total,
+      }),
+      { passed: 0, failed: 0, skipped: 0, total: 0 }
+    );
+    
+    console.log(`📊 Final totals: ${totals.total} tests (✅${totals.passed} passed, ❌${totals.failed} failed, ⏭️${totals.skipped} skipped)`);
+    
+    if (totals.failed > 0) {
       console.log('❌ Some tests failed - summary generated successfully');
-    } else {
+    } else if (totals.total > 0) {
       console.log('✅ All tests passed - summary generated successfully');
+    } else {
+      console.log('ℹ️ No tests found - empty summary generated');
     }
     
   } catch (error) {
