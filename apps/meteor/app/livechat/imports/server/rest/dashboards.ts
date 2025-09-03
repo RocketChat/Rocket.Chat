@@ -5,7 +5,6 @@ import {
 	isGETDashboardsAgentStatusParams,
 	isGETLivechatAnalyticsDashboardsChartDataParams,
 	validateUnauthorizedErrorResponse,
-	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	GETLivechatAnalyticsDashboardsChartDataSuccessSchema,
 } from '@rocket.chat/rest-typings';
@@ -254,7 +253,6 @@ const livechatAnalyticsEndpoints = API.v1.get(
 	{
 		response: {
 			200: GETLivechatAnalyticsDashboardsChartDataSuccessSchema,
-			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -279,7 +277,7 @@ const livechatAnalyticsEndpoints = API.v1.get(
 		});
 
 		if (!chartData) {
-			return API.v1.failure({
+			return API.v1.success({
 				chartLabel: chartName,
 				dataLabels: [],
 				dataPoints: [],
