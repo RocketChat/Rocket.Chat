@@ -4,9 +4,10 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
+import { VirtuosoMockContext } from 'react-virtuoso';
 
 import RepliesForm from './RepliesForm';
-import { createFakeDepartment } from '../../../../../../../tests/mocks/data';
+import { createFakeDepartment, createFakeUser } from '../../../../../../../tests/mocks/data';
 
 jest.mock('tinykeys', () => ({
 	__esModule: true,
@@ -18,7 +19,13 @@ const mockDepartment = createFakeDepartment({
 	name: 'Department 1',
 });
 
-const mockAgent: Serialized<ILivechatAgent> = {
+const mockUser = createFakeUser({
+	_id: 'agent-1',
+	username: 'agent.one',
+	name: 'Agent One',
+});
+
+const mockAgentOne: Serialized<ILivechatAgent> = {
 	_id: 'agent-1',
 	username: 'agent.one',
 	name: 'Agent 1',
@@ -34,10 +41,36 @@ const mockAgent: Serialized<ILivechatAgent> = {
 	type: '',
 };
 
-const mockDepartmentAgent = {
-	...mockAgent,
-	username: mockAgent.username || '',
-	agentId: mockAgent._id,
+const mockAgentTwo: Serialized<ILivechatAgent> = {
+	_id: 'agent-2',
+	username: 'agent.two',
+	name: 'Agent 2',
+	status: UserStatus.ONLINE,
+	statusLivechat: ILivechatAgentStatus.AVAILABLE,
+	emails: [{ address: 'a2@test.com', verified: true }],
+	_updatedAt: '',
+	createdAt: '',
+	active: true,
+	lastRoutingTime: '',
+	livechatCount: 1,
+	roles: [],
+	type: '',
+};
+
+const mockDepartmentAgentOne = {
+	...mockAgentOne,
+	username: mockAgentOne.username || '',
+	agentId: mockUser._id,
+	departmentId: mockDepartment._id,
+	departmentEnabled: true,
+	count: 0,
+	order: 0,
+};
+
+const mockDepartmentAgentTwo = {
+	...mockAgentTwo,
+	username: mockAgentTwo.username || '',
+	agentId: mockAgentTwo._id,
 	departmentId: mockDepartment._id,
 	departmentEnabled: true,
 	count: 0,
@@ -53,19 +86,33 @@ const getDepartmentsAutocompleteMock = jest.fn().mockImplementation(() => ({
 	offset: 0,
 }));
 
-const appRoot = mockAppRoot()
-	.withJohnDoe()
-	.withEndpoint('GET', '/v1/livechat/department/:_id', () => getDepartmentMock())
-	.withEndpoint('GET', '/v1/livechat/department', () => getDepartmentsAutocompleteMock())
-	.withTranslations('en', 'core', {
-		Department: 'Department',
-		Agent: 'Agent',
-		optional: 'optional',
-		Select_department: 'Select department',
-		Select_agent: 'Select agent',
-		Error_loading__name__information: 'Error loading {{name}} information',
-		Retry: 'Retry',
+const appRoot = (permissions = ['outbound.can-assign-self-only', 'outbound.can-assign-any-agent']) => {
+	const root = mockAppRoot()
+		.withUser(mockUser)
+		.withEndpoint('GET', '/v1/livechat/department/:_id', () => getDepartmentMock())
+		.withEndpoint('GET', '/v1/livechat/department', () => getDepartmentsAutocompleteMock())
+		.withTranslations('en', 'core', {
+			Department: 'Department',
+			Agent: 'Agent',
+			optional: 'optional',
+			Select_department: 'Select department',
+			Select_agent: 'Select agent',
+			Error_loading__name__information: 'Error loading {{name}} information',
+			Retry: 'Retry',
+			Outbound_message_agent_hint: 'Leave empty so any agent from the designated department can manage the replies.',
+			Outbound_message_agent_hint_no_permission:
+				"You don't have permission to assign an agent. The reply will be assigned to the department.",
+		})
+		.wrap((children) => (
+			<VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 28 }}>{children}</VirtuosoMockContext.Provider>
+		));
+
+	permissions.forEach((permission) => {
+		root.withPermission(permission);
 	});
+
+	return root;
+};
 
 describe('RepliesForm', () => {
 	beforeEach(() => {
@@ -73,18 +120,18 @@ describe('RepliesForm', () => {
 
 		getDepartmentMock.mockImplementation(() => ({
 			department: mockDepartment,
-			agents: [mockDepartmentAgent],
+			agents: [mockDepartmentAgentOne, mockDepartmentAgentTwo],
 		}));
 	});
 
 	it('should pass accessibility tests', async () => {
-		const { container } = render(<RepliesForm onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
+		const { container } = render(<RepliesForm onSubmit={jest.fn()} />, { wrapper: appRoot().build() });
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
 	});
 
 	it('renders correctly with all fields', async () => {
-		render(<RepliesForm onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
+		render(<RepliesForm onSubmit={jest.fn()} />, { wrapper: appRoot().build() });
 
 		expect(screen.getByLabelText('Department (optional)')).toBeInTheDocument();
 		expect(screen.getByLabelText('Agent (optional)')).toBeInTheDocument();
@@ -99,24 +146,27 @@ describe('RepliesForm', () => {
 			agentId: 'agent-1',
 		};
 
-		render(<RepliesForm defaultValues={defaultValues} onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
+		render(<RepliesForm defaultValues={defaultValues} onSubmit={jest.fn()} />, {
+			wrapper: appRoot().build(),
+		});
 
 		await waitFor(() => expect(screen.getByLabelText('Department (optional)')).toHaveTextContent('Department 1'));
 		await waitFor(() => expect(screen.getByLabelText('Agent (optional)')).toHaveTextContent('agent.one'));
 	});
 
-	xit('should enable agent selection when a department is selected', async () => {
-		render(<RepliesForm onSubmit={jest.fn()} />, { wrapper: appRoot.build() });
+	it('should enable agent selection when a department is selected', async () => {
+		render(<RepliesForm onSubmit={jest.fn()} />, { wrapper: appRoot().build() });
 
 		const departmentInput = screen.getByLabelText('Department (optional)');
 		const agentInput = screen.getByLabelText('Agent (optional)');
 
+		await waitFor(() => expect(departmentInput).not.toHaveAttribute('aria-busy', 'true'));
 		expect(agentInput).toBeDisabled();
 
 		await userEvent.click(departmentInput);
 		await userEvent.click(await screen.findByRole('option', { name: 'Department 1' }));
 
-		await waitFor(() => expect(agentInput).not.toBeDisabled());
+		await waitFor(() => expect(agentInput).toBeEnabled());
 	});
 
 	it('should show retry button when department fetch fails and retry when button is clicked', async () => {
@@ -125,7 +175,7 @@ describe('RepliesForm', () => {
 			.mockRejectedValueOnce(new Error('API Error')); // RepliesForm call
 
 		render(<RepliesForm defaultValues={{ departmentId: 'department-1' }} onSubmit={jest.fn()} />, {
-			wrapper: appRoot.build(),
+			wrapper: appRoot().build(),
 		});
 
 		const departmentErrorMessage = await screen.findByText('Error loading department information');
@@ -145,7 +195,7 @@ describe('RepliesForm', () => {
 		};
 
 		render(<RepliesForm defaultValues={defaultValues} onSubmit={handleSubmit} />, {
-			wrapper: appRoot.build(),
+			wrapper: appRoot().build(),
 		});
 
 		await waitFor(() =>
@@ -153,7 +203,7 @@ describe('RepliesForm', () => {
 				departmentId: 'department-1',
 				department: mockDepartment,
 				agentId: 'agent-1',
-				agent: mockAgent,
+				agent: mockAgentOne,
 			}),
 		);
 	});
@@ -162,7 +212,7 @@ describe('RepliesForm', () => {
 		const handleSubmit = jest.fn();
 		getDepartmentMock.mockResolvedValue({ department: null, agents: [] });
 
-		render(<RepliesForm defaultValues={{ departmentId: 'department-1' }} onSubmit={handleSubmit} />, { wrapper: appRoot.build() });
+		render(<RepliesForm defaultValues={{ departmentId: 'department-1' }} onSubmit={handleSubmit} />, { wrapper: appRoot().build() });
 
 		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
@@ -173,11 +223,50 @@ describe('RepliesForm', () => {
 		getDepartmentMock.mockResolvedValue({ department: mockDepartment, agents: [] });
 		const handleSubmit = jest.fn();
 		render(<RepliesForm defaultValues={{ departmentId: 'department-1', agentId: 'agent-1' }} onSubmit={handleSubmit} />, {
-			wrapper: appRoot.build(),
+			wrapper: appRoot().build(),
 		});
 
 		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
 		await waitFor(() => expect(handleSubmit).not.toHaveBeenCalled());
+	});
+
+	it('should not enable "Agent" field if the user doesnt have assign agent permissions', async () => {
+		render(<RepliesForm defaultValues={{ departmentId: 'department-1' }} onSubmit={jest.fn()} />, {
+			wrapper: appRoot([]).build(),
+		});
+
+		expect(screen.getByLabelText('Agent (optional)')).toBeDisabled();
+		await expect(screen.getByLabelText('Agent (optional)')).toHaveAccessibleDescription(
+			`You don't have permission to assign an agent. The reply will be assigned to the department.`,
+		);
+	});
+
+	it('should display only self when user doesnt have assign any permission', async () => {
+		render(<RepliesForm defaultValues={{ departmentId: 'department-1' }} onSubmit={jest.fn()} />, {
+			wrapper: appRoot(['outbound.can-assign-self-only']).build(),
+		});
+
+		await userEvent.click(screen.getByLabelText('Agent (optional)'));
+
+		const agentOneOption = await screen.findByRole('option', { name: 'agent.one' });
+		const agentTwoOption = screen.queryByRole('option', { name: 'agent.two' });
+
+		expect(agentOneOption).toBeInTheDocument();
+		expect(agentTwoOption).not.toBeInTheDocument();
+	});
+
+	it('should display all agents when user has assign any permission', async () => {
+		render(<RepliesForm defaultValues={{ departmentId: 'department-1' }} onSubmit={jest.fn()} />, {
+			wrapper: appRoot(['outbound.can-assign-any-agent']).build(),
+		});
+
+		await userEvent.click(screen.getByLabelText('Agent (optional)'));
+
+		const agentOneOption = await screen.findByRole('option', { name: 'agent.one' });
+		const agentTwoOption = await screen.findByRole('option', { name: 'agent.two' });
+
+		expect(agentOneOption).toBeInTheDocument();
+		expect(agentTwoOption).toBeInTheDocument();
 	});
 });
