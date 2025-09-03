@@ -14,7 +14,11 @@ export function useRestoreScrollPosition(rid: string, wait = 100) {
 					return;
 				}
 				const store = RoomManager.getStore(rid);
-				if (store?.scroll !== undefined && (!jumpToRef.current || !store.atBottom)) {
+				if (store?.atBottom) {
+					node.scrollTop = node.scrollHeight;
+					node.scrollLeft = 30;
+				}
+				if (!jumpToRef.current && store?.scroll !== undefined && !store.atBottom) {
 					node.scrollTop = store.scroll;
 					node.scrollLeft = 30;
 				}

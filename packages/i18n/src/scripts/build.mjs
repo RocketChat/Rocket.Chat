@@ -24,6 +24,7 @@ export async function build() {
 		sprintf: 0,
 		i18nextComponentsArray: 0,
 		nullValues: 0,
+		nestedPlurals: 0,
 	};
 
 	// Uncomment these lines for verbose output
@@ -41,12 +42,19 @@ export async function build() {
 	console.log(`Number of keys with (explicit) null values: ${countsByNormalization.nullValues} keys`);
 	console.log(`Number of keys using sprintf: ${countsByNormalization.sprintf} keys`);
 	console.log(`Number of keys using i18next components array (<number></number>): ${countsByNormalization.i18nextComponentsArray} keys`);
+	console.log(`Number of keys with nested plurals: ${countsByNormalization.nestedPlurals} keys`);
 
 	// purge dist directory
 	await rm(distDirectory, { recursive: true, force: true });
 	await mkdir(distDirectory, { recursive: true });
 
 	// write the files
+
+	// ./resources/*.i18n.json
+	await mkdir(join(distDirectory, 'resources'), { recursive: true });
+	for await (const resource of resources) {
+		await writeFile(join(distDirectory, 'resources', `${resource.language}.i18n.json`), JSON.stringify(resource.content, null, 2));
+	}
 
 	// ./resources
 	const allResources = resources.reduce((acc, resource) => {
