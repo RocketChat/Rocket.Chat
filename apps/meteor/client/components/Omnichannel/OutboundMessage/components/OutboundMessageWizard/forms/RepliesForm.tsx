@@ -2,7 +2,7 @@ import type { Serialized, ILivechatDepartment, ILivechatDepartmentAgents } from 
 import { Box, Button, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
-import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useEffect, useId, useMemo } from 'react';
@@ -44,10 +44,12 @@ const RepliesForm = (props: RepliesFormProps) => {
 	const dispatchToastMessage = useToastBarDispatch();
 	const { t } = useTranslation();
 	const repliesFormId = useId();
+	const userId = useUserId();
+
 	const canAssignAllDepartments = usePermission('outbound.can-assign-queues');
 	const canAssignAgentSelfOnly = usePermission('outbound.can-assign-self-only');
 	const canAssignAgentAny = usePermission('outbound.can-assign-any-agent');
-	const canAssignAgent = canAssignAllDepartments || canAssignAgentAny;
+	const canAssignAgent = canAssignAgentSelfOnly || canAssignAgentAny;
 
 	const {
 		control,
@@ -65,7 +67,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: departmentId ?? '' });
 
 	const {
-		data: { department, agents } = {},
+		data: { department, agents = [] } = {},
 		isError: isErrorDepartment,
 		isFetching: isFetchingDepartment,
 		refetch: refetchDepartment,
@@ -79,6 +81,8 @@ const RepliesForm = (props: RepliesFormProps) => {
 		isErrorDepartment && trigger('departmentId');
 		return () => clearErrors('departmentId');
 	}, [clearErrors, isErrorDepartment, trigger]);
+
+	const allowedAgents = canAssignAgentAny ? agents : agents.filter((agent) => agent.agentId === userId);
 
 	const handleDepartmentChange = useEffectEvent((onChange: (value: string) => void) => {
 		return (value: string) => {
@@ -171,10 +175,9 @@ const RepliesForm = (props: RepliesFormProps) => {
 									})}
 									error={!!errors.agentId}
 									id={`${repliesFormId}-agent`}
-									agents={agents}
-									canAssignSelfOnly={canAssignAgentSelfOnly}
+									agents={allowedAgents}
 									placeholder={isFetchingDepartment ? t('Loading...') : t('Select_agent')}
-									disabled={!departmentId || !canAssignAgent}
+									disabled={!departmentId || !canAssignAgent || isFetchingDepartment}
 									value={field.value}
 									onChange={field.onChange}
 								/>
