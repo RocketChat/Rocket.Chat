@@ -76,7 +76,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			emitter: instance.eventHandler,
 		};
 
-		createFederationContainer(containerOptions, config);
+		await createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
 		instance.buildMatrixHTTPRoutes();
 		instance.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
