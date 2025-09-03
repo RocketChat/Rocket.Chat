@@ -17,11 +17,12 @@ if (!rootDiv) {
 const root = createRoot(rootDiv);
 
 root.render(
-  // <StrictMode>
-  <Provider>
-    <PersistStore>
-      <App />
-    </PersistStore>
-  </Provider>,
-  // </StrictMode>,
+  <StrictMode>
+    <Provider>
+      <PersistStore>
+        <App />
+      </PersistStore>
+    </Provider>
+    ,
+  </StrictMode>,
 );
