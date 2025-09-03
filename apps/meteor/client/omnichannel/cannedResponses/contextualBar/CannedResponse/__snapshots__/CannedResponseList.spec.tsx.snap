@@ -156,14 +156,6 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
               </div>
             </div>
           </div>
-          <div
-            class="rcx-box rcx-box--full rcx-css-m843eh"
-          >
-            <div
-              class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
-              role="group"
-            />
-          </div>
         </div>
         <span
           data-focus-scope-end="true"
