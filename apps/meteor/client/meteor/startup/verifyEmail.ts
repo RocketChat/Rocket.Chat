@@ -1,12 +1,12 @@
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
-import { t } from '../../app/utils/lib/i18n';
-import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../cachedStores';
-import { dispatchToastMessage } from '../lib/toast';
-import { userIdStore } from '../lib/user';
-import { useUserDataSyncReady } from '../lib/userData';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../app/utils/lib/i18n';
+import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
+import { dispatchToastMessage } from '../../lib/toast';
+import { userIdStore } from '../../lib/user';
+import { useUserDataSyncReady } from '../../lib/userData';
 
 const whenMainReady = (): Promise<void> => {
 	const isMainReady = (): boolean => {
