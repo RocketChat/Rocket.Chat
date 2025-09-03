@@ -1,11 +1,10 @@
 import { Box, Button, ButtonGroup, Icon, IconButton, Tag } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { startRegistration } from '@simplewebauthn/browser';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEndpointAction } from '/client/hooks/useEndpointAction';
 import { GenericTable, GenericTableBody, GenericTableCell, GenericTableRow } from '/client/components/GenericTable';
 import { useFormatDate } from '/client/hooks/useFormatDate';
 
@@ -25,11 +24,11 @@ const Passkey = () => {
 
 	// const isEnabled = user?.services?.email2fa?.enabled;
 
-	const findPasskeysAction = useEndpointAction('GET', '/v1/users.findPasskeys');
-	const generateRegistrationOptionsAction = useEndpointAction('GET', '/v1/users.generateRegistrationOptions');
-	const verifyRegistrationResponseAction = useEndpointAction('POST', '/v1/users.verifyRegistrationResponse');
-	const editPasskeyAction = useEndpointAction('PUT', '/v1/users.editPasskey');
-	const deletePasskeyAction = useEndpointAction('POST', '/v1/users.deletePasskey');
+	const findPasskeysAction = useEndpoint('GET', '/v1/users.findPasskeys');
+	const generateRegistrationOptionsAction = useEndpoint('GET', '/v1/users.generateRegistrationOptions');
+	const verifyRegistrationResponseAction = useEndpoint('POST', '/v1/users.verifyRegistrationResponse');
+	const editPasskeyAction = useEndpoint('PUT', '/v1/users.editPasskey');
+	const deletePasskeyAction = useEndpoint('POST', '/v1/users.deletePasskey');
 
 	const findPasskeys = async () => {
 		try {

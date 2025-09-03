@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useEndpointAction } from '/client/hooks/useEndpointAction';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { startRegistration } from '@simplewebauthn/browser';
 import React from 'react';
 
@@ -17,9 +16,9 @@ export const PasskeyFirstCreate = async ({ userId, platform }: PasskeyFirstCreat
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 	const closeModal = () => setModal(null);
-	const findPasskeysAction = useEndpointAction('GET', '/v1/users.findPasskeys');
-	const generateRegistrationOptionsAction = useEndpointAction('GET', '/v1/users.generateRegistrationOptions');
-	const verifyRegistrationResponseAction = useEndpointAction('POST', '/v1/users.verifyRegistrationResponse');
+	const findPasskeysAction = useEndpoint('GET', '/v1/users.findPasskeys');
+	const generateRegistrationOptionsAction = useEndpoint('GET', '/v1/users.generateRegistrationOptions');
+	const verifyRegistrationResponseAction = useEndpoint('POST', '/v1/users.verifyRegistrationResponse');
 
 	const dontAskAgain = localStorage.getItem(`DontAskAgainForPasskey_${userId}`) === 'true';
 	if (dontAskAgain) {

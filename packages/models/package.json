@@ -18,9 +18,9 @@
 		"@rocket.chat/sha256": "workspace:^",
 		"@rocket.chat/string-helpers": "^0.31.25",
 		"@rocket.chat/tracing": "workspace:^",
+		"@simplewebauthn/server": "^13.1.1",
 		"date-fns": "~4.1.0",
-		"node-rsa": "^1.1.1",
-		"@simplewebauthn/server": "^13.1.1"
+		"node-rsa": "^1.1.1"
 	},
 	"scripts": {
 		"build": "rm -rf dist && tsc",

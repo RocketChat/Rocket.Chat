@@ -1,6 +1,6 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { capitalize } from '@rocket.chat/string-helpers';
-import { AuthenticationContext, useSetting } from '@rocket.chat/ui-contexts';
+import { AuthenticationContext, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
@@ -11,7 +11,6 @@ import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
 import { startAuthentication } from '@simplewebauthn/browser';
 import { PathPattern } from '@rocket.chat/rest-typings';
-import { useEndpointAction } from '../../hooks/useEndpointAction';
 
 export type LoginMethods = keyof typeof Meteor extends infer T ? (T extends `loginWith${string}` ? T : never) : never;
 
@@ -32,7 +31,7 @@ const callLoginMethod = (
 const getLoggingIn = () => Accounts.loggingIn();
 
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
-	const generateAuthenticationOptionsAction = useEndpointAction('GET', '/v1/users.generateAuthenticationOptions' as PathPattern);
+	const generateAuthenticationOptionsAction = useEndpoint('GET', '/v1/users.generateAuthenticationOptions' as PathPattern);
 
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
 	const isCrowdEnabled = useSetting('CROWD_Enable', false);

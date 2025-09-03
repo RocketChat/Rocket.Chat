@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useUserId, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useEndpointAction } from '/client/hooks/useEndpointAction';
+import { useUserId, useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { startRegistration } from '@simplewebauthn/browser';
 import React, { useEffect } from 'react';
 
@@ -12,9 +11,9 @@ export const usePasskeyGuide = () => {
 	const setModal = useSetModal();
 	const closeModal = () => setModal(null);
 	const userId = useUserId();
-	const findPasskeysAction = useEndpointAction('GET', '/v1/users.findPasskeys');
-	const generateRegistrationOptionsAction = useEndpointAction('GET', '/v1/users.generateRegistrationOptions');
-	const verifyRegistrationResponseAction = useEndpointAction('POST', '/v1/users.verifyRegistrationResponse');
+	const findPasskeysAction = useEndpoint('GET', '/v1/users.findPasskeys');
+	const generateRegistrationOptionsAction = useEndpoint('GET', '/v1/users.generateRegistrationOptions');
+	const verifyRegistrationResponseAction = useEndpoint('POST', '/v1/users.verifyRegistrationResponse');
 
 	useEffect(() => {
 		const handleUserLoggedIn = async () => {
