@@ -1,6 +1,5 @@
 import { api } from '@rocket.chat/core-services';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Roles, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -94,20 +93,3 @@ export const removeUserFromRole = async (userId: string, roleId: string, usernam
 
 	return remove;
 };
-
-Meteor.methods<ServerMethods>({
-	async 'authorization:removeUserFromRole'(roleId, username, scope) {
-		methodDeprecationLogger.method('authorization:removeUserFromRole', '8.0.0', '/v1/roles.removeUserFromRole');
-
-		const userId = Meteor.userId();
-
-		if (!userId) {
-			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
-				method: 'authorization:removeUserFromRole',
-				action: 'Accessing_permissions',
-			});
-		}
-
-		return removeUserFromRole(userId, roleId, username, scope);
-	},
-});
