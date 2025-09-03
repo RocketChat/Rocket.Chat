@@ -115,6 +115,7 @@ class Passkey {
 		let passkey = verification.registrationInfo!.credential;
 		passkey.name = name;
 		passkey.sync = !!registrationResponse.clientExtensionResults.credProps?.be;
+		console.log(connection);
 		passkey.platform = connection.httpHeaders['sec-ch-ua-platform'];
 
 		const { passkeys } = await Users.findOneById(userId, {
@@ -158,11 +159,11 @@ class Passkey {
 	public async verifyAuthenticationResponse(id: string, authenticationResponse: AuthenticationResponseJSON): Promise<string> {
 		const expectedChallenge = this.idAndChallenge[id];
 		delete this.idAndChallenge[id];
-		// TODO fzh075
-		// const user = await Users.findOne({ idForPasskey:  });
-
-		// TODO fzh075 Should this be included in Users.ts?
-		const user = await Users.findOne({ passkeys: { $elemMatch: { id: authenticationResponse.id } } }); // TODO fzh075 Should this be included in Users.ts?
+		const user = await Users.findOneByPasskeyId(authenticationResponse.id, {
+			projection: {
+				passkeys: 1,
+			},
+		});
 		if (!user) throw new Meteor.Error('Authenticator is not registered with this site');
 		const passkey = user.passkeys.find((key) => key.id === authenticationResponse.id);
 		passkey.publicKey = passkey.publicKey.buffer;
@@ -226,12 +227,6 @@ class Passkey {
 
 	// TODO fzh075 private
 	public async sendPasskeyChangeEmail(userId: string, action: 'create' | 'delete', connection) {
-		// TODO fzh075 setting
-		// const deviceEnabled = settings.get('Device_Management_Enable_Login_Emails');
-		// if (!deviceEnabled) {
-		// 	return;
-		// }
-
 		const user = await Users.findOneById(userId, {
 			projection: { name: 1, username: 1, emails: 1, language: 1 },
 		});
@@ -337,32 +332,7 @@ class Passkey {
 		} catch (error) {
 			console.error('Error sending passkey security alert email:', error);
 		}
-
-		// Mailer.send({
-		// 	to: user.emails[0].address,
-		// 	from: settings.get('From_Email'),
-		// 	subject: settings.get('Passkey_Added_Email_Subject'),
-		// 	html: settings.get('Passkey_Added_Email_Body'),
-		// 	data: {
-		// 		name: user.name,
-		// 		username: user.username,
-		// 		// ipInfo: clientIp,
-		// 		date: moment().format(settings.get('Message_TimeAndDateFormat')),
-		// 		// osInfo: ...
-		// 	},
-		// });
 	}
 }
 
 export const passkey = new Passkey();
-
-// TODO fzh075
-// Meteor.startup(() => {
-// 	Meteor.setInterval(async () => {
-// 		try {
-// 			await Users.removeUnusedPasskeys(120);
-// 		} catch (error) {
-// 			console.error('Error removing unused passkeys:', error);
-// 		}
-// 	}, 24 * 60 * 60 * 1000);
-// });

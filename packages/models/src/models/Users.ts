@@ -3425,6 +3425,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments({ _id: { $in: room.uids }, active: true });
 	}
 
+	findOneByPasskeyId(passkeyId: NonNullable<IUser['passkeys']>[number]['id'], options: FindOptions<IUser> = {}) {
+		const query = {
+			'passkeys.id': passkeyId,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	createPasskey(userId: IUser['_id'], rawPasskey: Passkey) {
 		const passkey: Passkey = {
 			...rawPasskey,

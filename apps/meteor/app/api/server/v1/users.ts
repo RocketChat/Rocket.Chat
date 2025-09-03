@@ -1460,10 +1460,6 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async put() {
-			// const { tokenName } = this.bodyParams;
-			// if (!tokenName) {
-			// 	return API.v1.failure("The 'tokenName' param is required");
-			// }
 			await passkey.editPasskey(this.userId, this.bodyParams.passkeyId, this.bodyParams.name);
 
 			return API.v1.success();
@@ -1475,12 +1471,7 @@ API.v1.addRoute(
 	'users.deletePasskey',
 	{ authRequired: true },
 	{
-		// TODO fzh075 'delete method' error
 		async post() {
-			// const { tokenName } = this.bodyParams;
-			// if (!tokenName) {
-			// 	return API.v1.failure("The 'tokenName' param is required");
-			// }
 			await passkey.deletePasskey(this.userId, this.bodyParams.passkeyId, this.connection);
 
 			return API.v1.success();

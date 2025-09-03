@@ -153,15 +153,21 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	// });
 
 	useEffect(() => {
-		loginWithPasskey()
-			.then(() => {
-				dispatchToastMessage({ type: 'error', message: t('Login_successfully') });
-			})
-			.catch((error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			});
-		// loginWithPasskeyMutation.mutate();
-	}, [loginWithPasskey, dispatchToastMessage, t]);
+		// if (!showFormLogin) return;
+		//
+		// const webauthnInput = document.querySelector('input[autocomplete$="webauthn"]') as HTMLInputElement | null;
+		// if (!webauthnInput || webauthnInput.disabled || webauthnInput.offsetParent === null) {
+		// 	return;
+		// }
+
+		loginWithPasskey().catch((error) => {
+			// TODO fzh075 Temporary solution
+			if (/No <input> with "webauthn"/i.test(error?.message)) {
+				return;
+			}
+			dispatchToastMessage({ type: 'error', message: error });
+		});
+	}, [showFormLogin, loginWithPasskey, dispatchToastMessage, t]);
 
 	if (errors.usernameOrEmail?.type === 'invalid-email') {
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('usernameOrEmail')} email={getValues('usernameOrEmail')} />;
