@@ -1,7 +1,7 @@
 import { Font, PDFViewer } from '@react-pdf/renderer';
 import type { Meta, StoryFn } from '@storybook/react';
+import i18next from 'i18next';
 
-import type { ChatTranscriptData } from '.';
 import { ChatTranscriptPDF } from '.';
 import { exampleData } from './ChatTranscript.fixtures';
 import { ChatTranscript } from '../../strategies/ChatTranscript';
@@ -30,7 +30,7 @@ export default {
 	component: ChatTranscriptPDF,
 } satisfies Meta<typeof ChatTranscriptPDF>;
 
-const data = new ChatTranscript().parseTemplateData(exampleData) as unknown as ChatTranscriptData;
+const data = new ChatTranscript().parseTemplateData(exampleData, i18next);
 
 export const ChatTranscriptPDFTemplate: StoryFn<typeof ChatTranscriptPDF> = () => (
 	<PDFViewer width='100%' height='800'>
