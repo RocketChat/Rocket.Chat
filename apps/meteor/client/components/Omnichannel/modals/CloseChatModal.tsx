@@ -21,12 +21,12 @@ import {
 	ModalContent,
 } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { usePermission, useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { dispatchToastMessage } from '../../../lib/toast';
 import Tags from '../Tags';
 
 type CloseChatModalFormData = {
@@ -50,7 +50,8 @@ type CloseChatModalProps = {
 };
 
 const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: CloseChatModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
 		formState: { errors },
@@ -147,11 +148,11 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 			}
 			setValue('subject', subject || customSubject || t('Transcript_of_your_livechat_conversation'));
 		}
-	}, [transcriptEmail, setValue, visitorEmail, subject, t, customSubject]);
+	}, [transcriptEmail, setValue, visitorEmail, subject, t, customSubject, dispatchToastMessage]);
 
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
-			<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} data-qa-id='close-chat-modal' />}>
+			<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
 				<ModalHeader>
 					<ModalIcon name='baloon-close-top-right' />
 					<ModalTitle>{t('Wrap_up_conversation')}</ModalTitle>

@@ -525,7 +525,7 @@ export class APIClass<
 		invocation.twoFactorChecked = true;
 	}
 
-	protected getFullRouteName(route: string, method: string): string {
+	public getFullRouteName(route: string, method: string): string {
 		return `/${this.apiPath || ''}/${route}${method}`;
 	}
 
@@ -831,7 +831,7 @@ export class APIClass<
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
-							route: `/${route}${this.request.method.toLowerCase()}`,
+							route: api.getFullRouteName(route, this.request.method.toLowerCase()),
 						};
 
 						let result;

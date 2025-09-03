@@ -1,5 +1,61 @@
 # @rocket.chat/apps-engine
 
+## 1.55.0-rc.1
+
+### Patch Changes
+
+- ([#36802](https://github.com/RocketChat/Rocket.Chat/pull/36802)) Fixes an error on apps loading that would cause an unhandled promise rejection crash during startup in some cases
+
+## 1.55.0-rc.0
+
+### Minor Changes
+
+- ([#36553](https://github.com/RocketChat/Rocket.Chat/pull/36553)) Creates a new endpoint that allows agents to send an outbound message from a registered app provider
+
+### Patch Changes
+
+- ([#36625](https://github.com/RocketChat/Rocket.Chat/pull/36625)) Fixes an issue where app installation would fail if the app package contained JS syntax newer than 2017
+
+- ([#36670](https://github.com/RocketChat/Rocket.Chat/pull/36670)) Fixes an issue that would cause the chat server to crash with an unhandled rejection in some cases
+
+## 1.54.0
+
+### Minor Changes
+
+- ([#36377](https://github.com/RocketChat/Rocket.Chat/pull/36377)) Adds new endpoints for outbound communications
+
+- ([#36403](https://github.com/RocketChat/Rocket.Chat/pull/36403)) Adds a button to the apps logs UI that exports logs as a downloadable file
+
+### Patch Changes
+
+- ([#36504](https://github.com/RocketChat/Rocket.Chat/pull/36504)) Fixes an issue that would leave an app in an unrecoverable state if the installation failed during the construction of the runtime
+
+- ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
+## 1.54.0-rc.1
+
+### Patch Changes
+
+- ([#36504](https://github.com/RocketChat/Rocket.Chat/pull/36504)) Fixes an issue that would leave an app in an unrecoverable state if the installation failed during the construction of the runtime
+
+## 1.54.0-rc.0
+
+### Minor Changes
+
+- ([#36377](https://github.com/RocketChat/Rocket.Chat/pull/36377)) Adds new endpoints for outbound communications
+
+- ([#36403](https://github.com/RocketChat/Rocket.Chat/pull/36403)) Adds a button to the apps logs UI that exports logs as a downloadable file
+
+### Patch Changes
+
+- ([#36346](https://github.com/RocketChat/Rocket.Chat/pull/36346)) Fixes an issue where some error objects sent to apps' method calls would only contain the message '[object Object]'
+
+## 1.53.1
+
+### Patch Changes
+
+- ([#36543](https://github.com/RocketChat/Rocket.Chat/pull/36543)) Fixes an issue that would leave an app in an unrecoverable state if the installation failed during the construction of the runtime
+
 ## 1.53.0
 
 ### Minor Changes

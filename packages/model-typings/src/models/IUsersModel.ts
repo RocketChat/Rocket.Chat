@@ -24,10 +24,15 @@ import type {
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
+import type { DocumentWithProjection } from '../types/DocumentWithProjection';
 
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
-	findUsersInRoles(roles: IRole['_id'][] | IRole['_id'], _scope?: null, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findUsersInRoles<T extends Document = IUser, O extends FindOptions<T> = FindOptions<T>>(
+		roles: IRole['_id'][] | IRole['_id'],
+		_scope?: null,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findPaginatedUsersInRoles(roles: IRole['_id'][] | IRole['_id'], options?: FindOptions<IUser>): FindPaginated<FindCursor<IUser>>;
 	findOneByIdWithEmailAddress(uid: IUser['_id'], options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByUsername<T extends Document = IUser>(username: string, options?: FindOptions<IUser>): Promise<T | null>;

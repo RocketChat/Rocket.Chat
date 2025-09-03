@@ -24,7 +24,7 @@ import { getEmailData, shouldNotifyEmail } from '../functions/notifications/emai
 import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 
-export type SubscriptionAggregation = {
+type SubscriptionAggregation = {
 	receiver: [Pick<IUser, 'active' | 'emails' | 'language' | 'status' | 'statusConnection' | 'username' | 'settings'> | null];
 } & Pick<
 	ISubscription,
@@ -134,7 +134,6 @@ export const sendNotification = async ({
 			user: sender,
 			message,
 			room,
-			receiver,
 		});
 	}
 

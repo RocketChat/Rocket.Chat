@@ -4,6 +4,7 @@ import { ajv } from '../v1/Ajv';
 export type AppLogsProps = PaginatedRequest<{
 	appId?: string;
 	logLevel?: '0' | '1' | '2';
+	instanceId?: string;
 	method?: string;
 	startDate?: string;
 	endDate?: string;
@@ -14,6 +15,7 @@ const AppLogsPropsSchema = {
 	properties: {
 		appId: { type: 'string', nullable: true },
 		logLevel: { type: 'string', enum: ['0', '1', '2'], nullable: true },
+		instanceId: { type: 'string', nullable: true },
 		method: { type: 'string', nullable: true },
 		startDate: { type: 'string', format: 'date-time', nullable: true },
 		endDate: { type: 'string', format: 'date-time', nullable: true },

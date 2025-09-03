@@ -52,7 +52,7 @@ const AccountSecurityPage = (): ReactElement => {
 					{allowPasswordChange && (
 						<FormProvider {...methods}>
 							<Accordion>
-								<AccordionItem title={t('Password')} expanded={!require2faSetup}>
+								<AccordionItem title={t('Password')} defaultExpanded={!require2faSetup}>
 									<ChangePassword id={passwordFormId} />
 								</AccordionItem>
 							</Accordion>
@@ -67,7 +67,7 @@ const AccountSecurityPage = (): ReactElement => {
 					</Accordion>
 					<Accordion>
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
-							<AccordionItem expanded={require2faSetup} title={t('Two Factor Authentication')}>
+							<AccordionItem defaultExpanded={require2faSetup} title={t('Two Factor Authentication')}>
 								{require2faSetup && (
 									<Callout type='warning' title={t('Enable_two-factor_authentication')} mbe='24px'>
 										{t('Enable_two-factor_authentication_callout_description')}

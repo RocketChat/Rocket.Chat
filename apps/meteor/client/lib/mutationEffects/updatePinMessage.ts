@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { Messages } from '../../../app/models/client';
+import { Messages } from '../../stores';
 import { PinMessagesNotAllowed } from '../errors/PinMessagesNotAllowed';
 
 export const updatePinMessage = (message: IMessage, data: Partial<IMessage>) => {

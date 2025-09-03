@@ -1,10 +1,11 @@
 import { ServiceStarter } from '@rocket.chat/core-services';
-import { type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus, type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 
 import { queueLogger } from './logger';
+import { notifyOnLivechatInquiryChangedByRoom } from '../../../app/lib/server/lib/notifyListener';
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 import { dispatchAgentDelegated } from '../../../app/livechat/server/lib/Helper';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
@@ -188,6 +189,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 					step: 'reconciliation',
 				});
 				await LivechatInquiry.removeByRoomId(roomId);
+				void notifyOnLivechatInquiryChangedByRoom(roomId, 'removed');
 				break;
 			}
 			case 'taken': {
@@ -199,6 +201,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				});
 				// Reconciliate served inquiries, by updating their status to taken after queue tried to pick and failed
 				await LivechatInquiry.takeInquiry(inquiryId);
+				void notifyOnLivechatInquiryChangedByRoom(roomId, 'updated', { status: LivechatInquiryStatus.TAKEN, takenAt: new Date() });
 				break;
 			}
 			case 'missing': {
@@ -209,6 +212,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 					step: 'reconciliation',
 				});
 				await LivechatInquiry.removeByRoomId(roomId);
+				void notifyOnLivechatInquiryChangedByRoom(roomId, 'removed');
 				break;
 			}
 			default: {

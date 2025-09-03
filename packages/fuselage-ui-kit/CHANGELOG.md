@@ -1,5 +1,213 @@
 # Change Log
 
+## 22.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.10.0-rc.5
+  - @rocket.chat/gazzodown@22.0.0-rc.5
+  - @rocket.chat/ui-avatar@18.0.0-rc.5
+  - @rocket.chat/ui-contexts@22.0.0-rc.5
+  - @rocket.chat/ui-video-conf@22.0.0-rc.5
+  </details>
+
+## 22.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.10.0-rc.4
+  - @rocket.chat/gazzodown@22.0.0-rc.4
+  - @rocket.chat/ui-avatar@18.0.0-rc.4
+  - @rocket.chat/ui-contexts@22.0.0-rc.4
+  - @rocket.chat/ui-video-conf@22.0.0-rc.4
+  </details>
+
+## 22.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [128b228fcb0b2fda2967c88b07340be4b34a5470]:</summary>
+
+  - @rocket.chat/apps-engine@1.55.0-rc.1
+  - @rocket.chat/core-typings@7.10.0-rc.3
+  - @rocket.chat/gazzodown@22.0.0-rc.3
+  - @rocket.chat/ui-avatar@18.0.0-rc.3
+  - @rocket.chat/ui-contexts@22.0.0-rc.3
+  - @rocket.chat/ui-video-conf@22.0.0-rc.3
+  </details>
+
+## 22.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/core-typings@7.10.0-rc.2
+  - @rocket.chat/gazzodown@22.0.0-rc.2
+  - @rocket.chat/ui-avatar@18.0.0-rc.2
+  - @rocket.chat/ui-contexts@22.0.0-rc.2
+  - @rocket.chat/ui-video-conf@22.0.0-rc.2
+  </details>
+
+## 22.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.0-rc.1
+  - @rocket.chat/gazzodown@22.0.0-rc.1
+  - @rocket.chat/ui-avatar@18.0.0-rc.1
+  - @rocket.chat/ui-contexts@22.0.0-rc.1
+  - @rocket.chat/ui-video-conf@22.0.0-rc.1
+  </details>
+
+## 22.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [22498de4e9de4467642f637d00cc8344ba876987, c0c8919723c8d1242973625d15db74c994318460, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, 42979690f3880d3c700582b7892020e37bc82be3, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/apps-engine@1.55.0-rc.0
+  - @rocket.chat/core-typings@7.10.0-rc.0
+  - @rocket.chat/ui-contexts@22.0.0-rc.0
+  - @rocket.chat/gazzodown@22.0.0-rc.0
+  - @rocket.chat/ui-avatar@18.0.0-rc.0
+  - @rocket.chat/ui-video-conf@22.0.0-rc.0
+  </details>
+
+## 21.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.3
+  - @rocket.chat/gazzodown@21.0.3
+  - @rocket.chat/ui-avatar@17.0.3
+  - @rocket.chat/ui-contexts@21.0.3
+  - @rocket.chat/ui-video-conf@21.0.3
+  </details>
+
+## 21.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.2
+  - @rocket.chat/gazzodown@21.0.2
+  - @rocket.chat/ui-avatar@17.0.2
+  - @rocket.chat/ui-contexts@21.0.2
+  - @rocket.chat/ui-video-conf@21.0.2
+  </details>
+
+## 21.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@7.9.1
+  - @rocket.chat/gazzodown@21.0.1
+  - @rocket.chat/ui-avatar@17.0.1
+  - @rocket.chat/ui-contexts@21.0.1
+  - @rocket.chat/ui-video-conf@21.0.1
+    </details>
+
+## 21.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ba0cbd32657365abc2a10e50285e02b4e34bf674, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, cfabf2684046e1e336b1f81d548a081c25419677, 9826bc2ed9a3a4232ce6d5d436c3f489f2d4192b]:</summary>
+
+  - @rocket.chat/gazzodown@21.0.0
+  - @rocket.chat/apps-engine@1.54.0
+  - @rocket.chat/core-typings@7.9.0
+  - @rocket.chat/ui-contexts@21.0.0
+  - @rocket.chat/ui-avatar@17.0.0
+  - @rocket.chat/ui-video-conf@21.0.0
+  </details>
+
+## 21.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cfabf2684046e1e336b1f81d548a081c25419677]:</summary>
+
+  - @rocket.chat/apps-engine@1.54.0-rc.1
+  - @rocket.chat/core-typings@7.9.0-rc.2
+  - @rocket.chat/gazzodown@21.0.0-rc.2
+  - @rocket.chat/ui-avatar@17.0.0-rc.2
+  - @rocket.chat/ui-contexts@21.0.0-rc.2
+  - @rocket.chat/ui-video-conf@21.0.0-rc.2
+  </details>
+
+## 21.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.9.0-rc.1
+  - @rocket.chat/gazzodown@21.0.0-rc.1
+  - @rocket.chat/ui-avatar@17.0.0-rc.1
+  - @rocket.chat/ui-contexts@21.0.0-rc.1
+  - @rocket.chat/ui-video-conf@21.0.0-rc.1
+  </details>
+
+## 21.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ba0cbd32657365abc2a10e50285e02b4e34bf674, 2cec8acd5beddf5ad0c67c29fe632487cb82b026, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 9826bc2ed9a3a4232ce6d5d436c3f489f2d4192b]:</summary>
+
+  - @rocket.chat/gazzodown@21.0.0-rc.0
+  - @rocket.chat/apps-engine@1.54.0-rc.0
+  - @rocket.chat/core-typings@7.9.0-rc.0
+  - @rocket.chat/ui-contexts@21.0.0-rc.0
+  - @rocket.chat/ui-avatar@17.0.0-rc.0
+  - @rocket.chat/ui-video-conf@21.0.0-rc.0
+  </details>
+
+## 20.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3c914ca4b4f9ae3246b149409c893b7610ae6570]:</summary>
+
+  - @rocket.chat/apps-engine@1.53.1
+  - @rocket.chat/core-typings@7.8.3
+  - @rocket.chat/gazzodown@20.0.3
+  - @rocket.chat/ui-contexts@20.0.3
+  - @rocket.chat/ui-avatar@16.0.3
+  - @rocket.chat/ui-video-conf@20.0.3
+  </details>
+
+## 20.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.2
+  - @rocket.chat/gazzodown@20.0.2
+  - @rocket.chat/ui-contexts@20.0.2
+  - @rocket.chat/ui-avatar@16.0.2
+  - @rocket.chat/ui-video-conf@20.0.2
+  </details>
+
+## 20.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.8.1
+  - @rocket.chat/gazzodown@20.0.1
+  - @rocket.chat/ui-contexts@20.0.1
+  - @rocket.chat/ui-avatar@16.0.1
+  - @rocket.chat/ui-video-conf@20.0.1
+  </details>
+
 ## 20.0.0
 
 ### Patch Changes

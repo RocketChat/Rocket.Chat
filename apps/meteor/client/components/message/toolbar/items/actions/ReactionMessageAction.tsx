@@ -1,6 +1,6 @@
 import { isOmnichannelRoom, type IMessage, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
-import { useUser, useMethod } from '@rocket.chat/ui-contexts';
+import { useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +20,7 @@ type ReactionMessageActionProps = {
 const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageActionProps) => {
 	const chat = useChat();
 	const user = useUser();
-	const setReaction = useMethod('setReaction');
+	const setReaction = useEndpoint('POST', '/v1/chat.react');
 	const quickReactionsEnabled = useFeaturePreview('quickReactions');
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 	const { t } = useTranslation();
@@ -44,7 +44,10 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 	}
 
 	const toggleReaction = (emoji: string) => {
-		setReaction(`:${emoji}:`, message._id);
+		setReaction({
+			emoji: `:${emoji}:`,
+			messageId: message._id,
+		});
 		addRecentEmoji(emoji);
 	};
 

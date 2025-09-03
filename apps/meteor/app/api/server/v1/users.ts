@@ -1,5 +1,5 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
@@ -32,7 +32,6 @@ import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/
 import { i18n } from '../../../../server/lib/i18n';
 import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
-import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
 import { resetAvatar } from '../../../../server/methods/resetAvatar';
@@ -56,6 +55,7 @@ import { generateUsernameSuggestion } from '../../../lib/server/functions/getUse
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../../lib/server/functions/saveUser';
+import { sendWelcomeEmail } from '../../../lib/server/functions/saveUser/sendUserEmail';
 import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
@@ -66,6 +66,7 @@ import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { deleteUserOwnAccount } from '../../../lib/server/methods/deleteUserOwnAccount';
 import { settings } from '../../../settings/server';
+import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -181,7 +182,13 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 					};
 
-			await executeSaveUserProfile.call(this as unknown as Meteor.MethodThisType, userData, this.bodyParams.customFields, twoFactorOptions);
+			await executeSaveUserProfile.call(
+				this as unknown as Meteor.MethodThisType,
+				this.user,
+				userData,
+				this.bodyParams.customFields,
+				twoFactorOptions,
+			);
 
 			return API.v1.success({
 				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
@@ -633,7 +640,22 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { email } = this.bodyParams;
-			await sendWelcomeEmail(email);
+
+			if (!isSMTPConfigured()) {
+				throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
+					method: 'sendWelcomeEmail',
+				});
+			}
+
+			const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
+
+			if (!user) {
+				throw new MeteorError('error-invalid-user', 'Invalid user', {
+					method: 'sendWelcomeEmail',
+				});
+			}
+
+			await sendWelcomeEmail({ ...user, email });
 
 			return API.v1.success();
 		},
@@ -1322,10 +1344,14 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
+			const { _id, username, roles, name } = user;
+			let { statusText } = user;
+
 			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
 				await setStatusText(user._id, this.bodyParams.message);
+				statusText = this.bodyParams.message;
 			}
 			if (this.bodyParams.status) {
 				const validStatus = ['online', 'away', 'offline', 'busy'];
@@ -1348,7 +1374,6 @@ API.v1.addRoute(
 						},
 					);
 
-					const { _id, username, statusText, roles, name } = user;
 					void api.broadcast('presence.status', {
 						user: { status, _id, username, statusText, roles, name },
 						previousStatus: user.status,

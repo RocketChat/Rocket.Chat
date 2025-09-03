@@ -1,11 +1,12 @@
 import { CheckBox } from '@rocket.chat/fuselage';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useFeaturePreview, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const useGroupingListItems = (): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
+	const secondSidebarEnabled = useFeaturePreview('secondarySidebar');
 
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType');
 	const sidebarShowFavorites = useUserPreference<boolean>('sidebarShowFavorites');
@@ -27,7 +28,7 @@ export const useGroupingListItems = (): GenericMenuItemProps[] => {
 			icon: 'flag',
 			addon: <CheckBox onChange={handleChangeShowUnread} checked={sidebarShowUnread} />,
 		},
-		{
+		!secondSidebarEnabled && {
 			id: 'favorites',
 			content: t('Favorites'),
 			icon: 'star',
@@ -39,5 +40,5 @@ export const useGroupingListItems = (): GenericMenuItemProps[] => {
 			icon: 'group-by-type',
 			addon: <CheckBox onChange={handleChangeGroupByType} checked={sidebarGroupByType} />,
 		},
-	];
+	].filter(Boolean) as GenericMenuItemProps[];
 };

@@ -7,6 +7,7 @@ import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
 import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
+import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
 import { startAuthentication } from '@simplewebauthn/browser';
 import { PathPattern } from '@rocket.chat/rest-typings';
@@ -28,6 +29,8 @@ const callLoginMethod = (
 	});
 };
 
+const getLoggingIn = () => Accounts.loggingIn();
+
 const AuthenticationProvider = ({ children }: AuthenticationProviderProps): ReactElement => {
 	const generateAuthenticationOptionsAction = useEndpointAction('GET', '/v1/users.generateAuthenticationOptions' as PathPattern);
 
@@ -38,8 +41,11 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 
 	useLDAPAndCrowdCollisionWarning();
 
+	const isLoggingIn = useReactiveValue(getLoggingIn);
+
 	const contextValue = useMemo(
 		(): ContextType<typeof AuthenticationContext> => ({
+			isLoggingIn,
 			loginWithToken: (token: string): Promise<void> =>
 				new Promise((resolve, reject) =>
 					Meteor.loginWithToken(token, (err) => {
@@ -149,7 +155,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),
 			},
 		}),
-		[loginMethod],
+		[isLoggingIn, loginMethod],
 	);
 
 	return <AuthenticationContext.Provider children={children} value={contextValue} />;

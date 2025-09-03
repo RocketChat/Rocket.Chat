@@ -68,7 +68,7 @@ describe('InstanceService', () => {
 	});
 
 	describe('#getAppsStatusInInstances', () => {
-		it('should return app status from all non-local instances', async () => {
+		it('should return app status from all instances', async () => {
 			const mockInstances = [
 				{ id: 'node1', local: true },
 				{ id: 'node2', local: false },
@@ -76,21 +76,24 @@ describe('InstanceService', () => {
 			];
 
 			ServiceBrokerMock.call
-				.onFirstCall()
+				.onCall(0)
 				.resolves(mockInstances)
-				.onSecondCall()
+				.onCall(1)
 				.resolves([{ status: 'enabled', appId: 'app1' }])
-				.onThirdCall()
-				.resolves([{ status: 'disabled', appId: 'app2' }]);
+				.onCall(2)
+				.resolves([{ status: 'disabled', appId: 'app2' }])
+				.onCall(3)
+				.resolves([{ status: 'enabled', appId: 'app3' }]);
 
 			const result = await service.getAppsStatusInInstances();
 
 			expect(result).to.deep.equal({
-				app1: [{ instanceId: 'node2', status: 'enabled' }],
-				app2: [{ instanceId: 'node3', status: 'disabled' }],
+				app1: [{ instanceId: 'node1', isLocal: true, status: 'enabled' }],
+				app2: [{ instanceId: 'node2', isLocal: false, status: 'disabled' }],
+				app3: [{ instanceId: 'node3', isLocal: false, status: 'enabled' }],
 			});
 
-			expect(ServiceBrokerMock.call.calledThrice).to.be.true;
+			expect(ServiceBrokerMock.call.callCount).to.be.equal(4);
 		});
 
 		it('should handle empty app status response', async () => {
@@ -99,12 +102,11 @@ describe('InstanceService', () => {
 				{ id: 'node2', local: false },
 			];
 
-			ServiceBrokerMock.call.onFirstCall().resolves(mockInstances).onSecondCall().resolves([]);
-
+			ServiceBrokerMock.call.onFirstCall().resolves(mockInstances).onSecondCall().resolves([]).onThirdCall().resolves([]);
 			const result = await service.getAppsStatusInInstances();
 
 			expect(result).to.deep.equal({});
-			expect(ServiceBrokerMock.call.calledTwice).to.be.true;
+			expect(ServiceBrokerMock.call.calledThrice).to.be.true;
 		});
 
 		it('should handle undefined app status response', async () => {
@@ -115,8 +117,8 @@ describe('InstanceService', () => {
 
 			ServiceBrokerMock.call.onFirstCall().resolves(mockInstances).onSecondCall().resolves(undefined);
 
-			await expect(service.getAppsStatusInInstances()).to.be.rejectedWith(`Failed to get apps status from instance node2`);
-			expect(ServiceBrokerMock.call.calledTwice).to.be.true;
+			await expect(service.getAppsStatusInInstances()).to.be.rejectedWith(`Failed to get apps status from instance node1`);
+			expect(ServiceBrokerMock.call.calledThrice).to.be.true;
 		});
 	});
 });

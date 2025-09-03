@@ -275,7 +275,7 @@ export type IUserDataEvent = {
 	| {
 			type: 'updated';
 			diff: Partial<IUser>;
-			unset: Record<string, number>;
+			unset: Partial<Record<keyof IUser, number>>;
 	  }
 );
 
