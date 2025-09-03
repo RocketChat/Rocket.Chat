@@ -1,4 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
