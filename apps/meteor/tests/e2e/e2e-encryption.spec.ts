@@ -13,6 +13,7 @@ import {
 	E2EEKeyDecodeFailureBanner,
 	EnterE2EEPasswordBanner,
 	EnterE2EEPasswordModal,
+	ResetE2EEPasswordModal,
 	SaveE2EEPasswordBanner,
 	SaveE2EEPasswordModal,
 } from './page-objects/fragments/e2ee';
@@ -112,6 +113,22 @@ test.describe('initial setup', () => {
 		// Reset the E2EE key to start the flow from the beginning
 		await accountSecurityPage.goto();
 		await accountSecurityPage.resetE2EEPassword();
+
+		await loginPage.loginByUserState(Users.admin);
+	});
+
+	test('should reset e2e password from the modal', async ({ page }) => {
+		const sidenav = new HomeSidenav(page);
+		const loginPage = new LoginPage(page);
+		const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
+		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
+		const resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
+
+		await sidenav.logout();
+		await loginPage.loginByUserState(Users.admin);
+		await enterE2EEPasswordBanner.click();
+		await enterE2EEPasswordModal.forgotPassword();
+		await resetE2EEPasswordModal.confirmReset();
 
 		await loginPage.loginByUserState(Users.admin);
 	});
