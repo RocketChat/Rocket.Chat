@@ -70,6 +70,25 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				name: dbName,
 				poolSize: Number.parseInt(process.env.DATABASE_POOL_SIZE || '10', 10),
 			},
+			media: {
+				maxFileSize: Number.parseInt(process.env.MEDIA_MAX_FILE_SIZE || '100', 10) * 1024 * 1024,
+				allowedMimeTypes: process.env.MEDIA_ALLOWED_MIME_TYPES?.split(',') || [
+					'image/jpeg',
+					'image/png',
+					'image/gif',
+					'image/webp',
+					'text/plain',
+					'application/pdf',
+					'video/mp4',
+					'audio/mpeg',
+					'audio/ogg',
+				],
+				enableThumbnails: process.env.MEDIA_ENABLE_THUMBNAILS === 'true' || true,
+				rateLimits: {
+					uploadPerMinute: Number.parseInt(process.env.MEDIA_UPLOAD_RATE_LIMIT || '10', 10),
+					downloadPerMinute: Number.parseInt(process.env.MEDIA_DOWNLOAD_RATE_LIMIT || '60', 10),
+				},
+			},
 		});
 
 		const containerOptions: FederationContainerOptions = {
