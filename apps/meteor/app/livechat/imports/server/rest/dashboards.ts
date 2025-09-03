@@ -265,11 +265,6 @@ const livechatAnalyticsEndpoints = API.v1.get(
 	async function action() {
 		const { chartName, start, end, departmentId } = this.queryParams;
 
-		const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
-		if (!user) {
-			return API.v1.failure('User not found');
-		}
-
 		const chartData = await OmnichannelAnalytics.getAnalyticsChartData({
 			daterange: {
 				from: start,
@@ -278,13 +273,17 @@ const livechatAnalyticsEndpoints = API.v1.get(
 			chartOptions: {
 				name: chartName,
 			},
-			utcOffset: user?.utcOffset,
-			executedBy: this.userId,
+			utcOffset: this.user.utcOffset,
+			executedBy: this.user._id,
 			departmentId,
 		});
 
 		if (!chartData) {
-			return API.v1.failure('No data available');
+			return API.v1.failure({
+				chartLabel: chartName,
+				dataLabels: [],
+				dataPoints: [],
+			});
 		}
 
 		return API.v1.success(chartData);

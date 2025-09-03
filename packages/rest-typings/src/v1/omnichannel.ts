@@ -3446,6 +3446,10 @@ const GETLivechatAnalyticsDashboardsChartDataSuccess = {
 				type: 'number',
 			},
 		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
 	},
 	additionalProperties: false,
 };
