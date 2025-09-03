@@ -6,7 +6,6 @@ import './methods/addPermissionToRole';
 import './methods/addUserToRole';
 import './methods/deleteRole';
 import './methods/removeRoleFromPermission';
-import './methods/removeUserFromRole';
 import './streamer/permissions';
 
 export { getRoles, getUsersInRole, subscriptionHasRole, canAccessRoomAsync, roomAccessAttributes };
