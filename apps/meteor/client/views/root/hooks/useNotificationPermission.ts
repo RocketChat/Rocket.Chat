@@ -1,6 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 
-import { notificationManager } from '../../lib/notificationManager';
+import { notificationManager } from '../../../lib/notificationManager';
 
 export const useNotificationPermission = () => {
 	const requestPermission = useEffectEvent(async () => {

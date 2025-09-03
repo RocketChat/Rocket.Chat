@@ -1,7 +1,7 @@
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { RoomsCachedStore, SubscriptionsCachedStore } from '../cachedStores';
+import { RoomsCachedStore, SubscriptionsCachedStore } from '../../../cachedStores';
 
 export const useLoadRoomForAllowedAnonymousRead = () => {
 	const userId = useUserId();
