@@ -94,12 +94,21 @@ const EventBaseSchema = {
 			nullable: true,
 		},
 	},
-	required: ['type', 'content', 'sender', 'room_id', 'origin_server_ts', 'depth', 'prev_events', 'auth_events', 'origin'],
+	required: ['type', 'content', 'sender', 'room_id', 'origin_server_ts', 'depth', 'prev_events', 'auth_events'],
 };
 
 const SendTransactionBodySchema = {
 	type: 'object',
 	properties: {
+		origin: {
+			type: 'string',
+			description: 'Origin server',
+		},
+		origin_server_ts: {
+			type: 'number',
+			minimum: 0,
+			description: 'Unix timestamp in milliseconds',
+		},
 		pdus: {
 			type: 'array',
 			items: EventBaseSchema,
@@ -117,7 +126,7 @@ const SendTransactionBodySchema = {
 			nullable: true,
 		},
 	},
-	required: ['pdus'],
+	required: ['origin', 'origin_server_ts', 'pdus'],
 };
 
 const isSendTransactionBodyProps = ajv.compile(SendTransactionBodySchema);
@@ -172,14 +181,24 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 		async (c) => {
 			const body = await c.req.json();
 
-			const { pdus = [], edus = [] } = body;
+			try {
+				await event.processIncomingTransaction(body);
+			} catch (error: any) {
+				// TODO custom error types?
+				if (error.message === 'too-many-concurrent-transactions') {
+					return {
+						statusCode: 429,
+						body: {
+							errorcode: 'M_UNKNOWN',
+							error: 'Too many concurrent transactions',
+						},
+					};
+				}
 
-			if (pdus.length > 0) {
-				await event.processIncomingPDUs(pdus);
-			}
-
-			if (edus.length > 0) {
-				await event.processIncomingEDUs(edus);
+				return {
+					statusCode: 400,
+					body: {},
+				};
 			}
 
 			return {
