@@ -11,7 +11,6 @@ type WrapCannedResponseProps = {
 	canUseCannedResponses: boolean;
 	cannedItem: IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] };
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
-	canSaveCannedResponses: boolean;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	onClose: () => void;
 	reload: () => void;
