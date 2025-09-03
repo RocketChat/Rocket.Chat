@@ -3,8 +3,8 @@ import { Emitter } from '@rocket.chat/emitter';
 import { debounce } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 
+import { settings } from '../../../../client/lib/settings';
 import { Users } from '../../../../client/stores';
-import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
 const TIMEOUT = 15000;
@@ -32,7 +32,7 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 	if (!user) {
 		return;
 	}
-	if (settings.get('UI_Use_Real_Name')) {
+	if (settings.peek('UI_Use_Real_Name')) {
 		return user.name;
 	}
 	return user.username;
@@ -45,7 +45,7 @@ const emitActivities = debounce(async (rid: string, extras: IExtras): Promise<vo
 
 function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
 	rid = extras?.tmid || rid;
-	const roomActivities = performingUsers.get(rid) || {};
+	const roomActivities = { ...performingUsers.get(rid) };
 
 	for (const [, activity] of Object.entries(USER_ACTIVITIES)) {
 		roomActivities[activity] = roomActivities[activity] || new Map();

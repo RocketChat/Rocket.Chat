@@ -109,6 +109,10 @@ export class HomeSidenav {
 		return this.page.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
+	getSidebarListItemByName(name: string): Locator {
+		return this.sidebarChannelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
+	}
+
 	getSearchItemByName(name: string): Locator {
 		return this.searchList.getByRole('link').filter({ has: this.page.getByText(name, { exact: true }) });
 	}
@@ -229,5 +233,13 @@ export class HomeSidenav {
 		await this.btnCreate.click();
 
 		await toastMessages.dismissToast('success');
+	}
+
+	async waitForHome(): Promise<void> {
+		await this.page.waitForSelector('main');
+	}
+
+	get homepageHeader(): Locator {
+		return this.page.locator('main').getByRole('heading', { name: 'Home' });
 	}
 }

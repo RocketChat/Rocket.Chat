@@ -57,6 +57,30 @@ const replaceI18nextComponentsArrayInterpolations = generator(replaceI18nextComp
 
 const replaceNullValues = generator(replaceNullValuesInterpolation, 'nullValues');
 
+const replaceNestedPlurals = (dictionary, language, cb) => {
+	const entries = [];
+	const plurals = ['zero', 'one', 'two', 'few', 'many', 'other'];
+
+	for (const [key, translation] of Object.entries(dictionary).toSorted(([a], [b]) => a.localeCompare(b))) {
+		if (typeof translation === 'string') {
+			entries.push([key, translation]);
+		} else if (typeof translation === 'object' && translation !== null) {
+			const existingKeys = new Set(Object.keys(translation));
+			const exceedingKeys = existingKeys.difference(new Set(plurals));
+			if (exceedingKeys.size > 0) console.error(`Invalid plurals in key "${key}" found: ${Array.from(exceedingKeys).join(', ')}`);
+
+			for (const plural of plurals) {
+				if (!(plural in translation)) continue;
+
+				entries.push([`${key}_${plural}`, translation[plural]]);
+			}
+			cb?.('nestedPlurals', { language, key });
+		}
+	}
+
+	return Object.fromEntries(entries);
+};
+
 export const pipe =
 	(...fns) =>
 	(y, ...x) =>
@@ -66,6 +90,7 @@ export const pipe =
 
 export const normalizeI18nInterpolations = (dictionary, language, cb) => {
 	const result = pipe(
+		replaceNestedPlurals,
 		replaceNullValues,
 		replaceI18nInterpolations,
 		replaceI18nextComponentsArrayInterpolations,

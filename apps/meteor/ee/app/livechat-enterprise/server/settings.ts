@@ -88,6 +88,7 @@ export const createSettings = async (): Promise<void> => {
 				invalidValue: false,
 				modules: ['livechat-enterprise'],
 				enableQuery: omnichannelEnabledQuery,
+				public: true,
 			});
 
 			await this.add('Livechat_waiting_queue_message', '', {
