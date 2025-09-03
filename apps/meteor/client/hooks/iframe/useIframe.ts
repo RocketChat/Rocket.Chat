@@ -47,26 +47,31 @@ export const useIframe = () => {
 				url += `${separator}client=electron`;
 			}
 
-			const result = await fetch(apiUrl, {
-				method: apiMethod,
-				headers: undefined,
-				credentials: 'include',
-			});
+			try {
+				const result = await fetch(apiUrl, {
+					method: apiMethod,
+					headers: undefined,
+					credentials: 'include',
+				});
 
-			if (!result.ok || result.status !== 200) {
-				setIframeLoginUrl(url);
-				callback?.(new Error(), null);
-				return;
-			}
-
-			loginWithToken(await result.json(), async (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
-				if (error) {
+				if (!result.ok || result.status !== 200) {
 					setIframeLoginUrl(url);
-				} else {
-					setIframeLoginUrl(undefined);
+					callback?.(new Error(), null);
+					return;
 				}
-				callback?.(error, await result.json());
-			});
+
+				loginWithToken(await result.json(), async (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
+					if (error) {
+						setIframeLoginUrl(url);
+					} else {
+						setIframeLoginUrl(undefined);
+					}
+					callback?.(error, await result.json());
+				});
+			} catch (error) {
+				setIframeLoginUrl(url);
+				callback?.(error, null);
+			}
 		},
 		[apiMethod, apiUrl, accountIframeUrl, loginWithToken, enabled],
 	);
