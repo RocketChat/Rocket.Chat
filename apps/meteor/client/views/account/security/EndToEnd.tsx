@@ -1,22 +1,22 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button, Divider } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useMethod, useTranslation, useLogout } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { Accounts } from 'meteor/accounts-base';
 import type { ComponentProps, ReactElement } from 'react';
-import { useId, useCallback, useEffect } from 'react';
+import { useId, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { e2e } from '../../../lib/e2ee/rocketchat.e2e';
+import { useResetE2EPasswordMutation } from '../../hooks/useResetE2EPasswordMutation';
 
 const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const logout = useLogout();
 
 	const publicKey = Accounts.storageLocation.getItem('public_key');
 	const privateKey = Accounts.storageLocation.getItem('private_key');
 
-	const resetE2eKey = useMethod('e2e.resetOwnE2EKey');
+	const resetE2EPassword = useResetE2EPasswordMutation();
 
 	const {
 		handleSubmit,
@@ -47,18 +47,6 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
-
-	const handleResetE2eKey = useCallback(async () => {
-		try {
-			const result = await resetE2eKey();
-			if (result) {
-				dispatchToastMessage({ type: 'success', message: t('User_e2e_key_was_reset') });
-				logout();
-			}
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [dispatchToastMessage, resetE2eKey, logout, t]);
 
 	useEffect(() => {
 		if (password?.trim() === '') {
@@ -161,7 +149,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 					{t('Reset_E2E_Key')}
 				</Box>
 				<Box is='p' fontScale='p1' mbe={12} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('E2E_Reset_Key_Explanation')) }} />
-				<Button onClick={handleResetE2eKey} data-qa-type='e2e-encryption-reset-key-button'>
+				<Button onClick={() => resetE2EPassword.mutate()} data-qa-type='e2e-encryption-reset-key-button'>
 					{t('Reset_E2E_Key')}
 				</Button>
 			</Box>
