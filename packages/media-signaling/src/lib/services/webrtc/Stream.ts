@@ -18,6 +18,14 @@ export class Stream {
 		this.toggleAudioTracks();
 	}
 
+	public setEnabled(enabled: boolean): void {
+		if (enabled) {
+			this.enable();
+		} else {
+			this.disable();
+		}
+	}
+
 	public stopAudio(): void {
 		this.removeAudioTracks();
 	}

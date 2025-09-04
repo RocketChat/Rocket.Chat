@@ -64,7 +64,8 @@ export interface IClientMediaCall {
 	signed: boolean;
 	hidden: boolean;
 	muted: boolean;
-	onHold: boolean;
+	/* if the call was put on hold */
+	held: boolean;
 
 	contact: CallContact;
 
@@ -77,5 +78,5 @@ export interface IClientMediaCall {
 	reject(): void;
 	hangup(): void;
 	setMuted(muted: boolean): void;
-	setOnHold(onHold: boolean): void;
+	setHeld(onHold: boolean): void;
 }

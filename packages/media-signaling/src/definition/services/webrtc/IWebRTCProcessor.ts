@@ -19,10 +19,10 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	emitter: Emitter<WebRTCProcessorEvents>;
 
 	muted: boolean;
-	onHold: boolean;
+	held: boolean;
 
 	setMuted(muted: boolean): void;
-	setOnHold(onHold: boolean): void;
+	setHeld(held: boolean): void;
 	stop(): void;
 
 	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
