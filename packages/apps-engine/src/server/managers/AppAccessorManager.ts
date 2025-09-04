@@ -25,6 +25,7 @@ import {
 	Modify,
 	Notifier,
 	OAuthAppsReader,
+	OutboundMessageProviderExtend,
 	Persistence,
 	PersistenceRead,
 	Reader,
@@ -114,8 +115,9 @@ export class AppAccessorManager {
 			const excs = new ExternalComponentsExtend(this.manager.getExternalComponentManager(), appId);
 			const scheduler = new SchedulerExtend(this.manager.getSchedulerManager(), appId);
 			const ui = new UIExtend(this.manager.getUIActionButtonManager(), appId);
+			const outboundComms = new OutboundMessageProviderExtend(this.manager.getOutboundCommunicationProviderManager(), appId);
 
-			this.configExtenders.set(appId, new ConfigurationExtend(htt, sets, cmds, apis, excs, scheduler, ui, videoConf));
+			this.configExtenders.set(appId, new ConfigurationExtend(htt, sets, cmds, apis, excs, scheduler, ui, videoConf, outboundComms));
 		}
 
 		return this.configExtenders.get(appId);

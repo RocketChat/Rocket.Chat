@@ -4,6 +4,8 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
+
 export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 	const t = useTranslation();
 	const router = useRouter();
@@ -19,10 +21,8 @@ export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 				await deleteAction();
 				dispatchToastMessage({ type: 'success', message: t('Agent_removed') });
 				router.navigate('/omnichannel/agents');
-				queryClient.invalidateQueries({
-					queryKey: ['livechat-agents'],
-				});
-				queryClient.invalidateQueries({ queryKey: ['livechat-getAgentDepartments', uid] });
+				queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agents() });
+				queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agentDepartments(uid) });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

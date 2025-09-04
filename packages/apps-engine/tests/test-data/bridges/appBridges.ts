@@ -13,6 +13,7 @@ import { TestsInternalFederationBridge } from './internalFederationBridge';
 import { TestLivechatBridge } from './livechatBridge';
 import { TestsMessageBridge } from './messageBridge';
 import { TestsModerationBridge } from './moderationBridge';
+import { TestOutboundCommunicationBridge } from './outboundComms';
 import { TestsPersisBridge } from './persisBridge';
 import { TestsRoleBridge } from './roleBridge';
 import { TestsRoomBridge } from './roomBridge';
@@ -35,6 +36,7 @@ import type {
 	LivechatBridge,
 	MessageBridge,
 	ModerationBridge,
+	OutboundMessageBridge,
 	PersistenceBridge,
 	RoleBridge,
 	RoomBridge,
@@ -102,6 +104,8 @@ export class TestsAppBridges extends AppBridges {
 
 	private readonly threadBridge: ThreadBridge;
 
+	private readonly outboundCommsBridge: TestOutboundCommunicationBridge;
+
 	constructor() {
 		super();
 		this.appDetails = new TestsAppDetailChangesBridge();
@@ -129,6 +133,7 @@ export class TestsAppBridges extends AppBridges {
 		this.threadBridge = new TestsThreadBridge();
 		this.emailBridge = new TestsEmailBridge();
 		this.contactBridge = new TestContactBridge();
+		this.outboundCommsBridge = new TestOutboundCommunicationBridge();
 	}
 
 	public getCommandBridge(): TestsCommandBridge {
@@ -233,5 +238,9 @@ export class TestsAppBridges extends AppBridges {
 
 	public getContactBridge(): ContactBridge {
 		return this.contactBridge;
+	}
+
+	public getOutboundMessageBridge(): OutboundMessageBridge {
+		return this.outboundCommsBridge;
 	}
 }

@@ -23,14 +23,6 @@ export class OmnichannelCurrentChats extends OmnichannelAdministration {
 		return this.page.locator('[data-qa="current-chats-status"]');
 	}
 
-	get inputFrom(): Locator {
-		return this.page.locator('[data-qa="current-chats-from"]');
-	}
-
-	get inputTo(): Locator {
-		return this.page.locator('[data-qa="current-chats-to"]');
-	}
-
 	get inputDepartment(): Locator {
 		return this.page.locator('[data-qa="autocomplete-department"] input');
 	}
@@ -43,18 +35,6 @@ export class OmnichannelCurrentChats extends OmnichannelAdministration {
 		return this.page.locator('[data-qa="current-chats-tags"] [role="listbox"]');
 	}
 
-	get btnFilterOptions(): Locator {
-		return this.page.locator('[data-qa="current-chats-options"]');
-	}
-
-	get optionClearFilter(): Locator {
-		return this.page.locator('[data-qa="current-chats-options-clearFilters"]');
-	}
-
-	get optionRemoveAllClosed(): Locator {
-		return this.page.locator('[data-qa="current-chats-options-removeAllClosed"]');
-	}
-
 	get modalConfirmRemove(): Locator {
 		return this.page.locator('[data-qa-id="current-chats-modal-remove"]');
 	}
@@ -65,14 +45,6 @@ export class OmnichannelCurrentChats extends OmnichannelAdministration {
 
 	get btnConfirmRemove(): Locator {
 		return this.modalConfirmRemove.locator('role=button[name="Delete"]');
-	}
-
-	get btnConfirmRemoveAllClosed(): Locator {
-		return this.modalConfirmRemoveAllClosed.locator('role=button[name="Delete"]');
-	}
-
-	get optionCustomFields(): Locator {
-		return this.page.locator('[data-qa="current-chats-options-customFields"]');
 	}
 
 	async selectServedBy(option: string) {
@@ -108,9 +80,5 @@ export class OmnichannelCurrentChats extends OmnichannelAdministration {
 
 	findRowByName(name: string) {
 		return this.page.locator(`tr[data-qa-id="${name}"]`);
-	}
-
-	findRowByServer(name: string) {
-		return this.page.locator('tr', { has: this.page.locator(`[data-qa="current-chats-cell-servedBy"] >> text=${name}`) });
 	}
 }

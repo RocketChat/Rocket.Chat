@@ -1,5 +1,4 @@
-import { format, formatDistance } from 'date-fns';
-import isToday from 'date-fns/isToday';
+import { format, formatDistance, isToday } from 'date-fns';
 import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 

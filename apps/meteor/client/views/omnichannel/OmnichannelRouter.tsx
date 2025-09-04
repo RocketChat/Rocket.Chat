@@ -4,7 +4,7 @@ import { Suspense, useEffect } from 'react';
 
 import OmnichannelSidebar from './sidebar/OmnichannelSidebar';
 import PageSkeleton from '../../components/PageSkeleton';
-import SidebarPortal from '../../sidebar/SidebarPortal';
+import SidebarPortal from '../../portals/SidebarPortal';
 
 type OmnichannelRouterProps = {
 	children?: ReactNode;
