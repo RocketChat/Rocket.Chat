@@ -281,6 +281,10 @@ export class AppManager {
 					getStatus() {
 						return Promise.resolve(AppStatus.COMPILER_ERROR_DISABLED);
 					},
+
+					on(): void {
+						return undefined;
+					},
 				} as unknown as DenoRuntimeSubprocessController);
 
 				this.apps.set(item.id, prl);
@@ -588,9 +592,15 @@ export class AppManager {
 			return aff;
 		}
 
-		// Now that is has all been compiled, let's get the
-		// the App instance from the source.
-		const app = await this.getCompiler().toSandBox(this, descriptor, result);
+		let app: ProxiedApp;
+
+		try {
+			app = await this.getCompiler().toSandBox(this, descriptor, result);
+		} catch (error) {
+			await Promise.all(undoSteps.map((undoer) => undoer()));
+
+			throw error;
+		}
 
 		undoSteps.push(() =>
 			this.getRuntime()

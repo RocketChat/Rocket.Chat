@@ -409,7 +409,7 @@ class VoipClient extends Emitter<VoipEvents> {
 
 	public async changeAudioInputDevice(constraints: MediaStreamConstraints): Promise<boolean> {
 		if (!this.session) {
-			console.warn('changeAudioInputDevice() : No session.');
+			LocalStream.changeInputDeviceOffline(constraints);
 			return false;
 		}
 

@@ -2,11 +2,11 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
+import { settings } from './settings';
 import { emojiParser } from '../../app/emoji/client/emojiParser';
 import { filterMarkdown } from '../../app/markdown/lib/markdown';
 import { MentionsParser } from '../../app/mentions/lib/MentionsParser';
-import { Users } from '../../app/models/client';
-import { settings } from '../../app/settings/client';
+import { Users } from '../stores';
 
 export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 	if (message.msg) {
@@ -15,9 +15,9 @@ export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 			return filteredMessage;
 		}
 		const uid = Meteor.userId();
-		const me = (uid && Users.findOne(uid, { fields: { username: 1 } })?.username) || '';
-		const pattern = settings.get('UTF8_User_Names_Validation');
-		const useRealName = settings.get('UI_Use_Real_Name');
+		const me = (uid && Users.state.get(uid)?.username) || '';
+		const pattern = settings.peek('UTF8_User_Names_Validation');
+		const useRealName = settings.peek('UI_Use_Real_Name');
 
 		const instance = new MentionsParser({
 			pattern: () => pattern,

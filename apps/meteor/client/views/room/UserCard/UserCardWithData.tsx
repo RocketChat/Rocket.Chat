@@ -86,16 +86,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			return null;
 		}
 
-		return (
-			<GenericMenu
-				title={t('More')}
-				key='menu'
-				data-qa-id='menu'
-				sections={menuOptions}
-				placement='bottom-start'
-				callbackAction={onClose}
-			/>
-		);
+		return <GenericMenu title={t('More')} key='menu' sections={menuOptions} placement='bottom-start' callbackAction={onClose} />;
 	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {

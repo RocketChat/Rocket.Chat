@@ -1,5 +1,197 @@
 # @rocket.chat/models
 
+## 1.6.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- ([#36617](https://github.com/RocketChat/Rocket.Chat/pull/36617)) Allows agents to set a default agent when the chat being transferred ends up in the queue
+
+- ([#36749](https://github.com/RocketChat/Rocket.Chat/pull/36749)) Fixes an issue with Omnichannel inquiries where multiple instances could take the same inquiry from the queue resulting in the same room being assined to multiple agents.
+
+- <details><summary>Updated dependencies [f040b27ff67c31188026a0aed9ba1e9c4f717f08, a54f8837338246842585d037a0d0327a79245811, c5f0be15b31d1de03256f74bd277ad4ab753ada2, b25f05acd07762387fa45d67a1241b982c192f5d, c86fbce9b44942662dc25a599fc12b009fd40a74, 2fea1a79b831999f148505b9442cd584e1b06d09, 2f162a0dca79274d4458a5853afe64c506a7554f, fd32867fd4949bc2951a22075498ccb551cc6bbc, 1ca92c346e45486e9b6afc66566ae38fac65b48f, 5d7dec3a68f7281b4b4531fa708d7fc7589a863c, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, dc6acda84bf7452d96f375be3cd97748ed016bfc, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0
+  - @rocket.chat/model-typings@1.7.0
+  </details>
+
+## 1.6.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0-rc.6
+  - @rocket.chat/model-typings@1.7.0-rc.6
+  </details>
+
+## 1.6.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/rest-typings@7.10.0-rc.5
+  - @rocket.chat/model-typings@1.7.0-rc.5
+  </details>
+
+## 1.6.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/rest-typings@7.10.0-rc.4
+  - @rocket.chat/model-typings@1.7.0-rc.4
+  </details>
+
+## 1.6.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/rest-typings@7.10.0-rc.3
+  - @rocket.chat/model-typings@1.7.0-rc.3
+  </details>
+
+## 1.6.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0-rc.2
+  - @rocket.chat/model-typings@1.7.0-rc.2
+  </details>
+
+## 1.6.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0-rc.1
+  - @rocket.chat/model-typings@1.7.0-rc.1
+  </details>
+
+## 1.6.0-rc.0
+
+### Minor Changes
+
+- ([#36049](https://github.com/RocketChat/Rocket.Chat/pull/36049)) Introduces the side navigation with a new filtering system. The update adds new filters for All, Mentions, Favorites, and Discussions, as well as dedicated filters for Omnichannel conversations and grouping by Teams, Channels, and DMs.
+  > This change is being tested under `Enhanced navigation experience` feature preview, in order to check it you need to enabled it
+
+### Patch Changes
+
+- ([#36617](https://github.com/RocketChat/Rocket.Chat/pull/36617)) Allows agents to set a default agent when the chat being transferred ends up in the queue
+
+- ([#36749](https://github.com/RocketChat/Rocket.Chat/pull/36749)) Fixes an issue with Omnichannel inquiries where multiple instances could take the same inquiry from the queue resulting in the same room being assined to multiple agents.
+
+- <details><summary>Updated dependencies [f040b27ff67c31188026a0aed9ba1e9c4f717f08, a54f8837338246842585d037a0d0327a79245811, c5f0be15b31d1de03256f74bd277ad4ab753ada2, b25f05acd07762387fa45d67a1241b982c192f5d, c86fbce9b44942662dc25a599fc12b009fd40a74, 2fea1a79b831999f148505b9442cd584e1b06d09, 2f162a0dca79274d4458a5853afe64c506a7554f, fd32867fd4949bc2951a22075498ccb551cc6bbc, 1ca92c346e45486e9b6afc66566ae38fac65b48f, 5d7dec3a68f7281b4b4531fa708d7fc7589a863c, 17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, dc6acda84bf7452d96f375be3cd97748ed016bfc, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
+
+  - @rocket.chat/rest-typings@7.10.0-rc.0
+  - @rocket.chat/model-typings@1.7.0-rc.0
+  </details>
+
+## 1.5.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/rest-typings@7.9.3
+  - @rocket.chat/model-typings@1.6.15
+  </details>
+
+## 1.5.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/rest-typings@7.9.2
+  - @rocket.chat/model-typings@1.6.14
+  </details>
+
+## 1.5.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+    - @rocket.chat/rest-typings@7.9.1
+    - @rocket.chat/model-typings@1.6.13
+  </details>
+
+## 1.5.12
+
+### Patch Changes
+
+- ([#36345](https://github.com/RocketChat/Rocket.Chat/pull/36345)) Fixes an issue that prevented all custom fields from being saved when multiple updates were issued on a single call
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+- ([#36449](https://github.com/RocketChat/Rocket.Chat/pull/36449)) Fixes priorities, sla changes & inquiries not being propagated when change streams were not being used
+
+- ([#36228](https://github.com/RocketChat/Rocket.Chat/pull/36228)) Fixes GDPR contact information removal for Omnichannel.
+
+- ([#36235](https://github.com/RocketChat/Rocket.Chat/pull/36235)) Fixes the issue of deactivation emails being sent to users that were removed from AD even if they were not active in the workspace
+
+- <details><summary>Updated dependencies [459f635a5160fcb0f73fb96b267f76145c11b3e4, 0de9318f344b49cb4afbce6bf8b26f943346343d, d4226a564d699e44eb6264095da8de3850071d6b, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 68426bdfae63f7be8db55d17bd40b076290fd102, e5eda7eb5c3e45ff0798559922c732f5b537d023]:</summary>
+
+  - @rocket.chat/model-typings@1.6.12
+  - @rocket.chat/rest-typings@7.9.0
+  </details>
+
+## 1.5.12-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.9.0-rc.2
+  - @rocket.chat/model-typings@1.6.11-rc.2
+  </details>
+
+## 1.5.12-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.9.0-rc.1
+  - @rocket.chat/model-typings@1.6.11-rc.1
+  </details>
+
+## 1.5.12-rc.0
+
+### Patch Changes
+
+- ([#36345](https://github.com/RocketChat/Rocket.Chat/pull/36345)) Fixes an issue that prevented all custom fields from being saved when multiple updates were issued on a single call
+
+- ([#35006](https://github.com/RocketChat/Rocket.Chat/pull/35006)) Fixes the parsing of FreeSwitch events to properly generate a history of calls on Rocket.Chat
+
+- ([#36449](https://github.com/RocketChat/Rocket.Chat/pull/36449)) Fixes priorities, sla changes & inquiries not being propagated when change streams were not being used
+
+- ([#36228](https://github.com/RocketChat/Rocket.Chat/pull/36228)) Fixes GDPR contact information removal for Omnichannel.
+
+- ([#36235](https://github.com/RocketChat/Rocket.Chat/pull/36235)) Fixes the issue of deactivation emails being sent to users that were removed from AD even if they were not active in the workspace
+
+- <details><summary>Updated dependencies [459f635a5160fcb0f73fb96b267f76145c11b3e4, 0de9318f344b49cb4afbce6bf8b26f943346343d, d4226a564d699e44eb6264095da8de3850071d6b, 6f205101215b4d9890ac62f7acc21257f0cd3cf4, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a, 0b4f3d3c2745ded2c3d299aa6aef01e107cb2de0, 68426bdfae63f7be8db55d17bd40b076290fd102, e5eda7eb5c3e45ff0798559922c732f5b537d023]:</summary>
+
+  - @rocket.chat/model-typings@1.6.11-rc.0
+  - @rocket.chat/rest-typings@7.9.0-rc.0
+    </details>
+
+## 1.5.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@7.8.3
+  - @rocket.chat/model-typings@1.6.11
+    </details>
+
 ## 1.5.10
 
 ### Patch Changes

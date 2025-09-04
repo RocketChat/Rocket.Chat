@@ -1,5 +1,5 @@
 import { AudioEncoder } from './AudioEncoder';
-import { settings } from '../../../../settings/client';
+import { settings } from '../../../../../client/lib/settings';
 
 export class AudioRecorder {
 	private audioContext: AudioContext | undefined;
@@ -52,7 +52,7 @@ export class AudioRecorder {
 		}
 
 		const input = this.audioContext?.createMediaStreamSource(this.stream);
-		this.encoder = new AudioEncoder(input, { bitRate: settings.get('Message_Audio_bitRate') || 32 });
+		this.encoder = new AudioEncoder(input, { bitRate: settings.peek('Message_Audio_bitRate') || 32 });
 	}
 
 	destroyEncoder() {

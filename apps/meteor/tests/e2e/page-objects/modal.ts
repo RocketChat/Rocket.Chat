@@ -7,6 +7,10 @@ export class Modal {
 		this.page = page;
 	}
 
+	getModalByName(name: string): Locator {
+		return this.page.getByRole('dialog', { name });
+	}
+
 	get textInput(): Locator {
 		return this.page.locator('[name="modal_input"]');
 	}
