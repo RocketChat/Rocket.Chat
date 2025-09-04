@@ -2,10 +2,11 @@ import { AnchorPortal } from '@rocket.chat/ui-client';
 import {
 	useEndpoint,
 	useUserAvatarPath,
-	useUserId,
+	// useUserId,
 	useSetOutputMediaDevice,
 	useSetInputMediaDevice,
 	Device,
+	useUser,
 	// useSelectedDevices,
 } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
@@ -19,7 +20,9 @@ import MediaCallContext, { PeerInfo } from '../v2/MediaCallContext';
 import MediaCallWidget from '../v2/MediaCallWidget';
 
 const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
-	const userId = useUserId();
+	const user = useUser();
+
+	const userId = user?._id;
 
 	const { instance, processor } = useMediaSessionInstance(userId ?? undefined);
 	// console.log('instance', instance);
@@ -142,7 +145,9 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	// const usersInfoEndpoint = useEndpoint('GET', '/v1/users.info');
 
 	const getAutocompleteOptions = async (filter: string) => {
-		const { items } = await usersAutoCompleteEndpoint({ selector: JSON.stringify({ term: filter, conditions: {} }) });
+		const { items } = await usersAutoCompleteEndpoint({
+			selector: JSON.stringify({ term: filter, exceptions: [user?.username] }),
+		});
 		return (
 			items.map((user) => {
 				const label = user.name || user.username;
