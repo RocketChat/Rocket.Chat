@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useMediaPermissions } from '../../../views/room/composer/messageBox/hooks/useMediaPermissions';
 import type { RoomToolboxActionConfig } from '../../../views/room/contexts/RoomToolboxContext';
 
+// TODO: REMOVE THIS FILE
 export const useMediaCallAction = () => {
 	const { t } = useTranslation();
 	// const { uids = [] } = useRoom();
