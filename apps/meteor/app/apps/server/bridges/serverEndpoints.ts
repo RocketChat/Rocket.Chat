@@ -21,9 +21,9 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 	}
 
 	protected async call<T = unknown>(info: IServerEndpointCallInfo): Promise<IServerEndpointResponse<T>> {
-		const path = `/${String(info.path || '').replace(/^\/+/, '')}`;
-		// Call API.api.innerRouter with a path under '/v1', since API.api mounts API.v1 at '/v1'
-		const url = `/v1${path}${info.query ? `?${qs.stringify(info.query)}` : ''}`;
+		this.orch.debugLog(`App ${info.appId} is calling server endpoint ${info.method} ${info.path}`);
+		const subpath = String(info.path || '').replace(/^\/+/, '');
+		const url = `${subpath}${info.query ? `?${qs.stringify(info.query)}` : ''}`;
 
 		const headers: Record<string, string> = Object.fromEntries(
 			Object.entries(info.headers || {}).map(([k, v]) => [k.toLowerCase(), String(v)]),
@@ -61,22 +61,7 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 				init.body = JSON.stringify(info.body);
 			}
 		}
-		// Ensure a remote address is available for middlewares expecting an IncomingMessage
-		const remoteAddr = headers['x-real-ip'] || headers['x-forwarded-for'] || '127.0.0.1';
-		const honoEnv = { incoming: { socket: { remoteAddress: remoteAddr }, connection: { remoteAddress: remoteAddr } } } as any;
-
-		// Call the top-level API router ('/api') that nests '/v1' routes.
-		// Try '/v1/...', and if not found, try '/api/v1/...'
-		const tryRequest = async (): Promise<Response> => {
-			let r = await (API.api as any).innerRouter.request(url, init, honoEnv);
-			if (r.status === 404) {
-				const alt = `/api${url}`;
-				r = await (API.api as any).innerRouter.request(alt, init, honoEnv);
-			}
-			return r;
-		};
-
-		let res = await tryRequest();
+		let res = await API.v1.router.dispatch(url, init);
 
 		// If the app user token became invalid, try refreshing it once transparently
 		if (res.status === 401) {
@@ -86,13 +71,13 @@ export class AppServerEndpointsBridge extends ServerEndpointsBridge {
 				usedImpersonationKey = cacheKey;
 				(init.headers as Headers).set('x-user-id', userId);
 				(init.headers as Headers).set('x-auth-token', token);
-				res = await tryRequest();
+				res = await API.v1.router.dispatch(url, init);
 			} else if (usedAppToken) {
 				await this.invalidateAppToken(info.appId);
 				const { userId, token } = await this.ensureAppUserToken(info.appId);
 				(init.headers as Headers).set('x-user-id', userId);
 				(init.headers as Headers).set('x-auth-token', token);
-				res = await tryRequest();
+				res = await API.v1.router.dispatch(url, init);
 			}
 		}
 

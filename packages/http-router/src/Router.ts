@@ -401,6 +401,18 @@ export class Router<
 		);
 		return router;
 	}
+
+	/**
+	 * Dispatch a request in-memory through this router's Hono pipeline.
+	 * The provided path should be relative to this router's base (e.g., 'rooms.info?foo=bar').
+	 */
+	public async dispatch(path: string, init?: RequestInit, env?: unknown): Promise<Response> {
+		const normalized = path.startsWith('/') ? path : `/${path}`;
+		const fullPath = `${this.base}${normalized}`.replaceAll('//', '/');
+		const hono = new Hono();
+		const routed = hono.route(this.base, this.innerRouter);
+		return routed.request(fullPath, init as any, env as any);
+	}
 }
 
 type Prettify<T> = {
