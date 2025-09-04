@@ -99,12 +99,13 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.webrtcProcessor.muted;
 	}
 
-	public get onHold(): boolean {
+	/** indicates if the call is on hold */
+	public get held(): boolean {
 		if (!this.webrtcProcessor) {
 			return false;
 		}
 
-		return this.webrtcProcessor.onHold;
+		return this.webrtcProcessor.held;
 	}
 
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
@@ -141,7 +142,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private inputTrack: MediaStreamTrack | null;
 
-	// localCallId will only be different on calls initiated by this session
+	/** localCallId will only be different on calls initiated by this session */
 	private localCallId: string;
 
 	constructor(
@@ -178,8 +179,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = null;
 	}
 
-	// Initialize an outbound call with basic contact information until we receive the full call details from the server;
-	// this gets executed once for outbound calls initiated in this session.
+	/**
+	 * Initialize an outbound call with basic contact information until we receive the full call details from the server;
+	 * this gets executed once for outbound calls initiated in this session.
+	 */
 	public async initializeOutboundCall(contact: CallContact): Promise<void> {
 		if (this.acceptedLocally) {
 			return;
@@ -204,7 +207,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	// Initialize an outbound call with the callee information and send a call request to the server
+	/** Initialize an outbound call with the callee information and send a call request to the server */
 	public async requestCall(callee: { type: CallActorType; id: string }, contactInfo?: CallContact): Promise<void> {
 		if (this.initialized) {
 			return;
@@ -220,7 +223,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.initializeOutboundCall({ ...contactInfo, ...callee });
 	}
 
-	// initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call
+	/** initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call */
 	public async initializeRemoteCall(signal: ServerMediaSignalNewCall): Promise<void> {
 		if (this.hasRemoteData) {
 			return;
@@ -458,18 +461,18 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public setOnHold(onHold: boolean): void {
+	public setHeld(held: boolean): void {
 		if (this.isOver()) {
 			return;
 		}
-		if (!this.webrtcProcessor && !onHold) {
+		if (!this.webrtcProcessor && !held) {
 			return;
 		}
 
 		this.requireWebRTC();
-		const wasOnHold = this.webrtcProcessor.onHold;
-		this.webrtcProcessor.setOnHold(onHold);
-		if (wasOnHold !== this.webrtcProcessor.onHold) {
+		const wasOnHold = this.webrtcProcessor.held;
+		this.webrtcProcessor.setHeld(held);
+		if (wasOnHold !== this.webrtcProcessor.held) {
 			this.emitter.emit('trackStateChange');
 		}
 	}
