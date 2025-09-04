@@ -88,6 +88,7 @@ function ContactTable() {
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
 			{isCallReady && <GenericTableHeaderCell key='call' width={44} />}
+			<GenericTableHeaderCell key='spacer' w={40} />
 		</>
 	);
 

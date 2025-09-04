@@ -2,6 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users } from '@rocket.chat/models';
 import type { TOptions } from 'i18next';
 import { check, Match } from 'meteor/check';
@@ -15,7 +16,6 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { MessageTypes } from '../../../ui-utils/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
 

@@ -3926,10 +3926,10 @@
   "mention-here": "在此提及",
   "mention-here_description": "使用 @here 提及的权限",
   "message": "消息",
-  "message_pruned": "已修剪消息",
   "message_counter": {
     "other": "{{count}} 消息"
   },
+  "message_pruned": "已修剪消息",
   "messages": "消息",
   "messages_pruned": "消息被修剪",
   "meteor_status_connected": "已连接",

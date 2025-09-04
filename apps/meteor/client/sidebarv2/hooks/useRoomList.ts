@@ -7,9 +7,9 @@ import { useMemo } from 'react';
 
 import { useOmnichannelEnabled } from '../../hooks/omnichannel/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../hooks/omnichannel/useQueuedInquiries';
+import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 
 const query = { open: { $ne: false } };
-const sortOptions = { sort: { lm: -1 } } as const;
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
@@ -44,7 +44,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
-	const rooms = useUserSubscriptions(query, sortOptions);
+	const options = useSortQueryOptions();
+
+	const rooms = useUserSubscriptions(query, options);
 
 	const inquiries = useQueuedInquiries();
 

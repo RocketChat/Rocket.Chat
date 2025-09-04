@@ -5,7 +5,6 @@ import { Random } from '@rocket.chat/random';
 import { render, screen } from '@testing-library/react';
 
 import SystemMessage from './SystemMessage';
-import '../../../startup/messageTypes';
 
 jest.mock('../../../../app/ui-utils/client', () => {
 	const actual = jest.requireActual('../../../../app/ui-utils/lib/MessageTypes');

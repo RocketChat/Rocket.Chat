@@ -4290,10 +4290,10 @@
   "message": "訊息",
   "message-impersonate": "冒充其他使用者",
   "message-impersonate_description": "允許使用訊息別名模擬其他使用者",
-  "message_pruned": "訊息已修剪",
   "message_counter": {
     "other": "{{count}} 訊息"
   },
+  "message_pruned": "訊息已修剪",
   "messages": "訊息",
   "messages_pruned": "訊息被修剪",
   "meteor_status_connected": "已連線",

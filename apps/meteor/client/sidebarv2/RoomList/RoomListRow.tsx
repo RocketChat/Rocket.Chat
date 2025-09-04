@@ -3,19 +3,25 @@ import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfInc
 import type { TFunction } from 'i18next';
 import { memo, useMemo } from 'react';
 
-import SidebarItemWithData from './SidebarItemWithData';
+import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
+import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 type RoomListRowProps = {
 	data: {
+		extended: boolean;
 		t: TFunction;
+		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
+		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 		openedRoom: string;
+		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
 	};
 	item: SubscriptionWithRoom;
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { t } = data;
+	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -31,7 +37,18 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 		[acceptCall, rejectCall, currentCall],
 	);
 
-	return <SidebarItemWithData t={t} room={item} videoConfActions={videoConfActions} />;
+	return (
+		<SidebarItemTemplateWithData
+			sidebarViewMode={sidebarViewMode}
+			selected={item.rid === openedRoom}
+			t={t}
+			room={item}
+			extended={extended}
+			SidebarItemTemplate={SidebarItemTemplate}
+			AvatarTemplate={AvatarTemplate}
+			videoConfActions={videoConfActions}
+		/>
+	);
 };
 
 export default memo(RoomListRow);

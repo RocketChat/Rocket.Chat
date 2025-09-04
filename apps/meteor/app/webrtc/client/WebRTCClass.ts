@@ -6,9 +6,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChromeScreenShare } from './screenShare';
+import { settings } from '../../../client/lib/settings';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
 import { Subscriptions, Users } from '../../../client/stores';
-import { settings } from '../../settings/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import { WEB_RTC_EVENTS } from '../lib/constants';
@@ -265,7 +265,7 @@ class WebRTCClass {
 		};
 		this.debug = false;
 		this.TransportClass = WebRTCTransportClass;
-		let servers = settings.get<string>('WebRTC_Servers');
+		let servers = settings.peek<string>('WebRTC_Servers');
 		if (servers && servers.trim() !== '') {
 			servers = servers.replace(/\s/g, '');
 
@@ -1035,21 +1035,21 @@ const WebRTC = new (class {
 			}
 			switch (subscription.t) {
 				case 'd':
-					enabled = settings.get('WebRTC_Enable_Direct');
+					enabled = settings.watch('WebRTC_Enable_Direct') ?? false;
 					break;
 				case 'p':
-					enabled = settings.get('WebRTC_Enable_Private');
+					enabled = settings.watch('WebRTC_Enable_Private') ?? false;
 					break;
 				case 'c':
-					enabled = settings.get('WebRTC_Enable_Channel');
+					enabled = settings.watch('WebRTC_Enable_Channel') ?? false;
 					break;
 				case 'l':
-					enabled = settings.get<string>('Omnichannel_call_provider') === 'WebRTC';
+					enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
 			}
 		} else {
-			enabled = settings.get<string>('Omnichannel_call_provider') === 'WebRTC';
+			enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
 		}
-		enabled = enabled && settings.get('WebRTC_Enabled');
+		enabled = enabled && (settings.watch('WebRTC_Enabled') ?? false);
 		if (enabled === false) {
 			return;
 		}

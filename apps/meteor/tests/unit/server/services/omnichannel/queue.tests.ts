@@ -57,6 +57,14 @@ const { OmnichannelQueue } = p.noCallThru().load('../../../../../server/services
 	'./logger': { queueLogger },
 	'@rocket.chat/models': models,
 	'@rocket.chat/license': { License: license },
+	'../../../app/metrics/server': {
+		metrics: {
+			timeToQueueProcessingByQueue: { observe: Sinon.stub() },
+			totalItemsProcessedByQueue: { inc: Sinon.stub() },
+			totalItemsProcessedByReconciliationQueue: { inc: Sinon.stub() },
+			totalItemsFailedByQueue: { inc: Sinon.stub() },
+		},
+	},
 });
 
 describe('Omnichannel Queue processor', () => {

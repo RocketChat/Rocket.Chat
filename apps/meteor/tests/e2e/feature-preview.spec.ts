@@ -316,6 +316,10 @@ test.describe.serial('feature preview', () => {
 						name: 'newNavigation',
 						value: true,
 					},
+					{
+						name: 'secondarySidebar',
+						value: true,
+					},
 				],
 			});
 		});
@@ -327,6 +331,10 @@ test.describe.serial('feature preview', () => {
 				featuresPreview: [
 					{
 						name: 'newNavigation',
+						value: false,
+					},
+					{
+						name: 'secondarySidebar',
 						value: false,
 					},
 				],
@@ -389,7 +397,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 		});
 
-		test('should sort by last message even if unread message is inside thread', async ({ page, browser }) => {
+		test('should keep the main room on the top even if child has unread messages', async ({ page, browser }) => {
 			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 
@@ -427,15 +435,25 @@ test.describe.serial('feature preview', () => {
 			await user1Channel.content.sendMessageInThread('hello thread');
 
 			const item = poHomeChannel.sidepanel.getTeamItemByName(targetChannel);
-			await expect(item.locator('..')).toHaveAttribute('data-item-index', '0');
+			await expect(item.locator('..')).toHaveAttribute('data-item-index', '1');
 
 			await user1Page.close();
 		});
 
-		test('sidebar and sidepanel should retain their state after opening a room through navbar search', async ({ page }) => {
+		test('sidepanel should open the respective parent room filter if its a room filter', async ({ page }) => {
+			await page.goto(`/channel/${targetChannel}`);
+			await poHomeChannel.sidenav.waitForHome();
+			await poHomeChannel.sidebar.getSearchRoomByName(sidepanelTeam).click();
+			await poHomeChannel.content.waitForChannel();
+
+			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
+			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
+			await expect(poHomeChannel.sidenav.getSidebarItemByName(sidepanelTeam)).toHaveAttribute('aria-selected', 'true');
+		});
+
+		test('sidepanel should not open the respective parent room filter if its not a room filter', async ({ page }) => {
 			await page.goto('/home');
 			await poHomeChannel.sidenav.waitForHome();
-
 			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader('Favorites')).toBeVisible();
@@ -737,6 +755,10 @@ test.describe.serial('feature preview', () => {
 						name: 'newNavigation',
 						value: true,
 					},
+					{
+						name: 'secondarySidebar',
+						value: true,
+					},
 				],
 			});
 		});
@@ -748,6 +770,10 @@ test.describe.serial('feature preview', () => {
 				featuresPreview: [
 					{
 						name: 'newNavigation',
+						value: false,
+					},
+					{
+						name: 'secondarySidebar',
 						value: false,
 					},
 				],
