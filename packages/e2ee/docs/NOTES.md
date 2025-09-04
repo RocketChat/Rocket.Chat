@@ -15,6 +15,7 @@
 - [[FIX] E2E messages not decrypting in message threads](https://github.com/RocketChat/Rocket.Chat/pull/14580)
 - [[FIX] Not possible to read encrypted messages after disable E2E on channel level](https://github.com/RocketChat/Rocket.Chat/pull/18101)
 - [[NEW] Encrypted Discussions and new Encryption Permissions](https://github.com/RocketChat/Rocket.Chat/pull/20201)
+- [[FIX] E2E issues](https://github.com/RocketChat/Rocket.Chat/pull/20704)
 - [[FIX] Ensure E2E is enabled/disabled on sending message](https://github.com/RocketChat/Rocket.Chat/pull/21084)
 - [Regression: Fix non encrypted rooms failing sending messages](https://github.com/RocketChat/Rocket.Chat/pull/21287)
 - [Chore: Replace `promises` helper](https://github.com/RocketChat/Rocket.Chat/pull/23488)

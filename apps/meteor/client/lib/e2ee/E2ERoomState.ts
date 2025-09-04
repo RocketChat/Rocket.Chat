@@ -1,8 +1,6 @@
 export type E2ERoomState =
-	| 'NO_PASSWORD_SET'
 	| 'NOT_STARTED'
 	| 'DISABLED'
-	| 'HANDSHAKE'
 	| 'ESTABLISHING'
 	| 'CREATING_KEYS'
 	| 'WAITING_KEYS'

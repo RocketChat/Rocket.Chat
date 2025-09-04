@@ -36,52 +36,46 @@ import { roomCoordinator } from '../rooms/roomCoordinator';
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
-type Mutations = { [k in E2ERoomState]?: E2ERoomState[] };
+type Mutations = { [K in E2ERoomState]: E2ERoomState[] };
 
 const permitedMutations: Mutations = {
 	NOT_STARTED: ['ESTABLISHING', 'DISABLED', 'KEYS_RECEIVED'],
-	READY: ['DISABLED', 'CREATING_KEYS', 'WAITING_KEYS'],
-	ERROR: ['KEYS_RECEIVED', 'NOT_STARTED'],
-	WAITING_KEYS: ['KEYS_RECEIVED', 'ERROR', 'DISABLED'],
 	ESTABLISHING: ['READY', 'KEYS_RECEIVED', 'ERROR', 'DISABLED', 'WAITING_KEYS', 'CREATING_KEYS'],
+	KEYS_RECEIVED: ['ESTABLISHING'],
+	CREATING_KEYS: ['READY', 'KEYS_RECEIVED'],
+	READY: ['DISABLED', 'CREATING_KEYS', 'WAITING_KEYS'],
+	ERROR: ['KEYS_RECEIVED', 'NOT_STARTED', 'ERROR'],
+	WAITING_KEYS: ['KEYS_RECEIVED', 'ERROR', 'DISABLED'],
+	DISABLED: [],
 };
 
-const filterMutation = (currentState: E2ERoomState | undefined, nextState: E2ERoomState): E2ERoomState | false => {
-	// When state is undefined, allow it to be moved
-	if (!currentState) {
-		return nextState;
-	}
-
+const filterMutation = (currentState: E2ERoomState, nextState: E2ERoomState): E2ERoomState | false => {
 	if (currentState === nextState) {
 		return nextState === 'ERROR' ? 'ERROR' : false;
 	}
 
-	if (!(currentState in permitedMutations)) {
-		return nextState;
-	}
-
-	if (permitedMutations?.[currentState]?.includes(nextState)) {
+	if (permitedMutations[currentState].includes(nextState)) {
 		return nextState;
 	}
 
 	return false;
 };
 
-const  exportSessionKey = async (key: string): Promise<string> => {
-		key = key.slice(12);
-		const decodedKey = Base64.decode(key);
+const exportSessionKey = async (key: string): Promise<string> => {
+	key = key.slice(12);
+	const decodedKey = Base64.decode(key);
 
-		if (!e2e.privateKey) {
-			throw new Error('Private key not found');
-		}
-
-		const decryptedKey = await decryptRSA(e2e.privateKey, decodedKey);
-		return toString(decryptedKey);
+	if (!e2e.privateKey) {
+		throw new Error('Private key not found');
 	}
 
-const  decryptSessionKey = async (key: string): Promise<CryptoKey> => {
-		return importAesGcmKey(JSON.parse(await exportSessionKey(key)));
-	}
+	const decryptedKey = await decryptRSA(e2e.privateKey, decodedKey);
+	return toString(decryptedKey);
+};
+
+const decryptSessionKey = async (key: string): Promise<CryptoKey> => {
+	return importAesGcmKey(JSON.parse(await exportSessionKey(key)));
+};
 
 export type EncryptedGroupKey = { E2EKey: string; e2eKeyId: string; ts: Date };
 export type DecryptedGroupKey = { E2EKey: CryptoKey | null; e2eKeyId: string; ts: Date };
@@ -162,18 +156,6 @@ export class E2ERoom extends Emitter {
 
 	isReady() {
 		return this.state === 'READY';
-	}
-
-	isDisabled() {
-		return this.state === 'DISABLED';
-	}
-
-	enable() {
-		if (this.state === 'READY') {
-			return;
-		}
-
-		this.setState('READY');
 	}
 
 	pause() {
@@ -293,7 +275,7 @@ export class E2ERoom extends Emitter {
 			} catch (e) {
 				this.error(
 					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
-					e
+					e,
 				);
 			}
 		}
@@ -367,10 +349,6 @@ export class E2ERoom extends Emitter {
 	isSupportedRoomType(type: string): boolean {
 		return roomCoordinator.getRoomDirectives(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
 	}
-
-	
-
-	
 
 	async handleSubscriptionChanged(sub: ISubscription) {
 		if (sub.E2ESuggestedKey) {

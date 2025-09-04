@@ -33,7 +33,6 @@ export const useE2EERoomAction = () => {
 
 	const isE2EERoomNotReady = () => {
 		if (
-			e2eeRoomState === 'NO_PASSWORD_SET' ||
 			e2eeRoomState === 'NOT_STARTED' ||
 			e2eeRoomState === 'DISABLED' ||
 			e2eeRoomState === 'ERROR' ||
