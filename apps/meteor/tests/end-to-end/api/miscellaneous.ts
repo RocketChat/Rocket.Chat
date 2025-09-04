@@ -670,9 +670,18 @@ describe('miscellaneous', () => {
 			// populate the logs by sending method calls
 			const populateLogsPromises = [];
 			populateLogsPromises.push(
-				request.get(api('rooms.roles')).set(credentials).query({
-					rid: 'GENERAL',
-				}),
+				request
+					.post(methodCall('loadHistory'))
+					.set(credentials)
+					.set('Cookie', `rc_token=${credentials['X-Auth-Token']}`)
+					.send({
+						message: JSON.stringify({
+							id: 'id',
+							msg: 'method',
+							method: 'loadHistory',
+							params: ['GENERAL'],
+						}),
+					}),
 			);
 
 			populateLogsPromises.push(
