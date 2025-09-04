@@ -369,27 +369,27 @@ export class E2ERoom extends Emitter {
 
 	async handleSubscriptionChanged(sub: ISubscription) {
 		if (sub.E2ESuggestedKey) {
-				await this.handleSuggestedKey(sub.E2ESuggestedKey);
-			}
-			sub.encrypted ? this.resume() : this.pause();
-
-			// Cover private groups and direct messages
-			if (!this.isSupportedRoomType(sub.t)) {
-				this.setState('DISABLED');
-				return;
-			}
-
-			if (sub.E2EKey && this.isWaitingKeys()) {
-				this.setState('KEYS_RECEIVED');
-				return;
-			}
-
-			if (!this.isReady()) {
-				return;
-			}
-
-			await this.decryptSubscription();
+			await this.handleSuggestedKey(sub.E2ESuggestedKey);
 		}
+		sub.encrypted ? this.resume() : this.pause();
+
+		// Cover private groups and direct messages
+		if (!this.isSupportedRoomType(sub.t)) {
+			this.setState('DISABLED');
+			return;
+		}
+
+		if (sub.E2EKey && this.isWaitingKeys()) {
+			this.setState('KEYS_RECEIVED');
+			return;
+		}
+
+		if (!this.isReady()) {
+			return;
+		}
+
+		await this.decryptSubscription();
+	}
 
 	async handleSuggestedKey(suggestedKey: string) {
 		if (await this.importGroupKey(suggestedKey)) {
