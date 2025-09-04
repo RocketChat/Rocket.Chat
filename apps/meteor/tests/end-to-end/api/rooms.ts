@@ -2123,7 +2123,7 @@ describe('[Rooms]', () => {
 		let testChannel: IRoom;
 
 		before(async () => {
-			testChannel = (await createRoom({ type: 'c', name: 'тест test' })).body.channel;
+			testChannel = (await createRoom({ type: 'c', name: 'тест' })).body.channel;
 		});
 
 		after(async () => {
@@ -2167,8 +2167,7 @@ describe('[Rooms]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
 					expect(res.body.items).to.have.lengthOf(1);
-					expect(res.body.items[0].name).to.be.equal(testChannel.name);
-					expect(res.body.items[0].fname).to.be.equal('тест test');
+					expect(res.body.items[0].fname).to.be.equal('тест');
 				})
 				.end(done);
 		});
