@@ -34,6 +34,21 @@ let failedToDecodeKey = false;
 
 const ROOM_KEY_EXCHANGE_SIZE = 10;
 
+const waitForRoom = (rid: IRoom['_id']): Promise<IRoom> =>
+	new Promise((resolve) => {
+		const room = Rooms.state.get(rid);
+
+		if (room) resolve(room);
+
+		const unsubscribe = Rooms.use.subscribe((state) => {
+			const room = state.get(rid);
+			if (room) {
+				unsubscribe();
+				resolve(room);
+			}
+		});
+	});
+
 class E2E extends Emitter<{
 	READY: void;
 	E2E_STATE_CHANGED: { prevState: E2EEState; nextState: E2EEState };
@@ -201,24 +216,8 @@ class E2E extends Emitter<{
 		);
 	}
 
-	private waitForRoom(rid: IRoom['_id']): Promise<IRoom> {
-		return new Promise((resolve) => {
-			const room = Rooms.state.get(rid);
-
-			if (room) resolve(room);
-
-			const unsubscribe = Rooms.use.subscribe((state) => {
-				const room = state.get(rid);
-				if (room) {
-					unsubscribe();
-					resolve(room);
-				}
-			});
-		});
-	}
-
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
-		const room = await this.waitForRoom(rid);
+		const room = await waitForRoom(rid);
 
 		if (room.t !== 'd' && room.t !== 'p') {
 			return null;
