@@ -20,10 +20,11 @@ import { formatOutboundMessagePayload, isMessageStepValid, isRecipientStepValid,
 
 type OutboundMessageWizardProps = {
 	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId' | 'recipient' | 'sender'>>;
-	onMessageSent?(): void;
+	onSuccess?(): void;
+	onError?(): void;
 };
 
-const OutboundMessageWizard = ({ defaultValues = {}, onMessageSent }: OutboundMessageWizardProps) => {
+const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: OutboundMessageWizardProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastBarDispatch();
 	const [state, setState] = useState<Partial<SubmitPayload>>(defaultValues);
@@ -104,13 +105,19 @@ const OutboundMessageWizard = ({ defaultValues = {}, onMessageSent }: OutboundMe
 				message: t('Outbound_message_sent_to__name__', { name: contact?.name || formatPhoneNumber(recipient) }),
 			});
 
-			onMessageSent?.();
+			onSuccess?.();
 		} catch (e) {
-			if (e instanceof Error) {
+			dispatchToastMessage({ type: 'error', message: t('Outbound_message_not_sent') });
+
+			// only console.error when in debug mode
+			const urlParams = new URLSearchParams(window.location.search);
+			const debug = urlParams.get('debug') === 'true';
+
+			if (debug && e instanceof Error) {
 				console.error(e.message);
 			}
 
-			dispatchToastMessage({ type: 'error', message: t('Outbound_message_not_sent') });
+			onError?.();
 		}
 	});
 
