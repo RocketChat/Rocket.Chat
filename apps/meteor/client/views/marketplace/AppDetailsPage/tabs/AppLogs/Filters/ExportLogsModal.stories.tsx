@@ -18,6 +18,7 @@ export default {
 			startDate: '',
 			endDate: '',
 		},
+		onConfirm: () => action('onConfirm'),
 	},
 	decorators: [
 		mockAppRoot().buildStoryDecorator(),

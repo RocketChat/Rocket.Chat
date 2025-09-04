@@ -1,17 +1,19 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { getRoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getRoomRoles(rid: IRoom['_id']): ISubscription[];
+		getRoomRoles(rid: IRoom['_id']): RoomRoles[];
 	}
 }
 
@@ -36,6 +38,7 @@ export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUserId?: string
 
 Meteor.methods<ServerMethods>({
 	async getRoomRoles(rid) {
+		methodDeprecationLogger.method('getRoomRoles', '8.0.0', 'Use the /v1/room.getRoles endpoint instead');
 		const fromUserId = Meteor.userId();
 
 		return executeGetRoomRoles(rid, fromUserId);

@@ -20,6 +20,16 @@ import { defaultMediaStreamFactory } from 'sip.js/lib/platform/web';
 import Stream from './Stream';
 
 export default class LocalStream extends Stream {
+	// This is used to change the input device before a call is started/answered.
+	// Some browsers request permission per-device, this ensures the permission will be prompted.
+	static changeInputDeviceOffline(constraints: MediaStreamConstraints) {
+		navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+			stream.getTracks().forEach((track) => {
+				track.stop();
+			});
+		});
+	}
+
 	static async requestNewStream(constraints: MediaStreamConstraints, session: Session): Promise<MediaStream | undefined> {
 		const factory: MediaStreamFactory = defaultMediaStreamFactory();
 		if (session?.sessionDescriptionHandler) {

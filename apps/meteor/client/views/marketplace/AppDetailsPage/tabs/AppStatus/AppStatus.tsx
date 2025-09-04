@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Tag, Margins, Icon, Palette } from '@rocket.chat/fuselage';
+import { Box, Button, Tag, Margins, Icon } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -108,10 +108,14 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const getStatusFontColor = (status: appStatusSpanResponseProps) => {
 		if (status.type === 'warning') {
-			return Palette.statusColor['status-font-on-warning'].toString();
+			return 'status-font-on-warning';
 		}
 
-		return Palette.text['font-default'].toString();
+		if (status.type === 'danger') {
+			return 'status-font-on-danger';
+		}
+
+		return 'font-default';
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {

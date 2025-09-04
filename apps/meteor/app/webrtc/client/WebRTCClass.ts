@@ -6,9 +6,9 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
 import { ChromeScreenShare } from './screenShare';
+import { settings } from '../../../client/lib/settings';
 import { goToRoomById } from '../../../client/lib/utils/goToRoomById';
-import { Subscriptions, Users } from '../../models/client';
-import { settings } from '../../settings/client';
+import { Subscriptions, Users } from '../../../client/stores';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import { WEB_RTC_EVENTS } from '../lib/constants';
@@ -265,7 +265,7 @@ class WebRTCClass {
 		};
 		this.debug = false;
 		this.TransportClass = WebRTCTransportClass;
-		let servers = settings.get<string>('WebRTC_Servers');
+		let servers = settings.peek<string>('WebRTC_Servers');
 		if (servers && servers.trim() !== '') {
 			servers = servers.replace(/\s/g, '');
 
@@ -820,34 +820,28 @@ class WebRTCClass {
 			return;
 		}
 
-		const user = Users.findOne(data.from);
-		let fromUsername = undefined;
-		if (user?.username) {
-			fromUsername = user.username;
-		}
-		const subscription = Subscriptions.findOne({
-			rid: data.room,
-		})!;
+		const username = data.from ? Users.state.get(data.from)?.username : undefined;
+		const subscription = Subscriptions.state.find(({ rid }) => rid === data.room);
 
 		let icon;
 		let title;
 		if (data.monitor === true) {
 			icon = 'eye' as const;
-			title = t('WebRTC_monitor_call_from_%s', fromUsername);
+			title = t('WebRTC_monitor_call_from_%s', username);
 		} else if (subscription && subscription.t === 'd') {
 			if (data.media?.video) {
 				icon = 'video' as const;
-				title = t('WebRTC_direct_video_call_from_%s', fromUsername);
+				title = t('WebRTC_direct_video_call_from_%s', username);
 			} else {
 				icon = 'phone' as const;
-				title = t('WebRTC_direct_audio_call_from_%s', fromUsername);
+				title = t('WebRTC_direct_audio_call_from_%s', username);
 			}
 		} else if (data.media?.video) {
 			icon = 'video' as const;
-			title = t('WebRTC_group_video_call_from_%s', subscription.name);
+			title = t('WebRTC_group_video_call_from_%s', subscription?.name);
 		} else {
 			icon = 'phone' as const;
-			title = t('WebRTC_group_audio_call_from_%s', subscription.name);
+			title = t('WebRTC_group_audio_call_from_%s', subscription?.name);
 		}
 
 		imperativeModal.open({
@@ -1035,27 +1029,27 @@ const WebRTC = new (class {
 	getInstanceByRoomId(rid: IRoom['_id'], visitorId: string | null = null) {
 		let enabled = false;
 		if (!visitorId) {
-			const subscription = Subscriptions.findOne({ rid });
+			const subscription = Subscriptions.state.find((record) => record.rid === rid);
 			if (!subscription) {
 				return;
 			}
 			switch (subscription.t) {
 				case 'd':
-					enabled = settings.get('WebRTC_Enable_Direct');
+					enabled = settings.watch('WebRTC_Enable_Direct') ?? false;
 					break;
 				case 'p':
-					enabled = settings.get('WebRTC_Enable_Private');
+					enabled = settings.watch('WebRTC_Enable_Private') ?? false;
 					break;
 				case 'c':
-					enabled = settings.get('WebRTC_Enable_Channel');
+					enabled = settings.watch('WebRTC_Enable_Channel') ?? false;
 					break;
 				case 'l':
-					enabled = settings.get<string>('Omnichannel_call_provider') === 'WebRTC';
+					enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
 			}
 		} else {
-			enabled = settings.get<string>('Omnichannel_call_provider') === 'WebRTC';
+			enabled = settings.watch<string>('Omnichannel_call_provider') === 'WebRTC';
 		}
-		enabled = enabled && settings.get('WebRTC_Enabled');
+		enabled = enabled && (settings.watch('WebRTC_Enabled') ?? false);
 		if (enabled === false) {
 			return;
 		}

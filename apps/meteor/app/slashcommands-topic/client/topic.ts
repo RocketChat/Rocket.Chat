@@ -1,9 +1,9 @@
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 
 import { dispatchToastMessage } from '../../../client/lib/toast';
+import { Rooms } from '../../../client/stores';
 import { callbacks } from '../../../lib/callbacks';
 import { hasPermission } from '../../authorization/client';
-import { Rooms } from '../../models/client/models/Rooms';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { slashCommands } from '../../utils/client/slashCommand';
 

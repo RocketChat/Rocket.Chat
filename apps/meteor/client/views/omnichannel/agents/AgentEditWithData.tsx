@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import AgentEdit from './AgentEdit';
 import { ContextualbarSkeletonBody } from '../../../components/Contextualbar';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElement => {
 	const { t } = useTranslation();
@@ -25,7 +26,7 @@ const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElemen
 		isPending: agentDepartmentsLoading,
 		error: agentsDepartmentsError,
 	} = useQuery({
-		queryKey: ['livechat-getAgentDepartments', uid],
+		queryKey: omnichannelQueryKeys.agentDepartments(uid),
 		queryFn: async () => getAgentDepartments(),
 		refetchOnWindowFocus: false,
 	});

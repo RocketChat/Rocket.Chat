@@ -13,6 +13,7 @@ import {
 	E2EEKeyDecodeFailureBanner,
 	EnterE2EEPasswordBanner,
 	EnterE2EEPasswordModal,
+	ResetE2EEPasswordModal,
 	SaveE2EEPasswordBanner,
 	SaveE2EEPasswordModal,
 } from './page-objects/fragments/e2ee';
@@ -68,6 +69,8 @@ test.describe('initial setup', () => {
 		// Log out
 		await sidenav.logout();
 
+		await expect(loginPage.loginButton).toBeVisible();
+
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
 
@@ -86,6 +89,22 @@ test.describe('initial setup', () => {
 		// Reset the E2EE key to start the flow from the beginning
 		await accountSecurityPage.goto();
 		await accountSecurityPage.resetE2EEPassword();
+
+		await loginPage.loginByUserState(Users.admin);
+	});
+
+	test('should reset e2e password from the modal', async ({ page }) => {
+		const sidenav = new HomeSidenav(page);
+		const loginPage = new LoginPage(page);
+		const enterE2EEPasswordBanner = new EnterE2EEPasswordBanner(page);
+		const enterE2EEPasswordModal = new EnterE2EEPasswordModal(page);
+		const resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
+
+		await sidenav.logout();
+		await loginPage.loginByUserState(Users.admin);
+		await enterE2EEPasswordBanner.click();
+		await enterE2EEPasswordModal.forgotPassword();
+		await resetE2EEPasswordModal.confirmReset();
 
 		await loginPage.loginByUserState(Users.admin);
 	});
@@ -116,6 +135,8 @@ test.describe('initial setup', () => {
 		await sidenav.logout();
 
 		// Login again
+		await expect(loginPage.loginButton).toBeVisible();
+
 		await loginPage.loginByUserState(Users.admin);
 
 		// Enter the saved password
@@ -1056,7 +1077,7 @@ test.describe.serial('e2ee room setup', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
-		await poHomeChannel.sidenav.userProfileMenu.click();
+		await poHomeChannel.sidenav.btnUserProfileMenu.click();
 		await poHomeChannel.sidenav.accountProfileOption.click();
 
 		await page.locator('role=navigation >> a:has-text("Security")').click();
@@ -1126,7 +1147,7 @@ test.describe('e2ee support legacy formats', () => {
 		// send old format encrypted message via API
 		const msg = await page.evaluate(async (rid) => {
 			// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path
-			const { e2e } = require('/app/e2e/client/rocketchat.e2e.ts');
+			const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts');
 			const e2eRoom = await e2e.getInstanceByRoomId(rid);
 			return e2eRoom.encrypt({ _id: 'id', msg: 'Old format message' });
 		}, rid);

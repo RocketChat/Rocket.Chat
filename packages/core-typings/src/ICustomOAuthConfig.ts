@@ -14,4 +14,5 @@ export type OauthConfig = {
 	usernameField?: string;
 	mergeUsers?: boolean;
 	responseType?: string;
+	loginStyle?: 'popup' | 'redirect';
 };

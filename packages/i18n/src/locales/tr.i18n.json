@@ -3078,16 +3078,20 @@
   "mention-here": "Burada Bahset",
   "mention-here_description": "@here bahsetmesini kullanma izni",
   "message": "ileti",
-  "message_counter_one": "{{count}} ileti",
-  "message_counter_other": "{{count}} ileti",
+  "message_counter": {
+    "one": "{{count}} ileti",
+    "other": "{{count}} ileti"
+  },
   "messages": "iletiler",
   "messages_pruned": "iletiler budandı",
   "meteor_status_connected": "Bağlantı sağlandı",
   "meteor_status_connecting": "Bağlanıyor...",
   "meteor_status_failed": "Sunucu ile bağlantı başarısız",
   "meteor_status_offline": "Çevrimdışı mod.",
-  "meteor_status_reconnect_in_one": "tekrar deneniyor...",
-  "meteor_status_reconnect_in_other": "{{count}} saniye içinde tekrar denenecek...",
+  "meteor_status_reconnect_in": {
+    "one": "tekrar deneniyor...",
+    "other": "{{count}} saniye içinde tekrar denenecek..."
+  },
   "meteor_status_try_now_offline": "Tekrar bağlan!",
   "meteor_status_try_now_waiting": "Şimdi tekrar dene!",
   "meteor_status_waiting": "Sunucu bağlantısı bekleniyor,",

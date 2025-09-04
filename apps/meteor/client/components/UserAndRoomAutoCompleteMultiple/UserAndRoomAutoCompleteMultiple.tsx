@@ -7,8 +7,8 @@ import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
 
-import { Rooms } from '../../../app/models/client';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { Rooms } from '../../stores';
 
 type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & { limit?: number };
 
