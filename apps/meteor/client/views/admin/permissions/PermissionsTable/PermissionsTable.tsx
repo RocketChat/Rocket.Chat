@@ -56,7 +56,8 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 		});
 	});
 
-	const fixedColumnStyle = css`
+	const tableCustomStyle = css`
+		// Makes the first column of the table sticky
 		tr > th {
 			&:first-child {
 				position: sticky;
@@ -72,6 +73,18 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 				box-shadow: -1px 0 0 ${Palette.stroke['stroke-light']} inset;
 				background-color: ${Palette.surface['surface-light']};
 				z-index: 11;
+			}
+		}
+
+		tr:hover {
+			td {
+				&:first-child {
+					background-color: ${Palette.surface['surface-hover']};
+				}
+			}
+			td > :nth-child(2) {
+				visibility: visible;
+				opacity: 1;
 			}
 		}
 	`;
@@ -110,7 +123,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 						{permissions?.length === 0 && <GenericNoResults />}
 						{permissions?.length > 0 && (
 							<>
-								<GenericTable className={[fixedColumnStyle]} fixed={false}>
+								<GenericTable className={[tableCustomStyle]} fixed={false}>
 									<GenericTableHeader>
 										<GenericTableHeaderCell width='x120'>{t('Name')}</GenericTableHeaderCell>
 										{roleList?.map(({ _id, name, description }) => (
