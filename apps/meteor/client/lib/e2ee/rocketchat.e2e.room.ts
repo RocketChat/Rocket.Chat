@@ -775,15 +775,6 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	provideKeyToUser(keyId: string) {
-		if (this.keyID !== keyId) {
-			return;
-		}
-
-		void this.encryptKeyForOtherParticipants();
-		this.setState('READY');
-	}
-
 	onStateChange(cb: () => void) {
 		this.on('STATE_CHANGED', cb);
 		return () => this.off('STATE_CHANGED', cb);
