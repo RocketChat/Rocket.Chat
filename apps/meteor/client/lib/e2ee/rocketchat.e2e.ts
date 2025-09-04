@@ -141,11 +141,11 @@ class E2E extends Emitter<{
 
 		if (sub.E2ESuggestedKey) {
 			if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-				await this.acceptSuggestedKey(sub.rid);
-				e2eRoom.keyReceived();
+				await e2eRoom.acceptSuggestedKey();
+				e2eRoom.setState('KEYS_RECEIVED');
 			} else {
 				logger.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-				await this.rejectSuggestedKey(sub.rid);
+				await e2eRoom.rejectSuggestedKey();
 			}
 		}
 
@@ -153,12 +153,12 @@ class E2E extends Emitter<{
 
 		// Cover private groups and direct messages
 		if (!e2eRoom.isSupportedRoomType(sub.t)) {
-			e2eRoom.disable();
+			e2eRoom.setState('DISABLED');
 			return;
 		}
 
 		if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
-			e2eRoom.keyReceived();
+			e2eRoom.setState('KEYS_RECEIVED');
 			return;
 		}
 
@@ -208,6 +208,13 @@ class E2E extends Emitter<{
 		this.emit(nextState);
 	}
 
+	async room(rid: IRoom['_id'], fn: (room: E2ERoom) => Promise<void>) {
+		const e2eRoom = await this.getInstanceByRoomId(rid);
+		if (e2eRoom) {
+			await fn(e2eRoom);
+		}
+	}
+
 	/**
 	 * Handles the suggested E2E key for a subscription.
 	 */
@@ -215,24 +222,11 @@ class E2E extends Emitter<{
 		const subs = Subscriptions.state.filter((sub) => typeof sub.E2ESuggestedKey !== 'undefined');
 		await Promise.all(
 			subs
-				.filter((sub) => sub.E2ESuggestedKey && !sub.E2EKey)
+				.flatMap(({ E2ESuggestedKey, E2EKey, rid, encrypted }) => (E2ESuggestedKey && !E2EKey ? [{ rid, E2ESuggestedKey, encrypted }] : []))
 				.map(async (sub) => {
-					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
-
-					if (!e2eRoom) {
-						return;
-					}
-
-					if (sub.E2ESuggestedKey && (await e2eRoom.importGroupKey(sub.E2ESuggestedKey))) {
-						logger.log('Imported valid E2E suggested key');
-						await e2e.acceptSuggestedKey(sub.rid);
-						e2eRoom.keyReceived();
-					} else {
-						logger.error('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-						await e2e.rejectSuggestedKey(sub.rid);
-					}
-
-					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+					await this.room(sub.rid, async (e2eRoom) => {
+						await e2eRoom?.handleSuggestedKey(sub.E2ESuggestedKey, sub.encrypted);
+					});
 				}),
 		);
 	}
@@ -284,18 +278,6 @@ class E2E extends Emitter<{
 
 	removeInstanceByRoomId(rid: IRoom['_id']): void {
 		delete this.instancesByRoomId[rid];
-	}
-
-	async acceptSuggestedKey(rid: string): Promise<void> {
-		await sdk.rest.post('/v1/e2e.acceptSuggestedGroupKey', {
-			rid,
-		});
-	}
-
-	async rejectSuggestedKey(rid: string): Promise<void> {
-		await sdk.rest.post('/v1/e2e.rejectSuggestedGroupKey', {
-			rid,
-		});
 	}
 
 	initiateHandshake() {

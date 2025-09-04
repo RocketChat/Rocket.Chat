@@ -109,6 +109,8 @@ export class E2ERoom extends Emitter {
 			}
 		});
 		this.on('STATE_CHANGED', () => this.handshake());
+
+		this.handshake();
 	}
 
 	log(...msg: unknown[]): void {
@@ -123,7 +125,7 @@ export class E2ERoom extends Emitter {
 		return !!this.groupSessionKey;
 	}
 
-	getState(): E2ERoomState | undefined {
+	getState(): E2ERoomState {
 		return this.state;
 	}
 
@@ -158,10 +160,6 @@ export class E2ERoom extends Emitter {
 		this.setState('READY');
 	}
 
-	disable() {
-		this.setState('DISABLED');
-	}
-
 	pause() {
 		this.log('PAUSED', this[PAUSED], '->', true);
 		this[PAUSED] = true;
@@ -172,10 +170,6 @@ export class E2ERoom extends Emitter {
 		this.log('PAUSED', this[PAUSED], '->', false);
 		this[PAUSED] = false;
 		this.emit('PAUSED', false);
-	}
-
-	keyReceived() {
-		this.setState('KEYS_RECEIVED');
 	}
 
 	async shouldConvertSentMessages(message: { msg: string }) {
@@ -298,6 +292,18 @@ export class E2ERoom extends Emitter {
 		);
 	}
 
+	async acceptSuggestedKey(): Promise<void> {
+		await sdk.rest.post('/v1/e2e.acceptSuggestedGroupKey', {
+			rid: this.roomId,
+		});
+	}
+
+	async rejectSuggestedKey(): Promise<void> {
+		await sdk.rest.post('/v1/e2e.rejectSuggestedGroupKey', {
+			rid: this.roomId,
+		});
+	}
+
 	// Initiates E2E Encryption
 	async handshake(): Promise<void> {
 		if (!e2e.isReady()) {
@@ -359,6 +365,19 @@ export class E2ERoom extends Emitter {
 
 		const decryptedKey = await decryptRSA(e2e.privateKey, decodedKey);
 		return toString(decryptedKey);
+	}
+
+	async handleSuggestedKey(suggestedKey: string, encrypted?: boolean) {
+		if (await this.importGroupKey(suggestedKey)) {
+			logger.log('Imported valid E2E suggested key');
+			await this.acceptSuggestedKey();
+			this.setState('KEYS_RECEIVED');
+		} else {
+			logger.error('Invalid E2ESuggestedKey, rejecting', suggestedKey);
+			await this.rejectSuggestedKey();
+		}
+
+		encrypted ? this.resume() : this.pause();
 	}
 
 	async importGroupKey(groupKey: string): Promise<boolean> {
