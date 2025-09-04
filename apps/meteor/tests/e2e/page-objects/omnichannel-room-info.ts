@@ -53,6 +53,23 @@ export class OmnichannelRoomInfo {
 		return this.page.getByRole('option', { name, exact: true }).click();
 	}
 
+	get inputTags(): Locator {
+		return this.page.getByRole('textbox', { name: 'Select an option' });
+	}
+
+	optionTags(name: string): Locator {
+		return this.page.getByRole('option', { name, exact: true });
+	}
+
+	async selectTags(name: string): Promise<void> {
+		await this.inputTags.click();
+		return this.page.getByRole('option', { name, exact: true }).click();
+	}
+
+	getTagInfoByLabel(label: string): Locator {
+		return this.dialogRoomInfo.getByText(label);
+	}
+
 	getBadgeIndicator(name: string, title: string): Locator {
 		return this.homeSidenav.getSidebarItemByName(name).getByTitle(title);
 	}
