@@ -3,7 +3,6 @@ import { patchOmniCore } from '@rocket.chat/omni-core-ee';
 import { Meteor } from 'meteor/meteor';
 
 import './methods/addMonitor';
-import './methods/getUnitsFromUserRoles';
 import './methods/removeMonitor';
 import './methods/removeTag';
 import './methods/saveTag';
