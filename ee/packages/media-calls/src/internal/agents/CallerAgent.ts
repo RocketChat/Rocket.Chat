@@ -1,6 +1,5 @@
 import type { IMediaCall, MediaCallContact } from '@rocket.chat/core-typings';
 import type { ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
-import { MediaCalls } from '@rocket.chat/models';
 
 import { UserActorAgent } from './BaseUserAgent';
 import { logger } from '../../logger';
@@ -30,21 +29,5 @@ export class UserActorCallerAgent extends UserActorAgent {
 			// Send back the caller requested Id so the client can match this call to its request
 			...(call.callerRequestedId && { requestedCallId: call.callerRequestedId }),
 		};
-	}
-
-	public async onRemoteDescriptionChanged(callId: string, _description: RTCSessionDescriptionInit): Promise<void> {
-		logger.debug({ msg: 'UserActorCallerAgent.onRemoteDescriptionChanged', callId });
-		const call = await MediaCalls.findOneById(callId);
-
-		if (call?.state !== 'accepted' || !call.webrtcAnswer) {
-			return;
-		}
-
-		await this.sendSignal({
-			callId,
-			toContractId: call.caller.contractId,
-			type: 'remote-sdp',
-			sdp: call.webrtcAnswer,
-		});
 	}
 }

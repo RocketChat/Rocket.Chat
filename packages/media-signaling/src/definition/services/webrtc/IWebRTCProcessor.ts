@@ -26,9 +26,12 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	stop(): void;
 
 	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
-	createOffer(params: { iceRestart?: boolean }): Promise<{ sdp: RTCSessionDescriptionInit }>;
-	createAnswer(params: { sdp: RTCSessionDescriptionInit }): Promise<{ sdp: RTCSessionDescriptionInit }>;
-	setRemoteDescription(params: { sdp: RTCSessionDescriptionInit }): Promise<void>;
+	createOffer(params: { negotiationId: string }): Promise<{ sdp: RTCSessionDescriptionInit; negotiationId: string }>;
+	createAnswer(params: {
+		sdp: RTCSessionDescriptionInit;
+		negotiationId: string;
+	}): Promise<{ sdp: RTCSessionDescriptionInit; negotiationId: string }>;
+	setRemoteDescription(params: { sdp: RTCSessionDescriptionInit; negotiationId: string }): Promise<void>;
 
 	getRemoteMediaStream(): MediaStream;
 }
