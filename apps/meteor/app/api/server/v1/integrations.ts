@@ -1,4 +1,10 @@
-import type { IIntegration, INewIncomingIntegration, INewOutgoingIntegration } from '@rocket.chat/core-typings';
+import type {
+	IIntegration,
+	INewIncomingIntegration,
+	INewOutgoingIntegration,
+	IIncomingIntegration,
+	IOutgoingIntegration,
+} from '@rocket.chat/core-typings';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import {
 	ajv,
@@ -56,10 +62,12 @@ const integrationsEndpoints = API.v1.get(
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{ integration: IIntegration }>({
+			200: ajv.compile<{ integration: IIncomingIntegration | IOutgoingIntegration }>({
 				type: 'object',
 				properties: {
-					integration: { $ref: '#/components/schemas/IIntegration' },
+					integration: {
+						anyOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
+					},
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['integration', 'success'],
