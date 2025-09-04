@@ -61,7 +61,7 @@ export class OmnichannelRoomInfo {
 		return this.page.getByRole('option', { name, exact: true });
 	}
 
-	async selectTags(name: string): Promise<void> {
+	async selectTag(name: string): Promise<void> {
 		await this.inputTags.click();
 		return this.page.getByRole('option', { name, exact: true }).click();
 	}
