@@ -20,7 +20,7 @@ const NewCall = () => {
 
 	const { onKeypadPress, peerInfo, ...autocomplete } = usePeerAutocomplete();
 
-	const keypad = useKeypad(onKeypadPress);
+	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onKeypadPress);
 
 	const { onCall, onToggleWidget } = useMediaCallContext();
 
@@ -39,9 +39,9 @@ const NewCall = () => {
 				)}
 			</WidgetContent>
 			<WidgetFooter>
-				{keypad.element}
+				{keypad}
 				<ButtonGroup stretch>
-					<ActionButton label='dialpad' icon='dialpad' flexGrow={0} secondary onClick={keypad.toggleOpen} />
+					<ActionButton label='dialpad' icon='dialpad' flexGrow={0} secondary {...keypadButtonProps} />
 					<DevicePicker secondary />
 					<Button
 						medium

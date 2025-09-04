@@ -20,7 +20,7 @@ import { useKeypad } from '../useKeypad';
 const OngoingCall = () => {
 	const { muted, held, onMute, onHold, onForward, onEndCall, onTone, peerInfo } = useMediaCallContext();
 
-	const keypad = useKeypad(onTone);
+	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
 
 	const slots = useInfoSlots(muted, held);
 
@@ -40,9 +40,9 @@ const OngoingCall = () => {
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
 			<WidgetFooter>
-				{keypad?.element}
+				{keypad}
 				<ButtonGroup large>
-					<ActionButton label='dialpad' icon='dialpad' onClick={keypad.toggleOpen} />
+					<ActionButton label='dialpad' icon='dialpad' {...keypadButtonProps} />
 					<ToggleButton label='mute' icons={['mic', 'mic-off']} pressed={muted} onToggle={onMute} />
 					<ToggleButton label='hold' icons={['pause-shape-unfilled', 'pause-shape-unfilled']} pressed={held} onToggle={onHold} />
 					<ActionButton label='forward' icon='arrow-forward' onClick={onForward} />
