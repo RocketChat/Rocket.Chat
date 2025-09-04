@@ -136,7 +136,7 @@ export const useDevicePermissionPrompt2 = () => {
 	const queryClient = useQueryClient();
 	const { audioInput } = useSelectedDevices() || {};
 
-	const selectedDeviceId = audioInput?.id || 'default';
+	const selectedDeviceId = audioInput?.id;
 
 	return useCallback(
 		async ({
@@ -179,7 +179,7 @@ export const useDevicePermissionPrompt2 = () => {
 				};
 
 				const constraints = _constraints || {
-					audio: selectedDeviceId === 'default' ? true : { deviceId: { exact: selectedDeviceId } },
+					audio: selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : true,
 				};
 
 				if (state === 'granted') {
