@@ -169,7 +169,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 			throw new Error('No call available to hold');
 		}
 
-		call.setOnHold(hold);
+		call.setHeld(hold);
 		this.emit('stateChanged');
 	}
 
@@ -315,7 +315,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 			return false;
 		}
 
-		return call.onHold;
+		return call.held;
 	}
 
 	public getError() {
@@ -483,7 +483,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 			console.log('startCall', target);
 			const actorType = target.identifierKind === 'extension' ? 'sip' : 'user';
-			await this.session.startCall(actorType, target.identifier);
+			await this.session.startCall(actorType, target.identifier, { inputTrack: null });
 
 			this.emit('stateChanged');
 		} finally {
