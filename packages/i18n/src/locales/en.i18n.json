@@ -3906,6 +3906,7 @@
   "Outbound_message": "Outbound message",
   "Outbound_message_department_hint": "Assign replies to a department.",
   "Outbound_message_agent_hint": "Leave empty so any agent from the designated department can manage the replies.",
+  "Outbound_message_agent_hint_no_permission": "You don't have permission to assign an agent. The reply will be assigned to the department.",
   "Out_of_seats": "Out of Seats",
   "Outdated": "Outdated",
   "Outgoing": "Outgoing",
