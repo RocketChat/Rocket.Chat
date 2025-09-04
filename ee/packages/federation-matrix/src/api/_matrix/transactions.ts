@@ -3,6 +3,8 @@ import type { EventID } from '@hs/room';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { aclMiddleware } from '../middlewares';
+
 const SendTransactionParamsSchema = {
 	type: 'object',
 	properties: {
@@ -252,7 +254,7 @@ const GetStateResponseSchema = {
 const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
 
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event, config } = services;
+	const { event, federationAuth } = services;
 
 	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
@@ -373,6 +375,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
+				aclMiddleware(federationAuth),
 				async (c) => {
 					const eventData = await event.getEventById(c.req.param('eventId') as EventID);
 					if (!eventData) {
@@ -387,9 +390,9 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 
 					return {
 						body: {
-							origin_server_ts: new Date().getTime(),
-							origin: config.serverName,
-							pdus: [eventData.event],
+							origin_server_ts: eventData.origin_server_ts,
+							origin: eventData.origin,
+							pdus: [eventData],
 						},
 						statusCode: 200,
 					};
