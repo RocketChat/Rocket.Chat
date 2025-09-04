@@ -27,6 +27,10 @@ export class HomeChannel {
 		this.tabs = new HomeFlextab(page);
 	}
 
+	goto() {
+		return this.page.goto('/home');
+	}
+
 	get toastSuccess(): Locator {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
