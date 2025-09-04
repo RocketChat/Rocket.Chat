@@ -25,55 +25,6 @@ export async function getUserMedia(constraints: MediaStreamConstraints): Promise
 	return navigator.mediaDevices.getUserMedia.call(navigator.mediaDevices, constraints);
 }
 
-class WebRTCProcessor extends MediaCallWebRTCProcessor {
-	constructor(config: WebRTCProcessorConfig) {
-		super(config);
-	}
-
-	public async replaceSenderTrack(track: MediaStreamTrack) {
-		// Not sure how we'd go about replacing the tracks, if there can be more than one track/sender.
-		const sender = this.peer.getSenders().find((sender) => sender.track?.kind === track.kind);
-		if (sender) {
-			const oldTrack = sender.track;
-			await sender.replaceTrack(track);
-
-			oldTrack?.stop();
-		}
-	}
-
-	public toggleSenderTracks(enable: boolean) {
-		const tracks = this.peer.getSenders().map((sender) => sender.track);
-		tracks.forEach((track) => {
-			if (!track) {
-				return;
-			}
-			track.enabled = enable;
-		});
-	}
-
-	// TODO: This is to implement "hold", but we also need to send a signal which is not sent yet.
-	public toggleReceiverTracks(enable: boolean) {
-		const tracks = this.peer.getReceivers().map((receiver) => receiver.track);
-		tracks.forEach((track) => {
-			if (!track) {
-				return;
-			}
-			track.enabled = enable;
-		});
-	}
-
-	public stopAllTracks() {
-		const senderTracks = this.peer.getSenders().map((sender) => sender.track);
-		const receiverTracks = this.peer.getReceivers().map((receiver) => receiver.track);
-		[...senderTracks, ...receiverTracks].forEach((track) => {
-			if (!track) {
-				return;
-			}
-			track.stop();
-		});
-	}
-}
-
 interface BaseSession {
 	state: State;
 	peerInfo?: PeerInfo;
@@ -109,8 +60,8 @@ type MediaSession = SessionInfo & {
 	selectPeer: (peerInfo: PeerInfo) => void;
 
 	endCall: () => void;
-	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
-	acceptCall: () => Promise<void>;
+	startCall: (id: string, kind: 'user' | 'sip', track: MediaStreamTrack) => Promise<void>;
+	acceptCall: (track: MediaStreamTrack) => Promise<void>;
 
 	// changeDevice: (device: string) => void;
 	changeDevice: (newTrack: MediaStreamTrack) => Promise<void>;
@@ -126,7 +77,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 	private sendSignalFn: SignalTransport | null = null;
 
-	private _webrtcProcessorFactory: ((config: WebRTCProcessorConfig) => WebRTCProcessor) | null = null;
+	private _webrtcProcessorFactory: ((config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) | null = null;
 
 	constructor() {
 		super();
@@ -163,7 +114,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			processorFactories: {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
-			mediaStreamFactory: getUserMedia,
+			// mediaStreamFactory: getUserMedia,
 		});
 
 		this.change();
@@ -191,7 +142,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 		};
 	}
 
-	public setWebRTCProcessorFactory(factory: (config: WebRTCProcessorConfig) => WebRTCProcessor) {
+	public setWebRTCProcessorFactory(factory: (config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) {
 		this._webrtcProcessorFactory = factory;
 	}
 }
@@ -222,7 +173,7 @@ export const useMediaSessionInstance = (userId?: string) => {
 	const iceServers = useIceServers();
 	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
 
-	const processor = useRef<WebRTCProcessor | undefined>(undefined);
+	const processor = useRef<MediaCallWebRTCProcessor | undefined>(undefined);
 
 	const notifyUserStream = useStream('notify-user');
 	const writeStream = useWriteStream('notify-user');
@@ -248,7 +199,7 @@ export const useMediaSessionInstance = (userId?: string) => {
 
 	useEffect(() => {
 		mediaSession.setWebRTCProcessorFactory((config) => {
-			const _processor = new WebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout });
+			const _processor = new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout });
 			processor.current = _processor;
 			return _processor;
 		});
@@ -263,21 +214,21 @@ export const useMediaSessionInstance = (userId?: string) => {
 const reducer = (
 	reducerState: SessionInfo,
 	action: {
-		type: 'mute' | 'hold' | 'toggleWidget' | 'selectPeer' | 'instance_updated' | 'reset';
+		type: 'toggleWidget' | 'selectPeer' | 'instance_updated' | 'reset' | 'mute' | 'hold';
 		payload?: Partial<SessionInfo>;
 	},
 ): SessionInfo => {
 	if (action.type === 'mute') {
 		return {
 			...reducerState,
-			muted: !reducerState.muted,
+			muted: action.payload?.muted ?? reducerState.muted,
 		};
 	}
 
 	if (action.type === 'hold') {
 		return {
 			...reducerState,
-			held: !reducerState.held,
+			held: action.payload?.held ?? reducerState.held,
 		};
 	}
 
@@ -310,7 +261,7 @@ const reducer = (
 	return reducerState;
 };
 
-export const useMediaSession = (instance?: MediaSignalingSession, processor?: WebRTCProcessor): MediaSession => {
+export const useMediaSession = (instance?: MediaSignalingSession, processor?: MediaCallWebRTCProcessor): MediaSession => {
 	const [mediaSession, dispatch] = useReducer<typeof reducer>(reducer, defaultSessionInfo);
 
 	const getAvatarUrl = useUserAvatarPath();
@@ -329,11 +280,11 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 				return;
 			}
 
-			const { contact, state: callState, role } = mainCall;
+			const { contact, state: callState, role, muted, onHold } = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (contact.type === 'sip') {
-				dispatch({ type: 'instance_updated', payload: { peerInfo: { number: contact.id || 'unknown' }, state } });
+				dispatch({ type: 'instance_updated', payload: { peerInfo: { number: contact.id || 'unknown' }, state, muted, held: onHold } });
 				return;
 			}
 
@@ -362,7 +313,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			} as PeerInfo; // TODO: Some of these fields are typed as optional, but I think they are always present.
 			// Also as of now, there is no sip calls to handle.
 
-			dispatch({ type: 'instance_updated', payload: { state, peerInfo } });
+			dispatch({ type: 'instance_updated', payload: { state, peerInfo, muted, held: onHold } });
 		};
 
 		const offCbs = [
@@ -372,10 +323,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			instance.on('newCall', updateSessionState),
 			instance.on('acceptedCall', updateSessionState),
 			instance.on('activeCall', updateSessionState),
-			instance.on('endedCall', () => {
-				processor?.stopAllTracks();
-				updateSessionState();
-			}),
+			instance.on('endedCall', updateSessionState),
 		];
 
 		return () => {
@@ -393,11 +341,25 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 		};
 
 		const toggleMute = () => {
-			dispatch({ type: 'mute' });
+			const mainCall = instance?.getMainCall();
+			if (!mainCall) {
+				return;
+			}
+
+			mainCall.setMuted(!mainCall.muted);
+
+			dispatch({ type: 'mute', payload: { muted: mainCall.muted } });
 		};
 
 		const toggleHold = () => {
-			dispatch({ type: 'hold' });
+			const mainCall = instance?.getMainCall();
+			if (!mainCall) {
+				return;
+			}
+
+			mainCall.setOnHold(!mainCall.onHold);
+
+			dispatch({ type: 'hold', payload: { held: mainCall.onHold } });
 		};
 
 		const endCall = () => {
@@ -420,7 +382,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			mainCall.reject();
 		};
 
-		const acceptCall = async () => {
+		const acceptCall = async (track: MediaStreamTrack) => {
 			if (!instance) {
 				return;
 			}
@@ -430,23 +392,32 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 				return;
 			}
 
+			await call.setInputTrack(track);
 			call.accept();
 		};
 
-		const startCall = async (id: string, kind: 'user' | 'sip') => {
+		const startCall = async (id: string, kind: 'user' | 'sip', track: MediaStreamTrack) => {
 			if (!instance) {
 				return;
 			}
 
 			try {
+				instance.once('newCall', ({ call }) => {
+					void call.setInputTrack(track);
+				});
 				await instance.startCall(kind, id);
 			} catch (error) {
-				console.error(error);
+				console.error('Error starting call', error);
 			}
 		};
 
 		const changeDevice = async (newTrack: MediaStreamTrack) => {
-			await processor?.replaceSenderTrack(newTrack);
+			const mainCall = instance?.getMainCall();
+			if (!mainCall) {
+				return;
+			}
+
+			await mainCall.setInputTrack(newTrack);
 		};
 
 		const forwardCall = () => {
@@ -469,7 +440,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: We
 			toggleMute,
 			acceptCall,
 		};
-	}, [instance, processor]);
+	}, [instance]);
 
 	return {
 		...mediaSession,
