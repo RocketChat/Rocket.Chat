@@ -4,4 +4,3 @@
 ---
 
 Removes the deprecated method `createToken`
-Removes the deprecated endpoint `/api/v1/users.createToken`
