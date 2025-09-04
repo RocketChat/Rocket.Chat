@@ -59,18 +59,8 @@ export class UserActorSignalProcessor {
 		this.ignored = Boolean(actor.contractId && actor.contractId !== channel.contractId);
 	}
 
-	public async setRemoteDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.setRemoteDescription', sdp });
-		await this.sendSignal({
-			callId: this.callId,
-			toContractId: this.contractId,
-			type: 'remote-sdp',
-			sdp,
-		});
-	}
-
-	public async requestWebRTCOffer(params: { iceRestart?: boolean }): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.requestOffer', actor: this.actor });
+	public async requestWebRTCOffer(params: { negotiationId: string }): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.requestWebRTCOffer', actor: this.actor });
 
 		await this.sendSignal({
 			callId: this.callId,
@@ -89,7 +79,7 @@ export class UserActorSignalProcessor {
 		// 2. the call has not been accepted yet and the signal came from a valid sesison from the callee
 		switch (signal.type) {
 			case 'local-sdp':
-				return this.saveLocalDescription(signal.sdp);
+				return this.saveLocalDescription(signal.sdp, signal.negotiationId);
 			case 'answer':
 				return this.processAnswer(signal.answer);
 			case 'hangup':
@@ -105,10 +95,10 @@ export class UserActorSignalProcessor {
 		return MediaCallDirector.hangup(this.call, this.agent, reason);
 	}
 
-	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit): Promise<void> {
+	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit, negotiationId: string): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdp });
 
-		await MediaCallDirector.saveWebrtcSession(this.call, this.agent, sdp, this.contractId);
+		await MediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId }, this.contractId);
 	}
 
 	private async processAnswer(answer: CallAnswer): Promise<void> {
@@ -151,8 +141,11 @@ export class UserActorSignalProcessor {
 
 		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
 		if (this.role === 'caller' && this.signed) {
-			// When the signed caller's client is reached, we immediatelly send the first offer request
-			await this.requestWebRTCOffer({ iceRestart: false });
+			// When the signed caller's client is reached, we immediatelly start the first negotiation
+			const negotiationId = await MediaCallDirector.startFirstNegotiation(this.call);
+			if (negotiationId) {
+				await this.requestWebRTCOffer({ negotiationId });
+			}
 		}
 	}
 
