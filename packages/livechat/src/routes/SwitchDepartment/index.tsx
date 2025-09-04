@@ -73,7 +73,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 		await dispatch({ loading: true });
 		try {
 			const { _id: rid } = room;
-			const result = await Livechat.transferChat({ roomId: rid, departmentId: department });
+			const result = await Livechat.transferChat({ rid, department });
 			const { success } = result;
 
 			if (!success) {

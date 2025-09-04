@@ -12,7 +12,7 @@ import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
-	isPOSTLivechatRoomTransferParams,
+	isPOSTLivechatVisitorDepartmentTransferParams,
 	isPOSTLivechatRoomSurveyParams,
 	isLiveChatRoomJoinProps,
 	isLiveChatRoomSaveInfoProps,
@@ -322,7 +322,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/visitor.department.transfer',
-	{ validateParams: isPOSTLivechatRoomTransferParams },
+	{ validateParams: isPOSTLivechatVisitorDepartmentTransferParams },
 	{
 		async post() {
 			const { rid, token, department } = this.bodyParams;
