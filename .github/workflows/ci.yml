@@ -543,56 +543,33 @@ jobs:
     if: always() && (needs.test-ui.result != 'skipped' || needs.test-ui-ee.result != 'skipped' || needs.test-ui-ee-watcher.result != 'skipped')
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          
+
       - name: Download all test summaries
         uses: actions/download-artifact@v4
         with:
           pattern: test-summary-*
           merge-multiple: true
-          
-      - name: Extract and list downloaded files
-        run: |
-          echo "📁 Downloaded files:"
-          ls -la
-          
-          # Extract any ZIP files that were downloaded
-          if find . -name "*.zip" -type f | grep -q .; then
-            find . -name "*.zip" -type f | while read zipfile; do
-              echo "🗂️ Extracting: $zipfile"
-              unzip -o "$zipfile"
-              rm "$zipfile"
-            done
-          else
-            echo "No ZIP files found to extract"
-          fi
-          
-          echo "📄 All files after extraction:"
-          find . -type f -name "*.md" | sort
-          
-          echo "📄 Test summary files specifically:"
-          find . -name "*test-summary*.md" -o -name "test-summary*.md" -type f | sort
-          
+
       - name: Merge test summaries
         run: node .github/scripts/merge-test-summaries.js
-        
+
       - name: Verify merged summary
         if: always()
         run: |
           if [ -f "merged-test-summary.md" ]; then
             echo "✅ Merged summary file created successfully"
-            echo "📊 File size: $(stat -c%s merged-test-summary.md) bytes"
-            echo "📄 File preview:"
-            head -20 merged-test-summary.md
+            echo "📄 File content:"
+            cat merged-test-summary.md
           else
             echo "❌ Merged summary file not found!"
             exit 1
           fi
-        
+
       - name: Upload merged summary
         if: always()
         uses: actions/upload-artifact@v4

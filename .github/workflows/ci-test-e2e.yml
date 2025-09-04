@@ -278,6 +278,7 @@ jobs:
           REPORTER_ROCKETCHAT_PR: ${{ github.event.pull_request.number }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
+          GITHUB_SUMMARY_PATH: test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
           CI: true
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
         working-directory: ./apps/meteor
@@ -298,7 +299,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
-          path: ./apps/meteor/test-summary.md
+          path: ./apps/meteor/test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
           if-no-files-found: ignore
 
       - name: Show server logs if E2E test failed

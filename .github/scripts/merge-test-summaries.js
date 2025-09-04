@@ -4,63 +4,71 @@ const fs = require('fs');
 const path = require('path');
 
 /**
- * Merges multiple test summary markdown files into a single comprehensive summary
+ * Merges multiple test summary JSON files into a single comprehensive markdown summary
  * and outputs it as a GitHub Actions job summary
  */
 
-function parseMarkdownTable(content) {
-  const lines = content.split('\n');
-  const suites = new Map();
-  let inTable = false;
-  
-  for (const line of lines) {
-    if (line.includes('| Suite | Status |')) {
-      inTable = true;
-      continue;
-    }
-    if (inTable && line.startsWith('|') && !line.includes('----')) {
-      const parts = line.split('|').map(p => p.trim()).filter(p => p);
-      if (parts.length >= 6) {
-        const [name, status, passed, failed, skipped, total] = parts;
-        
-        if (!suites.has(name)) {
-          suites.set(name, {
-            name,
-            passed: 0,
-            failed: 0,
-            skipped: 0,
-            total: 0
-          });
-        }
-        
-        const suite = suites.get(name);
-        suite.passed += parseInt(passed) || 0;
-        suite.failed += parseInt(failed) || 0;
-        suite.skipped += parseInt(skipped) || 0;
-        suite.total += parseInt(total) || 0;
+/**
+ * Parses a JSON test summary report and extracts test suites data
+ * @param {string} content - Raw JSON content from test summary file
+ * @returns {{suites: Map<string, Object>, metadata: Object}} Parsed test suites and metadata
+ */
+function parseJsonReport(content) {
+  try {
+    const report = JSON.parse(content);
+    const suites = new Map();
+    
+    if (report.summaries) {
+      for (const summary of report.summaries) {
+        suites.set(summary.name, {
+          name: summary.name,
+          passed: summary.passed,
+          failed: summary.failed,
+          skipped: summary.skipped,
+          total: summary.total
+        });
       }
     }
-    if (inTable && line === '') {
-      inTable = false;
-    }
+    
+    return { suites, metadata: report.metadata || {} };
+  } catch (error) {
+    console.error('Failed to parse JSON:', error.message);
+    return { suites: new Map(), metadata: {} };
   }
-  
-  return suites;
 }
 
+
+/**
+ * Returns the appropriate status icon based on test results
+ * @param {number} passed - Number of passed tests
+ * @param {number} failed - Number of failed tests
+ * @returns {string} Status icon emoji
+ */
 function getStatusIcon(passed, failed) {
   if (failed > 0) return '🔴';
   if (passed > 0) return '🟢';
   return '🟡';
 }
 
+/**
+ * Returns the appropriate status text based on test results
+ * @param {number} passed - Number of passed tests
+ * @param {number} failed - Number of failed tests
+ * @returns {string} Status text ('failed', 'passed', or 'skipped')
+ */
 function getStatusText(passed, failed) {
   if (failed > 0) return 'failed';
   if (passed > 0) return 'passed';
   return 'skipped';
 }
 
-function generateMergedSummary(allSuites) {
+/**
+ * Generates a comprehensive markdown summary from merged test suites and metadata
+ * @param {Map<string, Object>} allSuites - Map of test suite names to their aggregated results
+ * @param {Array<Object>} allMetadata - Array of metadata objects from all test runs
+ * @returns {string} Formatted markdown summary
+ */
+function generateMergedSummary(allSuites, allMetadata) {
   const suites = Array.from(allSuites.values()).sort((a, b) => a.name.localeCompare(b.name));
   
   // Calculate totals
@@ -95,15 +103,53 @@ function generateMergedSummary(allSuites) {
   
   markdown += '\n';
 
+  // Test run metadata
+  if (allMetadata.length > 0) {
+    const uniqueShards = [...new Set(allMetadata.map(m => m.shard).filter(Boolean))];
+    const uniqueTypes = [...new Set(allMetadata.map(m => m.type).filter(Boolean))];
+    const uniqueReleases = [...new Set(allMetadata.map(m => m.release).filter(Boolean))];
+    
+    markdown += '### 📋 Test Run Info\n\n';
+    if (uniqueShards.length > 0) {
+      markdown += `- **Shards**: ${uniqueShards.join(', ')}\n`;
+    }
+    if (uniqueTypes.length > 0) {
+      markdown += `- **Test Types**: ${uniqueTypes.join(', ')}\n`;
+    }
+    if (uniqueReleases.length > 0) {
+      markdown += `- **Releases**: ${uniqueReleases.join(', ')}\n`;
+    }
+    markdown += '\n';
+  }
+
   // Test suites breakdown
   markdown += '### 📋 Test Suites\n\n';
-  markdown += '| Suite | Status | Passed | Failed | Skipped | Total |\n';
-  markdown += '|-------|--------|--------|--------|---------|-------|\n';
+  
+  // Calculate column widths for better formatting
+  const maxSuiteNameLength = Math.max('Suite'.length, ...suites.map(s => s.name.length));
+  const maxStatusLength = Math.max('Status'.length, ...suites.map(s => {
+    const status = getStatusText(s.passed, s.failed);
+    return (status + ' ' + getStatusIcon(s.passed, s.failed)).length;
+  }));
+  
+  // Create properly padded table headers
+  const suiteHeader = 'Suite'.padEnd(maxSuiteNameLength);
+  const statusHeader = 'Status'.padEnd(maxStatusLength);
+  
+  markdown += `| ${suiteHeader} | ${statusHeader} | Passed | Failed | Skipped | Total |\n`;
+  markdown += `|${'-'.repeat(maxSuiteNameLength + 2)}|${'-'.repeat(maxStatusLength + 2)}|--------|--------|---------|-------|\n`;
 
   for (const suite of suites) {
     const icon = getStatusIcon(suite.passed, suite.failed);
     const status = getStatusText(suite.passed, suite.failed);
-    markdown += `| ${suite.name} | ${icon} ${status} | ${suite.passed} | ${suite.failed} | ${suite.skipped} | ${suite.total} |\n`;
+    const suiteName = suite.name.padEnd(maxSuiteNameLength);
+    const statusText = `${icon} ${status}`.padEnd(maxStatusLength);
+    const passed = suite.passed.toString().padStart(6);
+    const failed = suite.failed.toString().padStart(6);
+    const skipped = suite.skipped.toString().padStart(7);
+    const total = suite.total.toString().padStart(5);
+    
+    markdown += `| ${suiteName} | ${statusText} | ${passed} | ${failed} | ${skipped} | ${total} |\n`;
   }
 
   markdown += '\n---\n';
@@ -112,12 +158,23 @@ function generateMergedSummary(allSuites) {
   return markdown;
 }
 
+/**
+ * Main function that orchestrates the test summary merging process
+ * - Discovers test summary JSON files in current directory and subdirectories
+ * - Parses and merges test results from multiple files
+ * - Generates comprehensive markdown summary
+ * - Outputs to GitHub Actions job summary and merged-test-summary.md file
+ */
 async function main() {
   try {
     // Find all test summary files using native Node.js (check current dir and subdirs)
     let summaryFiles = [];
     
-    // Function to find files recursively
+    /**
+     * Recursively finds test summary JSON files in directory tree
+     * @param {string} dir - Directory to search (defaults to current directory)
+     * @returns {Array<string>} Array of file paths to test summary JSON files
+     */
     function findSummaryFiles(dir = '.') {
       const files = [];
       try {
@@ -125,13 +182,24 @@ async function main() {
         for (const entry of entries) {
           const fullPath = path.join(dir, entry.name);
           if (entry.isFile()) {
-            // Match various test summary file patterns
+            // Match various test summary file patterns (JSON files only)
             if ((entry.name.includes('test-summary') || entry.name.startsWith('test-summary-')) && 
-                entry.name.endsWith('.md')) {
+                entry.name.endsWith('.json')) {
               files.push(fullPath);
             }
           } else if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
-            // Recursively search subdirectories (but skip hidden dirs and node_modules)
+            // Check if this is an artifact directory with test-summary.json inside
+            if (entry.name.startsWith('test-summary-')) {
+              const jsonSummaryFile = path.join(fullPath, 'test-summary.json');
+              try {
+                if (fs.existsSync(jsonSummaryFile)) {
+                  files.push(jsonSummaryFile);
+                }
+              } catch (error) {
+                console.log(`Could not check for test-summary.json in ${fullPath}:`, error.message);
+              }
+            }
+            // Also recursively search subdirectories for backwards compatibility
             files.push(...findSummaryFiles(fullPath));
           }
         }
@@ -145,21 +213,21 @@ async function main() {
     
     if (summaryFiles.length === 0) {
       console.log('❌ No test summary files found');
-      console.log('Expected patterns: test-summary*.md or *test-summary*.md');
+      console.log('Expected patterns: test-summary*.json');
       
-      // List all .md files for debugging
+      // List all potential files for debugging
       try {
-        const allMdFiles = fs.readdirSync('.').filter(f => f.endsWith('.md'));
-        if (allMdFiles.length > 0) {
-          console.log('📄 Found .md files in current directory:');
-          allMdFiles.forEach(file => console.log(`  - ${file}`));
+        const allFiles = fs.readdirSync('.').filter(f => f.endsWith('.json'));
+        if (allFiles.length > 0) {
+          console.log('📄 Found .json files in current directory:');
+          allFiles.forEach(file => console.log(`  - ${file}`));
         }
       } catch (error) {
-        console.log('Could not list .md files for debugging:', error.message);
+        console.log('Could not list files for debugging:', error.message);
       }
       
       // Create empty summary to avoid CI failure
-      const emptySummary = generateMergedSummary(new Map());
+      const emptySummary = generateMergedSummary(new Map(), []);
       fs.writeFileSync('merged-test-summary.md', emptySummary);
       console.log('✅ Created empty merged test summary');
       return;
@@ -169,6 +237,7 @@ async function main() {
     summaryFiles.forEach(file => console.log(`  - ${file}`));
     
     const allSuites = new Map();
+    const allMetadata = [];
     let filesProcessed = 0;
     
     // Parse each summary file
@@ -176,7 +245,19 @@ async function main() {
       try {
         console.log(`🔍 Processing ${file}`);
         const content = fs.readFileSync(file, 'utf8');
-        const suites = parseMarkdownTable(content);
+        
+        let suites, metadata;
+        if (file.endsWith('.json')) {
+          const result = parseJsonReport(content);
+          suites = result.suites;
+          metadata = result.metadata;
+          if (metadata) {
+            allMetadata.push(metadata);
+          }
+        } else {
+          console.log(`  ⚠️ Unsupported file format: ${file} (only JSON files supported)`);
+          continue;
+        }
         
         if (suites.size === 0) {
           console.log(`  ⚠️ No test suites found in ${file}`);
@@ -207,7 +288,7 @@ async function main() {
     console.log(`📈 Summary: Processed ${filesProcessed}/${summaryFiles.length} files, found ${allSuites.size} unique test suites`);
     
     // Generate merged summary
-    const mergedSummary = generateMergedSummary(allSuites);
+    const mergedSummary = generateMergedSummary(allSuites, allMetadata);
     
     // Write to GitHub Actions summary if in CI
     if (process.env.GITHUB_STEP_SUMMARY) {

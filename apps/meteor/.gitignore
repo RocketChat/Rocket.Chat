@@ -88,3 +88,6 @@ dist
 matrix-federation-config/*
 .eslintcache
 tsconfig.typecheck.tsbuildinfo
+test-summary-*.json
+test-summary.json
+merged-test-summary.md

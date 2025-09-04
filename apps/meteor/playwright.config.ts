@@ -26,7 +26,7 @@ export default {
 		process.env.CI && [
 			'./reporters/github-summary.ts',
 			{
-				outputPath: process.env.GITHUB_SUMMARY_PATH || 'test-summary.md',
+				outputPath: process.env.GITHUB_SUMMARY_PATH,
 			},
 		],
 		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
