@@ -196,6 +196,7 @@ export interface StreamerEvents {
 			args: [{ action: string; params: { callId: VideoConference['_id']; uid: IUser['_id']; rid: IRoom['_id'] } }];
 		},
 		{ key: `${string}/media-signal`; args: [ServerMediaSignal] },
+		{ key: `${string}/media-calls`; args: [string] },
 		{ key: `${string}/userData`; args: [IUserDataEvent] },
 		{ key: `${string}/updateInvites`; args: [unknown] },
 		{ key: `${string}/departmentAgentData`; args: [unknown] },
