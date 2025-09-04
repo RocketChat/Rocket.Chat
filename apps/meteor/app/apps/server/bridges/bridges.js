@@ -21,6 +21,7 @@ import { AppPersistenceBridge } from './persistence';
 import { AppRoleBridge } from './roles';
 import { AppRoomBridge } from './rooms';
 import { AppSchedulerBridge } from './scheduler';
+import { AppServerEndpointsBridge } from './serverEndpoints';
 import { AppSettingBridge } from './settings';
 import { AppThreadBridge } from './thread';
 import { UiInteractionBridge } from './uiInteraction';
@@ -59,6 +60,7 @@ export class RealAppBridges extends AppBridges {
 		this._emailBridge = new AppEmailBridge(orch);
 		this._contactBridge = new AppContactBridge(orch);
 		this._outboundMessageBridge = new OutboundCommunicationBridge(orch);
+		this._serverEndpointsBridge = new AppServerEndpointsBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -167,5 +169,9 @@ export class RealAppBridges extends AppBridges {
 
 	getContactBridge() {
 		return this._contactBridge;
+	}
+
+	getServerEndpointsBridge() {
+		return this._serverEndpointsBridge;
 	}
 }
