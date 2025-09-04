@@ -49,12 +49,13 @@ export async function updateGroupKey(rid: string, uid: string, key: string, call
 
 Meteor.methods<ServerMethods>({
 	async 'e2e.updateGroupKey'(rid, uid, key) {
+		methodDeprecationLogger.method('e2e.updateGroupKey', '8.0.0', '/v1/e2e.acceptSuggestedGroupKey');
+
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'e2e.acceptSuggestedGroupKey' });
 		}
 
-		methodDeprecationLogger.method('e2e.updateGroupKey', '8.0.0');
 		return updateGroupKey(rid, uid, key, userId);
 	},
 });

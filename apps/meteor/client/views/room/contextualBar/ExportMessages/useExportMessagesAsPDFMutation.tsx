@@ -5,9 +5,9 @@ import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { Messages } from '../../../../../app/models/client';
 import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { Messages } from '../../../../stores';
 
 const leftTab = {
 	marginLeft: 20,

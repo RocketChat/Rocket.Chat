@@ -14,12 +14,12 @@ export interface IOutboundMessage {
 	};
 }
 
-type TemplateComponent = {
+export type TemplateComponent = {
 	type: 'header' | 'body' | 'footer' | 'button';
 	parameters: TemplateParameter[];
 };
 
-type TemplateParameter =
+export type TemplateParameter =
 	| {
 			type: 'text';
 			text: string;

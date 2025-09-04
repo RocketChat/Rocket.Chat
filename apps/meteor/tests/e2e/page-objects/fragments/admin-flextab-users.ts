@@ -55,21 +55,12 @@ export class AdminFlextabUsers {
 		return this.page.locator('input[placeholder="Confirm password"]');
 	}
 
-	get checkboxVerified(): Locator {
-		return this.page.locator('//label[text()="Mark email as verified"]');
-	}
-
 	get joinDefaultChannels(): Locator {
 		return this.page.locator('//label[text()="Join default channels"]');
 	}
 
 	get userRole(): Locator {
 		return this.page.locator('button[role="option"]:has-text("user")');
-	}
-
-	async addRole(role: string): Promise<void> {
-		await this.page.locator('//label[text()="Roles"]/following-sibling::span//input').click();
-		await this.page.locator(`li[value=${role}]`).click();
 	}
 
 	get setupSmtpLink(): Locator {

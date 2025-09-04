@@ -25,8 +25,18 @@ export const useAuditMenu = () => {
 		onClick: () => router.navigate('/audit-log'),
 	};
 
+	const auditSecurityLogsItem: GenericMenuItemProps = {
+		id: 'auditSecurityLog',
+		content: t('Security_logs'),
+		onClick: () => router.navigate('/security-logs'),
+	};
+
 	return {
 		title: t('Audit'),
-		items: [hasAuditPermission && auditMessageItem, hasAuditLogPermission && auditLogItem].filter(Boolean) as GenericMenuItemProps[],
+		items: [
+			hasAuditPermission && auditMessageItem,
+			hasAuditLogPermission && auditLogItem,
+			hasAuditPermission && auditSecurityLogsItem,
+		].filter(Boolean) as GenericMenuItemProps[],
 	};
 };

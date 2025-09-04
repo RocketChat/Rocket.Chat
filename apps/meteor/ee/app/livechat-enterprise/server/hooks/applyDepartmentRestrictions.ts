@@ -1,17 +1,16 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
-import { hasRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: FilterOperators<ILivechatDepartment> = {}, userId: string) => {
-	const query: FilterOperators<ILivechatDepartment> = { ...originalQuery, type: { $ne: 'u' } };
+	const query: FilterOperators<ILivechatDepartment> = { $and: [originalQuery, { type: { $ne: 'u' } }] };
 
 	const units = await getUnitsFromUser(userId);
 	if (Array.isArray(units)) {
-		query.ancestors = { $in: units };
+		query.$and.push({ $or: [{ ancestors: { $in: units } }, { _id: { $in: units } }] });
 	}
 
 	cbLogger.debug({ msg: 'Applying department query restrictions', userId, units });
@@ -21,7 +20,7 @@ export const addQueryRestrictionsToDepartmentsModel = async (originalQuery: Filt
 callbacks.add(
 	'livechat.applyDepartmentRestrictions',
 	async (originalQuery: FilterOperators<ILivechatDepartment> = {}, { userId }: { userId?: string | null } = { userId: null }) => {
-		if (!userId || !(await hasRoleAsync(userId, 'livechat-monitor'))) {
+		if (!userId) {
 			return originalQuery;
 		}
 

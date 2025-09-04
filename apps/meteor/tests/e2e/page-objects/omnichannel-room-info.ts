@@ -34,4 +34,17 @@ export class OmnichannelRoomInfo {
 	getLabel(label: string): Locator {
 		return this.page.locator(`div >> text="${label}"`);
 	}
+
+	getInfoByLabel(label: string): Locator {
+		return this.dialogRoomInfo.getByLabel(label);
+	}
+
+	get inputSLAPolicy(): Locator {
+		return this.dialogEditRoom.getByRole('button', { name: 'SLA Policy' });
+	}
+
+	async selectSLA(name: string): Promise<void> {
+		await this.inputSLAPolicy.click();
+		return this.page.getByRole('option', { name, exact: true }).click();
+	}
 }

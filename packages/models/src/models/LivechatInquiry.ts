@@ -1,4 +1,10 @@
-import type { ILivechatInquiryRecord, IMessage, RocketChatRecordDeleted, ILivechatPriority } from '@rocket.chat/core-typings';
+import type {
+	ILivechatInquiryRecord,
+	IMessage,
+	RocketChatRecordDeleted,
+	ILivechatPriority,
+	SelectedAgent,
+} from '@rocket.chat/core-typings';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
 import type {
@@ -19,6 +25,8 @@ import type {
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
+
+const { INQUIRY_LOCK_TIMEOUT = '10000' } = process.env;
 
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
@@ -185,7 +193,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 					{
 						locked: true,
 						lockedAt: {
-							$lte: new Date(date.getTime() - 5000),
+							$lte: new Date(date.getTime() - parseInt(INQUIRY_LOCK_TIMEOUT)),
 						},
 					},
 					{
@@ -196,7 +204,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 			{
 				$set: {
 					locked: true,
-					// apply 5 secs lock lifetime
+					// apply INQUIRY_LOCK_TIMEOUT secs lock lifetime
 					lockedAt: new Date(),
 				},
 			},
@@ -308,10 +316,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.find({ status: LivechatInquiryStatus.QUEUED }, options);
 	}
 
-	async takeInquiry(inquiryId: string): Promise<void> {
-		await this.updateOne(
+	takeInquiry(inquiryId: string, lockedAt?: Date): Promise<UpdateResult> {
+		return this.updateOne(
 			{
 				_id: inquiryId,
+				...(lockedAt && { lockedAt }),
 			},
 			{
 				$set: { status: LivechatInquiryStatus.TAKEN, takenAt: new Date() },
@@ -331,7 +340,11 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async queueInquiry(inquiryId: string, lastMessage?: IMessage): Promise<ILivechatInquiryRecord | null> {
+	async queueInquiry(
+		inquiryId: string,
+		lastMessage?: IMessage,
+		defaultAgent?: SelectedAgent | null,
+	): Promise<ILivechatInquiryRecord | null> {
 		return this.findOneAndUpdate(
 			{
 				_id: inquiryId,
@@ -341,6 +354,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 					status: LivechatInquiryStatus.QUEUED,
 					queuedAt: new Date(),
 					...(lastMessage && { lastMessage }),
+					...(defaultAgent && { defaultAgent }),
 				},
 				$unset: { takenAt: 1 },
 			},

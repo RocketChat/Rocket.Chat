@@ -3,8 +3,8 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useUser } from '@rocket.chat/ui-contexts';
 
 import { useNotification } from './useNotification';
-import { e2e } from '../../../app/e2e/client';
 import { RoomManager } from '../../lib/RoomManager';
+import { e2e } from '../../lib/e2ee';
 import { getAvatarAsPng } from '../../lib/utils/getAvatarAsPng';
 
 export const useDesktopNotification = () => {

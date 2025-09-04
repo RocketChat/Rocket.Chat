@@ -2,8 +2,8 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useRouter } from '@rocket.chat/ui-contexts';
 
-import { Subscriptions } from '../../../../app/models/client';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import { Subscriptions } from '../../../stores';
 
 export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((rid: IRoom['_id']) => void) => {
 	const getRoomById = useMethod('getRoomById');

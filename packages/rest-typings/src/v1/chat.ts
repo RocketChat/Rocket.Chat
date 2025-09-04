@@ -175,24 +175,6 @@ const ChatUnstarMessageSchema = {
 
 export const isChatUnstarMessageProps = ajv.compile<ChatUnstarMessage>(ChatUnstarMessageSchema);
 
-type ChatPinMessage = {
-	messageId: IMessage['_id'];
-};
-
-const ChatPinMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-export const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
-
 type ChatUnpinMessage = {
 	messageId: IMessage['_id'];
 };
@@ -951,11 +933,6 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.unStarMessage': {
 		POST: (params: ChatUnstarMessage) => void;
-	};
-	'/v1/chat.pinMessage': {
-		POST: (params: ChatPinMessage) => {
-			message: IMessage;
-		};
 	};
 	'/v1/chat.unPinMessage': {
 		POST: (params: ChatUnpinMessage) => void;

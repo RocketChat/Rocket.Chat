@@ -11,12 +11,12 @@ import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { Messages, Subscriptions } from '../../../../client/stores';
 import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
 import { hasPermission } from '../../../authorization/client';
-import { Subscriptions, Messages } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
 
@@ -40,7 +40,7 @@ export const AutoTranslate = {
 	messageIdsToWait: {} as { [messageId: string]: boolean },
 	supportedLanguages: [] as ISupportedLanguage[] | undefined,
 
-	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
+	findSubscriptionByRid: mem((rid) => Subscriptions.state.find((record) => record.rid === rid)),
 
 	getLanguage(rid: IRoom['_id']): string {
 		let subscription: ISubscription | undefined;
@@ -120,12 +120,8 @@ export const AutoTranslate = {
 			}
 		});
 
-		Subscriptions.find().observeChanges({
-			changed: (_id: string, fields: ISubscription) => {
-				if (fields.hasOwnProperty('autoTranslate') || fields.hasOwnProperty('autoTranslateLanguage')) {
-					mem.clear(this.findSubscriptionByRid);
-				}
-			},
+		Subscriptions.use.subscribe(() => {
+			mem.clear(this.findSubscriptionByRid);
 		});
 
 		this.initialized = true;

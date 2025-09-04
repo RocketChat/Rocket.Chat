@@ -39,10 +39,7 @@ import { settings } from '../../../app/settings/server';
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
-	async create(
-		uid: string,
-		{ team, room = { name: team.name, extraData: {} }, members, owner, sidepanel }: ITeamCreateParams,
-	): Promise<ITeam> {
+	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
 		if (!(await checkUsernameAvailability(team.name))) {
 			throw new Error('team-name-already-exists');
 		}
@@ -90,7 +87,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 						extraData: {
 							...room.extraData,
 						},
-						sidepanel,
 					})
 				)._id;
 
@@ -1058,9 +1054,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		return rooms;
 	}
 
-	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'> | null> {
-		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'>>(team.roomId, {
-			projection: { name: 1, fname: 1, t: 1, sidepanel: 1 },
+	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id'> | null> {
+		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id'>>(team.roomId, {
+			projection: { name: 1, fname: 1, t: 1 },
 		});
 	}
 

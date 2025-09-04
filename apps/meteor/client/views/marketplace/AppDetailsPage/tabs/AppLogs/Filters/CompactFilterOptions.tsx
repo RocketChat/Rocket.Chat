@@ -3,12 +3,20 @@ import { useTranslation } from 'react-i18next';
 
 type CompactFilterOptionsProps = {
 	onExpandAll: () => void;
+	onCollapseAll: () => void;
 	onRefreshLogs: () => void;
 	onExportLogs: () => void;
 	isLoading: boolean;
 };
 
-const CompactFilterOptions = ({ onExportLogs, onExpandAll, onRefreshLogs, isLoading, ...props }: CompactFilterOptionsProps) => {
+const CompactFilterOptions = ({
+	onExportLogs,
+	onExpandAll,
+	onCollapseAll,
+	onRefreshLogs,
+	isLoading,
+	...props
+}: CompactFilterOptionsProps) => {
 	const { t } = useTranslation();
 
 	const menuOptions = {
@@ -29,6 +37,15 @@ const CompactFilterOptions = ({ onExportLogs, onExpandAll, onRefreshLogs, isLoad
 				</Box>
 			),
 			action: onExpandAll,
+		},
+		collapseAll: {
+			label: (
+				<Box>
+					<Icon name='arrow-collapse' size='x16' marginInlineEnd={4} />
+					{t('Collapse_all')}
+				</Box>
+			),
+			action: onCollapseAll,
 		},
 		refreshLogs: {
 			label: (

@@ -11,10 +11,10 @@ import moment from 'moment';
 
 import type { DataAPI } from './ChatAPI';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
-import { Messages, Rooms, Subscriptions } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { MessageTypes } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { Messages, Rooms, Subscriptions } from '../../stores';
 import { prependReplies } from '../utils/prependReplies';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
@@ -257,7 +257,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return room;
 	};
 
-	const isSubscribedToRoom = async (): Promise<boolean> => !!Subscriptions.findOne({ rid }, { reactive: false });
+	const isSubscribedToRoom = async (): Promise<boolean> => !!Subscriptions.state.find((record) => record.rid === rid);
 
 	const joinRoom = async (): Promise<void> => {
 		await sdk.call('joinRoom', rid);
@@ -292,13 +292,13 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const findSubscription = async (): Promise<ISubscription | undefined> => {
-		return Subscriptions.findOne({ rid }, { reactive: false });
+		return Subscriptions.state.find((record) => record.rid === rid);
 	};
 
 	const getSubscription = createStrictGetter(findSubscription, 'Subscription not found');
 
 	const findSubscriptionFromMessage = async (message: IMessage): Promise<ISubscription | undefined> => {
-		return Subscriptions.findOne({ rid: message.rid }, { reactive: false });
+		return Subscriptions.state.find((record) => record.rid === message.rid);
 	};
 
 	const getSubscriptionFromMessage = createStrictGetter(findSubscriptionFromMessage, 'Subscription not found');

@@ -1,6 +1,6 @@
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 
-import { Roles } from '../../../app/models/client';
+import { Roles } from '../../stores';
 
 export const useRequire2faSetup = () => {
 	const user = useUser();
