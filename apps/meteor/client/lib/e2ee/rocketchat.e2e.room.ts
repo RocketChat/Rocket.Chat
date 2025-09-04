@@ -67,6 +67,22 @@ const filterMutation = (currentState: E2ERoomState | undefined, nextState: E2ERo
 	return false;
 };
 
+const  exportSessionKey = async (key: string): Promise<string> => {
+		key = key.slice(12);
+		const decodedKey = Base64.decode(key);
+
+		if (!e2e.privateKey) {
+			throw new Error('Private key not found');
+		}
+
+		const decryptedKey = await decryptRSA(e2e.privateKey, decodedKey);
+		return toString(decryptedKey);
+	}
+
+const  decryptSessionKey = async (key: string): Promise<CryptoKey> => {
+		return importAesGcmKey(JSON.parse(await exportSessionKey(key)));
+	}
+
 export type EncryptedGroupKey = { E2EKey: string; e2eKeyId: string; ts: Date };
 export type DecryptedGroupKey = { E2EKey: CryptoKey | null; e2eKeyId: string; ts: Date };
 
@@ -238,7 +254,7 @@ export class E2ERoom extends Emitter {
 		const keys: DecryptedGroupKey[] = [];
 		for await (const key of sub.oldRoomKeys) {
 			try {
-				const k = await this.decryptSessionKey(key.E2EKey);
+				const k = await decryptSessionKey(key.E2EKey);
 				keys.push({
 					...key,
 					E2EKey: k,
@@ -269,7 +285,7 @@ export class E2ERoom extends Emitter {
 					continue;
 				}
 
-				const k = await this.exportSessionKey(key.E2EKey);
+				const k = await exportSessionKey(key.E2EKey);
 				keys.push({
 					...key,
 					E2EKey: k,
@@ -351,21 +367,9 @@ export class E2ERoom extends Emitter {
 		return roomCoordinator.getRoomDirectives(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
 	}
 
-	async decryptSessionKey(key: string): Promise<CryptoKey> {
-		return importAesGcmKey(JSON.parse(await this.exportSessionKey(key)));
-	}
+	
 
-	async exportSessionKey(key: string): Promise<string> {
-		key = key.slice(12);
-		const decodedKey = Base64.decode(key);
-
-		if (!e2e.privateKey) {
-			throw new Error('Private key not found');
-		}
-
-		const decryptedKey = await decryptRSA(e2e.privateKey, decodedKey);
-		return toString(decryptedKey);
-	}
+	
 
 	async handleSubscriptionChanged(sub: ISubscription) {
 		if (sub.E2ESuggestedKey) {
@@ -610,7 +614,6 @@ export class E2ERoom extends Emitter {
 		try {
 			result = await encryptAESCTR(vector, key, fileArrayBuffer);
 		} catch (error) {
-			console.log(error);
 			return this.error('Error encrypting group key: ', error);
 		}
 
