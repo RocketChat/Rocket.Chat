@@ -254,7 +254,7 @@ const GetStateResponseSchema = {
 const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
 
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event, federationAuth } = services;
+	const { event, federationAuth, config } = services;
 
 	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
@@ -390,9 +390,9 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 
 					return {
 						body: {
-							origin_server_ts: eventData.origin_server_ts,
-							origin: eventData.origin,
-							pdus: [eventData],
+							origin_server_ts: eventData.event.origin_server_ts,
+							origin: config.serverName,
+							pdus: [eventData.event],
 						},
 						statusCode: 200,
 					};
