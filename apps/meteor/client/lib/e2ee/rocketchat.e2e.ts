@@ -134,39 +134,29 @@ class E2E extends Emitter<{
 			return;
 		}
 
-		const e2eRoom = await this.getInstanceByRoomId(sub.rid);
-		if (!e2eRoom) {
-			return;
-		}
-
-		if (sub.E2ESuggestedKey) {
-			if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-				await e2eRoom.acceptSuggestedKey();
-				e2eRoom.setState('KEYS_RECEIVED');
-			} else {
-				logger.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-				await e2eRoom.rejectSuggestedKey();
+		await this.room(sub.rid, async (e2eRoom) => {
+			if (sub.E2ESuggestedKey) {
+				await e2eRoom.handleSuggestedKey(sub.E2ESuggestedKey);
 			}
-		}
+			sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
-		sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			// Cover private groups and direct messages
+			if (!e2eRoom.isSupportedRoomType(sub.t)) {
+				e2eRoom.setState('DISABLED');
+				return;
+			}
 
-		// Cover private groups and direct messages
-		if (!e2eRoom.isSupportedRoomType(sub.t)) {
-			e2eRoom.setState('DISABLED');
-			return;
-		}
+			if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
+				e2eRoom.setState('KEYS_RECEIVED');
+				return;
+			}
 
-		if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
-			e2eRoom.setState('KEYS_RECEIVED');
-			return;
-		}
+			if (!e2eRoom.isReady()) {
+				return;
+			}
 
-		if (!e2eRoom.isReady()) {
-			return;
-		}
-
-		await e2eRoom.decryptSubscription();
+			await e2eRoom.decryptSubscription();
+		});
 	}
 
 	private unsubscribeFromSubscriptions: (() => void) | undefined;
@@ -225,7 +215,8 @@ class E2E extends Emitter<{
 				.flatMap(({ E2ESuggestedKey, E2EKey, rid, encrypted }) => (E2ESuggestedKey && !E2EKey ? [{ rid, E2ESuggestedKey, encrypted }] : []))
 				.map(async (sub) => {
 					await this.room(sub.rid, async (e2eRoom) => {
-						await e2eRoom?.handleSuggestedKey(sub.E2ESuggestedKey, sub.encrypted);
+						await e2eRoom.handleSuggestedKey(sub.E2ESuggestedKey);
+						sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 					});
 				}),
 		);

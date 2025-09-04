@@ -367,7 +367,7 @@ export class E2ERoom extends Emitter {
 		return toString(decryptedKey);
 	}
 
-	async handleSuggestedKey(suggestedKey: string, encrypted?: boolean) {
+	async handleSuggestedKey(suggestedKey: string) {
 		if (await this.importGroupKey(suggestedKey)) {
 			logger.log('Imported valid E2E suggested key');
 			await this.acceptSuggestedKey();
@@ -376,8 +376,6 @@ export class E2ERoom extends Emitter {
 			logger.error('Invalid E2ESuggestedKey, rejecting', suggestedKey);
 			await this.rejectSuggestedKey();
 		}
-
-		encrypted ? this.resume() : this.pause();
 	}
 
 	async importGroupKey(groupKey: string): Promise<boolean> {
