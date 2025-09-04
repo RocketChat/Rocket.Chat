@@ -18,6 +18,7 @@
 - [refactor!: Room's Key ID generation](https://github.com/RocketChat/Rocket.Chat/pull/33329)
 - [feat: E2EE rom key reset modal](https://github.com/RocketChat/Rocket.Chat/pull/33503)
 - [chore: Update types of `e2e.room` file](https://github.com/RocketChat/Rocket.Chat/pull/34944)
+- [fix: Quote chaining in E2EE room not limiting quote depth](https://github.com/RocketChat/Rocket.Chat/pull/36143)
 - [chore: Move E2E Encryption startup](https://github.com/RocketChat/Rocket.Chat/pull/36722)
 
 ## Tasks
