@@ -293,6 +293,7 @@ export class E2ERoom extends Emitter {
 			} catch (e) {
 				this.error(
 					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
+					e
 				);
 			}
 		}
