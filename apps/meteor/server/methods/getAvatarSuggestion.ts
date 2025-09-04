@@ -22,7 +22,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async getAvatarSuggestion() {
-		methodDeprecationLogger.method('getAvatarSuggestion', '7.0.0');
+		methodDeprecationLogger.method('getAvatarSuggestion', '7.0.0', '/v1/users.getAvatarSuggestion');
 
 		const user = (await Meteor.userAsync()) as IUser | undefined;
 		if (!user) {

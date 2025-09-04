@@ -451,8 +451,10 @@
   "Apply": "Käytä",
   "Apply_and_refresh_all_clients": "Tallenna ja päivitä kaikki asiakkaat",
   "Apps": "Sovellukset",
-  "Apps_Count_Enabled_one": "{{count}} sovellus käytössä",
-  "Apps_Count_Enabled_other": "{{count}} sovellusta käytössä",
+  "Apps_Count_Enabled": {
+    "one": "{{count}} sovellus käytössä",
+    "other": "{{count}} sovellusta käytössä"
+  },
   "Apps_Count_Enabled_tooltip": "Yhteisöversion työtiloissa voi ottaa käyttöön enintään {{number}} {{context}}sovellusta",
   "Apps_Currently_Enabled": "{{enabled}}/{{limit}} {{context}}sovellusta on nyt käytössä.",
   "Apps_Engine_Version": "Sovellusmoottorin versio",
@@ -792,10 +794,11 @@
   "Caller_Id": "Soittajan tunnus",
   "Calling": "Soitetaan",
   "Calls": "Puhelut",
-  "Calls_in_queue": "{{calls}} puhelu jonossa",
-  "Calls_in_queue_one": "{{count}} puhelu jonossa",
-  "Calls_in_queue_other": "{{count}} puhelua jonossa",
-  "Calls_in_queue_zero": "Jono on tyhjä",
+  "Calls_in_queue": {
+    "zero": "Jono on tyhjä",
+    "one": "{{count}} puhelu jonossa",
+    "other": "{{count}} puhelua jonossa"
+  },
   "Cam_off": "Kamera ei käytössä",
   "Cam_on": "Kamera käytössä",
   "Camera_access_not_allowed": "Kameran käyttöä ei sallittu, tarkista selaimen asetukset.",
@@ -1565,7 +1568,6 @@
   "ECDH_Enabled": "Ota käyttöön toinen salaustaso tiedonsiirtoa varten",
   "Edit": "Muokkaa",
   "Edit_Business_Hour": "Muokkaa aukioloaikaa",
-  "Edit_CannedResponse": "Muokkaa esivalmistettua vastausta",
   "Edit_Canned_Response": "Muokkaa valmista vastausta",
   "Edit_Canned_Responses": "Muokkaa valmiita vastauksia",
   "Edit_Contact_Profile": "Muokkaa yhteyshenkilön profiilia",
@@ -3347,8 +3349,10 @@
   "Privacy_summary": "Tietosuojakäytännön yhteenveto",
   "Private": "Yksityinen",
   "Private_Apps": "Yksityiset sovellukset",
-  "Private_Apps_Count_Enabled_one": "{{count}} yksityistä sovellusta käytössä",
-  "Private_Apps_Count_Enabled_other": "{{count}} yksityistä sovellusta käytössä",
+  "Private_Apps_Count_Enabled": {
+    "one": "{{count}} yksityistä sovellusta käytössä",
+    "other": "{{count}} yksityistä sovellusta käytössä"
+  },
   "Private_Channel": "Yksityinen kanava Channel",
   "Private_Channels": "Yksityiset kanavat Channel",
   "Private_Chats": "Yksityiset keskustelut",
@@ -5282,8 +5286,10 @@
   "message": "viesti",
   "message-impersonate": "Esiinny toisena käyttäjänä",
   "message-impersonate_description": "Lupa esiintyä muina käyttäjinä viestin aliasta käyttäen",
-  "message_counter_one": "{{count}} viesti",
-  "message_counter_other": "{{count}} viestit",
+  "message_counter": {
+    "one": "{{count}} viesti",
+    "other": "{{count}} viestit"
+  },
   "message_pruned": "viesti karsittu",
   "messages": "viestit",
   "messages_pruned": "viestiä karsittu",
@@ -5291,8 +5297,10 @@
   "meteor_status_connecting": "Yhdistetään...",
   "meteor_status_failed": "Yhteys palvelimeen epäonnistui",
   "meteor_status_offline": "Offline-tila.",
-  "meteor_status_reconnect_in_one": "yrittää uudelleen sekunnin kuluttua...",
-  "meteor_status_reconnect_in_other": "yritän uudelleen {{count}} sekunnin kuluttua...",
+  "meteor_status_reconnect_in": {
+    "one": "yrittää uudelleen sekunnin kuluttua...",
+    "other": "yritän uudelleen {{count}} sekunnin kuluttua..."
+  },
   "meteor_status_try_now_offline": "Yhdistä uudelleen",
   "meteor_status_try_now_waiting": "Kokeile nyt",
   "meteor_status_waiting": "Odottaa palvelinyhteyttä,",
@@ -5736,8 +5744,10 @@
   "your_message_optional": "viestisi (valinnainen)",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} tyhjää huonetta poistetaan automaattisesti.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> tyhjää huonetta poistetaan automaattisesti:<br/> {{rooms}}.",
-  "__count__message_pruned_one": "{{count}} viesti karsittu",
-  "__count__message_pruned_other": "{{count}} viestiä karsittu",
+  "__count__message_pruned": {
+    "one": "{{count}} viesti karsittu",
+    "other": "{{count}} viestiä karsittu"
+  },
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ei ole enää {{role}} (muutoksen teki {{user_by}})",
   "__username__was_set__role__by__user_by_": "{{user_by}} muutti käyttäjän {{username}} rooliksi {{role}} ",
   "__usersCount__people_will_be_invited": "{{usersCount}} henkilöä kutsutaan"

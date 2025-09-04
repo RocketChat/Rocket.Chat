@@ -475,13 +475,13 @@ const RoomsIsMemberPropsSchema = {
 export const isRoomsIsMemberProps = ajv.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
 
 export type Notifications = {
-	disableNotifications: string;
-	muteGroupMentions: string;
-	hideUnreadStatus: string;
-	desktopNotifications: string;
-	audioNotificationValue: string;
-	mobilePushNotifications: string;
-	emailNotifications: string;
+	disableNotifications?: string;
+	muteGroupMentions?: string;
+	hideUnreadStatus?: string;
+	desktopNotifications?: string;
+	audioNotificationValue?: string;
+	mobilePushNotifications?: string;
+	emailNotifications?: string;
 };
 
 type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;
@@ -716,7 +716,7 @@ export type RoomsEndpoints = {
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
 			room: IRoom | undefined;
-			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u' | 'sidepanel'>;
+			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 		};
 	};

@@ -1,24 +1,12 @@
-import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import { useEffect } from 'react';
 
-import { mainReady } from '../../../../app/ui-utils/client';
-import { RoomsCachedStore, SubscriptionsCachedStore, PublicSettingsCachedStore } from '../../../cachedStores';
-import { useReactiveVar } from '../../../hooks/useReactiveVar';
-import { isSyncReady } from '../../../lib/userData';
+import { RoomsCachedStore, SubscriptionsCachedStore } from '../../../cachedStores';
 import PageLoading from '../PageLoading';
+import { useMainReady } from '../hooks/useMainReady';
 
 const Preload = ({ children }: { children: ReactNode }): ReactElement => {
-	const uid = useUserId();
-	const subscriptionsReady = SubscriptionsCachedStore.useReady();
-	const settingsReady = PublicSettingsCachedStore.useReady();
-	const userDataReady = useReactiveVar(isSyncReady);
-
-	const ready = !uid || (userDataReady && subscriptionsReady && settingsReady);
-
-	useEffect(() => {
-		mainReady.set(ready);
-	}, [ready]);
+	const ready = useMainReady();
 
 	useEffect(() => {
 		SubscriptionsCachedStore.listen();

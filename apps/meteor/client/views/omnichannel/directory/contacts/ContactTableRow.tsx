@@ -3,6 +3,7 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { useRoute } from '@rocket.chat/ui-contexts';
 
+import ContactItemMenu from './ContactItemMenu';
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useIsCallReady } from '../../../../contexts/CallContext';
@@ -63,6 +64,9 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 					<CallDialpadButton phoneNumber={phoneNumber} />
 				</GenericTableCell>
 			)}
+			<GenericTableCell>
+				<ContactItemMenu _id={_id} name={name} channels={channels} />
+			</GenericTableCell>
 		</GenericTableRow>
 	);
 };

@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet } from '@react-pdf/renderer';
 import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
 
-import type { PDFMessage } from '..';
+import type { PDFMessage } from '../../../types/ChatTranscriptData';
 import { Markup } from '../markup';
 import { Divider } from './Divider';
 import { Files } from './Files';
