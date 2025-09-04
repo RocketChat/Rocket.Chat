@@ -1,4 +1,5 @@
 import { messageLongerThanPage, splitByTens, isSystemMessage, markupEntriesGreaterThan10 } from './utils';
+import type { PDFMessage } from '../../../types/ChatTranscriptData';
 
 describe('utils', () => {
 	it('should return true if message is longer than MAX_MSG_SIZE', () => {
@@ -38,11 +39,11 @@ describe('utils', () => {
 		expect(splitByTens(message)).toEqual([Array(8).fill({})]);
 	});
 	it('should return true if message is a system message', () => {
-		const message = { t: 'system' };
-		expect(isSystemMessage(message as any)).toBe(true);
+		const message = { t: 'livechat-started' } as PDFMessage;
+		expect(isSystemMessage(message)).toBe(true);
 	});
 	it('should return false if message is not a system message', () => {
-		const message = { msg: 'text' };
-		expect(isSystemMessage(message as any)).toBe(false);
+		const message = { msg: 'text' } as PDFMessage;
+		expect(isSystemMessage(message)).toBe(false);
 	});
 });
