@@ -13,7 +13,7 @@ import type { IDocumentMapStore } from './DocumentMapStore';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
-import { getUserId } from '../user';
+import { getUserId, userStorage, LOGIN_TOKEN_KEY } from '../user';
 import { getConfig } from '../utils/getConfig';
 
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
@@ -376,7 +376,7 @@ export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends Cache
 
 export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
 	protected override getToken() {
-		return Accounts._storedLoginToken();
+		return userStorage.getItem(LOGIN_TOKEN_KEY);
 	}
 
 	override clearCacheOnLogout() {

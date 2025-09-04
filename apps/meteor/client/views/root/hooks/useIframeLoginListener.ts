@@ -1,11 +1,10 @@
-import { useUnstoreLoginToken } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { useIframe } from './useIframe';
+import { userStorage, LOGIN_TOKEN_KEY } from '../../../lib/user';
 
 export const useIframeLoginListener = () => {
 	const { enabled: iframeEnabled, tryLogin, loginWithToken } = useIframe();
-	const unstoreLoginToken = useUnstoreLoginToken();
 
 	useEffect(() => {
 		if (!iframeEnabled) {
@@ -60,5 +59,14 @@ export const useIframeLoginListener = () => {
 		};
 	}, [iframeEnabled, loginWithToken, tryLogin]);
 
-	useEffect(() => unstoreLoginToken(tryLogin), [tryLogin, unstoreLoginToken]);
+	useEffect(
+		() =>
+			userStorage.on('change', () => {
+				const loginToken = userStorage.getItem(LOGIN_TOKEN_KEY);
+				if (loginToken) return;
+
+				tryLogin();
+			}),
+		[tryLogin],
+	);
 };

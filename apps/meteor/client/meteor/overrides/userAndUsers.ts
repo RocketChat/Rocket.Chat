@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { userIdStore } from '../../lib/user';
+import { userIdStore, userStorage } from '../../lib/user';
 import { Users } from '../../stores/Users';
 import { MinimongoCollection } from '../minimongo/MinimongoCollection';
 import { watchUser, watchUserId } from '../user';
@@ -29,3 +29,7 @@ Meteor.user = () => (watchUser() as Meteor.User | undefined) ?? null;
 
 // assertion is needed because IUser has more obligatory fields than Meteor.User
 Meteor.users = collection as unknown as typeof Meteor.users;
+
+Meteor._localStorage = userStorage;
+
+Accounts.storageLocation = userStorage;

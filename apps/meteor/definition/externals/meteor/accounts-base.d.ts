@@ -1,6 +1,7 @@
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
-		const storageLocation: Window['localStorage'];
+		let storageLocation: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
+
 		function createUser(
 			options: {
 				username?: string;
@@ -26,10 +27,6 @@ declare module 'meteor/accounts-base' {
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Promise<LoginMethodResult>;
 
 		function registerLoginHandler(name: string, handler: (options: any) => undefined | object): void;
-
-		function _storedLoginToken(): unknown;
-
-		function _unstoreLoginToken(): void;
 
 		function _setAccountData(connectionId: string, key: string, token: string): void;
 
