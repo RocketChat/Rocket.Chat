@@ -1,6 +1,5 @@
 import { api } from '@rocket.chat/core-services';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Roles, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -89,20 +88,3 @@ export const addUserToRole = async (userId: string, roleId: string, username: IU
 
 	return add;
 };
-
-Meteor.methods<ServerMethods>({
-	async 'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope) {
-		methodDeprecationLogger.method('authorization:addUserToRole', '8.0.0', '/v1/roles.addUserToRole');
-
-		const userId = Meteor.userId();
-
-		if (!userId) {
-			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
-				method: 'authorization:addUserToRole',
-				action: 'Accessing_permissions',
-			});
-		}
-
-		return addUserToRole(userId, roleId, username, scope);
-	},
-});
