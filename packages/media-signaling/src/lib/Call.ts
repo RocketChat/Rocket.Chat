@@ -148,6 +148,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
+		{ inputTrack }: { inputTrack: MediaStreamTrack | null },
 	) {
 		this.emitter = new Emitter<CallEvents>();
 
@@ -167,7 +168,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.serviceStates = new Map();
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
-		this.inputTrack = null;
+		this.inputTrack = inputTrack;
 
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
@@ -310,9 +311,16 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
+		const oldId = this.inputTrack?.id;
+		const newId = newInputTrack?.id;
+
 		this.inputTrack = newInputTrack;
 		if (this.webrtcProcessor) {
 			await this.webrtcProcessor.setInputTrack(newInputTrack);
+		}
+
+		if (oldId !== newId) {
+			this.emitter.emit('trackStateChange');
 		}
 	}
 
@@ -976,11 +984,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 }
 
-export class ClientMediaCallWebRTC extends ClientMediaCall {
-	public webrtcProcessor: IWebRTCProcessor;
-
-	constructor(config: IClientMediaCallConfig, callId: string) {
-		super(config, callId);
-		throw new Error('ClientMediaCallWebRTC is not meant to be constructed.');
-	}
+export abstract class ClientMediaCallWebRTC extends ClientMediaCall {
+	public abstract webrtcProcessor: IWebRTCProcessor;
 }
