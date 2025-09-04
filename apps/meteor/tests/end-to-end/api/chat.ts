@@ -1425,8 +1425,8 @@ describe('[Chat]', () => {
 
 				await (
 					customFields
-						? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
-						: request.post(api(`rooms.upload/${testChannel._id}`))
+						? request.post(api(`rooms.media/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
+						: request.post(api(`rooms.media/${testChannel._id}`))
 				)
 					.set(credentials)
 					.attach('file', imgURL)
