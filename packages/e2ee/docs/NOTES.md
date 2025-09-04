@@ -2,7 +2,18 @@
 
 ## History
 - [[NEW] Support for end to end encryption](https://github.com/RocketChat/Rocket.Chat/pull/10094)
+- [Fix: Change wording on e2e to make a little more clear](https://github.com/RocketChat/Rocket.Chat/pull/12124)
+- [Fix: e2e password visible on always-on alert message](https://github.com/RocketChat/Rocket.Chat/pull/12139)
+- [New: Option to change E2E key](https://github.com/RocketChat/Rocket.Chat/pull/12169)
+- [Improve: Moved the e2e password request to an alert instead of a popup](https://github.com/RocketChat/Rocket.Chat/pull/12172)
 - [Improve: Decrypt last message](https://github.com/RocketChat/Rocket.Chat/pull/12173)
+- [Improve: Rename E2E methods](https://github.com/RocketChat/Rocket.Chat/pull/12175)
+- [Improve: Do not start E2E Encryption when accessing admin as embedded](https://github.com/RocketChat/Rocket.Chat/pull/12192)
+- [[FIX] E2E data not cleared on logout](https://github.com/RocketChat/Rocket.Chat/pull/12254)
+- [[NEW] Option to reset e2e key](https://github.com/RocketChat/Rocket.Chat/pull/12483)
+- [Remove directly dependency between lib and e2e](https://github.com/RocketChat/Rocket.Chat/pull/13115)
+- [[FIX] E2E messages not decrypting in message threads](https://github.com/RocketChat/Rocket.Chat/pull/14580)
+- [[FIX] Not possible to read encrypted messages after disable E2E on channel level](https://github.com/RocketChat/Rocket.Chat/pull/18101)
 - [[NEW] Encrypted Discussions and new Encryption Permissions](https://github.com/RocketChat/Rocket.Chat/pull/20201)
 - [[FIX] Ensure E2E is enabled/disabled on sending message](https://github.com/RocketChat/Rocket.Chat/pull/21084)
 - [Regression: Fix non encrypted rooms failing sending messages](https://github.com/RocketChat/Rocket.Chat/pull/21287)
