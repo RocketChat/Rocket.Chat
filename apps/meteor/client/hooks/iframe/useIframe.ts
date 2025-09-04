@@ -1,5 +1,5 @@
 import { useLoginWithIframe, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export const useIframe = () => {
 	const [iframeLoginUrl, setIframeLoginUrl] = useState<string | undefined>(undefined);
@@ -11,6 +11,8 @@ export const useIframe = () => {
 
 	const iframeLogin = useLoginWithIframe();
 	const tokenLogin = useLoginWithToken();
+
+	const enabled = Boolean(iframeEnabled && accountIframeUrl && apiUrl && apiMethod);
 
 	const loginWithToken = useCallback(
 		(tokenData: string | { loginToken: string } | { token: string }, callback?: (error: Error | null | undefined) => void) => {
@@ -31,6 +33,10 @@ export const useIframe = () => {
 
 	const tryLogin = useCallback(
 		async (callback?: (error: Error | null | undefined, result: unknown) => void) => {
+			if (!enabled) {
+				return;
+			}
+
 			let url = accountIframeUrl;
 			let separator = '?';
 			if (url.indexOf('?') > -1) {
@@ -43,9 +49,7 @@ export const useIframe = () => {
 
 			const result = await fetch(apiUrl, {
 				method: apiMethod,
-				headers: {
-					'Content-Type': 'application/json',
-				},
+				headers: undefined,
 				credentials: 'include',
 			});
 
@@ -64,11 +68,15 @@ export const useIframe = () => {
 				callback?.(error, await result.json());
 			});
 		},
-		[apiMethod, apiUrl, accountIframeUrl, loginWithToken],
+		[apiMethod, apiUrl, accountIframeUrl, loginWithToken, enabled],
 	);
 
+	useEffect(() => {
+		tryLogin();
+	}, [tryLogin]);
+
 	return {
-		enabled: Boolean(iframeEnabled && accountIframeUrl && apiUrl && apiMethod),
+		enabled,
 		tryLogin,
 		loginWithToken,
 		iframeLoginUrl,
