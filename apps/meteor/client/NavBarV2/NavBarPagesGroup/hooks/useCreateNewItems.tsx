@@ -1,5 +1,5 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useTranslation, useSetting, useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting, useAtLeastOnePermission, usePermission } from '@rocket.chat/ui-contexts';
 
 import { useCreateRoomModal } from './useCreateRoomModal';
 import CreateDiscussion from '../../../components/CreateDiscussion';
@@ -21,6 +21,7 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 	const canCreateTeam = useAtLeastOnePermission(CREATE_TEAM_PERMISSIONS);
 	const canCreateDirectMessages = useAtLeastOnePermission(CREATE_DIRECT_PERMISSIONS);
 	const canCreateDiscussion = useAtLeastOnePermission(CREATE_DISCUSSION_PERMISSIONS);
+	const canSendOutboundMessage = usePermission('outbound.send-messages');
 
 	const createChannel = useCreateRoomModal(CreateChannelModal);
 	const createTeam = useCreateRoomModal(CreateTeamModal);
@@ -72,7 +73,6 @@ export const useCreateNewItems = (): GenericMenuItemProps[] => {
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
 		...(canCreateChannel ? [createChannelItem] : []),
 		...(canCreateTeam && canCreateChannel ? [createTeamItem] : []),
-		// TODO: Add permission check for outbound messages
-		createOutboundMessageItem,
+		...(canSendOutboundMessage ? [createOutboundMessageItem] : []),
 	];
 };
