@@ -13,7 +13,7 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 
 	token: string;
 	scriptEnabled: boolean;
-	script: string;
+	script?: string;
 	scriptCompiled?: string;
 	scriptError?: Pick<Error, 'name' | 'message' | 'stack'>;
 
@@ -45,7 +45,7 @@ export interface IOutgoingIntegration extends IRocketChatRecord {
 	username: string;
 	channel: string[];
 
-	event: OutgoingIntegrationEvent;
+	event?: OutgoingIntegrationEvent;
 	targetRoom?: string;
 	urls?: string[];
 	triggerWords?: string[];
@@ -53,7 +53,7 @@ export interface IOutgoingIntegration extends IRocketChatRecord {
 	token: string;
 
 	scriptEnabled: boolean;
-	script: string;
+	script?: string;
 	scriptCompiled?: string;
 	scriptError?: Pick<Error, 'name' | 'message' | 'stack'>;
 	runOnEdits?: boolean;
