@@ -1,4 +1,4 @@
-import { useMediaDeviceMicrophonePermission, useSetInputMediaDevice, useSetModal } from '@rocket.chat/ui-contexts';
+import { useMediaDeviceMicrophonePermission, useSelectedDevices, useSetInputMediaDevice, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
@@ -134,21 +134,27 @@ export const useDevicePermissionPrompt2 = () => {
 	const setModal = useSetModal();
 	const setInputMediaDevice = useSetInputMediaDevice();
 	const queryClient = useQueryClient();
+	const { audioInput } = useSelectedDevices() || {};
+
+	const selectedDeviceId = audioInput?.id || 'default';
 
 	return useCallback(
 		async ({
-			constraints,
+			constraints: _constraints,
 			actionType,
 		}: {
 			constraints?: MediaStreamConstraints;
 			actionType: 'outgoing' | 'incoming' | 'device-change';
 		}) => {
-			return new Promise<MediaStream>((resolve, reject) => {
-				const onAccept = (stream: MediaStream) => {
+			return new Promise<MediaStream>((_resolve, reject) => {
+				const resolve = (stream: MediaStream) => {
 					// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
 					// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
 					queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
+					_resolve(stream);
+				};
 
+				const onAccept = (stream: MediaStream) => {
 					stream.getTracks().forEach((track) => {
 						const { deviceId } = track.getSettings();
 						if (!deviceId) {
@@ -170,6 +176,10 @@ export const useDevicePermissionPrompt2 = () => {
 						}
 					});
 					resolve(stream);
+				};
+
+				const constraints = _constraints || {
+					audio: selectedDeviceId === 'default' ? true : { deviceId: { exact: selectedDeviceId } },
 				};
 
 				if (state === 'granted') {
@@ -199,6 +209,6 @@ export const useDevicePermissionPrompt2 = () => {
 				setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
 			});
 		},
-		[state, setModal, queryClient, setInputMediaDevice, requestDevice],
+		[selectedDeviceId, state, setModal, queryClient, setInputMediaDevice, requestDevice],
 	);
 };
