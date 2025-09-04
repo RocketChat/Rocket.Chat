@@ -8,13 +8,13 @@ import {
 	Device,
 	// useSelectedDevices,
 } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useCallSounds } from './useCallSounds';
 import { useMediaSessionInstance, useMediaSession } from './useMediaSession';
 import useMediaStream from './useMediaStream';
-import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermissionPrompt';
+import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import MediaCallContext, { PeerInfo } from '../v2/MediaCallContext';
 import MediaCallWidget from '../v2/MediaCallWidget';
 
@@ -45,18 +45,6 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 		),
 	);
 
-	// mute/hold
-	useEffect(() => {
-		if (!processor) {
-			return;
-		}
-
-		const micMuted = session.muted || session.held;
-
-		processor.toggleSenderTracks(!micMuted);
-		processor.toggleReceiverTracks(!session.held);
-	}, [processor, session.muted, session.held]);
-
 	const onMute = () => session.toggleMute();
 	const onHold = () => session.toggleHold();
 
@@ -66,15 +54,10 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 			console.error('Cannot start call in state', session.state);
 			return;
 		}
-		stopTracks(
-			await requestDevice({
-				actionType: 'outgoing',
-				constraints: {
-					audio: true,
-				},
-			}),
-		);
-		session.startCall(_id, kind);
+
+		const stream = await requestDevice({ actionType: 'outgoing' });
+
+		session.startCall(_id, kind, stream.getTracks()[0]);
 	};
 
 	const onAccept = async () => {
@@ -83,44 +66,54 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 			console.error('Cannot accept call in state', session.state);
 			return;
 		}
-		stopTracks(
-			await requestDevice({
-				actionType: 'incoming',
-				constraints: {
-					audio: true,
-				},
-			}),
-		);
-		session.acceptCall();
+
+		const stream = await requestDevice({ actionType: 'incoming' });
+
+		session.acceptCall(stream.getTracks()[0]);
 	};
 
 	const onDeviceChange = (device: Device) => {
 		console.log('onDeviceChange', device);
+
+		const parameters = {
+			actionType: 'device-change',
+			constraints: {
+				audio: {
+					deviceId: {
+						exact: device.id,
+					},
+				},
+			},
+		} as const;
+
+		if (session.state === 'new') {
+			void requestDevice(parameters).then(async (stream) => {
+				stopTracks(stream);
+				setInputMediaDevice(device);
+			});
+		}
+
 		if (device.type === 'audiooutput') {
 			if (!audioElement.current) return;
 			setOutputMediaDevice({ outputDevice: device, HTMLAudioElement: audioElement.current });
-		} else {
-			void requestDevice({
-				actionType: 'device-change',
-				constraints: {
-					audio: {
-						deviceId: {
-							exact: device.id,
-						},
-					},
-				},
-			}).then(async (stream) => {
+			return;
+		}
+
+		if (device.type === 'audioinput') {
+			void requestDevice(parameters).then(async (stream) => {
 				try {
 					await session.changeDevice(stream.getTracks()[0]);
 					setInputMediaDevice(device);
 				} catch (error) {
-					stream.getTracks().forEach((track) => {
-						track.stop();
-					});
+					stopTracks(stream);
 					console.error('Error changing device', error);
 				}
 			});
+
+			return;
 		}
+
+		console.error('Invalid device type', device.type);
 	};
 
 	const onForward = () => {
