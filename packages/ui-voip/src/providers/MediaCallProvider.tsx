@@ -91,6 +91,7 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 				stopTracks(stream);
 				setInputMediaDevice(device);
 			});
+			return;
 		}
 
 		if (device.type === 'audiooutput') {
