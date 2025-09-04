@@ -2123,10 +2123,12 @@ describe('[Rooms]', () => {
 		let testChannel: IRoom;
 
 		before(async () => {
+			await updateSetting('UI_Allow_room_names_with_special_chars', true);
 			testChannel = (await createRoom({ type: 'c', name: 'тест' })).body.channel;
 		});
 
 		after(async () => {
+			await updateSetting('UI_Allow_room_names_with_special_chars', true);
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
