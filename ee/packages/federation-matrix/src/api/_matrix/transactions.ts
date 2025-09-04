@@ -2,6 +2,8 @@ import type { HomeserverServices } from '@hs/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
+import { aclMiddleware } from '../middlewares';
+
 const SendTransactionParamsSchema = {
 	type: 'object',
 	properties: {
@@ -14,6 +16,45 @@ const SendTransactionParamsSchema = {
 };
 
 const isSendTransactionParamsProps = ajv.compile(SendTransactionParamsSchema);
+
+const GetEventParamsSchema = {
+	type: 'object',
+	properties: {
+		eventId: {
+			type: 'string',
+			description: 'Event ID',
+		},
+	},
+	required: ['eventId'],
+	additionalProperties: false,
+};
+
+const isGetEventParamsProps = ajv.compile(GetEventParamsSchema);
+
+const GetEventResponseSchema = {
+	type: 'object',
+	properties: {
+		origin_server_ts: {
+			type: 'number',
+			minimum: 0,
+			description: 'Unix timestamp in milliseconds',
+		},
+		origin: {
+			type: 'string',
+			description: 'Origin server',
+		},
+		pdus: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+			description: 'Persistent data units (PDUs)',
+		},
+	},
+	required: ['origin_server_ts', 'origin', 'pdus'],
+};
+
+const isGetEventResponseProps = ajv.compile(GetEventResponseSchema);
 
 const EventHashSchema = {
 	type: 'object',
@@ -164,50 +205,89 @@ const ErrorResponseSchema = {
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event } = services;
+	const { event, federationAuth } = services;
 
-	return new Router('/federation').put(
-		'/v1/send/:txnId',
-		{
-			params: isSendTransactionParamsProps,
-			body: isSendTransactionBodyProps,
-			response: {
-				200: isSendTransactionResponseProps,
-				400: isErrorResponseProps,
-			},
-			tags: ['Federation'],
-			license: ['federation'],
-		},
-		async (c) => {
-			const body = await c.req.json();
-
-			try {
-				await event.processIncomingTransaction(body);
-			} catch (error: any) {
-				// TODO custom error types?
-				if (error.message === 'too-many-concurrent-transactions') {
-					return {
-						statusCode: 429,
-						body: {
-							errorcode: 'M_UNKNOWN',
-							error: 'Too many concurrent transactions',
-						},
-					};
-				}
-
-				return {
-					statusCode: 400,
-					body: {},
-				};
-			}
-
-			return {
-				body: {
-					pdus: {},
-					edus: {},
+	// PUT /_matrix/federation/v1/send/{txnId}
+	return (
+		new Router('/federation')
+			.put(
+				'/v1/send/:txnId',
+				{
+					params: isSendTransactionParamsProps,
+					body: isSendTransactionBodyProps,
+					response: {
+						200: isSendTransactionResponseProps,
+						400: isErrorResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
 				},
-				statusCode: 200,
-			};
-		},
+				async (c) => {
+					const body = await c.req.json();
+
+					try {
+						await event.processIncomingTransaction(body);
+					} catch (error: any) {
+						// TODO custom error types?
+						if (error.message === 'too-many-concurrent-transactions') {
+							return {
+								statusCode: 429,
+								body: {
+									errorcode: 'M_UNKNOWN',
+									error: 'Too many concurrent transactions',
+								},
+							};
+						}
+
+						return {
+							statusCode: 400,
+							body: {},
+						};
+					}
+
+					return {
+						body: {
+							pdus: {},
+							edus: {},
+						},
+						statusCode: 200,
+					};
+				},
+			)
+
+			// GET /_matrix/federation/v1/event/{eventId}
+			.get(
+				'/v1/event/:eventId',
+				{
+					params: isGetEventParamsProps,
+					response: {
+						200: isGetEventResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
+				},
+				aclMiddleware(federationAuth),
+				async (c) => {
+					const eventData = await event.getEventById(c.req.param('eventId'));
+					if (!eventData) {
+						return {
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Event not found',
+							},
+							statusCode: 404,
+						};
+					}
+
+					return {
+						body: {
+							origin_server_ts: eventData.origin_server_ts,
+							origin: eventData.origin,
+							pdus: [eventData],
+						},
+						statusCode: 200,
+					};
+				},
+			)
 	);
 };
