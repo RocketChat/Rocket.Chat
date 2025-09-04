@@ -8,6 +8,7 @@ import type { IModify } from '@rocket.chat/apps-engine/definition/accessors/IMod
 import type { INotifier } from '@rocket.chat/apps-engine/definition/accessors/INotifier.ts';
 import type { IPersistence } from '@rocket.chat/apps-engine/definition/accessors/IPersistence.ts';
 import type { IHttp, IHttpExtend } from '@rocket.chat/apps-engine/definition/accessors/IHttp.ts';
+import type { IServerEndpoints } from '@rocket.chat/apps-engine/definition/accessors/IServerEndpoints.ts';
 import type { IConfigurationExtend } from '@rocket.chat/apps-engine/definition/accessors/IConfigurationExtend.ts';
 import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand.ts';
 import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
@@ -49,6 +50,7 @@ export class AppAccessors {
 	private extender?: ModifyExtender;
 	private httpExtend: IHttpExtend = new HttpExtend();
 	private http?: IHttp;
+	private serverEndpoints?: IServerEndpoints;
 	private notifier?: INotifier;
 
 	private proxify: <T>(namespace: string, overrides?: Record<string, (...args: unknown[]) => unknown>) => T;
@@ -225,6 +227,7 @@ export class AppAccessors {
 				environmentWriter: this.getEnvironmentWrite(),
 				reader: this.getReader(),
 				http: this.getHttp(),
+				serverEndpoints: this.getServerEndpoints(),
 				providedApiEndpoints: AppObjectRegistry.get<IApiEndpointMetadata[]>('apiEndpoints') as IApiEndpointMetadata[],
 			};
 		}
@@ -287,6 +290,14 @@ export class AppAccessors {
 
 	public getHttp() {
 		return this.http;
+	}
+
+	public getServerEndpoints() {
+		if (!this.serverEndpoints) {
+			this.serverEndpoints = this.proxify('getServerEndpoints');
+		}
+
+		return this.serverEndpoints;
 	}
 
 	private getCreator() {

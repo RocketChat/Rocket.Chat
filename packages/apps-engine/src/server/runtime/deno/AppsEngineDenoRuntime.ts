@@ -28,6 +28,7 @@ export const ALLOWED_ACCESSOR_METHODS = [
 	'getReader',
 	'getPersistence',
 	'getHttp',
+	'getServerEndpoints',
 	'getModifier',
 ] as Array<
 	keyof Pick<
@@ -39,6 +40,7 @@ export const ALLOWED_ACCESSOR_METHODS = [
 		| 'getReader'
 		| 'getPersistence'
 		| 'getHttp'
+		| 'getServerEndpoints'
 		| 'getModifier'
 	>
 >;
