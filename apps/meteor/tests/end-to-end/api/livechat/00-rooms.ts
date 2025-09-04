@@ -1895,10 +1895,10 @@ describe('LIVECHAT - rooms', () => {
 		});
 	});
 
-	describe('livechat/visitor.department.transfer', () => {
+	describe('livechat/visitor/department.transfer', () => {
 		it('should not be successful when no target (userId or departmentId) was specified', async () => {
 			await request
-				.post(api('livechat/visitor.department.transfer'))
+				.post(api('livechat/visitor/department.transfer'))
 				.set(credentials)
 				.send({
 					rid: room._id,
@@ -1920,7 +1920,7 @@ describe('LIVECHAT - rooms', () => {
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
 			await request
-				.post(api('livechat/visitor.department.transfer'))
+				.post(api('livechat/visitor/department.transfer'))
 				.set(credentials)
 				.send({
 					rid: newRoom._id,
@@ -1953,7 +1953,7 @@ describe('LIVECHAT - rooms', () => {
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
 			await request
-				.post(api('livechat/visitor.department.transfer'))
+				.post(api('livechat/visitor/department.transfer'))
 				.set(credentials)
 				.send({
 					rid: newRoom._id,
@@ -1991,7 +1991,7 @@ describe('LIVECHAT - rooms', () => {
 				const newRoom = await createLivechatRoom(newVisitor.token);
 
 				await request
-					.post(api('livechat/visitor.department.transfer'))
+					.post(api('livechat/visitor/department.transfer'))
 					.set(credentials)
 					.send({
 						rid: newRoom._id,
@@ -2019,7 +2019,7 @@ describe('LIVECHAT - rooms', () => {
 			const newVisitor = await createVisitor(initialDepartment._id);
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
-			await request.post(api('livechat/visitor.department.transfer')).set(credentials).send({
+			await request.post(api('livechat/visitor/department.transfer')).set(credentials).send({
 				rid: newRoom._id,
 				token: newVisitor.token,
 				departmentId: forwardToOfflineDepartment._id,
