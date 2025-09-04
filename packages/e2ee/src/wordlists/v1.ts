@@ -1,4 +1,4 @@
-export const v1: string[] = `acrobat
+export const wordlist: string[] = `acrobat
 africa
 alaska
 albert

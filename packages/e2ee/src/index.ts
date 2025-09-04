@@ -12,9 +12,9 @@ import { /** decryptAesCbc, encryptAesCbc, **/ encryptAesGcm, decryptAesGcm } fr
 // import { Keychain } from './keychain.ts';
 
 const generateMnemonicPhrase = async (length: number): Promise<string> => {
-	const { v1 } = await import('./word-list.ts');
+	const { wordlist } = await import('./wordlists/v2.ts');
 	const randomBuffer = crypto.getRandomValues(new Uint8Array(length));
-	return Array.from(randomBuffer, (value) => v1[value % v1.length]).join(' ');
+	return Array.from(randomBuffer, (value) => wordlist[value % wordlist.length]).join(' ');
 };
 
 export interface KeyService {
@@ -91,7 +91,23 @@ export default class E2EE {
 		}
 	}
 
-	async persistKeys(localKeyPair: LocalKeyPair, password: string, force: boolean): AsyncResult<unknown, Error> {
+	async backupKeys(): Promise<void> {
+		await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword(5), false);
+	}
+
+	async changePassphrase(newPassword: string): Promise<void> {
+		const result = await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, true);
+
+		if (!result.isOk) {
+			throw result.error;
+		}
+
+		if (this.getRandomPassword()) {
+			this.storeRandomPassword(newPassword);
+		}
+	}
+
+	private async persistKeys(localKeyPair: LocalKeyPair, password: string, force: boolean): AsyncResult<unknown, Error> {
 		if (typeof localKeyPair.public_key !== 'string' || typeof localKeyPair.private_key !== 'string') {
 			return err(new TypeError('Failed to persist keys as they are not strings.'));
 		}

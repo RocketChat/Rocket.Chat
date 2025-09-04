@@ -19,7 +19,7 @@ export const useE2EEncryption = () => {
 
 	useEffect(() => {
 		if (!userId) {
-			logger.log('Not logged in');
+			logger.warn('Not logged in');
 			return;
 		}
 
@@ -29,7 +29,7 @@ export const useE2EEncryption = () => {
 		}
 
 		if (enabled && !adminEmbedded) {
-			logger.log('enabled starting client');
+			logger.debug('enabled starting client');
 			e2e.startClient();
 		} else {
 			e2e.setState('DISABLED');
@@ -48,12 +48,12 @@ export const useE2EEncryption = () => {
 
 	useEffect(() => {
 		if (!ready) {
-			logger.log('Not ready');
+			logger.info('Not ready');
 			return;
 		}
 
 		if (listenersAttachedRef.current) {
-			logger.log('Listeners already attached');
+			logger.warn('Listeners already attached');
 			return;
 		}
 
@@ -120,10 +120,10 @@ export const useE2EEncryption = () => {
 		});
 
 		listenersAttachedRef.current = true;
-		logger.log('Listeners attached');
+		logger.info('Listeners attached');
 
 		return () => {
-			logger.log('Not ready');
+			logger.info('Not ready');
 			offClientMessageReceived();
 			offClientBeforeSendMessage();
 			listenersAttachedRef.current = false;

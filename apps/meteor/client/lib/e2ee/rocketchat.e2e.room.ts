@@ -71,9 +71,9 @@ export type EncryptedGroupKey = { E2EKey: string; e2eKeyId: string; ts: Date };
 export type DecryptedGroupKey = { E2EKey: CryptoKey | null; e2eKeyId: string; ts: Date };
 
 export class E2ERoom extends Emitter {
-	state: E2ERoomState | undefined = undefined;
+	state: E2ERoomState = 'NOT_STARTED';
 
-	[PAUSED]: boolean | undefined = undefined;
+	[PAUSED] = false;
 
 	[KEY_ID]: string;
 
@@ -109,8 +109,6 @@ export class E2ERoom extends Emitter {
 			}
 		});
 		this.on('STATE_CHANGED', () => this.handshake());
-
-		this.setState('NOT_STARTED');
 	}
 
 	log(...msg: unknown[]): void {

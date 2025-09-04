@@ -3,7 +3,7 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import type { EncryptedKeyPair, LocalKeyPair, RemoteKeyPair } from '@rocket.chat/e2ee';
+import type { EncryptedKeyPair, RemoteKeyPair } from '@rocket.chat/e2ee';
 import E2EE from '@rocket.chat/e2ee';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
@@ -58,7 +58,7 @@ class E2E extends Emitter<{
 
 	private keyDistributionInterval: ReturnType<typeof setInterval> | null;
 
-	private state: E2EEState;
+	private state: E2EEState = 'NOT_STARTED';
 
 	private e2ee: E2EE;
 
@@ -100,8 +100,6 @@ class E2E extends Emitter<{
 		this.on('ERROR', () => {
 			this.unsubscribeFromSubscriptions?.();
 		});
-
-		this.setState('NOT_STARTED');
 	}
 
 	getState() {
@@ -288,13 +286,6 @@ class E2E extends Emitter<{
 		delete this.instancesByRoomId[rid];
 	}
 
-	private async persistKeys(localKeyPair: LocalKeyPair, password: string, force = false): Promise<void> {
-		const res = await this.e2ee.persistKeys(localKeyPair, password, force);
-		if (!res.isOk) {
-			throw res.error;
-		}
-	}
-
 	async acceptSuggestedKey(rid: string): Promise<void> {
 		await sdk.rest.post('/v1/e2e.acceptSuggestedGroupKey', {
 			rid,
@@ -385,7 +376,7 @@ class E2E extends Emitter<{
 
 		if (!this.db_public_key || !this.db_private_key) {
 			this.setState('LOADING_KEYS');
-			await this.persistKeys(this.e2ee.getKeysFromLocalStorage(), await this.e2ee.createRandomPassword(5));
+			await this.e2ee.backupKeys();
 		}
 
 		const randomPassword = this.e2ee.getRandomPassword();
@@ -417,11 +408,7 @@ class E2E extends Emitter<{
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
-		await this.persistKeys(await this.e2ee.getKeysFromLocalStorage(), newPassword, true);
-
-		if (await this.e2ee.getRandomPassword()) {
-			await this.e2ee.storeRandomPassword(newPassword);
-		}
+		await this.e2ee.changePassphrase(newPassword);
 	}
 
 	async loadKeysFromDB(): Promise<RemoteKeyPair> {
