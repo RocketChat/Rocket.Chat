@@ -205,22 +205,6 @@ exports[`renders AppLogsItem without crashing 1`] = `
           </button>
         </div>
         <button
-          class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-css-qv9v2f"
-          type="button"
-        >
-          <span
-            class="rcx-button--content"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-expand rcx-icon rcx-css-1hdf9ok"
-            >
-              
-            </i>
-            Expand_all
-          </span>
-        </button>
-        <button
           class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-qv9v2f"
           title="Refresh_logs"
           type="button"
@@ -244,6 +228,19 @@ exports[`renders AppLogsItem without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-icon--name-circle-arrow-down rcx-icon rcx-css-1x2l7ts"
           >
             
+          </i>
+        </button>
+        <button
+          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-17zzf5z"
+          data-testid="menu"
+          title="Options"
+          type="button"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1x2l7ts"
+          >
+            
           </i>
         </button>
       </div>

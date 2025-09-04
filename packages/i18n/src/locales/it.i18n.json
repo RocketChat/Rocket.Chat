@@ -349,9 +349,11 @@
   "Apply": "Applicare",
   "Apply_and_refresh_all_clients": "Applica e aggiorna tutti i clienti",
   "Apps": "Apps",
-  "Apps_Count_Enabled_one": "{{count}} app abilitate",
-  "Apps_Count_Enabled_other": "{{count}} app abilitate",
-  "Apps_Count_Enabled_many": "{{count}} app abilitate",
+  "Apps_Count_Enabled": {
+    "one": "{{count}} app abilitate",
+    "many": "{{count}} app abilitate",
+    "other": "{{count}} app abilitate"
+  },
   "Apps_Count_Enabled_tooltip": "Gli spazi di lavoro comunitari possono abilitare fino a {{number}} applicazioni {{context}}",
   "Apps_Framework_enabled": "Abilita l'App Framework",
   "Apps_Game_Center": "Game Center",
@@ -506,10 +508,12 @@
   "Caller_Id": "ID chiamante",
   "Calling": "Chiamata in corso",
   "Calls": "Chiamate",
-  "Calls_in_queue": "{{calls}} chiamate in coda",
-  "Calls_in_queue_one": "{{count}} chiamata in coda",
-  "Calls_in_queue_other": "{{count}} chiamate in coda",
-  "Calls_in_queue_zero": "La coda è vuota",
+  "Calls_in_queue": {
+    "zero": "La coda è vuota",
+    "one": "{{count}} chiamata in coda",
+    "many": "{{count}} chiamate in coda",
+    "other": "{{count}} chiamate in coda"
+  },
   "Cam_off": "Camera spenta",
   "Cam_on": "Camera accesa",
   "Camera_access_not_allowed": "L'accesso alla telecamera non è stato consentito, controlla le impostazioni del browser.",
@@ -2110,9 +2114,11 @@
   "Privacy_Policy": "Privacy Policy",
   "Private": "Privato",
   "Private_Apps": "Applicazioni private",
-  "Private_Apps_Count_Enabled_one": "{{count}} applicazione private abilitate",
-  "Private_Apps_Count_Enabled_other": "{{count}} applicazioni private abilitate",
-  "Private_Apps_Count_Enabled_many": "{{count}} applicazioni private abilitate",
+  "Private_Apps_Count_Enabled": {
+    "one": "{{count}} applicazione private abilitate",
+    "many": "{{count}} applicazioni private abilitate",
+    "other": "{{count}} applicazioni private abilitate"
+  },
   "Private_Channel": "Canale privato",
   "Private_Channels": "Canali privati",
   "Private_Group": "Gruppo privato",
@@ -3215,9 +3221,11 @@
   "meteor_status_connecting": "Connessione in corso...",
   "meteor_status_failed": "Impossibile connettersi al server",
   "meteor_status_offline": "Modalità non in linea.",
-  "meteor_status_reconnect_in_one": "riprovo tra pochi secondi...",
-  "meteor_status_reconnect_in_other": "riprovo tra {{count}} secondi...",
-  "meteor_status_reconnect_in_many": "riprovo tra {{count}} secondi...",
+  "meteor_status_reconnect_in": {
+    "one": "riprovo tra pochi secondi...",
+    "many": "riprovo tra {{count}} secondi...",
+    "other": "riprovo tra {{count}} secondi..."
+  },
   "meteor_status_try_now_offline": "Riprova",
   "meteor_status_try_now_waiting": "Connetti ora",
   "meteor_status_waiting": "Server non disponibile,",
@@ -3406,9 +3414,11 @@
   "__count__conversations__period__": "{{count}} conversazioni, {{period}}",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} stanze vuote verranno automaticamente rimosse.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> stanze vuote saranno rimosse automaticamente:<br/> {{rooms}}.",
-  "__count__message_pruned_one": "{{count}} messaggio eliminato",
-  "__count__message_pruned_other": "{{count}} messaggi eliminati",
-  "__count__message_pruned_many": "{{count}} messaggi eliminati",
+  "__count__message_pruned": {
+    "one": "{{count}} messaggio eliminato",
+    "many": "{{count}} messaggi eliminati",
+    "other": "{{count}} messaggi eliminati"
+  },
   "__count__tags__and__count__conversations__period__": "{{count}} tag e {{conversations}} conversazioni, {{period}}",
   "__count__without__assignee__": "{{count}} non assegnate",
   "__count__without__department__": "{{count}} senza reparto",

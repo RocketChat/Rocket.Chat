@@ -1,10 +1,10 @@
 import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { usePermission, useAtLeastOnePermission, useRole, useEndpoint } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { usePermission, useAtLeastOnePermission, useRole } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { E2EEState } from '../../../../../../app/e2e/client/E2EEState';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
+import { useTeamInfoQuery } from '../../../../../hooks/useTeamInfoQuery';
+import { E2EEState } from '../../../../../lib/e2ee/E2EEState';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { useE2EEState } from '../../../hooks/useE2EEState';
 
@@ -17,19 +17,12 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
-	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
 
 	const teamId = room.teamId || '';
-	const { data: teamInfoData } = useQuery({
-		queryKey: ['teamId', teamId],
-		queryFn: async () => teamsInfoEndpoint({ teamId }),
-		placeholderData: keepPreviousData,
-		retry: false,
-		enabled: room.teamId !== '',
-	});
+	const { data: teamInfo } = useTeamInfoQuery(teamId);
 
-	const canCreateTeamChannel = usePermission('create-team-channel', teamInfoData?.teamInfo.roomId);
-	const canCreateTeamGroup = usePermission('create-team-group', teamInfoData?.teamInfo.roomId);
+	const canCreateTeamChannel = usePermission('create-team-channel', teamInfo?.roomId);
+	const canCreateTeamGroup = usePermission('create-team-group', teamInfo?.roomId);
 
 	const canChangeType = getCanChangeType(
 		room,

@@ -4,6 +4,7 @@ import type {
 	ValidOutboundProvider,
 	IOutboundMessageProviderService,
 	IOutboundProviderMetadata,
+	IOutboundMessage,
 } from '@rocket.chat/core-typings';
 import { ValidOutboundProviderList } from '@rocket.chat/core-typings';
 
@@ -55,13 +56,13 @@ export class OutboundMessageProviderService implements IOutboundMessageProviderS
 		return manager;
 	}
 
-	public sendMessage(providerId: string, body: any) {
+	public sendMessage(providerId: string, message: IOutboundMessage) {
 		const provider = this.provider.findOneByProviderId(providerId);
 		if (!provider) {
 			throw new Error('error-invalid-provider');
 		}
 
-		return this.getProviderManager().sendOutboundMessage(provider.appId, provider.type, body);
+		return this.getProviderManager().sendOutboundMessage(provider.appId, provider.type, message);
 	}
 }
 
