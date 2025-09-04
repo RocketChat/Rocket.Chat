@@ -80,7 +80,7 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 		items: availableOutputDevice,
 	};
 
-	const disabled = !micSection.items.length || !speakerSection.items.length;
+	const disabled = availableOutputDevice.length === 0 && availableInputDevice.length === 0;
 
 	const [isOpen, setIsOpen] = useSafely(useState(false));
 
