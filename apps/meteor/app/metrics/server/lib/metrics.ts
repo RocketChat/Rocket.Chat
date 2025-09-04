@@ -218,6 +218,28 @@ export const metrics = {
 		name: 'rocketchat_livechat_webhooks_failures',
 		help: 'failed livechat webhooks',
 	}),
+
+	totalItemsProcessedByQueue: new client.Counter({
+		name: 'rocketchat_queue_items_processed_total',
+		labelNames: ['queue'],
+		help: 'Total number of items processed by Rocket.Chat Omni queues',
+	}),
+	totalItemsFailedByQueue: new client.Counter({
+		name: 'rocketchat_queue_items_failed_total',
+		labelNames: ['queue'],
+		help: 'Total number of items failed by Rocket.Chat Omni queues',
+	}),
+	totalItemsProcessedByReconciliationQueue: new client.Counter({
+		name: 'rocketchat_reconciliation_queue_items_processed_total',
+		labelNames: ['queue', 'action'],
+		help: 'Total number of items processed by the Omnichannel queue that were reconciled before processing',
+	}),
+	timeToQueueProcessingByQueue: new client.Summary({
+		name: 'rocketchat_queue_wait_time_seconds',
+		labelNames: ['queue'],
+		help: 'Time taken in seconds for an item to be processed for the first time by Omni queues',
+		percentiles,
+	}),
 };
 
 // Metrics
