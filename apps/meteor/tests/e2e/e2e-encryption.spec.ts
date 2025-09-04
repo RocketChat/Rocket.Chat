@@ -125,6 +125,7 @@ test.describe('initial setup', () => {
 		const resetE2EEPasswordModal = new ResetE2EEPasswordModal(page);
 
 		await sidenav.logout();
+		await expect(loginPage.loginButton).toBeVisible();
 		await loginPage.loginByUserState(Users.admin);
 		await enterE2EEPasswordBanner.click();
 		await enterE2EEPasswordModal.forgotPassword();
