@@ -135,27 +135,7 @@ class E2E extends Emitter<{
 		}
 
 		await this.room(sub.rid, async (e2eRoom) => {
-			if (sub.E2ESuggestedKey) {
-				await e2eRoom.handleSuggestedKey(sub.E2ESuggestedKey);
-			}
-			sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
-
-			// Cover private groups and direct messages
-			if (!e2eRoom.isSupportedRoomType(sub.t)) {
-				e2eRoom.setState('DISABLED');
-				return;
-			}
-
-			if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
-				e2eRoom.setState('KEYS_RECEIVED');
-				return;
-			}
-
-			if (!e2eRoom.isReady()) {
-				return;
-			}
-
-			await e2eRoom.decryptSubscription();
+			await e2eRoom.handleSubscriptionChanged(sub);
 		});
 	}
 
@@ -176,7 +156,6 @@ class E2E extends Emitter<{
 				excess.forEach((rid) => this.removeInstanceByRoomId(rid));
 			}
 
-			logger.table(subscriptions);
 			for (const sub of subscriptions) {
 				void this.onSubscriptionChanged(sub);
 			}
