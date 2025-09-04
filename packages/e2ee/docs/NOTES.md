@@ -9,6 +9,7 @@
 - [Chore: Replace `promises` helper](https://github.com/RocketChat/Rocket.Chat/pull/23488)
 - [[NEW] E2E password generator](github.com/RocketChat/Rocket.Chat/pull/24114)
 - [[IMPROVE] Require acceptance when setting new E2E Encryption key for another user](https://github.com/RocketChat/Rocket.Chat/pull/27556)
+- [chore: don't `ignoreUndefined`](https://github.com/RocketChat/Rocket.Chat/pull/31497)
 - [feat: Un-encrypted messages not allowed in E2EE rooms](https://github.com/RocketChat/Rocket.Chat/pull/32040)
 - [feat(E2EE): Async E2EE keys exchange](https://github.com/RocketChat/Rocket.Chat/pull/32197)
 - [feat(E2EEncryption): File encryption support](https://github.com/RocketChat/Rocket.Chat/pull/32316)
@@ -16,10 +17,14 @@
 - [fix: Disabled E2EE room instances creation](https://github.com/RocketChat/Rocket.Chat/pull/32857)
 - [feat!: Allow E2EE rooms to reset its room key](https://github.com/RocketChat/Rocket.Chat/pull/33328)
 - [refactor!: Room's Key ID generation](https://github.com/RocketChat/Rocket.Chat/pull/33329)
-- [feat: E2EE rom key reset modal](https://github.com/RocketChat/Rocket.Chat/pull/33503)
+- [feat: E2EE room key reset modal](https://github.com/RocketChat/Rocket.Chat/pull/33503)
+- [fix: Allow any user in e2ee room to create and propagate room keys](https://github.com/RocketChat/Rocket.Chat/pull/34038)
+- [chore: bump meteor and node version](https://github.com/RocketChat/Rocket.Chat/pull/)
 - [chore: Update types of `e2e.room` file](https://github.com/RocketChat/Rocket.Chat/pull/34944)
 - [fix: Quote chaining in E2EE room not limiting quote depth](https://github.com/RocketChat/Rocket.Chat/pull/36143)
+- [chore(deps-dev): bump typescript to 5.9.2](https://github.com/RocketChat/Rocket.Chat/pull/36645)
 - [chore: Move E2E Encryption startup](https://github.com/RocketChat/Rocket.Chat/pull/36722)
+- [feat: Allow reset E2E key from `EnterE2EPassword` modal](https://github.com/RocketChat/Rocket.Chat/pull/36778)
 
 ## Tasks
 
