@@ -217,7 +217,7 @@ export async function testFileUploads(
 				expect(res.body).to.have.property('success', true);
 
 				msgId = res.body.message._id;
-				fileId = res.body.message.file._id;
+				fileId = res.body.file._id;
 			});
 		await request
 			.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
