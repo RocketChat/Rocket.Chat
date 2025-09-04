@@ -213,6 +213,17 @@ export class UserActorSignalProcessor {
 
 			await this.clientIsActive();
 		}
+
+		// if (this.call.service !== 'webrtc') {
+		// 	return;
+		// }
+
+		// // If we have a webrtc offer but the client doesn't, send it to them
+		// if (this.role === 'callee' this.call.webrtcOffer) {
+		// 	if (!signal.serviceStates.signaling || signal.serviceStates.signaling === 'closed') {
+
+		// 	}
+		// }
 	}
 
 	private async onSignalingError(errorMessage?: string): Promise<void> {

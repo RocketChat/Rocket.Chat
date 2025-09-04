@@ -15,6 +15,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	constructor() {
 		super();
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
+		callServer.emitter.on('callUpdated', (callId) => api.broadcast('media-call.updated', callId));
+		this.onEvent('media-call.updated', (callId) => callServer.receiveCallUpdate(callId));
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
 			if (setting._id.startsWith('VoIP_TeamCollab_')) {
@@ -66,8 +68,8 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	private getMediaServerSettings(): IMediaCallServerSettings {
 		const enabled = settings.get<boolean>('VoIP_TeamCollab_Enabled') ?? false;
-		const sipEnabled = false;
-		const forceSip = false;
+		const sipEnabled = enabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false);
+		const forceSip = sipEnabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls') ?? false);
 
 		return {
 			enabled,
@@ -77,6 +79,15 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			},
 			sip: {
 				enabled: sipEnabled,
+				drachtio: {
+					host: settings.get<string>('VoIP_TeamCollab_Drachtio_Host') ?? '',
+					port: settings.get<number>('VoIP_TeamCollab_Drachtio_Port') ?? 9022,
+					secret: settings.get<string>('VoIP_TeamCollab_Drachtio_Password') ?? '',
+				},
+				sipServer: {
+					host: settings.get<string>('VoIP_TeamCollab_SIP_Server_Host') ?? '',
+					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5080,
+				},
 			},
 		};
 	}

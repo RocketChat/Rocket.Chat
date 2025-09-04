@@ -27,7 +27,7 @@ export type CallState =
 
 export type CallHangupReason =
 	| 'normal' // User explicitly hanged up
-	| 'remote' // Server told the client to hang up
+	| 'remote' // The client was told the call is over
 	| 'rejected' // The callee rejected the call
 	| 'unavailable' // The actor is not available
 	| 'timeout' // The call state hasn't progressed for too long
