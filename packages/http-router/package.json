@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/http-router",
-	"version": "7.9.0",
+	"version": "7.9.4",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:~",
@@ -13,7 +13,7 @@
 		"jest": "~30.0.5",
 		"supertest": "^7.1.1",
 		"ts-jest": "~29.4.0",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"scripts": {
 		"build": "rm -rf dist && tsc",

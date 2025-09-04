@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/api-client",
-	"version": "0.2.33",
+	"version": "0.2.37",
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -9,7 +9,7 @@
 		"eslint": "~8.45.0",
 		"jest": "~30.0.5",
 		"jest-fetch-mock": "^3.0.3",
-		"typescript": "~5.8.3"
+		"typescript": "~5.9.2"
 	},
 	"scripts": {
 		"build": "tsc",

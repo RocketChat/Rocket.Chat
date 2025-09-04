@@ -2,9 +2,9 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useE2EEResetRoomKey } from './useE2EEResetRoomKey';
-import { e2e } from '../../../../app/e2e/client';
+import { e2e } from '../../../lib/e2ee';
 
-jest.mock('../../../../app/e2e/client', () => ({
+jest.mock('../../../lib/e2ee', () => ({
 	e2e: {
 		getInstanceByRoomId: jest.fn(),
 	},

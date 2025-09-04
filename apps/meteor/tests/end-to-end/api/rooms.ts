@@ -2792,64 +2792,6 @@ describe('[Rooms]', () => {
 					expect(res.body.room).to.not.have.property('favorite');
 				});
 		});
-		it('should update the team sidepanel items to channels and discussions', async () => {
-			const sidepanelItems = ['channels', 'discussions'];
-			const response = await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testTeam.roomId,
-					sidepanel: { items: sidepanelItems },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(response.body).to.have.property('success', true);
-
-			const channelInfoResponse = await request
-				.get(api('channels.info'))
-				.set(credentials)
-				.query({ roomId: response.body.rid })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(channelInfoResponse.body).to.have.property('success', true);
-			expect(channelInfoResponse.body.channel).to.have.property('sidepanel');
-			expect(channelInfoResponse.body.channel.sidepanel).to.have.property('items').that.is.an('array').to.have.deep.members(sidepanelItems);
-		});
-		it('should throw error when updating team sidepanel with incorrect items', async () => {
-			const sidepanelItems = ['wrong'];
-			await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testTeam.roomId,
-					sidepanel: { items: sidepanelItems },
-				})
-				.expect(400);
-		});
-		it('should throw error when updating team sidepanel with more than 2 items', async () => {
-			const sidepanelItems = ['channels', 'discussions', 'extra'];
-			await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testTeam.roomId,
-					sidepanel: { items: sidepanelItems },
-				})
-				.expect(400);
-		});
-		it('should throw error when updating team sidepanel with duplicated items', async () => {
-			const sidepanelItems = ['channels', 'channels'];
-			await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testTeam.roomId,
-					sidepanel: { items: sidepanelItems },
-				})
-				.expect(400);
-		});
 	});
 
 	describe('rooms.images', () => {

@@ -60,10 +60,6 @@ export class OmnichannelTriggers {
 		return this.page.locator('input[name="conditions.0.value"]');
 	}
 
-	get actionLabel(): Locator {
-		return this.page.locator('label >> text="Action"');
-	}
-
 	get senderLabel(): Locator {
 		return this.page.locator('label >> text="Sender"');
 	}
