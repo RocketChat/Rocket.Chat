@@ -16,9 +16,11 @@ import type {
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
+import type { AppLogsExportProps } from './appLogsExportProps';
 import type { AppLogsProps } from './appLogsProps';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
+export * from './appLogsExportProps';
 export * from './appLogsProps';
 
 export type AppsEndpoints = {
@@ -104,6 +106,14 @@ export type AppsEndpoints = {
 		GET: (params: Omit<AppLogsProps, 'appId'>) => PaginatedResult<{
 			logs: ILogItem[];
 		}>;
+	};
+
+	'/apps/:id/logs/distinctValues': {
+		GET: () => { success: boolean; instanceIds: string[]; methods: string[] };
+	};
+
+	'/apps/:id/export-logs': {
+		GET: (params: AppLogsExportProps) => Buffer;
 	};
 
 	'/apps/:id/apis': {

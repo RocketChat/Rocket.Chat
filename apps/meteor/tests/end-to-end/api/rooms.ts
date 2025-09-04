@@ -2792,64 +2792,6 @@ describe('[Rooms]', () => {
 					expect(res.body.room).to.not.have.property('favorite');
 				});
 		});
-		it('should update the team sidepanel items to channels and discussions', async () => {
-			const sidepanelItems = ['channels', 'discussions'];
-			const response = await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testTeam.roomId,
-					sidepanel: { items: sidepanelItems },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(response.body).to.have.property('success', true);
-
-			const channelInfoResponse = await request
-				.get(api('channels.info'))
-				.set(credentials)
-				.query({ roomId: response.body.rid })
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(channelInfoResponse.body).to.have.property('success', true);
-			expect(channelInfoResponse.body.channel).to.have.property('sidepanel');
-			expect(channelInfoResponse.body.channel.sidepanel).to.have.property('items').that.is.an('array').to.have.deep.members(sidepanelItems);
-		});
-		it('should throw error when updating team sidepanel with incorrect items', async () => {
-			const sidepanelItems = ['wrong'];
-			await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testTeam.roomId,
-					sidepanel: { items: sidepanelItems },
-				})
-				.expect(400);
-		});
-		it('should throw error when updating team sidepanel with more than 2 items', async () => {
-			const sidepanelItems = ['channels', 'discussions', 'extra'];
-			await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testTeam.roomId,
-					sidepanel: { items: sidepanelItems },
-				})
-				.expect(400);
-		});
-		it('should throw error when updating team sidepanel with duplicated items', async () => {
-			const sidepanelItems = ['channels', 'channels'];
-			await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testTeam.roomId,
-					sidepanel: { items: sidepanelItems },
-				})
-				.expect(400);
-		});
 	});
 
 	describe('rooms.images', () => {
@@ -4429,6 +4371,29 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
+		});
+	});
+
+	describe('/rooms.roles', () => {
+		let testChannel: IRoom;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` })).body.channel;
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
+		it('should get room roles', async () => {
+			const response = await request.get(api('rooms.roles')).set(credentials).query({ rid: testChannel._id }).expect(200);
+			expect(response.body.success).to.be.true;
+			// the schema is already validated in the server on TEST mode
+			expect(response.body.roles).to.be.an('array');
+			// it should have the user roles
+			expect(response.body.roles).to.have.lengthOf(1);
+			expect(response.body.roles[0].rid).to.equal(testChannel._id);
+			expect(response.body.roles[0].roles).to.be.an('array');
+			// it should contain owner role
+			expect(response.body.roles[0].roles).to.include('owner');
 		});
 	});
 });

@@ -14,7 +14,7 @@ export abstract class AppLogStorage {
 		return this.engine;
 	}
 
-	public abstract find(
+	public abstract findPaginated(
 		query: { [field: string]: any },
 		options?: IAppLogStorageFindOptions,
 	): Promise<{ logs: ILoggerStorageEntry[]; total: number }>;

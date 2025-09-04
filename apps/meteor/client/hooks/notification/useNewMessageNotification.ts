@@ -2,6 +2,8 @@ import type { AtLeast, ISubscription } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 
+import { Subscriptions } from '../../stores';
+
 export const useNewMessageNotification = () => {
 	const { notificationSounds } = useCustomSound();
 
@@ -9,14 +11,12 @@ export const useNewMessageNotification = () => {
 		if (!sub || sub.audioNotificationValue === 'none') {
 			return;
 		}
-		// TODO: Fix this - Room Notifications Preferences > sound > desktop is not working.
-		// plays the user notificationSound preference
 
-		// if (sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-		// 	void CustomSounds.play(sub.audioNotificationValue, {
-		// 		volume: Number((notificationsSoundVolume / 100).toPrecision(2)),
-		// 	});
-		// }
+		const subscription = Subscriptions.state.find((record) => record.rid === sub.rid);
+
+		if (subscription?.audioNotificationValue) {
+			return notificationSounds.playNewMessageCustom(subscription.audioNotificationValue);
+		}
 
 		notificationSounds.playNewMessage();
 	});

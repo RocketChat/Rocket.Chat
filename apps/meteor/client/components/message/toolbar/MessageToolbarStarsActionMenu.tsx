@@ -31,7 +31,7 @@ const MessageToolbarStarsActionMenu = ({ message, context, onChangeMenuVisibilit
 
 	const groupOptions = starsAction.data.reduce((acc, option) => {
 		const transformedOption = {
-			variant: option.color === 'alert' ? 'danger' : '',
+			variant: option.variant,
 			id: option.id,
 			icon: option.icon,
 			content: t(option.label),
@@ -76,8 +76,6 @@ const MessageToolbarStarsActionMenu = ({ message, context, onChangeMenuVisibilit
 			title={t('AI_Actions')}
 			sections={groupOptions}
 			placement='bottom-end'
-			data-qa-id='menu'
-			data-qa-type='message-action-stars-menu-options'
 			onOpenChange={onChangeMenuVisibility}
 		/>
 	);
