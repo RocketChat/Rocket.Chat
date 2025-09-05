@@ -13,6 +13,7 @@ import { configureLDAP } from './ldap';
 import { configureOAuth } from './oauth';
 import { configurePushNotifications } from './pushNotification';
 import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
+import { configurePasskey } from '/server/configuration/passkey';
 
 export async function configureServer(settings: ICachedSettings) {
 	await Promise.all([
@@ -30,5 +31,6 @@ export async function configureServer(settings: ICachedSettings) {
 		configureSMTP(settings),
 		configureFederation(settings),
 		configureIRC(settings),
+		configurePasskey(settings),
 	]);
 }
