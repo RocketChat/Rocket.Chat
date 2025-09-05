@@ -1,5 +1,3 @@
-import { EventEmitter } from 'stream';
-
 import { TestsAppBridges } from './bridges/appBridges';
 import { TestSourceStorage } from './storage/TestSourceStorage';
 import { TestsAppLogStorage } from './storage/logStorage';
@@ -47,7 +45,7 @@ import type {
 } from '../../src/server/managers';
 import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeManager';
 import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
-import type { DenoRuntimeSubprocessController } from '../../src/server/runtime/deno/AppsEngineDenoRuntime';
+import type { IRuntimeController } from '../../src/server/runtime/IRuntimeController';
 import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
 
 export class TestInfastructureSetup {
@@ -70,7 +68,7 @@ export class TestInfastructureSetup {
 		this.sourceStorage = new TestSourceStorage();
 		this.runtimeManager = {
 			startRuntimeForApp: async () => {
-				return {} as DenoRuntimeSubprocessController;
+				return TestData.getMockRuntimeController('test');
 			},
 			runInSandbox: async () => {
 				return {} as unknown as Promise<unknown>;
@@ -96,7 +94,7 @@ export class TestInfastructureSetup {
 				return {} as AppExternalComponentManager;
 			},
 			getOneById(appId: string): ProxiedApp {
-				return appId === 'failMePlease' ? undefined : TestData.getMockApp(appId, 'testing');
+				return appId === 'failMePlease' ? undefined : TestData.getMockApp({ id: appId, name: 'testing' }, this);
 			},
 			getLogStorage(): AppLogStorage {
 				return new TestsAppLogStorage();
@@ -512,11 +510,38 @@ export class TestData {
 		return OAuthApp;
 	}
 
-	public static getMockApp(id: string, name: string): ProxiedApp {
+	public static getMockRuntimeController(id: string): IRuntimeController {
+		const mock = {
+			getStatus: () => Promise.resolve(AppStatus.AUTO_ENABLED),
+			sendRequest: () => Promise.resolve(undefined),
+			setupApp: () => Promise.resolve(),
+			stopApp: () => Promise.resolve(),
+			getAppId: () => id,
+			on: () => mock,
+			once: () => mock,
+			off: () => mock,
+			emit: () => true,
+			addListener: () => mock,
+			removeListener: () => mock,
+			removeAllListeners: () => mock,
+			setMaxListeners: () => mock,
+			getMaxListeners: () => 10,
+			listeners: () => [],
+			rawListeners: () => [],
+			listenerCount: () => 0,
+			prependListener: () => mock,
+			prependOnceListener: () => mock,
+			eventNames: () => [],
+		} as IRuntimeController;
+
+		return mock;
+	}
+
+	public static getMockApp({ id, name }: { id: string; name: string }, manager: AppManager): ProxiedApp {
 		return new ProxiedApp(
-			{} as AppManager,
-			{ status: AppStatus.UNKNOWN, info: { id, name } } as IAppStorageItem,
-			new EventEmitter() as DenoRuntimeSubprocessController,
+			manager,
+			{ id, status: AppStatus.AUTO_ENABLED, info: { id, name } } as IAppStorageItem,
+			TestData.getMockRuntimeController(id),
 		);
 	}
 }

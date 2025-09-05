@@ -32,7 +32,7 @@ export class OutboundMessageProvider {
 		const provider = `${this.provider.name}-${this.provider.type}`;
 
 		try {
-			const result = await this.app.getDenoRuntime().sendRequest({
+			const result = await this.app.getRuntimeController().sendRequest({
 				method: `outboundCommunication:${provider}:${method}`,
 				params: runContextArgs,
 			});
