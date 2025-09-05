@@ -1,3 +1,4 @@
+import { LOGIN_TOKEN_KEY, userStorage } from '../user';
 import type { IWithManageableCache } from './CachedStore';
 
 class CachedStoresManager {
@@ -20,3 +21,10 @@ export {
 	/** @deprecated */
 	instance as CachedStoresManager,
 };
+
+userStorage.on('change', () => {
+	const loginToken = userStorage.getItem(LOGIN_TOKEN_KEY);
+	if (loginToken) return;
+
+	instance.clearAllCachesOnLogout();
+});

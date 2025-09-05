@@ -110,16 +110,6 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 						resolve();
 					});
 				}),
-			unstoreLoginToken: (callback) => {
-				const { _unstoreLoginToken } = Accounts;
-				Accounts._unstoreLoginToken = function (...args) {
-					callback();
-					_unstoreLoginToken.apply(Accounts, args);
-				};
-				return () => {
-					Accounts._unstoreLoginToken = _unstoreLoginToken;
-				};
-			},
 			queryLoginServices: {
 				getCurrentValue: () => loginServices.getLoginServiceButtons(),
 				subscribe: (onStoreChange: () => void) => loginServices.on('changed', onStoreChange),

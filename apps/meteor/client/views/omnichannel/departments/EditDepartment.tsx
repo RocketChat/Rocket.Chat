@@ -38,7 +38,7 @@ import { AsyncStatePhase } from '../../../lib/asyncState';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import DepartmentTags from './DepartmentTags';
-import AutoCompleteUnit from '../../../omnichannel/additionalForms/AutoCompleteUnit';
+import AutoCompleteUnit from '../additionalForms/AutoCompleteUnit';
 
 export type EditDepartmentProps = {
 	id?: string;

@@ -152,7 +152,7 @@ export class MockedAppRootBuilder {
 		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
 		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
 		user: null,
-		userId: null,
+		userId: undefined,
 	};
 
 	private userPresence: ContextType<typeof UserPresenceContext> = {
@@ -244,7 +244,6 @@ export class MockedAppRootBuilder {
 			getCurrentValue: () => this.authServices,
 			subscribe: () => () => undefined,
 		},
-		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
 	};
 
 	private events = new Emitter<MockedAppRootEvents>();
@@ -410,7 +409,7 @@ export class MockedAppRootBuilder {
 	}
 
 	withAnonymous(): this {
-		this.user.userId = null;
+		this.user.userId = undefined;
 		this.user.user = null;
 
 		return this;

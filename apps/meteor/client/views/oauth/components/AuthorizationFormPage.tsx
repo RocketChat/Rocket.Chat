@@ -2,12 +2,13 @@ import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Form } from '@rocket.chat/layout';
 import { useLogout, useRoute } from '@rocket.chat/ui-contexts';
-import { Accounts } from 'meteor/accounts-base';
-import { useEffect, useId, useMemo, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import CurrentUserDisplay from './CurrentUserDisplay';
 import Layout from './Layout';
+import { useUserStorageValue } from '../../../hooks/useUserStorageValue';
+import { LOGIN_TOKEN_KEY } from '../../../lib/user';
 
 type AuthorizationFormPageProps = {
 	oauthApp: IOAuthApps;
@@ -16,7 +17,7 @@ type AuthorizationFormPageProps = {
 };
 
 const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFormPageProps) => {
-	const token = useMemo(() => Accounts.storageLocation.getItem(Accounts.LOGIN_TOKEN_KEY) ?? undefined, []);
+	const token = useUserStorageValue(LOGIN_TOKEN_KEY);
 
 	const formLabelId = useId();
 

@@ -10,10 +10,10 @@ import { baseURI } from '../baseURI';
 import { onLoggedIn } from '../loggedIn';
 import { CachedStoresManager } from './CachedStoresManager';
 import type { IDocumentMapStore } from './DocumentMapStore';
-import { watch } from './watch';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { isTruthy } from '../../../lib/isTruthy';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { getUserId, userStorage, LOGIN_TOKEN_KEY } from '../user';
 import { getConfig } from '../utils/getConfig';
 
 type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
@@ -74,7 +74,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
 		if (this.eventType === 'notify-user') {
-			return `${Meteor.userId()}/${this.name}-changed`;
+			return `${getUserId()}/${this.name}-changed`;
 		}
 		return `${this.name}-changed`;
 	}
@@ -359,10 +359,6 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	private reconnectionComputation: Tracker.Computation | undefined;
 
-	watchReady() {
-		return watch(this.useReady, (ready) => ready);
-	}
-
 	setReady(ready: boolean) {
 		this.useReady.setState(ready);
 	}
@@ -380,7 +376,7 @@ export class PublicCachedStore<T extends IRocketChatRecord, U = T> extends Cache
 
 export class PrivateCachedStore<T extends IRocketChatRecord, U = T> extends CachedStore<T, U> {
 	protected override getToken() {
-		return Accounts._storedLoginToken();
+		return userStorage.getItem(LOGIN_TOKEN_KEY);
 	}
 
 	override clearCacheOnLogout() {

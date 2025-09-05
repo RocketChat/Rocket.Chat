@@ -4,7 +4,7 @@ import { lazy, useMemo } from 'react';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useHasLicenseModule } from '../useHasLicenseModule';
 
-const CannedResponse = lazy(() => import('../../omnichannel/cannedResponses/contextualBar/CannedResponse/WrapCannedResponseList'));
+const CannedResponse = lazy(() => import('../../views/omnichannel/cannedResponses/contextualBar/CannedResponse/WrapCannedResponseList'));
 
 export const useCannedResponsesRoomAction = () => {
 	const licensed = useHasLicenseModule('canned-responses') === true;
