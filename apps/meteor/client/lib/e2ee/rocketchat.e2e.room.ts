@@ -373,7 +373,13 @@ export class E2ERoom extends Emitter {
 	async importGroupKey(groupKey: string) {
 		this.log('Importing room key ->', this.roomId);
 		// Get existing group key
-		// const keyID = groupKey.slice(0, 12);
+		const keyID = groupKey.slice(0, 12);
+
+		if (this.keyID === keyID) {
+			this.log('Key already imported');
+			return true;
+		}
+
 		groupKey = groupKey.slice(12);
 		const decodedGroupKey = Base64.decode(groupKey);
 
@@ -424,11 +430,6 @@ export class E2ERoom extends Emitter {
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
 			const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
 			if (myKey) {
-				await sdk.rest.post('/v1/e2e.updateGroupKey', {
-					rid: this.roomId,
-					uid: this.userId,
-					key: myKey,
-				});
 				await this.encryptKeyForOtherParticipants();
 			}
 		} catch (error) {

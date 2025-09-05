@@ -42,31 +42,6 @@ const E2eGetUsersOfRoomWithoutKeySchema = {
 
 export const isE2eGetUsersOfRoomWithoutKeyProps = ajv.compile<E2eGetUsersOfRoomWithoutKeyProps>(E2eGetUsersOfRoomWithoutKeySchema);
 
-type E2eUpdateGroupKeyProps = {
-	uid: string;
-	rid: string;
-	key: string;
-};
-
-const E2eUpdateGroupKeySchema = {
-	type: 'object',
-	properties: {
-		uid: {
-			type: 'string',
-		},
-		rid: {
-			type: 'string',
-		},
-		key: {
-			type: 'string',
-		},
-	},
-	required: ['uid', 'rid', 'key'],
-	additionalProperties: false,
-};
-
-export const isE2eUpdateGroupKeyProps = ajv.compile<E2eUpdateGroupKeyProps>(E2eUpdateGroupKeySchema);
-
 type E2EProvideUsersGroupKeyProps = {
 	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string; oldKeys: ISubscription['suggestedOldRoomKeys'] }[]>;
 };
@@ -156,9 +131,6 @@ export type E2eEndpoints = {
 		GET: (params: E2eGetUsersOfRoomWithoutKeyProps) => {
 			users: Pick<IUser, '_id' | 'e2e'>[];
 		};
-	};
-	'/v1/e2e.updateGroupKey': {
-		POST: (params: E2eUpdateGroupKeyProps) => void;
 	};
 	'/v1/e2e.acceptSuggestedGroupKey': {
 		POST: (params: E2eGetUsersOfRoomWithoutKeyProps) => void;
