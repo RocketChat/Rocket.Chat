@@ -142,17 +142,29 @@ jobs:
         with:
           repository: RocketChat/homeserver
           path: homeserver
-          ref: bundle-for-rocket.chat
+
+      - uses: actions/cache@v4
+        id: cache-homeserver
+        name: cache homeserver
+        with:
+          path: /tmp/homeserver
+          key: homeserver-${{ hashFiles('homeserver/.git/refs/heads/main') }}
+
       - uses: oven-sh/setup-bun@v2
+        if: steps.cache-homeserver.outputs.cache-hit != 'true'
       - run: |
           cd homeserver
           bun install
           bun run build
           bun run bundle:sdk
+          rm -rf .git
+          cp -r ../homeserver /tmp/homeserver
+        if: steps.cache-homeserver.outputs.cache-hit != 'true'
+
       - uses: actions/upload-artifact@v4
         with:
           name: homeserver
-          path: homeserver
+          path: /tmp/homeserver
 
   packages-build:
     name: 📦 Build Packages
