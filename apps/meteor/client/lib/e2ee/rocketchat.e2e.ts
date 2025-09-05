@@ -7,7 +7,7 @@ import type { EncryptedKeyPair, RemoteKeyPair } from '@rocket.chat/e2ee';
 import E2EE from '@rocket.chat/e2ee';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
-import _ from 'lodash';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -48,6 +48,25 @@ const waitForRoom = (rid: IRoom['_id']): Promise<IRoom> =>
 			}
 		});
 	});
+
+const isRoomWithSuggestedKey = <T extends { E2ESuggestedKey?: unknown, E2EKey?: unknown }>(sub: T): sub is T & { E2ESuggestedKey: string, E2EKey?: undefined } =>
+	typeof sub.E2ESuggestedKey === 'string' && !sub.E2EKey;
+
+const isRoomEncrypted = <T extends { encrypted?: unknown }>(sub: T): sub is T & { encrypted: true } => sub.encrypted === true;
+
+const filterSubscriptions = <T extends SubscriptionWithRoom = SubscriptionWithRoom>(filter: (sub: SubscriptionWithRoom) => sub is T) => {
+	return Subscriptions.state.filter(filter);
+};
+
+const sampleSize = <T>(array: readonly T[], size: number): T[] => {
+    if (size >= array.length) return [...array];
+    const arr = array.slice(); // don't mutate caller
+    for (let i = 0; i < size; i++) {
+        const r = i + Math.floor(Math.random() * (arr.length - i)); // random index in [i, end)
+        [arr[i], arr[r]] = [arr[r], arr[i]];
+    }
+    return arr.slice(0, size);
+}
 
 class E2E extends Emitter<{
 	READY: void;
@@ -119,10 +138,6 @@ class E2E extends Emitter<{
 
 	getState() {
 		return this.state;
-	}
-
-	isEnabled(): boolean {
-		return this.state !== 'DISABLED';
 	}
 
 	isReady(): boolean {
@@ -203,16 +218,17 @@ class E2E extends Emitter<{
 	 * Handles the suggested E2E key for a subscription.
 	 */
 	async handleAsyncE2EESuggestedKey() {
-		const subs = Subscriptions.state.filter((sub) => typeof sub.E2ESuggestedKey !== 'undefined');
+		const subs = filterSubscriptions(isRoomWithSuggestedKey);
+		if (!subs.length) {
+			return;
+		}
 		await Promise.all(
-			subs
-				.flatMap(({ E2ESuggestedKey, E2EKey, rid, encrypted }) => (E2ESuggestedKey && !E2EKey ? [{ rid, E2ESuggestedKey, encrypted }] : []))
-				.map(async (sub) => {
-					await this.room(sub.rid, async (e2eRoom) => {
-						await e2eRoom.handleSuggestedKey(sub.E2ESuggestedKey);
-						sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
-					});
-				}),
+			subs.map(async (sub) => {
+				await this.room(sub.rid, async (e2eRoom) => {
+					await e2eRoom.handleSuggestedKey(sub.E2ESuggestedKey);
+					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+				});
+			}),
 		);
 	}
 
@@ -404,7 +420,7 @@ class E2E extends Emitter<{
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await sdk.call('e2e.requestSubscriptionKeys');
+		await sdk.rest.get('/v1/e2e.requestSubscriptionKeys');
 	}
 
 	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
@@ -575,8 +591,7 @@ class E2E extends Emitter<{
 	}
 
 	async decryptSubscriptions(): Promise<void> {
-		Subscriptions.state
-			.filter((subscription) => Boolean(subscription.encrypted))
+		filterSubscriptions(isRoomEncrypted)
 			.forEach((subscription) => this.decryptSubscription(subscription._id));
 	}
 
@@ -669,7 +684,7 @@ class E2E extends Emitter<{
 			return [];
 		}
 
-		const randomRoomIds = _.sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
+		const randomRoomIds = sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
 
 		const sampleIds: string[] = [];
 		for await (const roomId of randomRoomIds) {

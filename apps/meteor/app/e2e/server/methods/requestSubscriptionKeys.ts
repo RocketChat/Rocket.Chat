@@ -34,9 +34,9 @@ Meteor.methods<ServerMethods>({
 		};
 
 		const rooms = Rooms.find(query);
-		await rooms.forEach((room) => {
+		for await (const room of rooms) {
 			void api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
-		});
+		}
 
 		return true;
 	},

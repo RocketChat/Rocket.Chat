@@ -243,7 +243,8 @@ export class E2ERoom extends Emitter {
 				});
 			} catch (e) {
 				this.error(
-					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
+					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping\n`,
+					JSON.stringify(e)
 				);
 				keys.push({ ...key, E2EKey: null });
 			}
@@ -656,10 +657,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Helper function for encryption of messages
-	encrypt(message: IMessage) {
-		if (!this.isSupportedRoomType(this.typeOfRoom)) {
-			return;
-		}
+	encrypt(message: { _id: IMessage['_id']; msg: IMessage['msg'] }): Promise<string | undefined> {
 
 		if (!this.groupSessionKey) {
 			throw new Error(t('E2E_Invalid_Key'));

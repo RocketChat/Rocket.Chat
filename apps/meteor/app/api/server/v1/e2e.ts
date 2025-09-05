@@ -1,4 +1,5 @@
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import {
 	ajv,
 	validateUnauthorizedErrorResponse,
@@ -75,6 +76,42 @@ const e2eEndpoints = API.v1.post(
 
 		return API.v1.success();
 	},
+).get('e2e.requestSubscriptionKeys', {
+	authRequired: true,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		200: ajv.compile<void>({
+			type: 'object',
+			properties: {
+				success: { type: 'boolean', enum: [true] },
+			},
+			required: ['success'],
+		}),
+	},
+},
+	async function action() {
+		// Get all encrypted rooms that the user is subscribed to and has no E2E key yet
+		const subscriptions = await Subscriptions.findByUserIdWithoutE2E(this.userId).toArray();
+		const roomIds = subscriptions.map((subscription) => subscription.rid);
+
+		// For all subscriptions without E2E key, get the rooms that have encryption enabled
+		const query = {
+			e2eKeyId: {
+				$exists: true,
+			},
+			_id: {
+				$in: roomIds,
+			},
+		};
+
+		const rooms = Rooms.find(query);
+		for await (const room of rooms) {
+			void api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
+		}
+
+		return API.v1.success();
+	}
 );
 
 API.v1.addRoute(
