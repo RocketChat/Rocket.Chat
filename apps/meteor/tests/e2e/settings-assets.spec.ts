@@ -13,7 +13,7 @@ test.describe.serial('settings-assets', () => {
 
 		await poAdmin.btnAssetsSettings.click();
 
-		await expect(page.locator('[data-qa-type="PageHeader-title"]')).toHaveText('Assets');
+		await expect(page.getByRole('main').getByRole('heading', { level: 1, name: 'Assets', exact: true })).toBeVisible();
 	});
 
 	test('expect upload and delete logo asset and label should be visible', async ({ page }) => {
