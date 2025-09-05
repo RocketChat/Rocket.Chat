@@ -23,7 +23,6 @@ import { createMiscSettings } from './misc';
 import { createMobileSettings } from './mobile';
 import { createOauthSettings } from './oauth';
 import { createOmniSettings } from './omnichannel';
-import { createOTRSettings } from './otr';
 import { createPushSettings } from './push';
 import { createRateLimitSettings } from './rate';
 import { createRetentionSettings } from './retention-policy';
@@ -35,7 +34,6 @@ import { createTroubleshootSettings } from './troubleshoot';
 import { createUserDataSettings } from './userDataDownload';
 import { createVConfSettings } from './video-conference';
 import { createWebDavSettings } from './webdav';
-import { createWebRTCSettings } from './webrtc';
 
 await Promise.all([
 	createAccountSettings(),
@@ -63,7 +61,6 @@ await Promise.all([
 	createMobileSettings(),
 	createOauthSettings(),
 	createOmniSettings(),
-	createOTRSettings(),
 	createPushSettings(),
 	createRateLimitSettings(),
 	createRetentionSettings(),
@@ -75,5 +72,4 @@ await Promise.all([
 	createVConfSettings(),
 	createUserDataSettings(),
 	createWebDavSettings(),
-	createWebRTCSettings(),
 ]);

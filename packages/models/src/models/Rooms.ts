@@ -77,10 +77,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{
-				key: { createdOTR: 1 },
-				sparse: true,
-			},
-			{
 				key: { encrypted: 1 },
 				sparse: true,
 			}, // used on statistics
@@ -863,15 +859,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<IRoomFederated>(query, options);
 	}
 
-	findCountOfRoomsWithActiveCalls(): Promise<number> {
-		const query: Filter<IRoom> = {
-			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
-			callStatus: { $exists: true },
-		};
-
-		return this.countDocuments(query);
-	}
-
 	async findBiggestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined> {
 		const asc = false;
 
@@ -940,35 +927,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findOneByIdAndType(roomId: IRoom['_id'], type: IRoom['t'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.findOne({ _id: roomId, t: type }, options);
-	}
-
-	setCallStatus(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = {
-			_id,
-		};
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				callStatus: status,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	setCallStatusAndCallStartTime(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = {
-			_id,
-		};
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				callStatus: status,
-				webRtcCallStartTime: new Date(),
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	setReactionsInLastMessage(roomId: IRoom['_id'], reactions: IMessage['reactions']): Promise<UpdateResult> {
@@ -1496,14 +1454,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findByCreatedOTR(): FindCursor<IRoom> {
-		return this.find({ createdOTR: true });
-	}
-
-	countByCreatedOTR(options?: CountDocumentsOptions): Promise<number> {
-		return this.countDocuments({ createdOTR: true }, options);
-	}
-
 	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom> {
 		return this.find({ $or: [{ usernames: { $in: usernames } }, { uids: { $in: uids } }] });
 	}
@@ -1994,18 +1944,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	countDiscussions(): Promise<number> {
 		return this.countDocuments({ prid: { $exists: true } });
-	}
-
-	setOTRForDMByRoomID(rid: IRoom['_id']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id: rid, t: 'd' };
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				createdOTR: true,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	async getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]> {
