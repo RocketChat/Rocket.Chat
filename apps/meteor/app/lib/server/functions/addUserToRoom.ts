@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -149,6 +149,10 @@ export const addUserToRoom = async function (
 
 	if (room.encrypted && settings.get('E2E_Enable') && userToBeAdded.e2e?.public_key) {
 		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
+	}
+
+	if (isRoomFederated(room) && userToBeAdded.username && inviter) {
+		await callbacks.run('native-federation.onAfterAddUsersToRoom', { invitees: [userToBeAdded.username], inviter }, room);
 	}
 
 	void notifyOnRoomChangedById(rid);

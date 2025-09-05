@@ -24,6 +24,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
@@ -561,6 +562,8 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult._id, role: 'moderator' });
+
 			await addRoomModerator(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
@@ -576,6 +579,8 @@ API.v1.addRoute(
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
+
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult._id, role: 'owner' });
 
 			await addRoomOwner(this.userId, findResult._id, user._id);
 
@@ -1185,6 +1190,8 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult._id, role: 'user' });
+
 			await removeRoomModerator(this.userId, findResult._id, user._id);
 
 			return API.v1.success();
@@ -1200,6 +1207,8 @@ API.v1.addRoute(
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
 			const user = await getUserFromParams(this.bodyParams);
+
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult._id, role: 'user' });
 
 			await removeRoomOwner(this.userId, findResult._id, user._id);
 

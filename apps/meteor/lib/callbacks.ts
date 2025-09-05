@@ -94,6 +94,9 @@ interface EventLikeCallbackSignatures {
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
 	'afterUserImport': (data: { inserted: IUser['_id'][]; updated: IUser['_id']; skipped: number; failed: number }) => void;
+
+	'native-federation.onAddUsersToRoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
+	'native-federation.onAfterAddUsersToRoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 }
 
 /**
@@ -198,6 +201,12 @@ type ChainedCallbackSignatures = {
 	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
 	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
+	'beforeChangeRoomRole': (params: {
+		fromUserId: string;
+		userId: string;
+		roomId: string;
+		role: 'moderator' | 'owner' | 'leader' | 'user';
+	}) => void;
 };
 
 export type Hook =

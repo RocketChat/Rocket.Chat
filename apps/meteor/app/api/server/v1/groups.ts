@@ -6,6 +6,7 @@ import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
@@ -163,6 +164,8 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'moderator' });
+
 			await addRoomModerator(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
@@ -181,6 +184,8 @@ API.v1.addRoute(
 			});
 
 			const user = await getUserFromParams(this.bodyParams);
+
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'owner' });
 
 			await addRoomOwner(this.userId, findResult.rid, user._id);
 
@@ -907,6 +912,8 @@ API.v1.addRoute(
 
 			const user = await getUserFromParams(this.bodyParams);
 
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'user' });
+
 			await removeRoomModerator(this.userId, findResult.rid, user._id);
 
 			return API.v1.success();
@@ -925,6 +932,8 @@ API.v1.addRoute(
 			});
 
 			const user = await getUserFromParams(this.bodyParams);
+
+			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'user' });
 
 			await removeRoomOwner(this.userId, findResult.rid, user._id);
 
