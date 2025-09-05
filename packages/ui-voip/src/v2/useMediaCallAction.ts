@@ -1,7 +1,8 @@
 import type { Keys as IconNames } from '@rocket.chat/icons';
-import { useMediaCallContext } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { useMediaCallContext } from './MediaCallContext';
 
 export const useMediaCallAction = (): { title: string; icon: IconNames; action: () => void; loading?: boolean } => {
 	const { t } = useTranslation();
