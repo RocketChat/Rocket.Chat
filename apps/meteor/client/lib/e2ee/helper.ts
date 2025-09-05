@@ -25,7 +25,7 @@ export function toArrayBuffer(thing: any) {
 	return ByteBuffer.wrap(thing, 'binary').toArrayBuffer();
 }
 
-export function joinVectorAndEcryptedData(vector: any, encryptedData: any) {
+export function joinVectorAndEncryptedData(vector: any, encryptedData: any) {
 	const cipherText = new Uint8Array(encryptedData);
 	const output = new Uint8Array(vector.length + cipherText.length);
 	output.set(vector, 0);
@@ -33,7 +33,7 @@ export function joinVectorAndEcryptedData(vector: any, encryptedData: any) {
 	return output;
 }
 
-export function splitVectorAndEcryptedData(cipherText: any) {
+export function splitVectorAndEncryptedData(cipherText: Uint8Array<ArrayBuffer>): [Uint8Array<ArrayBuffer>, Uint8Array<ArrayBuffer>] {
 	const vector = cipherText.slice(0, 16);
 	const encryptedData = cipherText.slice(16);
 

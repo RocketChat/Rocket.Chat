@@ -602,6 +602,7 @@ test.describe('e2e-encryption', () => {
 		await poHomeChannel.sidenav.btnCreate.click();
 
 		await expect(page).toHaveURL(`/direct/user2${Users.userE2EE.data.username}`);
+		await expect(page.getByRole('textbox', { name: 'Message @user2' })).toBeVisible()
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		if (await poHomeChannel.tabs.btnDisableE2E.isVisible()) {

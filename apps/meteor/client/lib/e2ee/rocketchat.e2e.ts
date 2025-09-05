@@ -565,7 +565,10 @@ class E2E extends Emitter<{
 			return message;
 		}
 
-		const data = await e2eRoom.decrypt(pinnedMessage);
+		const data = await e2eRoom.decrypt({
+			algorithm: 'rc.v2.aes-gcm-sha2',
+			ciphertext: pinnedMessage
+		});
 
 		if (!data) {
 			return message;

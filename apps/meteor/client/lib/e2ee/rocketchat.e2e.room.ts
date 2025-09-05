@@ -8,8 +8,8 @@ import type { E2ERoomState } from './E2ERoomState';
 import {
 	toString,
 	toArrayBuffer,
-	joinVectorAndEcryptedData,
-	splitVectorAndEcryptedData,
+	joinVectorAndEncryptedData,
+	splitVectorAndEncryptedData,
 	encryptRSA,
 	encryptAesGcm,
 	decryptRSA,
@@ -23,6 +23,8 @@ import {
 	generateAESCTRKey,
 	sha256HashFromArrayBuffer,
 	createSha256HashFromText,
+	encryptAesCbc,
+	decryptAesCbc,
 } from './helper';
 import { logger } from './logger';
 import { e2e } from './rocketchat.e2e';
@@ -79,6 +81,12 @@ const decryptSessionKey = async (key: string): Promise<CryptoKey> => {
 
 export type EncryptedGroupKey = { E2EKey: string; e2eKeyId: string; ts: Date };
 export type DecryptedGroupKey = { E2EKey: CryptoKey | null; e2eKeyId: string; ts: Date };
+
+export type EncryptionAlgorithm = 'rc.v1.aes-sha2' | 'rc.v2.aes-gcm-sha2';
+export type EncryptedContent = {
+	algorithm: EncryptionAlgorithm;
+	ciphertext: string;
+};
 
 export class E2ERoom extends Emitter {
 	state: E2ERoomState = 'NOT_STARTED';
@@ -613,15 +621,21 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Encrypts messages
-	async encryptText(data: Uint8Array<ArrayBuffer>) {
+	async encryptText(data: Uint8Array<ArrayBuffer>, algorithm: 'rc.v1.aes-sha2' | 'rc.v2.aes-gcm-sha2' = 'rc.v2.aes-gcm-sha2'): Promise<EncryptedContent> {
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 
 		try {
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
-			const result = await encryptAesGcm(vector, this.groupSessionKey, data);
-			return this.keyID + Base64.encode(joinVectorAndEcryptedData(vector, result));
+			const result = algorithm === 'rc.v1.aes-sha2'
+				? await encryptAesCbc(vector, this.groupSessionKey, data)
+				: await encryptAesGcm(vector, this.groupSessionKey, data);
+			const ciphertext = this.keyID + Base64.encode(joinVectorAndEncryptedData(vector, result));
+			return {
+				algorithm,
+				ciphertext,
+			}
 		} catch (error) {
 			this.error('Error encrypting message: ', error);
 			throw error;
@@ -634,10 +648,8 @@ export class E2ERoom extends Emitter {
 	) {
 		const data = new TextEncoder().encode(EJSON.stringify(contentToBeEncrypted));
 
-		return {
-			algorithm: 'rc.v1.aes-sha2',
-			ciphertext: await this.encryptText(data),
-		};
+		const encrypted = await this.encryptText(data, 'rc.v2.aes-gcm-sha2');
+		return encrypted;
 	}
 
 	// Helper function for encryption of content
@@ -674,14 +686,23 @@ export class E2ERoom extends Emitter {
 			}),
 		);
 
-		return this.encryptText(data);
+		return this.encryptText(data, 'rc.v2.aes-gcm-sha2').then((res) => res.ciphertext);
 	}
 
 	async decryptContent<T extends IUploadWithUser | IE2EEMessage>(data: T) {
-		if (data.content && data.content.algorithm === 'rc.v1.aes-sha2') {
-			const content = await this.decrypt(data.content.ciphertext);
-			Object.assign(data, content);
+		if (!data.content) {
+			return data;
 		}
+
+		const { content: { algorithm, ciphertext } } = data;
+
+		if (algorithm !== 'rc.v2.aes-gcm-sha2' && algorithm !== 'rc.v1.aes-sha2') {
+			this.error('Unknown encryption algorithm: ', algorithm);
+			return data;
+		}
+
+			const decryptedContent = await this.decrypt({ algorithm, ciphertext });
+			Object.assign(data, decryptedContent);
 
 		return data;
 	}
@@ -693,7 +714,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		if (message.msg) {
-			const data = await this.decrypt(message.msg);
+			const data = await this.decrypt({ algorithm: 'rc.v2.aes-gcm-sha2', ciphertext: message.msg });
 
 			if (data?.text) {
 				message.msg = data.text;
@@ -708,16 +729,20 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
-	async doDecrypt(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, cipherText: Uint8Array<ArrayBuffer>) {
-		const result = await decryptAesGcm(vector, key, cipherText);
+	async doDecrypt(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, cipherText: Uint8Array<ArrayBuffer>, algorithm: EncryptionAlgorithm) {
+		if (algorithm === 'rc.v2.aes-gcm-sha2') {
+			const result = await decryptAesGcm(vector, key, cipherText);
+			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
+		}
+		const result = await decryptAesCbc(vector, key, cipherText);
 		return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 	}
 
-	async decrypt(message: string) {
-		const keyID = message.slice(0, 12);
-		message = message.slice(12);
+	async decrypt(content: EncryptedContent) {
+		const keyID = content.ciphertext.slice(0, 12);
+		content.ciphertext = content.ciphertext.slice(12);
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(Base64.decode(message));
+		const [vector, ciphertext] = splitVectorAndEncryptedData(Base64.decode(content.ciphertext));
 
 		let oldKey = null;
 		if (keyID !== this.keyID) {
@@ -732,9 +757,9 @@ export class E2ERoom extends Emitter {
 					if (!this.groupSessionKey) {
 						throw new Error('No group session key found.');
 					}
-					return await this.doDecrypt(vector, this.groupSessionKey, cipherText);
+					return await this.doDecrypt(vector, this.groupSessionKey, ciphertext, content.algorithm);
 				} catch (error) {
-					this.error('Error decrypting message: ', error, message);
+					this.error('Error decrypting message: ', error, content);
 					return { msg: t('E2E_indecipherable') };
 				}
 			}
@@ -743,14 +768,14 @@ export class E2ERoom extends Emitter {
 
 		try {
 			if (oldKey) {
-				return await this.doDecrypt(vector, oldKey, cipherText);
+				return await this.doDecrypt(vector, oldKey, ciphertext, content.algorithm);
 			}
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
-			return await this.doDecrypt(vector, this.groupSessionKey, cipherText);
+			return await this.doDecrypt(vector, this.groupSessionKey, ciphertext, content.algorithm);
 		} catch (error) {
-			this.error('Error decrypting message: ', error, message);
+			this.error('Error decrypting message: ', error, content);
 			return { msg: t('E2E_Key_Error') };
 		}
 	}
