@@ -91,12 +91,16 @@ export default class E2EE {
 		}
 	}
 
-	async backupKeys(): Promise<void> {
-		await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword(5), false);
+	async backupKeys(): Promise<unknown> {
+		const res = await this.persistKeys(await this.createRandomPassword(5), false);
+		if (!res.isOk) {
+			throw res.error;
+		}
+		return res.value;
 	}
 
 	async changePassphrase(newPassword: string): Promise<void> {
-		const result = await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, true);
+		const result = await this.persistKeys(newPassword, true);
 
 		if (!result.isOk) {
 			throw result.error;
@@ -107,7 +111,9 @@ export default class E2EE {
 		}
 	}
 
-	private async persistKeys(localKeyPair: LocalKeyPair, password: string, force: boolean): AsyncResult<unknown, Error> {
+	private async persistKeys(password: string, force: boolean): AsyncResult<unknown, Error> {
+		const localKeyPair = this.getKeysFromLocalStorage();
+
 		if (typeof localKeyPair.public_key !== 'string' || typeof localKeyPair.private_key !== 'string') {
 			return err(new TypeError('Failed to persist keys as they are not strings.'));
 		}
