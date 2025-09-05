@@ -360,7 +360,7 @@ class E2E extends Emitter<{
 		}
 	}
 
-	async stopClient(): Promise<void> {
+	stopClient(): void {
 		logger.log('-> Stop Client');
 		this.closeAlert();
 
@@ -753,5 +753,5 @@ class E2E extends Emitter<{
 export const e2e = new E2E();
 
 Accounts.onLogout(() => {
-	void e2e.stopClient();
+	e2e.stopClient();
 });
