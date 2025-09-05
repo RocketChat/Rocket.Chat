@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.1.37-rc.5",
+	"version": "0.1.37",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
