@@ -22,6 +22,12 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		});
 	}
 
+	if (room.teamMain) {
+		throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
+			method: 'eraseRoom',
+		});
+	}
+
 	if (
 		!(await roomCoordinator
 			.getRoomDirectives(room.t)
