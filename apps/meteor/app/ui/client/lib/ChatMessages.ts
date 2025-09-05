@@ -25,7 +25,7 @@ type DeepWritable<T> = T extends (...args: any) => any
 		};
 
 export class ChatMessages implements ChatAPI {
-	public uid: string | null;
+	public uid: string | undefined;
 
 	public tmid?: IMessage['_id'];
 
@@ -142,7 +142,7 @@ export class ChatMessages implements ChatAPI {
 
 	public flows: DeepWritable<ChatAPI['flows']>;
 
-	public constructor(params: { rid: IRoom['_id']; tmid?: IMessage['_id']; uid: IUser['_id'] | null; actionManager: IActionManager }) {
+	public constructor(params: { rid: IRoom['_id']; tmid?: IMessage['_id']; uid: IUser['_id'] | undefined; actionManager: IActionManager }) {
 		const { rid, tmid } = params;
 		this.tmid = tmid;
 		this.uid = params.uid;

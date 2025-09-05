@@ -15,7 +15,7 @@ type HistoryMessageListOptions = {
 
 export const useHistoryMessageList = (
 	options: HistoryMessageListOptions,
-	uid: IUser['_id'] | null,
+	uid: IUser['_id'] | undefined,
 ): {
 	itemsList: MessageList;
 	initialItemCount: number;

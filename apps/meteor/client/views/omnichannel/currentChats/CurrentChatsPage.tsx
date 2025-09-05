@@ -28,9 +28,9 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
-import { RoomActivityIcon } from '../../../omnichannel/components/RoomActivityIcon';
-import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../omnichannel/priorities/PriorityIcon';
+import RoomActivityIcon from '../components/RoomActivityIcon';
+import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
+import { PriorityIcon } from '../priorities/PriorityIcon';
 
 type DebouncedParams = {
 	fname: string;

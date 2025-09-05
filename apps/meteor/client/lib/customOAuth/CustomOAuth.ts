@@ -7,7 +7,7 @@ import { OAuth } from 'meteor/oauth';
 
 import { isURL } from '../../../lib/utils/isURL';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
-import { createOAuthTotpLoginMethod } from '../../meteorOverrides/login/oauth';
+import { createOAuthTotpLoginMethod } from '../../meteor/overrides/login/oauth';
 import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
 import { loginServices } from '../loginServices';
 import { CustomOAuthError } from './CustomOAuthError';
