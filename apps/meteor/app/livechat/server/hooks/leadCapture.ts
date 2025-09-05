@@ -37,14 +37,28 @@ callbacks.add(
 			return message;
 		}
 
-		const phoneRegexp = new RegExp(settings.get<string>('Livechat_lead_phone_regex'), 'g');
-		const msgPhones = message.msg.match(phoneRegexp)?.filter(isTruthy) || [];
+		const phoneRegexSetting = settings.get<string>('Livechat_lead_phone_regex');
+		const emailRegexSetting = settings.get<string>('Livechat_lead_email_regex');
 
-		const emailRegexp = new RegExp(settings.get<string>('Livechat_lead_email_regex'), 'gi');
-		const msgEmails = message.msg.match(emailRegexp)?.filter(isTruthy) || [];
-		if (msgEmails || msgPhones) {
-			await LivechatVisitors.saveGuestEmailPhoneById(room.v._id, msgEmails, msgPhones);
+		const safeMatch = (pattern: string, flags: string, text: string): string[] => {
+			if (!pattern) {
+				return [];
+			}
+			try {
+				const re = new RegExp(pattern, flags);
+				return text.match(re)?.filter(isTruthy) ?? [];
+			} catch {
+				return [];
+			}
+		};
 
+		const uniq = (arr: string[]) => [...new Set(arr.filter(isTruthy))];
+
+		const matchedPhones = uniq(safeMatch(phoneRegexSetting, 'g', message.msg));
+		const matchedEmails = uniq(safeMatch(emailRegexSetting, 'gi', message.msg));
+
+		if (matchedEmails.length || matchedPhones.length) {
+			await LivechatVisitors.saveGuestEmailPhoneById(room.v._id, matchedEmails, matchedPhones);
 			await callbacks.run('livechat.leadCapture', room);
 		}
 
