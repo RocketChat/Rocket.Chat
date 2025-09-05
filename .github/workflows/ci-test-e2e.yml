@@ -278,6 +278,7 @@ jobs:
           REPORTER_ROCKETCHAT_PR: ${{ github.event.pull_request.number }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
+          GITHUB_SUMMARY_PATH: test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
           CI: true
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
         working-directory: ./apps/meteor
@@ -292,6 +293,14 @@ jobs:
           name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
+
+      - name: Store test summary
+        if: inputs.type == 'ui' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          if-no-files-found: ignore
 
       - name: Show server logs if E2E test failed
         if: failure() && inputs.release == 'ee'
