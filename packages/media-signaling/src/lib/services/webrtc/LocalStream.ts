@@ -1,18 +1,6 @@
 import { Stream } from './Stream';
 
 export class LocalStream extends Stream {
-	public get muted(): boolean {
-		return !this.enabled;
-	}
-
-	public setMuted(muted: boolean): void {
-		if (muted) {
-			this.disable();
-		} else {
-			this.enable();
-		}
-	}
-
 	public async setTrack(newTrack: MediaStreamTrack | null, peer: RTCPeerConnection): Promise<void> {
 		if (newTrack) {
 			const matchingTrack = this.mediaStream.getTrackById(newTrack.id);

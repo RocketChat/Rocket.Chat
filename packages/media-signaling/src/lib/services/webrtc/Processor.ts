@@ -37,10 +37,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this._muted;
 	}
 
-	private _onHold = false;
+	private _held = false;
 
-	public get onHold(): boolean {
-		return this._onHold;
+	public get held(): boolean {
+		return this._held;
 	}
 
 	private stopped = false;
@@ -101,17 +101,17 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		this._muted = muted;
-		this.localStream.setMuted(muted || this._onHold);
+		this.localStream.setEnabled(!muted && !this._held);
 	}
 
-	public setOnHold(onHold: boolean): void {
+	public setHeld(held: boolean): void {
 		if (this.stopped) {
 			return;
 		}
 
-		this._onHold = onHold;
-		this.localStream.setMuted(onHold || this._muted);
-		this.remoteStream.setOnHold(onHold);
+		this._held = held;
+		this.localStream.setEnabled(!held && !this._muted);
+		this.remoteStream.setEnabled(!held);
 	}
 
 	public stop(): void {
