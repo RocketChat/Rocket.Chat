@@ -9,7 +9,7 @@ import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExtern
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	public emitter: Emitter<WebRTCProcessorEvents>;
 
-	private peer: RTCPeerConnection;
+	protected peer: RTCPeerConnection;
 
 	private iceGatheringFinished = false;
 

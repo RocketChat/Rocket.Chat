@@ -20,7 +20,7 @@ const NewCall = () => {
 
 	const { onKeypadPress, peerInfo, ...autocomplete } = usePeerAutocomplete();
 
-	const keypad = useKeypad(onKeypadPress);
+	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onKeypadPress);
 
 	const { onCall, onToggleWidget } = useMediaCallContext();
 
@@ -39,11 +39,34 @@ const NewCall = () => {
 				)}
 			</WidgetContent>
 			<WidgetFooter>
-				{keypad.element}
+				{keypad}
 				<ButtonGroup stretch>
-					<ActionButton label='dialpad' icon='dialpad' flexGrow={0} secondary onClick={keypad.toggleOpen} />
+					<ActionButton label='dialpad' icon='dialpad' flexGrow={0} secondary {...keypadButtonProps} />
 					<DevicePicker secondary />
-					<Button medium name='phone' icon='phone' success flexGrow={1} onClick={() => onCall(autocomplete.value)}>
+					<Button
+						medium
+						name='phone'
+						icon='phone'
+						success
+						flexGrow={1}
+						onClick={() => {
+							if (!peerInfo) {
+								return;
+							}
+
+							if ('userId' in peerInfo) {
+								onCall(peerInfo.userId, 'user');
+								return;
+							}
+
+							if ('number' in peerInfo) {
+								onCall(peerInfo.number, 'sip');
+								return;
+							}
+
+							throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
+						}}
+					>
 						{t('Call')}
 					</Button>
 				</ButtonGroup>

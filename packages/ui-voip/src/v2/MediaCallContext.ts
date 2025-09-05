@@ -1,13 +1,16 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { Device } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { createContext, useContext, useState } from 'react';
 
 import type { PeerAutocompleteOptions } from './components';
 
 type InternalPeerInfo = {
-	name: string;
-	avatarUrl: string;
-	identifier: string;
+	displayName: string;
+	userId: string;
+	username?: string;
+	avatarUrl?: string;
+	callerId?: string;
 };
 
 type ExternalPeerInfo = {
@@ -28,16 +31,19 @@ type MediaCallContextType = {
 	onMute: () => void;
 	onHold: () => void;
 
-	onDeviceChange: (device: string) => void;
+	onDeviceChange: (device: Device) => void;
 	onForward: () => void;
 	onTone: (tone: string) => void;
 
 	// onCall and onEndCall are used to start/accept and reject/end a call
 	onEndCall: () => void;
 	// TODO: Not sure if we need to pass the peerId to the callback, or if it should be a state stored somewhere else in the context.
-	onCall: (peerId?: string) => void;
+	onCall: (peerId: string, kind: 'user' | 'sip') => Promise<void>;
+	onAccept: () => Promise<void>;
 
-	onToggleWidget: () => void;
+	onToggleWidget: (peerInfo?: PeerInfo) => void;
+
+	onSelectPeer: (peerInfo: PeerInfo) => void;
 
 	getAutocompleteOptions: (filter: string) => Promise<PeerAutocompleteOptions[]>;
 	// This is used to get the peer info from the server in case it's not available in the autocomplete options.
@@ -59,9 +65,12 @@ const MediaCallContext = createContext<MediaCallContextType>({
 	onTone: () => undefined,
 
 	onEndCall: () => undefined,
-	onCall: () => undefined,
+	onCall: () => Promise.resolve(undefined),
+	onAccept: () => Promise.resolve(undefined),
 
 	onToggleWidget: () => undefined,
+
+	onSelectPeer: () => undefined,
 
 	getAutocompleteOptions: () => Promise.resolve([]),
 	getPeerInfo: () => Promise.resolve(undefined),
@@ -82,8 +91,10 @@ const getFirstOption = (filter: string): PeerAutocompleteOptions => {
 };
 
 export const usePeerAutocomplete = () => {
-	const { getAutocompleteOptions, getPeerInfo } = useMediaCallContext();
-	const [selected, setSelected] = useState<string | undefined>();
+	const { getAutocompleteOptions, peerInfo, onSelectPeer } = useMediaCallContext();
+	// const [selected, setSelected] = useState<string | undefined>(
+	// 	contextPeerInfo && 'userId' in contextPeerInfo ? contextPeerInfo.userId : undefined,
+	// );
 	const [filter, setFilter] = useState('');
 
 	const debouncedFilter = useDebouncedValue(filter, 400);
@@ -103,29 +114,29 @@ export const usePeerAutocomplete = () => {
 		initialData: [],
 	});
 
-	const { data: peerInfo } = useQuery({
-		queryKey: ['mediaCall/peerInfo', selected],
-		queryFn: async () => {
-			if (!selected) {
-				return undefined;
-			}
+	// const { data: peerInfo } = useQuery({
+	// 	queryKey: ['mediaCall/peerInfo', selected],
+	// 	queryFn: async () => {
+	// 		if (!selected) {
+	// 			return undefined;
+	// 		}
 
-			const localInfo = options.find((option) => option.value === selected);
+	// 		const localInfo = options.find((option) => option.value === selected);
 
-			if (localInfo) {
-				return {
-					name: localInfo.label,
-					avatarUrl: localInfo.avatarUrl || '',
-					identifier: localInfo.value,
-				};
-			}
+	// 		if (localInfo) {
+	// 			return {
+	// 				name: localInfo.label,
+	// 				avatarUrl: localInfo.avatarUrl || '',
+	// 				identifier: localInfo.value || '',
+	// 			};
+	// 		}
 
-			const peerInfo = await getPeerInfo(selected);
+	// 		const peerInfo = await getPeerInfo(selected);
 
-			return peerInfo;
-		},
-		enabled: !!selected,
-	});
+	// 		return peerInfo;
+	// 	},
+	// 	enabled: !!selected,
+	// });
 
 	return {
 		options,
@@ -136,9 +147,24 @@ export const usePeerAutocomplete = () => {
 				return;
 			}
 
-			setSelected(value);
+			if (isFirstPeerAutocompleteOption(value)) {
+				onSelectPeer({ number: value.replace(PREFIX_FIRST_OPTION, '') });
+				return;
+			}
+
+			const localInfo = options.find((option) => option.value === value);
+
+			if (!localInfo) {
+				throw new Error(`Peer info not found for value: ${value}`);
+			}
+
+			onSelectPeer({
+				userId: localInfo.value,
+				displayName: localInfo.label,
+				avatarUrl: localInfo.avatarUrl,
+			});
 		},
-		value: selected,
+		value: peerInfo && 'userId' in peerInfo ? peerInfo.userId : undefined,
 		filter,
 		onKeypadPress: (key: string) => setFilter((filter) => filter + key),
 	};
