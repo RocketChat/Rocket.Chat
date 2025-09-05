@@ -1,6 +1,6 @@
 import { Box, Modal } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const iframeMsgListener = (confirm: (data: any) => void, cancel: () => void) => (e: MessageEvent<any>) => {
@@ -23,7 +23,7 @@ type IframeModalProps = {
 
 const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }: IframeModalProps) => {
 	const { t } = useTranslation();
-
+	const iframeContainerRef = useRef(null);
 	useEffect(() => {
 		const listener = iframeMsgListener(confirm, cancel);
 
@@ -34,9 +34,22 @@ const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }:
 		};
 	}, [confirm, cancel]);
 
+	useEffect(() => {
+		const handleClickOutside = (event) => {
+		  if (iframeContainerRef.current && !iframeContainerRef.current.contains(event.target)) {
+			cancel();
+		  }
+		};
+	  
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+		  document.removeEventListener('mousedown', handleClickOutside);
+		};
+	  }, [cancel]);
+
 	return (
 		<Modal height={wrapperHeight} {...props}>
-			<Box padding='x12' w='full' h='full' flexGrow={1} bg='white' borderRadius='x8'>
+			<Box ref={iframeContainerRef} padding='x12' w='full' h='full' flexGrow={1} bg='white' borderRadius='x8'>
 				<iframe title={t('Marketplace_apps')} style={{ border: 'none', height: '100%', width: '100%' }} src={url} />
 			</Box>
 		</Modal>
