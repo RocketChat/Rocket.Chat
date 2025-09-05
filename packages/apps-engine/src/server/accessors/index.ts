@@ -30,6 +30,7 @@ import { RoomExtender } from './RoomExtender';
 import { RoomRead } from './RoomRead';
 import { SchedulerExtend } from './SchedulerExtend';
 import { SchedulerModify } from './SchedulerModify';
+import { ServerEndpoints } from './ServerEndpoints';
 import { ServerSettingRead } from './ServerSettingRead';
 import { ServerSettingUpdater } from './ServerSettingUpdater';
 import { ServerSettingsModify } from './ServerSettingsModify';
@@ -94,4 +95,5 @@ export {
 	OAuthAppsModify,
 	OAuthAppsReader,
 	OutboundMessageProviderExtend,
+	ServerEndpoints,
 };
