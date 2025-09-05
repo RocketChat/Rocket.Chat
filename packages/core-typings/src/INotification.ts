@@ -1,6 +1,7 @@
 import type { ICalendarEvent } from './ICalendarEvent';
 import type { IMessage } from './IMessage';
 import type { IRoom } from './IRoom';
+import type { ISubscription } from './ISubscription';
 
 export interface INotificationItemPush {
 	type: 'push';
@@ -64,6 +65,7 @@ export interface INotificationDesktop {
 			msg: IMessage['msg'];
 			t?: IMessage['t'];
 		};
+		audioNotificationValue: ISubscription['audioNotificationValue'];
 	};
 }
 
