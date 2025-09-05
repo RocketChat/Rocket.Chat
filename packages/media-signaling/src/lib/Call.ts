@@ -621,7 +621,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
-		let offer: { sdp: RTCSessionDescriptionInit } | null = null;
+		let offer: { sdp: RTCSessionDescriptionInit; negotiationId: string } | null = null;
 		try {
 			offer = await this.webrtcProcessor.createOffer(signal);
 		} catch (e) {
@@ -659,7 +659,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
-		let answer: { sdp: RTCSessionDescriptionInit } | null = null;
+		let answer: { sdp: RTCSessionDescriptionInit; negotiationId: string } | null = null;
 		try {
 			answer = await this.webrtcProcessor.createAnswer(signal);
 		} catch (e) {
@@ -710,7 +710,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.hasRemoteDescription = true;
 	}
 
-	protected async deliverSdp(data: { sdp: RTCSessionDescriptionInit }) {
+	protected async deliverSdp(data: { sdp: RTCSessionDescriptionInit; negotiationId: string }) {
 		this.config.logger?.debug('ClientMediaCall.deliverSdp');
 		this.hasLocalDescription = true;
 

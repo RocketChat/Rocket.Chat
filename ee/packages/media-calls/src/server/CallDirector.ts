@@ -1,6 +1,14 @@
-import type { AtLeast, IMediaCall, MediaCallActor, MediaCallSignedActor, ServerActor } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	IMediaCall,
+	IMediaCallNegotiation,
+	MediaCallActor,
+	MediaCallSignedActor,
+	ServerActor,
+} from '@rocket.chat/core-typings';
 import type { CallHangupReason, CallService } from '@rocket.chat/media-signaling';
-import { MediaCalls } from '@rocket.chat/models';
+import type { InsertionModel } from '@rocket.chat/model-typings';
+import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector } from './injection';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
@@ -77,6 +85,10 @@ export class MediaCallDirector {
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
+		// To avoid race conditions, load the negotiation before changing the call state
+		// Once the state changes, negotiations need to be referred by id.
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
+
 		const stateResult = await MediaCalls.acceptCallById(call._id, data, this.getNewExpirationTime());
 		// If nothing changed, the call was no longer ringing
 		if (!stateResult.modifiedCount) {
@@ -86,11 +98,36 @@ export class MediaCallDirector {
 		await calleeAgent.onCallAccepted(call._id, data.calleeContractId);
 		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
 
-		if (data.webrtcAnswer) {
-			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, data.webrtcAnswer);
+		if (data.webrtcAnswer && negotiation) {
+			await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
+			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
 		}
 
 		return true;
+	}
+
+	public static async startFirstNegotiation(
+		call: MediaCallHeader,
+		offer?: RTCSessionDescriptionInit,
+	): Promise<IMediaCallNegotiation['_id'] | null> {
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
+		// If the call already has a negotiation, do nothing
+		if (negotiation) {
+			return null;
+		}
+
+		const newNegotiation: InsertionModel<IMediaCallNegotiation> = {
+			callId: call._id,
+			offerer: 'caller',
+			requestTimestamp: new Date(),
+			...(offer && {
+				offer,
+				offerTimestamp: new Date(),
+			}),
+		};
+
+		const result = await MediaCallNegotiations.insertOne(newNegotiation);
+		return result.insertedId;
 	}
 
 	public static get cast(): IMediaCallCastDirector {
@@ -105,48 +142,38 @@ export class MediaCallDirector {
 	public static async saveWebrtcSession(
 		call: IMediaCall,
 		fromAgent: IMediaCallAgent,
-		sdp: RTCSessionDescriptionInit,
+		session: { sdp: RTCSessionDescriptionInit; negotiationId: string },
 		contractId: string,
 	): Promise<void> {
-		if (sdp.type === 'offer') {
-			if (fromAgent.role !== 'caller') {
-				throw new Error('invalid-sdp');
-			}
-			if (contractId !== call.caller.contractId) {
-				throw new Error('invalid-contract');
-			}
-
-			return this.saveWebrtcOffer(call, fromAgent, sdp);
+		logger.debug({ msg: 'MediaCallDirector.saveWebrtcSession', callId: call?._id });
+		const negotiation = await MediaCallNegotiations.findOneById(session.negotiationId);
+		if (!negotiation) {
+			throw new Error('invalid-negotiation');
 		}
 
-		if (fromAgent.role !== 'callee') {
-			throw new Error('invalid-sdp');
-		}
-		if (contractId !== call.callee.contractId || !call.callee.contractId) {
+		const actor = fromAgent.getMyCallActor(call);
+		if (!actor.contractId || actor.contractId !== contractId) {
 			throw new Error('invalid-contract');
 		}
 
-		return this.saveWebrtcAnswer(call, fromAgent, sdp);
-	}
+		const isOfferer = fromAgent.role === negotiation.offerer;
+		const isOffer = session.sdp.type === 'offer';
 
-	private static async saveWebrtcOffer(call: IMediaCall, fromAgent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void> {
-		logger.debug({ msg: 'MediaCallDirector.saveWebrtcOffer', callId: call?._id });
-		const result = await MediaCalls.setWebrtcOfferById(call._id, sdp, this.getNewExpirationTime());
-		if (!result.modifiedCount) {
+		if (isOffer !== isOfferer) {
+			throw new Error('invalid-sdp');
+		}
+
+		const updater = isOffer
+			? MediaCallNegotiations.setOfferById(negotiation._id, session.sdp)
+			: MediaCallNegotiations.setAnswerById(negotiation._id, session.sdp);
+		const updateResult = await updater;
+
+		if (!updateResult.modifiedCount) {
 			return;
 		}
 
-		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, sdp);
-	}
-
-	private static async saveWebrtcAnswer(call: IMediaCall, fromAgent: IMediaCallAgent, sdp: RTCSessionDescriptionInit): Promise<void> {
-		logger.debug({ msg: 'MediaCallDirector.saveWebrtcAnswer', callId: call?._id });
-		const result = await MediaCalls.setWebrtcAnswerById(call._id, sdp, this.getNewExpirationTime());
-		if (!result.modifiedCount) {
-			return;
-		}
-
-		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, sdp);
+		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
+		// await MediaCalls.setExpiresAtById(call._id, this.getNewExpirationTime());
 	}
 
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
