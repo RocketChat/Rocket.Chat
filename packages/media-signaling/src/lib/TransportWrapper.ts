@@ -38,6 +38,10 @@ export class MediaSignalTransportWrapper {
 		return this.sendToServer(callId, 'hangup', { reason });
 	}
 
+	public requestRenegotiation(callId: string, oldNegotiationId: string) {
+		return this.sendToServer(callId, 'negotiation-needed', { oldNegotiationId });
+	}
+
 	public sendSignal(signal: ClientMediaSignal): void {
 		this.logger?.debug('MediaSignalTransportWrapper.sendSignal', signal);
 		this.sendSignalFn(signal);

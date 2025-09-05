@@ -16,6 +16,7 @@ import type { ClientContractState, ClientState } from '../definition/client';
 import type { IWebRTCProcessor, MediaStreamFactory, WebRTCInternalStateMap } from '../definition/services';
 import { mergeContacts } from './utils/mergeContacts';
 import type { IMediaSignalLogger } from '../definition/logger';
+import { isPendingState } from './services/states';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
@@ -106,6 +107,11 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		return this.webrtcProcessor.held;
+	}
+
+	/** indicates the call is past the "dialing" stage and not yet over */
+	public get busy(): boolean {
+		return !this.isPendingAcceptance() && !this.isOver();
 	}
 
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
@@ -305,6 +311,15 @@ export class ClientMediaCall implements IClientMediaCall {
 				}
 
 				return 'accepted';
+			case 'renegotiating':
+				if (this.hasLocalDescription && this.hasRemoteDescription) {
+					return 'has-new-answer';
+				}
+				if (this.hasLocalDescription !== this.hasRemoteDescription) {
+					return 'has-new-offer';
+				}
+
+				return 'renegotiating';
 			default:
 				return this._state;
 		}
@@ -415,7 +430,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public isPendingAcceptance(): boolean {
-		return ['none', 'ringing'].includes(this._state);
+		return isPendingState(this._state);
 	}
 
 	public isPendingOurAcceptance(): boolean {
@@ -894,6 +909,15 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	private onWebRTCNegotiationNeeded(): void {
+		if (this._state !== 'active') {
+			return;
+		}
+
+		// #TODO: keep the negotiation state logic in the call instead of the processor, so we can get the id safely here and also keep the processor free of business logic
+		// this.config.transporter.requestRenegotiation(this.callId, oldNegotiationId);
+	}
+
 	private onWebRTCConnectionStateChange(stateValue: RTCPeerConnectionState): void {
 		if (this.hidden) {
 			return;
@@ -972,6 +996,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
 		this.webrtcProcessor.emitter.on('internalError', (event) => this.onWebRTCInternalError(event));
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
+		this.webrtcProcessor.emitter.on('negotiationNeeded', () => this.onWebRTCNegotiationNeeded());
 	}
 
 	private requireWebRTC(): asserts this is ClientMediaCallWebRTC {

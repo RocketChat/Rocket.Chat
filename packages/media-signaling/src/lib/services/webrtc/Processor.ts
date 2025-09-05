@@ -11,6 +11,11 @@ type LocalNegotiation = {
 	remote?: RTCSessionDescriptionInit;
 };
 
+type SdpNegotiation = {
+	sdp: RTCSessionDescriptionInit;
+	negotiationId: string;
+};
+
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	public emitter: Emitter<WebRTCProcessorEvents>;
 
@@ -90,7 +95,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 	}
 
-	public async createOffer({ negotiationId }: { negotiationId: string }): Promise<{ sdp: RTCSessionDescriptionInit; negotiationId: string }> {
+	public async createOffer({ negotiationId }: { negotiationId: string }): Promise<SdpNegotiation> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.createOffer');
 		if (this.stopped) {
 			throw new Error('WebRTC Processor has already been stopped.');
@@ -136,13 +141,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.remoteStream.stopAudio();
 	}
 
-	public async createAnswer({
-		sdp,
-		negotiationId,
-	}: {
-		sdp: RTCSessionDescriptionInit;
-		negotiationId: string;
-	}): Promise<{ sdp: RTCSessionDescriptionInit; negotiationId: string }> {
+	public async createAnswer({ sdp, negotiationId }: SdpNegotiation): Promise<SdpNegotiation> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.createAnswer');
 		if (this.stopped) {
 			throw new Error('WebRTC Processor has already been stopped.');
@@ -154,6 +153,10 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await this.initializeLocalMediaStream();
 
 		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
+			if (this.currentNegotiationId && this.currentNegotiationId !== negotiationId) {
+				this.clearIceGatheringWaiters(new Error('ice-restart'));
+			}
+
 			this.peer.setRemoteDescription(sdp);
 			this.currentNegotiationId = negotiationId;
 			this.registerNegotiationData(this.currentNegotiationId, { remote: sdp });
@@ -168,15 +171,22 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return this.getLocalDescription();
 	}
 
-	public async setRemoteDescription({ sdp, negotiationId }: { sdp: RTCSessionDescriptionInit; negotiationId: string }): Promise<void> {
+	public async setRemoteDescription({ sdp, negotiationId }: SdpNegotiation): Promise<void> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.setRemoteDescription');
+		this.registerNegotiationData(negotiationId, { remote: sdp });
+
 		if (this.stopped) {
 			return;
 		}
 
-		// If we received an answer for a different negotiation... #ToDo
-		if (sdp.type !== 'offer' && negotiationId !== this.currentNegotiationId) {
-			throw new Error('negotiation-error');
+		// If we received an sdp for a different negotiation than the one we currently have as active
+		if (this.currentNegotiationId && negotiationId !== this.currentNegotiationId) {
+			// If it's an offer, give up on the old negotiation - otherwise ignore the new one
+			if (sdp.type === 'offer') {
+				this.clearIceGatheringWaiters(new Error('ice-restart'));
+			} else {
+				return;
+			}
 		}
 
 		this.peer.setRemoteDescription(sdp);
@@ -206,16 +216,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.emitter.emit('internalStateChange', stateName);
 	}
 
-	private async getLocalDescription(): Promise<{ sdp: RTCSessionDescriptionInit; negotiationId: string }> {
+	private async getLocalDescription(): Promise<SdpNegotiation> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.getLocalDescription');
 		if (this.stopped) {
 			throw new Error('WebRTC Processor has already been stopped.');
 		}
 		await this.waitForIceGathering();
-
-		// always wait a little extra to ensure all relevant events have been fired
-		// 30ms is low enough that it won't be noticeable by users, but is also enough time to process a full `host` candidate
-		await new Promise((resolve) => setTimeout(resolve, 30));
 
 		const negotiationId = this.currentNegotiationId;
 		const sdp = this.peer.localDescription;
@@ -257,7 +263,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.iceGatheringWaiters.add(iceGatheringData);
 		this.changeInternalState('iceUntrickler');
-		return iceGatheringData.promise;
+		await iceGatheringData.promise;
+
+		// always wait a little extra to ensure all relevant events have been fired
+		// 30ms is low enough that it won't be noticeable by users, but is also enough time to process any local stuff
+		await new Promise((resolve) => setTimeout(resolve, 30));
 	}
 
 	private registerPeerEvents() {
@@ -306,6 +316,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onNegotiationNeeded');
+		this.emitter.emit('negotiationNeeded');
 	}
 
 	private onTrack(event: RTCTrackEvent): void {
@@ -322,6 +333,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onConnectionStateChange');
+
 		this.changeInternalState('connection');
 	}
 
@@ -450,9 +462,14 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private clearIceGatheringWaiters(error?: Error) {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.clearIceGatheringWaiters');
+		this.iceGatheringTimedOut = false;
+
+		if (!this.iceGatheringWaiters.size) {
+			return;
+		}
+
 		const waiters = this.iceGatheringWaiters.values().toArray();
 		this.iceGatheringWaiters.clear();
-		this.iceGatheringTimedOut = false;
 
 		for (const iceGatheringData of waiters) {
 			this.clearIceGatheringData(iceGatheringData, error);

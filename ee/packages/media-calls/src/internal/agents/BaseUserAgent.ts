@@ -1,11 +1,11 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { ClientMediaSignal, ServerMediaSignal, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
+import { isBusyState, type ClientMediaSignal, type ServerMediaSignal, type ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
+import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
 import { getMediaCallServer } from '../../server/injection';
-import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 export abstract class UserActorAgent extends BaseMediaCallAgent {
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
@@ -60,7 +60,7 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 		logger.debug({ msg: 'UserActorAgent.onRemoteDescriptionChanged', callId, negotiationId });
 
 		const call = await MediaCalls.findOneById(callId);
-		if (!call || !['accepted', 'active'].includes(call.state)) {
+		if (!call || !isBusyState(call.state)) {
 			return;
 		}
 

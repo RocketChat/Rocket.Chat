@@ -221,7 +221,7 @@ export class GlobalSignalProcessor {
 		}
 
 		// if the call is already accepted, we won't send its signals again
-		if (['active'].includes(call.state)) {
+		if (!['none', 'ringing'].includes(call.state)) {
 			this.invalidCallId(uid, { ...rejection, reason: 'already-requested' });
 		}
 

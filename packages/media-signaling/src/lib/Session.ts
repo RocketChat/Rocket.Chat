@@ -78,12 +78,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public isBusy(): boolean {
-		const call = this.getMainCall();
-		if (!call) {
-			return false;
-		}
-
-		return ['accepted', 'active'].includes(call.state);
+		return this.getMainCall()?.busy ?? false;
 	}
 
 	public enableStateReport(interval: number): void {
@@ -114,7 +109,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 				continue;
 			}
 
-			if (['accepted', 'active'].includes(call.state)) {
+			if (call.busy) {
 				return call;
 			}
 			if (call.state === 'ringing' && !ringingCall) {

@@ -15,6 +15,7 @@ export type ServiceProcessorEvents<ServiceStateMap extends DefaultServiceStateMa
 	stateChange: string;
 	internalStateChange: keyof ServiceStateMap;
 	internalError: { critical: boolean; error: string | Error };
+	negotiationNeeded: void;
 };
 
 export interface IServiceProcessor<ServiceStateMap extends DefaultServiceStateMap = DefaultServiceStateMap> {

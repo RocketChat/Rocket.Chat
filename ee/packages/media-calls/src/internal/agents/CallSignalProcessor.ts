@@ -1,12 +1,13 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallActor, MediaCallActorType } from '@rocket.chat/core-typings';
-import type {
-	CallAnswer,
-	CallHangupReason,
-	CallRole,
-	ClientMediaSignal,
-	ClientMediaSignalError,
-	ClientMediaSignalLocalState,
-	ServerMediaSignal,
+import {
+    isPendingState,
+	type CallAnswer,
+	type CallHangupReason,
+	type CallRole,
+	type ClientMediaSignal,
+	type ClientMediaSignalError,
+	type ClientMediaSignalLocalState,
+	type ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
 import { MediaCallChannels, MediaCalls } from '@rocket.chat/models';
 
@@ -187,7 +188,7 @@ export class UserActorSignalProcessor {
 	}
 
 	protected isCallPending(): boolean {
-		return ['none', 'ringing'].includes(this.call.state);
+		return isPendingState(this.call.state);
 	}
 
 	protected isPastNegotiation(): boolean {
