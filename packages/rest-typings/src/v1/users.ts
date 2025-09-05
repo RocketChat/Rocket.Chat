@@ -259,20 +259,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.getAvatarSuggestion': {
-		GET: () => {
-			suggestions: Record<
-				string,
-				{
-					blob: string;
-					contentType: string;
-					service: string;
-					url: string;
-				}
-			>;
-		};
-	};
-
 	'/v1/users.checkUsernameAvailability': {
 		GET: (params: { username: string }) => {
 			result: boolean;
