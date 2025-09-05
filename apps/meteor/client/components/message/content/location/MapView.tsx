@@ -11,14 +11,12 @@ type MapViewProps = {
 };
 
 const MapView = ({ latitude, longitude }: MapViewProps) => {
-	const googleMapsApiKey = useSetting('MapView_GMapsAPIKey', '');
+	const locationIQKey = 'pk.898e468814facdcffda869b42260a2f0';
 
-	const linkUrl = `https://maps.google.com/maps?daddr=${latitude},${longitude}`;
+	const linkUrl = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=16/${latitude}/${longitude}`;
 
 	const imageUrl = useAsyncImage(
-		googleMapsApiKey
-			? `https://maps.googleapis.com/maps/api/staticmap?zoom=14&size=250x250&markers=color:gray%7Clabel:%7C${latitude},${longitude}&key=${googleMapsApiKey}`
-			: undefined,
+		`https://maps.locationiq.com/v2/staticmap?key=${locationIQKey}&center=${latitude},${longitude}&zoom=16&size=250x250&markers=icon:small-red-cutout|${latitude},${longitude}`,
 	);
 
 	if (!linkUrl) {
