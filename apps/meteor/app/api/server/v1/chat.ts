@@ -10,7 +10,6 @@ import {
 	isChatGetThreadsListProps,
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
-	isChatGetMessageProps,
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
@@ -147,39 +146,16 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'chat.getMessage',
-	{
-		authRequired: true,
-		validateParams: isChatGetMessageProps,
-	},
-	{
-		async get() {
-			if (!this.queryParams.msgId) {
-				return API.v1.failure('The "msgId" query parameter must be provided.');
-			}
-
-			const msg = await getSingleMessage(this.userId, this.queryParams.msgId);
-
-			if (!msg) {
-				return API.v1.failure();
-			}
-
-			const [message] = await normalizeMessagesForUser([msg], this.userId);
-
-			return API.v1.success({
-				message,
-			});
-		},
-	},
-);
-
 type ChatPinMessage = {
 	messageId: IMessage['_id'];
 };
 
 type ChatUnpinMessage = {
 	messageId: IMessage['_id'];
+};
+
+type ChatGetMessage = {
+	msgId: IMessage['_id'];
 };
 
 const ChatPinMessageSchema = {
@@ -206,9 +182,23 @@ const ChatUnpinMessageSchema = {
 	additionalProperties: false,
 };
 
+const ChatGetMessageSchema = {
+	type: 'object',
+	properties: {
+		msgId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['msgId'],
+	additionalProperties: false,
+};
+
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -281,6 +271,406 @@ const chatEndpoints = API.v1
 			await unpinMessage(this.userId, msg);
 
 			return API.v1.success();
+		},
+	)
+	.get(
+		'chat.getMessage',
+		{
+			authRequired: true,
+			query: isChatGetMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: {
+							type: 'object',
+							properties: {
+								rid: { type: 'string' },
+								msg: { type: 'string' },
+								tmid: { type: 'string' },
+								tshow: { type: 'boolean' },
+								ts: {
+									type: 'string',
+									format: 'date-time',
+								},
+								mentions: {
+									type: 'array',
+									items: {
+										$ref: '#/components/schemas/MessageMention',
+									},
+								},
+								groupable: {
+									type: 'boolean',
+								},
+								channels: {
+									type: 'array',
+									items: {
+										$ref: '#/components/schemas/PickIRoom_idname',
+									},
+								},
+								u: {
+									$ref: '#/components/schemas/RequiredPickIUser_idusernamePickIUsername',
+								},
+								blocks: {
+									$ref: '#/components/schemas/MessageSurfaceLayout',
+								},
+								alias: {
+									type: 'string',
+								},
+								md: {
+									anyOf: [
+										{
+											type: 'array',
+											items: {
+												anyOf: [
+													{
+														$ref: '#/components/schemas/Paragraph',
+													},
+													{
+														$ref: '#/components/schemas/Code',
+													},
+													{
+														$ref: '#/components/schemas/Heading',
+													},
+													{
+														$ref: '#/components/schemas/Quote',
+													},
+													{
+														$ref: '#/components/schemas/ListItem',
+													},
+													{
+														$ref: '#/components/schemas/Tasks',
+													},
+													{
+														$ref: '#/components/schemas/OrderedList',
+													},
+													{
+														$ref: '#/components/schemas/UnorderedList',
+													},
+													{
+														$ref: '#/components/schemas/LineBreak',
+													},
+													{
+														$ref: '#/components/schemas/KaTeX',
+													},
+												],
+											},
+										},
+										{
+											type: 'array',
+											items: {
+												anyOf: [
+													{
+														$ref: '#/components/schemas/BigEmoji.o1',
+													},
+												],
+											},
+											minItems: 1,
+											maxItems: 1,
+										},
+									],
+								},
+								_hidden: {
+									type: 'boolean',
+								},
+								imported: {
+									type: 'boolean',
+								},
+								replies: {
+									type: 'array',
+									items: {
+										type: 'string',
+									},
+								},
+								location: {
+									type: 'object',
+									properties: {
+										type: {
+											type: 'string',
+											enum: ['Point'],
+										},
+										coordinates: {
+											type: 'array',
+											items: {
+												type: 'number',
+											},
+											minItems: 2,
+											maxItems: 2,
+										},
+									},
+									required: ['type', 'coordinates'],
+								},
+								starred: {
+									type: 'array',
+									items: {
+										type: 'object',
+										properties: {
+											_id: {
+												type: 'string',
+											},
+										},
+										required: ['_id'],
+									},
+								},
+								pinned: {
+									type: 'boolean',
+								},
+								pinnedAt: {
+									type: 'string',
+									format: 'date-time',
+								},
+								pinnedBy: {
+									$ref: '#/components/schemas/PickIUser_idusername',
+								},
+								unread: {
+									type: 'boolean',
+								},
+								temp: {
+									type: 'boolean',
+								},
+								drid: {
+									type: 'string',
+								},
+								tlm: {
+									type: 'string',
+									format: 'date-time',
+								},
+								dcount: {
+									type: 'number',
+								},
+								tcount: {
+									type: 'number',
+								},
+								t: {
+									type: 'string',
+								},
+								e2e: {
+									type: 'string',
+									enum: ['pending', 'done'],
+								},
+								e2eMentions: {
+									type: 'object',
+									properties: {
+										e2eUserMentions: {
+											type: 'array',
+											items: {
+												type: 'string',
+											},
+										},
+										e2eChannelMentions: {
+											type: 'array',
+											items: {
+												type: 'string',
+											},
+										},
+									},
+									required: [],
+								},
+								otrAck: {
+									type: 'string',
+								},
+								urls: {
+									type: 'array',
+									items: {
+										$ref: '#/components/schemas/MessageUrl',
+									},
+								},
+								actionLinks: {
+									type: 'array',
+									items: {
+										type: 'object',
+										properties: {
+											icon: {
+												type: 'string',
+											},
+											i18nLabel: {},
+											label: {
+												type: 'string',
+											},
+											method_id: {
+												type: 'string',
+											},
+											params: {
+												type: 'string',
+											},
+										},
+										required: ['icon', 'i18nLabel', 'label', 'method_id', 'params'],
+									},
+									deprecated: true,
+								},
+								file: {
+									$ref: '#/components/schemas/FileProp',
+									deprecated: true,
+								},
+								fileUpload: {
+									type: 'object',
+									properties: {
+										publicFilePath: {
+											type: 'string',
+										},
+										type: {
+											type: 'string',
+										},
+										size: {
+											type: 'number',
+										},
+									},
+									required: ['publicFilePath'],
+								},
+								files: {
+									type: 'array',
+									items: {
+										$ref: '#/components/schemas/FileProp',
+									},
+								},
+								attachments: { type: 'array' },
+								reactions: {
+									type: 'object',
+									properties: {},
+									required: [],
+									additionalProperties: {
+										type: 'object',
+										properties: {
+											names: {
+												type: 'array',
+												items: {
+													type: 'string',
+												},
+											},
+											usernames: {
+												type: 'array',
+												items: {
+													type: 'string',
+												},
+											},
+											federationReactionEventIds: {
+												$ref: '#/components/schemas/Recordstringstring',
+											},
+										},
+										required: ['usernames'],
+									},
+								},
+								private: {
+									type: 'boolean',
+								},
+								bot: {
+									$ref: '#/components/schemas/Recordstringany',
+								},
+								sentByEmail: {
+									type: 'boolean',
+								},
+								webRtcCallEndTs: {
+									type: 'string',
+									format: 'date-time',
+								},
+								role: {
+									type: 'string',
+								},
+								avatar: {
+									type: 'string',
+								},
+								emoji: {
+									type: 'string',
+								},
+								tokens: {
+									type: 'array',
+									items: {
+										$ref: '#/components/schemas/Token',
+									},
+								},
+								html: {
+									type: 'string',
+								},
+								token: {
+									type: 'string',
+								},
+								federation: {
+									type: 'object',
+									properties: {
+										eventId: {
+											type: 'string',
+										},
+									},
+									required: ['eventId'],
+								},
+								slaData: {
+									type: 'object',
+									properties: {
+										definedBy: {
+											$ref: '#/components/schemas/PickIUser_idusername',
+										},
+										sla: {
+											$ref: '#/components/schemas/PickIOmnichannelServiceLevelAgreementsname',
+										},
+									},
+									required: ['definedBy'],
+								},
+								priorityData: {
+									type: 'object',
+									properties: {
+										definedBy: {
+											$ref: '#/components/schemas/PickIUser_idusername',
+										},
+										priority: {
+											$ref: '#/components/schemas/PickILivechatPrioritynamei18n',
+										},
+									},
+									required: ['definedBy'],
+								},
+								customFields: {
+									$ref: '#/components/schemas/IMessageCustomFields',
+								},
+								content: {
+									type: 'object',
+									properties: {
+										algorithm: {
+											type: 'string',
+										},
+										ciphertext: {
+											type: 'string',
+										},
+									},
+									required: ['algorithm', 'ciphertext'],
+								},
+								_id: {
+									type: 'string',
+								},
+								_updatedAt: {
+									type: 'string',
+									format: 'date-time',
+								},
+							},
+							required: ['rid', 'msg', 'ts', 'u', '_id', '_updatedAt'],
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+
+		async function action() {
+			if (!this.queryParams.msgId) {
+				return API.v1.failure('The "msgId" query parameter must be provided.');
+			}
+
+			const msg: IMessage | null = await getSingleMessage(this.userId, this.queryParams.msgId);
+
+			if (!msg) {
+				return API.v1.failure();
+			}
+
+			const [message]: IMessage[] = await normalizeMessagesForUser([msg], this.userId);
+
+			return API.v1.success({
+				message,
+			});
 		},
 	);
 
