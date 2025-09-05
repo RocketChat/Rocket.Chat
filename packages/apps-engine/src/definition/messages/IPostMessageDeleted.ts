@@ -1,4 +1,4 @@
-import type { IMessage } from '.';
+import type { IMessage } from './index.ts';
 import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
 import type { IMessageDeleteContext } from './IMessageDeleteContext';
 
