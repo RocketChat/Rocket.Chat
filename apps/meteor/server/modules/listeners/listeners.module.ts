@@ -502,8 +502,15 @@ export class ListenersModule {
 		service.onEvent('otrMessage', ({ roomId, message, user, room }: { roomId: string; message: IMessage; user: IUser; room: IRoom }) => {
 			notifications.streamRoomMessage.emit(roomId, message, user, room);
 		});
+
 		service.onEvent('otrAckUpdate', ({ roomId, acknowledgeMessage }: { roomId: string; acknowledgeMessage: IOTRMessage }) => {
 			notifications.streamRoomMessage.emit(roomId, acknowledgeMessage);
+		});
+
+		service.onEvent('qr-code', ({ sessionId, authToken }: { sessionId: string; authToken: string }) => {
+			notifications.streamQR.emitWithoutBroadcast(`${sessionId}/verify`, {
+				authToken,
+			});
 		});
 	}
 }

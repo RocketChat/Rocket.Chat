@@ -70,6 +70,6 @@ test.describe.parallel('Login', () => {
 		const buttonEnglish = page.getByRole('button', { name: 'Change to English' });
 		await buttonEnglish.click();
 
-		await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
+		await expect(page.getByRole('button', { name: 'Login', exact: true })).toBeVisible();
 	});
 });
