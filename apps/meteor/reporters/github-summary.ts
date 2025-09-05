@@ -10,6 +10,8 @@ interface ITestSummary {
 	skipped: number;
 	total: number;
 	status: 'passed' | 'failed' | 'mixed';
+	filePath?: string;
+	lineNumber?: number;
 }
 
 interface ITestSummaryReport {
@@ -38,8 +40,8 @@ class GitHubSummaryReporter implements Reporter {
 	}
 
 	onTestEnd(test: TestCase, result: TestResult) {
-		// Get the describe block name (suite title)
-		const suiteName = this.getSuiteName(test);
+		// Get the describe block name (suite title) and location info
+		const { suiteName, filePath, lineNumber } = this.getSuiteNameAndLocation(test);
 
 		// Initialize or get existing summary
 		let summary = this.testResults.get(suiteName);
@@ -51,6 +53,8 @@ class GitHubSummaryReporter implements Reporter {
 				skipped: 0,
 				total: 0,
 				status: 'passed',
+				filePath,
+				lineNumber,
 			};
 			this.testResults.set(suiteName, summary);
 		}
@@ -85,28 +89,38 @@ class GitHubSummaryReporter implements Reporter {
 		this.generateSummaryJson();
 	}
 
-	private getSuiteName(test: TestCase): string {
+	private getSuiteNameAndLocation(test: TestCase): { suiteName: string; filePath?: string; lineNumber?: number } {
 		// Walk up the suite hierarchy to collect all suite titles
 		const suiteTitles: string[] = [];
 		let suite: Suite | undefined = test.parent;
+		let topLevelSuite: Suite | undefined;
 
 		while (suite) {
 			if (suite.title && suite.title !== '') {
 				// Skip filenames (they typically end with .spec.ts or .spec.js)
 				if (!suite.title.endsWith('.spec.ts') && !suite.title.endsWith('.spec.js')) {
 					suiteTitles.push(suite.title);
+					// Keep track of the outermost describe block
+					topLevelSuite = suite;
 				}
 			}
 			suite = suite.parent;
 		}
 
+		// Get file path and line number from the test case
+		const filePath = test.location?.file;
+		// Try to get line number from the top-level suite if available, otherwise from the test
+		const lineNumber = topLevelSuite?.location?.line || test.location?.line;
+
 		// Return the top-most (outermost) describe block name
 		// The array is built from innermost to outermost, so we want the last element
-		if (suiteTitles.length > 0) {
-			return suiteTitles[suiteTitles.length - 1];
-		}
+		const suiteName = suiteTitles.length > 0 ? suiteTitles[suiteTitles.length - 1] : 'Unknown';
 
-		return 'Unknown';
+		return {
+			suiteName,
+			filePath,
+			lineNumber,
+		};
 	}
 
 	private generateSummaryJson() {

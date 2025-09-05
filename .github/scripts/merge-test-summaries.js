@@ -25,7 +25,9 @@ function parseJsonReport(content) {
           passed: summary.passed,
           failed: summary.failed,
           skipped: summary.skipped,
-          total: summary.total
+          total: summary.total,
+          filePath: summary.filePath,
+          lineNumber: summary.lineNumber
         });
       }
     }
@@ -63,12 +65,48 @@ function getStatusText(passed, failed) {
 }
 
 /**
+ * Generates a GitHub link to the test file and line number
+ * @param {string} suiteName - Name of the test suite
+ * @param {string} filePath - Path to the test file
+ * @param {number} lineNumber - Line number in the file
+ * @returns {string} Formatted suite name with GitHub link
+ */
+function formatSuiteNameWithLink(suiteName, filePath, lineNumber) {
+  // If we don't have file path info, return the suite name as-is
+  if (!filePath) {
+    return suiteName;
+  }
+  
+  // Extract repository info from environment variables or use defaults
+  const repoOwner = process.env.GITHUB_REPOSITORY_OWNER || 'RocketChat';
+  const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] || 'Rocket.Chat';
+  const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || 'develop';
+  
+  // Convert absolute path to relative path by removing common prefixes
+  let relativePath = filePath;
+  const commonPrefixes = ['/home/runner/work/Rocket.Chat/Rocket.Chat/', '/github/workspace/', process.cwd() + '/'];
+  for (const prefix of commonPrefixes) {
+    if (relativePath.startsWith(prefix)) {
+      relativePath = relativePath.substring(prefix.length);
+      break;
+    }
+  }
+  
+  // Generate GitHub link
+  const githubUrl = `https://github.com/${repoOwner}/${repoName}/blob/${branch}/${relativePath}`;
+  const linkWithLine = lineNumber ? `${githubUrl}#L${lineNumber}` : githubUrl;
+  
+  return `[${suiteName}](${linkWithLine})`;
+}
+
+/**
  * Generates a comprehensive markdown summary from merged test suites and metadata
  * @param {Map<string, Object>} allSuites - Map of test suite names to their aggregated results
  * @param {Array<Object>} allMetadata - Array of metadata objects from all test runs
+ * @param {boolean} includeLinks - Whether to include GitHub links in suite names
  * @returns {string} Formatted markdown summary
  */
-function generateMergedSummary(allSuites, allMetadata) {
+function generateMergedSummary(allSuites, allMetadata, includeLinks = false) {
   const suites = Array.from(allSuites.values()).sort((a, b) => a.name.localeCompare(b.name));
   
   // Calculate totals
@@ -125,31 +163,47 @@ function generateMergedSummary(allSuites, allMetadata) {
   // Test suites breakdown
   markdown += '### 📋 Test Suites\n\n';
   
-  // Calculate column widths for better formatting
-  const maxSuiteNameLength = Math.max('Suite'.length, ...suites.map(s => s.name.length));
-  const maxStatusLength = Math.max('Status'.length, ...suites.map(s => {
-    const status = getStatusText(s.passed, s.failed);
-    return (status + ' ' + getStatusIcon(s.passed, s.failed)).length;
-  }));
-  
-  // Create properly padded table headers
-  const suiteHeader = 'Suite'.padEnd(maxSuiteNameLength);
-  const statusHeader = 'Status'.padEnd(maxStatusLength);
-  
-  markdown += `| ${suiteHeader} | ${statusHeader} | Passed | Failed | Skipped | Total |\n`;
-  markdown += `|${'-'.repeat(maxSuiteNameLength + 2)}|${'-'.repeat(maxStatusLength + 2)}|--------|--------|---------|-------|\n`;
+  if (includeLinks) {
+    // GitHub Actions summary version with links, no padding
+    markdown += `| Suite | Status | Passed | Failed | Skipped | Total |\n`;
+    markdown += `|-------|--------|--------|--------|---------|-------|\n`;
 
-  for (const suite of suites) {
-    const icon = getStatusIcon(suite.passed, suite.failed);
-    const status = getStatusText(suite.passed, suite.failed);
-    const suiteName = suite.name.padEnd(maxSuiteNameLength);
-    const statusText = `${icon} ${status}`.padEnd(maxStatusLength);
-    const passed = suite.passed.toString().padStart(6);
-    const failed = suite.failed.toString().padStart(6);
-    const skipped = suite.skipped.toString().padStart(7);
-    const total = suite.total.toString().padStart(5);
+    for (const suite of suites) {
+      const icon = getStatusIcon(suite.passed, suite.failed);
+      const status = getStatusText(suite.passed, suite.failed);
+      const statusText = `${icon} ${status}`;
+      const formattedName = formatSuiteNameWithLink(suite.name, suite.filePath, suite.lineNumber);
+      
+      markdown += `| ${formattedName} | ${statusText} | ${suite.passed} | ${suite.failed} | ${suite.skipped} | ${suite.total} |\n`;
+    }
+  } else {
+    // Console/file version with padding, no links
+    // Calculate column widths for better formatting
+    const maxSuiteNameLength = Math.max('Suite'.length, ...suites.map(s => s.name.length));
+    const maxStatusLength = Math.max('Status'.length, ...suites.map(s => {
+      const status = getStatusText(s.passed, s.failed);
+      return (status + ' ' + getStatusIcon(s.passed, s.failed)).length;
+    }));
     
-    markdown += `| ${suiteName} | ${statusText} | ${passed} | ${failed} | ${skipped} | ${total} |\n`;
+    // Create properly padded table headers
+    const suiteHeader = 'Suite'.padEnd(maxSuiteNameLength);
+    const statusHeader = 'Status'.padEnd(maxStatusLength);
+    
+    markdown += `| ${suiteHeader} | ${statusHeader} | Passed | Failed | Skipped | Total |\n`;
+    markdown += `|${'-'.repeat(maxSuiteNameLength + 2)}|${'-'.repeat(maxStatusLength + 2)}|--------|--------|---------|-------|\n`;
+
+    for (const suite of suites) {
+      const icon = getStatusIcon(suite.passed, suite.failed);
+      const status = getStatusText(suite.passed, suite.failed);
+      const suiteName = suite.name.padEnd(maxSuiteNameLength);
+      const statusText = `${icon} ${status}`.padEnd(maxStatusLength);
+      const passed = suite.passed.toString().padStart(6);
+      const failed = suite.failed.toString().padStart(6);
+      const skipped = suite.skipped.toString().padStart(7);
+      const total = suite.total.toString().padStart(5);
+      
+      markdown += `| ${suiteName} | ${statusText} | ${passed} | ${failed} | ${skipped} | ${total} |\n`;
+    }
   }
 
   markdown += '\n---\n';
@@ -227,7 +281,7 @@ async function main() {
       }
       
       // Create empty summary to avoid CI failure
-      const emptySummary = generateMergedSummary(new Map(), []);
+      const emptySummary = generateMergedSummary(new Map(), [], false);
       fs.writeFileSync('merged-test-summary.md', emptySummary);
       console.log('✅ Created empty merged test summary');
       return;
@@ -275,6 +329,11 @@ async function main() {
             existing.failed += suite.failed;
             existing.skipped += suite.skipped;
             existing.total += suite.total;
+            // Keep the first occurrence's file path and line number
+            if (!existing.filePath && suite.filePath) {
+              existing.filePath = suite.filePath;
+              existing.lineNumber = suite.lineNumber;
+            }
           }
         }
         
@@ -287,17 +346,20 @@ async function main() {
     
     console.log(`📈 Summary: Processed ${filesProcessed}/${summaryFiles.length} files, found ${allSuites.size} unique test suites`);
     
-    // Generate merged summary
-    const mergedSummary = generateMergedSummary(allSuites, allMetadata);
+    // Generate both versions of the summary
+    const printedSummary = generateMergedSummary(allSuites, allMetadata, false); // No links, with padding
+    const githubSummary = generateMergedSummary(allSuites, allMetadata, true);   // With links, no padding
     
-    // Write to GitHub Actions summary if in CI
+    // Write to GitHub Actions summary if in CI (with links)
     if (process.env.GITHUB_STEP_SUMMARY) {
-      fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, mergedSummary);
-      console.log('✅ Test summary added to GitHub Actions job summary');
+      fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, githubSummary);
+      console.log('✅ Test summary with links added to GitHub Actions job summary');
+    } else {
+      console.log('ℹ️ No GitHub Actions summary file found - skipping links, content:' + githubSummary);
     }
     
-    // Also write to file for artifact
-    fs.writeFileSync('merged-test-summary.md', mergedSummary);
+    // Write to file for artifact (printed version without links)
+    fs.writeFileSync('merged-test-summary.md', printedSummary);
     console.log('✅ Merged test summary written to merged-test-summary.md');
     
     // Log test results summary (don't exit with error code for failed tests - that's handled elsewhere)
