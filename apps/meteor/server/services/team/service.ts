@@ -427,6 +427,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		const room = await Rooms.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
+
 		if (!room) {
 			throw new Error('invalid-room');
 		}
