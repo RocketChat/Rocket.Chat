@@ -495,6 +495,7 @@ test.describe('e2e-encryption', () => {
 
 		await poHomeChannel.dismissToast();
 
+		await expect(page.getByRole('button', { name: 'Send' })).toBeVisible();
 		await poHomeChannel.tabs.kebab.click();
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
 		await poHomeChannel.tabs.btnEnableE2E.click();
