@@ -30,6 +30,7 @@ export default {
 		{
 			displayName: 'server',
 			preset: server.preset,
+
 			testMatch: [
 				'<rootDir>/app/livechat/server/business-hour/**/*.spec.ts?(x)',
 				'<rootDir>/app/livechat/server/api/**/*.spec.ts',
@@ -43,7 +44,13 @@ export default {
 				'<rootDir>/app/api/server/**.spec.ts',
 				'<rootDir>/app/api/server/helpers/**.spec.ts',
 				'<rootDir>/app/api/server/middlewares/**.spec.ts',
+				'<rootDir>/app/lib/server/**/*.spec.ts',
 			],
+
+			moduleNameMapper: {
+				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',
+			},
+
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},
 	],
