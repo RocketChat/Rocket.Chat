@@ -1,0 +1,19 @@
+version: '3'
+services:
+  testldap_idp:
+    build: .
+    environment:
+      LDAP_ORGANISATION: "rcldap"
+      LDAP_DOMAIN: "rcldap.com.br"
+      LDAP_ADMIN_PASSWORD: "password"
+      LDAP_READONLY_USER: "false"
+      LDAP_RFC2307BIS_SCHEMA: "false"
+      LDAP_BACKEND: "mdb"
+      LDAP_TLS: "false"
+      LDAP_REPLICATION: "false"
+      KEEP_EXISTING_CONFIG: "false"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+    ports:
+      - "389:389"
+      - "636:636"
+    command: --copy-service
