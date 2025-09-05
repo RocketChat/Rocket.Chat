@@ -281,7 +281,17 @@ async function joinRoom({
 			roomName = inviteEvent.roomId.split(':')[0].replace('!', '') || 'Unnamed Room';
 		}
 
-		const roomType = isDM ? 'd' : matrixRoom.isPublic() ? 'c' : 'p';
+		let roomType: 'c' | 'p' | 'd';
+
+		if (isDM) {
+			roomType = 'd';
+		} else if (matrixRoom.isPublic()) {
+			roomType = 'c';
+		} else if (matrixRoom.isInviteOnly()) {
+			roomType = 'p';
+		} else {
+			throw new Error('room is neither public, private, nor direct message - rocketchat is unable to join for now');
+		}
 
 		let ourRoom: { _id: string };
 

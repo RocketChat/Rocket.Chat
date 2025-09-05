@@ -2803,10 +2803,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hs/core@workspace:homeserver/packages/core"
   dependencies:
+    "@hs/room": "workspace:*"
     bun-types: "npm:latest"
     ts-node: "npm:^10.9.2"
     ts-patch: "npm:^3.1.2"
-    typescript: "npm:^5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -2829,7 +2830,7 @@ __metadata:
     tweetnacl: "npm:^1.0.3"
     zod: "npm:^3.22.4"
   peerDependencies:
-    typescript: ^5.8.3
+    typescript: ~5.9.2
   languageName: unknown
   linkType: soft
 
@@ -2857,7 +2858,6 @@ __metadata:
   resolution: "@hs/room@workspace:homeserver/packages/room"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.3"
-    "@hs/core": "workspace:*"
     "@hs/crypto": "workspace:*"
     bun-types: "npm:latest"
   languageName: unknown
@@ -7508,6 +7508,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/desktop-api@workspace:packages/desktop-api, @rocket.chat/desktop-api@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/desktop-api@workspace:packages/desktop-api"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:~"
+    eslint: "npm:~8.45.0"
+    rimraf: "npm:~6.0.1"
+    typescript: "npm:~5.9.2"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/emitter@npm:^0.31.25, @rocket.chat/emitter@npm:~0.31.25":
   version: 0.31.25
   resolution: "@rocket.chat/emitter@npm:0.31.25"
@@ -7596,6 +7607,7 @@ __metadata:
     "@rocket.chat/network-broker": "workspace:^"
     "@types/bun": "npm:latest"
     "@types/express": "npm:^4.17.17"
+    eslint: "npm:~8.45.0"
     hono: "npm:^3.11.0"
     pino: "npm:^8.16.0"
     polka: "npm:^0.5.2"
@@ -20561,6 +20573,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-copy@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "fast-copy@npm:3.0.2"
+  checksum: 10/97e1022e2aaa27acf4a986d679310bfd66bfb87fe8da9dd33b698e3e50189484001cf1eeb9670e19b59d9d299828ed86c8da354c954f125995ab2a6331c5f290
+  languageName: node
+  linkType: hard
+
 "fast-decode-uri-component@npm:^1.0.1":
   version: 1.0.1
   resolution: "fast-decode-uri-component@npm:1.0.1"
@@ -22354,13 +22373,14 @@ __metadata:
     husky: "npm:^9.1.7"
     lint-staged: "npm:^16.1.2"
     pino: "npm:^9.7.0"
+    pino-pretty: "npm:^13.0.0"
     reflect-metadata: "npm:^0.2.2"
     sinon: "npm:^20.0.0"
     tsconfig-paths: "npm:^4.2.0"
     tsyringe: "npm:^4.10.0"
-    turbo: "npm:^2.5.4"
+    turbo: "npm:~2.5.6"
     tweetnacl: "npm:^1.0.3"
-    typescript: "npm:^5.8.3"
+    typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -25339,7 +25359,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:~30.0.0, jest@npm:~30.0.5":
+"jest@npm:~30.0.0, jest@npm:~30.0.2, jest@npm:~30.0.5":
   version: 30.0.5
   resolution: "jest@npm:30.0.5"
   dependencies:
@@ -35758,31 +35778,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.5.6":
-  version: 2.5.6
-  resolution: "turbo-darwin-64@npm:2.5.6"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
-"turbo-darwin-arm64@npm:2.5.5":
-  version: 2.5.5
-  resolution: "turbo-darwin-arm64@npm:2.5.5"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "turbo-darwin-arm64@npm:2.5.6":
   version: 2.5.6
   resolution: "turbo-darwin-arm64@npm:2.5.6"
   conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"turbo-linux-64@npm:2.5.5":
-  version: 2.5.5
-  resolution: "turbo-linux-64@npm:2.5.5"
-  conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
@@ -35793,24 +35792,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:2.5.5":
-  version: 2.5.5
-  resolution: "turbo-linux-arm64@npm:2.5.5"
-  conditions: os=linux & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "turbo-linux-arm64@npm:2.5.6":
   version: 2.5.6
   resolution: "turbo-linux-arm64@npm:2.5.6"
   conditions: os=linux & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"turbo-windows-64@npm:2.5.5":
-  version: 2.5.5
-  resolution: "turbo-windows-64@npm:2.5.5"
-  conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
@@ -35821,13 +35806,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:2.5.5":
-  version: 2.5.5
-  resolution: "turbo-windows-arm64@npm:2.5.5"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "turbo-windows-arm64@npm:2.5.6":
   version: 2.5.6
   resolution: "turbo-windows-arm64@npm:2.5.6"
@@ -35835,38 +35813,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.5.4":
+"turbo@npm:~2.5.6":
   version: 2.5.6
   resolution: "turbo@npm:2.5.6"
-  dependencies:
-    turbo-darwin-64: "npm:2.5.6"
-    turbo-darwin-arm64: "npm:2.5.6"
-    turbo-linux-64: "npm:2.5.6"
-    turbo-linux-arm64: "npm:2.5.6"
-    turbo-windows-64: "npm:2.5.6"
-    turbo-windows-arm64: "npm:2.5.6"
-  dependenciesMeta:
-    turbo-darwin-64:
-      optional: true
-    turbo-darwin-arm64:
-      optional: true
-    turbo-linux-64:
-      optional: true
-    turbo-linux-arm64:
-      optional: true
-    turbo-windows-64:
-      optional: true
-    turbo-windows-arm64:
-      optional: true
-  bin:
-    turbo: bin/turbo
-  checksum: 10/8b6509854c32b3163a6de943787e9a33d2c610577360968db1a0cc959b79aaf7e8e80611a349384295e9181ac26edede2a86ea9867d8e6b3d2d676c584b2a3a5
-  languageName: node
-  linkType: hard
-
-"turbo@npm:~2.5.5":
-  version: 2.5.5
-  resolution: "turbo@npm:2.5.5"
   dependencies:
     turbo-darwin-64: "npm:2.5.6"
     turbo-darwin-arm64: "npm:2.5.6"
@@ -36101,7 +36050,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.3.0, typescript@npm:^5.8.3, typescript@npm:~5.9.2":
+"typescript@npm:^5.3.0, typescript@npm:~5.9.2":
   version: 5.9.2
   resolution: "typescript@npm:5.9.2"
   bin:
@@ -36121,7 +36070,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.3.0#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.8.3#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^5.3.0#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A~5.9.2#optional!builtin<compat/typescript>":
   version: 5.9.2
   resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"
   bin:

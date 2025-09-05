@@ -522,7 +522,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 		const messageToReplyTo = await Messages.findOneById(messageToReplyToId);
-		if (!messageToReplyTo || !messageToReplyTo.federation?.eventId) {
+		if (!messageToReplyTo?.federation?.eventId) {
 			return;
 		}
 
@@ -917,8 +917,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error(`No Matrix user ID mapping found for user ${senderId}`);
 		}
 
-		const powerLevel = role === 'owner' ? 100 : role === 'moderator' ? 50 : 0;
-
+		let powerLevel = 0;
+		if (role === 'owner') {
+			powerLevel = 100;
+		} else if (role === 'moderator') {
+			powerLevel = 50;
+		}
 		await this.homeserverServices.room.setPowerLevelForUser(matrixRoomId, senderMatrixUserId, matrixUserId, powerLevel);
 	}
 }
