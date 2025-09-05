@@ -2120,6 +2120,18 @@ describe('[Rooms]', () => {
 	});
 
 	describe('[/rooms.autocomplete.channelAndPrivate]', () => {
+		let testChannel: IRoom;
+
+		before(async () => {
+			await updateSetting('UI_Allow_room_names_with_special_chars', true);
+			testChannel = (await createRoom({ type: 'c', name: 'тест' })).body.channel;
+		});
+
+		after(async () => {
+			await updateSetting('UI_Allow_room_names_with_special_chars', true);
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
 		it('should return an error when the required parameter "selector" is not provided', (done) => {
 			void request
 				.get(api('rooms.autocomplete.channelAndPrivate'))
@@ -2143,6 +2155,21 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('items').and.to.be.an('array');
+				})
+				.end(done);
+		});
+		it('should return the rooms with cyrillic characters in channel name', (done) => {
+			void request
+				.get(api('rooms.autocomplete.channelAndPrivate'))
+				.query({ selector: '{ "name": "тест" }' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items').and.to.be.an('array');
+					expect(res.body.items).to.have.lengthOf(1);
+					expect(res.body.items[0].fname).to.be.equal('тест');
 				})
 				.end(done);
 		});
