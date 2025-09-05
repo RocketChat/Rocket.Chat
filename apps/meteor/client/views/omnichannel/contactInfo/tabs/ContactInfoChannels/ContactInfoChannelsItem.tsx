@@ -3,23 +3,35 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useBlockChannel } from './useBlockChannel';
+import { useOutboundMessageModal } from '../../../../../components/Omnichannel/OutboundMessage/modals/OutboundMessageModal';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 
-type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel>;
+type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel> & {
+	contactId?: string;
+	canSendOutboundMessage?: boolean;
+};
 
-const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: ContactInfoChannelsItemProps) => {
+const ContactInfoChannelsItem = ({
+	contactId,
+	visitor,
+	details,
+	blocked,
+	lastChat,
+	canSendOutboundMessage,
+}: ContactInfoChannelsItemProps) => {
 	const { t } = useTranslation();
 	const { getSourceLabel, getSourceName } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 
 	const [showButton, setShowButton] = useState(false);
 	const handleBlockContact = useBlockChannel({ association: visitor, blocked });
+	const outboundMessageModal = useOutboundMessageModal();
 
 	const customClass = css`
 		&:hover,
@@ -28,15 +40,28 @@ const ContactInfoChannelsItem = ({ visitor, details, blocked, lastChat }: Contac
 		}
 	`;
 
-	const menuItems: GenericMenuItemProps[] = [
-		{
-			id: 'block',
-			icon: 'ban',
-			content: blocked ? t('Unblock') : t('Block'),
-			variant: 'danger',
-			onClick: handleBlockContact,
-		},
-	];
+	const menuItems = useMemo(() => {
+		const items: GenericMenuItemProps[] = [
+			{
+				id: 'block',
+				icon: 'ban',
+				content: blocked ? t('Unblock') : t('Block'),
+				variant: 'danger',
+				onClick: handleBlockContact,
+			},
+		];
+
+		if (canSendOutboundMessage) {
+			items.unshift({
+				id: 'outbound-message',
+				icon: 'send',
+				content: t('Outbound_message'),
+				onClick: () => outboundMessageModal.open({ contactId, providerId: details.id }),
+			});
+		}
+
+		return items;
+	}, [blocked, canSendOutboundMessage, contactId, details.id, handleBlockContact, outboundMessageModal, t]);
 
 	return (
 		<Box

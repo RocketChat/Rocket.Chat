@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ReviewStep renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-162rsse"
+    >
+      <div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1ir42z0"
+        >
+          <div
+            agentname="John Doe"
+            agentusername="johndoe"
+            contactname="Jane Smith"
+            data-testid="outbound-message-preview"
+            departmentname="Support"
+            providername="Rocket.Chat"
+            providertype="phone"
+            recipient="+0987654321"
+            sender="+1234567890"
+            template="[object Object]"
+            templateparameters="[object Object]"
+          />
+        </div>
+        <div
+          class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-kqd92f"
+          >
+            Messages_cannot_be_unsent
+          </div>
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Back
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-send rcx-icon rcx-css-1hdf9ok"
+                >
+                  〈
+                </i>
+                Send
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
