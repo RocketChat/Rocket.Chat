@@ -81,13 +81,16 @@ const integrationsEndpoints = API.v1.get(
 			return API.v1.failure('The query parameter "integrationId" is required.');
 		}
 
-		return API.v1.success({
-			integration: await findOneIntegration({
-				userId: this.userId,
-				integrationId,
-				createdBy,
-			}),
+		const integration = await findOneIntegration({
+			userId: this.userId,
+			integrationId,
+			createdBy,
 		});
+
+		// TODO : remove this line if the database doesnt return null value for script. since script should never be null
+		if (!integration.script) integration.script = '';
+
+		return API.v1.success({ integration });
 	},
 );
 
