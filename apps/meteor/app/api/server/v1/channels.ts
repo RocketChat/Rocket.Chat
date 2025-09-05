@@ -58,7 +58,6 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
-import { callbacks } from '../../../../lib/callbacks';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({

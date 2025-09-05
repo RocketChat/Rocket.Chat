@@ -22,7 +22,6 @@ import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomType } from '../functions/saveRoomType';
-import { getFederationVersion } from '../../../../server/services/federation/utils';
 
 type RoomSettings = {
 	roomAvatar: string;
@@ -224,7 +223,7 @@ const settingSavers: RoomSettingsSavers = {
 				updateRoom: false,
 			});
 		}
-		
+
 		if (value && isRoomFederated(room) && getFederationVersion() === 'native') {
 			await FederationMatrix.updateRoomName(rid, value, user._id);
 		}
@@ -236,7 +235,7 @@ const settingSavers: RoomSettingsSavers = {
 		if (value !== room.topic) {
 			await saveRoomTopic(rid, value, user);
 		}
-		
+
 		if (value && isRoomFederated(room) && getFederationVersion() === 'native') {
 			await FederationMatrix.updateRoomTopic(rid, value, user._id);
 		}

@@ -38,7 +38,6 @@ import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessag
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
-import { callbacks } from '../../../../lib/callbacks';
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -185,8 +184,6 @@ API.v1.addRoute(
 			});
 
 			const user = await getUserFromParams(this.bodyParams);
-			
-			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'owner' });
 
 			await callbacks.run('beforeChangeRoomRole', { fromUserId: this.userId, userId: user._id, roomId: findResult.rid, role: 'owner' });
 
