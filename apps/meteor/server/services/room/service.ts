@@ -4,6 +4,7 @@ import { type AtLeast, type IRoom, type IUser, isOmnichannelRoom, isRoomWithJoin
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { FederationActions } from './hooks/BeforeFederationActions';
+import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
@@ -11,6 +12,9 @@ import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUser
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { addRoomLeader } from '../../methods/addRoomLeader';
+import { addRoomModerator } from '../../methods/addRoomModerator';
+import { addRoomOwner } from '../../methods/addRoomOwner';
 import { createDirectMessage } from '../../methods/createDirectMessage';
 import { getFederationVersion } from '../federation/utils';
 import { saveRoomName } from '../../../app/channel-settings/server';

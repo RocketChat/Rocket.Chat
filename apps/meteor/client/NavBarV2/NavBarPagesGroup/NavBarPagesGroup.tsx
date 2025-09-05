@@ -6,6 +6,7 @@ import NavBarItemCreateNew from './NavBarItemCreateNew';
 import NavBarItemDirectoryPage from './NavBarItemDirectoryPage';
 import NavBarItemHomePage from './NavBarItemHomePage';
 import NavBarItemMarketPlaceMenu from './NavBarItemMarketPlaceMenu';
+import NavBarItemSort from './NavBarItemSort';
 import NavBarPagesStackMenu from './NavBarPagesStackMenu';
 
 const NavBarPagesGroup = () => {
@@ -26,6 +27,7 @@ const NavBarPagesGroup = () => {
 				</>
 			)}
 			{showMarketplace && !isMobile && <NavBarItemMarketPlaceMenu />}
+			{!isMobile && <NavBarItemSort />}
 			<NavBarItemCreateNew />
 		</NavBarGroup>
 	);
