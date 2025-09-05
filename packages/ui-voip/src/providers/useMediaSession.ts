@@ -280,11 +280,11 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: Me
 				return;
 			}
 
-			const { contact, state: callState, role, muted, onHold } = mainCall;
+			const { contact, state: callState, role, muted, held } = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (contact.type === 'sip') {
-				dispatch({ type: 'instance_updated', payload: { peerInfo: { number: contact.id || 'unknown' }, state, muted, held: onHold } });
+				dispatch({ type: 'instance_updated', payload: { peerInfo: { number: contact.id || 'unknown' }, state, muted, held } });
 				return;
 			}
 
@@ -313,7 +313,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: Me
 			} as PeerInfo; // TODO: Some of these fields are typed as optional, but I think they are always present.
 			// Also as of now, there is no sip calls to handle.
 
-			dispatch({ type: 'instance_updated', payload: { state, peerInfo, muted, held: onHold } });
+			dispatch({ type: 'instance_updated', payload: { state, peerInfo, muted, held } });
 		};
 
 		const offCbs = [
@@ -357,9 +357,9 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: Me
 				return;
 			}
 
-			mainCall.setOnHold(!mainCall.onHold);
+			mainCall.setHeld(!mainCall.held);
 
-			dispatch({ type: 'hold', payload: { held: mainCall.onHold } });
+			dispatch({ type: 'hold', payload: { held: mainCall.held } });
 		};
 
 		const endCall = () => {
@@ -396,16 +396,13 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: Me
 			call.accept();
 		};
 
-		const startCall = async (id: string, kind: 'user' | 'sip', track: MediaStreamTrack) => {
+		const startCall = async (id: string, kind: 'user' | 'sip', inputTrack: MediaStreamTrack) => {
 			if (!instance) {
 				return;
 			}
 
 			try {
-				instance.once('newCall', ({ call }) => {
-					void call.setInputTrack(track);
-				});
-				await instance.startCall(kind, id);
+				await instance.startCall(kind, id, { inputTrack });
 			} catch (error) {
 				console.error('Error starting call', error);
 			}
