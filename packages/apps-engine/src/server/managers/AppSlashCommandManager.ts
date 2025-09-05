@@ -333,10 +333,16 @@ export class AppSlashCommandManager {
 
 		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd));
 
-		if (!app || AppStatusUtils.isDisabled(await app.getStatus())) {
-			// Just in case someone decides to do something they shouldn't
-			// let's ensure the app actually exists
+		if (!app) {
+			// App doesn't exist anymore
 			return;
+		}
+
+		// Check if app is disabled - if so, we still allow execution but the app should handle this gracefully
+		const appStatus = await app.getStatus();
+		if (AppStatusUtils.isDisabled(appStatus)) {
+			// Command is visible but app is disabled - let the app handle this scenario
+			// The app can check its own status and respond appropriately (e.g., show a message that it's disabled)
 		}
 
 		const appCmd = this.retrieveCommandInfo(cmd, app.getID());
@@ -357,10 +363,16 @@ export class AppSlashCommandManager {
 
 		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd));
 
-		if (!app || AppStatusUtils.isDisabled(await app.getStatus())) {
-			// Just in case someone decides to do something they shouldn't
-			// let's ensure the app actually exists
+		if (!app) {
+			// App doesn't exist anymore
 			return;
+		}
+
+		// Allow previews even for disabled apps - let the app handle the disabled state
+		const appStatus = await app.getStatus();
+		if (AppStatusUtils.isDisabled(appStatus)) {
+			// App is disabled but we still allow preview generation
+			// The app can check its own status and respond appropriately
 		}
 
 		const appCmd = this.retrieveCommandInfo(cmd, app.getID());
@@ -389,10 +401,16 @@ export class AppSlashCommandManager {
 
 		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd));
 
-		if (!app || AppStatusUtils.isDisabled(await app.getStatus())) {
-			// Just in case someone decides to do something they shouldn't
-			// let's ensure the app actually exists
+		if (!app) {
+			// App doesn't exist anymore
 			return;
+		}
+
+		// Allow preview execution even for disabled apps - let the app handle the disabled state
+		const appStatus = await app.getStatus();
+		if (AppStatusUtils.isDisabled(appStatus)) {
+			// App is disabled but we still allow preview execution
+			// The app can check its own status and respond appropriately
 		}
 
 		const appCmd = this.retrieveCommandInfo(cmd, app.getID());
@@ -431,7 +449,7 @@ export class AppSlashCommandManager {
 
 		// Should the command information really not exist
 		// Or if the command hasn't been registered
-		// Or the command is disabled on our side
+		// Or the command is disabled on our side (app-level disable, not app status disable)
 		// then let's not execute it, as the App probably doesn't want it yet
 		if (!cmdInfo?.isRegistered || cmdInfo?.isDisabled) {
 			return false;
