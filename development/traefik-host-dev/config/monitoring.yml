@@ -1,0 +1,30 @@
+# Optional monitoring services configuration
+# This file shows how to add additional services for development monitoring
+# Reference: https://doc.traefik.io/traefik/reference/dynamic-configuration/file/
+
+http:
+  routers:
+    # Prometheus metrics endpoint (if you have Prometheus running locally)
+    prometheus:
+      rule: "Host(`prometheus.localhost`)"
+      service: "prometheus-service"
+      entryPoints:
+        - "web"
+    
+    # Grafana dashboard (if you have Grafana running locally)
+    grafana:
+      rule: "Host(`grafana.localhost`)"
+      service: "grafana-service"
+      entryPoints:
+        - "web"
+
+  services:
+    prometheus-service:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1:9090"
+    
+    grafana-service:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1:3001"  # Adjust port as needed

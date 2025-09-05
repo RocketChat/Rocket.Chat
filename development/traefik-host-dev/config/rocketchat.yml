@@ -1,0 +1,81 @@
+# Dynamic Configuration for Rocket.Chat Load Balancing
+# This file defines the routing rules and load balancing configuration
+# Reference: https://doc.traefik.io/traefik/reference/dynamic-configuration/file/
+
+http:
+  # Routers define how incoming requests are matched and routed
+  routers:
+    # Main Rocket.Chat router for HTTP traffic
+    rocketchat-main:
+      rule: "Host(`localhost`) || Host(`127.0.0.1`) || Host(`rocketchat.localhost`)"
+      service: "rocketchat-backend"
+      entryPoints:
+        - "web"
+      priority: 1
+
+    # WebSocket router for real-time connections (sockjs and native websockets)
+    rocketchat-websocket:
+      rule: "(Host(`localhost`) || Host(`127.0.0.1`) || Host(`rocketchat.localhost`)) && (PathPrefix(`/websocket`) || PathPrefix(`/sockjs`))"
+      service: "rocketchat-backend"
+      entryPoints:
+        - "web"
+        - "websocket"
+      priority: 2  # Higher priority to match websocket paths first
+
+    # Traefik dashboard router
+    traefik-dashboard:
+      rule: "Host(`traefik.localhost`) || (Host(`localhost`) && PathPrefix(`/dashboard`))"
+      service: "api@internal"
+      entryPoints:
+        - "traefik"
+
+  # Services define the backend servers and load balancing configuration
+  services:
+    rocketchat-backend:
+      loadBalancer:
+        # Health check configuration
+        healthCheck:
+          path: "/api/info"
+          interval: "30s"
+          timeout: "5s"
+          scheme: "http"
+        
+        # Load balancing strategy
+        # Options: roundrobin (default), leastconn, iphash
+        # Reference: https://doc.traefik.io/traefik/routing/services/#load-balancing
+        sticky:
+          cookie:
+            name: "rocketchat-server"
+            secure: false
+            httpOnly: true
+        
+        # Backend servers - Add more instances as needed
+        servers:
+          # Instance 1 - Default development server
+          - url: "http://127.0.0.1:3000"
+            weight: 1
+          
+          # Instance 2 - Uncomment and modify port for second instance
+          # - url: "http://127.0.0.1:3002"
+          #   weight: 1
+          
+          # Instance 3 - Uncomment and modify port for third instance
+          # - url: "http://127.0.0.1:3003"
+          #   weight: 1
+
+  # Middlewares for request processing (optional)
+  middlewares:
+    # Add security headers
+    security-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: "http"
+        customResponseHeaders:
+          X-Frame-Options: "SAMEORIGIN"
+          X-Content-Type-Options: "nosniff"
+    
+    # Rate limiting (optional, useful for testing)
+    rate-limit:
+      rateLimit:
+        burst: 100
+        average: 50
