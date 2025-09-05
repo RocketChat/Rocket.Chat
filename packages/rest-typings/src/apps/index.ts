@@ -144,6 +144,22 @@ export type AppsEndpoints = {
 		};
 	};
 
+	'/apps/:id/scheduler-jobs': {
+		GET: () => {
+			jobs: Array<{
+				id: string;
+				name: string;
+				nextRunAt?: Date;
+				lastRunAt?: Date;
+				failedAt?: Date;
+				lastFinishedAt?: Date;
+				repeatInterval?: string;
+				lockedAt?: Date;
+				status: 'failed' | 'running' | 'scheduled';
+			}>;
+		};
+	};
+
 	'/apps/:id/versions': {
 		GET: () => {
 			apps: App[];
