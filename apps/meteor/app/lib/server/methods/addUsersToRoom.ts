@@ -54,7 +54,9 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 	// Can add to any room you're in, with permission, otherwise need specific room type permission
 	let canAddUser = false;
-	if (userInRoom && (await hasPermissionAsync(userId, 'add-user-to-joined-room', room._id))) {
+	if (await hasPermissionAsync(userId, 'manage-room-members-remotely')) {
+		canAddUser = true;
+	} else if (userInRoom && (await hasPermissionAsync(userId, 'add-user-to-joined-room', room._id))) {
 		canAddUser = true;
 	} else if (room.t === 'c' && (await hasPermissionAsync(userId, 'add-user-to-any-c-room'))) {
 		canAddUser = true;

@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { getRoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
@@ -29,7 +30,8 @@ export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUserId?: string
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomRoles' });
 	}
 
-	if (fromUserId && !(await canAccessRoomAsync(room, { _id: fromUserId }))) {
+	const hasManageRemotely = fromUserId && (await hasPermissionAsync(fromUserId, 'manage-room-members-remotely'));
+	if (fromUserId && !hasManageRemotely && !(await canAccessRoomAsync(room, { _id: fromUserId }))) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
 	}
 

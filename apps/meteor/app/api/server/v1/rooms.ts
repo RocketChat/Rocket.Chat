@@ -867,7 +867,8 @@ API.v1.addRoute(
 				return API.v1.failure('error-user-not-found');
 			}
 
-			if (await canAccessRoomAsync(room, { _id: this.user._id })) {
+			const hasManageRemotely = await hasPermissionAsync(this.userId, 'manage-room-members-remotely');
+			if (hasManageRemotely || (await canAccessRoomAsync(room, { _id: this.user._id }))) {
 				return API.v1.success({
 					isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
 				});
@@ -887,7 +888,12 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			if (!(await canAccessRoomAsync(findResult, this.user))) {
+			// Check if user has manage-room-members-remotely permission
+			const hasManageMembersPermission = await hasPermissionAsync(this.userId, 'manage-room-members-remotely');
+
+			// If user has manage-room-members-remotely permission, allow access to any room
+			// Otherwise, check normal room access
+			if (!hasManageMembersPermission && !(await canAccessRoomAsync(findResult, this.user))) {
 				return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any room');
 			}
 
