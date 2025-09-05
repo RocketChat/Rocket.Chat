@@ -268,7 +268,7 @@ jobs:
         run: sudo apt-get install -y musl-tools libunwind-dev && find /usr/include -name stdarg.h 2>/dev/null || true
 
       - if: steps.matrix-rust-sdk-crypto-nodejs.outputs.cache-hit != 'true'
-        uses: actions/setup-node@v4.4.0
+        uses: actions/setup-node@v5.0.0
         with:
           node-version: 22.16.0
 
