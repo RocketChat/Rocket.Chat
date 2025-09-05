@@ -47,6 +47,7 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/media-signaling": "workspace:^",
 		"@types/ejson": "^2.2.2",
 		"@types/node": "~22.16.1",
 		"@types/polka": "^0.5.7",
