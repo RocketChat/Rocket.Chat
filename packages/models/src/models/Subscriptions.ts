@@ -557,23 +557,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document> {
-		const query = {
-			'rid': roomId,
-			'u._id': {
-				$ne: userId,
-			},
-			'alert': { $ne: true },
-		};
-
-		const update = {
-			$set: {
-				alert: true,
-			},
-		};
-		return this.updateMany(query, update);
-	}
-
 	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,

@@ -100,7 +100,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const groupMentionInc = getGroupMentions(room.t, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
 
 	// find all subscriptions that will need to be notified after the update.
-	// we need to use toArray() here and keep results in memory because we'll update the them later
+	// we need to use toArray() here and keep results in memory because we'll update them later
 	const subs = await Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
 		roomId: room._id,
 		uidsExclude: [message.u._id],
@@ -119,9 +119,11 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 	}
 
+	const uids = subs.map((sub) => sub.u._id);
+
 	// update subscriptions of other members of the room
 	await Promise.all([
-		Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
+		Subscriptions.setAlertForRoomIdAndUserIds(message.rid, uids),
 		Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id),
 	]);
 
