@@ -24,7 +24,7 @@ import { useIdleConnection } from '../../hooks/useIdleConnection';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
-import { userIdStore } from '../../lib/user';
+import { getUser, userIdStore } from '../../lib/user';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
@@ -36,9 +36,7 @@ const ee = new Emitter();
 Accounts.onLogout(() => ee.emit('logout'));
 
 ee.on('logout', async () => {
-	const userId = userIdStore.getState();
-	if (!userId) return;
-	const user = Users.state.get(userId);
+	const user = getUser();
 	if (!user) return;
 
 	await afterLogoutCleanUpCallback.run(user);
