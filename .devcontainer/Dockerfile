@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev && \
     rm -rf /var/lib/apt/lists/*
 
-ENV NVM_DIR /usr/local/nvm
+ENV NVM_DIR=/usr/local/nvm
 RUN mkdir -p $NVM_DIR && \
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash && \
     bash -c ". $NVM_DIR/nvm.sh && nvm install $(jq -r '.engines.node' /tmp/package.json) && npm install -g yarn"
