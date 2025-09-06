@@ -58,7 +58,7 @@ export const useE2EEncryption = () => {
 
 		const offClientMessageReceived = onClientMessageReceived.use(async (msg) => {
 			const e2eRoom = await e2e.getInstanceByRoomId(msg.rid);
-			if (!e2eRoom?.shouldConvertReceivedMessages()) {
+			if (!e2eRoom?.isReady()) {
 				return msg;
 			}
 
@@ -76,24 +76,6 @@ export const useE2EEncryption = () => {
 			if (!e2eRoom) {
 				return message;
 			}
-
-			// e2e.getInstanceByRoomId already waits for the room to be available which means this logic needs to be
-			// refactored to avoid waiting for the room again
-			// const subscription = await new Promise<IRoom>((resolve) => {
-			// 	const room = Rooms.state.get(message.rid);
-
-			// 	if (room) resolve(room);
-
-			// 	const unsubscribe = Rooms.use.subscribe((state) => {
-			// 		const room = state.get(message.rid);
-			// 		if (room) {
-			// 			unsubscribe();
-			// 			resolve(room);
-			// 		}
-			// 	});
-			// });
-
-			// subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
 			const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages(message);
 

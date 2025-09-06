@@ -65,7 +65,7 @@ export const useFilesList = (
 			for await (const file of items) {
 				if (file.rid && file.content) {
 					const e2eRoom = await e2e.getInstanceByRoomId(file.rid);
-					if (e2eRoom?.shouldConvertReceivedMessages()) {
+					if (e2eRoom?.isReady()) {
 						const decrypted = await e2e.decryptFileContent(file);
 						const key = Base64.encode(
 							JSON.stringify({

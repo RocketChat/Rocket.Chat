@@ -220,10 +220,6 @@ export class E2ERoom extends Emitter {
 		return true;
 	}
 
-	shouldConvertReceivedMessages() {
-		return this.isReady();
-	}
-
 	isWaitingKeys() {
 		return this.state === 'WAITING_KEYS';
 	}
