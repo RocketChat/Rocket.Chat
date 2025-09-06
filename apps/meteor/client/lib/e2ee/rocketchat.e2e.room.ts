@@ -154,11 +154,11 @@ export class E2ERoom extends Emitter {
 		if (this.roomId !== RoomManager.opened) {
 			return;
 		}
-		logger.info(`[${this.roomId} (${this.state})]`, ...msg);
+		logger.info(`[${this.roomId}]`, ...msg);
 	}
 
 	error(...msg: unknown[]): void {
-		logger.error(`[${this.roomId} (${this.state})]`, ...msg);
+		logger.error(`[${this.roomId}]`, ...msg);
 	}
 
 	hasSessionKey(): boolean {
