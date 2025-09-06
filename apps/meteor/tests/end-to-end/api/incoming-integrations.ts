@@ -593,8 +593,7 @@ describe('[Incoming Integrations]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
-					expect(res.body).to.have.property('error', `must have required property 'integrationId'`);
+					expect(res.body).to.have.property('error', `must have required property 'integrationId' [invalid-params]`);
 				})
 				.end(done);
 		});
