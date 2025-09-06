@@ -45,7 +45,7 @@ export interface IOutgoingIntegration extends IRocketChatRecord {
 	username: string;
 	channel: string[];
 
-	event?: OutgoingIntegrationEvent;
+	event: OutgoingIntegrationEvent;
 	targetRoom?: string;
 	urls?: string[];
 	triggerWords?: string[];
