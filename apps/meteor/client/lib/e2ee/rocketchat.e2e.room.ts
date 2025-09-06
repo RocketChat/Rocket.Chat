@@ -38,9 +38,11 @@ import { roomCoordinator } from '../rooms/roomCoordinator';
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
-type Mutations = { [K in E2ERoomState]: {
-	[K2 in E2ERoomState]?: true;
-} };
+type Mutations = {
+	[K in E2ERoomState]: {
+		[K2 in E2ERoomState]?: true;
+	};
+};
 
 const permitedMutations: Mutations = {
 	NOT_STARTED: {
@@ -274,7 +276,7 @@ export class E2ERoom extends Emitter {
 			} catch (e) {
 				this.error(
 					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping\n`,
-					JSON.stringify(e)
+					JSON.stringify(e),
 				);
 				keys.push({ ...key, E2EKey: null });
 			}
@@ -643,21 +645,25 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Encrypts messages
-	async encryptText(data: Uint8Array<ArrayBuffer>, algorithm: 'rc.v1.aes-sha2' | 'rc.v2.aes-gcm-sha2' = 'rc.v2.aes-gcm-sha2'): Promise<EncryptedContent> {
+	async encryptText(
+		data: Uint8Array<ArrayBuffer>,
+		algorithm: 'rc.v1.aes-sha2' | 'rc.v2.aes-gcm-sha2' = 'rc.v2.aes-gcm-sha2',
+	): Promise<EncryptedContent> {
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 
 		try {
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
-			const result = algorithm === 'rc.v1.aes-sha2'
-				? await encryptAesCbc(vector, this.groupSessionKey, data)
-				: await encryptAesGcm(vector, this.groupSessionKey, data);
+			const result =
+				algorithm === 'rc.v1.aes-sha2'
+					? await encryptAesCbc(vector, this.groupSessionKey, data)
+					: await encryptAesGcm(vector, this.groupSessionKey, data);
 			const ciphertext = this.keyID + Base64.encode(joinVectorAndEncryptedData(vector, result));
 			return {
 				algorithm,
 				ciphertext,
-			}
+			};
 		} catch (error) {
 			this.error('Error encrypting message: ', error);
 			throw error;
@@ -692,7 +698,6 @@ export class E2ERoom extends Emitter {
 
 	// Helper function for encryption of messages
 	encrypt(message: { _id: IMessage['_id']; msg: IMessage['msg'] }): Promise<string | undefined> {
-
 		if (!this.groupSessionKey) {
 			throw new Error(t('E2E_Invalid_Key'));
 		}
@@ -716,15 +721,17 @@ export class E2ERoom extends Emitter {
 			return data;
 		}
 
-		const { content: { algorithm, ciphertext } } = data;
+		const {
+			content: { algorithm, ciphertext },
+		} = data;
 
 		if (algorithm !== 'rc.v2.aes-gcm-sha2' && algorithm !== 'rc.v1.aes-sha2') {
 			this.error('Unknown encryption algorithm: ', algorithm);
 			return data;
 		}
 
-			const decryptedContent = await this.decrypt({ algorithm, ciphertext });
-			Object.assign(data, decryptedContent);
+		const decryptedContent = await this.decrypt({ algorithm, ciphertext });
+		Object.assign(data, decryptedContent);
 
 		return data;
 	}
