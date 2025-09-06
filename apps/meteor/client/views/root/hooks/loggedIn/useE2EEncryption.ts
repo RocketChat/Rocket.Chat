@@ -1,4 +1,4 @@
-import { isE2EEPinnedMessage, type IRoom, type IMessage } from '@rocket.chat/core-typings';
+import { isE2EEPinnedMessage, type IMessage } from '@rocket.chat/core-typings';
 import { useUserId, useSetting, useRouter, useLayout, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
@@ -7,7 +7,6 @@ import { e2e } from '../../../../lib/e2ee';
 import { logger } from '../../../../lib/e2ee/logger';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
-import { Rooms } from '../../../../stores';
 import { useE2EEState } from '../../../room/hooks/useE2EEState';
 
 export const useE2EEncryption = () => {
@@ -80,21 +79,21 @@ export const useE2EEncryption = () => {
 
 			// e2e.getInstanceByRoomId already waits for the room to be available which means this logic needs to be
 			// refactored to avoid waiting for the room again
-			const subscription = await new Promise<IRoom>((resolve) => {
-				const room = Rooms.state.get(message.rid);
+			// const subscription = await new Promise<IRoom>((resolve) => {
+			// 	const room = Rooms.state.get(message.rid);
 
-				if (room) resolve(room);
+			// 	if (room) resolve(room);
 
-				const unsubscribe = Rooms.use.subscribe((state) => {
-					const room = state.get(message.rid);
-					if (room) {
-						unsubscribe();
-						resolve(room);
-					}
-				});
-			});
+			// 	const unsubscribe = Rooms.use.subscribe((state) => {
+			// 		const room = state.get(message.rid);
+			// 		if (room) {
+			// 			unsubscribe();
+			// 			resolve(room);
+			// 		}
+			// 	});
+			// });
 
-			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			// subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
 			const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages(message);
 
