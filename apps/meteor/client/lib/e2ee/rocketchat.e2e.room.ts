@@ -38,25 +38,50 @@ import { roomCoordinator } from '../rooms/roomCoordinator';
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
 
-type Mutations = { [K in E2ERoomState]: E2ERoomState[] };
+type Mutations = { [K in E2ERoomState]: {
+	[K2 in E2ERoomState]?: true;
+} };
 
 const permitedMutations: Mutations = {
-	NOT_STARTED: ['ESTABLISHING', 'DISABLED', 'KEYS_RECEIVED'],
-	ESTABLISHING: ['READY', 'KEYS_RECEIVED', 'ERROR', 'DISABLED', 'WAITING_KEYS', 'CREATING_KEYS'],
-	KEYS_RECEIVED: ['ESTABLISHING'],
-	CREATING_KEYS: ['READY', 'KEYS_RECEIVED'],
-	READY: ['DISABLED', 'CREATING_KEYS', 'WAITING_KEYS', 'KEYS_RECEIVED'],
-	ERROR: ['KEYS_RECEIVED', 'NOT_STARTED', 'ERROR'],
-	WAITING_KEYS: ['KEYS_RECEIVED', 'ERROR', 'DISABLED'],
-	DISABLED: [],
+	NOT_STARTED: {
+		ESTABLISHING: true,
+		DISABLED: true,
+		KEYS_RECEIVED: true,
+	},
+	ESTABLISHING: {
+		READY: true,
+		KEYS_RECEIVED: true,
+		ERROR: true,
+		DISABLED: true,
+		WAITING_KEYS: true,
+		CREATING_KEYS: true,
+	},
+	KEYS_RECEIVED: {
+		ESTABLISHING: true,
+	},
+	CREATING_KEYS: {
+		READY: true,
+		KEYS_RECEIVED: true,
+	},
+	READY: {
+		DISABLED: true,
+		CREATING_KEYS: true,
+		WAITING_KEYS: true,
+	},
+	ERROR: {
+		KEYS_RECEIVED: true,
+		NOT_STARTED: true,
+	},
+	WAITING_KEYS: {
+		KEYS_RECEIVED: true,
+		ERROR: true,
+		DISABLED: true,
+	},
+	DISABLED: {},
 };
 
 const filterMutation = (currentState: E2ERoomState, nextState: E2ERoomState): E2ERoomState | false => {
-	if (currentState === nextState) {
-		return nextState === 'ERROR' ? 'ERROR' : false;
-	}
-
-	if (permitedMutations[currentState].includes(nextState)) {
+	if (permitedMutations[currentState][nextState]) {
 		return nextState;
 	}
 
@@ -121,18 +146,15 @@ export class E2ERoom extends Emitter {
 			return this.decryptPendingMessages();
 		});
 		this.once('READY', () => this.decryptSubscription());
-		this.on('STATE_CHANGED', (prev) => {
-			if (this.roomId === RoomManager.opened) {
-				this.log(`[PREV: ${prev}]`, 'State CHANGED');
-			}
-		});
 		this.on('STATE_CHANGED', () => this.handshake());
-
 		this.handshake();
 	}
 
 	log(...msg: unknown[]): void {
-		logger.log(`[${this.roomId} (${this.state})]`, ...msg);
+		if (this.roomId !== RoomManager.opened) {
+			return;
+		}
+		logger.info(`[${this.roomId} (${this.state})]`, ...msg);
 	}
 
 	error(...msg: unknown[]): void {
@@ -385,11 +407,11 @@ export class E2ERoom extends Emitter {
 
 	async handleSuggestedKey(suggestedKey: string) {
 		if (await this.importGroupKey(suggestedKey)) {
-			logger.log('Imported valid E2E suggested key');
+			this.log('Imported valid E2E suggested key');
 			await this.acceptSuggestedKey();
 			this.setState('KEYS_RECEIVED');
 		} else {
-			logger.error('Invalid E2ESuggestedKey, rejecting', suggestedKey);
+			this.error('Invalid E2ESuggestedKey, rejecting', suggestedKey);
 			await this.rejectSuggestedKey();
 		}
 	}
