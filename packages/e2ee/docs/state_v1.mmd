@@ -1,42 +1,71 @@
-stateDiagram-v2
-    direction TB
-    %% External events / triggers noted after colon
-    [*] --> NOT_STARTED: init E2E instance
-    NOT_STARTED --> LOADING_KEYS: startClient()
-    NOT_STARTED --> DISABLED: stopClient()
+sequenceDiagram
+    autonumber
+    participant U as User Client
+    participant RS as Room State
+    participant Sub as Subscriptions Store
+    participant API as REST API
+    participant KMS as Key Source (peer/creator)
 
-    LOADING_KEYS --> ENTER_PASSWORD: need user password
-    LOADING_KEYS --> READY: keys loaded
-    LOADING_KEYS --> READY: new keys created
-    LOADING_KEYS --> ERROR: fetch/import failure
+    Note over RS: Initial load
+    U->>RS: Open room
+    RS->>RS: state = NOT_STARTED
 
-    ENTER_PASSWORD --> LOADING_KEYS: password accepted
-    ENTER_PASSWORD --> ENTER_PASSWORD: wrong password
-    ENTER_PASSWORD --> ERROR: unrecoverable error
+    alt Existing key present
+        Sub-->>RS: E2EKey (room subscription)
+        RS->>RS: state = KEYS_RECEIVED
+    else Suggested key rotation
+        Sub-->>RS: E2ESuggestedKey
+        RS->>RS: importSuggestedKey()
+        RS-->>API: POST /v1/e2e.acceptSuggestedGroupKey
+        RS->>RS: state = KEYS_RECEIVED
+    else No key yet
+        RS->>RS: remain NOT_STARTED
+    end
 
-    READY --> SAVE_PASSWORD: random password present
-    SAVE_PASSWORD --> READY: user saved password
+    U->>RS: handshake()
+    RS->>RS: Guard: require state in {NOT_STARTED, KEYS_RECEIVED} & e2e.isReady()
+    RS->>RS: state = ESTABLISHING
 
-    READY --> DISABLED: stopClient()
-    SAVE_PASSWORD --> DISABLED: stopClient()
+    opt Fast-path import
+        Sub-->>RS: (lookup) E2EKey
+        RS->>RS: importGroupKey()
+        RS->>RS: state = READY
+        RS-->>U: Handshake complete
+    end
 
-    READY --> ERROR: runtime error
-    SAVE_PASSWORD --> ERROR: runtime error
+    alt No existing key
+        RS-->>API: Request /v1/e2e.requestSubscriptionKeys
+        API-->>RS: 404 / no material
+        RS->>RS: state = CREATING_KEYS
+        RS->>RS: generate group key
+        RS-->>API: publish new key
+        RS->>RS: state = READY
+        RS-->>U: Handshake complete
+    else Key arrives late
+        par Parallel events
+            API-->>RS: E2EKey via subscription update
+            RS-->>RS: state = KEYS_RECEIVED
+        and RS->>RS: continuing ESTABLISHING
+        end
+        RS->>RS: importGroupKey() (idempotent)
+        RS->>RS: state = READY
+        RS-->>U: Handshake complete
+    end
 
-    ERROR --> NOT_STARTED: restart
-    DISABLED --> NOT_STARTED: startClient()
+    rect rgba(255,200,0,0.15)
+    note over RS: ERROR path
+    RS-->>RS: on fetch/import error -> state = ERROR
+    Sub-->>RS: Later E2EKey
+    RS->>RS: state = KEYS_RECEIVED
+    U->>RS: handshake() retry
+    end
 
-    state NOT_STARTED {
-        [*] --> idle
-        idle --> [*]
-    }
-
-    note right of LOADING_KEYS
-        Fetch/generate keys
-        Maybe persist encoded key
-    end note
-
-    note right of SAVE_PASSWORD
-        Banner + modal prompts user
-        to store random password
-    end note
+    rect rgba(150,200,255,0.15)
+    note over RS: Key rotation
+    Sub-->>RS: E2ESuggestedKey
+    RS->>RS: importGroupKey() (new keyID)
+    RS-->>API: acceptSuggestedGroupKey
+    RS->>RS: state = KEYS_RECEIVED
+    U->>RS: handshake() (re-establish)
+    RS->>RS: state = ESTABLISHING -> READY
+    end
