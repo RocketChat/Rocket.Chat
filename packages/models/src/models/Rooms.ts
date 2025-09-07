@@ -676,6 +676,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id: roomId }, { $set: { name } });
 	}
 
+	setSidepanelById(roomId: IRoom['_id'], sidepanel: IRoom['sidepanel']): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $set: { sidepanel } });
+	}
+
 	setFnameById(_id: IRoom['_id'], fname: IRoom['fname']): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
@@ -2209,21 +2213,5 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	async hasCreatedRolePrioritiesForRoom(rid: IRoom['_id'], syncVersion: number) {
 		return this.countDocuments({ _id: rid, rolePrioritiesCreated: syncVersion });
-	}
-
-	findPrivateRoomsNotSubscribedByUser(userRoomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		return this.find(
-			{
-				t: 'p',
-				_id: { $nin: userRoomIds || [] },
-				_hidden: { $ne: true },
-				archived: { $ne: true },
-				prid: { $exists: false },
-			},
-			{
-				projection: { _id: 1, t: 1, name: 1 },
-				...options,
-			},
-		);
 	}
 }

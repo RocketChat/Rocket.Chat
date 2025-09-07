@@ -19,12 +19,4 @@ export class Directory {
 		await this.searchChannel(name);
 		await this.getSearchByChannelName(name).click();
 	}
-
-	async goto() {
-		await this.page.goto('/directory/channels');
-	}
-
-	async toggleChannelsTab() {
-		await this.page.getByRole('tab', { name: 'Channels' }).click();
-	}
 }

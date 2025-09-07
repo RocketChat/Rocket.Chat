@@ -94,28 +94,16 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			const hasAllPrivateRoomsAccess = await hasPermissionAsync(userId, 'view-all-p-room');
-
 			const userPref = await getUserPreference(user, 'sidebarGroupByType');
 			// needs to negate globalPref because userPref represents its opposite
 			const groupByType = userPref !== undefined ? userPref : settings.get('UI_Group_Channels_By_Type');
 
 			if (!groupByType) {
-				if (hasAllPrivateRoomsAccess) {
-					// show all private rooms if the user has permission to view all private rooms
-					if (filter) {
-						channels = channels.concat(await Rooms.findByTypeAndNameContaining('p', filter, options).toArray());
-					} else {
-						channels = channels.concat(await Rooms.findByType('p', options).toArray());
-					}
+				const roomIds = (await Subscriptions.findByTypeAndUserId('p', userId, { projection: { rid: 1 } }).toArray()).map((s) => s.rid);
+				if (filter) {
+					channels = channels.concat(await Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).toArray());
 				} else {
-					// only show private rooms that the user is subscribed to
-					const roomIds = (await Subscriptions.findByTypeAndUserId('p', userId, { projection: { rid: 1 } }).toArray()).map((s) => s.rid);
-					if (filter) {
-						channels = channels.concat(await Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).toArray());
-					} else {
-						channels = channels.concat(await Rooms.findByTypeInIds('p', roomIds, options).toArray());
-					}
+					channels = channels.concat(await Rooms.findByTypeInIds('p', roomIds, options).toArray());
 				}
 			}
 		}
