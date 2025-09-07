@@ -14,3 +14,4 @@ import './login/oauth';
 import './login/password';
 import './login/saml';
 import './login/twitter';
+import './settings';

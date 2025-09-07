@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "7.10.0-rc.5",
+	"version": "7.11.0-develop",
 	"private": true,
 	"type": "commonjs",
 	"author": {
@@ -273,6 +273,7 @@
 		"@rocket.chat/logo": "^0.32.2",
 		"@rocket.chat/memo": "~0.31.25",
 		"@rocket.chat/message-parser": "workspace:^",
+		"@rocket.chat/message-types": "workspace:~",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/mongo-adapter": "workspace:^",
