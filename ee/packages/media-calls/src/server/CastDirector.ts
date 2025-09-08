@@ -9,6 +9,7 @@ import type { UserActorAgent } from '../internal/agents/BaseUserAgent';
 import { UserActorCalleeAgent } from '../internal/agents/CalleeAgent';
 import { UserActorCallerAgent } from '../internal/agents/CallerAgent';
 import { logger } from '../logger';
+import { BroadcastActorAgent } from './BroadcastAgent';
 
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 
@@ -131,10 +132,8 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		return null;
 	}
 
-	protected async getAgentForSipActorAndRole(_actor: MediaCallContact, _role: CallRole): Promise<IMediaCallAgent | null> {
-		// #TODO: SIP Agents
-
-		return null;
+	protected async getAgentForSipActorAndRole(actor: MediaCallContact, role: CallRole): Promise<BroadcastActorAgent | null> {
+		return new BroadcastActorAgent(actor, role);
 	}
 
 	protected buildContactListForUser(user: MinimalUserData, defaultContactInfo?: MediaCallContactInformation): ContactList {

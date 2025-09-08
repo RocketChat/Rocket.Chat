@@ -9,18 +9,22 @@ import type { InternalCallParams } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
 import { GlobalSignalProcessor } from '../internal/SignalProcessor';
 import { logger } from '../logger';
+import { SipServerSession } from '../sip/Session';
 
 /**
  * Class used as gateway to send and receive signals to/from clients
  * The actual function used to send the signals needs to be set by the server
  */
 export class MediaCallServer implements IMediaCallServer {
+	private session: SipServerSession;
+
 	private signalProcessor: GlobalSignalProcessor;
 
 	public emitter: Emitter<MediaCallServerEvents>;
 
 	constructor() {
 		this.emitter = new Emitter();
+		this.session = new SipServerSession();
 		this.signalProcessor = new GlobalSignalProcessor();
 
 		this.signalProcessor.emitter.on('signalRequest', ({ toUid, signal }) => {
@@ -50,14 +54,24 @@ export class MediaCallServer implements IMediaCallServer {
 		this.emitter.emit('signalRequest', { toUid, signal });
 	}
 
+	public reportCallUpdate(callId: string): void {
+		logger.debug({ msg: 'MediaCallServer.reportCallUpdate', callId });
+
+		this.emitter.emit('callUpdated', callId);
+	}
+
 	public async createCall(params: InternalCallParams): Promise<IMediaCall> {
 		logger.debug({ msg: 'MediaCallServer.createCall', params });
 
 		if (params.callee.type === 'sip') {
-			throw new Error('Outgoing SIP calls are not yet implemented.');
+			return this.session.createOutgoingCall(params);
 		}
 
 		return InternalCallProvider.createCall(params);
+	}
+
+	public receiveCallUpdate(callId: string): void {
+		this.session.reactToCallUpdate(callId);
 	}
 
 	public async hangupExpiredCalls(): Promise<void> {
@@ -70,6 +84,7 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public configure(settings: IMediaCallServerSettings): void {
 		logger.debug({ msg: 'Media Server Configuration', settings });
+		this.session.configure(settings);
 		this.signalProcessor.configure(settings);
 	}
 
