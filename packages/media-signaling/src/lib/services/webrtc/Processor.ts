@@ -259,7 +259,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onIceCandidate', event.candidate);
-		// this.registerCurrentLocalDescription();
 	}
 
 	private onIceCandidateError(event: RTCPeerConnectionIceErrorEvent) {
@@ -293,7 +292,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onConnectionStateChange');
-
 		this.changeInternalState('connection');
 	}
 

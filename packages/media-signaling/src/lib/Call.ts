@@ -550,6 +550,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			serviceStates: Object.fromEntries(this.serviceStates.entries()),
 			ignored: this.ignored,
 			contractState: this.contractState,
+			...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }),
 		});
 
 		if (this.state === 'hangup') {
@@ -928,7 +929,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private onWebRTCInternalError({ critical, error }: { critical: boolean; error: string | Error }): void {
 		const errorCode = typeof error === 'object' ? error.message : error;
-		this.sendError({ errorType: 'service', errorCode, negotiationId: this.currentNegotiationId });
+		this.sendError({ errorType: 'service', errorCode, ...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }) });
 
 		if (critical) {
 			this.hangup('service-error');

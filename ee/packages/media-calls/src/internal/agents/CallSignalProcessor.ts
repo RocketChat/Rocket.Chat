@@ -217,6 +217,10 @@ export class UserActorSignalProcessor {
 		}
 
 		if (signal.clientState === 'active') {
+			if (signal.negotiationId) {
+				void MediaCallNegotiations.setStableById(signal.negotiationId).catch(() => null);
+			}
+
 			if (this.channel.state === 'active' || this.channel.activeAt) {
 				return;
 			}

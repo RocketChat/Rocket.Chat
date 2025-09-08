@@ -91,6 +91,7 @@ export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> imp
 		return this.updateOne(
 			{
 				_id: id,
+				stableTimestamp: { $exists: false },
 			},
 			{
 				$set: {
