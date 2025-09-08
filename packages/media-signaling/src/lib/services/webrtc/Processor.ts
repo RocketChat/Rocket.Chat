@@ -123,6 +123,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	public async startNewNegotiation(): Promise<void> {
+		this.iceGatheringFinished = false;
 		this.clearIceGatheringWaiters(new Error('new-negotiation'));
 	}
 
@@ -210,15 +211,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 
-		if (this.peer.iceGatheringState === 'complete') {
-			return;
-		}
-
 		this.iceGatheringTimedOut = false;
 		const iceGatheringData = getExternalWaiter({
 			timeout: this.config.iceGatheringTimeout,
 			timeoutFn: () => {
 				if (this.iceGatheringWaiters.has(iceGatheringData)) {
+					this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering - timeout');
 					this.clearIceGatheringData(iceGatheringData);
 					this.iceGatheringTimedOut = true;
 					this.changeInternalState('iceUntrickler');
@@ -250,9 +248,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private restartIce() {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.restartIce');
-		this.iceGatheringFinished = false;
-
-		this.clearIceGatheringWaiters(new Error('ice-restart'));
+		this.startNewNegotiation();
 
 		this.peer.restartIce();
 	}

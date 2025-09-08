@@ -19,6 +19,10 @@ export function getExternalWaiter({ timeout, timeoutFn, cleanupFn }: PromiseWait
 	};
 
 	const flagAsDone = () => {
+		if (data.done) {
+			return;
+		}
+	
 		if (data.timeout) {
 			clearTimeout(data.timeout);
 			data.timeout = null;
@@ -51,11 +55,13 @@ export function getExternalWaiter({ timeout, timeoutFn, cleanupFn }: PromiseWait
 			if (data.done) {
 				return;
 			}
-			flagAsDone();
 
 			if (timeoutFn) {
 				timeoutFn();
-			} else if (data.promiseReject) {
+				flagAsDone();
+			}
+
+			if (data.promiseReject) {
 				data.promiseReject(new Error('timeout'));
 			}
 		}, timeout);

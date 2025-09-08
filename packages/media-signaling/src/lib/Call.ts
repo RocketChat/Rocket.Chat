@@ -632,30 +632,35 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
+		const { negotiationId } = signal;
+
 		if (this.shouldIgnoreWebRTC()) {
-			this.sendError({ errorType: 'service', errorCode: 'invalid-service' });
+			this.sendError({ errorType: 'service', errorCode: 'invalid-service', negotiationId });
 			return;
 		}
 
 		this.requireWebRTC();
 
-		const iceRestart = this.currentNegotiationId !== signal.negotiationId;
-		this.currentNegotiationId = signal.negotiationId;
+		const iceRestart = this.currentNegotiationId !== negotiationId;
+		this.currentNegotiationId = negotiationId;
+		if (iceRestart) {
+			this.hasLocalDescription = false;
+		}
 		this.hasRemoteDescription = false;
 
 		let offer: { sdp: RTCSessionDescriptionInit } | null = null;
 		try {
 			offer = await this.webrtcProcessor.createOffer({ iceRestart });
 		} catch (e) {
-			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-offer' });
+			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-offer', negotiationId });
 			throw e;
 		}
 
 		if (!offer) {
-			this.sendError({ errorType: 'service', errorCode: 'implementation-error' });
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId });
 		}
 
-		await this.deliverSdp({ ...offer, negotiationId: signal.negotiationId });
+		await this.deliverSdp({ ...offer, negotiationId });
 	}
 
 	protected shouldIgnoreWebRTC(): boolean {
@@ -680,28 +685,31 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.logger?.debug('ClientMediaCall.processAnswerRequest', signal);
 
 		this.requireWebRTC();
+		const { negotiationId } = signal;
 
-		const iceRestart = this.currentNegotiationId !== signal.negotiationId;
+		const iceRestart = this.currentNegotiationId !== negotiationId;
 		if (iceRestart) {
+			this.hasLocalDescription = false;
+			this.hasRemoteDescription = false;
 			await this.webrtcProcessor.startNewNegotiation();
 		}
-		this.currentNegotiationId = signal.negotiationId;
+		this.currentNegotiationId = negotiationId;
 
 		let answer: { sdp: RTCSessionDescriptionInit } | null = null;
 		try {
 			answer = await this.webrtcProcessor.createAnswer(signal);
 		} catch (e) {
-			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer' });
+			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer', negotiationId });
 			throw e;
 		}
 
 		if (!answer) {
-			this.sendError({ errorType: 'service', errorCode: 'implementation-error' });
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId });
 			return;
 		}
 
 		this.hasRemoteDescription = true;
-		await this.deliverSdp({ ...answer, negotiationId: signal.negotiationId });
+		await this.deliverSdp({ ...answer, negotiationId });
 	}
 
 	protected sendError(error: Partial<ClientMediaSignalError>): void {
@@ -920,7 +928,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private onWebRTCInternalError({ critical, error }: { critical: boolean; error: string | Error }): void {
 		const errorCode = typeof error === 'object' ? error.message : error;
-		this.sendError({ errorType: 'service', errorCode });
+		this.sendError({ errorType: 'service', errorCode, negotiationId: this.currentNegotiationId });
 
 		if (critical) {
 			this.hangup('service-error');
