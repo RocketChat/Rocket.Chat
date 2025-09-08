@@ -3,13 +3,12 @@ import { Box, Button, Avatar, TextInput, IconButton, Label, FieldError } from '@
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import { useId, useState, useCallback, useEffect } from 'react';
+import { useId, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
-import { isURL } from '../../../../lib/utils/isURL';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
@@ -22,6 +21,15 @@ type UserAvatarEditorProps = {
 	name: IUser['name'];
 };
 
+function isUrl(myUrlString: string) {
+	try {
+		new URL(myUrlString);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
@@ -31,10 +39,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [avatarUrlError, setAvatarUrlError] = useState<string | undefined>(undefined);
-
-	useEffect(() => {
-		setAvatarUrlError(undefined);
-	}, []);
 
 	const setUploadedPreview = useCallback(
 		async (file: File, avatarObj: AvatarObject) => {
@@ -55,8 +59,12 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
 	const handleAddUrl = (): void => {
-		setNewAvatarSource(avatarFromUrl);
-		setAvatarObj({ avatarUrl: avatarFromUrl });
+		if (isUrl(avatarFromUrl)) {
+			setNewAvatarSource(avatarFromUrl);
+			setAvatarObj({ avatarUrl: avatarFromUrl });
+		} else {
+			setAvatarUrlError(t('error-invalid-image-url'));
+		}
 	};
 
 	const clickReset = (): void => {
@@ -67,13 +75,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const url = newAvatarSource;
 
 	const handleAvatarFromUrlChange = (event: ChangeEvent<HTMLInputElement>): void => {
+		if (avatarUrlError) {
+			setAvatarUrlError(undefined);
+		}
 		const { value } = event.currentTarget;
 		setAvatarFromUrl(value);
-		if (isURL(value) || !value) {
-			setAvatarUrlError(undefined);
-		} else {
-			setAvatarUrlError(t('error-invalid-image-url'));
-		}
 	};
 
 	const handleSelectSuggestion = useCallback(
