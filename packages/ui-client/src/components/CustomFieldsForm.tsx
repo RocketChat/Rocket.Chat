@@ -104,3 +104,5 @@ export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl,
 		})}
 	</>
 );
+
+export default CustomFieldsForm;

@@ -52,6 +52,9 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 					exclude: [/\/node_modules\/core-js\//],
 					type: 'javascript/auto',
 					use: ['babel-loader'],
+					resolve: {
+						fullySpecified: false,
+					},
 				},
 				{
 					test: /\.tsx?$/,
