@@ -182,7 +182,7 @@ const UsersTable = ({
 				/>
 			)}
 
-			{isSuccess && !!users && (
+			{isSuccess && users.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
