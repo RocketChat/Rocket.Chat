@@ -16,6 +16,7 @@ import type { ClientContractState, ClientState } from '../definition/client';
 import type { IWebRTCProcessor, MediaStreamFactory, WebRTCInternalStateMap } from '../definition/services';
 import { mergeContacts } from './utils/mergeContacts';
 import type { IMediaSignalLogger } from '../definition/logger';
+import { isPendingState } from './services/states';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
@@ -28,7 +29,7 @@ export interface IClientMediaCallConfig {
 	logger?: IMediaSignalLogger;
 	transporter: MediaSignalTransportWrapper;
 	processorFactories: IServiceProcessorFactoryList;
-	mediaStreamFactory: MediaStreamFactory;
+	mediaStreamFactory?: MediaStreamFactory;
 
 	iceGatheringTimeout: number;
 }
@@ -91,6 +92,28 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.ignored || this.contractState === 'ignored';
 	}
 
+	public get muted(): boolean {
+		if (!this.webrtcProcessor) {
+			return false;
+		}
+
+		return this.webrtcProcessor.muted;
+	}
+
+	/** indicates if the call is on hold */
+	public get held(): boolean {
+		if (!this.webrtcProcessor) {
+			return false;
+		}
+
+		return this.webrtcProcessor.held;
+	}
+
+	/** indicates the call is past the "dialing" stage and not yet over */
+	public get busy(): boolean {
+		return !this.isPendingAcceptance() && !this.isOver();
+	}
+
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
 
 	private acceptedLocally: boolean;
@@ -123,12 +146,17 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private contractState: ClientContractState;
 
-	// localCallId will only be different on calls initiated by this session
+	private inputTrack: MediaStreamTrack | null;
+
+	/** localCallId will only be different on calls initiated by this session */
 	private localCallId: string;
+
+	private currentNegotiationId: string | null;
 
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
+		{ inputTrack }: { inputTrack: MediaStreamTrack | null },
 	) {
 		this.emitter = new Emitter<CallEvents>();
 
@@ -148,7 +176,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.serviceStates = new Map();
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
+		this.inputTrack = inputTrack;
 
+		this.currentNegotiationId = null;
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
 		this._role = 'callee';
@@ -159,8 +189,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = null;
 	}
 
-	// Initialize an outbound call with basic contact information until we receive the full call details from the server;
-	// this gets executed once for outbound calls initiated in this session.
+	/**
+	 * Initialize an outbound call with basic contact information until we receive the full call details from the server;
+	 * this gets executed once for outbound calls initiated in this session.
+	 */
 	public async initializeOutboundCall(contact: CallContact): Promise<void> {
 		if (this.acceptedLocally) {
 			return;
@@ -185,7 +217,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	// Initialize an outbound call with the callee information and send a call request to the server
+	/** Initialize an outbound call with the callee information and send a call request to the server */
 	public async requestCall(callee: { type: CallActorType; id: string }, contactInfo?: CallContact): Promise<void> {
 		if (this.initialized) {
 			return;
@@ -201,7 +233,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.initializeOutboundCall({ ...contactInfo, ...callee });
 	}
 
-	// initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call
+	/** initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call */
 	public async initializeRemoteCall(signal: ServerMediaSignalNewCall): Promise<void> {
 		if (this.hasRemoteData) {
 			return;
@@ -282,8 +314,31 @@ export class ClientMediaCall implements IClientMediaCall {
 				}
 
 				return 'accepted';
+			case 'renegotiating':
+				if (this.hasLocalDescription && this.hasRemoteDescription) {
+					return 'has-new-answer';
+				}
+				if (this.hasLocalDescription !== this.hasRemoteDescription) {
+					return 'has-new-offer';
+				}
+
+				return 'renegotiating';
 			default:
 				return this._state;
+		}
+	}
+
+	public async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
+		const oldId = this.inputTrack?.id;
+		const newId = newInputTrack?.id;
+
+		this.inputTrack = newInputTrack;
+		if (this.webrtcProcessor) {
+			await this.webrtcProcessor.setInputTrack(newInputTrack);
+		}
+
+		if (oldId !== newId) {
+			this.emitter.emit('trackStateChange');
 		}
 	}
 
@@ -378,7 +433,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public isPendingAcceptance(): boolean {
-		return ['none', 'ringing'].includes(this._state);
+		return isPendingState(this._state);
 	}
 
 	public isPendingOurAcceptance(): boolean {
@@ -416,6 +471,38 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.mayReportStates = false;
 	}
 
+	public setMuted(muted: boolean): void {
+		if (this.isOver()) {
+			return;
+		}
+		if (!this.webrtcProcessor && !muted) {
+			return;
+		}
+
+		this.requireWebRTC();
+		const wasMuted = this.webrtcProcessor.muted;
+		this.webrtcProcessor.setMuted(muted);
+		if (wasMuted !== this.webrtcProcessor.muted) {
+			this.emitter.emit('trackStateChange');
+		}
+	}
+
+	public setHeld(held: boolean): void {
+		if (this.isOver()) {
+			return;
+		}
+		if (!this.webrtcProcessor && !held) {
+			return;
+		}
+
+		this.requireWebRTC();
+		const wasOnHold = this.webrtcProcessor.held;
+		this.webrtcProcessor.setHeld(held);
+		if (wasOnHold !== this.webrtcProcessor.held) {
+			this.emitter.emit('trackStateChange');
+		}
+	}
+
 	public setContractState(state: 'signed' | 'ignored') {
 		if (this.contractState === state) {
 			return;
@@ -447,6 +534,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.hidden && !wasHidden) {
 			this.emitter.emit('hidden');
 		}
+		this.maybeStopWebRTC();
 	}
 
 	public reportStates(): void {
@@ -462,6 +550,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			serviceStates: Object.fromEntries(this.serviceStates.entries()),
 			ignored: this.ignored,
 			contractState: this.contractState,
+			...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }),
 		});
 
 		if (this.state === 'hangup') {
@@ -478,6 +567,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		const oldState = this._state;
 		this._state = newState;
+		this.maybeStopWebRTC();
 		this.updateClientState();
 
 		this.emitter.emit('stateChange', oldState);
@@ -514,6 +604,16 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.emitter.emit('clientStateChange', oldClientState);
 	}
 
+	private maybeStopWebRTC(): void {
+		if (!this.webrtcProcessor) {
+			return;
+		}
+
+		if (this.isOver() || this.hidden) {
+			this.webrtcProcessor.stop();
+		}
+	}
+
 	private changeContact(contact: CallContact | null, { prioritizeExisting }: { prioritizeExisting?: boolean } = {}): void {
 		this.config.logger?.debug('ClientMediaCall.changeContact');
 		const oldContct = prioritizeExisting ? contact : this._contact;
@@ -533,26 +633,35 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
+		const { negotiationId } = signal;
+
 		if (this.shouldIgnoreWebRTC()) {
-			this.sendError({ errorType: 'service', errorCode: 'invalid-service' });
+			this.sendError({ errorType: 'service', errorCode: 'invalid-service', negotiationId });
 			return;
 		}
 
 		this.requireWebRTC();
 
+		const iceRestart = this.currentNegotiationId !== negotiationId;
+		this.currentNegotiationId = negotiationId;
+		if (iceRestart) {
+			this.hasLocalDescription = false;
+		}
+		this.hasRemoteDescription = false;
+
 		let offer: { sdp: RTCSessionDescriptionInit } | null = null;
 		try {
-			offer = await this.webrtcProcessor.createOffer(signal);
+			offer = await this.webrtcProcessor.createOffer({ iceRestart });
 		} catch (e) {
-			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-offer' });
+			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-offer', negotiationId });
 			throw e;
 		}
 
 		if (!offer) {
-			this.sendError({ errorType: 'service', errorCode: 'implementation-error' });
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId });
 		}
 
-		await this.deliverSdp(offer);
+		await this.deliverSdp({ ...offer, negotiationId });
 	}
 
 	protected shouldIgnoreWebRTC(): boolean {
@@ -577,22 +686,31 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.logger?.debug('ClientMediaCall.processAnswerRequest', signal);
 
 		this.requireWebRTC();
+		const { negotiationId } = signal;
+
+		const iceRestart = this.currentNegotiationId !== negotiationId;
+		if (iceRestart) {
+			this.hasLocalDescription = false;
+			this.hasRemoteDescription = false;
+			await this.webrtcProcessor.startNewNegotiation();
+		}
+		this.currentNegotiationId = negotiationId;
 
 		let answer: { sdp: RTCSessionDescriptionInit } | null = null;
 		try {
 			answer = await this.webrtcProcessor.createAnswer(signal);
 		} catch (e) {
-			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer' });
+			this.sendError({ errorType: 'service', errorCode: 'failed-to-create-answer', negotiationId });
 			throw e;
 		}
 
 		if (!answer) {
-			this.sendError({ errorType: 'service', errorCode: 'implementation-error' });
+			this.sendError({ errorType: 'service', errorCode: 'implementation-error', negotiationId });
 			return;
 		}
 
 		this.hasRemoteDescription = true;
-		await this.deliverSdp(answer);
+		await this.deliverSdp({ ...answer, negotiationId });
 	}
 
 	protected sendError(error: Partial<ClientMediaSignalError>): void {
@@ -625,11 +743,16 @@ export class ClientMediaCall implements IClientMediaCall {
 			return this.processAnswerRequest(signal);
 		}
 
-		await this.webrtcProcessor.setRemoteDescription(signal);
+		if (signal.negotiationId !== this.currentNegotiationId) {
+			this.config.logger?.error('Received an answer for an unexpected negotiation.');
+			return;
+		}
+
+		await this.webrtcProcessor.setRemoteAnswer(signal);
 		this.hasRemoteDescription = true;
 	}
 
-	protected async deliverSdp(data: { sdp: RTCSessionDescriptionInit }) {
+	protected async deliverSdp(data: { sdp: RTCSessionDescriptionInit; negotiationId: string }) {
 		this.config.logger?.debug('ClientMediaCall.deliverSdp');
 		this.hasLocalDescription = true;
 
@@ -804,6 +927,23 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
+	private onWebRTCInternalError({ critical, error }: { critical: boolean; error: string | Error }): void {
+		const errorCode = typeof error === 'object' ? error.message : error;
+		this.sendError({ errorType: 'service', errorCode, ...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }) });
+
+		if (critical) {
+			this.hangup('service-error');
+		}
+	}
+
+	private onWebRTCNegotiationNeeded(): void {
+		if (this._state !== 'active' || !this.currentNegotiationId) {
+			return;
+		}
+
+		this.config.transporter.requestRenegotiation(this.callId, this.currentNegotiationId);
+	}
+
 	private onWebRTCConnectionStateChange(stateValue: RTCPeerConnectionState): void {
 		if (this.hidden) {
 			return;
@@ -879,8 +1019,10 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger, iceGatheringTimeout });
+		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
+		this.webrtcProcessor.emitter.on('internalError', (event) => this.onWebRTCInternalError(event));
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
+		this.webrtcProcessor.emitter.on('negotiationNeeded', () => this.onWebRTCNegotiationNeeded());
 	}
 
 	private requireWebRTC(): asserts this is ClientMediaCallWebRTC {
@@ -893,11 +1035,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 }
 
-export class ClientMediaCallWebRTC extends ClientMediaCall {
-	public webrtcProcessor: IWebRTCProcessor;
-
-	constructor(config: IClientMediaCallConfig, callId: string) {
-		super(config, callId);
-		throw new Error('ClientMediaCallWebRTC is not meant to be constructed.');
-	}
+export abstract class ClientMediaCallWebRTC extends ClientMediaCall {
+	public abstract webrtcProcessor: IWebRTCProcessor;
 }

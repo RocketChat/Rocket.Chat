@@ -7,6 +7,7 @@ export type ClientMediaSignalLocalSDP = {
 	type: 'local-sdp';
 
 	sdp: RTCSessionDescriptionInit;
+	negotiationId: string;
 };
 
 export const clientMediaSignalLocalSDPSchema: JSONSchemaType<ClientMediaSignalLocalSDP> = {
@@ -40,7 +41,11 @@ export const clientMediaSignalLocalSDPSchema: JSONSchemaType<ClientMediaSignalLo
 			nullable: false,
 			required: ['type'],
 		},
+		negotiationId: {
+			type: 'string',
+			nullable: false,
+		},
 	},
 	additionalProperties: false,
-	required: ['callId', 'contractId', 'type', 'sdp'],
+	required: ['callId', 'contractId', 'type', 'sdp', 'negotiationId'],
 };

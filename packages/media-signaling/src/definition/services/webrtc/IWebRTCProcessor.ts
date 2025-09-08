@@ -1,5 +1,6 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
+import type { IClientMediaCall } from '../../call';
 import type { IMediaSignalLogger } from '../../logger';
 import type { IServiceProcessor, ServiceProcessorEvents } from '../IServiceProcessor';
 import type { MediaStreamFactory } from '../MediaStreamFactory';
@@ -17,15 +18,26 @@ export type WebRTCProcessorEvents = ServiceProcessorEvents<WebRTCInternalStateMa
 export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateMap> {
 	emitter: Emitter<WebRTCProcessorEvents>;
 
+	muted: boolean;
+	held: boolean;
+
+	setMuted(muted: boolean): void;
+	setHeld(held: boolean): void;
+	stop(): void;
+
+	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
+	startNewNegotiation(): Promise<void>;
 	createOffer(params: { iceRestart?: boolean }): Promise<{ sdp: RTCSessionDescriptionInit }>;
 	createAnswer(params: { sdp: RTCSessionDescriptionInit }): Promise<{ sdp: RTCSessionDescriptionInit }>;
-	setRemoteDescription(params: { sdp: RTCSessionDescriptionInit }): Promise<void>;
+	setRemoteAnswer(params: { sdp: RTCSessionDescriptionInit }): Promise<void>;
 
 	getRemoteMediaStream(): MediaStream;
 }
 
 export type WebRTCProcessorConfig = {
-	mediaStreamFactory: MediaStreamFactory;
+	mediaStreamFactory?: MediaStreamFactory;
+	call: IClientMediaCall;
+	inputTrack: MediaStreamTrack | null;
 	iceGatheringTimeout: number;
 	logger?: IMediaSignalLogger;
 	rtc?: RTCConfiguration;

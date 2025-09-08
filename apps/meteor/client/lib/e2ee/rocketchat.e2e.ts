@@ -27,7 +27,6 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
-import { settings } from '../../../app/settings/client';
 import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -40,6 +39,7 @@ import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
+import { settings } from '../settings';
 import { dispatchToastMessage } from '../toast';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 
@@ -753,9 +753,11 @@ class E2E extends Emitter {
 		}
 		const urls = message.msg.match(getMessageUrlRegex()) || [];
 
+		const siteUrl = settings.peek<string>('Site_Url');
+
 		await Promise.all(
 			urls.map(async (url) => {
-				if (!url.includes(settings.get('Site_Url'))) {
+				if (siteUrl && !url.includes(siteUrl)) {
 					return;
 				}
 
@@ -782,7 +784,7 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
-				const useRealName = settings.get('UI_Use_Real_Name');
+				const useRealName = settings.peek('UI_Use_Real_Name');
 				const quoteAttachment = createQuoteAttachment(
 					decryptedQuoteMessage,
 					url,
@@ -790,7 +792,7 @@ class E2E extends Emitter {
 					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
 				);
 
-				message.attachments.push(limitQuoteChain(quoteAttachment, settings.get('Message_QuoteChainLimit') ?? 2));
+				message.attachments.push(limitQuoteChain(quoteAttachment, settings.peek('Message_QuoteChainLimit') ?? 2));
 			}),
 		);
 

@@ -23,6 +23,7 @@ export type CallState =
 	| 'ringing' // call has been acknoledged by the callee's agent, but no response about them accepting it or not
 	| 'accepted' // call has been accepted and the webrtc offer is being exchanged
 	| 'active' // webrtc connection has been established
+	| 'renegotiating' // a webrtc connection had been established before, but a new one is being negotiated
 	| 'hangup'; // call is over
 
 export type CallHangupReason =
@@ -63,14 +64,22 @@ export interface IClientMediaCall {
 	ignored: boolean;
 	signed: boolean;
 	hidden: boolean;
+	muted: boolean;
+	/* if the call was put on hold */
+	held: boolean;
+	/* busy = state >= 'accepted' && state < 'hangup' */
+	busy: boolean;
 
 	contact: CallContact;
 
 	emitter: Emitter<CallEvents>;
 
+	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
 	getRemoteMediaStream(): MediaStream;
 
 	accept(): void;
 	reject(): void;
 	hangup(): void;
+	setMuted(muted: boolean): void;
+	setHeld(onHold: boolean): void;
 }

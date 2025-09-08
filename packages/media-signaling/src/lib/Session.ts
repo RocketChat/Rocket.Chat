@@ -14,9 +14,11 @@ import type { IClientMediaCall, CallState, CallActorType, CallContact } from '..
 import type { IMediaSignalLogger } from '../definition/logger';
 
 export type MediaSignalingEvents = {
+	sessionStateChange: void;
 	callContactUpdate: { call: IClientMediaCall };
 	callStateChange: { call: IClientMediaCall; oldState: CallState };
 	callClientStateChange: { call: IClientMediaCall; oldState: ClientState };
+	callTrackStateChange: { call: IClientMediaCall };
 	newCall: { call: IClientMediaCall };
 	acceptedCall: { call: IClientMediaCall };
 	activeCall: { call: IClientMediaCall };
@@ -29,7 +31,7 @@ export type MediaSignalingSessionConfig = {
 	oldSessionId?: string;
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
-	mediaStreamFactory: MediaStreamFactory;
+	mediaStreamFactory?: MediaStreamFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
 };
@@ -76,12 +78,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public isBusy(): boolean {
-		const call = this.getMainCall();
-		if (!call) {
-			return false;
-		}
-
-		return ['accepted', 'active'].includes(call.state);
+		return this.getMainCall()?.busy ?? false;
 	}
 
 	public enableStateReport(interval: number): void {
@@ -112,7 +109,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 				continue;
 			}
 
-			if (['accepted', 'active'].includes(call.state)) {
+			if (call.busy) {
 				return call;
 			}
 			if (call.state === 'ringing' && !ringingCall) {
@@ -147,10 +144,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.processSignal(signal);
 	}
 
-	public async startCall(calleeType: CallActorType, calleeId: string, contactInfo?: CallContact): Promise<void> {
+	public async startCall(
+		calleeType: CallActorType,
+		calleeId: string,
+		params: { contactInfo?: CallContact; inputTrack: MediaStreamTrack | null },
+	): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
+		const { contactInfo, ...callParams } = params;
+
 		const callId = this.createTemporaryCallId();
-		const call = this.createCall(callId);
+		const call = this.createCall(callId, callParams);
 
 		await call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
 	}
@@ -216,7 +219,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return existingCall;
 		}
 
-		return this.createCall(signal.callId);
+		return this.createCall(signal.callId, { inputTrack: null });
 	}
 
 	private reportState(): void {
@@ -238,7 +241,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		});
 	}
 
-	private createCall(callId: string): ClientMediaCall {
+	private createCall(callId: string, { inputTrack }: { inputTrack: MediaStreamTrack | null }): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
 			logger: this.config.logger,
@@ -248,14 +251,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			iceGatheringTimeout: this.config.iceGatheringTimeout || 500,
 		};
 
-		const call = new ClientMediaCall(config, callId);
+		const call = new ClientMediaCall(config, callId, { inputTrack });
 		this.knownCalls.set(callId, call);
 
 		call.emitter.on('contactUpdate', () => this.onCallContactUpdate(call));
 		call.emitter.on('stateChange', (oldState) => this.onCallStateChange(call, oldState));
 		call.emitter.on('clientStateChange', (oldState) => this.onCallClientStateChange(call, oldState));
+		call.emitter.on('trackStateChange', () => this.onTrackStateChange(call));
 		call.emitter.on('initialized', () => this.onNewCall(call));
 		call.emitter.on('accepted', () => this.onAcceptedCall(call));
+		call.emitter.on('accepting', () => this.onAcceptingCall(call));
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ended', () => this.onEndedCall(call));
@@ -270,10 +275,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		this.emit('callContactUpdate', { call });
+		this.onSessionStateChange();
 	}
 
 	private onCallStateChange(call: ClientMediaCall, oldState: CallState): void {
 		this.config.logger?.debug('MediaSignalingSession.onCallStateChange');
+		this.onSessionStateChange();
 		if (call.hidden && call.state !== 'hangup') {
 			return;
 		}
@@ -283,6 +290,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onCallClientStateChange(call: ClientMediaCall, oldState: ClientState): void {
 		this.config.logger?.debug('MediaSignalingSession.onCallClientStateChange');
+		this.onSessionStateChange();
 		if (call.hidden && call.state !== 'hangup') {
 			return;
 		}
@@ -292,6 +300,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onNewCall(call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onNewCall');
+		this.onSessionStateChange();
 		if (call.hidden) {
 			return;
 		}
@@ -301,6 +310,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onAcceptedCall(call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onAcceptedCall');
+		this.onSessionStateChange();
 		if (call.hidden) {
 			return;
 		}
@@ -308,19 +318,40 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.emit('acceptedCall', { call });
 	}
 
+	private onAcceptingCall(_call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onAcceptingCall');
+		this.onSessionStateChange();
+	}
+
+	private onTrackStateChange(call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onTrackStateChange');
+		this.onSessionStateChange();
+		this.emit('callTrackStateChange', { call });
+	}
+
 	private onEndedCall(call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onEndedCall');
 		this.ignoreCall(call.callId);
+		this.onSessionStateChange();
 		this.emit('endedCall', { call });
 	}
 
 	private onHiddenCall(call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onHiddenCall');
-		this.emit('hiddenCall', { call });
+		this.onSessionStateChange();
+
+		if (!call.isOver()) {
+			this.emit('hiddenCall', { call });
+		}
 	}
 
 	private onActiveCall(call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onActiveCall');
+		this.onSessionStateChange();
 		this.emit('activeCall', { call });
+	}
+
+	private onSessionStateChange(): void {
+		this.emit('sessionStateChange');
 	}
 }
