@@ -13,7 +13,9 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
+import CustomFieldsForm from '@rocket.chat/ui-client/components/CustomFieldsForm';
+import PasswordVerifier from '@rocket.chat/ui-client/components/PasswordVerifier/PasswordVerifier';
+import { useValidatePassword } from '@rocket.chat/ui-client/hooks/useValidatePassword';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
