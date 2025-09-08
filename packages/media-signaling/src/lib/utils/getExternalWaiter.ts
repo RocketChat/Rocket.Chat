@@ -22,7 +22,7 @@ export function getExternalWaiter({ timeout, timeoutFn, cleanupFn }: PromiseWait
 		if (data.done) {
 			return;
 		}
-	
+
 		if (data.timeout) {
 			clearTimeout(data.timeout);
 			data.timeout = null;
