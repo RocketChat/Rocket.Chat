@@ -18,6 +18,7 @@ import {
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
 	ajv,
+	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
@@ -337,6 +338,7 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 				required: ['success'],
 				additionalProperties: false,
 			}),
+			400: validateBadRequestErrorResponse,
 		},
 		body: isPOSTLivechatVisitorDepartmentTransferParams,
 	},
@@ -345,26 +347,26 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 
 		const visitor = await findGuest(token);
 		if (!visitor) {
-			throw new Error('invalid-token');
+			return API.v1.failure('invalid-token');
 		}
 		const room = await LivechatRooms.findOneById(rid);
 
 		if (!room || room.t !== 'l') {
-			throw new Error('error-invalid-room');
+			return API.v1.failure('error-invalid-room');
 		}
 
 		if (!room.open) {
-			throw new Error('This_conversation_is_already_closed');
+			return API.v1.failure('This_conversation_is_already_closed');
 		}
 
 		// As this is a visitor endpoint, we should not show the mac limit error
 		if (!(await Omnichannel.isWithinMACLimit(room))) {
-			throw new Error('error-transefing-chat');
+			return API.v1.failure('error-transefing-chat');
 		}
 
 		const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
 		if (!guest) {
-			throw new Error('error-invalid-visitor');
+			return API.v1.failure('error-invalid-visitor');
 		}
 
 		const transferredBy = normalizeTransferredByData(
@@ -376,7 +378,7 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 
 		const chatForwardedResult = await transfer(room, guest, transferData);
 		if (!chatForwardedResult) {
-			throw new Error('error-transfering-chat');
+			return API.v1.failure('error-transfering-chat');
 		}
 
 		return API.v1.success();
