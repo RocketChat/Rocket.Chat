@@ -29,7 +29,7 @@ export const useAppSlashCommands = () => {
 			return;
 		}
 		return apps('apps', ([key, [command]]) => {
-			if (['command/added', 'command/updated', 'command/disabled', 'command/removed'].includes(key)) {
+			if (['command/added', 'command/updated', 'command/removed'].includes(key)) {
 				if (typeof command === 'string') {
 					delete slashCommands.commands[command];
 				}

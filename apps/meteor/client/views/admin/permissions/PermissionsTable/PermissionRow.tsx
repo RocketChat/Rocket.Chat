@@ -1,9 +1,8 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { ReactElement } from 'react';
-import { useState, memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoleCell from './RoleCell';
@@ -36,28 +35,15 @@ type PermissionRowProps = {
 const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRowProps): ReactElement => {
 	const { t } = useTranslation();
 	const { _id, roles } = permission;
-	const [hovered, setHovered] = useState(false);
 	const changeRole = useChangeRole({ onGrant, onRemove, permissionId: _id });
 
-	const onMouseEnter = useEffectEvent(() => setHovered(true));
-	const onMouseLeave = useEffectEvent(() => setHovered(false));
-
 	return (
-		<GenericTableRow key={_id} role='link' action tabIndex={0} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+		<GenericTableRow key={_id} role='link' action tabIndex={0}>
 			<GenericTableCell maxWidth='x300' withTruncatedText title={t(`${_id}_description` as TranslationKey)}>
 				{getName(t, permission)}
 			</GenericTableCell>
 			{roleList.map(({ _id, name, description }) => (
-				<RoleCell
-					key={_id}
-					_id={_id}
-					name={name}
-					description={description}
-					grantedRoles={roles}
-					onChange={changeRole}
-					lineHovered={hovered}
-					permissionId={_id}
-				/>
+				<RoleCell key={_id} _id={_id} name={name} description={description} grantedRoles={roles} onChange={changeRole} permissionId={_id} />
 			))}
 		</GenericTableRow>
 	);
