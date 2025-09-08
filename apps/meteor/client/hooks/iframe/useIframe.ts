@@ -70,7 +70,7 @@ export const useIframe = () => {
 				});
 			} catch (error) {
 				setIframeLoginUrl(url);
-				callback?.(error, null);
+				callback?.(error instanceof Error ? error : undefined, null);
 			}
 		},
 		[apiMethod, apiUrl, accountIframeUrl, loginWithToken, enabled],
