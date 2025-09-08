@@ -472,9 +472,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			let result;
 			if (message.files && message.files.length > 0) {
-				result = await this.handleFileMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
+				result = await this.handleFileMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
 			} else {
-				result = await this.handleTextMessage(message, matrixRoomId, actualMatrixUserId, matrixDomain);
+				result = await this.handleTextMessage(message, matrixRoomId, actualMatrixUserId, this.serverName);
 			}
 
 			if (!result) {

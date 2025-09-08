@@ -49,7 +49,7 @@ async function verifyMatrixSignature(
 ): Promise<{ isValid: boolean; origin?: string; error?: string }> {
 	try {
 		const { origin, destination, key, signature } = extractSignaturesFromHeader(authHeader);
-		const ourServerName = homeserverServices.config.getServerConfig().name;
+		const ourServerName = homeserverServices.config.serverName;
 
 		if (destination !== ourServerName) {
 			return {
@@ -248,7 +248,7 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 		async (context: any) => {
 			try {
 				const { mediaId } = context.req.param();
-				const serverName = config.getServerConfig().name;
+				const { serverName} = config;
 
 				const authResult = await handleFederationAuth(context, homeserverServices);
 				if (!authResult.isValid) {
@@ -303,7 +303,7 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 		async (context: any) => {
 			try {
 				const { mediaId } = context.req.param();
-				const serverName = config.getServerConfig().name;
+				const { serverName } = config;
 
 				const authResult = await handleFederationAuth(context, homeserverServices);
 				if (!authResult.isValid) {

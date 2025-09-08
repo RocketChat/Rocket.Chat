@@ -207,7 +207,7 @@ async function handleMediaMessage(
 	};
 }
 
-export function message(emitter: Emitter<HomeserverEventSignatures>) {
+export function message(emitter: Emitter<HomeserverEventSignatures>, serverName: string) {
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
 			console.log('on homeserver.matrix.message', data);
@@ -258,7 +258,6 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 			const isMediaMessage = ['m.image', 'm.file', 'm.video', 'm.audio'].includes(msgtype);
 
 			// Handle message editing
-			const localDomain = await getMatrixLocalDomain();
 			const isEditedMessage = data.content['m.relates_to']?.rel_type === 'm.replace';
 			if (isEditedMessage && data.content['m.relates_to']?.event_id && data.content['m.new_content']) {
 				logger.debug('Received edited message from Matrix, updating existing message');
@@ -286,7 +285,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 						messageToReplyToUrl,
 						formattedMessage: data.content.formatted_body || '',
 						rawMessage: messageBody,
-						homeServerDomain: localDomain,
+						homeServerDomain: serverName,
 						senderExternalId: data.sender,
 					});
 					await Message.updateMessage(
@@ -329,7 +328,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 					messageToReplyToUrl,
 					formattedMessage: data.content.formatted_body || '',
 					rawMessage: messageBody,
-					homeServerDomain: localDomain,
+					homeServerDomain: serverName,
 					senderExternalId: data.sender,
 				});
 				await Message.saveMessageFromFederation({
@@ -357,7 +356,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>) {
 				const formatted = toInternalMessageFormat({
 					rawMessage: messageBody,
 					formattedMessage: data.content.formatted_body || '',
-					homeServerDomain: localDomain,
+					homeServerDomain: serverName,
 					senderExternalId: data.sender,
 				});
 				await Message.saveMessageFromFederation({
