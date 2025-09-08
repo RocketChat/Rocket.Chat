@@ -14,14 +14,22 @@ import {
 	SaveE2EEPasswordModal,
 } from '../page-objects/fragments/e2ee';
 import { LoginPage } from '../page-objects/login';
-import { getSettingValueById } from '../utils';
+import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
+
+const settingsList = [
+	'E2E_Enable',
+	'E2E_Allow_Unencrypted_Messages',
+	'E2E_Enabled_Default_DirectRooms',
+	'E2E_Enabled_Default_PrivateRooms',
+];
+
+const originalSettings = preserveSettings(settingsList);
 
 test.describe('E2EE Passphrase Management - Initial Setup', () => {
 	test.use({ storageState: Users.admin.state });
 
 	test.beforeAll(async ({ api }) => {
-		// Set settings for this describe block only
 		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true });
 		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
@@ -29,11 +37,10 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// Restore original settings
-		await api.post('/settings/E2E_Enable', { value: false });
-		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
-		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: false });
-		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: false });
+		await api.post('/settings/E2E_Enable', { value: originalSettings.E2E_Enable });
+		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: originalSettings.E2E_Allow_Unencrypted_Messages });
+		await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: originalSettings.E2E_Enabled_Default_DirectRooms });
+		await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: originalSettings.E2E_Enabled_Default_PrivateRooms });
 	});
 
 	test.beforeEach(async ({ api, page }) => {
@@ -148,15 +155,14 @@ test.describe('E2EE Passphrase Management - Initial Setup', () => {
 
 test.use({ storageState: Users.admin.state });
 
-const roomSetupSettings = {
-	E2E_Enable: false as unknown,
-	E2E_Allow_Unencrypted_Messages: false as unknown,
-};
+const roomSetupSettingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 
 test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	let poAccountProfile: AccountProfile;
 	let poHomeChannel: HomeChannel;
 	let e2eePassword: string;
+
+	preserveSettings(roomSetupSettingsList);
 
 	test.beforeEach(async ({ page }) => {
 		poAccountProfile = new AccountProfile(page);
@@ -164,15 +170,8 @@ test.describe.serial('E2EE Passphrase Management - Room Setup States', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		roomSetupSettings.E2E_Enable = await getSettingValueById(api, 'E2E_Enable');
-		roomSetupSettings.E2E_Allow_Unencrypted_Messages = await getSettingValueById(api, 'E2E_Allow_Unencrypted_Messages');
 		await api.post('/settings/E2E_Enable', { value: true });
 		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
-	});
-
-	test.afterAll(async ({ api }) => {
-		await api.post('/settings/E2E_Enable', { value: roomSetupSettings.E2E_Enable });
-		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: roomSetupSettings.E2E_Allow_Unencrypted_Messages });
 	});
 
 	test.afterEach(async ({ api }) => {

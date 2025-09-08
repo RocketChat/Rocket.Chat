@@ -1,28 +1,16 @@
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
-import { getSettingValueById } from '../utils';
+import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
-const settings = {
-	E2E_Enable: false as unknown,
-	E2E_Allow_Unencrypted_Messages: false as unknown,
-	E2E_Enabled_Default_DirectRooms: false as unknown,
-	E2E_Enabled_Default_PrivateRooms: false as unknown,
-};
+const settingsList = [
+	'E2E_Enable',
+	'E2E_Allow_Unencrypted_Messages',
+	'E2E_Enabled_Default_DirectRooms',
+	'E2E_Enabled_Default_PrivateRooms',
+];
 
-test.beforeAll(async ({ api }) => {
-	settings.E2E_Enable = await getSettingValueById(api, 'E2E_Enable');
-	settings.E2E_Allow_Unencrypted_Messages = await getSettingValueById(api, 'E2E_Allow_Unencrypted_Messages');
-	settings.E2E_Enabled_Default_DirectRooms = await getSettingValueById(api, 'E2E_Enabled_Default_DirectRooms');
-	settings.E2E_Enabled_Default_PrivateRooms = await getSettingValueById(api, 'E2E_Enabled_Default_PrivateRooms');
-});
-
-test.afterAll(async ({ api }) => {
-	await api.post('/settings/E2E_Enable', { value: settings.E2E_Enable });
-	await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: settings.E2E_Allow_Unencrypted_Messages });
-	await api.post('/settings/E2E_Enabled_Default_DirectRooms', { value: settings.E2E_Enabled_Default_DirectRooms });
-	await api.post('/settings/E2E_Enabled_Default_PrivateRooms', { value: settings.E2E_Enabled_Default_PrivateRooms });
-});
+preserveSettings(settingsList);
 
 test.describe('E2EE OTR (Off-The-Record)', () => {
 	let poHomeChannel: HomeChannel;

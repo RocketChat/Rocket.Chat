@@ -3,7 +3,17 @@ import { faker } from '@faker-js/faker';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
+
+const settingsList = [
+	'E2E_Enable',
+	'E2E_Allow_Unencrypted_Messages',
+	'E2E_Enabled_Default_DirectRooms',
+	'E2E_Enabled_Default_PrivateRooms',
+];
+
+preserveSettings(settingsList);
 
 test.describe('E2EE Server Settings', () => {
 	let poHomeChannel: HomeChannel;

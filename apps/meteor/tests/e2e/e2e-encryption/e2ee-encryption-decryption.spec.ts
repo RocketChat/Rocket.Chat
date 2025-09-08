@@ -6,23 +6,12 @@ import { HomeSidenav } from '../page-objects/fragments';
 import { SaveE2EEPasswordBanner, SaveE2EEPasswordModal } from '../page-objects/fragments/e2ee';
 import { FileUploadModal } from '../page-objects/fragments/file-upload-modal';
 import { LoginPage } from '../page-objects/login';
-import { getSettingValueById } from '../utils';
+import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
-const settings = {
-	E2E_Enable: false as unknown,
-	E2E_Allow_Unencrypted_Messages: false as unknown,
-};
+const settingsList = ['E2E_Enable', 'E2E_Allow_Unencrypted_Messages'];
 
-test.beforeAll(async ({ api }) => {
-	settings.E2E_Enable = await getSettingValueById(api, 'E2E_Enable');
-	settings.E2E_Allow_Unencrypted_Messages = await getSettingValueById(api, 'E2E_Allow_Unencrypted_Messages');
-});
-
-test.afterAll(async ({ api }) => {
-	await api.post('/settings/E2E_Enable', { value: settings.E2E_Enable });
-	await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: settings.E2E_Allow_Unencrypted_Messages });
-});
+preserveSettings(settingsList);
 
 test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 	test.use({ storageState: Users.admin.state });
