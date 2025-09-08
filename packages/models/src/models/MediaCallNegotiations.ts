@@ -4,7 +4,7 @@ import type { IndexDescription, Collection, Db, FindOptions, Document, FindCurso
 
 import { BaseRaw } from './BaseRaw';
 
-export class MediaCallNegotiationssRaw extends BaseRaw<IMediaCallNegotiation> implements IMediaCallNegotiationsModel {
+export class MediaCallNegotiationsRaw extends BaseRaw<IMediaCallNegotiation> implements IMediaCallNegotiationsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMediaCallNegotiation>>) {
 		super(db, 'media_call_negotiations', trash);
 	}
