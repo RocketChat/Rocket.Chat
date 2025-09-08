@@ -2,8 +2,8 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useWizardContext, WizardActions, WizardBackButton, WizardNextButton } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 
-import type { MessageFormSubmitPayload } from '../forms/MessageForm';
-import MessageForm from '../forms/MessageForm';
+import type { MessageFormSubmitPayload } from '../forms/MessageForm/MessageForm';
+import MessageForm from '../forms/MessageForm/MessageForm';
 
 type MessageStepProps = Omit<ComponentProps<typeof MessageForm>, 'onSubmit'> & {
 	onSubmit(values: MessageFormSubmitPayload): void;
