@@ -1,5 +1,4 @@
-import QueryString from 'querystring';
-import URL from 'url';
+
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
@@ -620,15 +619,15 @@ class E2E extends Emitter<{
 					return;
 				}
 
-				const urlObj = URL.parse(url);
+				const urlObj = new URL(url);
 				// if the URL doesn't have query params (doesn't reference message) skip
-				if (!urlObj.query) {
+				if (!urlObj.search) {
 					return;
 				}
 
-				const { msg: msgId } = QueryString.parse(urlObj.query);
+				const [msgId, ...rest] = urlObj.searchParams.getAll('msg');
 
-				if (!msgId || Array.isArray(msgId)) {
+				if (!msgId || rest.length > 0) {
 					return;
 				}
 

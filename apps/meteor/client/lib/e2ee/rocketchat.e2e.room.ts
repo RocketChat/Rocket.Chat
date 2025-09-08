@@ -693,7 +693,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Helper function for encryption of messages
-	encrypt(message: { _id: IMessage['_id']; msg: IMessage['msg'] }): Promise<string | undefined> {
+	async encrypt(message: { _id: IMessage['_id']; msg: IMessage['msg'] }): Promise<string | undefined> {
 		if (!this.groupSessionKey) {
 			throw new Error(t('E2E_Invalid_Key'));
 		}
@@ -709,7 +709,9 @@ export class E2ERoom extends Emitter {
 			}),
 		);
 
-		return this.encryptText(data, 'rc.v2.aes-gcm-sha2').then((res) => res.ciphertext);
+		const encrypted = await this.encryptText(data, 'rc.v2.aes-gcm-sha2');
+
+		return encrypted.ciphertext;
 	}
 
 	async decryptContent<T extends IUploadWithUser | IE2EEMessage>(data: T) {
