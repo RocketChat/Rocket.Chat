@@ -1,6 +1,6 @@
 import type { IMediaCall, IMediaCallChannel, MediaCallActor, MediaCallActorType } from '@rocket.chat/core-typings';
 import {
-    isPendingState,
+	isPendingState,
 	type CallAnswer,
 	type CallHangupReason,
 	type CallRole,
@@ -9,7 +9,7 @@ import {
 	type ClientMediaSignalLocalState,
 	type ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
-import { MediaCallChannels, MediaCalls } from '@rocket.chat/models';
+import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
@@ -89,6 +89,8 @@ export class UserActorSignalProcessor {
 				return this.reviewLocalState(signal);
 			case 'error':
 				return this.processError(signal.errorType, signal.errorCode);
+			case 'negotiation-needed':
+				return this.processNegotiationNeeded(signal.oldNegotiationId);
 		}
 	}
 
@@ -129,6 +131,20 @@ export class UserActorSignalProcessor {
 				return this.onServiceError(errorCode);
 			default:
 				return this.onUnexpectedError(errorCode);
+		}
+	}
+
+	private async processNegotiationNeeded(oldNegotiationId: string): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processNegotiationNeeded', oldNegotiationId });
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(this.callId);
+		// If the negotiation that triggered a request for renegotiation is not the latest negotiation, then a new one must already be happening and we can ignore this request.
+		if (negotiation?._id !== oldNegotiationId) {
+			return;
+		}
+
+		const negotiationId = await MediaCallDirector.startNewNegotiation(this.call, this.role);
+		if (negotiationId) {
+			await this.requestWebRTCOffer({ negotiationId });
 		}
 	}
 

@@ -6,7 +6,7 @@ import type {
 	MediaCallSignedActor,
 	ServerActor,
 } from '@rocket.chat/core-typings';
-import type { CallHangupReason, CallService } from '@rocket.chat/media-signaling';
+import type { CallHangupReason, CallRole, CallService } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
@@ -116,9 +116,17 @@ export class MediaCallDirector {
 			return null;
 		}
 
+		return this.startNewNegotiation(call, 'caller', offer);
+	}
+
+	public static async startNewNegotiation(
+		call: MediaCallHeader,
+		offerer: CallRole,
+		offer?: RTCSessionDescriptionInit,
+	): Promise<IMediaCallNegotiation['_id'] | null> {
 		const newNegotiation: InsertionModel<IMediaCallNegotiation> = {
 			callId: call._id,
-			offerer: 'caller',
+			offerer,
 			requestTimestamp: new Date(),
 			...(offer && {
 				offer,
