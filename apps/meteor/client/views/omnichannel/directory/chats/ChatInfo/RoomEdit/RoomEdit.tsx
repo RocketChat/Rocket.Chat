@@ -10,8 +10,8 @@ import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/
 import { ContextualbarContent, ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import Tags from '../../../../../../components/Omnichannel/Tags';
 import { roomsQueryKeys } from '../../../../../../lib/queryKeys';
-import { useOmnichannelPriorities } from '../../../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
+import { useOmnichannelPriorities } from '../../../../hooks/useOmnichannelPriorities';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
 import { useSlaPolicies } from '../../../hooks/useSlaPolicies';
