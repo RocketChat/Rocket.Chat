@@ -139,7 +139,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await this.initializeLocalMediaStream();
 
 		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
-			this.clearIceGatheringWaiters(new Error('ice-restart'));
+			this.startNewNegotiation();
 			this.peer.setRemoteDescription(sdp);
 		}
 
@@ -152,7 +152,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	public async setRemoteAnswer({ sdp }: { sdp: RTCSessionDescriptionInit }): Promise<void> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.setRemoteDescription');
-
 		if (this.stopped) {
 			return;
 		}
