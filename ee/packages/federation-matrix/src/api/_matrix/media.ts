@@ -248,7 +248,7 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 		async (context: any) => {
 			try {
 				const { mediaId } = context.req.param();
-				const { serverName} = config;
+				const { serverName } = config;
 
 				const authResult = await handleFederationAuth(context, homeserverServices);
 				if (!authResult.isValid) {
