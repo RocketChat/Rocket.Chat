@@ -16,6 +16,10 @@
 			"default": "./dist/helpers/*.js",
 			"types": "./dist/helpers/*.d.ts"
 		},
+		"./lib/*": {
+			"default": "./dist/lib/*.js",
+			"types": "./dist/lib/*.d.ts"
+		},
 		"./components": {
 			"default": "./dist/components/index.js",
 			"types": "./dist/components/index.d.ts"

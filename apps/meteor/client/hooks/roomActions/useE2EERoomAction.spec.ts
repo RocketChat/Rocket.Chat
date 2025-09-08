@@ -1,4 +1,4 @@
-import { imperativeModal } from '@rocket.chat/ui-client';
+import { imperativeModal } from '@rocket.chat/ui-client/lib/imperativeModal';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
@@ -19,8 +19,8 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useToastMessageDispatch: jest.fn(() => dispatchToastMessage),
 }));
 
-jest.mock('@rocket.chat/ui-client', () => ({
-	...jest.requireActual('@rocket.chat/ui-client'),
+jest.mock('@rocket.chat/ui-client/lib/imperativeModal', () => ({
+	...jest.requireActual('@rocket.chat/ui-client/lib/imperativeModal'),
 	imperativeModal: {
 		open: jest.fn(),
 		close: jest.fn(),

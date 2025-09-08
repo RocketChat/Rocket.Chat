@@ -7,7 +7,7 @@ import ModalProvider from './ModalProvider';
 import ModalProviderWithRegion from './ModalProviderWithRegion';
 import GenericModal from '../../components/Modal/GenericModal';
 import ModalRegion from '../../components/Modal/ModalRegion';
-import { imperativeModal } from '../../helpers/imperativeModal';
+import { imperativeModal } from '../../lib/imperativeModal';
 
 const renderWithSuspense = (ui: ReactElement) =>
 	render(ui, {

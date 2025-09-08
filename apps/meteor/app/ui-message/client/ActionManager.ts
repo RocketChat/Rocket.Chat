@@ -1,7 +1,7 @@
 import type { DistributiveOmit } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
-import { imperativeModal } from '@rocket.chat/ui-client';
+import { imperativeModal } from '@rocket.chat/ui-client/lib/imperativeModal';
 import type { RouterContext, IActionManager } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { t } from 'i18next';
