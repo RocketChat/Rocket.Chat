@@ -181,7 +181,6 @@ export class MediaCallDirector {
 		}
 
 		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
-		// await MediaCalls.setExpiresAtById(call._id, this.getNewExpirationTime());
 	}
 
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
