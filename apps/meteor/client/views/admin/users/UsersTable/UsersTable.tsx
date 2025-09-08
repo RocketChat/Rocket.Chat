@@ -131,7 +131,6 @@ const UsersTable = ({
 	return (
 		<>
 			<UsersTableFilters roleData={roleData} setUsersFilters={setUserFilters} />
-
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -140,11 +139,9 @@ const UsersTable = ({
 					</GenericTableBody>
 				</GenericTable>
 			)}
-
 			{isError && (
 				<GenericNoResults icon='warning' title={t('Something_went_wrong')} buttonTitle={t('Reload_page')} buttonAction={onReload} />
 			)}
-
 			{isSuccess && data.users.length === 0 && (
 				<GenericNoResults
 					icon='user'
@@ -155,8 +152,7 @@ const UsersTable = ({
 					description={t(`Users_Table_no_${tab}_users_description`)}
 				/>
 			)}
-
-			{isSuccess && !!data?.users && (
+			{isSuccess && data?.users.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
