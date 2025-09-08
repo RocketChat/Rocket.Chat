@@ -5,6 +5,7 @@ import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './err
 import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup';
 import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './local-sdp';
 import { clientMediaSignalLocalStateSchema, type ClientMediaSignalLocalState } from './local-state';
+import { clientMediaSignalNegotiationNeededSchema, type ClientMediaSignalNegotiationNeeded } from './negotiation-needed';
 import { clientMediaSignalRegisterSchema, type ClientMediaSignalRegister } from './register';
 import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call';
 
@@ -17,7 +18,8 @@ export type ClientMediaSignal =
 	| ClientMediaSignalHangup
 	| ClientMediaSignalRequestCall
 	| ClientMediaSignalLocalState
-	| ClientMediaSignalRegister;
+	| ClientMediaSignalRegister
+	| ClientMediaSignalNegotiationNeeded;
 
 export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 	type: 'object',
@@ -32,6 +34,7 @@ export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 		clientMediaSignalRequestCallSchema,
 		clientMediaSignalLocalStateSchema,
 		clientMediaSignalRegisterSchema,
+		clientMediaSignalNegotiationNeededSchema,
 	],
 };
 

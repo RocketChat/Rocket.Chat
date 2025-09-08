@@ -1,11 +1,12 @@
 import type { IMediaCall, IUser, MediaCallActor } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type {
-	ClientMediaSignal,
-	ClientMediaSignalRegister,
-	ClientMediaSignalRequestCall,
-	ServerMediaSignal,
-	ServerMediaSignalRejectedCallRequest,
+import {
+	isPendingState,
+	type ClientMediaSignal,
+	type ClientMediaSignalRegister,
+	type ClientMediaSignalRequestCall,
+	type ServerMediaSignal,
+	type ServerMediaSignalRejectedCallRequest,
 } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
@@ -221,7 +222,7 @@ export class GlobalSignalProcessor {
 		}
 
 		// if the call is already accepted, we won't send its signals again
-		if (['active'].includes(call.state)) {
+		if (!isPendingState(call.state)) {
 			this.invalidCallId(uid, { ...rejection, reason: 'already-requested' });
 		}
 

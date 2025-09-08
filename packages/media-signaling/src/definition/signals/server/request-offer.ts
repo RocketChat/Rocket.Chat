@@ -4,5 +4,5 @@ export type ServerMediaSignalRequestOffer = {
 	toContractId: string;
 	type: 'request-offer';
 
-	iceRestart?: boolean;
+	negotiationId: string;
 };

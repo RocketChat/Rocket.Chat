@@ -153,28 +153,4 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		const count = await this.countDocuments({ state: { $ne: 'hangup' } }, { limit: 1 });
 		return count > 0;
 	}
-
-	public async setWebrtcOfferById(callId: string, offer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult> {
-		return this.updateOne(
-			{
-				_id: callId,
-				webrtcOffer: { $exists: false },
-			},
-			{
-				$set: { webrtcOffer: offer, expiresAt },
-			},
-		);
-	}
-
-	public async setWebrtcAnswerById(callId: string, answer: RTCSessionDescriptionInit, expiresAt: Date): Promise<UpdateResult> {
-		return this.updateOne(
-			{
-				_id: callId,
-				webrtcAnswer: { $exists: false },
-			},
-			{
-				$set: { webrtcAnswer: answer, expiresAt },
-			},
-		);
-	}
 }

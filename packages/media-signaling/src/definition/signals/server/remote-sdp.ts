@@ -5,4 +5,5 @@ export type ServerMediaSignalRemoteSDP = {
 	type: 'remote-sdp';
 
 	sdp: RTCSessionDescriptionInit;
+	negotiationId: string;
 };

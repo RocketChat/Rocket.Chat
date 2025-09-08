@@ -122,6 +122,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.remoteStream.stopAudio();
 	}
 
+	public async startNewNegotiation(): Promise<void> {
+		this.iceGatheringFinished = false;
+		this.clearIceGatheringWaiters(new Error('new-negotiation'));
+	}
+
 	public async createAnswer({ sdp }: { sdp: RTCSessionDescriptionInit }): Promise<{ sdp: RTCSessionDescriptionInit }> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.createAnswer');
 		if (this.stopped) {
@@ -134,19 +139,25 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await this.initializeLocalMediaStream();
 
 		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
+			this.startNewNegotiation();
 			this.peer.setRemoteDescription(sdp);
 		}
 
 		const answer = await this.peer.createAnswer();
+
 		await this.peer.setLocalDescription(answer);
 
 		return this.getLocalDescription();
 	}
 
-	public async setRemoteDescription({ sdp }: { sdp: RTCSessionDescriptionInit }): Promise<void> {
+	public async setRemoteAnswer({ sdp }: { sdp: RTCSessionDescriptionInit }): Promise<void> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.setRemoteDescription');
 		if (this.stopped) {
 			return;
+		}
+
+		if (sdp.type === 'offer') {
+			throw new Error('invalid-answer');
 		}
 
 		this.peer.setRemoteDescription(sdp);
@@ -182,10 +193,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 		await this.waitForIceGathering();
 
-		// always wait a little extra to ensure all relevant events have been fired
-		// 30ms is low enough that it won't be noticeable by users, but is also enough time to process a full `host` candidate
-		await new Promise((resolve) => setTimeout(resolve, 30));
-
 		const sdp = this.peer.localDescription;
 
 		if (!sdp) {
@@ -203,15 +210,12 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 
-		if (this.peer.iceGatheringState === 'complete') {
-			return;
-		}
-
 		this.iceGatheringTimedOut = false;
 		const iceGatheringData = getExternalWaiter({
 			timeout: this.config.iceGatheringTimeout,
 			timeoutFn: () => {
 				if (this.iceGatheringWaiters.has(iceGatheringData)) {
+					this.config.logger?.debug('MediaCallWebRTCProcessor.waitForIceGathering - timeout');
 					this.clearIceGatheringData(iceGatheringData);
 					this.iceGatheringTimedOut = true;
 					this.changeInternalState('iceUntrickler');
@@ -221,7 +225,11 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.iceGatheringWaiters.add(iceGatheringData);
 		this.changeInternalState('iceUntrickler');
-		return iceGatheringData.promise;
+		await iceGatheringData.promise;
+
+		// always wait a little extra to ensure all relevant events have been fired
+		// 30ms is low enough that it won't be noticeable by users, but is also enough time to process any local stuff
+		await new Promise((resolve) => setTimeout(resolve, 30));
 	}
 
 	private registerPeerEvents() {
@@ -239,9 +247,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private restartIce() {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.restartIce');
-		this.iceGatheringFinished = false;
-
-		this.clearIceGatheringWaiters(new Error('ice-restart'));
+		this.startNewNegotiation();
 
 		this.peer.restartIce();
 	}
@@ -268,6 +274,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onNegotiationNeeded');
+		this.emitter.emit('negotiationNeeded');
 	}
 
 	private onTrack(event: RTCTrackEvent): void {
@@ -412,9 +419,14 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private clearIceGatheringWaiters(error?: Error) {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.clearIceGatheringWaiters');
+		this.iceGatheringTimedOut = false;
+
+		if (!this.iceGatheringWaiters.size) {
+			return;
+		}
+
 		const waiters = this.iceGatheringWaiters.values().toArray();
 		this.iceGatheringWaiters.clear();
-		this.iceGatheringTimedOut = false;
 
 		for (const iceGatheringData of waiters) {
 			this.clearIceGatheringData(iceGatheringData, error);
