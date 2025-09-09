@@ -64,17 +64,13 @@ API.v1.addRoute(
 			}
 
 			const user = await getUserFromParams(this.bodyParams);
-			const { roleId, roleName, roomId } = this.bodyParams;
+			const { roleId, roomId } = this.bodyParams;
 
 			if (!roleId) {
-				if (!roleName) {
-					return API.v1.failure('error-invalid-role-properties');
-				}
-
-				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
+				return API.v1.failure('error-invalid-role-properties');
 			}
 
-			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
+			const role = await Roles.findOneById(roleId);
 			if (!role) {
 				return API.v1.failure('error-role-not-found', 'Role not found');
 			}
@@ -191,14 +187,10 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
 			}
 
-			const { roleId, roleName, username, scope } = bodyParams;
+			const { roleId, username, scope } = bodyParams;
 
 			if (!roleId) {
-				if (!roleName) {
-					return API.v1.failure('error-invalid-role-properties');
-				}
-
-				apiDeprecationLogger.parameter(this.route, 'roleName', '7.0.0', this.response);
+				return API.v1.failure('error-invalid-role-properties');
 			}
 
 			const user = await Users.findOneByUsername(username);
@@ -207,7 +199,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user', 'There is no user with this username');
 			}
 
-			const role = roleId ? await Roles.findOneById(roleId) : await Roles.findOneByIdOrName(roleName as string);
+			const role = await Roles.findOneById(roleId);
 
 			if (!role) {
 				throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
