@@ -8210,7 +8210,6 @@ __metadata:
     "@storybook/preact": "npm:^8.6.14"
     "@storybook/preact-webpack5": "npm:^8.6.14"
     "@storybook/theming": "npm:^8.6.14"
-    "@types/babel__core": "npm:^7"
     "@types/crypto-js": "npm:~4.2.2"
     "@types/mini-css-extract-plugin": "npm:~2.5.1"
     "@types/react": "npm:~18.3.23"
@@ -11398,7 +11397,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__core@npm:^7, @types/babel__core@npm:^7.1.14, @types/babel__core@npm:^7.18.0, @types/babel__core@npm:^7.20.5":
+"@types/babel__core@npm:^7.1.14, @types/babel__core@npm:^7.18.0, @types/babel__core@npm:^7.20.5":
   version: 7.20.5
   resolution: "@types/babel__core@npm:7.20.5"
   dependencies:
