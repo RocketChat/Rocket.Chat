@@ -1,6 +1,7 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint, Button, Divider } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
+import { Accounts } from 'meteor/accounts-base';
 import type { ComponentProps, ReactElement } from 'react';
 import { useId, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -12,8 +13,8 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const publicKey = localStorage.getItem('public_key');
-	const privateKey = localStorage.getItem('private_key');
+	const publicKey = Accounts.storageLocation.getItem('public_key');
+	const privateKey = Accounts.storageLocation.getItem('private_key');
 
 	const resetE2EPassword = useResetE2EPasswordMutation();
 

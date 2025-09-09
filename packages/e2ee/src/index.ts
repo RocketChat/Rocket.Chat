@@ -11,7 +11,7 @@ import { generateRsaOaepKeyPair, importRsaOaepKey } from './rsa.ts';
 import { /** decryptAesCbc, encryptAesCbc, **/ encryptAesGcm, decryptAesGcm } from './aes.ts';
 // import { Keychain } from './keychain.ts';
 
-const generateMnemonicPhrase = async (length: number): Promise<string> => {
+export const generateMnemonicPhrase = async (length: number): Promise<string> => {
 	const { wordlist } = await import('./wordlists/v2.ts');
 	const randomBuffer = crypto.getRandomValues(new Uint8Array(length));
 	return Array.from(randomBuffer, (value) => wordlist[value % wordlist.length]).join(' ');
