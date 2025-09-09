@@ -11,8 +11,8 @@ import MessageStep from './MessageStep';
 import * as stories from './MessageStep.stories';
 import { createFakeContact } from '../../../../../../../tests/mocks/data';
 import { createFakeOutboundTemplate } from '../../../../../../../tests/mocks/data/outbound-message';
-import type { MessageFormSubmitPayload } from '../forms/MessageForm/MessageForm';
-import type MessageForm from '../forms/MessageForm/MessageForm';
+import type { MessageFormSubmitPayload } from '../forms/MessageForm';
+import type MessageForm from '../forms/MessageForm';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
