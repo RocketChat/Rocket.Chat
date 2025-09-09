@@ -708,7 +708,7 @@ describe('[Direct Messages]', () => {
 		describe('_hidden messages behavior when Message_KeepHistory is enabled', async () => {
 			before(async () => {
 				await updateSetting('Message_KeepHistory', true);
-				await pinMessage({ messageId: pinnedMessageId, unpin: true });
+				await pinMessage({ messageId: pinnedMessageId, unpin: true, requestCredentials: testUserCredentials });
 			});
 
 			after(async () => {
