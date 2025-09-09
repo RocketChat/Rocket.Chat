@@ -1,4 +1,4 @@
-import { Field, FieldError, FieldLabel, FieldRow, Option, OptionDescription } from '@rocket.chat/fuselage';
+import { Box, Field, FieldError, FieldLabel, FieldRow, Option, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
@@ -38,13 +38,22 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 		},
 	});
 
-	const renderContactOption = useEffectEvent<RenderFnType>(({ label, ...props }, { phones }) => (
-		<Option {...props} label={label} avatar={<UserAvatar title={label} username={label} size='x20' />}>
-			{phones?.length ? (
-				<OptionDescription>{`(${phones?.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ')})`}</OptionDescription>
-			) : null}
-		</Option>
-	));
+	const renderContactOption = useEffectEvent<RenderFnType>(({ label, ...props }, { phones }) => {
+		const phoneList = phones?.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ');
+
+		return (
+			<Option {...props} avatar={<UserAvatar title={label} username={label} size='x20' />}>
+				<Box is={OptionContent} mie='auto' flexGrow={0} flexShrink={0} flexBasis={0}>
+					{label}
+				</Box>
+				{phones?.length ? (
+					<Box withTruncatedText flexGrow={0} flexShrink={1} title={phoneList}>
+						<OptionDescription>{`(${phoneList})`}</OptionDescription>
+					</Box>
+				) : null}
+			</Option>
+		);
+	});
 
 	return (
 		<Field {...props}>
