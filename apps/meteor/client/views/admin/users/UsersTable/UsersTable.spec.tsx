@@ -1,8 +1,27 @@
+import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
+import { axe } from 'jest-axe';
 
 import UsersTable from './UsersTable';
+import * as stories from './UsersTable.stories';
 import { createFakeUser } from '../../../../../tests/mocks/data';
+
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
+
+test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+	const { baseElement } = render(<Story />, { wrapper: mockAppRoot().build() });
+	expect(baseElement).toMatchSnapshot();
+});
+
+test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
+
+	// TODO: Needed to skip `button-name` because fuselage‘s `Pagination` buttons are missing names
+	const results = await axe(container, { rules: { 'button-name': { enabled: false } } });
+	expect(results).toHaveNoViolations();
+});
 
 const createFakeAdminUser = (freeSwitchExtension?: string) =>
 	createFakeUser({
@@ -17,7 +36,11 @@ it('should not render voip extension column when voice call is disabled', async 
 
 	render(
 		<UsersTable
-			filteredUsersQueryResult={{ isSuccess: true, data: { users: [user], count: 1, offset: 1, total: 1 } } as any}
+			isSuccess={true}
+			isLoading={false}
+			isError={false}
+			users={[user] as unknown as Serialized<IUser>[]}
+			total={1}
 			setUserFilters={() => undefined}
 			tab='all'
 			onReload={() => undefined}
@@ -44,7 +67,11 @@ it('should not render voip extension column or actions if user doesnt have the r
 
 	render(
 		<UsersTable
-			filteredUsersQueryResult={{ isSuccess: true, data: { users: [user], count: 1, offset: 1, total: 1 } } as any}
+			isSuccess={true}
+			isLoading={false}
+			isError={false}
+			users={[user] as unknown as Serialized<IUser>[]}
+			total={1}
 			setUserFilters={() => undefined}
 			tab='all'
 			onReload={() => undefined}
@@ -71,7 +98,11 @@ it('should render "Unassign_extension" button when user has a associated extensi
 
 	render(
 		<UsersTable
-			filteredUsersQueryResult={{ isSuccess: true, data: { users: [user], count: 1, offset: 1, total: 1 } } as any}
+			isSuccess={true}
+			isLoading={false}
+			isError={false}
+			users={[user] as unknown as Serialized<IUser>[]}
+			total={1}
 			setUserFilters={() => undefined}
 			tab='all'
 			onReload={() => undefined}
@@ -98,7 +129,11 @@ it('should render "Assign_extension" button when user has no associated extensio
 
 	render(
 		<UsersTable
-			filteredUsersQueryResult={{ isSuccess: true, data: { users: [user], count: 1, offset: 1, total: 1 } } as any}
+			isSuccess={true}
+			isLoading={false}
+			isError={false}
+			users={[user] as unknown as Serialized<IUser>[]}
+			total={1}
 			setUserFilters={() => undefined}
 			tab='all'
 			onReload={() => undefined}
