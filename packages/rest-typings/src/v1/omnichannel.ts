@@ -31,6 +31,7 @@ import type {
 	ILivechatContact,
 	ILivechatContactChannel,
 	IUser,
+	OmichannelRoutingConfig,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
@@ -2133,6 +2134,42 @@ const GETLivechatConfigParamsSchema = {
 };
 
 export const isGETLivechatConfigParams = ajv.compile<GETLivechatConfigParams>(GETLivechatConfigParamsSchema);
+
+export const GETLivechatConfigRoutingSchema = {
+	type: 'object',
+	properties: {
+		config: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				previewRoom: {
+					type: 'boolean',
+				},
+				showConnecting: {
+					type: 'boolean',
+				},
+				showQueue: {
+					type: 'boolean',
+				},
+				showQueueLink: {
+					type: 'boolean',
+				},
+				returnQueue: {
+					type: 'boolean',
+				},
+				enableTriggerAction: {
+					type: 'boolean',
+				},
+				autoAssignAgent: {
+					type: 'boolean',
+				},
+			},
+		},
+	},
+	additionalProperties: false,
+};
+
+export const GETLivechatConfigRouting = ajv.compile<{ config: OmichannelRoutingConfig | undefined }>(GETLivechatConfigRoutingSchema);
 
 type POSTLivechatCustomFieldParams = {
 	token: string;
