@@ -1,48 +1,15 @@
-class Logger {
-	level: 0 | 1 | 2 | 3 | 4 | 5;
+const noop = (): void => {
+	// do nothing
+};
 
-	prefix: string;
 
-	constructor(prefix: string, level: 0 | 1 | 2 | 3 | 4 | 5) {
-		this.level = level;
-		this.prefix = prefix;
-	}
-
-	table<T>(tabularData: T, properties?: readonly Extract<keyof T, string>[]) {
-		if (this.level <= 0) {
-			console.table(tabularData, properties);
-		}
-	}
-
-	log(...data: unknown[]) {
-		if (this.level <= 0) {
-			console.log(this.prefix, ...data);
-		}
-	}
-
-	info(...data: unknown[]) {
-		if (this.level <= 1) {
-			console.info(this.prefix, ...data);
-		}
-	}
-
-	warn(...data: unknown[]) {
-		if (this.level <= 2) {
-			console.warn(this.prefix, ...data);
-		}
-	}
-
-	error(...data: unknown[]) {
-		if (this.level <= 3) {
-			console.error(this.prefix, ...data);
-		}
-	}
-
-	debug(...data: unknown[]) {
-		if (this.level <= 4) {
-			console.debug(this.prefix, ...data);
-		}
-	}
+export const createLogger = (level: 0 | 1 | 2 | 3 | 4 | 5 = 0) => {
+	return {
+		log: level <= 0 ? console.log.bind(console) : noop,
+		info: level <= 1 ? console.info.bind(console) : noop,
+		warn: level <= 2 ? console.warn.bind(console) : noop,
+		error: level <= 3 ? console.error.bind(console) : noop,
+		debug: level <= 4 ? console.debug.bind(console) : noop,
+		trace: level <= 5 ? console.trace.bind(console) : noop,
+	};
 }
-
-export const logger = new Logger('E2EE', 0);

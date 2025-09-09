@@ -1,12 +1,12 @@
-import { isE2EEPinnedMessage, type IMessage } from '@rocket.chat/core-typings';
+import { isE2EEPinnedMessage, type IRoom, type IMessage } from '@rocket.chat/core-typings';
 import { useUserId, useSetting, useRouter, useLayout, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
 import { MentionsParser } from '../../../../../app/mentions/lib/MentionsParser';
 import { e2e } from '../../../../lib/e2ee';
-import { logger } from '../../../../lib/e2ee/logger';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
+import { Rooms } from '../../../../stores';
 import { useE2EEState } from '../../../room/hooks/useE2EEState';
 
 export const useE2EEncryption = () => {
@@ -18,19 +18,20 @@ export const useE2EEncryption = () => {
 
 	useEffect(() => {
 		if (!userId) {
-			logger.warn('Not logged in');
+			e2e.info('Not logged in');
 			return;
 		}
 
 		if (!window.crypto) {
-			logger.error('No crypto support');
+			e2e.error('No crypto support');
 			return;
 		}
 
 		if (enabled && !adminEmbedded) {
-			logger.debug('enabled starting client');
+			e2e.info('E2E enabled starting client');
 			e2e.startClient();
 		} else {
+			e2e.info('E2E disabled');
 			e2e.setState('DISABLED');
 			e2e.closeAlert();
 		}
@@ -47,18 +48,18 @@ export const useE2EEncryption = () => {
 
 	useEffect(() => {
 		if (!ready) {
-			logger.info('Not ready');
+			e2e.info('Not ready');
 			return;
 		}
 
 		if (listenersAttachedRef.current) {
-			logger.warn('Listeners already attached');
+			e2e.info('Listeners already attached');
 			return;
 		}
 
 		const offClientMessageReceived = onClientMessageReceived.use(async (msg) => {
 			const e2eRoom = await e2e.getInstanceByRoomId(msg.rid);
-			if (!e2eRoom?.isReady()) {
+			if (!e2eRoom?.shouldConvertReceivedMessages()) {
 				return msg;
 			}
 
@@ -76,6 +77,24 @@ export const useE2EEncryption = () => {
 			if (!e2eRoom) {
 				return message;
 			}
+
+			// e2e.getInstanceByRoomId already waits for the room to be available which means this logic needs to be
+			// refactored to avoid waiting for the room again
+			const subscription = await new Promise<IRoom>((resolve) => {
+				const room = Rooms.state.get(message.rid);
+
+				if (room) resolve(room);
+
+				const unsubscribe = Rooms.use.subscribe((state) => {
+					const room = state.get(message.rid);
+					if (room) {
+						unsubscribe();
+						resolve(room);
+					}
+				});
+			});
+
+			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
 			const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages(message);
 
@@ -101,10 +120,10 @@ export const useE2EEncryption = () => {
 		});
 
 		listenersAttachedRef.current = true;
-		logger.info('Listeners attached');
+		e2e.info('Listeners attached');
 
 		return () => {
-			logger.info('Not ready');
+			e2e.info('Not ready');
 			offClientMessageReceived();
 			offClientBeforeSendMessage();
 			listenersAttachedRef.current = false;

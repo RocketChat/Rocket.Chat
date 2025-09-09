@@ -1,5 +1,4 @@
-import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
 	validateUnauthorizedErrorResponse,
@@ -13,7 +12,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
-import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSuggestedGroupKey';
@@ -52,98 +50,32 @@ const E2eSetRoomKeyIdSchema = {
 
 const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
 
-const e2eEndpoints = API.v1
-	.post(
-		'e2e.setRoomKeyID',
-		{
-			authRequired: true,
-			body: isE2eSetRoomKeyIdProps,
-			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile<void>({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
-				}),
-			},
-		},
-
-		async function action() {
-			const { rid, keyID } = this.bodyParams;
-
-			await setRoomKeyIDMethod(this.userId, rid, keyID);
-
-			return API.v1.success();
-		},
-	)
-	.get(
-		'e2e.requestSubscriptionKeys',
-		{
-			authRequired: true,
-			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile<void>({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
-				}),
-			},
-		},
-		async function action() {
-			// Get all encrypted rooms that the user is subscribed to and has no E2E key yet
-			const subscriptions = await Subscriptions.findByUserIdWithoutE2E(this.userId).toArray();
-			const roomIds = subscriptions.map((subscription) => subscription.rid);
-
-			// For all subscriptions without E2E key, get the rooms that have encryption enabled
-			const query = {
-				e2eKeyId: {
-					$exists: true,
+const e2eEndpoints = API.v1.post(
+	'e2e.setRoomKeyID',
+	{
+		authRequired: true,
+		body: isE2eSetRoomKeyIdProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
 				},
-				_id: {
-					$in: roomIds,
-				},
-			};
-
-			const rooms = Rooms.find(query);
-			for await (const room of rooms) {
-				void api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
-			}
-
-			return API.v1.success();
+				required: ['success'],
+			}),
 		},
-	)
-	.post(
-		'e2e.resetOwnE2EKey',
-		{
-			twoFactorRequired: true,
-			authRequired: true,
-			body: ajv.compile<undefined>({ type: 'object', properties: {}, additionalProperties: false }),
-			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile<void>({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
-				}),
-			},
-		},
-		async function action() {
-			if (!await resetUserE2EEncriptionKey(this.userId, false)) {
-				return API.v1.failure('failed-reset-e2e-password');
-			}
+	},
 
-			return API.v1.success();
-		},
-	);
+	async function action() {
+		const { rid, keyID } = this.bodyParams;
+
+		await setRoomKeyIDMethod(this.userId, rid, keyID);
+
+		return API.v1.success();
+	},
+);
 
 API.v1.addRoute(
 	'e2e.fetchMyKeys',

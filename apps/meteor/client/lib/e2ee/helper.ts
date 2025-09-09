@@ -25,7 +25,7 @@ export function toArrayBuffer(thing: any) {
 	return ByteBuffer.wrap(thing, 'binary').toArrayBuffer();
 }
 
-export function joinVectorAndEncryptedData(vector: any, encryptedData: any) {
+export function joinVectorAndEncryptedData(vector: Uint8Array<ArrayBuffer>, encryptedData: ArrayBuffer) {
 	const cipherText = new Uint8Array(encryptedData);
 	const output = new Uint8Array(vector.length + cipherText.length);
 	output.set(vector, 0);
@@ -69,6 +69,10 @@ export async function encryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey,
 }
 
 export async function decryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
+	if (iv.length !== 12) {
+		throw new Error('Invalid iv length for AES-GCM. Must be 12 bytes.');
+	}
+
 	return crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
 }
 

@@ -1,5 +1,3 @@
-
-
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { EncryptedKeyPair, RemoteKeyPair } from '@rocket.chat/e2ee';
@@ -11,7 +9,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import type { E2EEState } from './E2EEState';
-import { logger } from './logger';
+import { createLogger } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
 import { getUserAvatarURL } from '../../../app/utils/client';
@@ -28,6 +26,8 @@ import type { LegacyBannerPayload } from '../banners';
 import { settings } from '../settings';
 import { dispatchToastMessage } from '../toast';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
+
+const logger = createLogger();
 
 let failedToDecodeKey = false;
 
@@ -48,8 +48,9 @@ const waitForRoom = (rid: IRoom['_id']): Promise<IRoom> =>
 		});
 	});
 
-const isRoomWithSuggestedKey = <T extends { E2ESuggestedKey?: unknown, E2EKey?: unknown }>(sub: T): sub is T & { E2ESuggestedKey: string, E2EKey?: undefined } =>
-	typeof sub.E2ESuggestedKey === 'string' && !sub.E2EKey;
+const isRoomWithSuggestedKey = <T extends { E2ESuggestedKey?: unknown; E2EKey?: unknown }>(
+	sub: T,
+): sub is T & { E2ESuggestedKey: string; E2EKey?: undefined } => typeof sub.E2ESuggestedKey === 'string' && !sub.E2EKey;
 
 const isRoomEncrypted = <T extends { encrypted?: unknown }>(sub: T): sub is T & { encrypted: true } => sub.encrypted === true;
 
@@ -58,18 +59,18 @@ const filterSubscriptions = <T extends SubscriptionWithRoom = SubscriptionWithRo
 };
 
 const sampleSize = <T>(array: readonly T[], size: number): T[] => {
-    if (size >= array.length) return [...array];
-    const arr = array.slice(); // don't mutate caller
-    for (let i = 0; i < size; i++) {
-        const r = i + Math.floor(Math.random() * (arr.length - i)); // random index in [i, end)
-        [arr[i], arr[r]] = [arr[r], arr[i]];
-    }
-    return arr.slice(0, size);
-}
+	if (size >= array.length) return [...array];
+	const arr = array.slice(); // don't mutate caller
+	for (let i = 0; i < size; i++) {
+		const r = i + Math.floor(Math.random() * (arr.length - i)); // random index in [i, end)
+		[arr[i], arr[r]] = [arr[r], arr[i]];
+	}
+	return arr.slice(0, size);
+};
 
 class E2E extends Emitter<{
 	READY: void;
-	E2E_STATE_CHANGED: { prevState: E2EEState; nextState: E2EEState };
+	E2E_STATE_CHANGED: { prevState: E2EEState | undefined; nextState: E2EEState };
 	SAVE_PASSWORD: void;
 	DISABLED: void;
 	NOT_STARTED: void;
@@ -91,7 +92,7 @@ class E2E extends Emitter<{
 
 	private keyDistributionInterval: ReturnType<typeof setInterval> | null;
 
-	private state: E2EEState = 'NOT_STARTED';
+	private state: E2EEState | undefined = undefined;
 
 	private e2ee: E2EE;
 
@@ -133,7 +134,17 @@ class E2E extends Emitter<{
 		this.on('ERROR', () => {
 			this.unsubscribeFromSubscriptions?.();
 		});
+
+		this.setState('NOT_STARTED');
 	}
+
+	warn = logger.warn.bind(logger);
+
+	info = logger.info.bind(logger);
+
+	error = logger.error.bind(logger);
+
+	debug = logger.debug.bind(logger);
 
 	getState() {
 		return this.state;
@@ -158,13 +169,56 @@ class E2E extends Emitter<{
 	}
 
 	async onSubscriptionChanged(sub: ISubscription) {
+		this.info('Subscription changed', sub);
 		if (!sub.encrypted && !sub.E2EKey) {
 			this.removeInstanceByRoomId(sub.rid);
 			return;
 		}
 
-		await this.room(sub.rid, async (e2eRoom) => {
-			await e2eRoom.handleSubscriptionChanged(sub);
+		const e2eRoom = await this.getInstanceByRoomId(sub.rid);
+		if (!e2eRoom) {
+			return;
+		}
+
+		if (sub.E2ESuggestedKey) {
+			if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+				await this.acceptSuggestedKey(sub.rid);
+				e2eRoom.keyReceived();
+			} else {
+				console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+				await this.rejectSuggestedKey(sub.rid);
+			}
+		}
+
+		sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+
+		// Cover private groups and direct messages
+		if (!e2eRoom.isSupportedRoomType(sub.t)) {
+			e2eRoom.disable();
+			return;
+		}
+
+		if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
+			e2eRoom.keyReceived();
+			return;
+		}
+
+		if (!e2eRoom.isReady()) {
+			return;
+		}
+
+		await e2eRoom.decryptSubscription();
+	}
+
+	async acceptSuggestedKey(rid: string): Promise<void> {
+		await sdk.rest.post('/v1/e2e.acceptSuggestedGroupKey', {
+			rid,
+		});
+	}
+
+	async rejectSuggestedKey(rid: string): Promise<void> {
+		await sdk.rest.post('/v1/e2e.rejectSuggestedGroupKey', {
+			rid,
 		});
 	}
 
@@ -181,7 +235,7 @@ class E2E extends Emitter<{
 			const excess = instatiated.difference(subscribed);
 
 			if (excess.size) {
-				logger.log('Unsubscribing from excess instances', excess);
+				this.info('Unsubscribing from excess instances', excess);
 				excess.forEach((rid) => this.removeInstanceByRoomId(rid));
 			}
 
@@ -419,7 +473,7 @@ class E2E extends Emitter<{
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await sdk.rest.get('/v1/e2e.requestSubscriptionKeys');
+		await sdk.call('e2e.requestSubscriptionKeys');
 	}
 
 	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
@@ -566,7 +620,7 @@ class E2E extends Emitter<{
 
 		const data = await e2eRoom.decrypt({
 			algorithm: 'rc.v2.aes-gcm-sha2',
-			ciphertext: pinnedMessage
+			ciphertext: pinnedMessage,
 		});
 
 		if (!data) {
@@ -593,8 +647,7 @@ class E2E extends Emitter<{
 	}
 
 	async decryptSubscriptions(): Promise<void> {
-		filterSubscriptions(isRoomEncrypted)
-			.forEach((subscription) => this.decryptSubscription(subscription._id));
+		filterSubscriptions(isRoomEncrypted).forEach((subscription) => this.decryptSubscription(subscription._id));
 	}
 
 	openAlert(config: Omit<LegacyBannerPayload, 'id'>): void {
