@@ -1,13 +1,14 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallActor, MediaCallActorType } from '@rocket.chat/core-typings';
-import {
-	isPendingState,
-	type CallAnswer,
-	type CallHangupReason,
-	type CallRole,
-	type ClientMediaSignal,
-	type ClientMediaSignalError,
-	type ClientMediaSignalLocalState,
-	type ServerMediaSignal,
+import type { IMediaCall, IMediaCallChannel, MediaCallActorType, MediaCallSignedActor } from '@rocket.chat/core-typings';
+import { isPendingState, isBusyState } from '@rocket.chat/media-signaling';
+import type {
+	ClientMediaSignalTransfer,
+	CallAnswer,
+	CallHangupReason,
+	CallRole,
+	ClientMediaSignal,
+	ClientMediaSignalError,
+	ClientMediaSignalLocalState,
+	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
 import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
@@ -37,7 +38,7 @@ export class UserActorSignalProcessor {
 		return this.channel.role;
 	}
 
-	public get actor(): MediaCallActor {
+	public get actor(): MediaCallSignedActor {
 		return {
 			type: this.actorType,
 			id: this.actorId,
@@ -91,6 +92,8 @@ export class UserActorSignalProcessor {
 				return this.processError(signal.errorType, signal.errorCode);
 			case 'negotiation-needed':
 				return this.processNegotiationNeeded(signal.oldNegotiationId);
+			case 'transfer':
+				return this.processCallTransfer(signal.to);
 		}
 	}
 
@@ -146,6 +149,15 @@ export class UserActorSignalProcessor {
 		if (negotiationId) {
 			await this.requestWebRTCOffer({ negotiationId });
 		}
+	}
+
+	private async processCallTransfer(to: ClientMediaSignalTransfer['to']): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processCallTransfer', to });
+		if (!isBusyState(this.call.state)) {
+			return;
+		}
+
+		return MediaCallDirector.transferCall(this.call, to, this.actor, this.agent);
 	}
 
 	protected async clientIsReachable(): Promise<void> {

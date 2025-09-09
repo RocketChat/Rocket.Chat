@@ -1,4 +1,4 @@
-import type { IMediaCall } from '@rocket.chat/core-typings';
+import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignal, type ServerMediaSignal, type ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
@@ -115,6 +115,29 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
+	public async onCallTransfered(callId: string): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onCallTransfered', callId });
+
+		const call = await MediaCalls.findOneById(callId);
+		if (!call?.transferedBy || !call?.transferedTo) {
+			return;
+		}
+
+		const actor = this.getMyCallActor(call);
+		// If we haven't signed yet, we can't be transfered
+		if (!actor.contractId) {
+			return;
+		}
+
+		getMediaCallServer().requestCall({
+			caller: actor as MediaCallSignedContact,
+			callee: call.transferedTo,
+			requestedService: call.service,
+			requestedBy: call.transferedBy,
+			parentCallId: call._id,
+		});
+	}
+
 	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {
 		return {
 			callId: call._id,
@@ -123,6 +146,7 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 			kind: call.kind,
 			role: this.role,
 			contact: this.getOtherCallActor(call),
+			...(call.parentCallId && { replacingCallId: call.parentCallId }),
 		};
 	}
 }

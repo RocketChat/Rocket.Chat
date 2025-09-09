@@ -62,5 +62,6 @@ export class Stream {
 
 		this.removeAudioTracks();
 		this.mediaStream.addTrack(newTrack);
+		newTrack.enabled = this.enabled;
 	}
 }

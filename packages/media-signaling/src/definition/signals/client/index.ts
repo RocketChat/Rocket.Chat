@@ -6,5 +6,6 @@ export * from './local-state';
 export * from './negotiation-needed';
 export * from './register';
 export * from './request-call';
+export * from './transfer';
 
 export * from './MediaSignal';

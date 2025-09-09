@@ -141,13 +141,14 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			}
 		}
 
-		await call.processSignal(signal);
+		const oldCall = this.getReplacedCallBySignal(signal);
+		await call.processSignal(signal, oldCall);
 	}
 
 	public async startCall(
 		calleeType: CallActorType,
 		calleeId: string,
-		params: { contactInfo?: CallContact; inputTrack: MediaStreamTrack | null },
+		params: { contactInfo?: CallContact; inputTrack?: MediaStreamTrack | null } = {},
 	): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
 		const { contactInfo, ...callParams } = params;
@@ -212,6 +213,14 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return null;
 	}
 
+	private getReplacedCallBySignal(signal: ServerMediaSignal): ClientMediaCall | null {
+		if ('replacingCallId' in signal && signal.replacingCallId) {
+			return this.knownCalls.get(signal.replacingCallId) || null;
+		}
+
+		return null;
+	}
+
 	private getOrCreateCallBySignal(signal: ServerMediaSignal): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.getOrCreateCallBySignal', signal);
 		const existingCall = this.getExistingCallBySignal(signal);
@@ -241,7 +250,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		});
 	}
 
-	private createCall(callId: string, { inputTrack }: { inputTrack: MediaStreamTrack | null }): ClientMediaCall {
+	private createCall(callId: string, { inputTrack }: { inputTrack?: MediaStreamTrack | null } = {}): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
 			logger: this.config.logger,
@@ -251,7 +260,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			iceGatheringTimeout: this.config.iceGatheringTimeout || 500,
 		};
 
-		const call = new ClientMediaCall(config, callId, { inputTrack });
+		const call = new ClientMediaCall(config, callId, { inputTrack: inputTrack || null });
 		this.knownCalls.set(callId, call);
 
 		call.emitter.on('contactUpdate', () => this.onCallContactUpdate(call));

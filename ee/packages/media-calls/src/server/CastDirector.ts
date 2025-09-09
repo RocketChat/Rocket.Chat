@@ -49,11 +49,11 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		logger.debug({ msg: 'MediaCallCastDirector.getContactForActor', actor, options, defaultContactInfo });
 
 		if (actor.type === 'user') {
-			return this.getContactForUserId(actor.id, options, defaultContactInfo);
+			return this.getContactForUserId(actor.id, options, { ...actor, ...defaultContactInfo });
 		}
 
 		if (actor.type === 'sip') {
-			return this.getContactForExtensionNumber(actor.id, options, defaultContactInfo);
+			return this.getContactForExtensionNumber(actor.id, options, { ...actor, ...defaultContactInfo });
 		}
 
 		return null;
