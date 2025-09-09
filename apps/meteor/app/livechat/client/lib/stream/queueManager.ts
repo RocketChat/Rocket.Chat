@@ -6,8 +6,7 @@ import { roomsQueryKeys } from '../../../../../client/lib/queryKeys';
 import { settings } from '../../../../../client/lib/settings';
 import { mapMessageFromApi } from '../../../../../client/lib/utils/mapMessageFromApi';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
-
-import { RoutingManager } from '/app/livechat/server/lib/RoutingManager';
+import { RoutingManager } from '../../../server/lib/RoutingManager';
 
 const departments = new Set();
 
