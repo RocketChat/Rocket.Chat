@@ -4,9 +4,10 @@ import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechat
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { roomsQueryKeys } from '../../../../../client/lib/queryKeys';
 import { settings } from '../../../../../client/lib/settings';
-import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
 import { mapMessageFromApi } from '../../../../../client/lib/utils/mapMessageFromApi';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
+
+import { RoutingManager } from '/app/livechat/server/lib/RoutingManager';
 
 const departments = new Set();
 
@@ -120,7 +121,7 @@ const addAgentListener = (userId: IOmnichannelAgent['_id']) => {
 };
 
 const subscribe = async (userId: IOmnichannelAgent['_id']) => {
-	const config = await callWithErrorHandling('livechat:getRoutingConfig');
+	const config = RoutingManager.getConfig();
 	if (config?.autoAssignAgent) {
 		return;
 	}
