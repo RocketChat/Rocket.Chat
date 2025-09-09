@@ -1,30 +1,18 @@
-import type {
-	AtLeast,
-	IMediaCall,
-	IMediaCallNegotiation,
-	MediaCallActor,
-	MediaCallSignedActor,
-	ServerActor,
-} from '@rocket.chat/core-typings';
-import type { CallHangupReason, CallRole, CallService } from '@rocket.chat/media-signaling';
+import type { IMediaCall, IMediaCallNegotiation, MediaCallContact, MediaCallSignedActor, ServerActor } from '@rocket.chat/core-typings';
+import type { CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector } from './injection';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
-import type { MediaCallHeader } from '../definition/common';
+import type { InternalCallParams, MediaCallHeader } from '../definition/common';
 import { logger } from '../logger';
 
 const EXPIRATION_TIME = 120000;
 const EXPIRATION_CHECK_DELAY = 1000;
 
-export type CreateCallParams = {
-	caller: MediaCallSignedActor;
-	callee: MediaCallActor;
-	requestedCallId?: string;
-	requestedService?: CallService;
-
+export type CreateCallParams = InternalCallParams & {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
 
@@ -43,28 +31,8 @@ export class MediaCallDirector {
 		}
 	}
 
-	public static async hangupByServer(call: AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>, serverErrorCode: string): Promise<void> {
-		logger.debug({ msg: 'MediaCallDirector.hangupByServer', callId: call._id, serverErrorCode });
-		try {
-			const endedBy = { type: 'server', id: 'server' } as ServerActor;
-
-			const modified = await this.hangupCallById(call._id, { endedBy, reason: serverErrorCode });
-			if (!modified) {
-				return;
-			}
-
-			// Try to notify the agents but there's no guarantee they are reachable
-			try {
-				const agents = await this.cast.getAgentsFromCall(call);
-				for (const agent of Object.values(agents)) {
-					agent?.onCallEnded(call._id).catch(() => null);
-				}
-			} catch {
-				// Ignore errors on the ended event
-			}
-		} catch (error) {
-			logger.error({ msg: 'Failed to terminate call.', error, callId: call._id, serverErrorCode });
-		}
+	public static async hangupByServer(call: MediaCallHeader, serverErrorCode: string): Promise<void> {
+		return this.hangupDetachedCall(call, { reason: serverErrorCode });
 	}
 
 	public static async activate(call: IMediaCall, actorAgent: IMediaCallAgent): Promise<void> {
@@ -185,7 +153,7 @@ export class MediaCallDirector {
 
 	public static async createCall(params: CreateCallParams): Promise<IMediaCall> {
 		logger.debug({ msg: 'MediaCallDirector.createCall', params });
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, webrtcOffer } = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, webrtcOffer, parentCallId, requestedBy } = params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -210,12 +178,18 @@ export class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
+		const createdByActor = requestedBy || caller;
+
 		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
 			service,
 			kind: 'direct',
 			state: 'none',
 
-			createdBy: caller,
+			createdBy: {
+				type: createdByActor.type,
+				id: createdByActor.id,
+				contractId: createdByActor.contractId,
+			},
 			createdAt: new Date(),
 
 			caller,
@@ -225,6 +199,7 @@ export class MediaCallDirector {
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 			...(webrtcOffer && { webrtcOffer }),
+			...(parentCallId && { parentCallId }),
 		};
 
 		logger.debug({ msg: 'creating call', call });
@@ -242,10 +217,39 @@ export class MediaCallDirector {
 		return newCall;
 	}
 
+	public static async transferCall(
+		call: MediaCallHeader,
+		to: MediaCallContact,
+		by: MediaCallSignedActor,
+		agent: IMediaCallAgent,
+	): Promise<void> {
+		if (!agent.oppositeAgent) {
+			logger.error('Unable to transfer calls without a reference to the opposite agent.');
+			return;
+		}
+
+		const updateResult = await MediaCalls.transferCallById(call._id, { by, to });
+		if (!updateResult.modifiedCount) {
+			return;
+		}
+
+		agent.oppositeAgent.onCallTransfered(call._id);
+	}
+
+	public static async hangupTransferedCallById(callId: string): Promise<void> {
+		logger.debug({ msg: 'MediaCallDirector.hangupTransferedCallById', callId });
+		const call = await MediaCalls.findOneById(callId);
+		if (!call?.transferedBy) {
+			return;
+		}
+
+		return this.hangupDetachedCall(call, { endedBy: call.transferedBy, reason: 'transfer' });
+	}
+
 	public static async hangupExpiredCalls(): Promise<void> {
 		logger.debug('MediaCallDirector.hangupExpiredCalls');
 
-		const result = MediaCalls.findAllExpiredCalls<Pick<IMediaCall, '_id' | 'caller' | 'callee'>>({
+		const result = MediaCalls.findAllExpiredCalls<MediaCallHeader>({
 			projection: { _id: 1, caller: 1, callee: 1 },
 		});
 
@@ -335,5 +339,32 @@ export class MediaCallDirector {
 				agent.onCallEnded(callId).catch((error) => logger.error({ msg: 'Failed to notify agent of a hangup', error, actor: agent.actor })),
 			),
 		);
+	}
+
+	private static async hangupDetachedCall(
+		call: MediaCallHeader,
+		params?: { endedBy?: IMediaCall['endedBy']; reason?: string },
+	): Promise<void> {
+		logger.debug({ msg: 'MediaCallDirector.hangupDetachedCall', callId: call._id, params });
+		try {
+			const endedBy = params?.endedBy || ({ type: 'server', id: 'server' } as ServerActor);
+
+			const modified = await this.hangupCallById(call._id, { ...params, endedBy });
+			if (!modified) {
+				return;
+			}
+
+			// Try to notify the agents but there's no guarantee they are reachable
+			try {
+				const agents = await this.cast.getAgentsFromCall(call);
+				for (const agent of Object.values(agents)) {
+					agent?.onCallEnded(call._id).catch(() => null);
+				}
+			} catch {
+				// Ignore errors on the ended event
+			}
+		} catch (error) {
+			logger.error({ msg: 'Failed to terminate call.', error, callId: call._id, params });
+		}
 	}
 }

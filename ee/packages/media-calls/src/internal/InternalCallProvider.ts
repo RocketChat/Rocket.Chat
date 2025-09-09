@@ -33,6 +33,10 @@ export class InternalCallProvider extends BaseCallProvider {
 		// If the callee agent fails, this will automatically hangup the call, notify the caller agent and then throw an error
 		await MediaCallDirector.runOnCallCreatedForAgent(call, calleeAgent, callerAgent);
 
+		if (params.parentCallId) {
+			MediaCallDirector.hangupTransferedCallById(params.parentCallId).catch(() => null);
+		}
+
 		return call;
 	}
 }

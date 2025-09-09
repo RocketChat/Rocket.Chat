@@ -31,6 +31,7 @@ export type CallHangupReason =
 	| 'remote' // Server told the client to hang up
 	| 'rejected' // The callee rejected the call
 	| 'unavailable' // The actor is not available
+	| 'transfer' // one of the users requested the other be transfered to someone else
 	| 'timeout' // The call state hasn't progressed for too long
 	| 'signaling-error' // Hanging up because of an error during the signal processing
 	| 'service-error' // Hanging up because of an error setting up the service connection
@@ -82,4 +83,5 @@ export interface IClientMediaCall {
 	hangup(): void;
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
+	transfer(callee: { type: CallActorType; id: string }): void;
 }
