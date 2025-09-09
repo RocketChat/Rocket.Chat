@@ -630,7 +630,7 @@ state: E2ERoomState | undefined = undefined;
 
 		const fileArrayBuffer = await readFileAsArrayBuffer(file);
 
-		const hash = await sha256HashFromArrayBuffer(new Uint8Array(fileArrayBuffer));
+		const hash = await sha256HashFromArrayBuffer(fileArrayBuffer);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		const key = await generateAESCTRKey();

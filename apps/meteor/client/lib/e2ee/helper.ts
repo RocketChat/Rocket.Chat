@@ -139,15 +139,15 @@ export async function importAesCbcKey(keyData: JsonWebKey, keyUsages: ReadonlyAr
 /**
  * Imports an AES-GCM key from JWK format.
  */
-export async function importAesGcmKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
+export function importAesGcmKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
 	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-GCM' }, true, keyUsages);
 }
 
-export async function importRawKey(keyData: BufferSource, keyUsages: ReadonlyArray<KeyUsage> = ['deriveKey']) {
+export function importRawKey(keyData: BufferSource, keyUsages: ReadonlyArray<KeyUsage> = ['deriveKey']) {
 	return crypto.subtle.importKey('raw', keyData, { name: 'PBKDF2' }, false, keyUsages);
 }
 
-export async function deriveKey(salt: Uint8Array<ArrayBuffer>, baseKey: CryptoKey) {
+export function deriveKey(salt: Uint8Array<ArrayBuffer>, baseKey: CryptoKey) {
 	return crypto.subtle.deriveKey(
 		{ name: 'PBKDF2', salt, iterations: 100_000, hash: 'SHA-256' },
 		baseKey,
@@ -157,11 +157,11 @@ export async function deriveKey(salt: Uint8Array<ArrayBuffer>, baseKey: CryptoKe
 	);
 }
 
-export async function readFileAsArrayBuffer(file: File) {
-	return new Promise<any>((resolve, reject) => {
+export function readFileAsArrayBuffer(file: File) {
+	return new Promise<ArrayBuffer>((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onload = (evt) => {
-			resolve(evt.target?.result);
+			resolve(evt.target?.result as ArrayBuffer);
 		};
 		reader.onerror = (evt) => {
 			reject(evt);
@@ -170,14 +170,14 @@ export async function readFileAsArrayBuffer(file: File) {
 	});
 }
 
-export async function createSha256HashFromText(data: any) {
+export async function createSha256HashFromText(data: string) {
 	const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
 	return Array.from(new Uint8Array(hash))
 		.map((b) => b.toString(16).padStart(2, '0'))
 		.join('');
 }
 
-export async function sha256HashFromArrayBuffer(arrayBuffer: any) {
+export async function sha256HashFromArrayBuffer(arrayBuffer: ArrayBuffer) {
 	const hashArray = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', arrayBuffer)));
 	return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }

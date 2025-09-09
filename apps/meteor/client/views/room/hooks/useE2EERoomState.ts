@@ -1,6 +1,7 @@
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { useE2EERoom } from './useE2EERoom';
+import type { E2ERoomState } from '../../../lib/e2ee/E2ERoomState';
 
 export const useE2EERoomState = (rid: string) => {
 	const e2eRoom = useE2EERoom(rid);
@@ -9,7 +10,7 @@ export const useE2EERoomState = (rid: string) => {
 		() =>
 			[
 				(callback: () => void): (() => void) => (e2eRoom ? e2eRoom.onStateChange(callback) : () => undefined),
-				() => (e2eRoom ? e2eRoom.getState() : undefined),
+				(): E2ERoomState | undefined => (e2eRoom ? e2eRoom.getState() : undefined),
 			] as const,
 		[e2eRoom],
 	);

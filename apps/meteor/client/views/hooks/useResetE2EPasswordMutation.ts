@@ -1,4 +1,4 @@
-import { useEndpoint, useLogout, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useLogout, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { MutationOptions } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ export const useResetE2EPasswordMutation = ({ options }: { options?: MutationOpt
 	const { t } = useTranslation();
 
 	const logout = useLogout();
-	const resetE2eKey = useEndpoint('POST', '/v1/e2e.resetOwnE2EKey');
+	const resetE2eKey = useMethod('e2e.resetOwnE2EKey');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	return useMutation({
