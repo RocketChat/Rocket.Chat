@@ -884,5 +884,6 @@ jobs:
 
     uses: ./.github/workflows/update-version-durability.yml
     secrets:
+      LTS_VERSIONS: ${{ vars.LTS_VERSIONS }}
       CI_PAT: ${{ secrets.CI_PAT }}
       D360_TOKEN: ${{ secrets.D360_TOKEN }}
