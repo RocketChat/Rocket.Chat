@@ -10,7 +10,6 @@ import { getUsersInRolePaginated } from '../../../authorization/server/functions
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { addUserToRole } from '../../../authorization/server/methods/addUserToRole';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -113,21 +112,10 @@ API.v1.addRoute(
 			}
 
 			const options = { projection: { _id: 1 } };
-			let roleData = await Roles.findOneById<Pick<IRole, '_id'>>(role, options);
-			if (!roleData) {
-				roleData = await Roles.findOneByName<Pick<IRole, '_id'>>(role, options);
-				if (!roleData) {
-					throw new Meteor.Error('error-invalid-roleId');
-				}
+			const roleData = await Roles.findOneById<Pick<IRole, '_id'>>(role, options);
 
-				apiDeprecationLogger.deprecatedParameterUsage(
-					this.route,
-					'role',
-					'7.0.0',
-					this.response,
-					({ parameter, endpoint, version }) =>
-						`Querying \`${parameter}\` by name is deprecated in ${endpoint} and will be removed on the removed on version ${version}`,
-				);
+			if (!roleData) {
+				throw new Meteor.Error('error-invalid-roleId');
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
