@@ -127,4 +127,30 @@ test.describe.serial('Notification Sounds', () => {
 			expect(audioCalls.played).toBe(true);
 		});
 	});
+
+	test.describe('none sound notification preferences', () => {
+		test.beforeEach(async ({ api }) => {
+			await api.post('/rooms.saveNotification', {
+				roomId: targetChannelId,
+				notifications: {
+					audioNotificationValue: 'none',
+				},
+			});
+		});
+
+		test('should not play any notification sound', async ({ page }) => {
+			await user1Page.goto(`/channel/${targetChannel}`);
+			const user1PoHomeChannel = new HomeChannel(user1Page);
+			await user1PoHomeChannel.content.waitForChannel();
+
+			await poHomeChannel.sidenav.sidebarHomeAction.click();
+
+			await user1PoHomeChannel.content.sendMessage(`Hello @${Users.admin.data.username} from User 1`);
+
+			await page.waitForTimeout(100); // wait for the sound to play
+
+			const audioCalls = await page.evaluate(() => window.__audioCalls);
+			expect(audioCalls).toBeUndefined();
+		});
+	});
 });
