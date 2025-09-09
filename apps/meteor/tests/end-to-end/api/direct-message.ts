@@ -753,7 +753,12 @@ describe('[Direct Messages]', () => {
 			});
 
 			it('should not return old message when updating a message', async () => {
-				await updateMessage({ msgId: pinnedMessageId, updatedMessage: 'message was unpinned', roomId: testUserDMRoom._id });
+				await updateMessage({
+					msgId: pinnedMessageId,
+					updatedMessage: 'message was unpinned',
+					roomId: testUserDMRoom._id,
+					requestCredentials: testUser2Credentials,
+				});
 
 				await request
 					.get(api('im.messages'))
