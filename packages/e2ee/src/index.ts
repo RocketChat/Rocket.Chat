@@ -139,7 +139,7 @@ export default class E2EE {
 		if (!masterKey.isOk) {
 			return masterKey;
 		}
-		const IV_LENGTH = 16;
+		const IV_LENGTH = 12;
 		const vector = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
 		try {
 			const privateKeyBuffer = toArrayBuffer(privateKey);

@@ -1,5 +1,5 @@
-const ZERO = 0x00;
-const IV_LENGTH = 0x10;
+const ZERO = 0;
+const IV_LENGTH = 12;
 
 export const joinVectorAndEncryptedData = (vector: Uint8Array<ArrayBuffer>, cipherText: ArrayBuffer): Uint8Array<ArrayBuffer> => {
 	if (vector.length !== IV_LENGTH) {
