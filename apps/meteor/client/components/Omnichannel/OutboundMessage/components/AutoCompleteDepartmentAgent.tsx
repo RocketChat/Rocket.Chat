@@ -50,7 +50,7 @@ const AutoCompleteDepartmentAgent = ({ value, onChange, agents, ...props }: Auto
 			renderItem={({ value, label, ...props }): ReactElement => (
 				<Option key={value} {...props}>
 					<OptionAvatar>
-						<UserAvatar username={value} size='x20' />
+						<UserAvatar username={label} size='x20' />
 					</OptionAvatar>
 					<OptionContent>{label}</OptionContent>
 				</Option>
