@@ -17,7 +17,6 @@ import { useGameCenterRoomAction } from './hooks/roomActions/useGameCenterRoomAc
 import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';
-import { useOTRRoomAction } from './hooks/roomActions/useOTRRoomAction';
 import { useOmnichannelExternalFrameRoomAction } from './hooks/roomActions/useOmnichannelExternalFrameRoomAction';
 import { useOutlookCalenderRoomAction } from './hooks/roomActions/useOutlookCalenderRoomAction';
 import { usePinnedMessagesRoomAction } from './hooks/roomActions/usePinnedMessagesRoomAction';
@@ -34,7 +33,6 @@ import { useUserInfoRoomAction } from './hooks/roomActions/useUserInfoRoomAction
 import { useVideoCallRoomAction } from './hooks/roomActions/useVideoCallRoomAction';
 import { useVoIPRoomInfoRoomAction } from './hooks/roomActions/useVoIPRoomInfoRoomAction';
 import { useVoiceCallRoomAction } from './hooks/roomActions/useVoiceCallRoomAction';
-import { useWebRTCVideoRoomAction } from './hooks/roomActions/useWebRTCVideoRoomAction';
 import type { RoomToolboxActionConfig } from './views/room/contexts/RoomToolboxContext';
 import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
 
@@ -56,7 +54,6 @@ export const roomActionHooks = [
 	useKeyboardShortcutListRoomAction,
 	useMembersListRoomAction,
 	useMentionsRoomAction,
-	useOTRRoomAction,
 	useOmnichannelExternalFrameRoomAction,
 	useOutlookCalenderRoomAction,
 	usePinnedMessagesRoomAction,
@@ -67,7 +64,6 @@ export const roomActionHooks = [
 	useTeamChannelsRoomAction,
 	useUploadedFilesListRoomAction,
 	useVoIPRoomInfoRoomAction,
-	useWebRTCVideoRoomAction,
 	useAppsRoomStarActions,
 	useVideoCallRoomAction,
 	useVoiceCallRoomAction,

@@ -131,7 +131,6 @@ Meteor.methods<ServerMethods>({
 			tshow: Match.Maybe(Boolean),
 			ts: Match.Maybe(Date),
 			t: Match.Maybe(String),
-			otrAck: Match.Maybe(String),
 			bot: Match.Maybe(Object),
 			content: Match.Maybe(Object),
 			e2e: Match.Maybe(String),
