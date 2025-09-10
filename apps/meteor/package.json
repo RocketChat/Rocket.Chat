@@ -175,7 +175,7 @@
 		"eslint-plugin-anti-trojan-source": "~1.1.1",
 		"eslint-plugin-import": "~2.31.0",
 		"eslint-plugin-no-floating-promise": "~2.0.0",
-		"eslint-plugin-playwright": "~2.2.0",
+		"eslint-plugin-playwright": "~2.2.2",
 		"eslint-plugin-prettier": "~5.2.6",
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
