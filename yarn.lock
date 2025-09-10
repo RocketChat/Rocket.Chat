@@ -8360,7 +8360,7 @@ __metadata:
     jest: "npm:~30.1.3"
     qs: "npm:^6.14.0"
     supertest: "npm:~7.1.4"
-    ts-jest: "npm:~29.4.0"
+    ts-jest: "npm:~29.4.1"
     typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
@@ -9745,7 +9745,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.1.3"
-    ts-jest: "npm:~29.4.0"
+    ts-jest: "npm:~29.4.1"
     typescript: "npm:~5.9.2"
   languageName: unknown
   linkType: soft
@@ -9941,7 +9941,7 @@ __metadata:
     npm-run-all: "npm:~4.1.5"
     prettier: "npm:~3.3.3"
     rimraf: "npm:~6.0.1"
-    ts-jest: "npm:~29.4.0"
+    ts-jest: "npm:~29.4.1"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.2"
     typia: "npm:~9.7.0"
@@ -17315,7 +17315,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:4, chalk@npm:4.1.2, chalk@npm:^4.0.0, chalk@npm:^4.0.2, chalk@npm:^4.1.0, chalk@npm:^4.1.1, chalk@npm:^4.1.2, chalk@npm:~4.1.2":
+"chalk@npm:4, chalk@npm:4.1.2, chalk@npm:^4.0.0, chalk@npm:^4.1.0, chalk@npm:^4.1.1, chalk@npm:^4.1.2, chalk@npm:~4.1.2":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -20042,17 +20042,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ejs@npm:^3.1.10":
-  version: 3.1.10
-  resolution: "ejs@npm:3.1.10"
-  dependencies:
-    jake: "npm:^10.8.5"
-  bin:
-    ejs: bin/cli.js
-  checksum: 10/a9cb7d7cd13b7b1cd0be5c4788e44dd10d92f7285d2f65b942f33e127230c054f99a42db4d99f766d8dbc6c57e94799593ee66a14efd7c8dd70c4812bf6aa384
-  languageName: node
-  linkType: hard
-
 "ejson@npm:^2.2.3":
   version: 2.2.3
   resolution: "ejson@npm:2.2.3"
@@ -21874,15 +21863,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filelist@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "filelist@npm:1.0.4"
-  dependencies:
-    minimatch: "npm:^5.0.1"
-  checksum: 10/4b436fa944b1508b95cffdfc8176ae6947b92825483639ef1b9a89b27d82f3f8aa22b21eed471993f92709b431670d4e015b39c087d435a61e1bb04564cf51de
-  languageName: node
-  linkType: hard
-
 "filename-reserved-regex@npm:^2.0.0":
   version: 2.0.0
   resolution: "filename-reserved-regex@npm:2.0.0"
@@ -23106,6 +23086,24 @@ __metadata:
   version: 2.0.1
   resolution: "handle-thing@npm:2.0.1"
   checksum: 10/441ec98b07f26819c70c702f6c874088eebeb551b242fe8fae4eab325746b82bf84ae7a1f6419547698accb3941fa26806c5f5f93c50e19f90e499065a711d61
+  languageName: node
+  linkType: hard
+
+"handlebars@npm:^4.7.8":
+  version: 4.7.8
+  resolution: "handlebars@npm:4.7.8"
+  dependencies:
+    minimist: "npm:^1.2.5"
+    neo-async: "npm:^2.6.2"
+    source-map: "npm:^0.6.1"
+    uglify-js: "npm:^3.1.4"
+    wordwrap: "npm:^1.0.0"
+  dependenciesMeta:
+    uglify-js:
+      optional: true
+  bin:
+    handlebars: bin/handlebars
+  checksum: 10/bd528f4dd150adf67f3f857118ef0fa43ff79a153b1d943fa0a770f2599e38b25a7a0dbac1a3611a4ec86970fd2325a81310fb788b5c892308c9f8743bd02e11
   languageName: node
   linkType: hard
 
@@ -25244,20 +25242,6 @@ __metadata:
     uuid: "npm:^8.3.2"
     xorshift: "npm:^1.1.1"
   checksum: 10/411d5657ec2d3f4ba9175260f0586c125edbd76c283ceabe0baa78efe2a04698f029be8d79ad199105f10c0428c7cd9f8cfed5f5c8393eeb2cb3ceb974c43279
-  languageName: node
-  linkType: hard
-
-"jake@npm:^10.8.5":
-  version: 10.9.2
-  resolution: "jake@npm:10.9.2"
-  dependencies:
-    async: "npm:^3.2.3"
-    chalk: "npm:^4.0.2"
-    filelist: "npm:^1.0.4"
-    minimatch: "npm:^3.1.2"
-  bin:
-    jake: bin/cli.js
-  checksum: 10/3be324708f99f031e0aec49ef8fd872eb4583cbe8a29a0c875f554f6ac638ee4ea5aa759bb63723fd54f77ca6d7db851eaa78353301734ed3700db9cb109a0cd
   languageName: node
   linkType: hard
 
@@ -28249,7 +28233,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^5.0.1, minimatch@npm:^5.1.0":
+"minimatch@npm:^5.1.0":
   version: 5.1.6
   resolution: "minimatch@npm:5.1.6"
   dependencies:
@@ -36323,13 +36307,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:~29.4.0":
-  version: 29.4.0
-  resolution: "ts-jest@npm:29.4.0"
+"ts-jest@npm:~29.4.1":
+  version: 29.4.1
+  resolution: "ts-jest@npm:29.4.1"
   dependencies:
     bs-logger: "npm:^0.2.6"
-    ejs: "npm:^3.1.10"
     fast-json-stable-stringify: "npm:^2.1.0"
+    handlebars: "npm:^4.7.8"
     json5: "npm:^2.2.3"
     lodash.memoize: "npm:^4.1.2"
     make-error: "npm:^1.3.6"
@@ -36359,7 +36343,7 @@ __metadata:
       optional: true
   bin:
     ts-jest: cli.js
-  checksum: 10/fe501f3d9946ec52db78ae0ac6cfd72942b1c1f5d657c12db321c9d570f0f499e83eb6c7e26074cd11dfe534a6a09c676947e7a63ee08fcda552aabcdeb6c592
+  checksum: 10/6aed48232c01a70c7d24c8e1e1fa4c10fcc7d4845913cc4b4c3def10d2d5ba32e98e495b427d3aca5682c13ac0754e6145af81d977ffcc71a26c54a2ca634d65
   languageName: node
   linkType: hard
 
@@ -36916,6 +36900,15 @@ __metadata:
   bin:
     uglifyjs: bin/uglifyjs
   checksum: 10/7adc2d9f0439573e8f5cee4b4f2b7b19638f38fd305fb7ccc7168ddeddd3549f903eea12f8fa156071c3958a567ed96f161e52fa1a53d79c9b4e04cf8d6dbb67
+  languageName: node
+  linkType: hard
+
+"uglify-js@npm:^3.1.4":
+  version: 3.19.3
+  resolution: "uglify-js@npm:3.19.3"
+  bin:
+    uglifyjs: bin/uglifyjs
+  checksum: 10/6b9639c1985d24580b01bb0ab68e78de310d38eeba7db45bec7850ab4093d8ee464d80ccfaceda9c68d1c366efbee28573b52f95e69ac792354c145acd380b11
   languageName: node
   linkType: hard
 
@@ -38241,6 +38234,13 @@ __metadata:
     triple-beam: "npm:^1.3.0"
     winston-transport: "npm:^4.7.0"
   checksum: 10/60e55eb3621e4de1a764a4e43ee1d242c71957d3e0eb359cb8f16fe2b9d9543fd4c31a8d3baf96fa7e43ef5df383c43c1a98aff4bd714ea0082303504b0e3cdc
+  languageName: node
+  linkType: hard
+
+"wordwrap@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "wordwrap@npm:1.0.0"
+  checksum: 10/497d40beb2bdb08e6d38754faa17ce20b0bf1306327f80cb777927edb23f461ee1f6bc659b3c3c93f26b08e1cf4b46acc5bae8fda1f0be3b5ab9a1a0211034cd
   languageName: node
   linkType: hard
 
