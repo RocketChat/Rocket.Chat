@@ -34,7 +34,7 @@
 		"@rocket.chat/icons": "~0.44.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
-		"typia": "~9.7.0"
+		"typia": "~9.7.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

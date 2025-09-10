@@ -54,7 +54,7 @@
 		"typescript": "~5.9.2"
 	},
 	"dependencies": {
-		"typia": "~9.7.0"
+		"typia": "~9.7.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/icons": "*"
