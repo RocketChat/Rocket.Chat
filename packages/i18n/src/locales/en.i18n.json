@@ -5702,7 +5702,7 @@
   "Voice_call__user_": "Voice call {{user}}",
   "Voice_call__user__hangup": "End call with {{user}}",
   "Voice_call__user__cancel": "Cancel call with {{user}}",
-  "Voice_call__user__incoming": "Incoming call from {{user}}",
+  "Voice_call__user__reject": "Reject call with {{user}}",
   "Voice_call_extension": "Voice call extension",
   "Voice_calling_disabled": "Voice calling is disabled",
   "Voice_calling_enabled": "Voice calling is enabled",

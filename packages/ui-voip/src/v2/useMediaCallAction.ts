@@ -2,9 +2,9 @@ import type { Keys as IconNames } from '@rocket.chat/icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMediaCallContext } from './MediaCallContext';
+import { PeerInfo, useMediaCallContext } from './MediaCallContext';
 
-export const useMediaCallAction = (): { title: string; icon: IconNames; action: () => void; loading?: boolean } => {
+export const useMediaCallAction = (direct = false): { title: string; icon: IconNames; action: (callee?: PeerInfo) => void } => {
 	const { t } = useTranslation();
 
 	const { state, onToggleWidget, onEndCall, peerInfo } = useMediaCallContext();
@@ -32,10 +32,9 @@ export const useMediaCallAction = (): { title: string; icon: IconNames; action: 
 
 		if (state === 'ringing' && peerInfo) {
 			return {
-				title: t('Voice_call__user__incoming', { user: getDisplayName(peerInfo) }),
+				title: t('Voice_call__user__reject', { user: getDisplayName(peerInfo) }),
 				icon: 'phone-off',
-				loading: true,
-				action: () => undefined, // TODO
+				action: () => onEndCall(),
 			};
 		}
 
@@ -43,8 +42,8 @@ export const useMediaCallAction = (): { title: string; icon: IconNames; action: 
 			title: t('New_voice_call'),
 			// TODO: use phone-plus when it's available in fuselage
 			// icon: 'phone-plus',
-			icon: 'phone-out',
-			action: () => onToggleWidget(),
+			icon: direct ? 'phone' : 'phone-out',
+			action: (callee?: PeerInfo) => onToggleWidget(callee),
 		};
-	}, [onEndCall, onToggleWidget, peerInfo, state, t]);
+	}, [direct, onEndCall, onToggleWidget, peerInfo, state, t]);
 };
