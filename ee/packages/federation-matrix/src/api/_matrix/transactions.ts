@@ -278,7 +278,7 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 
 					return {
 						body: {
-							origin_server_ts: eventData.event.origin_server_ts,
+							origin_server_ts: new Date().getTime(),
 							origin: config.serverName,
 							pdus: [eventData.event],
 						},
