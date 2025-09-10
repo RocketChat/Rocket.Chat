@@ -186,5 +186,73 @@ describe.each([
 			expect(encrypted).not.toBeChecked();
 			expect(encrypted).toBeDisabled();
 		});
+
+		it('should disable and turn on ReadOnly toggle when Broadcast is ON and no set-readonly permission', async () => {
+			render(<CreateTeamModalComponent onClose={() => null} />, {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+
+			const broadcast = screen.getByLabelText('Teams_New_Broadcast_Label') as HTMLInputElement;
+			const readOnly = screen.getByLabelText('Teams_New_Read_only_Label') as HTMLInputElement;
+
+			expect(readOnly).not.toBeChecked();
+
+			// Broadcast: OFF -> ON (ReadOnly stays ON + disabled)
+			await userEvent.click(broadcast);
+			expect(broadcast).toBeChecked();
+			expect(readOnly).toBeChecked();
+			expect(readOnly).toBeDisabled();
+		});
+
+		it('should disable and turn on ReadOnly toggle when Broadcast is ON with set-readonly permission', async () => {
+			render(<CreateTeamModalComponent onClose={() => null} />, {
+				wrapper: mockAppRoot().withPermission('set-readonly').build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+
+			const broadcast = screen.getByLabelText('Teams_New_Broadcast_Label') as HTMLInputElement;
+			const readOnly = screen.getByLabelText('Teams_New_Read_only_Label') as HTMLInputElement;
+
+			expect(readOnly).not.toBeChecked();
+
+			// Broadcast: OFF -> ON (ReadOnly stays ON + disabled)
+			await userEvent.click(broadcast);
+			expect(broadcast).toBeChecked();
+			expect(readOnly).toBeChecked();
+			expect(readOnly).toBeDisabled();
+		});
+
+		it('should disable and turn off ReadOnly toggle when Broadcast is OFF with no set-readonly permission', async () => {
+			render(<CreateTeamModalComponent onClose={() => null} />, {
+				wrapper: mockAppRoot().build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+
+			const broadcast = screen.getByLabelText('Teams_New_Broadcast_Label') as HTMLInputElement;
+			const readOnly = screen.getByLabelText('Teams_New_Read_only_Label') as HTMLInputElement;
+
+			expect(broadcast).not.toBeChecked();
+			expect(readOnly).not.toBeChecked();
+			expect(readOnly).toBeDisabled();
+		});
+
+		it('should enable ReadOnly toggle when Broadcast is OFF with set-readonly permission', async () => {
+			render(<CreateTeamModalComponent onClose={() => null} />, {
+				wrapper: mockAppRoot().withPermission('set-readonly').build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+
+			const broadcast = screen.getByLabelText('Teams_New_Broadcast_Label') as HTMLInputElement;
+			const readOnly = screen.getByLabelText('Teams_New_Read_only_Label') as HTMLInputElement;
+
+			expect(broadcast).not.toBeChecked();
+			expect(readOnly).not.toBeChecked();
+			expect(readOnly).toBeEnabled();
+		});
 	},
 );

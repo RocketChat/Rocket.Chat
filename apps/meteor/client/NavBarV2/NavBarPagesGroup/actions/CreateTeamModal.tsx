@@ -21,7 +21,14 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { useEndpoint, usePermission, useSetting, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	useEndpoint,
+	usePermission,
+	usePermissionWithScopedRoles,
+	useSetting,
+	useToastMessageDispatch,
+	useTranslation,
+} from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -49,6 +56,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
+	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canCreateTeam = usePermission('create-team');
@@ -108,7 +116,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		setValue('readOnly', broadcast);
 	}, [watch, setValue, broadcast, isPrivate]);
 
-	const canChangeReadOnly = !broadcast;
+	const readOnlyDisabled = broadcast || !canSetReadOnly;
 	const canChangeEncrypted = isPrivate && e2eEnabled;
 	const getEncryptedHint = useEncryptedRoomDescription('team');
 
@@ -274,7 +282,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 											<ToggleSwitch
 												id={readOnlyId}
 												aria-describedby={`${readOnlyId}-hint`}
-												disabled={!canChangeReadOnly}
+												disabled={readOnlyDisabled}
 												onChange={onChange}
 												checked={value}
 												ref={ref}
