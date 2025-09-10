@@ -4,10 +4,10 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { extractParameterMetadata, processTemplatePreviewText } from './template';
 import type { TemplateMediaParameter, TemplateComponent, TemplateParameterMetadata } from '../definitions/template';
 
-const createMockTextMetadata = (type: TemplateComponent['type'], index = 0): TemplateParameterMetadata => {
+const createMockTextMetadata = (templateId: string, type: TemplateComponent['type'], index = 0): TemplateParameterMetadata => {
 	const placeholder = `{{${index + 1}}}`;
 	return {
-		id: `${type}.${placeholder}`,
+		id: `${templateId}.${type}.${placeholder}`,
 		type: 'text',
 		placeholder,
 		name: capitalize(type),
@@ -17,8 +17,12 @@ const createMockTextMetadata = (type: TemplateComponent['type'], index = 0): Tem
 	};
 };
 
-const createMockMediaMetadata = (type: TemplateComponent['type'], format: TemplateMediaParameter['format']): TemplateParameterMetadata => ({
-	id: `${type}.mediaUrl`,
+const createMockMediaMetadata = (
+	templateId: string,
+	type: TemplateComponent['type'],
+	format: TemplateMediaParameter['format'],
+): TemplateParameterMetadata => ({
+	id: `${templateId}.${type}.mediaUrl`,
 	type: 'media',
 	placeholder: '',
 	name: 'Media_URL',
@@ -28,14 +32,17 @@ const createMockMediaMetadata = (type: TemplateComponent['type'], format: Templa
 });
 
 const variations: [IOutboundProviderTemplate['components'], TemplateParameterMetadata[]][] = [
-	[[{ type: 'header', text: 'Parameter {{1}}', format: 'image' }], [createMockMediaMetadata('header', 'image')]],
-	[[{ type: 'body', text: 'Parameter {{1}} and {{2}}' }], [createMockTextMetadata('body', 0), createMockTextMetadata('body', 1)]],
-	[[{ type: 'footer', text: 'Parameter {{1}}' }], [createMockTextMetadata('footer', 0)]],
+	[[{ type: 'header', text: 'Parameter {{1}}', format: 'image' }], [createMockMediaMetadata('template-1', 'header', 'image')]],
+	[
+		[{ type: 'body', text: 'Parameter {{1}} and {{2}}' }],
+		[createMockTextMetadata('template-1', 'body', 0), createMockTextMetadata('template-1', 'body', 1)],
+	],
+	[[{ type: 'footer', text: 'Parameter {{1}}' }], [createMockTextMetadata('template-1', 'footer', 0)]],
 ];
 
 describe('extractParameterMetadata', () => {
 	test.each(variations)('should return the parameters metadata for "%i" component type', (components, expected) => {
-		const parametersMetadata = extractParameterMetadata(components);
+		const parametersMetadata = extractParameterMetadata({ id: 'template-1', components });
 
 		expect(parametersMetadata).toStrictEqual(expected);
 	});
