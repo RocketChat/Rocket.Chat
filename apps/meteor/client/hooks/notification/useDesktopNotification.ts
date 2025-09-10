@@ -25,10 +25,7 @@ export const useDesktopNotification = () => {
 		if (notification.payload.message?.t === 'e2e') {
 			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
 			if (e2eRoom) {
-				notification.text = (await e2eRoom.decrypt({
-					ciphertext: notification.payload.message.msg,
-					algorithm: 'rc.v2.aes-gcm-sha2'
-				})).text;
+				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
 			}
 		}
 

@@ -394,7 +394,7 @@ class E2E extends Emitter {
 						this.closeAlert();
 					},
 				});
-				return;
+				return this.error('E2E -> Error decoding private key: ', error);
 			}
 		}
 
