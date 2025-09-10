@@ -97,7 +97,7 @@
 		"@msgpack/msgpack": "3.0.0-beta2",
 		"adm-zip": "^0.5.16",
 		"debug": "^4.3.7",
-		"esbuild": "^0.25.5",
+		"esbuild": "~0.25.10",
 		"jose": "^4.15.9",
 		"jsonrpc-lite": "^2.2.0",
 		"lodash.clonedeep": "^4.5.0",
