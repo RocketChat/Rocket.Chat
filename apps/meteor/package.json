@@ -130,7 +130,7 @@
 		"@types/mocha": "github:whitecolor/mocha-types",
 		"@types/node": "~22.16.5",
 		"@types/node-rsa": "^1.1.4",
-		"@types/nodemailer": "^6.4.17",
+		"@types/nodemailer": "~6.4.19",
 		"@types/oauth2-server": "^3.0.18",
 		"@types/object-path": "^0.11.4",
 		"@types/parseurl": "^1.3.3",
