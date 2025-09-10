@@ -9564,7 +9564,7 @@ __metadata:
     xml2js: "npm:~0.6.2"
     yaqrcode: "npm:^0.2.1"
     zod: "npm:^3.24.1"
-    zustand: "npm:~5.0.5"
+    zustand: "npm:~5.0.8"
   languageName: unknown
   linkType: soft
 
@@ -39777,9 +39777,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:~5.0.5":
-  version: 5.0.5
-  resolution: "zustand@npm:5.0.5"
+"zustand@npm:~5.0.8":
+  version: 5.0.8
+  resolution: "zustand@npm:5.0.8"
   peerDependencies:
     "@types/react": ">=18.0.0"
     immer: ">=9.0.6"
@@ -39794,7 +39794,7 @@ __metadata:
       optional: true
     use-sync-external-store:
       optional: true
-  checksum: 10/ae10e1da74e0abbc669401f30baa1088b779c54a2a9c30f1c62d03a4f4d1b9ac9b60933eca01e3d3871d644d387a289005b45607339f253cd3fadf7e3a390724
+  checksum: 10/f824fbd0120bbb58c71e74599c7090fa81e9e94334b55a8bfc8964c57e6f1e1187d4be4771a93674755e798874eeb7612d6bde4c8c02a4fe47415fcd9f7407fc
   languageName: node
   linkType: hard
 
