@@ -60,7 +60,7 @@
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~5.0.0",
 		"file-loader": "^6.2.0",
-		"html-webpack-plugin": "^5.6.3",
+		"html-webpack-plugin": "~5.6.4",
 		"if-env": "^1.0.4",
 		"image-webpack-loader": "~8.1.0",
 		"lorem-ipsum": "^2.0.8",
