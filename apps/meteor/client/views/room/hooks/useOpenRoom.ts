@@ -1,16 +1,17 @@
 import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
+import { getObjectKeys } from '@rocket.chat/tools';
 import { useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
-import { Rooms } from '../../../../app/models/client';
 import { roomFields } from '../../../../lib/publishFields';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { Rooms } from '../../../stores';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
 	const user = useUser();
@@ -34,7 +35,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			let roomData;
+			let roomData: IRoom;
 			try {
 				roomData = await getRoomByTypeAndName(type, reference);
 			} catch (error) {
@@ -57,21 +58,15 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 				throw new RoomNotFoundError(undefined, { type, reference });
 			}
 
-			const $set: any = {};
-			const $unset: any = {};
+			const { Rooms, Subscriptions } = await import('../../../stores');
 
-			for (const key of Object.keys(roomFields)) {
-				if (key in roomData) {
-					$set[key] = roomData[key as keyof typeof roomData];
-				} else {
-					$unset[key] = '';
-				}
-			}
+			const unsetKeys = getObjectKeys(roomData).filter((key) => !(key in roomFields));
+			unsetKeys.forEach((key) => {
+				delete roomData[key];
+			});
+			Rooms.state.store(roomData);
 
-			const { Rooms, Subscriptions } = await import('../../../../app/models/client');
-
-			Rooms.upsert({ _id: roomData._id }, { $set, $unset });
-			const room = Rooms.findOne({ _id: roomData._id });
+			const room = Rooms.state.get(roomData._id);
 
 			if (!room) {
 				throw new TypeError('room is undefined');
@@ -81,14 +76,14 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			if (reference !== undefined && room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid
-				await LegacyRoomManager.close(type + reference);
+				LegacyRoomManager.close(type + reference);
 				directRoute.push({ rid: room._id }, (prev) => prev);
 				throw new OldUrlRoomError(undefined, { rid: room._id });
 			}
 
 			const { RoomManager } = await import('../../../lib/RoomManager');
 
-			const sub = Subscriptions.findOne({ rid: room._id });
+			const sub = Subscriptions.state.find((record) => record.rid === room._id);
 
 			// if user doesn't exist at this point, anonymous read is enabled, otherwise an error would have been thrown
 			if (user && !sub && !hasPreviewPermission && isPublicRoom(room)) {
@@ -118,7 +113,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	useEffect(() => {
 		if (error) {
 			if (['l', 'v'].includes(type) && error instanceof RoomNotFoundError) {
-				Rooms.remove(reference);
+				Rooms.state.remove((record) => Object.values(record).includes(reference));
 				queryClient.removeQueries({ queryKey: ['rooms', reference] });
 				queryClient.removeQueries({ queryKey: roomsQueryKeys.info(reference) });
 			}

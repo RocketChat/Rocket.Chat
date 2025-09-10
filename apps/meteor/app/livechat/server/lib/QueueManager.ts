@@ -219,7 +219,7 @@ export class QueueManager {
 			return false;
 		}
 
-		const contact = await LivechatContacts.findOneById(room.contactId, { projection: { channels: 1 } });
+		const contact = await LivechatContacts.findOneEnabledById(room.contactId, { projection: { channels: 1 } });
 		if (!contact) {
 			return false;
 		}

@@ -6,6 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import type { UpdateResult } from 'mongodb';
 
 import { passwordPolicy } from '../../app/lib/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import { compareUserPassword } from '../lib/compareUserPassword';
 
 declare module '@rocket.chat/ddp-client' {
@@ -17,6 +19,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async setUserPassword(password) {
+		methodDeprecationLogger.method('setUserPassword', '8.0.0', 'Use the endpoint /v1/users.updateOwnBasicInfo instead');
 		check(password, String);
 
 		const userId = Meteor.userId();
@@ -52,6 +55,14 @@ Meteor.methods<ServerMethods>({
 			logout: false,
 		});
 
-		return Users.unsetRequirePasswordChange(userId);
+		const update = await Users.unsetRequirePasswordChange(userId);
+
+		void notifyOnUserChange({
+			clientAction: 'updated',
+			id: userId,
+			diff: { requirePasswordChange: false, requirePasswordChangeReason: false },
+		});
+
+		return update;
 	},
 });

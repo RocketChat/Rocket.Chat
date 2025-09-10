@@ -30,7 +30,7 @@ const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): R
 			return <>{t('Message_with_attachment')}</>;
 		}
 		if (!isEncryptedMessage || message.e2e === 'done') {
-			return mdTokens ? (
+			return mdTokens?.length ? (
 				<GazzodownText>
 					<PreviewMarkup tokens={mdTokens} />
 				</GazzodownText>

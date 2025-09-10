@@ -13,7 +13,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:getDepartmentForwardRestrictions'(departmentId) {
-		methodDeprecationLogger.method('livechat:getDepartmentForwardRestrictions', '7.0.0');
+		methodDeprecationLogger.method('livechat:getDepartmentForwardRestrictions', '7.0.0', 'This functionality is no longer supported');
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'livechat:getDepartmentForwardRestrictions',

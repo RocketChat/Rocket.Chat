@@ -18,6 +18,10 @@ const eventsToListen: EventNames = [
 	'CHANNEL_UNHOLD',
 	'CHANNEL_ORIGINATE',
 	'CHANNEL_UUID',
+	'CHANNEL_APPLICATION',
+	'CHANNEL_PROGRESS',
+	'CHANNEL_PROGRESS_MEDIA',
+	'CALL_UPDATE',
 ];
 
 export class FreeSwitchEventClient extends FreeSwitchESLClient {

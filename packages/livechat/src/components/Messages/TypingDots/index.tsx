@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'preact/compat';
 
-import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
+import { createClassName } from '../../../helpers/createClassName';
 
 type TypingDotsProps = {
 	text: string;

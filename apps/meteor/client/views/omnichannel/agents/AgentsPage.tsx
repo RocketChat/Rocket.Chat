@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import AgentEditWithData from './AgentEditWithData';
 import AgentInfo from './AgentInfo';
-import AgentsTable from './AgentsTable/AgentsTable';
+import AgentsTable from './AgentsTable';
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';

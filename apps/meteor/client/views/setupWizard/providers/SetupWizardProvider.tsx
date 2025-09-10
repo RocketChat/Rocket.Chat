@@ -10,7 +10,6 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { Meteor } from 'meteor/meteor';
 import type { ReactElement, ContextType } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -49,7 +48,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const setShowSetupWizard = useSettingSetValue('Show_Setup_Wizard');
 	const registerUser = useMethod('registerUser');
-	const defineUsername = useMethod('setUsername');
+	const setBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
@@ -87,7 +86,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			try {
 				await loginWithPassword(email, password);
 			} catch (error) {
-				if (error instanceof Meteor.Error && error.error === 'error-invalid-email') {
+				if ((error as { error?: unknown }).error === 'error-invalid-email') {
 					dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
 					return;
 				}
@@ -99,11 +98,11 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 			setForceLogin(false);
 
-			await defineUsername(username);
+			await setBasicInfo({ data: { username } });
 			await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
 			void callbacks.run('usernameSet', {});
 		},
-		[registerUser, setForceLogin, defineUsername, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
+		[registerUser, setForceLogin, setBasicInfo, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
 	);
 
 	const saveAgreementData = useCallback(

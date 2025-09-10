@@ -13,6 +13,10 @@ import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcom
 import type { IProcessor } from '@rocket.chat/apps-engine/definition/scheduler/IProcessor.ts';
 import type { IApi } from '@rocket.chat/apps-engine/definition/api/IApi.ts';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider.ts';
+import type {
+	IOutboundPhoneMessageProvider,
+	IOutboundEmailMessageProvider,
+} from '@rocket.chat/apps-engine/definition/outboundCommunication/IOutboundCommsProvider.ts';
 
 import { Http } from './http.ts';
 import { HttpExtend } from './extenders/HttpExtender.ts';
@@ -22,6 +26,7 @@ import { ModifyCreator } from './modify/ModifyCreator.ts';
 import { ModifyUpdater } from './modify/ModifyUpdater.ts';
 import { ModifyExtender } from './modify/ModifyExtender.ts';
 import { Notifier } from './notifier.ts';
+import { formatErrorResponse } from './formatResponseErrorHandler.ts';
 
 const httpMethods = ['get', 'post', 'put', 'delete', 'head', 'options', 'patch'] as const;
 
@@ -53,26 +58,28 @@ export class AppAccessors {
 			new Proxy(
 				{ __kind: `accessor:${namespace}` },
 				{
-					get: (_target: unknown, prop: string) => (...params: unknown[]) => {
-						// We don't want to send a request for this prop
-						if (prop === 'toJSON') {
-							return {};
-						}
+					get:
+						(_target: unknown, prop: string) =>
+						(...params: unknown[]) => {
+							// We don't want to send a request for this prop
+							if (prop === 'toJSON') {
+								return {};
+							}
 
-						// If the prop is inteded to be overriden by the caller
-						if (prop in overrides) {
-							return overrides[prop].apply(undefined, params);
-						}
+							// If the prop is inteded to be overriden by the caller
+							if (prop in overrides) {
+								return overrides[prop].apply(undefined, params);
+							}
 
-						return senderFn({
-							method: `accessor:${namespace}:${prop}`,
-							params,
-						})
-							.then((response) => response.result)
-							.catch((err) => {
-								throw new Error(err.error);
-							});
-					},
+							return senderFn({
+								method: `accessor:${namespace}:${prop}`,
+								params,
+							})
+								.then((response) => response.result)
+								.catch((err) => {
+									throw formatErrorResponse(err);
+								});
+						},
 				},
 			) as T;
 
@@ -183,6 +190,17 @@ export class AppAccessors {
 						AppObjectRegistry.set(`videoConfProvider:${provider.name}`, provider);
 
 						return this._proxy.provideVideoConfProvider(provider);
+					},
+				},
+				outboundCommunication: {
+					_proxy: this.proxify('getConfigurationExtend:outboundCommunication'),
+					registerEmailProvider(provider: IOutboundEmailMessageProvider) {
+						AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
+						return this._proxy.registerEmailProvider(provider);
+					},
+					registerPhoneProvider(provider: IOutboundPhoneMessageProvider) {
+						AppObjectRegistry.set(`outboundCommunication:${provider.name}-${provider.type}`, provider);
+						return this._proxy.registerPhoneProvider(provider);
 					},
 				},
 				slashCommands: {

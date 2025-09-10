@@ -85,6 +85,8 @@ export const useVoipClient = (): UseVoipClientResult => {
 							iceServers,
 							connectionRetryCount: Number(voipRetryCount),
 							enableKeepAliveUsingOptionsForUnstableNetworks: Boolean(enableKeepAlive),
+							userId: uid || '',
+							siteUrl: '',
 						};
 
 						client = await (isEE ? EEVoipClient.create(config) : VoIPUser.create(config));

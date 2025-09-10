@@ -126,3 +126,15 @@ export const setUserOnline = (overrideCredentials = credentials) =>
 				msg: 'method',
 			}),
 		});
+
+export const removeRoleFromUser = (username: string, roleId: string, overrideCredentials = credentials) =>
+	getUserByUsername(username).then((user) =>
+		request
+			.post(api('users.update'))
+			.set(overrideCredentials)
+			.send({
+				userId: user._id,
+				data: { roles: user.roles.filter((role) => role !== roleId) },
+			})
+			.expect(200),
+	);
