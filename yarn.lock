@@ -9380,7 +9380,7 @@ __metadata:
     chalk: "npm:^4.1.2"
     change-case: "npm:^4.1.2"
     chart.js: "npm:^3.9.1"
-    codemirror: "npm:^5.65.19"
+    codemirror: "npm:~5.65.20"
     colorette: "npm:^2.0.20"
     colors: "npm:^1.4.0"
     connect: "npm:^3.7.0"
@@ -18344,13 +18344,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codemirror@npm:^5.65.19":
-  version: 5.65.19
-  resolution: "codemirror@npm:5.65.19"
-  checksum: 10/52d9746d577d591e2d875fb542a7cd48e822b03e58905854bfcf852c2fcc673086c2cd05e72964b24d894452a82f28d35c535adf43d38559aa339a1b299efb2c
-  languageName: node
-  linkType: hard
-
 "codemirror@npm:^6.0.2":
   version: 6.0.2
   resolution: "codemirror@npm:6.0.2"
@@ -18363,6 +18356,13 @@ __metadata:
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.0.0"
   checksum: 10/bd73c9ebbd8cb709a697fa4e2484c188c44aafce4b4d2a342807a5648c6be5bd5876f0caac47db0c1181f1ec8d86e38bd2b6efe51b971bf240fd3382bef0b371
+  languageName: node
+  linkType: hard
+
+"codemirror@npm:~5.65.20":
+  version: 5.65.20
+  resolution: "codemirror@npm:5.65.20"
+  checksum: 10/62598c706bec992c5eb007dd233b4a06f29c91245d74f907246e094892c062203b11af0a394ea35064605613c80fc6d8168f6311f2cf394aa88154c75f7f6ad2
   languageName: node
   linkType: hard
 
