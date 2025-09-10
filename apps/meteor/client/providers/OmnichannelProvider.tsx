@@ -61,7 +61,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 	const agentAvailable = user?.statusLivechat === 'available';
 	const voipCallAvailable = true; // TODO: use backend check;
 
-	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
+	const useGetRoutingConfig = useEndpoint('GET', '/v1/livechat/config/routing');
 
 	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
 
@@ -109,7 +109,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 
 		const update = async (): Promise<void> => {
 			try {
-				const routeConfig = await getRoutingConfig();
+				const routeConfig = await useGetRoutingConfig();
 				setRouteConfig(routeConfig);
 			} catch (error) {
 				loggerRef.current.error(`update() error in routeConfig ${error}`);
@@ -119,7 +119,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 		if (omnichannelRouting || !omnichannelRouting) {
 			update();
 		}
-	}, [accessible, getRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
+	}, [accessible, useGetRoutingConfig, iceServersSetting, omnichannelRouting, setRouteConfig, voipCallAvailable]);
 
 	const manuallySelected =
 		enabled && canViewOmnichannelQueue && !!routeConfig && routeConfig.showQueue && !routeConfig.autoAssignAgent && agentAvailable;
