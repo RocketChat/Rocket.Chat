@@ -11,6 +11,7 @@ import './login/google';
 import './login/ldap';
 import './login/meteorDeveloperAccount';
 import './login/oauth';
+import './login/passkey';
 import './login/password';
 import './login/saml';
 import './login/twitter';

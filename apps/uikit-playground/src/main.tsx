@@ -23,5 +23,6 @@ root.render(
         <App />
       </PersistStore>
     </Provider>
+    ,
   </StrictMode>,
 );

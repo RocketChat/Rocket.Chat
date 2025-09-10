@@ -13,12 +13,13 @@ import {
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
-import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
+import { useLoginWithPassword, useLoginWithPasskey, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
 import EmailConfirmationForm from './EmailConfirmationForm';
 import LoginServices from './LoginServices';
@@ -81,6 +82,9 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 	const usernameOrEmailPlaceholder = useSetting('Accounts_EmailOrUsernamePlaceholder', '');
 	const passwordPlaceholder = useSetting('Accounts_PasswordPlaceholder', '');
 
+	const dispatchToastMessage = useToastMessageDispatch();
+	const loginWithPasskey = useLoginWithPasskey();
+
 	useDocumentTitle(t('registration.component.login'), false);
 
 	const loginMutation = useMutation({
@@ -135,6 +139,36 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		return null;
 	};
 
+	// const loginWithPasskeyMutation = useMutation({
+	// 	mutationFn: () => {
+	// 		return loginWithPasskey();
+	// 	},
+	// 	onError: (error) => {
+	// 		if (error) {
+	// 			dispatchToastMessage({ type: 'error', message: error });
+	// 			return;
+	// 		}
+	// 		dispatchToastMessage({ type: 'success', message: t('Login_successfully') });
+	// 	},
+	// });
+
+	useEffect(() => {
+		// if (!showFormLogin) return;
+		//
+		// const webauthnInput = document.querySelector('input[autocomplete$="webauthn"]') as HTMLInputElement | null;
+		// if (!webauthnInput || webauthnInput.disabled || webauthnInput.offsetParent === null) {
+		// 	return;
+		// }
+
+		loginWithPasskey().catch((error) => {
+			// TODO fzh075 Temporary solution
+			if (/No <input> with "webauthn"/i.test(error?.message)) {
+				return;
+			}
+			dispatchToastMessage({ type: 'error', message: error });
+		});
+	}, [showFormLogin, loginWithPasskey, dispatchToastMessage, t]);
+
 	if (errors.usernameOrEmail?.type === 'invalid-email') {
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('usernameOrEmail')} email={getValues('usernameOrEmail')} />;
 	}
@@ -168,6 +202,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 										aria-invalid={errors.usernameOrEmail || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										id={usernameId}
+										autoComplete='username webauthn'
 									/>
 								</FieldRow>
 								{errors.usernameOrEmail && (
@@ -219,6 +254,9 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 							<Button loading={loginMutation.isPending} type='submit' primary>
 								{t('registration.component.login')}
 							</Button>
+							{/*<Button loading={loginMutation.isPending} onClick={() => loginWithPasskeyMutation.mutate()}>*/}
+							{/*	{t('registration.component.loginWithPasskey')}*/}
+							{/*</Button>*/}
 						</ButtonGroup>
 						<p>
 							<Trans i18nKey='registration.page.login.register'>

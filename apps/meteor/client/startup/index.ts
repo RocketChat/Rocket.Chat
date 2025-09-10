@@ -6,6 +6,7 @@ import './callbacks';
 import './deviceManagement';
 import './iframeCommands';
 import './incomingMessages';
+import './passkey';
 import './roles';
 import './routes';
 import './slashCommands';
