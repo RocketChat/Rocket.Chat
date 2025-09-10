@@ -215,15 +215,17 @@ export async function testFileUploads(
 			.expect(200)
 			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
-
-				msgId = res.body.message._id;
 				fileId = res.body.file._id;
 			});
 		await request
 			.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
-			.expect(200);
+			.expect(200)
+			.expect((res: Response) => {
+				expect(res.body).to.have.property('success', true);
+				msgId = res.body.message._id;
+			});
 
 		await request
 			.post(api('chat.delete'))
