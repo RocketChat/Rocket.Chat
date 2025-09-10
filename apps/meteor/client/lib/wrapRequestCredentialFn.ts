@@ -1,12 +1,9 @@
 import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
-import type { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
 import { loginServices } from './loginServices';
-
-type RequestCredentialOptions = Meteor.LoginWithExternalServiceOptions;
-type RequestCredentialCallback = (credentialTokenOrError?: string | Error) => void;
+import { type RequestCredentialOptions, type RequestCredentialCallback, wrapLoginHandlerFn } from './wrapLoginHandlerFn';
 
 type RequestCredentialConfig<T extends Partial<OAuthConfiguration>> = {
 	config: T;
@@ -38,15 +35,7 @@ export function wrapRequestCredentialFn<T extends Partial<OAuthConfiguration>>(
 		});
 	};
 
-	return (
-		options?: RequestCredentialOptions | RequestCredentialCallback,
-		credentialRequestCompleteCallback?: RequestCredentialCallback,
-	) => {
-		if (!credentialRequestCompleteCallback && typeof options === 'function') {
-			void wrapped({}, options);
-			return;
-		}
-
-		void wrapped(options as RequestCredentialOptions, credentialRequestCompleteCallback);
-	};
+	return wrapLoginHandlerFn((...args) => {
+		void wrapped(...args);
+	});
 }
