@@ -7216,7 +7216,7 @@ __metadata:
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/bcrypt": "npm:^5.0.2"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     bcrypt: "npm:^5.1.1"
@@ -7294,7 +7294,7 @@ __metadata:
     "@types/adm-zip": "npm:^0.5.7"
     "@types/debug": "npm:^4.1.12"
     "@types/lodash.clonedeep": "npm:^4.5.9"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/semver": "npm:^7.5.8"
     "@types/stack-trace": "npm:0.0.33"
     "@types/uuid": "npm:~10.0.0"
@@ -7352,7 +7352,7 @@ __metadata:
     "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
@@ -7525,7 +7525,7 @@ __metadata:
     "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tracing": "workspace:^"
     "@types/ejson": "npm:^2.2.2"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/underscore": "npm:^1.13.0"
@@ -8151,7 +8151,7 @@ __metadata:
     "@rocket.chat/peggy-loader": "workspace:~"
     "@rocket.chat/prettier-config": "npm:~0.31.25"
     "@types/jest": "npm:~30.0.0"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@typescript-eslint/parser": "npm:~5.58.0"
     babel-loader: "npm:~9.2.1"
     eslint: "npm:~8.45.0"
@@ -8347,7 +8347,7 @@ __metadata:
     "@types/meteor-collection-hooks": "npm:^0.8.9"
     "@types/mkdirp": "npm:^1.0.2"
     "@types/mocha": "github:whitecolor/mocha-types"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/node-rsa": "npm:^1.1.4"
     "@types/nodemailer": "npm:^6.4.17"
     "@types/oauth2-server": "npm:^3.0.18"
@@ -8683,7 +8683,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/chai": "npm:~4.3.20"
     "@types/ejson": "npm:^2.2.2"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/sinon": "npm:^10.0.20"
     chai: "npm:^4.5.0"
     ejson: "npm:^2.2.3"
@@ -8754,7 +8754,7 @@ __metadata:
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     date-fns: "npm:~4.1.0"
     ejson: "npm:^2.2.3"
     emoji-toolkit: "npm:^7.0.1"
@@ -8791,7 +8791,7 @@ __metadata:
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/i18next-sprintf-postprocessor": "npm:^0.2.3"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/react": "npm:~18.3.23"
@@ -8906,7 +8906,7 @@ __metadata:
   dependencies:
     "@rocket.chat/eslint-config": "workspace:~"
     "@rocket.chat/prettier-config": "npm:~0.31.25"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     eslint: "npm:~8.45.0"
     npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
@@ -8945,7 +8945,7 @@ __metadata:
     "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
@@ -8977,7 +8977,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     babel-jest: "npm:~30.0.5"
     eslint: "npm:~8.45.0"
     jest: "npm:~30.1.3"
@@ -9010,7 +9010,7 @@ __metadata:
     "@rocket.chat/omnichannel-services": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
@@ -9059,7 +9059,7 @@ __metadata:
     "@octokit/core": "npm:^5.0.1"
     "@octokit/plugin-throttling": "npm:^6.1.0"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     eslint: "npm:~8.45.0"
     mdast-util-to-string: "npm:2.0.0"
     remark-parse: "npm:9.0.0"
@@ -9076,7 +9076,7 @@ __metadata:
   dependencies:
     "@changesets/types": "npm:^6.0.0"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     dataloader: "npm:^2.2.3"
     eslint: "npm:~8.45.0"
     node-fetch: "npm:^2.7.0"
@@ -9199,7 +9199,7 @@ __metadata:
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/bcrypt": "npm:^5.0.2"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/polka": "npm:^0.5.7"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
@@ -12443,7 +12443,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=0.0.2, @types/node@npm:>=12, @types/node@npm:>=12.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18, @types/node@npm:>=18.0.0, @types/node@npm:>=4.0.0, @types/node@npm:~22.16.1":
+"@types/node@npm:*, @types/node@npm:>=0.0.2, @types/node@npm:>=12, @types/node@npm:>=12.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18, @types/node@npm:>=18.0.0, @types/node@npm:>=4.0.0":
   version: 22.16.1
   resolution: "@types/node@npm:22.16.1"
   dependencies:
@@ -12463,6 +12463,15 @@ __metadata:
   version: 14.18.63
   resolution: "@types/node@npm:14.18.63"
   checksum: 10/82a7775898c2ea6db0b610a463512206fb2c7adc1af482c7eb44b99d94375fff51c74f67ae75a63c5532971159f30c866a4d308000624ef02fd9a7175e277019
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:~22.16.5":
+  version: 22.16.5
+  resolution: "@types/node@npm:22.16.5"
+  dependencies:
+    undici-types: "npm:~6.21.0"
+  checksum: 10/ba45b5c9113cbc5edb12960fcfe7e80db2c998af5c1931264240695b27d756570d92462150b95781bd67a03aa82111cc970ab0f4504eb99213edff8bf425354e
   languageName: node
   linkType: hard
 
@@ -32400,7 +32409,7 @@ __metadata:
     "@changesets/cli": "npm:^2.27.11"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/stream-buffers": "npm:^3.0.7"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
@@ -32430,7 +32439,7 @@ __metadata:
     "@types/ejson": "npm:^2.2.2"
     "@types/express": "npm:^4.17.23"
     "@types/fibers": "npm:^3.1.4"
-    "@types/node": "npm:~22.16.1"
+    "@types/node": "npm:~22.16.5"
     "@types/ws": "npm:^8.5.13"
     ajv: "npm:^8.17.1"
     bcrypt: "npm:^5.1.1"
