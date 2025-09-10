@@ -81,8 +81,8 @@ const InterchangeableChart = ({
 					...(departmentId && { departmentId }),
 				});
 
-				if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
-					throw new Error('Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data');
+				if (!result?.dataLabels || !result?.dataPoints) {
+					throw new Error('Error! fetching chart data.');
 				}
 				(context.current || typeof context.current === 'undefined') &&
 					canvas.current &&
