@@ -17,10 +17,10 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@babel/core": "~7.26.10",
-		"@babel/preset-env": "~7.26.9",
-		"@babel/preset-react": "~7.25.9",
-		"@babel/preset-typescript": "~7.26.0",
+		"@babel/core": "~7.28.4",
+		"@babel/preset-env": "~7.28.3",
+		"@babel/preset-react": "~7.27.1",
+		"@babel/preset-typescript": "~7.27.1",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "~0.31.25",
