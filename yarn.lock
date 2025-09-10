@@ -9464,7 +9464,7 @@ __metadata:
     matrix-appservice: "npm:^2.0.0"
     matrix-appservice-bridge: "npm:^10.3.3"
     mem: "npm:^8.1.1"
-    meteor-node-stubs: "npm:^1.2.19"
+    meteor-node-stubs: "npm:~1.2.24"
     mime-db: "npm:^1.52.0"
     mime-type: "npm:^4.0.0"
     mkdirp: "npm:^1.0.4"
@@ -28786,9 +28786,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"meteor-node-stubs@npm:^1.2.19":
-  version: 1.2.19
-  resolution: "meteor-node-stubs@npm:1.2.19"
+"meteor-node-stubs@npm:~1.2.24":
+  version: 1.2.24
+  resolution: "meteor-node-stubs@npm:1.2.24"
   dependencies:
     "@meteorjs/crypto-browserify": "npm:^3.12.1"
     assert: "npm:^2.1.0"
@@ -28805,6 +28805,7 @@ __metadata:
     punycode: "npm:^1.4.1"
     querystring-es3: "npm:^0.2.1"
     readable-stream: "npm:^3.6.2"
+    sha.js: "npm:^2.4.12"
     stream-browserify: "npm:^3.0.0"
     stream-http: "npm:^3.2.0"
     string_decoder: "npm:^1.3.0"
@@ -28813,7 +28814,7 @@ __metadata:
     url: "npm:^0.11.4"
     util: "npm:^0.12.5"
     vm-browserify: "npm:^1.1.2"
-  checksum: 10/4c719b6c2bb47c6d6b8853a1bb8dc8814011e9fd459b09154d3b224c7490c27ac37514815d2620b9ea40637a39c111ed1373f69bd0b7ae28e432a033b3b18af2
+  checksum: 10/ec22c86dfc0b79f4ae39ed42a9d504085acba61986ebe843bffb67839291a183693b58c272e23a78b011865f46ad57be9054d98b864392ad59bd87f49fe7e1c2
   languageName: node
   linkType: hard
 
@@ -34984,6 +34985,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sha.js@npm:^2.4.12":
+  version: 2.4.12
+  resolution: "sha.js@npm:2.4.12"
+  dependencies:
+    inherits: "npm:^2.0.4"
+    safe-buffer: "npm:^5.2.1"
+    to-buffer: "npm:^1.2.0"
+  bin:
+    sha.js: bin.js
+  checksum: 10/39c0993592c2ab34eb2daae2199a2a1d502713765aecb611fd97c0c4ab7cd53e902d628e1962aaf384bafd28f55951fef46dcc78799069ce41d74b03aa13b5a7
+  languageName: node
+  linkType: hard
+
 "shallow-clone@npm:^3.0.0":
   version: 3.0.1
   resolution: "shallow-clone@npm:3.0.1"
@@ -37081,6 +37095,17 @@ __metadata:
   version: 1.1.1
   resolution: "to-buffer@npm:1.1.1"
   checksum: 10/8ade59fe04239b281496b6067bc83ad0371a3657552276cbd09ffffaeb3ad0018a28306d61b854b83280eabe1829cbc53001ccd761e834c6062cbcc7fee2766a
+  languageName: node
+  linkType: hard
+
+"to-buffer@npm:^1.2.0":
+  version: 1.2.1
+  resolution: "to-buffer@npm:1.2.1"
+  dependencies:
+    isarray: "npm:^2.0.5"
+    safe-buffer: "npm:^5.2.1"
+    typed-array-buffer: "npm:^1.0.3"
+  checksum: 10/f8d03f070b8567d9c949f1b59c8d47c83ed2e59b50b5449258f931df9a1fcb751aa8bb8756a9345adc529b6b1822521157c48e1a7d01779a47185060d7bf96d4
   languageName: node
   linkType: hard
 

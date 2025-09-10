@@ -397,7 +397,7 @@
 		"matrix-appservice": "^2.0.0",
 		"matrix-appservice-bridge": "^10.3.3",
 		"mem": "^8.1.1",
-		"meteor-node-stubs": "^1.2.19",
+		"meteor-node-stubs": "~1.2.24",
 		"mime-db": "^1.52.0",
 		"mime-type": "^4.0.0",
 		"mkdirp": "^1.0.4",
