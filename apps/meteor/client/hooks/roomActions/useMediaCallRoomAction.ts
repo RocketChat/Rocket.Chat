@@ -34,7 +34,6 @@ export const useMediaCallRoomAction = () => {
 
 	const { action, title, icon } = useMediaCallAction(true);
 
-	// TODO: Implement hangup call
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!peerId) {
 			return undefined;
