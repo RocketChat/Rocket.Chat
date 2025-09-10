@@ -62,18 +62,20 @@ export async function decryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: Crypto
 
 export async function encryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey, data: BufferSource) {
 	if (iv.length !== 12) {
-		throw new Error('Invalid iv length for AES-GCM. Must be 12 bytes.');
+		throw new Error(`Invalid iv length for AES-GCM: ${iv.length}. Must be 12 bytes.`);
 	}
 
-	return crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+	const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+	return encrypted;
 }
 
 export async function decryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
 	if (iv.length !== 12) {
-		throw new Error('Invalid iv length for AES-GCM. Must be 12 bytes.');
+		throw new Error(`Invalid iv length for AES-GCM: ${iv.length}. Must be 12 bytes.`);
 	}
 
-	return crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+	const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+	return decrypted;
 }
 
 export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data: BufferSource) {
@@ -84,19 +86,23 @@ export async function decryptRSA(key: CryptoKey, data: Uint8Array<ArrayBuffer>) 
 	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
 }
 
+/**
+ * Generates an AES-CBC key.
+ * @deprecated Use {@link generateAesGcmKey} instead.
+ */
 export async function generateAesCbcKey() {
 	return crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
 }
 
-export async function generateAesGcmKey() {
+export function generateAesGcmKey(): Promise<CryptoKey> {
 	return crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
 }
 
-export async function generateAESCTRKey() {
+export function generateAESCTRKey(): Promise<CryptoKey> {
 	return crypto.subtle.generateKey({ name: 'AES-CTR', length: 256 }, true, ['encrypt', 'decrypt']);
 }
 
-export async function generateRSAKey() {
+export function generateRSAKey(): Promise<CryptoKeyPair> {
 	return crypto.subtle.generateKey(
 		{
 			name: 'RSA-OAEP',
@@ -109,11 +115,11 @@ export async function generateRSAKey() {
 	);
 }
 
-export async function exportJWKKey(key: CryptoKey): Promise<JsonWebKey> {
+export function exportJWKKey(key: CryptoKey): Promise<JsonWebKey> {
 	return crypto.subtle.exportKey('jwk', key);
 }
 
-export async function importRSAKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
+export function importRSAKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
 	return crypto.subtle.importKey(
 		'jwk',
 		keyData,
@@ -132,7 +138,7 @@ export async function importRSAKey(keyData: JsonWebKey, keyUsages: ReadonlyArray
  * Imports an AES-CBC key from JWK format.
  * @deprecated Use {@link importAesGcmKey} instead.
  */
-export async function importAesCbcKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
+export function importAesCbcKey(keyData: JsonWebKey, keyUsages: ReadonlyArray<KeyUsage> = ['encrypt', 'decrypt']) {
 	return crypto.subtle.importKey('jwk', keyData, { name: 'AES-CBC' }, true, keyUsages);
 }
 

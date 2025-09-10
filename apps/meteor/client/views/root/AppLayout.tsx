@@ -22,7 +22,7 @@ import { useCorsSSLConfig } from '../../../app/cors/client/useCorsSSLConfig';
 import { useEmojiOne } from '../../../app/emoji-emojione/client/hooks/useEmojiOne';
 import { useLivechatEnterprise } from '../../../app/livechat-enterprise/hooks/useLivechatEnterprise';
 import { useIframeLoginListener } from '../../hooks/iframe/useIframeLoginListener';
-import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
+// import { useNotificationPermission } from '../../hooks/notification/useNotificationPermission';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { useAnalyticsEventTracking } from '../../hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from '../../hooks/useAutoupdate';
@@ -46,7 +46,7 @@ const AppLayout = () => {
 	useEscapeKeyStroke();
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
-	useNotificationPermission();
+	// useNotificationPermission();
 	useEmojiOne();
 	// useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();

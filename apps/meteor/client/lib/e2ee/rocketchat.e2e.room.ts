@@ -33,7 +33,7 @@ import { Messages, Rooms, Subscriptions } from '../../stores';
 import { RoomManager } from '../RoomManager';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
-const { info: log, error: logError } = createLogger();
+const logger = createLogger();
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
@@ -112,11 +112,6 @@ export class E2ERoom extends Emitter {
 			return this.decryptPendingMessages();
 		});
 		this.once('READY', () => this.decryptSubscription());
-		this.on('STATE_CHANGED', (prev) => {
-			if (this.roomId === RoomManager.opened) {
-				this.log(`[PREV: ${prev}]`, 'State CHANGED');
-			}
-		});
 		this.on('STATE_CHANGED', () => this.handshake());
 
 		this.setState('NOT_STARTED');
@@ -124,13 +119,25 @@ export class E2ERoom extends Emitter {
 
 	log(...msg: unknown[]) {
 		if (this.roomId === RoomManager.opened) {
-			log(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
+			logger.info(`[E2E] ROOM`, ...msg);
+		} else {
+			logger.debug(`[E2E] ROOM ${this.roomId}`, ...msg);
 		}
 	}
 
 	error(...msg: unknown[]) {
 		if (this.roomId === RoomManager.opened) {
-			logError(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
+			logger.error(`[E2E] ROOM`, ...msg);
+		} else {
+			logger.trace(`[E2E] ROOM ${this.roomId}`, ...msg);
+		}
+	}
+
+	warn(...msg: unknown[]) {
+		if (this.roomId === RoomManager.opened) {
+			logger.warn(`[E2E] ROOM`, ...msg);
+		} else {
+			logger.trace(`[E2E] ROOM ${this.roomId}`, ...msg);
 		}
 	}
 
@@ -178,13 +185,13 @@ export class E2ERoom extends Emitter {
 	}
 
 	pause() {
-		this.log('PAUSED', this[PAUSED], '->', true);
+		// this.log('PAUSED', this[PAUSED], '->', true);
 		this[PAUSED] = true;
 		this.emit('PAUSED', true);
 	}
 
 	resume() {
-		this.log('PAUSED', this[PAUSED], '->', false);
+		// this.log('PAUSED', this[PAUSED], '->', false);
 		this[PAUSED] = false;
 		this.emit('PAUSED', false);
 	}
@@ -377,7 +384,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async importGroupKey(groupKey: string) {
-		this.log('Importing room key ->', this.roomId);
+		this.log('Importing room key');
 		// Get existing group key
 		const keyID = groupKey.slice(0, 36);
 		groupKey = groupKey.slice(36);
@@ -623,7 +630,9 @@ export class E2ERoom extends Emitter {
 				throw new Error('No group session key found.');
 			}
 			const result = await encryptAesGcm(vector, this.groupSessionKey, data);
-			return this.keyID + Base64.encode(joinVectorAndEncryptedData(vector, result));
+			const ciphertext = this.keyID + Base64.encode(joinVectorAndEncryptedData(vector, result));
+			this.log('Message encrypted successfully', { ciphertext });
+			return ciphertext;
 		} catch (error) {
 			this.error('Error encrypting message: ', error);
 			throw error;
@@ -726,7 +735,7 @@ export class E2ERoom extends Emitter {
 
 		let oldKey = null;
 		if (keyID !== this.keyID) {
-			const oldRoomKey = this.oldKeys?.find((key: any) => key.e2eKeyId === keyID);
+			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === keyID);
 			// Messages already contain a keyID stored with them
 			// That means that if we cannot find a keyID for the key the message has preppended to
 			// The message is indecipherable.
@@ -737,7 +746,9 @@ export class E2ERoom extends Emitter {
 					if (!this.groupSessionKey) {
 						throw new Error('No group session key found.');
 					}
-					return await this.doDecrypt(vector, this.groupSessionKey, cipherText);
+					const result = await this.doDecrypt(vector, this.groupSessionKey, cipherText);
+					this.warn('Message keyID does not match any known keys, but was able to decrypt with current session key. This may be a mobile client issue.', { message: result });
+					return result;
 				} catch (error) {
 					this.error('Error decrypting message: ', error, message);
 					return { msg: t('E2E_indecipherable') };
@@ -748,12 +759,16 @@ export class E2ERoom extends Emitter {
 
 		try {
 			if (oldKey) {
-				return await this.doDecrypt(vector, oldKey, cipherText);
+				const result = await this.doDecrypt(vector, oldKey, cipherText);
+				this.log('Message decrypted', { result, keyID });
+				return result;
 			}
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
-			return await this.doDecrypt(vector, this.groupSessionKey, cipherText);
+			const result = await this.doDecrypt(vector, this.groupSessionKey, cipherText);
+			this.log('Message decrypted', { result, keyID });
+			return result;
 		} catch (error) {
 			this.error('Error decrypting message: ', error, message);
 			return { msg: t('E2E_Key_Error') };

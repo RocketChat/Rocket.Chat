@@ -45,7 +45,7 @@ import { mapMessageFromApi } from '../utils/mapMessageFromApi';
 
 let failedToDecodeKey = false;
 
-const { info: log, error: logError } = createLogger();
+const logger = createLogger();
 
 type KeyPair = {
 	public_key: string | null;
@@ -105,11 +105,11 @@ class E2E extends Emitter {
 	}
 
 	log(...msg: unknown[]) {
-		log('E2E', ...msg);
+		logger.info('[E2E]', ...msg);
 	}
 
 	error(...msg: unknown[]) {
-		logError('E2E', ...msg);
+		logger.error('[E2E]', ...msg);
 	}
 
 	getState() {
@@ -139,7 +139,7 @@ class E2E extends Emitter {
 	}
 
 	async onSubscriptionChanged(sub: ISubscription) {
-		this.log('Subscription changed', sub);
+		// this.log('Subscription changed', sub);
 		if (!sub.encrypted && !sub.E2EKey) {
 			this.removeInstanceByRoomId(sub.rid);
 			return;
