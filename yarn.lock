@@ -8347,7 +8347,7 @@ __metadata:
     jest: "npm:~30.2.0"
     jest-websocket-mock: "npm:~2.5.0"
     typescript: "npm:~5.9.2"
-    ws: "npm:^8.18.2"
+    ws: "npm:~8.18.3"
   peerDependencies:
     "@rocket.chat/emitter": "*"
   languageName: unknown
@@ -8397,7 +8397,7 @@ __metadata:
     typescript: "npm:~5.9.2"
     underscore: "npm:^1.13.7"
     uuid: "npm:^11.0.3"
-    ws: "npm:^8.18.2"
+    ws: "npm:~8.18.3"
   languageName: unknown
   linkType: soft
 
@@ -34374,7 +34374,7 @@ __metadata:
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.9.2"
     uuid: "npm:^11.0.3"
-    ws: "npm:^8.18.2"
+    ws: "npm:~8.18.3"
   languageName: unknown
   linkType: soft
 
@@ -39386,7 +39386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^8, ws@npm:^8.18.0, ws@npm:^8.18.2, ws@npm:^8.2.3":
+"ws@npm:^8, ws@npm:^8.18.0, ws@npm:^8.2.3":
   version: 8.18.2
   resolution: "ws@npm:8.18.2"
   peerDependencies:
@@ -39398,6 +39398,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10/018e04ec95561d88248d53a2eaf094b4ae131e9b062f2679e6e8a62f04649bc543448f1e038125225ac6bbb25f54c1e65d7a2cc9dbc1e28b43e5e6b7162ad88e
+  languageName: node
+  linkType: hard
+
+"ws@npm:~8.18.3":
+  version: 8.18.3
+  resolution: "ws@npm:8.18.3"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10/725964438d752f0ab0de582cd48d6eeada58d1511c3f613485b5598a83680bedac6187c765b0fe082e2d8cc4341fc57707c813ae780feee82d0c5efe6a4c61b6
   languageName: node
   linkType: hard
 
