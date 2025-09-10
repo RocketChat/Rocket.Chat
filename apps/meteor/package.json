@@ -190,7 +190,7 @@
 		"outdent": "~0.8.0",
 		"pino-pretty": "^7.6.1",
 		"playwright-core": "~1.52.0",
-		"playwright-qase-reporter": "^2.1.3",
+		"playwright-qase-reporter": "~2.1.6",
 		"postcss": "~8.4.49",
 		"postcss-custom-properties": "^14.0.6",
 		"postcss-easy-import": "^4.0.0",

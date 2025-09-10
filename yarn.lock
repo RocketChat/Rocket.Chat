@@ -9489,7 +9489,7 @@ __metadata:
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^7.6.1"
     playwright-core: "npm:~1.52.0"
-    playwright-qase-reporter: "npm:^2.1.3"
+    playwright-qase-reporter: "npm:~2.1.6"
     postcss: "npm:~8.4.49"
     postcss-custom-properties: "npm:^14.0.6"
     postcss-easy-import: "npm:^4.0.0"
@@ -31502,16 +31502,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-qase-reporter@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "playwright-qase-reporter@npm:2.1.3"
+"playwright-qase-reporter@npm:~2.1.6":
+  version: 2.1.6
+  resolution: "playwright-qase-reporter@npm:2.1.6"
   dependencies:
     chalk: "npm:^4.1.2"
-    qase-javascript-commons: "npm:~2.3.3"
+    qase-javascript-commons: "npm:~2.4.2"
     uuid: "npm:^9.0.0"
   peerDependencies:
     "@playwright/test": ">=1.16.3"
-  checksum: 10/4427e4b4c7a0916358ab6116791da5fc05cc065d1eae95c8ca0c49f14b44fc81e0054fee57227e6eec4edfc1b2a38460e73bb402676774621f26a1e6d81ada37
+  checksum: 10/e6dec661445dc593f9ea32d3ec0e601447f6db36266b45f2fc4f643d9359081cfc496966c3f3a2d139bbc61b8b4703a3dc2829a59524683ba4083086b655cf98
   languageName: node
   linkType: hard
 
@@ -32775,15 +32775,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qase-javascript-commons@npm:~2.3.3":
-  version: 2.3.5
-  resolution: "qase-javascript-commons@npm:2.3.5"
+"qase-javascript-commons@npm:~2.4.2":
+  version: 2.4.2
+  resolution: "qase-javascript-commons@npm:2.4.2"
   dependencies:
     ajv: "npm:^8.12.0"
     async-mutex: "npm:~0.5.0"
     chalk: "npm:^4.1.2"
     env-schema: "npm:^5.2.0"
-    form-data: "npm:^4.0.0"
+    form-data: "npm:^4.0.4"
     lodash.get: "npm:^4.4.2"
     lodash.merge: "npm:^4.6.2"
     lodash.mergewith: "npm:^4.6.2"
@@ -32792,7 +32792,7 @@ __metadata:
     qase-api-v2-client: "npm:~1.0.1"
     strip-ansi: "npm:^6.0.1"
     uuid: "npm:^9.0.0"
-  checksum: 10/8028f9424bf97054f1974c3b663a438f97ebf2f3f487cf9260a3d28047abe2883c870087f1619e67ce5334cc3c88361c08e9566b36052fd316b2bac3096e0712
+  checksum: 10/8e09e0eacb92bc34bcbd4725b19f6df559dc84a520afcab4ed956ce003b0047753dd313ab218d21a8fb00ce1931c4e3e8bc141214037116150fe1107d606aabf
   languageName: node
   linkType: hard
 
