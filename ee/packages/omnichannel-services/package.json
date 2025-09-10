@@ -22,7 +22,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.31.25",
+		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tools": "workspace:^",
 		"@types/node": "~22.16.1",
 		"date-fns": "~4.1.0",

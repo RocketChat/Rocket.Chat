@@ -25,7 +25,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.31.25",
+		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"ajv": "^8.17.1",
 		"bcrypt": "^5.1.1",
@@ -48,7 +48,7 @@
 		"ws": "^8.18.2"
 	},
 	"devDependencies": {
-		"@rocket.chat/icons": "^0.43.0",
+		"@rocket.chat/icons": "~0.44.0",
 		"@types/cookie": "^0.5.4",
 		"@types/cookie-parser": "^1.4.9",
 		"@types/ejson": "^2.2.2",
