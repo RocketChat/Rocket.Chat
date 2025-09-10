@@ -46,7 +46,7 @@
     "@rocket.chat/emitter": "~0.31.25",
     "@rocket.chat/tsconfig": "workspace:*",
     "@types/lodash": "~4.17.20",
-    "@types/react": "~18.3.23",
+    "@types/react": "~18.3.24",
     "@types/react-beautiful-dnd": "^13.1.8",
     "@types/react-dom": "~18.3.7",
     "@typescript-eslint/eslint-plugin": "~5.60.1",
