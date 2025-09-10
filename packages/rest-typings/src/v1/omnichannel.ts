@@ -2165,6 +2165,10 @@ export const GETLivechatConfigRoutingSchema = {
 				},
 			},
 		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
 	},
 	additionalProperties: false,
 };

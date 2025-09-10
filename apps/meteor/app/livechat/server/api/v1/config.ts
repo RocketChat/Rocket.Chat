@@ -47,7 +47,7 @@ const livechatConfigEndpoints = API.v1.get(
 		response: {
 			200: GETLivechatConfigRouting,
 		},
-		// authRequired: true,
+		authRequired: true,
 	},
 	async function action() {
 		const config = RoutingManager.getConfig();
