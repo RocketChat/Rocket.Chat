@@ -6,7 +6,7 @@ import type { ComponentType, TemplateParameterMetadata, TemplateParameter } from
 const placeholderPattern = new RegExp('{{(.*?)}}', 'g'); // e.g {{1}} or {{text}}
 
 export const extractParameterMetadata = (template: Pick<IOutboundProviderTemplate, 'id' | 'components'>) => {
-	if (!template.components.length) {
+	if (!template.components?.length) {
 		return [];
 	}
 
