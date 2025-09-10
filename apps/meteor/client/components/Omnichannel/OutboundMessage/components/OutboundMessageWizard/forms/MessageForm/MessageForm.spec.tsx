@@ -4,8 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
 import MessageForm from './MessageForm';
-import { createFakeContactWithManagerData } from '../../../../../../../tests/mocks/data';
-import { createFakeOutboundTemplate } from '../../../../../../../tests/mocks/data/outbound-message';
+import { createFakeContactWithManagerData } from '../../../../../../../../tests/mocks/data';
+import { createFakeOutboundTemplate } from '../../../../../../../../tests/mocks/data/outbound-message';
 
 jest.mock('tinykeys', () => ({
 	__esModule: true,
@@ -54,8 +54,7 @@ describe('MessageForm', () => {
 		jest.clearAllMocks();
 	});
 
-	// TODO: adjust accessibility tests to integrate with storybook
-	xit('should pass accessibility tests', async () => {
+	it('should pass accessibility tests', async () => {
 		const { container } = render(<MessageForm {...defaultProps} />, { wrapper: appRoot.build() });
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
@@ -83,6 +82,7 @@ describe('MessageForm', () => {
 		await userEvent.click(await screen.findByRole('option', { name: /Template One/ }));
 
 		expect(screen.getByLabelText('Template*')).toHaveTextContent('Template One');
+
 		expect(await screen.findByText(component.body.text)).toBeInTheDocument();
 	});
 
@@ -93,7 +93,7 @@ describe('MessageForm', () => {
 		await userEvent.click(screen.getByLabelText('Template*'));
 		await userEvent.click(await screen.findByRole('option', { name: /Template One/ }));
 
-		await userEvent.type(screen.getByLabelText('Body {{1}}'), 'Hello World');
+		await userEvent.type(screen.getByLabelText('Body {{1}}*'), 'Hello World');
 
 		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
@@ -137,8 +137,29 @@ describe('MessageForm', () => {
 
 		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
 
-		expect(await screen.findByText('Error loading template information')).toBeInTheDocument();
+		expect(screen.getByLabelText('Template*')).not.toHaveAccessibleDescription('Error loading template information');
+
 		expect(handleSubmit).not.toHaveBeenCalled();
+	});
+
+	it('should show parameter is required when submitting without filling all parameters', async () => {
+		const handleSubmit = jest.fn();
+		const defaultValues = { templateId: 'template-1' };
+		render(<MessageForm {...defaultProps} onSubmit={handleSubmit} defaultValues={defaultValues} />, { wrapper: appRoot.build() });
+
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+		expect(screen.getByLabelText('Body {{1}}*')).toHaveAccessibleDescription('Body {{1}} is required');
+
+		expect(handleSubmit).not.toHaveBeenCalled();
+
+		await userEvent.type(screen.getByLabelText('Body {{1}}*'), 'Hello World');
+
+		await userEvent.click(screen.getByRole('button', { name: 'Submit' }));
+
+		expect(screen.getByLabelText('Body {{1}}*')).not.toHaveAccessibleDescription('Body {{1}} is required');
+
+		expect(handleSubmit).toHaveBeenCalled();
 	});
 
 	it('should render custom actions via renderActions prop', async () => {
@@ -157,11 +178,11 @@ describe('MessageForm', () => {
 			wrapper: appRoot.build(),
 		});
 
-		await userEvent.type(screen.getByLabelText('Body {{1}}'), 'Hello World');
+		await userEvent.type(screen.getByLabelText('Body {{1}}*'), 'Hello World');
 
 		await userEvent.click(screen.getByLabelText('Template*'));
 		await userEvent.click(await screen.findByRole('option', { name: /Template Two/ }));
 
-		expect(screen.getByLabelText('Body {{1}}')).toHaveValue('');
+		expect(screen.getByLabelText('Body {{1}}*')).toHaveValue('');
 	});
 });

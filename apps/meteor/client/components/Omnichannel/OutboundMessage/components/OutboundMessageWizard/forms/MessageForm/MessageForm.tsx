@@ -4,14 +4,16 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import type { ReactNode } from 'react';
 import { useId, useMemo } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useController, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import type { TemplateParameters } from '../../../definitions/template';
-import TemplateEditor from '../../TemplateEditor';
-import TemplateSelect from '../../TemplateSelect';
-import { useFormKeyboardSubmit } from '../hooks/useFormKeyboardSubmit';
-import { FormFetchError } from '../utils/errors';
+import TemplatePlaceholderField from './components/TemplatePlaceholderField';
+import TemplatePreviewForm from './components/TemplatePreviewField';
+import type { TemplateParameters } from '../../../../definitions/template';
+import { extractParameterMetadata } from '../../../../utils/template';
+import TemplateSelect from '../../../TemplateSelect';
+import { useFormKeyboardSubmit } from '../../hooks/useFormKeyboardSubmit';
+import { FormFetchError } from '../../utils/errors';
 
 export type MessageFormData = {
 	templateId: string;
@@ -50,22 +52,32 @@ const MessageForm = (props: MessageFormProps) => {
 		mode: 'onChange',
 		reValidateMode: 'onChange',
 		defaultValues: {
-			templateParameters: defaultValues?.templateParameters || {},
+			templateParameters: defaultValues?.templateParameters ?? {},
 			templateId: defaultValues?.templateId ?? '',
 		},
 	});
 
+	const { field: templateIdField } = useController({
+		control,
+		name: 'templateId',
+		rules: {
+			validate: {
+				// NOTE: The order of these validations matters
+				templatesNotFound: () => (!templates?.length ? t('No_templates_available') : true),
+				templateNotFound: () => (templateId && !template ? t('Error_loading__name__information', { name: t('template') }) : true),
+				required: (value) => (!value?.trim() ? t('Required_field', { field: t('Template_message') }) : true),
+			},
+		},
+	});
+
 	const templateId = useWatch({ control, name: 'templateId' });
-
 	const template = useMemo(() => templates?.find((template) => template.id === templateId), [templates, templateId]);
-
+	const parametersMetadata = useMemo(() => (template ? extractParameterMetadata(template) : []), [template]);
 	const customActions = useMemo(() => renderActions?.({ isSubmitting }), [isSubmitting, renderActions]);
 
-	const handleTemplateChange = useEffectEvent((onChange: (value: string) => void) => {
-		return (value: string) => {
-			setValue('templateParameters', {});
-			onChange(value);
-		};
+	const handleTemplateChange = useEffectEvent((value: string) => {
+		setValue('templateParameters', {});
+		templateIdField.onChange(value);
 	});
 
 	const submit = useEffectEvent(async (values: MessageFormData) => {
@@ -94,28 +106,15 @@ const MessageForm = (props: MessageFormProps) => {
 						{t('Template')}
 					</FieldLabel>
 					<FieldRow>
-						<Controller
-							control={control}
-							name='templateId'
-							rules={{
-								validate: {
-									templatesNotFound: () => (!templates?.length ? t('No_templates_available') : true),
-									templateNotFound: () => (templateId && !template ? t('Error_loading__name__information', { name: t('template') }) : true),
-									required: (value) => (!value?.trim() ? t('Required_field', { field: t('Template_message') }) : true),
-								},
-							}}
-							render={({ field }) => (
-								<TemplateSelect
-									aria-labelledby={`${messageFormId}-template`}
-									aria-invalid={!!errors.templateId}
-									aria-describedby={errors.templateId && `${messageFormId}-template-error`}
-									placeholder={t('Select_template')}
-									error={errors.templateId?.message}
-									templates={templates || []}
-									value={field.value}
-									onChange={handleTemplateChange(field.onChange)}
-								/>
-							)}
+						<TemplateSelect
+							aria-labelledby={`${messageFormId}-template`}
+							aria-invalid={!!errors.templateId}
+							aria-describedby={errors.templateId && `${messageFormId}-template-error`}
+							placeholder={t('Select_template')}
+							error={errors.templateId?.message}
+							templates={templates || []}
+							value={templateIdField.value}
+							onChange={handleTemplateChange}
 						/>
 					</FieldRow>
 					{errors.templateId && (
@@ -131,28 +130,11 @@ const MessageForm = (props: MessageFormProps) => {
 					</FieldHint>
 				</Field>
 
-				{template ? (
-					<Controller
-						control={control}
-						name='templateParameters'
-						render={({ field }) => (
-							<TemplateEditor
-								maxHeight={400}
-								overflowY='scroll'
-								overflowX='hidden'
-								p={2}
-								pie={20}
-								m={-2}
-								mbs={24}
-								mie={-20}
-								template={template}
-								parameters={field.value}
-								contact={contact}
-								onChange={field.onChange}
-							/>
-						)}
-					/>
-				) : null}
+				{parametersMetadata.map((metadata) => (
+					<TemplatePlaceholderField key={metadata.id} control={control} metadata={metadata} contact={contact} />
+				))}
+
+				{template ? <TemplatePreviewForm control={control} template={template} /> : null}
 			</FieldGroup>
 
 			{customActions ?? (
