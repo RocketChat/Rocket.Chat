@@ -33,11 +33,11 @@ export function joinVectorAndEncryptedData(vector: Uint8Array<ArrayBuffer>, encr
 	return output;
 }
 
-export function splitVectorAndEncryptedData(cipherText: Uint8Array<ArrayBuffer>, ivLength: 12 | 16): [Uint8Array<ArrayBuffer>, Uint8Array<ArrayBuffer>] {
+export function splitVectorAndEncryptedData(cipherText: Uint8Array<ArrayBuffer>, ivLength: 12 | 16 = 16): [ArrayBuffer, ArrayBuffer] {
 	const vector = cipherText.slice(0, ivLength);
 	const encryptedData = cipherText.slice(ivLength);
 
-	return [vector, encryptedData];
+	return [vector.buffer, encryptedData.buffer];
 }
 
 export async function encryptRSA(key: CryptoKey, data: BufferSource) {
@@ -69,11 +69,7 @@ export async function encryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey,
 	return encrypted;
 }
 
-export async function decryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
-	if (iv.length !== 12) {
-		throw new Error(`Invalid iv length for AES-GCM: ${iv.length}. Must be 12 bytes.`);
-	}
-
+export async function decryptAesGcm(iv: ArrayBuffer, key: CryptoKey, data: ArrayBuffer) {
 	const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
 	return decrypted;
 }

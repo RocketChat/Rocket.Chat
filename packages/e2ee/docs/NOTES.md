@@ -31,6 +31,7 @@
 - [feat!: Allow E2EE rooms to reset its room key](https://github.com/RocketChat/Rocket.Chat/pull/33328)
 - [refactor!: Room's Key ID generation](https://github.com/RocketChat/Rocket.Chat/pull/33329)
 - [feat: E2EE room key reset modal](https://github.com/RocketChat/Rocket.Chat/pull/33503)
+- [chore: Upgrade `@tanstack/query` to v5](https://github.com/RocketChat/Rocket.Chat/pull/33898)
 - [fix: Allow any user in e2ee room to create and propagate room keys](https://github.com/RocketChat/Rocket.Chat/pull/34038)
 - [chore: bump meteor and node version](https://github.com/RocketChat/Rocket.Chat/pull/)
 - [chore: Update types of `e2e.room` file](https://github.com/RocketChat/Rocket.Chat/pull/34944)
