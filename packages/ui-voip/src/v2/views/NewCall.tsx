@@ -13,14 +13,11 @@ import {
 	DevicePicker,
 	ActionButton,
 } from '../components';
-import { useKeypad } from '../useKeypad';
 
 const NewCall = () => {
 	const { t } = useTranslation();
 
-	const { onKeypadPress, peerInfo, ...autocomplete } = usePeerAutocomplete();
-
-	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onKeypadPress);
+	const { peerInfo, ...autocomplete } = usePeerAutocomplete();
 
 	const { onCall, onToggleWidget } = useMediaCallContext();
 
@@ -39,9 +36,7 @@ const NewCall = () => {
 				)}
 			</WidgetContent>
 			<WidgetFooter>
-				{keypad}
 				<ButtonGroup stretch>
-					<ActionButton label='dialpad' icon='dialpad' flexGrow={0} secondary {...keypadButtonProps} />
 					<DevicePicker secondary />
 					<Button
 						medium
