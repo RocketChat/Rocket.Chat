@@ -3670,6 +3670,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jest/create-cache-key-function@npm:^30.0.0":
+  version: 30.0.5
+  resolution: "@jest/create-cache-key-function@npm:30.0.5"
+  dependencies:
+    "@jest/types": "npm:30.0.5"
+  checksum: 10/ca939b0586792fc6c4dedf3c88a5c41491b49dce6856847da9f8657a5ab9cb5cea2b90d9cf0ba8cc4097746d1138e728812236bb74d3e4108ae4c25304d46bee
+  languageName: node
+  linkType: hard
+
 "@jest/diff-sequences@npm:30.0.1":
   version: 30.0.1
   resolution: "@jest/diff-sequences@npm:30.0.1"
@@ -8384,8 +8393,8 @@ __metadata:
   resolution: "@rocket.chat/jest-presets@workspace:packages/jest-presets"
   dependencies:
     "@rocket.chat/eslint-config": "workspace:~"
-    "@swc/core": "npm:~1.12.4"
-    "@swc/jest": "npm:~0.2.38"
+    "@swc/core": "npm:~1.13.20"
+    "@swc/jest": "npm:~0.2.39"
     "@testing-library/jest-dom": "npm:~6.6.3"
     "@types/identity-obj-proxy": "npm:^3.0.2"
     "@types/jest": "npm:~30.0.0"
@@ -11309,9 +11318,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-darwin-arm64@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-darwin-arm64@npm:1.13.20"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
 "@swc/core-darwin-x64@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-darwin-x64@npm:1.12.4"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core-darwin-x64@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-darwin-x64@npm:1.13.20"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -11323,9 +11346,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-linux-arm-gnueabihf@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.13.20"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
 "@swc/core-linux-arm64-gnu@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-linux-arm64-gnu@npm:1.12.4"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-arm64-gnu@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.13.20"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
@@ -11337,9 +11374,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-linux-arm64-musl@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-linux-arm64-musl@npm:1.13.20"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@swc/core-linux-x64-gnu@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-linux-x64-gnu@npm:1.12.4"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@swc/core-linux-x64-gnu@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-linux-x64-gnu@npm:1.13.20"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
@@ -11351,9 +11402,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-linux-x64-musl@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-linux-x64-musl@npm:1.13.20"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@swc/core-win32-arm64-msvc@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-win32-arm64-msvc@npm:1.12.4"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@swc/core-win32-arm64-msvc@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.13.20"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -11365,6 +11430,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core-win32-ia32-msvc@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.13.20"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
 "@swc/core-win32-x64-msvc@npm:1.12.4":
   version: 1.12.4
   resolution: "@swc/core-win32-x64-msvc@npm:1.12.4"
@@ -11372,7 +11444,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core@npm:^1.5.22, @swc/core@npm:~1.12.4":
+"@swc/core-win32-x64-msvc@npm:1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core-win32-x64-msvc@npm:1.13.20"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@swc/core@npm:^1.5.22":
   version: 1.12.4
   resolution: "@swc/core@npm:1.12.4"
   dependencies:
@@ -11418,6 +11497,52 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/core@npm:~1.13.20":
+  version: 1.13.20
+  resolution: "@swc/core@npm:1.13.20"
+  dependencies:
+    "@swc/core-darwin-arm64": "npm:1.13.20"
+    "@swc/core-darwin-x64": "npm:1.13.20"
+    "@swc/core-linux-arm-gnueabihf": "npm:1.13.20"
+    "@swc/core-linux-arm64-gnu": "npm:1.13.20"
+    "@swc/core-linux-arm64-musl": "npm:1.13.20"
+    "@swc/core-linux-x64-gnu": "npm:1.13.20"
+    "@swc/core-linux-x64-musl": "npm:1.13.20"
+    "@swc/core-win32-arm64-msvc": "npm:1.13.20"
+    "@swc/core-win32-ia32-msvc": "npm:1.13.20"
+    "@swc/core-win32-x64-msvc": "npm:1.13.20"
+    "@swc/counter": "npm:^0.1.3"
+    "@swc/types": "npm:^0.1.25"
+  peerDependencies:
+    "@swc/helpers": ">=0.5.17"
+  dependenciesMeta:
+    "@swc/core-darwin-arm64":
+      optional: true
+    "@swc/core-darwin-x64":
+      optional: true
+    "@swc/core-linux-arm-gnueabihf":
+      optional: true
+    "@swc/core-linux-arm64-gnu":
+      optional: true
+    "@swc/core-linux-arm64-musl":
+      optional: true
+    "@swc/core-linux-x64-gnu":
+      optional: true
+    "@swc/core-linux-x64-musl":
+      optional: true
+    "@swc/core-win32-arm64-msvc":
+      optional: true
+    "@swc/core-win32-ia32-msvc":
+      optional: true
+    "@swc/core-win32-x64-msvc":
+      optional: true
+  peerDependenciesMeta:
+    "@swc/helpers":
+      optional: true
+  checksum: 10/fdbd34f98d894cc765e44bab27da5fa95e604660ae061f5eafeaf459418e1d32e8b8f2333966a6c32fef4770e9948f9cec3bdacc8a35d6b1b32bc48677777261
+  languageName: node
+  linkType: hard
+
 "@swc/counter@npm:^0.1.3":
   version: 0.1.3
   resolution: "@swc/counter@npm:0.1.3"
@@ -11443,7 +11568,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/jest@npm:^0.2.23, @swc/jest@npm:~0.2.38":
+"@swc/jest@npm:^0.2.23":
   version: 0.2.38
   resolution: "@swc/jest@npm:0.2.38"
   dependencies:
@@ -11456,12 +11581,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@swc/jest@npm:~0.2.39":
+  version: 0.2.39
+  resolution: "@swc/jest@npm:0.2.39"
+  dependencies:
+    "@jest/create-cache-key-function": "npm:^30.0.0"
+    "@swc/counter": "npm:^0.1.3"
+    jsonc-parser: "npm:^3.2.0"
+  peerDependencies:
+    "@swc/core": "*"
+  checksum: 10/a2b7ed6fbb908867e673d1bbff9efde7eee225a57ad75735216ce2005e40c5cfb92285bd807d2058f1c0317e3d48ed71f5577fe85b28bebc80c1bc2c3a03306e
+  languageName: node
+  linkType: hard
+
 "@swc/types@npm:^0.1.23":
   version: 0.1.23
   resolution: "@swc/types@npm:0.1.23"
   dependencies:
     "@swc/counter": "npm:^0.1.3"
   checksum: 10/8d9d73dd1fc9335105105da57595ab913bad6addd4fbcb2eb147300694630232225eb7dc74b733205af33352803e4fcefc18e3a36f8924cf821ef91384767670
+  languageName: node
+  linkType: hard
+
+"@swc/types@npm:^0.1.25":
+  version: 0.1.25
+  resolution: "@swc/types@npm:0.1.25"
+  dependencies:
+    "@swc/counter": "npm:^0.1.3"
+  checksum: 10/f6741450224892d12df43e5ca7f3cc0287df644dcd672626eb0cc2a3a8e3e875f4b29eb11336f37c7240cf6e010ba59eb3a79f4fb8bee5cbd168dfc1326ff369
   languageName: node
   linkType: hard
 
