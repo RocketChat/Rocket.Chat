@@ -45,7 +45,7 @@
 		"buffer": "~6.0.3",
 		"eslint": "~8.45.0",
 		"i18next": "~23.4.9",
-		"jest": "~30.0.5",
+		"jest": "~30.2.0",
 		"react-dom": "~18.3.1",
 		"storybook": "^8.6.14",
 		"typescript": "~5.9.2"

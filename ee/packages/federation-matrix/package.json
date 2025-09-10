@@ -13,7 +13,7 @@
 		"@types/sanitize-html": "^2",
 		"babel-jest": "~30.0.0",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.0",
+		"jest": "~30.2.0",
 		"pino-pretty": "^7.6.1",
 		"typescript": "~5.8.3"
 	},

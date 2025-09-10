@@ -24,7 +24,7 @@
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
 		"@typescript-eslint/parser": "~5.60.1",
 		"eslint": "~8.45.0",
-		"jest": "~30.0.5",
+		"jest": "~30.2.0",
 		"typescript": "~5.9.2"
 	},
 	"volta": {
