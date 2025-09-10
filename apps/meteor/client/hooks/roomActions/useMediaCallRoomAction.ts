@@ -1,11 +1,8 @@
-// import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-// import { usePermission /* , useUserId */ } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserAvatarPath, useUserId } from '@rocket.chat/ui-contexts';
-import { useMediaCallContext /* useVoipAPI, useVoipState */ } from '@rocket.chat/ui-voip';
+import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { useMediaPermissions } from '../../views/room/composer/messageBox/hooks/useMediaPermissions';
 import { useRoom } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useUserInfoQuery } from '../useUserInfoQuery';
@@ -26,37 +23,16 @@ const getPeerId = (uids: string[], ownUserId: string | null) => {
 };
 
 export const useMediaCallRoomAction = () => {
-	const { t } = useTranslation();
 	const { uids = [] } = useRoom();
 	const ownUserId = useUserId();
-	// const canStartVoiceCall = usePermission('view-user-voip-extension');
-
-	const [isMicPermissionDenied] = useMediaPermissions('microphone');
-
-	const { state, onToggleWidget } = useMediaCallContext();
 
 	const getAvatarUrl = useUserAvatarPath();
-
-	const isInCall = state !== 'closed' && state !== 'new';
-	const disabled = isMicPermissionDenied || isInCall;
-	// const allowed = canStartVoiceCall && !isInCall;
-	// const canMakeVoipCall = allowed && !isMicPermissionDenied;
-
-	const tooltip = useMemo(() => {
-		if (isMicPermissionDenied) {
-			return t('Microphone_access_not_allowed');
-		}
-
-		if (isInCall) {
-			return t('Unable_to_make_calls_while_another_is_ongoing');
-		}
-
-		return disabled ? t('Voice_calling_disabled') : t('Voice_Call');
-	}, [disabled, isMicPermissionDenied, isInCall, t]);
 
 	const peerId = getPeerId(uids, ownUserId);
 
 	const { data: peerInfo } = useUserInfoQuery({ userId: peerId as string }, { enabled: !!peerId });
+
+	const { action, title, icon } = useMediaCallAction(true);
 
 	// TODO: Implement hangup call
 	return useMemo((): RoomToolboxActionConfig | undefined => {
@@ -66,29 +42,27 @@ export const useMediaCallRoomAction = () => {
 
 		return {
 			id: 'start-voice-call',
-			title: 'Voice_Call',
-			icon: 'phone',
+			title: title as TranslationKey,
+			icon,
 			featured: true,
 			action: () => {
 				const { user } = peerInfo || {};
-				// console.log('user', user);
+
 				if (user) {
 					const avatarUrl = user.username
 						? getAvatarUrl({ username: user.username, etag: user.avatarETag })
 						: getAvatarUrl({ userId: peerId });
 
-					return onToggleWidget({
+					return action({
 						userId: peerId,
 						displayName: user.name || user.username || '',
 						avatarUrl,
 					});
 				}
 
-				return onToggleWidget();
+				return action();
 			},
 			groups: ['direct'] as const,
-			disabled,
-			tooltip,
 		};
-	}, [peerId, disabled, tooltip, peerInfo, onToggleWidget, getAvatarUrl]);
+	}, [peerId, title, icon, peerInfo, action, getAvatarUrl]);
 };
