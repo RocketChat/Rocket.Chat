@@ -118,7 +118,7 @@
 		"@types/later": "^1.2.9",
 		"@types/ldapjs": "^2.2.5",
 		"@types/less": "~3.0.8",
-		"@types/lodash": "^4.17.18",
+		"@types/lodash": "~4.17.20",
 		"@types/lodash.clonedeep": "^4.5.9",
 		"@types/lodash.debounce": "^4.0.9",
 		"@types/lodash.escape": "^4.0.9",
