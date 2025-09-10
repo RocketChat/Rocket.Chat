@@ -2,8 +2,6 @@ import type { HomeserverServices } from '@hs/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
-import { aclMiddleware } from '../middlewares';
-
 const SendTransactionParamsSchema = {
 	type: 'object',
 	properties: {
@@ -205,7 +203,7 @@ const ErrorResponseSchema = {
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event, federationAuth, config } = services;
+	const { event, config } = services;
 
 	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
@@ -266,7 +264,6 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
-				aclMiddleware(federationAuth),
 				async (c) => {
 					const eventData = await event.getEventById(c.req.param('eventId'));
 					if (!eventData) {
