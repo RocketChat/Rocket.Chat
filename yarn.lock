@@ -7696,7 +7696,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:~5.60.1"
     "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
-    eslint-config-prettier: "npm:~9.1.0"
+    eslint-config-prettier: "npm:~9.1.2"
     eslint-import-resolver-typescript: "npm:~4.4.4"
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-import: "npm:~2.31.0"
@@ -8660,7 +8660,7 @@ __metadata:
     emojione-assets: "npm:^4.5.0"
     esl: "npm:^11.2.1"
     eslint: "npm:~8.45.0"
-    eslint-config-prettier: "npm:~9.1.0"
+    eslint-config-prettier: "npm:~9.1.2"
     eslint-plugin-anti-trojan-source: "npm:~1.1.1"
     eslint-plugin-import: "npm:~2.31.0"
     eslint-plugin-no-floating-promise: "npm:~2.0.0"
@@ -20003,14 +20003,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:~9.1.0":
-  version: 9.1.0
-  resolution: "eslint-config-prettier@npm:9.1.0"
+"eslint-config-prettier@npm:~9.1.2":
+  version: 9.1.2
+  resolution: "eslint-config-prettier@npm:9.1.2"
   peerDependencies:
     eslint: ">=7.0.0"
   bin:
     eslint-config-prettier: bin/cli.js
-  checksum: 10/411e3b3b1c7aa04e3e0f20d561271b3b909014956c4dba51c878bf1a23dbb8c800a3be235c46c4732c70827276e540b6eed4636d9b09b444fd0a8e07f0fcd830
+  checksum: 10/e4bba2d76df9dc6e2adca2866e544bfd1ff32232fc483743c04cedd93918a90a327b56d4a7e3f9d3fa32d90bd50b034d09df987860260064b18c026b8bbd15aa
   languageName: node
   linkType: hard
 
