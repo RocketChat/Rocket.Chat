@@ -10,7 +10,6 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldError,
-	FieldDescription,
 	FieldHint,
 	Accordion,
 	AccordionItem,
@@ -245,9 +244,9 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 								)}
 							/>
 						</FieldRow>
-						<FieldDescription id={`${privateId}-hint`}>
+						<FieldHint id={`${privateId}-hint`}>
 							{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}
-						</FieldDescription>
+						</FieldHint>
 					</Field>
 				</FieldGroup>
 				<Accordion>
@@ -274,7 +273,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 										)}
 									/>
 								</FieldRow>
-								<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
+								<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>
@@ -294,9 +293,9 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 										)}
 									/>
 								</FieldRow>
-								<FieldDescription id={`${readOnlyId}-hint`}>
+								<FieldHint id={`${readOnlyId}-hint`}>
 									{readOnly ? t('Read_only_field_hint_enabled', { roomType: 'team' }) : t('Anyone_can_send_new_messages')}
-								</FieldDescription>
+								</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>
@@ -315,7 +314,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 										)}
 									/>
 								</FieldRow>
-								{broadcast && <FieldDescription id={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldDescription>}
+								{broadcast && <FieldHint id={`${broadcastId}-hint`}>{t('Teams_New_Broadcast_Description')}</FieldHint>}
 							</Field>
 						</FieldGroup>
 					</AccordionItem>
