@@ -10,7 +10,7 @@ import { useDraggable } from '../../../components/VoipPopupDraggable/DraggableCo
 const WidgetBase = styled('article')`
 	position: fixed;
 	right: 2em;
-	bottom: 10em;
+	top: 11em;
 	display: flex;
 	flex-direction: column;
 	width: 248px;
