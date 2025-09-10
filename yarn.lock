@@ -8990,7 +8990,7 @@ __metadata:
     image-webpack-loader: "npm:~8.1.0"
     lorem-ipsum: "npm:^2.0.8"
     mem: "npm:^8.1.1"
-    mini-css-extract-plugin: "npm:~2.9.2"
+    mini-css-extract-plugin: "npm:~2.9.4"
     npm-run-all: "npm:^4.1.5"
     path-to-regexp: "npm:^6.3.0"
     postcss: "npm:~8.4.49"
@@ -28978,7 +28978,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mini-css-extract-plugin@npm:*, mini-css-extract-plugin@npm:~2.9.2":
+"mini-css-extract-plugin@npm:*":
   version: 2.9.2
   resolution: "mini-css-extract-plugin@npm:2.9.2"
   dependencies:
@@ -28987,6 +28987,18 @@ __metadata:
   peerDependencies:
     webpack: ^5.0.0
   checksum: 10/db6ddb8ba56affa1a295b57857d66bad435d36e48e1f95c75d16fadd6c70e3ba33e8c4141c3fb0e22b4d875315b41c4f58550c6ac73b50bdbe429f768297e3ff
+  languageName: node
+  linkType: hard
+
+"mini-css-extract-plugin@npm:~2.9.4":
+  version: 2.9.4
+  resolution: "mini-css-extract-plugin@npm:2.9.4"
+  dependencies:
+    schema-utils: "npm:^4.0.0"
+    tapable: "npm:^2.2.1"
+  peerDependencies:
+    webpack: ^5.0.0
+  checksum: 10/24a0418dc49baed58a10a8b81e4d2fe474e89ccdc9370a7c69bd0aeeb5a70d2b4ee12f33b98c95a68423c79c1de7cc2a25aaa2105600b712e7d594cb0d56c9d4
   languageName: node
   linkType: hard
 
