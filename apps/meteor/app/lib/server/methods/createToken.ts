@@ -8,7 +8,7 @@ export async function generateAccessToken(callee: string, userId: string) {
 		!['yes', 'true'].includes(String(process.env.CREATE_TOKENS_FOR_USERS)) ||
 		(callee !== userId && !(await hasPermissionAsync(callee, 'user-generate-access-token')))
 	) {
-		throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'createToken' });
+		throw new Meteor.Error('error-not-authorized', 'Not authorized');
 	}
 
 	const token = Accounts._generateStampedLoginToken();
