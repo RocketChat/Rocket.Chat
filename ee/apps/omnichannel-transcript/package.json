@@ -51,7 +51,7 @@
 		"@types/i18next-sprintf-postprocessor": "^0.2.3",
 		"@types/polka": "^0.5.7",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"@types/react": "~18.3.23",
+		"@types/react": "~18.3.24",
 		"eslint": "~8.45.0",
 		"react": "~18.3.1",
 		"ts-node": "^10.9.2",
