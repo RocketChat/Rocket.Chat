@@ -392,7 +392,7 @@
 		"lodash.debounce": "^4.0.8",
 		"lodash.escape": "^4.0.1",
 		"lodash.get": "^4.4.2",
-		"mailparser": "^3.7.3",
+		"mailparser": "~3.7.4",
 		"marked": "^4.3.0",
 		"matrix-appservice": "^2.0.0",
 		"matrix-appservice-bridge": "^10.3.3",
