@@ -86,7 +86,7 @@
 		"@testing-library/react": "~16.3.0",
 		"@testing-library/user-event": "~14.6.1",
 		"@types/adm-zip": "^0.5.7",
-		"@types/archiver": "^5.3.4",
+		"@types/archiver": "~6.0.3",
 		"@types/bad-words": "^3.0.3",
 		"@types/bcrypt": "^5.0.2",
 		"@types/body-parser": "^1.19.6",

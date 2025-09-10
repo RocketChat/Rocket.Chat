@@ -8804,7 +8804,7 @@ __metadata:
     "@testing-library/react": "npm:~16.3.0"
     "@testing-library/user-event": "npm:~14.6.1"
     "@types/adm-zip": "npm:^0.5.7"
-    "@types/archiver": "npm:^5.3.4"
+    "@types/archiver": "npm:~6.0.3"
     "@types/bad-words": "npm:^3.0.3"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/body-parser": "npm:^1.19.6"
@@ -11796,12 +11796,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/archiver@npm:^5.3.4":
-  version: 5.3.4
-  resolution: "@types/archiver@npm:5.3.4"
+"@types/archiver@npm:~6.0.3":
+  version: 6.0.3
+  resolution: "@types/archiver@npm:6.0.3"
   dependencies:
     "@types/readdir-glob": "npm:*"
-  checksum: 10/535f85063743d3a5641937957f36a777a0363b501c90ae2b0035e4f08b970a8ea2126c28a576419289999439a81161ab2d6cb30e9ab5705b16f97cab233d4735
+  checksum: 10/c0ab3ca45b02baf2020b5ddb9f61452b5f9600db3a700ea365a46572f81baaaeb3b53ff5391b443df01af1492f470114006721e1850179da513b87cc5e6f441d
   languageName: node
   linkType: hard
 
