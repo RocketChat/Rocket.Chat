@@ -9528,7 +9528,7 @@ __metadata:
     sip.js: "npm:^0.21.2"
     sodium-native: "npm:^4.3.3"
     sodium-plus: "npm:^0.9.0"
-    source-map: "npm:^0.7.4"
+    source-map: "npm:~0.7.6"
     speakeasy: "npm:^2.0.0"
     storybook: "npm:^8.6.14"
     stream-buffers: "npm:^3.0.3"
@@ -35510,6 +35510,13 @@ __metadata:
   version: 0.5.7
   resolution: "source-map@npm:0.5.7"
   checksum: 10/9b4ac749ec5b5831cad1f8cc4c19c4298ebc7474b24a0acf293e2f040f03f8eeccb3d01f12aa0f90cf46d555c887e03912b83a042c627f419bda5152d89c5269
+  languageName: node
+  linkType: hard
+
+"source-map@npm:~0.7.6":
+  version: 0.7.6
+  resolution: "source-map@npm:0.7.6"
+  checksum: 10/c8d2da7c57c14f3fd7568f764b39ad49bbf9dd7632b86df3542b31fed117d4af2fb74a4f886fc06baf7a510fee68e37998efc3080aacdac951c36211dc29a7a3
   languageName: node
   linkType: hard
 

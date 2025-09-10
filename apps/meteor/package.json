@@ -204,7 +204,7 @@
 		"raw-loader": "~4.0.2",
 		"react-docgen-typescript-plugin": "^1.0.8",
 		"sinon": "^19.0.5",
-		"source-map": "^0.7.4",
+		"source-map": "~0.7.6",
 		"storybook": "^8.6.14",
 		"stylelint": "^16.10.0",
 		"stylelint-config-standard": "^36.0.1",
