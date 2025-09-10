@@ -257,7 +257,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const ourQuery = { ...query, rid: findResult._id };
+			const ourQuery = { ...query, rid: findResult._id,t: { $nin: ['command'] } };
 
 			// Special check for the permissions
 			if (
@@ -276,6 +276,7 @@ API.v1.addRoute(
 				skip: offset,
 				limit: count,
 				projection: fields,
+				
 			});
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
