@@ -8782,7 +8782,7 @@ __metadata:
     "@rocket.chat/ui-voip": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
     "@slack/bolt": "npm:^3.22.0"
-    "@slack/rtm-api": "npm:^7.0.3"
+    "@slack/rtm-api": "npm:~7.0.4"
     "@storybook/addon-a11y": "npm:^8.6.14"
     "@storybook/addon-essentials": "npm:^8.6.14"
     "@storybook/addon-interactions": "npm:^8.6.14"
@@ -10635,19 +10635,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/rtm-api@npm:^7.0.3":
-  version: 7.0.3
-  resolution: "@slack/rtm-api@npm:7.0.3"
+"@slack/rtm-api@npm:~7.0.4":
+  version: 7.0.4
+  resolution: "@slack/rtm-api@npm:7.0.4"
   dependencies:
     "@slack/logger": "npm:^4"
-    "@slack/web-api": "npm:^7.9.1"
+    "@slack/web-api": "npm:^7.10.0"
     "@types/node": "npm:>=18"
     eventemitter3: "npm:^5"
     finity: "npm:^0.5.4"
     p-cancelable: "npm:^2"
     p-queue: "npm:^6"
     ws: "npm:^8"
-  checksum: 10/260c0337b707e2eaef1c9534c18c1bcdcbd1dd570cdecb363d98910191fa5a0d947fba7512798807822884ba5a34dfce1a350e9c4ea29cf7ff382a6da996ee14
+  checksum: 10/6b1dec26f47e1c74e7db9d704469240c8c2f9aea03d7f5c43a70e4b29a0cd9bea0c849338832d985a9a0ed99d33ae77af130d183aa2fa06482ab71c574886d5b
   languageName: node
   linkType: hard
 
@@ -10692,23 +10692,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@slack/web-api@npm:^7.9.1":
-  version: 7.9.3
-  resolution: "@slack/web-api@npm:7.9.3"
+"@slack/web-api@npm:^7.10.0":
+  version: 7.10.0
+  resolution: "@slack/web-api@npm:7.10.0"
   dependencies:
     "@slack/logger": "npm:^4.0.0"
     "@slack/types": "npm:^2.9.0"
     "@types/node": "npm:>=18.0.0"
     "@types/retry": "npm:0.12.0"
-    axios: "npm:^1.8.3"
+    axios: "npm:^1.11.0"
     eventemitter3: "npm:^5.0.1"
-    form-data: "npm:^4.0.0"
+    form-data: "npm:^4.0.4"
     is-electron: "npm:2.2.2"
     is-stream: "npm:^2"
     p-queue: "npm:^6"
     p-retry: "npm:^4"
     retry: "npm:^0.13.1"
-  checksum: 10/dc8aa95c8127a1155f0c0756bc819185da0b471feb5953dc118301e577e67f45ad4ef64d9459ff430b44f769344a6347d1636ad59267483e9ac0104611263a05
+  checksum: 10/aaa834852cc4cd3990c433557b0e7e2f3105dd7f433a3de4d7b54f685264dd012ed78a026ea3dde0c19d1385b76489a128899334f71f0ba018a8d2461741085d
   languageName: node
   linkType: hard
 
@@ -15258,7 +15258,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.1, axios@npm:^1.7.4, axios@npm:^1.8.2, axios@npm:^1.8.3":
+"axios@npm:^1.11.0":
+  version: 1.11.0
+  resolution: "axios@npm:1.11.0"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.4"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10/232df4af7a4e4e07baa84621b9cc4b0c518a757b4eacc7f635c0eb3642cb98dff347326739f24b891b3b4481b7b838c79a3a0c4819c9fbc1fc40232431b9c5dc
+  languageName: node
+  linkType: hard
+
+"axios@npm:^1.6.1, axios@npm:^1.7.4, axios@npm:^1.8.2":
   version: 1.10.0
   resolution: "axios@npm:1.10.0"
   dependencies:
