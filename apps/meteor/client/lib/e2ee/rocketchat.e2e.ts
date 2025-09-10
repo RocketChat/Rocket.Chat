@@ -139,7 +139,7 @@ class E2E extends Emitter {
 	}
 
 	async onSubscriptionChanged(sub: ISubscription) {
-		// this.log('Subscription changed', sub);
+		this.log('Subscription changed', sub);
 		if (!sub.encrypted && !sub.E2EKey) {
 			this.removeInstanceByRoomId(sub.rid);
 			return;
@@ -530,7 +530,7 @@ class E2E extends Emitter {
 			if (!masterKey) {
 				throw new Error('Error getting master key');
 			}
-			const encodedPrivateKey = await encryptAesGcm(vector, masterKey, toArrayBuffer(privateKey));
+			const encodedPrivateKey = await encryptAesGcm(vector.buffer, masterKey, toArrayBuffer(privateKey));
 
 			return EJSON.stringify(joinVectorAndEncryptedData(vector, encodedPrivateKey));
 		} catch (error) {

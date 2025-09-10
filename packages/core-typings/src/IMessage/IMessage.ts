@@ -232,8 +232,13 @@ export interface IMessage extends IRocketChatRecord {
 	customFields?: IMessageCustomFields;
 
 	content?: {
-		algorithm: string; // 'rc.v1.aes-sha2'
+		algorithm: 'rc.v1.aes-sha2',
 		ciphertext: string; // Encrypted subset JSON of IMessage
+	} | {
+		algorithm: 'rc.v2.aes-sha2',
+		iv: string; // base64-encoded initialization vector
+		ciphertext: string; // base64-encoded encrypted subset JSON of IMessage
+		key_id: string; // ID of the key used to encrypt the message
 	};
 }
 

@@ -14,7 +14,7 @@ import {
 	encryptRSA,
 	encryptAesGcm,
 	decryptRSA,
-	decryptAesGcm,
+	// decryptAesGcm,
 	generateAesGcmKey,
 	exportJWKKey,
 	importAesGcmKey,
@@ -24,6 +24,7 @@ import {
 	generateAESCTRKey,
 	sha256HashFromArrayBuffer,
 	createSha256HashFromText,
+	decryptAes,
 } from './helper';
 import { createLogger } from './logger';
 import { e2e } from './rocketchat.e2e';
@@ -621,12 +622,12 @@ export class E2ERoom extends Emitter {
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
-			const result = await encryptAesGcm(vector, this.groupSessionKey, data);
-			const ciphertext = EJSON.stringify({
+			const result = await encryptAesGcm(vector.buffer, this.groupSessionKey, data);
+			const ciphertext = {
 				key_id: this.keyID,
-				iv: vector,
-				ciphertext: new Uint8Array(result),
-			});
+				iv: Base64.encode(vector),
+				ciphertext: Base64.encode(new Uint8Array(result)),
+			};
 			this.log('Message encrypted successfully', { ciphertext });
 			return ciphertext;
 		} catch (error) {
@@ -642,9 +643,9 @@ export class E2ERoom extends Emitter {
 		const data = new TextEncoder().encode(EJSON.stringify(contentToBeEncrypted));
 
 		return {
-			algorithm: 'rc.v1.aes-sha2',
-			ciphertext: await this.encryptText(data),
-		};
+			algorithm: 'rc.v2.aes-sha2',
+			...await this.encryptText(data),
+		} as const;
 	}
 
 	// Helper function for encryption of content
@@ -688,9 +689,20 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptContent<T extends IUploadWithUser | IE2EEMessage>(data: T) {
-		if (data.content && data.content.algorithm === 'rc.v1.aes-sha2') {
-			const content = await this.decrypt(data.content.ciphertext);
-			Object.assign(data, content);
+		if (!data.content) {
+			return data;
+		}
+
+		const { content } = data;
+
+		if (content && content.algorithm === 'rc.v1.aes-sha2') {
+			const decrypted = await this.decrypt(content.ciphertext);
+			Object.assign(data, decrypted);
+		}
+
+		if (content && content.algorithm === 'rc.v2.aes-sha2' && 'iv' in content) {
+			const decrypted = await this.decrypt(content);
+			Object.assign(data, decrypted);
 		}
 
 		return data;
@@ -719,36 +731,20 @@ export class E2ERoom extends Emitter {
 	}
 
 	async doDecrypt(vector: ArrayBuffer, key: CryptoKey, cipherText: ArrayBuffer) {
-		const result = await decryptAesGcm(vector, key, cipherText);
+		const result = await decryptAes(vector, key, cipherText);
 		return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 	}
 
 	// Parses the message to extract the keyID and cipherText
-	parse(payload: string): { key_id: string; iv: ArrayBuffer; ciphertext: ArrayBuffer } {
+	parse(payload: string | { key_id: string; iv: string; ciphertext: string }): { key_id: string; iv: ArrayBuffer; ciphertext: ArrayBuffer } {
 		// v2: {"key_id":"...", "iv": "...", "ciphertext":"..."}
-		if (payload[0] === '{') {
-			const parsed: unknown = EJSON.parse(payload);
+		if (typeof payload !== 'string') {
+			const iv = Base64.decode(payload.iv).buffer;
+			const ciphertext = Base64.decode(payload.ciphertext).buffer;
 
-			if (typeof parsed !== 'object' || parsed === null) {
-				throw new Error('Parsed payload is not an object');
-			}
-			if (!('key_id' in parsed && 'iv' in parsed && 'ciphertext' in parsed)) {
-				throw new Error('Parsed payload is missing required fields');
-			}
-
-			const { key_id, iv, ciphertext } = parsed;
-
-			if (typeof key_id !== 'string' || !(iv instanceof Uint8Array) || !(ciphertext instanceof Uint8Array)) {
-				throw new Error('Parsed payload has invalid field types');
-			}
-
-			if (!(iv.buffer instanceof ArrayBuffer) || !(ciphertext.buffer instanceof ArrayBuffer)) {
-				throw new Error('Parsed payload has invalid field types');
-			}
-
-			return { key_id, iv: iv.buffer, ciphertext: ciphertext.buffer };
+			return { key_id: payload.key_id, iv, ciphertext };
 		}
-		// v1: keyID + base64(vector + ciphertext)
+		// v1: key_id + base64(vector + ciphertext)
 		const message = payload;
 		const key_id = message.slice(0, 12);
 		const [iv, ciphertext] = splitVectorAndEncryptedData(Base64.decode(message.slice(12)));
@@ -759,12 +755,14 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
-	async decrypt(message: string) {
-		const { key_id: keyID, iv: vector, ciphertext: cipherText } = this.parse(message);
+	async decrypt(message: string | { key_id: string; iv: string; ciphertext: string }) {
+		const payload = this.parse(message);
+
+		this.log('Decrypting payload', payload);
 
 		let oldKey = null;
-		if (keyID !== this.keyID) {
-			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === keyID);
+		if (payload.key_id !== this.keyID) {
+			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === payload.key_id);
 			// Messages already contain a keyID stored with them
 			// That means that if we cannot find a keyID for the key the message has preppended to
 			// The message is indecipherable.
@@ -775,7 +773,7 @@ export class E2ERoom extends Emitter {
 					if (!this.groupSessionKey) {
 						throw new Error('No group session key found.');
 					}
-					const result = await this.doDecrypt(vector, this.groupSessionKey, cipherText);
+					const result = await this.doDecrypt(payload.iv, this.groupSessionKey, payload.ciphertext);
 					this.warn(
 						'Message keyID does not match any known keys, but was able to decrypt with current session key. This may be a mobile client issue.',
 						{ message: result },
@@ -791,15 +789,15 @@ export class E2ERoom extends Emitter {
 
 		try {
 			if (oldKey) {
-				const result = await this.doDecrypt(vector, oldKey, cipherText);
-				this.log('Message decrypted', { result, keyID });
+				const result = await this.doDecrypt(payload.iv, oldKey, payload.ciphertext);
+				this.log('Message decrypted', { result });
 				return result;
 			}
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
-			const result = await this.doDecrypt(vector, this.groupSessionKey, cipherText);
-			this.log('Message decrypted', { result, keyID });
+			const result = await this.doDecrypt(payload.iv, this.groupSessionKey, payload.ciphertext);
+			this.log('Message decrypted', result);
 			return result;
 		} catch (error) {
 			this.error('Error decrypting message: ', error, message);

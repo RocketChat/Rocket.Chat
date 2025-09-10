@@ -56,15 +56,11 @@ export async function encryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: Crypto
 	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
-export async function decryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
-	return crypto.subtle.decrypt({ name: 'AES-CBC', iv: vector }, key, data);
+export async function decryptAesCbc(iv: ArrayBuffer, key: CryptoKey, data: ArrayBuffer) {
+	return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data);
 }
 
-export async function encryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey, data: BufferSource) {
-	if (iv.length !== 12) {
-		throw new Error(`Invalid iv length for AES-GCM: ${iv.length}. Must be 12 bytes.`);
-	}
-
+export async function encryptAesGcm(iv: ArrayBuffer, key: CryptoKey, data: BufferSource) {
 	const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
 	return encrypted;
 }
@@ -72,6 +68,13 @@ export async function encryptAesGcm(iv: Uint8Array<ArrayBuffer>, key: CryptoKey,
 export async function decryptAesGcm(iv: ArrayBuffer, key: CryptoKey, data: ArrayBuffer) {
 	const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
 	return decrypted;
+}
+
+export function decryptAes(iv: ArrayBuffer, key: CryptoKey, data: ArrayBuffer) {
+	if (key.algorithm.name === 'AES-GCM') {
+		return decryptAesGcm(iv, key, data);
+	} 
+	return decryptAesCbc(iv, key, data);
 }
 
 export async function encryptAESCTR(counter: BufferSource, key: CryptoKey, data: BufferSource) {
