@@ -4848,14 +4848,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@node-oauth/oauth2-server@npm:5.2.0":
-  version: 5.2.0
-  resolution: "@node-oauth/oauth2-server@npm:5.2.0"
+"@node-oauth/oauth2-server@npm:~5.2.1":
+  version: 5.2.1
+  resolution: "@node-oauth/oauth2-server@npm:5.2.1"
   dependencies:
     "@node-oauth/formats": "npm:1.0.0"
     basic-auth: "npm:2.0.1"
-    type-is: "npm:1.6.18"
-  checksum: 10/0ae8b1a1fb175699a813d865a01da45aa9daa12619b9e8d1e0981ca081eb617e64444e2ce4af0d22a052719e3002bb937f37085d4a51622e560752d74cad5733
+    type-is: "npm:2.0.1"
+  checksum: 10/258d2a86586fedc3aa3d4284850b6aa9639464e4a3c193a81593ccea6715b3893e0228c8fc41fb465a3d426fa50cad2158860c468bd9bfb5b9e4374bccb5bdb9
   languageName: node
   linkType: hard
 
@@ -8685,7 +8685,7 @@ __metadata:
     "@nivo/line": "npm:0.88.0"
     "@nivo/pie": "npm:0.88.0"
     "@noble/ed25519": "npm:^3.0.0"
-    "@node-oauth/oauth2-server": "npm:5.2.0"
+    "@node-oauth/oauth2-server": "npm:~5.2.1"
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.54.2"
     "@opentelemetry/sdk-node": "npm:^0.54.2"
@@ -17543,7 +17543,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"content-type@npm:~1.0.4, content-type@npm:~1.0.5":
+"content-type@npm:^1.0.5, content-type@npm:~1.0.4, content-type@npm:~1.0.5":
   version: 1.0.5
   resolution: "content-type@npm:1.0.5"
   checksum: 10/585847d98dc7fb8035c02ae2cb76c7a9bd7b25f84c447e5ed55c45c2175e83617c8813871b4ee22f368126af6b2b167df655829007b21aa10302873ea9c62662
@@ -27462,6 +27462,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"media-typer@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "media-typer@npm:1.1.0"
+  checksum: 10/a58dd60804df73c672942a7253ccc06815612326dc1c0827984b1a21704466d7cde351394f47649e56cf7415e6ee2e26e000e81b51b3eebb5a93540e8bf93cbd
+  languageName: node
+  linkType: hard
+
 "mem@npm:^8.1.1":
   version: 8.1.1
   resolution: "mem@npm:8.1.1"
@@ -27669,6 +27676,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mime-db@npm:^1.54.0":
+  version: 1.54.0
+  resolution: "mime-db@npm:1.54.0"
+  checksum: 10/9e7834be3d66ae7f10eaa69215732c6d389692b194f876198dca79b2b90cbf96688d9d5d05ef7987b20f749b769b11c01766564264ea5f919c88b32a29011311
+  languageName: node
+  linkType: hard
+
 "mime-type@npm:^4.0.0":
   version: 4.0.0
   resolution: "mime-type@npm:4.0.0"
@@ -27686,6 +27700,15 @@ __metadata:
   dependencies:
     mime-db: "npm:1.52.0"
   checksum: 10/89aa9651b67644035de2784a6e665fc685d79aba61857e02b9c8758da874a754aed4a9aced9265f5ed1171fd934331e5516b84a7f0218031b6fa0270eca1e51a
+  languageName: node
+  linkType: hard
+
+"mime-types@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "mime-types@npm:3.0.1"
+  dependencies:
+    mime-db: "npm:^1.54.0"
+  checksum: 10/fa1d3a928363723a8046c346d87bf85d35014dae4285ad70a3ff92bd35957992b3094f8417973cfe677330916c6ef30885109624f1fb3b1e61a78af509dba120
   languageName: node
   linkType: hard
 
@@ -36482,7 +36505,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-is@npm:1.6.18, type-is@npm:~1.6.18":
+"type-is@npm:2.0.1":
+  version: 2.0.1
+  resolution: "type-is@npm:2.0.1"
+  dependencies:
+    content-type: "npm:^1.0.5"
+    media-typer: "npm:^1.1.0"
+    mime-types: "npm:^3.0.0"
+  checksum: 10/bacdb23c872dacb7bd40fbd9095e6b2fca2895eedbb689160c05534d7d4810a7f4b3fd1ae87e96133c505958f6d602967a68db5ff577b85dd6be76eaa75d58af
+  languageName: node
+  linkType: hard
+
+"type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
   dependencies:
