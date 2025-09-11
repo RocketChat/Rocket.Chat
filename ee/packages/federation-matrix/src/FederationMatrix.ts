@@ -98,6 +98,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		await createFederationContainer(containerOptions, config);
 		instance.homeserverServices = getAllServices();
+		MatrixMediaService.setHomeserverServices(instance.homeserverServices);
 		instance.buildMatrixHTTPRoutes();
 		instance.onEvent('user.typing', async ({ isTyping, roomId, user: { username } }): Promise<void> => {
 			if (!roomId || !username) {
