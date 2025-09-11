@@ -6,5 +6,9 @@ import type { IMessage } from './IMessage';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
 import type { ISubscription } from './ISubscription';
+import type { IUserStatus } from './IUserStatus';
 
-export const schemas = typia.json.schemas<[ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission], '3.0'>();
+export const schemas = typia.json.schemas<
+	[ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IUserStatus],
+	'3.0'
+>();
