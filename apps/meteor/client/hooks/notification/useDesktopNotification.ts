@@ -25,7 +25,7 @@ export const useDesktopNotification = () => {
 		if (notification.payload.message?.t === 'e2e') {
 			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
 			if (e2eRoom) {
-				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
+				notification = await e2eRoom.decryptDesktopNotification(notification);
 			}
 		}
 

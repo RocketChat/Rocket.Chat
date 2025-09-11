@@ -940,7 +940,8 @@ test.describe('e2e-encryption', () => {
 			// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path, @typescript-eslint/consistent-type-imports
 			const { e2e }:  typeof import('../../client/lib/e2ee/rocketchat.e2e.ts') = require('/client/lib/e2ee/rocketchat.e2e.ts');
 			const e2eRoom = await e2e.getInstanceByRoomId(rid);
-			return e2eRoom?.encrypt({ _id: 'id', msg: 'Old format message' });
+			// @ts-expect-error - _id is required, but we don't need it to encrypt a message
+			return e2eRoom?.encrypt({ _id: 'id', msg: 'Old format message', rid });
 		}, rid);
 
 		if (!msg) {
