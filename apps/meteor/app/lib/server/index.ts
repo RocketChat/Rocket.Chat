@@ -16,7 +16,6 @@ import './methods/checkRegistrationSecretURL';
 import './methods/cleanRoomHistory';
 import './methods/createChannel';
 import './methods/createPrivateGroup';
-import './methods/createToken';
 import './methods/deleteUserOwnAccount';
 import './methods/executeSlashCommandPreview';
 import './startup/mentionUserNotInChannel';
