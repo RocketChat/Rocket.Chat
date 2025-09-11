@@ -422,20 +422,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		info: {
 			mimetype?: string;
 			size?: number;
-			// TODO: Add thumbnail support when RC provides thumbnail metadata
-			// thumbnail_url?: string;
-			// thumbnail_info?: {
-			//   mimetype?: string;
-			//   size?: number;
-			//   w?: number;
-			//   h?: number;
-			// };
 		};
 	} {
 		const msgtype = this.determineFileMessageType(file.type);
-
-		const content: ReturnType<typeof this.buildFileMessageContent> = {
-			body: file.name || 'file',
+		return {
+			body: file.name,
 			msgtype,
 			url: mxcUri,
 			info: {
@@ -443,14 +434,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				size: file.size,
 			},
 		};
-
-		// Note: Rocket.Chat doesn't provide separate thumbnail metadata in the file object
-		// If we need thumbnail support, we'd need to either:
-		// 1. Generate thumbnails on-the-fly for images/videos
-		// 2. Use a pre-generated thumbnail if RC provides it in the future
-		// 3. Link to RC's thumbnail endpoint if available
-
-		return content;
 	}
 
 	private async handleFileMessage(
@@ -499,17 +482,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			homeServerDomain: matrixDomain,
 		});
 
-		// Check if this is a threaded message
 		if (message.tmid) {
 			return this.handleThreadedMessage(message, matrixRoomId, matrixUserId, matrixDomain, parsedMessage);
 		}
 
-		// Check if this is a quote/reply message
 		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
 			return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
 		}
 
-		// Send regular message
 		return this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, matrixUserId);
 	}
 
@@ -525,25 +505,15 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		if (!threadRootEventId) {
 			this.logger.warn('Thread root event ID not found, sending as regular message');
-			// Fall back to regular message or quote message
 			if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
 				return this.handleQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
 			}
 			return this.homeserverServices.message.sendMessage(matrixRoomId, message.msg, parsedMessage, matrixUserId);
 		}
 
-		// Get the latest thread message for proper threading
-		const latestThreadMessage = await Messages.findOne(
-			{
-				'tmid': message.tmid,
-				'federation.eventId': { $exists: true },
-				'_id': { $ne: message._id },
-			},
-			{ sort: { ts: -1 } },
-		);
+		const latestThreadMessage = await Messages.findLatestFederationThreadMessageByTmid(message.tmid, message.rid);
 		const latestThreadEventId = latestThreadMessage?.federation?.eventId;
 
-		// Check if this is a quote within a thread
 		if (message.attachments?.some((attachment) => isQuoteAttachment(attachment) && Boolean(attachment.message_link))) {
 			const quoteMessage = await this.getQuoteMessage(message, matrixRoomId, matrixUserId, matrixDomain);
 			if (!quoteMessage) {
@@ -559,7 +529,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			);
 		}
 
-		// Send regular thread message
 		return this.homeserverServices.message.sendThreadMessage(
 			matrixRoomId,
 			message.msg,

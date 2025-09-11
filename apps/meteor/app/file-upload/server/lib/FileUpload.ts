@@ -440,12 +440,6 @@ export const FileUpload = {
 			return true;
 		}
 
-		// Allow MatrixRemote files to bypass normal access control
-		// They are handled by federation-specific logic in the onRead method
-		if (file?.store === 'MatrixRemote:Uploads') {
-			return true;
-		}
-
 		const { query } = URL.parse(url, true);
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let { rc_uid, rc_token, rc_rid, rc_room_type } = query as Record<string, string | undefined>;
