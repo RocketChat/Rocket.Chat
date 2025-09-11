@@ -41,7 +41,7 @@ const AutoCompleteDepartmentAgent = ({ value, onChange, agents, ...props }: Auto
 			renderSelected={({ selected: { value, label }, ...props }): ReactElement => {
 				return (
 					<Chip {...props} height='x20' value={value} onClick={() => onChange('')} mie={4}>
-						<UserAvatar size='x20' username={value} />
+						<UserAvatar size='x20' username={label} />
 						<Box is='span' margin='none' mis={4}>
 							{label}
 						</Box>
