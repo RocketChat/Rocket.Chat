@@ -305,6 +305,7 @@ exports[`renders Default without crashing 1`] = `
                           <input
                             aria-describedby=":r4:-hint"
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                            disabled=""
                             id=":r4:"
                             type="checkbox"
                           />
@@ -696,6 +697,7 @@ exports[`renders DefaultVersion2 without crashing 1`] = `
                           <input
                             aria-describedby=":re:-hint"
                             class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                            disabled=""
                             id=":re:"
                             type="checkbox"
                           />
