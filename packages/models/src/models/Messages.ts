@@ -604,10 +604,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne({ 'federation.eventId': federationEventId });
 	}
 
-	async findLatestFederationThreadMessageByTmid(
-		tmid: string,
-		rootMessageId: IMessage['_id'],
-	): Promise<Pick<IMessage & { 'federation.eventId': string }, '_id' | 'federation.eventId'> | null> {
+	async findLatestFederationThreadMessageByTmid(tmid: string, rootMessageId: IMessage['_id']): Promise<IMessage | null> {
 		return this.findOne(
 			{
 				'_id': { $ne: rootMessageId },
@@ -616,7 +613,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 			{
 				sort: { ts: -1 },
-				projection: { 'federation.eventId': 1, '_id': 1 },
 			},
 		);
 	}
