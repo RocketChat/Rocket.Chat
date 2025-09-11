@@ -27,8 +27,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private iceGatheringWaiters: Set<PromiseWaiterData>;
 
-	private inputTrackWaiter: PromiseWaiterData | null;
-
 	private inputTrack: MediaStreamTrack | null;
 
 	private _muted = false;
@@ -50,7 +48,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.remoteMediaStream = new MediaStream();
 		this.iceGatheringWaiters = new Set();
 		this.inputTrack = config.inputTrack;
-		this.inputTrackWaiter = null;
 
 		this.localStream = new LocalStream(this.localMediaStream);
 		this.remoteStream = new RemoteStream(this.remoteMediaStream);
@@ -71,11 +68,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 
 		this.inputTrack = newInputTrack;
-		if (this.inputTrackWaiter && !this.inputTrackWaiter.done) {
-			this.inputTrackWaiter.promiseResolve();
-		} else if (this.localMediaStreamInitialized) {
-			await this.loadInputTrack();
-		}
+		await this.loadInputTrack();
 	}
 
 	public async createOffer({ iceRestart }: { iceRestart?: boolean }): Promise<{ sdp: RTCSessionDescriptionInit }> {
@@ -118,7 +111,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.stop');
 
 		this.stopped = true;
-		this.localStream.stopAudio();
+		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
 		this.remoteStream.stopAudio();
 	}
 
@@ -325,65 +318,17 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.changeInternalState('iceGathering');
 	}
 
-	private async waitForInputTrack(): Promise<void> {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.waitForInputTrack');
-		if (this.inputTrack || this.stopped) {
-			return;
-		}
-
-		if (this.inputTrackWaiter && !this.inputTrackWaiter.done) {
-			return this.inputTrackWaiter.promise;
-		}
-
-		const tracker = getExternalWaiter({
-			timeout: 30000,
-			timeoutFn: () => {
-				if (this.inputTrack) {
-					tracker.promiseResolve();
-					return;
-				}
-
-				this.config.logger?.error('MediaCallWebRTCProcessor.waitForInputTrack - Timeout reached with no input track in place.');
-				this.emitter.emit('internalError', { critical: true, error: 'no-input-track' });
-			},
-			cleanupFn: () => {
-				if (this.inputTrackWaiter === tracker) {
-					this.inputTrackWaiter = null;
-				}
-			},
-		});
-		this.inputTrackWaiter = tracker;
-		return this.inputTrackWaiter.promise;
-	}
-
 	private async initializeLocalMediaStream(): Promise<void> {
 		if (this.localMediaStreamInitialized) {
 			return;
 		}
 		this.config.logger?.debug('MediaCallWebRTCProcessor.initializeLocalMediaStream');
-		const { mediaStreamFactory } = this.config;
-
-		if (mediaStreamFactory) {
-			const userMedia = await mediaStreamFactory({ audio: true });
-			const tracks = userMedia.getAudioTracks();
-
-			if (!tracks.length) {
-				this.config.logger?.error('MediaCallWebRTCProcessor.initializeLocalMediaStream - Media stream has no audio tracks.');
-				this.emitter.emit('internalError', { critical: true, error: 'no-input-track' });
-				throw new Error('Media Stream has no audio tracks.');
-			}
-
-			this.inputTrack = tracks[0];
-		}
 
 		await this.loadInputTrack();
 	}
 
 	private async loadInputTrack(): Promise<void> {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.loadInputTrack');
-
 		this.localMediaStreamInitialized = true;
-		await this.waitForInputTrack();
 		await this.localStream.setTrack(this.inputTrack, this.peer);
 	}
 

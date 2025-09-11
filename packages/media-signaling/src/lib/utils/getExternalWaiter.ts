@@ -12,7 +12,7 @@ export type PromiseWaiterParams = {
 	cleanupFn?: () => void;
 };
 
-export function getExternalWaiter({ timeout, timeoutFn, cleanupFn }: PromiseWaiterParams): PromiseWaiterData {
+export function getExternalWaiter({ timeout, timeoutFn, cleanupFn }: PromiseWaiterParams = {}): PromiseWaiterData {
 	const data: Partial<PromiseWaiterData> = {
 		timeout: null,
 		done: false,
