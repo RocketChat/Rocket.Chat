@@ -15,7 +15,8 @@ const icon: Record<LogLevel, string> = {
 export const createLogger = (label: string) => {
 	return (level: LogLevel, title: string, message: unknown, ...params: unknown[]) => {
 		console.groupCollapsed(`${icon[level]} %c[${label}:${title}]`, styles[level]);
-		console.trace(message, ...params);
+		console.log(message, ...params);
+		console.trace();
 		console.groupEnd();
 	};
 };

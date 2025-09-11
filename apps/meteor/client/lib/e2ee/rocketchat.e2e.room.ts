@@ -125,12 +125,12 @@ export class E2ERoom extends Emitter {
 		const nextState = filterMutation(currentState, requestedState);
 
 		if (!nextState) {
-			log('error', 'setState', { currentState, requestedState });
+			log('error', 'setState', `${currentState} -> ${requestedState}`);
 			return;
 		}
 
 		this.state = nextState;
-		log('info', 'setState', { currentState, nextState });
+		log('info', 'setState', `${currentState} -> ${nextState}`);
 		this.emit('STATE_CHANGED', currentState);
 		this.emit(nextState, this);
 	}

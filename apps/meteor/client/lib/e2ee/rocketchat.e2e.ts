@@ -138,7 +138,7 @@ class E2E extends Emitter {
 				await this.acceptSuggestedKey(sub.rid);
 				e2eRoom.keyReceived();
 			} else {
-				console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+				log('warn', 'Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
 				await this.rejectSuggestedKey(sub.rid);
 			}
 		}
@@ -196,7 +196,7 @@ class E2E extends Emitter {
 
 		this.state = nextState;
 
-		log('info', 'e2eStateChanged', { prevState, nextState });
+		log('info', 'e2eStateChanged', `${prevState} -> ${nextState}`);
 		this.emit('E2E_STATE_CHANGED', { prevState, nextState });
 
 		this.emit(nextState);
