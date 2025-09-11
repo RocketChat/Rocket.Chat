@@ -55,8 +55,8 @@ export interface LivechatEndpoints {
 
 	// POST
 	transferChat(
-		args: OperationParams<'POST', '/v1/livechat/room.transfer'>,
-	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.transfer'>>>;
+		args: OperationParams<'POST', '/v1/livechat/visitor/department.transfer'>,
+	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor/department.transfer'>>>;
 	grantVisitor(
 		guest: OperationParams<'POST', '/v1/livechat/visitor'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor'>>>;
