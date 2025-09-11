@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Base64 } from '@rocket.chat/base64';
-import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, AtLeast, INotificationDesktop } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, AtLeast } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { Optional } from '@tanstack/react-query';
 import EJSON from 'ejson';
@@ -201,17 +201,6 @@ export class E2ERoom extends Emitter {
 
 	set keyID(keyID) {
 		this[KEY_ID] = keyID;
-	}
-
-	async decryptDesktopNotification(notification: INotificationDesktop): Promise<INotificationDesktop> {
-		if (!this.isReady()) {
-			return notification;
-		}
-
-		const message = await this.decrypt(notification.payload.message.msg);
-		notification.text = typeof message.msg === 'undefined' ? message.text : message.msg;
-
-		return notification;
 	}
 
 	async decryptSubscription() {
@@ -722,20 +711,20 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Parses the message to extract the keyID and cipherText
-	parse(payload: string | { key_id: string; iv: string; ciphertext: string }): {
+	parse(payload: string | Required<IMessage>['content']): {
 		key_id: string;
 		iv: ArrayBuffer;
 		ciphertext: ArrayBuffer;
 	} {
 		// v2: {"key_id":"...", "iv": "...", "ciphertext":"..."}
-		if (typeof payload !== 'string') {
+		if (typeof payload !== 'string' && payload.algorithm === 'rc.v2.aes-sha2') {
 			const iv = Base64.decode(payload.iv).buffer;
 			const ciphertext = Base64.decode(payload.ciphertext).buffer;
 
 			return { key_id: payload.key_id, iv, ciphertext };
 		}
 		// v1: key_id + base64(vector + ciphertext)
-		const message = payload;
+		const message = typeof payload === 'string' ? payload : payload.ciphertext;
 		const key_id = message.slice(0, 12);
 		const [iv, ciphertext] = splitVectorAndEncryptedData(Base64.decode(message.slice(12)));
 		return {
@@ -745,7 +734,7 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
-	async decrypt(message: string | { key_id: string; iv: string; ciphertext: string }): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined } | { msg: string }> {
+	async decrypt(message: string | Required<IMessage>['content']): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined } | { msg: string }> {
 		const payload = this.parse(message);
 		log('info', 'Decrypting payload', payload);
 

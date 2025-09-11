@@ -64,6 +64,7 @@ export interface INotificationDesktop {
 		message: {
 			msg: IMessage['msg'];
 			t?: IMessage['t'];
+			content?: IMessage['content'];
 		};
 		audioNotificationValue: ISubscription['audioNotificationValue'];
 	};
