@@ -38,30 +38,7 @@ const NewCall = () => {
 			<WidgetFooter>
 				<ButtonGroup stretch>
 					<DevicePicker secondary />
-					<Button
-						medium
-						name='phone'
-						icon='phone'
-						success
-						flexGrow={1}
-						onClick={() => {
-							if (!peerInfo) {
-								return;
-							}
-
-							if ('userId' in peerInfo) {
-								onCall(peerInfo.userId, 'user');
-								return;
-							}
-
-							if ('number' in peerInfo) {
-								onCall(peerInfo.number, 'sip');
-								return;
-							}
-
-							throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
-						}}
-					>
+					<Button medium name='phone' icon='phone' success flexGrow={1} onClick={onCall}>
 						{t('Call')}
 					</Button>
 				</ButtonGroup>

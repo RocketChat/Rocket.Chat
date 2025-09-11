@@ -38,7 +38,7 @@ type MediaCallContextType = {
 	// onCall and onEndCall are used to start/accept and reject/end a call
 	onEndCall: () => void;
 	// TODO: Not sure if we need to pass the peerId to the callback, or if it should be a state stored somewhere else in the context.
-	onCall: (peerId: string, kind: 'user' | 'sip') => Promise<void>;
+	onCall: () => Promise<void>;
 	onAccept: () => Promise<void>;
 
 	onToggleWidget: (peerInfo?: PeerInfo) => void;
@@ -92,9 +92,6 @@ const getFirstOption = (filter: string): PeerAutocompleteOptions => {
 
 export const usePeerAutocomplete = () => {
 	const { getAutocompleteOptions, peerInfo, onSelectPeer } = useMediaCallContext();
-	// const [selected, setSelected] = useState<string | undefined>(
-	// 	contextPeerInfo && 'userId' in contextPeerInfo ? contextPeerInfo.userId : undefined,
-	// );
 	const [filter, setFilter] = useState('');
 
 	const debouncedFilter = useDebouncedValue(filter, 400);
@@ -113,30 +110,6 @@ export const usePeerAutocomplete = () => {
 		placeholderData: keepPreviousData,
 		initialData: [],
 	});
-
-	// const { data: peerInfo } = useQuery({
-	// 	queryKey: ['mediaCall/peerInfo', selected],
-	// 	queryFn: async () => {
-	// 		if (!selected) {
-	// 			return undefined;
-	// 		}
-
-	// 		const localInfo = options.find((option) => option.value === selected);
-
-	// 		if (localInfo) {
-	// 			return {
-	// 				name: localInfo.label,
-	// 				avatarUrl: localInfo.avatarUrl || '',
-	// 				identifier: localInfo.value || '',
-	// 			};
-	// 		}
-
-	// 		const peerInfo = await getPeerInfo(selected);
-
-	// 		return peerInfo;
-	// 	},
-	// 	enabled: !!selected,
-	// });
 
 	return {
 		options,

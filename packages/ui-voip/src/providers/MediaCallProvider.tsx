@@ -51,16 +51,31 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const onMute = () => session.toggleMute();
 	const onHold = () => session.toggleHold();
 
-	const onCall = async (_id: string, kind: 'user' | 'sip') => {
-		console.log('onCall', _id, kind);
+	const onCall = async () => {
 		if (session.state !== 'new') {
 			console.error('Cannot start call in state', session.state);
 			return;
 		}
 
-		const stream = await requestDevice({ actionType: 'outgoing' });
+		const { peerInfo } = session;
 
-		session.startCall(_id, kind, stream.getTracks()[0]);
+		if (!peerInfo) {
+			return;
+		}
+
+		if ('userId' in peerInfo) {
+			const stream = await requestDevice({ actionType: 'outgoing' });
+			session.startCall(peerInfo.userId, 'user', stream.getTracks()[0]);
+			return;
+		}
+
+		if ('number' in peerInfo) {
+			const stream = await requestDevice({ actionType: 'outgoing' });
+			session.startCall(peerInfo.number, 'sip', stream.getTracks()[0]);
+			return;
+		}
+
+		throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 	};
 
 	const onAccept = async () => {
