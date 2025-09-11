@@ -2,8 +2,6 @@ import type { HomeserverServices } from '@hs/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
-import { aclMiddleware } from '../middlewares';
-
 const SendTransactionParamsSchema = {
 	type: 'object',
 	properties: {
@@ -204,12 +202,119 @@ const ErrorResponseSchema = {
 
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
+const GetStateIdsParamsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+};
+
+const isGetStateIdsParamsProps = ajv.compile(GetStateIdsParamsSchema);
+
+const GetStateIdsResponseSchema = {
+	type: 'object',
+	properties: {
+		stateIds: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+};
+
+const isGetStateIdsResponseProps = ajv.compile(GetStateIdsResponseSchema);
+const GetStateParamsSchema = {
+	type: 'object',
+	properties: {
+		event_id: {
+			type: 'string',
+		},
+	},
+};
+const isGetStateParamsProps = ajv.compile(GetStateParamsSchema);
+
+const GetStateResponseSchema = {
+	type: 'object',
+	properties: {
+		state: {
+			type: 'object',
+		},
+	},
+};
+
+const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
+
+const PostTestBodySchema = {
+	type: 'object',
+	properties: {
+		method: {
+			type: 'string',
+		},
+		url: {
+			type: 'string',
+		},
+		params: {
+			type: 'object',
+		},
+		body: {
+			type: 'object',
+		},
+	},
+	required: ['method', 'url', 'params', 'body'],
+};
+
+const isPostTestBodyProps = ajv.compile(PostTestBodySchema);
+
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event, federationAuth, config } = services;
+	const { event, config, profile, request } = services;
+
+	setTimeout(() => {
+		request
+			.get('hs1', '/_matrix/federation/v1/state/!mFLsjoZaidTbBSrqDR:hs1', {
+				event_id: '$c82X1idu-opwTPzW-UA2TPvwm84GoRz8LaC8iCzKA1E',
+				// event_id: '$M4nL0zG1c4TlNBiSKqUqreTLuYnshCpunrLbOfboQRE',
+			})
+			.then((res) => {
+				console.log('res', JSON.stringify(res, null, 2));
+			})
+			.catch((err) => {
+				console.log('err', err);
+			});
+	}, 1000);
 
 	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
 		new Router('/federation')
+			.post(
+				'/test',
+				{
+					response: {
+						200: isPostTestBodyProps,
+					},
+				},
+				async (c) => {
+					try {
+						const { url, params } = await c.req.json();
+
+						return {
+							statusCode: 200,
+							body: await request.get('hs1', url, params),
+						};
+					} catch (error) {
+						console.log('error', error);
+						return {
+							statusCode: 500,
+							body: {
+								error,
+							},
+						};
+					}
+				},
+			)
 			.put(
 				'/v1/send/:txnId',
 				{
@@ -255,6 +360,49 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 				},
 			)
 
+			// GET /_matrix/federation/v1/state_ids/{roomId}
+
+			.get(
+				'/v1/state_ids/:roomId',
+				{
+					params: isGetStateIdsParamsProps,
+					response: {
+						200: isGetStateIdsResponseProps,
+					},
+				},
+				async (c) => {
+					const roomId = c.req.param('roomId');
+					const eventId = c.req.query('event_id');
+					const stateIds = await profile.getStateIds(roomId, eventId);
+
+					console.log('stateIds', eventId, stateIds);
+					return {
+						body: stateIds,
+						statusCode: 200,
+					};
+				},
+			)
+			.get(
+				'/v1/state/:roomId',
+				{
+					params: isGetStateParamsProps,
+					response: {
+						200: isGetStateResponseProps,
+					},
+				},
+				async (c) => {
+					const roomId = c.req.param('roomId');
+
+					const eventId = c.req.query('eventId');
+					const state = await profile.getState(roomId, eventId);
+
+					console.log('state', eventId, state);
+					return {
+						statusCode: 200,
+						body: state,
+					};
+				},
+			)
 			// GET /_matrix/federation/v1/event/{eventId}
 			.get(
 				'/v1/event/:eventId',
@@ -266,7 +414,6 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					tags: ['Federation'],
 					license: ['federation'],
 				},
-				aclMiddleware(federationAuth),
 				async (c) => {
 					const eventData = await event.getEventById(c.req.param('eventId'));
 					if (!eventData) {
