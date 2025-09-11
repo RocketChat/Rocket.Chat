@@ -14,6 +14,13 @@ type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	  }
 	| undefined
 >;
+interface Item {
+  _id: string;
+  sort?: number;
+  description?: string;
+  params?: string;
+  permission?: string;
+}
 
 type ComposerBoxPopupOptions<T extends { _id: string; sort?: number | undefined }> = ComposerPopupOption<T>;
 
@@ -85,13 +92,14 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		});
 	}, [items, option, suspended]);
 
-	const select = useEffectEvent((item: T) => {
+	
+	const select = useEffectEvent((item: Item) => { 
 		if (!option) {
 			throw new Error('No popup is open');
 		}
-
+		
 		if (commandsRef.current?.select) {
-			commandsRef.current.select(item);
+			commandsRef.current.select(item as T);
 		} else {
 			const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
 			const selector =
@@ -102,8 +110,14 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			if (!result || !value) {
 				return;
 			}
-
-			chat?.composer?.replaceText((option.prefix ?? option.trigger ?? '') + option.getValue(item) + (option.suffix ?? ''), {
+			
+			// [in en] questa è la funzione che permette di aggiornare il filtro cioè il testo della text area ogni volta che viene selezionato un elemnto del pupup
+			const formattedParams = item.params?.startsWith('@') || item.params?.startsWith('#') ? item.params.slice(1)+': '+item.params.charAt(0): item.params+': ';
+			chat?.composer?.replaceText(
+				(option.prefix ?? option.trigger ?? '') + 
+				option.getValue(item as T) + 
+				(option.suffix ?? '') + 
+				(option.trigger == '/' ? formattedParams : '' ), {
 				start: value.lastIndexOf(result[1] + result[2]),
 				end: chat?.composer?.selection.start,
 			});
@@ -143,6 +157,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 				option.matchSelectorRegex ??
 				(option.triggerAnywhere ? new RegExp(`(?:^| |\n)(${option.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${option.trigger})([^\\s]*$)`));
 			const result = value.match(selector);
+			
 			setFilter(commandsRef.current?.getFilter?.() ?? (result ? result[2] : ''));
 		}
 		return option;

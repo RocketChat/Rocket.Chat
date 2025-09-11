@@ -10,13 +10,20 @@ import { t } from '../../../../app/utils/lib/i18n';
 import type { ChatAPI } from '../ChatAPI';
 
 const parse = (msg: string): { command: string; params: string } | { command: SlashCommand; params: string } | undefined => {
-	const match = msg.match(/^\/([^\s]+)(.*)/);
+	//const match = msg.match(/^\/([^\s]+)(.*)/);
+	// if (!match) {
+	// 	return undefined;
+	// }
 
+	const match = msg.match(/^\/([^\s]*)\s*[^:]*:\s*(.*)$/);
 	if (!match) {
 		return undefined;
 	}
 
-	const [, cmd, params] = match;
+	const cmd = match[1]; 
+  	const params = match[2];
+
+	//const [, cmd, params] = match; //funziona grazie alla sintassi della regex
 	const command = slashCommands.commands[cmd];
 
 	if (!command) {
@@ -53,7 +60,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 	const { command, params } = match;
 
 	if (typeof command === 'string') {
-		if (!settings.get('Message_AllowUnrecognizedSlashCommand')) {
+		if (!settings.get('Message_Allo	wUnrecognizedSlashCommand')) {
 			await warnUnrecognizedSlashCommand(chat, t('No_such_command', { command: escapeHTML(command) }));
 			return true;
 		}
