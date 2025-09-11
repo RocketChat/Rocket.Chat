@@ -3842,6 +3842,40 @@ const LivechatTriggerWebhookCallParamsSchema = {
 
 export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWebhookCallParams>(LivechatTriggerWebhookCallParamsSchema);
 
+type POSTLivechatRoomsCloseAll = {
+	departmentIds: string[];
+};
+
+const POSTLivechatRoomsCloseAllSchema = {
+	type: 'object',
+	properties: {
+		departmentIds: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRoomsCloseAll = ajv.compile<POSTLivechatRoomsCloseAll>(POSTLivechatRoomsCloseAllSchema);
+
+const POSTLivechatRoomsCloseAllSuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		removedRooms: {
+			type: 'number',
+		},
+	},
+	required: ['roomsClosed'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRoomsCloseAllSuccessResponse = ajv.compile<{ removedRooms: number }>(
+	POSTLivechatRoomsCloseAllSuccessResponseSchema,
+);
+
 export type ILivechatContactWithManagerData = Omit<ILivechatContact, 'contactManager'> & {
 	contactManager?: Pick<IUser, '_id' | 'name' | 'username'>;
 };
