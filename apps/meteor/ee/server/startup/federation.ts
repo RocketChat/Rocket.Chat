@@ -1,5 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import { FederationMatrix } from '@rocket.chat/federation-matrix';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 
@@ -24,7 +25,7 @@ export const startFederationService = async (): Promise<void> => {
 		}
 
 		logger.debug('Starting federation-matrix service');
-		federationMatrixService = await FederationMatrix.create();
+		federationMatrixService = await FederationMatrix.create(InstanceStatus.id());
 
 		try {
 			api.registerService(federationMatrixService);
