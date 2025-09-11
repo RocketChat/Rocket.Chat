@@ -9,21 +9,16 @@ export class Stream {
 	}
 
 	public enable(): void {
-		this.enabled = true;
-		this.toggleAudioTracks();
+		this.setEnabled(true);
 	}
 
 	public disable(): void {
-		this.enabled = false;
-		this.toggleAudioTracks();
+		this.setEnabled(false);
 	}
 
 	public setEnabled(enabled: boolean): void {
-		if (enabled) {
-			this.enable();
-		} else {
-			this.disable();
-		}
+		this.enabled = enabled;
+		this.toggleAudioTracks();
 	}
 
 	public stopAudio(): void {
@@ -46,7 +41,6 @@ export class Stream {
 				return;
 			}
 
-			track.stop();
 			this.mediaStream.removeTrack(track);
 		});
 	}

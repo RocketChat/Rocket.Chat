@@ -3,7 +3,6 @@ import type { Emitter } from '@rocket.chat/emitter';
 import type { IClientMediaCall } from '../../call';
 import type { IMediaSignalLogger } from '../../logger';
 import type { IServiceProcessor, ServiceProcessorEvents } from '../IServiceProcessor';
-import type { MediaStreamFactory } from '../MediaStreamFactory';
 
 export type WebRTCInternalStateMap = {
 	signaling: RTCSignalingState;
@@ -35,7 +34,6 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 }
 
 export type WebRTCProcessorConfig = {
-	mediaStreamFactory?: MediaStreamFactory;
 	call: IClientMediaCall;
 	inputTrack: MediaStreamTrack | null;
 	iceGatheringTimeout: number;

@@ -1,4 +1,4 @@
-import type { IMediaCall, MediaCallActorType, MediaCallSignedActor, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, MediaCallActorType, MediaCallContact, MediaCallSignedActor } from '@rocket.chat/core-typings';
 import type { Document, FindCursor, FindOptions, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -18,7 +18,7 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	activateCallById(callId: string, expiresAt: Date): Promise<UpdateResult>;
 	setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult>;
 	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<UpdateResult>;
-	transferCallById(callId: string, params: { by: MediaCallSignedActor; to: MediaCallSignedContact }): Promise<UpdateResult>;
+	transferCallById(callId: string, params: { by: MediaCallSignedActor; to: MediaCallContact }): Promise<UpdateResult>;
 	findAllExpiredCalls<T extends Document = IMediaCall>(options: FindOptions<T> | undefined): FindCursor<T>;
 	hasUnfinishedCalls(): Promise<boolean>;
 }

@@ -53,6 +53,6 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	/** transfered* fields are filled as soon as the transfer is requested, but the old call will only end when the new one is created */
 	transferedBy?: MediaCallSignedActor;
-	transferedTo?: MediaCallSignedContact;
+	transferedTo?: MediaCallContact;
 	transferedAt?: Date;
 }

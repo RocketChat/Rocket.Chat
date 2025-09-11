@@ -13,7 +13,7 @@ import type {
 	CallActorType,
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
-import type { IWebRTCProcessor, MediaStreamFactory, WebRTCInternalStateMap } from '../definition/services';
+import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { mergeContacts } from './utils/mergeContacts';
 import type { IMediaSignalLogger } from '../definition/logger';
 import { isPendingState } from './services/states';
@@ -29,7 +29,6 @@ export interface IClientMediaCallConfig {
 	logger?: IMediaSignalLogger;
 	transporter: MediaSignalTransportWrapper;
 	processorFactories: IServiceProcessorFactoryList;
-	mediaStreamFactory?: MediaStreamFactory;
 
 	iceGatheringTimeout: number;
 }
@@ -249,10 +248,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 
-		if (!this.inputTrack && oldCall?.inputTrack) {
-			this.inputTrack = oldCall.inputTrack;
-		}
-
 		this.changeContact(signal.contact);
 
 		if (this._role === 'caller' && !this.acceptedLocally) {
@@ -297,6 +292,30 @@ export class ClientMediaCall implements IClientMediaCall {
 		await this.processEarlySignals();
 	}
 
+	public mayNeedInputTrack(): boolean {
+		if (this.isOver() || this._ignored || this.hidden) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public needsInputTrack(): boolean {
+		if (!this.mayNeedInputTrack()) {
+			return false;
+		}
+
+		return ['active', 'renegotiating'].includes(this._state);
+	}
+
+	public hasInputTrack(): boolean {
+		return Boolean(this.inputTrack);
+	}
+
+	public isMissingInputTrack(): boolean {
+		return !this.hasInputTrack() && this.mayNeedInputTrack();
+	}
+
 	public getClientState(): ClientState {
 		if (this.isOver()) {
 			return 'hangup';
@@ -337,16 +356,11 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
-		const oldId = this.inputTrack?.id;
-		const newId = newInputTrack?.id;
+		this.config.logger?.debug('ClientMediaCall.setInputTrack');
 
 		this.inputTrack = newInputTrack;
 		if (this.webrtcProcessor) {
 			await this.webrtcProcessor.setInputTrack(newInputTrack);
-		}
-
-		if (oldId !== newId) {
-			this.emitter.emit('trackStateChange');
 		}
 	}
 
@@ -998,7 +1012,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private clearStateReporter(): void {
-		this.config.logger?.debug('ClientMediaCall.clearStateReporter');
 		if (this.stateReporterTimeoutHandler) {
 			clearTimeout(this.stateReporterTimeoutHandler);
 			this.stateReporterTimeoutHandler = null;
@@ -1006,7 +1019,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private requestStateReport(): void {
-		this.config.logger?.debug('ClientMediaCall.requestStateReport');
 		this.clearStateReporter();
 		if (!this.mayReportStates) {
 			return;
@@ -1029,7 +1041,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		const {
-			mediaStreamFactory,
 			logger,
 			processorFactories: { webrtc: webrtcFactory },
 			iceGatheringTimeout,
@@ -1039,7 +1050,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
+		this.webrtcProcessor = webrtcFactory({ logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
 		this.webrtcProcessor.emitter.on('internalError', (event) => this.onWebRTCInternalError(event));
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 		this.webrtcProcessor.emitter.on('negotiationNeeded', () => this.onWebRTCNegotiationNeeded());

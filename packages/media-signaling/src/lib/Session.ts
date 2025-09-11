@@ -31,7 +31,7 @@ export type MediaSignalingSessionConfig = {
 	oldSessionId?: string;
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
-	mediaStreamFactory?: MediaStreamFactory;
+	mediaStreamFactory: MediaStreamFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
 };
@@ -54,6 +54,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private callCount = 0;
 
+	private inputTrack: MediaStreamTrack | null;
+
+	private updatingInputTrack: boolean;
+
+	private deviceId: ConstrainDOMString | null;
+
+	private currentDeviceId: ConstrainDOMString | null;
+
+	private callsToGetUserMedia: number;
+
 	public get sessionId(): string {
 		return this._sessionId;
 	}
@@ -70,6 +80,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.recurringStateReportHandler = null;
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
+		this.inputTrack = null;
+		this.updatingInputTrack = false;
+		this.deviceId = null;
+		this.currentDeviceId = null;
+		this.callsToGetUserMedia = 0;
 
 		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
 
@@ -145,16 +160,26 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.processSignal(signal, oldCall);
 	}
 
-	public async startCall(
-		calleeType: CallActorType,
-		calleeId: string,
-		params: { contactInfo?: CallContact; inputTrack?: MediaStreamTrack | null } = {},
-	): Promise<void> {
+	public async setDeviceId(deviceId: ConstrainDOMString | null): Promise<void> {
+		this.deviceId = deviceId;
+		// do nothing if:
+		// 1. doesn't have any input track yet
+		// 2. it's the same device id
+		// 3. has no restriction on which device to use
+		if (!this.inputTrack || deviceId === this.currentDeviceId || !deviceId) {
+			return;
+		}
+
+		await this.setInputTrack(null);
+		await this.startInputTrack();
+	}
+
+	public async startCall(calleeType: CallActorType, calleeId: string, params: { contactInfo?: CallContact } = {}): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
-		const { contactInfo, ...callParams } = params;
+		const { contactInfo } = params;
 
 		const callId = this.createTemporaryCallId();
-		const call = this.createCall(callId, callParams);
+		const call = this.createCall(callId);
 
 		await call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
 	}
@@ -228,7 +253,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return existingCall;
 		}
 
-		return this.createCall(signal.callId, { inputTrack: null });
+		return this.createCall(signal.callId);
 	}
 
 	private reportState(): void {
@@ -250,17 +275,133 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		});
 	}
 
-	private createCall(callId: string, { inputTrack }: { inputTrack?: MediaStreamTrack | null } = {}): ClientMediaCall {
+	private async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.setInputTrack');
+		const { inputTrack: oldInputTrack } = this;
+		if (newInputTrack === oldInputTrack) {
+			return;
+		}
+
+		this.inputTrack = newInputTrack;
+
+		for await (const call of this.knownCalls.values()) {
+			await call.setInputTrack(newInputTrack);
+		}
+
+		if (oldInputTrack) {
+			oldInputTrack.stop();
+		}
+	}
+
+	private requestInputTrackUpdate(): void {
+		if (this.updatingInputTrack || this.callsToGetUserMedia > 0) {
+			return;
+		}
+
+		this.updateInputTrack().catch(() => null);
+	}
+
+	private async updateInputTrack(): Promise<void> {
+		this.updatingInputTrack = true;
+
+		try {
+			if (this.inputTrack) {
+				await this.maybeStopInputTrack();
+				return;
+			}
+
+			await this.maybeStartInputTrack();
+		} finally {
+			this.updatingInputTrack = this.callsToGetUserMedia > 0;
+		}
+	}
+
+	private async maybeStartInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.maybeStartInputTrack');
+		for (const call of this.knownCalls.values()) {
+			if (!call.mayNeedInputTrack()) {
+				continue;
+			}
+
+			return this.startInputTrack();
+		}
+	}
+
+	private getAudioConstraints(): boolean | MediaTrackConstraints {
+		if (this.deviceId) {
+			return { deviceId: this.deviceId };
+		}
+
+		return true;
+	}
+
+	private async startInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.startInputTrack');
+
+		this.currentDeviceId = this.deviceId;
+
+		let userMedia: MediaStream | null = null;
+		this.callsToGetUserMedia++;
+		try {
+			userMedia = await this.config.mediaStreamFactory({ audio: this.getAudioConstraints() }).catch(() => null);
+		} finally {
+			this.callsToGetUserMedia--;
+		}
+
+		// If there's multiple simultaneous attempts to get the track, only process the output of the last one
+		if (this.callsToGetUserMedia > 0) {
+			return;
+		}
+
+		if (!userMedia) {
+			return this.hangupCallsThatNeedInput();
+		}
+
+		const tracks = userMedia.getAudioTracks();
+		if (!tracks.length) {
+			return this.hangupCallsThatNeedInput();
+		}
+
+		return this.setInputTrack(tracks[0]);
+	}
+
+	private hangupCallsThatNeedInput(): void {
+		this.config.logger?.debug('MediaSignalingSession.hangupCallsThatNeedInput');
+
+		for (const call of this.knownCalls.values()) {
+			if (!call.needsInputTrack()) {
+				continue;
+			}
+
+			try {
+				call.hangup('service-error');
+			} catch {
+				//
+			}
+		}
+	}
+
+	private async maybeStopInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.maybeStopInputTrack');
+		for (const call of this.knownCalls.values()) {
+			if (call.mayNeedInputTrack()) {
+				return;
+			}
+		}
+
+		await this.setInputTrack(null);
+	}
+
+	private createCall(callId: string): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
 			logger: this.config.logger,
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,
-			mediaStreamFactory: this.config.mediaStreamFactory,
-			iceGatheringTimeout: this.config.iceGatheringTimeout || 500,
+			iceGatheringTimeout: this.config.iceGatheringTimeout || 1000,
 		};
 
-		const call = new ClientMediaCall(config, callId, { inputTrack: inputTrack || null });
+		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack });
 		this.knownCalls.set(callId, call);
 
 		call.emitter.on('contactUpdate', () => this.onCallContactUpdate(call));
@@ -362,5 +503,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onSessionStateChange(): void {
 		this.emit('sessionStateChange');
+		this.requestInputTrackUpdate();
 	}
 }
