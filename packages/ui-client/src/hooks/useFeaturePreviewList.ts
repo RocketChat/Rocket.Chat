@@ -5,7 +5,8 @@ export type FeaturesAvailable =
 	| 'enable-timestamp-message-parser'
 	| 'contextualbarResizable'
 	| 'newNavigation'
-	| 'secondarySidebar';
+	| 'secondarySidebar'
+	| 'expandableMessageComposer';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -72,6 +73,14 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 			name: 'newNavigation',
 			value: true,
 		},
+	},
+	{
+		name: 'expandableMessageComposer',
+		i18n: 'Expandable_message_composer',
+		description: 'Expandable_message_composer_description',
+		group: 'Message',
+		value: false,
+		enabled: true,
 	},
 ];
 

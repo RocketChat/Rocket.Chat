@@ -2024,6 +2024,8 @@
   "Execute_Synchronization_Now": "Execute Synchronization Now",
   "Exit_Full_Screen": "Exit Full Screen",
   "Expand": "Expand",
+  "Expandable_message_composer": "Expandable Message Composer",
+  "Expandable_message_composer_description": "Adds a button to expand the message composer vertically",
   "Expand_group": "Expand {{group}}",
   "Expand_all": "Expand all",
   "Expand_view": "Expand view",
