@@ -97,7 +97,7 @@ export const createDepartmentWithMethod = ({
 			});
 	});
 
-type OnlineAgent = {
+export type OnlineAgent = {
 	user: WithRequiredProperty<IUser, 'username'>;
 	credentials: Credentials;
 };

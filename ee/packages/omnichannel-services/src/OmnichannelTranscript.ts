@@ -8,17 +8,18 @@ import {
 	Settings as settingsService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import type { IMessage, IUpload, ILivechatAgent, AtLeast, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IUpload, ILivechatAgent, AtLeast, IOmnichannelRoom, IUser, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
+import type { MessageData, Quote, WorkerData } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
-import type i18n from 'i18next';
+import type { TFunction, i18n } from 'i18next';
 
-import { getAllSystemMessagesKeys, getSystemMessage } from './livechatSystemMessages';
-import type { MessageData, WorkDetailsWithSource, WorkerData, Quote } from './localTypes';
+import type { WorkDetailsWithSource } from './localTypes';
 import { isPromiseRejectedResult } from './localTypes';
 
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
@@ -32,28 +33,26 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	currentJobNumber = 0;
 
-	private translations?: Array<{ key: string; value: string }> = undefined;
-
 	constructor(
-		loggerClass: typeof Logger,
+		loggerConstructor: typeof Logger,
 		// Instance of i18n. Should already be init'd and loaded with the translation files
-		private readonly translator: typeof i18n,
+		private readonly translator: i18n,
 	) {
 		super();
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
-		this.log = new loggerClass('OmnichannelTranscript');
+		this.log = new loggerConstructor('OmnichannelTranscript');
 	}
 
-	async getTimezone(user?: AtLeast<ILivechatAgent, 'utcOffset'> | null): Promise<string> {
-		const reportingTimezone = await settingsService.get('Default_Timezone_For_Reporting');
+	async getTimezone(agent?: AtLeast<ILivechatAgent, 'utcOffset'> | null): Promise<string> {
+		const reportingTimezone = await settingsService.get<'server' | 'custom' | 'user'>('Default_Timezone_For_Reporting');
 
 		switch (reportingTimezone) {
 			case 'custom':
 				return settingsService.get<string>('Default_Custom_Timezone');
 			case 'user':
-				if (user?.utcOffset) {
-					return guessTimezoneFromOffset(user.utcOffset);
+				if (agent?.utcOffset) {
+					return guessTimezoneFromOffset(agent.utcOffset);
 				}
 				return guessTimezone();
 			default:
@@ -116,36 +115,30 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return quotes;
 	}
 
-	private getSystemMessage(message: IMessage, serverLanguage: string): false | MessageData {
-		if (!message.t) {
-			return false;
-		}
+	private getSystemMessage(message: IMessage, t: TFunction): MessageData | undefined {
+		if (!message.t) return undefined;
 
-		const systemMessageDefinition = getSystemMessage(message.t);
+		const systemMessageDefinition = MessageTypes.getType(message);
 
-		if (!systemMessageDefinition) {
-			return false;
-		}
-
-		const args = systemMessageDefinition.data && systemMessageDefinition?.data(message, this.translator.t.bind(this.translator));
-
-		const systemMessage = this.translator.t(systemMessageDefinition.message, { lng: serverLanguage, ...args });
+		if (!systemMessageDefinition) return undefined;
 
 		return {
 			...message,
-			msg: systemMessage,
-			files: [],
-			quotes: [],
+			msg: systemMessageDefinition.text(t, message),
 		};
 	}
 
-	async getMessagesData(messages: IMessage[], serverLanguage: string): Promise<MessageData[]> {
+	async getMessagesData(messages: IMessage[], t: TFunction): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
-			const systemMessage = this.getSystemMessage(message, serverLanguage);
+			const systemMessage = this.getSystemMessage(message, t);
 
 			if (systemMessage) {
-				messagesData.push(systemMessage);
+				messagesData.push({
+					...systemMessage,
+					files: systemMessage.files ?? [],
+					quotes: systemMessage.quotes ?? [],
+				});
 				continue;
 			}
 
@@ -169,7 +162,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}
 
 				if (!isFileAttachment(attachment)) {
-					this.log.error(`Invalid attachment type ${(attachment as any).type} for file ${attachment.title} in room ${message.rid}!`);
+					this.log.error(
+						`Invalid attachment type ${(attachment as { type?: string }).type} for file ${attachment.title} in room ${message.rid}!`,
+					);
 					// ignore other types of attachments
 					continue;
 				}
@@ -238,10 +233,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
 			// Remove nulls from final array
 			messagesData.push({
-				_id: message._id,
 				msg,
 				u: message.u,
-				files: files.filter(Boolean),
+				files,
 				quotes,
 				ts: message.ts,
 				md: message.md,
@@ -249,51 +243,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 
 		return messagesData;
-	}
-
-	private getAllTranslations(language: string): Array<{ key: string; value: string }> {
-		const keys: string[] = [
-			'Agent',
-			'Date',
-			'Customer',
-			'Not_assigned',
-			'Time',
-			'Chat_transcript',
-			'This_attachment_is_not_supported',
-			'Livechat_transfer_to_agent',
-			'Livechat_transfer_to_agent_with_a_comment',
-			'Livechat_transfer_to_department',
-			'Livechat_transfer_to_department_with_a_comment',
-			'Livechat_transfer_return_to_the_queue',
-			'Livechat_transfer_return_to_the_queue_with_a_comment',
-			'Livechat_transfer_to_agent_auto_transfer_unanswered_chat',
-			'Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat',
-			'Livechat_visitor_transcript_request',
-			'Livechat_user_sent_chat_transcript_to_visitor',
-			'WebRTC_call_ended_message',
-			'WebRTC_call_declined_message',
-			'Without_SLA',
-			'Unknown_User',
-			'Livechat_transfer_failed_fallback',
-			'Unprioritized',
-			'Unknown_User',
-			'Without_priority',
-			...getAllSystemMessagesKeys(),
-		];
-
-		return keys.map((key) => ({
-			key,
-			value: this.translator.t(key, { lng: language }),
-		}));
-	}
-
-	private loadTranslations(serverLanguage: string) {
-		this.log.info({ msg: 'Loading translations', serverLanguage });
-		if (!this.translations) {
-			this.translations = this.getAllTranslations(serverLanguage);
-		}
-
-		return this.translations;
 	}
 
 	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
@@ -304,12 +253,18 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 		this.currentJobNumber++;
 		// TODO: cache these with mem
-		const [siteName, dateFormat, timeAndDateFormat, language] = await Promise.all([
+		const [siteName, dateFormat, timeAndDateFormat, serverLanguage] = await Promise.all([
 			settingsService.get<string>('Site_Name'),
 			settingsService.get<string>('Message_DateFormat'),
 			settingsService.get<string>('Message_TimeAndDateFormat'),
 			settingsService.get<string>('Language'),
 		]);
+
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'language'>>(details.userId, { projection: { _id: 1, language: 1 } });
+		if (!user) return;
+
+		const language = user.language ?? serverLanguage;
+		const i18n = this.translator.cloneInstance({ lng: language });
 
 		try {
 			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'v' | 'pdfTranscriptFileId' | 'closedAt' | 'servedBy'>>(
@@ -327,17 +282,24 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			}
 			const messages = await this.getMessagesFromRoom({ rid: room._id });
 
-			const visitor =
-				room.v &&
-				(await LivechatVisitors.findOneEnabledById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } }));
-			const agent =
-				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
+			const visitor = room.v
+				? await LivechatVisitors.findOneEnabledById<Pick<ILivechatVisitor, '_id' | 'name' | 'username' | 'visitorEmails'>>(room.v._id, {
+						projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 },
+					})
+				: null;
+			const agent = room.servedBy
+				? await Users.findOneAgentById<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'utcOffset'>>(room.servedBy._id, {
+						projection: { _id: 1, name: 1, username: 1, utcOffset: 1 },
+					})
+				: null;
 
-			const messagesData = await this.getMessagesData(messages, language);
+			const messagesData = await this.getMessagesData(messages, i18n.t);
 
 			const timezone = await this.getTimezone(agent);
-			const translations = this.loadTranslations(language);
-			const data = {
+
+			this.log.info({ msg: 'Loading translations', language });
+
+			const data: WorkerData = {
 				visitor,
 				agent,
 				closedAt: room.closedAt,
@@ -346,22 +308,20 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				dateFormat,
 				timeAndDateFormat,
 				timezone,
-				translations,
-				serverLanguage: language,
 			};
 
-			await this.doRender({ data, details });
+			await this.doRender({ data, details, i18n });
 		} catch (error) {
-			await this.pdfFailed({ details, e: error as Error, serverLanguage: language });
+			await this.pdfFailed({ details, e: error as Error, i18n });
 		} finally {
 			this.currentJobNumber--;
 		}
 	}
 
-	async doRender({ data, details }: { data: WorkerData; details: WorkDetailsWithSource }): Promise<void> {
-		const transcriptText = this.translator.t('Transcript', { lng: data.serverLanguage });
+	private async doRender({ data, details, i18n }: { data: WorkerData; details: WorkDetailsWithSource; i18n: i18n }): Promise<void> {
+		const transcriptText = i18n.t('Transcript');
 
-		const stream = await this.worker.renderToStream({ data });
+		const stream = await this.worker.renderToStream({ data, i18n });
 		const outBuff = await streamToBuffer(stream as Readable);
 
 		try {
@@ -373,29 +333,16 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				data,
 				transcriptText,
 			});
-			await this.pdfComplete({ details, transcriptFile, rocketCatFile, serverLanguage: data.serverLanguage });
-		} catch (e: any) {
-			this.pdfFailed({ details, e, serverLanguage: data.serverLanguage });
+			await this.pdfComplete({ details, transcriptFile, rocketCatFile, i18n });
+		} catch (error) {
+			this.pdfFailed({ details, e: error as Error, i18n });
 		}
 	}
 
-	private async pdfFailed({
-		details,
-		e,
-		serverLanguage,
-	}: {
-		details: WorkDetailsWithSource;
-		e: Error;
-		serverLanguage: string;
-	}): Promise<void> {
+	private async pdfFailed({ details, e, i18n }: { details: WorkDetailsWithSource; e: Error; i18n: i18n }): Promise<void> {
 		this.log.error(`Transcript for room ${details.rid} by user ${details.userId} - Failed: ${e.message}`);
 		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id'>>(details.rid, { projection: { _id: 1 } });
 		if (!room) {
-			return;
-		}
-		// TODO: fix types of translate service (or deprecate, if possible)
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'language'>>(details.userId, { projection: { _id: 1, language: 1 } });
-		if (!user) {
 			return;
 		}
 
@@ -404,7 +351,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		await messageService.sendMessage({
 			fromId: 'rocket.cat',
 			rid,
-			msg: `${this.translator.t('pdf_error_message', { lng: user.language || serverLanguage, fallbackLng: 'en' })}: ${e.message}`,
+			msg: `${i18n.t('pdf_error_message')}: ${e.message}`,
 		});
 	}
 
@@ -418,7 +365,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		details: WorkDetailsWithSource;
 		buffer: Buffer;
 		roomIds: string[];
-		data: any;
+		data: Pick<WorkerData, 'siteName' | 'visitor'>;
 		transcriptText: string;
 	}): Promise<IUpload[]> {
 		return Promise.all(
@@ -446,18 +393,15 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		details,
 		transcriptFile,
 		rocketCatFile,
-		serverLanguage,
+		i18n,
 	}: {
 		details: WorkDetailsWithSource;
 		transcriptFile: IUpload;
 		rocketCatFile: IUpload;
-		serverLanguage: string;
+		i18n: i18n;
 	}): Promise<void> {
 		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
-		const user = await Users.findOneById(details.userId);
-		if (!user) {
-			return;
-		}
+
 		// Send the file to the livechat room where this was requested, to keep it in context
 		try {
 			await LivechatRooms.setPdfTranscriptFileIdById(details.rid, transcriptFile._id);
@@ -470,7 +414,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					file: transcriptFile,
 					message: {
 						// Translate from service
-						msg: this.translator.t('pdf_success_message', { lng: serverLanguage }),
+						msg: i18n.t('pdf_success_message'),
 					},
 				}),
 				// Send the file to the user who requested it, so they can download it
@@ -480,7 +424,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					file: rocketCatFile,
 					message: {
 						// Translate from service
-						msg: this.translator.t('pdf_success_message', { lng: user.language || serverLanguage, fallbackLng: 'en' }),
+						msg: i18n.t('pdf_success_message'),
 					},
 				}),
 			]);

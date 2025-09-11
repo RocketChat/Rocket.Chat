@@ -1,8 +1,8 @@
 import { defaultFeaturesPreview, FeaturePreviewBadge } from '@rocket.chat/ui-client';
 
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/client';
-import { settings } from '../../../app/settings/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
+import { settings } from '../../lib/settings';
 
 export const {
 	registerSidebarItem: registerAccountSidebarItem,
@@ -14,7 +14,7 @@ export const {
 		href: '/account/profile',
 		i18nLabel: 'Profile',
 		icon: 'user',
-		permissionGranted: (): boolean => settings.get('Accounts_AllowUserProfileChange'),
+		permissionGranted: (): boolean => settings.watch('Accounts_AllowUserProfileChange') ?? true,
 	},
 	{
 		href: '/account/preferences',
@@ -26,15 +26,15 @@ export const {
 		i18nLabel: 'Security',
 		icon: 'lock',
 		permissionGranted: (): boolean =>
-			settings.get('Accounts_TwoFactorAuthentication_Enabled') ||
-			settings.get('E2E_Enable') ||
-			settings.get('Accounts_AllowPasswordChange'),
+			(settings.watch('Accounts_TwoFactorAuthentication_Enabled') ?? true) ||
+			(settings.watch('E2E_Enable') ?? false) ||
+			(settings.watch('Accounts_AllowPasswordChange') ?? true),
 	},
 	{
 		href: '/account/integrations',
 		i18nLabel: 'Integrations',
 		icon: 'code',
-		permissionGranted: (): boolean => settings.get('Webdav_Integration_Enabled'),
+		permissionGranted: (): boolean => settings.watch('Webdav_Integration_Enabled') ?? false,
 	},
 	{
 		href: '/account/tokens',
@@ -53,7 +53,7 @@ export const {
 		i18nLabel: 'Feature_preview',
 		icon: 'flask',
 		badge: () => <FeaturePreviewBadge />,
-		permissionGranted: () => settings.get('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
+		permissionGranted: () => settings.watch('Accounts_AllowFeaturePreview') && defaultFeaturesPreview?.length > 0,
 	},
 	{
 		href: '/account/accessibility-and-appearance',
