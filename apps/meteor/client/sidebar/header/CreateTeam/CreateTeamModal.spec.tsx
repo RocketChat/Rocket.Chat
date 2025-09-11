@@ -3,15 +3,11 @@ import { composeStories } from '@storybook/react';
 import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
-import CreateChannelModal from './CreateChannelModal';
-import * as stories from './CreateChannelModal.stories';
-import { testCreateChannelModal } from '../../../NavBarV2/NavBarPagesGroup/actions/testCreateChannelModal';
+import * as stories from './CreateTeamModal.stories';
 
 jest.mock('../../../lib/utils/goToRoomById', () => ({
 	goToRoomById: jest.fn(),
 }));
-
-testCreateChannelModal(CreateChannelModal);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 

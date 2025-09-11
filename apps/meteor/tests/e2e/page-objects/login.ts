@@ -20,6 +20,7 @@ export class LoginPage {
 
 	protected async waitForLogin() {
 		await expect(this.loginButton).not.toBeVisible();
+		await expect(this.page.getByRole('main')).toBeVisible();
 	}
 
 	async loginByUserState(userState: IUserState) {

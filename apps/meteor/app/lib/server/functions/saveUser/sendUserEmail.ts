@@ -1,4 +1,5 @@
 import { MeteorError } from '@rocket.chat/core-services';
+import { Meteor } from 'meteor/meteor';
 
 import type { SaveUserData } from './saveUser';
 import * as Mailer from '../../../../mailer/server/api';
