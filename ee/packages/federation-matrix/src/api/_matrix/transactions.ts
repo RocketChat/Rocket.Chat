@@ -202,8 +202,55 @@ const ErrorResponseSchema = {
 
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
+const GetStateIdsParamsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId'],
+};
+
+const isGetStateIdsParamsProps = ajv.compile(GetStateIdsParamsSchema);
+
+const GetStateIdsResponseSchema = {
+	type: 'object',
+	properties: {
+		stateIds: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+};
+
+const isGetStateIdsResponseProps = ajv.compile(GetStateIdsResponseSchema);
+const GetStateParamsSchema = {
+	type: 'object',
+	properties: {
+		event_id: {
+			type: 'string',
+		},
+	},
+};
+const isGetStateParamsProps = ajv.compile(GetStateParamsSchema);
+
+const GetStateResponseSchema = {
+	type: 'object',
+	properties: {
+		state: {
+			type: 'object',
+		},
+	},
+};
+
+const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
+
+
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event, config } = services;
+	const { event, config, profile } = services;
 
 	// PUT /_matrix/federation/v1/send/{txnId}
 	return (
@@ -253,6 +300,49 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 				},
 			)
 
+			// GET /_matrix/federation/v1/state_ids/{roomId}
+
+			.get(
+				'/v1/state_ids/:roomId',
+				{
+					params: isGetStateIdsParamsProps,
+					response: {
+						200: isGetStateIdsResponseProps,
+					},
+				},
+				async (c) => {
+					const roomId = c.req.param('roomId');
+					const eventId = c.req.query('event_id');
+					const stateIds = await profile.getStateIds(roomId, eventId);
+
+					console.log('stateIds', eventId, stateIds);
+					return {
+						body: stateIds,
+						statusCode: 200,
+					};
+				},
+			)
+			.get(
+				'/v1/state/:roomId',
+				{
+					params: isGetStateParamsProps,
+					response: {
+						200: isGetStateResponseProps,
+					},
+				},
+				async (c) => {
+					const roomId = c.req.param('roomId');
+
+					const eventId = c.req.query('eventId');
+					const state = await profile.getState(roomId, eventId);
+
+					console.log('state', eventId, state);
+					return {
+						statusCode: 200,
+						body: state,
+					};
+				},
+			)
 			// GET /_matrix/federation/v1/event/{eventId}
 			.get(
 				'/v1/event/:eventId',
