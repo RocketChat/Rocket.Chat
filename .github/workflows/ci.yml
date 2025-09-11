@@ -883,7 +883,8 @@ jobs:
       - docker-image-publish
 
     uses: ./.github/workflows/update-version-durability.yml
-    secrets:
+    with:
       LTS_VERSIONS: ${{ vars.LTS_VERSIONS }}
+    secrets:
       CI_PAT: ${{ secrets.CI_PAT }}
       D360_TOKEN: ${{ secrets.D360_TOKEN }}
