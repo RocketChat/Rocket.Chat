@@ -40,7 +40,7 @@ export const useMediaCallAction = (direct = false): { title: string; icon: IconN
 
 		return {
 			title: t('New_voice_call'),
-			icon: direct ? 'dialpad' : 'phone-out',
+			icon: direct ? 'phone' : 'dialpad',
 			action: (callee?: PeerInfo) => onToggleWidget(callee),
 		};
 	}, [direct, onEndCall, onToggleWidget, peerInfo, state, t]);
