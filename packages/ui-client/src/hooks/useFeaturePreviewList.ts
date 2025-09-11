@@ -78,6 +78,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		name: 'expandableMessageComposer',
 		i18n: 'Expandable_message_composer',
 		description: 'Expandable_message_composer_description',
+		imageUrl: 'images/featurePreview/expandable-composer.png',
 		group: 'Message',
 		value: false,
 		enabled: true,
