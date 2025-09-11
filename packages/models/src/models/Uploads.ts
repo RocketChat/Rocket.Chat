@@ -47,6 +47,10 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		});
 	}
 
+	findByFederationMxcUri(mxcUri: string): Promise<IUpload | null> {
+		return this.findOne({ 'federation.mxcUri': mxcUri });
+	}
+
 	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
 		return this.findPaginated(
 			{

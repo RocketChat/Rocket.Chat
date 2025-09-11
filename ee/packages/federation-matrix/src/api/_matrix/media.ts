@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 
-import { extractSignaturesFromHeader, validateAuthorizationHeader } from '@hs/core';
 import type { HomeserverServices } from '@hs/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
@@ -11,7 +10,7 @@ import { MatrixMediaService } from '../../services/MatrixMediaService';
 import type { IUploadWithFederation } from '../../types/IUploadWithFederation';
 
 const logger = new Logger('federation-matrix:media');
-const ENFORCE_FEDERATION_VERIFICATION = process.env.ENFORCE_FEDERATION_VERIFICATION === 'true';
+
 const MediaDownloadParamsSchema = {
 	type: 'object',
 	properties: {
@@ -38,90 +37,6 @@ const BufferResponseSchema = {
 const isMediaDownloadParamsProps = ajv.compile(MediaDownloadParamsSchema);
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 const isBufferResponseProps = ajv.compile(BufferResponseSchema);
-
-// TODO: Move to homeserver
-async function verifyMatrixSignature(
-	homeserverServices: HomeserverServices,
-	authHeader: string,
-	method: string,
-	uri: string,
-	body?: any,
-): Promise<{ isValid: boolean; origin?: string; error?: string }> {
-	try {
-		const { origin, destination, key, signature } = extractSignaturesFromHeader(authHeader);
-		const ourServerName = homeserverServices.config.serverName;
-
-		if (destination !== ourServerName) {
-			return {
-				isValid: false,
-				error: `Destination mismatch: expected ${ourServerName}, got ${destination}`,
-			};
-		}
-
-		let publicKey: string;
-		try {
-			const keyResponse = await fetch(`https://${origin}/_matrix/key/v2/server`);
-			if (!keyResponse.ok) {
-				throw new Error(`Failed to fetch keys from ${origin}: ${keyResponse.status}`);
-			}
-
-			const keyData = (await keyResponse.json()) as any;
-			if (!keyData.verify_keys || !keyData.verify_keys[key]) {
-				throw new Error(`Key ${key} not found in response from ${origin}`);
-			}
-
-			publicKey = keyData.verify_keys[key].key;
-		} catch (fetchError) {
-			logger.error('Failed to fetch public key from origin server', {
-				origin,
-				keyId: key,
-				error: fetchError instanceof Error ? fetchError.message : 'Unknown error',
-			});
-
-			if (!ENFORCE_FEDERATION_VERIFICATION) {
-				logger.warn('Allowing request despite key fetch failure (development mode)');
-				return { isValid: true, origin };
-			}
-			return { isValid: false, error: 'Failed to fetch public key from origin server' };
-		}
-
-		try {
-			const isValid = await validateAuthorizationHeader(origin, publicKey, destination, method, uri, signature, body);
-			if (isValid) {
-				logger.info('X-Matrix signature verified successfully', { origin, keyId: key });
-				return { isValid: true, origin };
-			}
-			logger.warn('X-Matrix signature validation returned false', { origin, keyId: key });
-		} catch (validationError) {
-			logger.warn('X-Matrix signature verification failed', {
-				origin,
-				keyId: key,
-				method,
-				uri,
-				destination,
-				error: validationError instanceof Error ? validationError.message : 'Unknown error',
-			});
-
-			if (!ENFORCE_FEDERATION_VERIFICATION) {
-				logger.warn('Allowing request despite verification failure (development mode)');
-				return { isValid: true, origin };
-			}
-			return { isValid: false, error: 'Invalid signature' };
-		}
-
-		return { isValid: false, error: 'Signature verification failed' };
-	} catch (error) {
-		logger.error('Error during X-Matrix signature verification', {
-			error,
-			errorMessage: error instanceof Error ? error.message : 'Unknown error',
-			errorStack: error instanceof Error ? error.stack : undefined,
-		});
-		return {
-			isValid: false,
-			error: error instanceof Error ? error.message : 'Signature verification error',
-		};
-	}
-}
 
 function addSecurityHeaders(headers: Record<string, string>): Record<string, string> {
 	return {
@@ -189,49 +104,10 @@ async function getMediaFile(
 	return { file, buffer };
 }
 
-async function handleFederationAuth(
-	context: any,
-	homeserverServices: HomeserverServices,
-): Promise<{ isValid: boolean; requestingServer: string; errorResponse?: any }> {
-	const authHeader = context.req.header('Authorization');
-	let requestingServer = 'unknown';
-
-	if (!authHeader || (!authHeader.startsWith('X-Matrix') && !ENFORCE_FEDERATION_VERIFICATION)) {
-		return { isValid: true, requestingServer };
-	}
-
-	const verificationResult = await verifyMatrixSignature(
-		homeserverServices,
-		authHeader,
-		context.req.method,
-		context.req.path,
-		context.req.body,
-	);
-
-	if (!verificationResult.isValid) {
-		return {
-			isValid: false,
-			requestingServer,
-			errorResponse: {
-				statusCode: 401,
-				body: {
-					errcode: 'M_UNAUTHORIZED',
-					error: verificationResult.error || 'Invalid X-Matrix signature',
-				},
-			},
-		};
-	}
-
-	requestingServer = verificationResult.origin || 'unknown';
-
-	return { isValid: true, requestingServer };
-}
-
 export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => {
 	const { config } = homeserverServices;
 	const router = new Router('/federation');
 
-	// Federation V1 Download Endpoint
 	router.get(
 		'/v1/media/download/:mediaId',
 		{
@@ -250,11 +126,6 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 				const { mediaId } = context.req.param();
 				const { serverName } = config;
 
-				const authResult = await handleFederationAuth(context, homeserverServices);
-				if (!authResult.isValid) {
-					return authResult.errorResponse;
-				}
-
 				const { file, buffer } = await getMediaFile(mediaId, serverName);
 				if (!file || !buffer) {
 					return {
@@ -265,6 +136,7 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 
 				const mimeType = file.type || 'application/octet-stream';
 				const fileName = file.name || mediaId;
+
 				const multipartResponse = createMultipartResponse(buffer, mimeType, fileName, {
 					'content-type': mimeType,
 					'content-length': buffer.length,
@@ -288,7 +160,6 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 		},
 	);
 
-	// Federation V1 Thumbnail Endpoint
 	router.get(
 		'/v1/media/thumbnail/:mediaId',
 		{
@@ -304,11 +175,6 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 			try {
 				const { mediaId } = context.req.param();
 				const { serverName } = config;
-
-				const authResult = await handleFederationAuth(context, homeserverServices);
-				if (!authResult.isValid) {
-					return authResult.errorResponse;
-				}
 
 				const { file, buffer } = await getMediaFile(mediaId, serverName);
 				if (!file || !buffer) {

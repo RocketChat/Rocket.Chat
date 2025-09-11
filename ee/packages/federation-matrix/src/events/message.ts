@@ -137,10 +137,11 @@ async function handleMediaMessage(
 	files: any[];
 	attachments: any[];
 }> {
-	const fileInfo = content.info || {};
+	const fileInfo = content.info;
 	const mimeType = fileInfo.mimetype;
+	const fileName = messageBody;
 
-	const fileRefId = await MatrixMediaService.createRemoteFileReference(content.url, {
+	const fileRefId = await MatrixMediaService.downloadAndStoreRemoteFile(content.url, {
 		name: messageBody,
 		size: fileInfo.size,
 		type: mimeType,
@@ -148,8 +149,15 @@ async function handleMediaMessage(
 		userId: user._id,
 	});
 
-	const fileName = messageBody;
-	const fileExtension = fileName.includes('.') ? fileName.split('.').pop()?.toLowerCase() || '' : mimeType.split('/')[1] || '';
+	let fileExtension = '';
+	if (fileName && fileName.includes('.')) {
+		fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+	} else if (mimeType && mimeType.includes('/')) {
+		fileExtension = mimeType.split('/')[1] || '';
+		if (fileExtension === 'jpeg') {
+			fileExtension = 'jpg';
+		}
+	}
 
 	const fileUrl = `/file-upload/${fileRefId}/${encodeURIComponent(fileName)}`;
 	const attachment: any = {
@@ -191,12 +199,6 @@ async function handleMediaMessage(
 		size: fileInfo.size || 0,
 		format: fileExtension,
 	};
-
-	logger.info('Sending attachment data to saveMessageWithAttachmentFromFederation', {
-		attachment: JSON.stringify(attachment, null, 2),
-		fileData: JSON.stringify(fileData, null, 2),
-		msgtype,
-	});
 
 	return {
 		fromId: user._id,
