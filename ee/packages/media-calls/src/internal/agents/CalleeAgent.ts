@@ -1,5 +1,5 @@
 import type { MediaCallContact } from '@rocket.chat/core-typings';
-import { MediaCalls } from '@rocket.chat/models';
+import { MediaCallNegotiations } from '@rocket.chat/models';
 
 import { UserActorAgent } from './BaseUserAgent';
 import { logger } from '../../logger';
@@ -12,8 +12,8 @@ export class UserActorCalleeAgent extends UserActorAgent {
 	public async onCallAccepted(callId: string, signedContractId: string): Promise<void> {
 		await super.onCallAccepted(callId, signedContractId);
 
-		const call = await MediaCalls.findOneById(callId);
-		if (!call?.webrtcOffer) {
+		const negotiation = await MediaCallNegotiations.findLatestByCallId(callId);
+		if (!negotiation?.offer) {
 			logger.debug('The call was accepted but the webrtc offer is not yet available.');
 			return;
 		}
@@ -22,23 +22,8 @@ export class UserActorCalleeAgent extends UserActorAgent {
 			callId,
 			toContractId: signedContractId,
 			type: 'remote-sdp',
-			sdp: call.webrtcOffer,
-		});
-	}
-
-	public async onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void> {
-		logger.debug({ msg: 'UserActorCalleeAgent.onRemoteDescriptionChanged', callId });
-
-		const call = await MediaCalls.findOneById(callId);
-		if (call?.state !== 'accepted' || !call.webrtcOffer || !call.callee.contractId) {
-			return;
-		}
-
-		await this.sendSignal({
-			callId,
-			toContractId: call.callee.contractId,
-			type: 'remote-sdp',
-			sdp: description,
+			sdp: negotiation.offer,
+			negotiationId: negotiation._id,
 		});
 	}
 }

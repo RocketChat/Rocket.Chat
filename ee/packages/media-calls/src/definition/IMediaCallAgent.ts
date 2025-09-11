@@ -15,8 +15,8 @@ export interface IMediaCallAgent {
 	onCallAccepted(callId: string, signedContractId: string): Promise<void>;
 	onCallActive(callId: string): Promise<void>;
 	onCallCreated(call: IMediaCall): Promise<void>;
-	/* Called when the sdp of the other actor is available, regardless of call state */
-	onRemoteDescriptionChanged(callId: string, description: RTCSessionDescriptionInit): Promise<void>;
+	/* Called when the sdp of the other actor is available, regardless of call state, or when this actor must provide an offer */
+	onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void>;
 
 	getMyCallActor(call: IMediaCall): MediaCallActor;
 }

@@ -26,8 +26,12 @@ export class MediaSignalTransportWrapper {
 		} as GenericClientMediaSignal<T>);
 	}
 
-	public sendError(callId: string, { errorType, errorCode }: Partial<ClientMediaSignalError>) {
-		this.sendToServer(callId, 'error', { errorType: errorType || 'other', ...(errorCode && { errorCode }) });
+	public sendError(callId: string, { errorType, errorCode, negotiationId }: Partial<ClientMediaSignalError>) {
+		this.sendToServer(callId, 'error', {
+			errorType: errorType || 'other',
+			...(errorCode && { errorCode }),
+			...(negotiationId && { negotiationId }),
+		});
 	}
 
 	public answer(callId: string, answer: CallAnswer) {
@@ -36,6 +40,10 @@ export class MediaSignalTransportWrapper {
 
 	public hangup(callId: string, reason: CallHangupReason) {
 		return this.sendToServer(callId, 'hangup', { reason });
+	}
+
+	public requestRenegotiation(callId: string, oldNegotiationId: string) {
+		return this.sendToServer(callId, 'negotiation-needed', { oldNegotiationId });
 	}
 
 	public sendSignal(signal: ClientMediaSignal): void {

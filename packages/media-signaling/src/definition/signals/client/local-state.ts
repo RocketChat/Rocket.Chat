@@ -14,6 +14,7 @@ export type ClientMediaSignalLocalState = {
 	serviceStates?: Record<string, string>;
 	ignored?: boolean;
 	contractState: ClientContractState;
+	negotiationId?: string;
 };
 
 export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignalLocalState> = {
@@ -56,6 +57,10 @@ export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignal
 		contractState: {
 			type: 'string',
 			nullable: false,
+		},
+		negotiationId: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	additionalProperties: false,

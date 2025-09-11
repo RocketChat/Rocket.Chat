@@ -1,5 +1,6 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { ClientMediaSignal, ServerMediaSignal, ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
+import { isBusyState, type ClientMediaSignal, type ServerMediaSignal, type ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
+import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
@@ -53,6 +54,65 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 		logger.debug({ msg: 'UserActorAgent.onCallCreated', call });
 
 		await this.sendSignal(this.buildNewCallSignal(call));
+	}
+
+	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onRemoteDescriptionChanged', callId, negotiationId });
+
+		const call = await MediaCalls.findOneById(callId);
+		if (!call || !isBusyState(call.state)) {
+			return;
+		}
+
+		const actor = this.getMyCallActor(call);
+
+		const toContractId = actor.contractId;
+		// Do not send any sdp to an actor until they have a signed contract
+		if (!toContractId) {
+			return;
+		}
+
+		const negotiation = await MediaCallNegotiations.findOneById(negotiationId);
+		if (!negotiation) {
+			return;
+		}
+
+		if (negotiation.offerer === this.role) {
+			if (!negotiation.offer) {
+				await this.sendSignal({
+					callId,
+					toContractId,
+					type: 'request-offer',
+					negotiationId,
+				});
+				return;
+			}
+
+			if (!negotiation.answer) {
+				return;
+			}
+
+			await this.sendSignal({
+				callId,
+				toContractId,
+				type: 'remote-sdp',
+				sdp: negotiation.answer,
+				negotiationId,
+			});
+			return;
+		}
+
+		if (!negotiation.offer) {
+			return;
+		}
+
+		await this.sendSignal({
+			callId,
+			toContractId,
+			type: 'remote-sdp',
+			sdp: negotiation.offer,
+			negotiationId,
+		});
 	}
 
 	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {
