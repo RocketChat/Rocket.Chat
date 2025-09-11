@@ -4,7 +4,6 @@ import type { HomeserverServices } from '@hs/federation-sdk';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { Uploads } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { MatrixMediaService } from '../../services/MatrixMediaService';
@@ -38,66 +37,41 @@ const isMediaDownloadParamsProps = ajv.compile(MediaDownloadParamsSchema);
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 const isBufferResponseProps = ajv.compile(BufferResponseSchema);
 
-function addSecurityHeaders(headers: Record<string, string>): Record<string, string> {
-	return {
-		...headers,
-		'X-Content-Type-Options': 'nosniff',
-		'X-Frame-Options': 'DENY',
-		'Content-Security-Policy': "default-src 'none'; img-src 'self'; media-src 'self'",
-		'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-	};
-}
+const SECURITY_HEADERS = {
+	'X-Content-Type-Options': 'nosniff',
+	'X-Frame-Options': 'DENY',
+	'Content-Security-Policy': "default-src 'none'; img-src 'self'; media-src 'self'",
+	'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+};
 
 function createMultipartResponse(
 	buffer: Buffer,
 	mimeType: string,
 	fileName: string,
-	metadata?: Record<string, any>,
+	metadata: Record<string, any> = {},
 ): { body: Buffer; contentType: string } {
 	const boundary = crypto.randomBytes(16).toString('hex');
 	const parts: string[] = [];
 
-	if (metadata) {
-		parts.push(`--${boundary}`);
-		parts.push('Content-Type: application/json');
-		parts.push('');
-		parts.push(JSON.stringify(metadata));
-	}
-
-	parts.push(`--${boundary}`);
-	parts.push(`Content-Type: ${mimeType}`);
-	parts.push(`Content-Disposition: attachment; filename="${fileName}"`);
-	parts.push('');
+	parts.push(`--${boundary}`, 'Content-Type: application/json', '', JSON.stringify(metadata));
+	parts.push(`--${boundary}`, `Content-Type: ${mimeType}`, `Content-Disposition: attachment; filename="${fileName}"`, '');
 
 	const headerBuffer = Buffer.from(`${parts.join('\r\n')}\r\n`);
 	const endBoundary = Buffer.from(`\r\n--${boundary}--\r\n`);
-	const multipartBody = Buffer.concat([headerBuffer, buffer, endBoundary]);
 
 	return {
-		body: multipartBody,
+		body: Buffer.concat([headerBuffer, buffer, endBoundary]),
 		contentType: `multipart/mixed; boundary=${boundary}`,
 	};
 }
 
-async function getMediaFile(
-	mediaId: string,
-	serverName: string,
-): Promise<{
-	file: IUpload | null;
-	buffer: Buffer | null;
-}> {
-	const mxcUri = `mxc://${serverName}/${mediaId}`;
-	let file = await MatrixMediaService.getLocalFileForMatrixNode(mxcUri);
-
+async function getMediaFile(mediaId: string, serverName: string): Promise<{ file: IUpload; buffer: Buffer } | null> {
+	const file = await MatrixMediaService.getLocalFileForMatrixNode(mediaId, serverName);
 	if (!file) {
-		const directFile = await Uploads.findOneById(mediaId);
-		if (!directFile) {
-			return { file: null, buffer: null };
-		}
-		file = directFile;
+		return null;
 	}
 
-	const buffer = await MatrixMediaService.getLocalFileBuffer(file._id);
+	const buffer = await MatrixMediaService.getLocalFileBuffer(file);
 	return { file, buffer };
 }
 
@@ -118,33 +92,33 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 			},
 			tags: ['Federation', 'Media'],
 		},
-		async (context: any) => {
+		async (c) => {
 			try {
-				const { mediaId } = context.req.param();
+				const { mediaId } = c.req.param();
 				const { serverName } = config;
 
-				const { file, buffer } = await getMediaFile(mediaId, serverName);
-				if (!file || !buffer) {
+				const result = await getMediaFile(mediaId, serverName);
+				if (!result) {
 					return {
 						statusCode: 404,
 						body: { errcode: 'M_NOT_FOUND', error: 'Media not found' },
 					};
 				}
 
+				const { file, buffer } = result;
+
 				const mimeType = file.type || 'application/octet-stream';
 				const fileName = file.name || mediaId;
 
-				const multipartResponse = createMultipartResponse(buffer, mimeType, fileName, {
-					'content-type': mimeType,
-					'content-length': buffer.length,
-				});
+				const multipartResponse = createMultipartResponse(buffer, mimeType, fileName);
 
 				return {
 					statusCode: 200,
-					headers: addSecurityHeaders({
+					headers: {
+						...SECURITY_HEADERS,
 						'content-type': multipartResponse.contentType,
 						'content-length': String(multipartResponse.body.length),
-					}),
+					},
 					body: multipartResponse.body,
 				};
 			} catch (error) {
@@ -173,29 +147,28 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 				const { mediaId } = context.req.param();
 				const { serverName } = config;
 
-				const { file, buffer } = await getMediaFile(mediaId, serverName);
-				if (!file || !buffer) {
+				const result = await getMediaFile(mediaId, serverName);
+				if (!result) {
 					return {
 						statusCode: 404,
 						body: { errcode: 'M_NOT_FOUND', error: 'Media not found' },
 					};
 				}
 
+				const { file, buffer } = result;
+
 				const mimeType = file.type || 'application/octet-stream';
 				const fileName = file.name || mediaId;
 
-				const multipartResponse = createMultipartResponse(buffer, mimeType, fileName, {
-					'content-type': mimeType,
-					'content-length': buffer.length,
-					'thumbnail': true,
-				});
+				const multipartResponse = createMultipartResponse(buffer, mimeType, fileName);
 
 				return {
 					statusCode: 200,
-					headers: addSecurityHeaders({
+					headers: {
+						...SECURITY_HEADERS,
 						'content-type': multipartResponse.contentType,
 						'content-length': String(multipartResponse.body.length),
-					}),
+					},
 					body: multipartResponse.body,
 				};
 			} catch (error) {

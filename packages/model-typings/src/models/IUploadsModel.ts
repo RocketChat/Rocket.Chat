@@ -1,5 +1,5 @@
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import type { FindCursor, WithId, Filter, FindOptions } from 'mongodb';
+import type { FindCursor, WithId, Filter, FindOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated } from './IBaseModel';
 import type { IBaseUploadsModel } from './IBaseUploadsModel';
@@ -16,4 +16,8 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 	): FindPaginated<FindCursor<WithId<IUpload>>>;
 
 	findByFederationMxcUri(mxcUri: string): Promise<IUpload | null>;
+
+	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null>;
+
+	setFederationInfo(fileId: string, info: { mxcUri: string; serverName: string; mediaId: string }): Promise<Document | UpdateResult>;
 }

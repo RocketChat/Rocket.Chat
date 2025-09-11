@@ -2,7 +2,7 @@
 import type { IUpload, RocketChatRecordDeleted, IRoom } from '@rocket.chat/core-typings';
 import type { FindPaginated, IUploadsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription, WithId, Filter, FindOptions, UpdateResult } from 'mongodb';
 
 import { BaseUploadModelRaw } from './BaseUploadModel';
 
@@ -49,6 +49,17 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 
 	findByFederationMxcUri(mxcUri: string): Promise<IUpload | null> {
 		return this.findOne({ 'federation.mxcUri': mxcUri });
+	}
+
+	findByFederationMediaIdAndServerName(mediaId: string, serverName: string): Promise<IUpload | null> {
+		return this.findOne({ 'federation.mediaId': mediaId, 'federation.serverName': serverName });
+	}
+
+	setFederationInfo(fileId: string, info: { mxcUri: string; serverName: string; mediaId: string }): Promise<Document | UpdateResult> {
+		return this.updateOne(
+			{ _id: fileId },
+			{ $set: { 'federation.mxcUri': info.mxcUri, 'federation.serverName': info.serverName, 'federation.mediaId': info.mediaId } },
+		);
 	}
 
 	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
