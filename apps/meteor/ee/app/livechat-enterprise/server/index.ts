@@ -9,7 +9,6 @@ import './methods/saveTag';
 import './methods/removeUnit';
 import './methods/saveUnit';
 import './methods/removeBusinessHour';
-import './methods/resumeOnHold';
 import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
 import './hooks/beforeNewRoom';
