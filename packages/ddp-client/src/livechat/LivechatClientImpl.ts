@@ -204,11 +204,11 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}: {
 		rid: string;
 		department: string;
-	}): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.transfer'>>> {
+	}): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor/department.transfer'>>> {
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
-		return this.rest.post('/v1/livechat/room.transfer', { rid, token: this.token, department });
+		return this.rest.post('/v1/livechat/visitor/department.transfer', { rid, token: this.token, department });
 	}
 
 	async grantVisitor(

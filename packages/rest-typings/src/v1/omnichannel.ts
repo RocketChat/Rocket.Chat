@@ -37,7 +37,6 @@ import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
 
 import { ajv } from './Ajv';
-import type { Deprecated } from '../helpers/Deprecated';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -2811,13 +2810,13 @@ const POSTLivechatRoomCloseByUserParamsSchema = {
 
 export const isPOSTLivechatRoomCloseByUserParams = ajv.compile<POSTLivechatRoomCloseByUserParams>(POSTLivechatRoomCloseByUserParamsSchema);
 
-type POSTLivechatRoomTransferParams = {
+type POSTLivechatVisitorDepartmentTransferParams = {
 	token: string;
 	rid: string;
 	department: string;
 };
 
-const POSTLivechatRoomTransferParamsSchema = {
+const POSTLivechatVisitorDepartmentTransferParamsSchema = {
 	type: 'object',
 	properties: {
 		token: {
@@ -2834,7 +2833,9 @@ const POSTLivechatRoomTransferParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isPOSTLivechatRoomTransferParams = ajv.compile<POSTLivechatRoomTransferParams>(POSTLivechatRoomTransferParamsSchema);
+export const isPOSTLivechatVisitorDepartmentTransferParams = ajv.compile<POSTLivechatVisitorDepartmentTransferParams>(
+	POSTLivechatVisitorDepartmentTransferParamsSchema,
+);
 
 type POSTLivechatRoomSurveyParams = {
 	token: string;
@@ -4349,7 +4350,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: LiveChatRoomJoin) => void;
 	};
 	'/v1/livechat/room.forward': {
-		POST: (params: LiveChatRoomForward) => void;
+		POST: (params: LiveChatRoomForward) => { success: boolean };
 	};
 	'/v1/livechat/room.saveInfo': {
 		POST: (params: LiveChatRoomSaveInfo) => void;
@@ -4679,8 +4680,8 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/room.closeByUser': {
 		POST: (params: POSTLivechatRoomCloseByUserParams) => void;
 	};
-	'/v1/livechat/room.transfer': {
-		POST: (params: POSTLivechatRoomTransferParams) => Deprecated<{ room: IOmnichannelRoom }>;
+	'/v1/livechat/visitor/department.transfer': {
+		POST: (params: POSTLivechatVisitorDepartmentTransferParams) => { success: boolean };
 	};
 	'/v1/livechat/room.survey': {
 		POST: (params: POSTLivechatRoomSurveyParams) => { rid: string; data: unknown };
