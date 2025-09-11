@@ -257,6 +257,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
+			// Ultatel: Filter out command messages
 			const ourQuery = { ...query, rid: findResult._id,t: { $nin: ['command'] } };
 
 			// Special check for the permissions
