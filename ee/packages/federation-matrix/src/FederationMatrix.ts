@@ -42,7 +42,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		this.eventHandler = emitter || new Emitter<HomeserverEventSignatures>();
 	}
 
-	static async create(emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
+	static async create(instanceId: string, emitter?: Emitter<HomeserverEventSignatures>): Promise<FederationMatrix> {
 		const instance = new FederationMatrix(emitter);
 		const settingsSigningKey = await Settings.get<string>('Federation_Service_Matrix_Signing_Key');
 
@@ -57,6 +57,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const dbName = process.env.DATABASE_NAME || new URL(mongoUri).pathname.slice(1);
 
 		const config = new ConfigService({
+			instanceId,
 			serverName: serverHostname,
 			keyRefreshInterval: Number.parseInt(process.env.MATRIX_KEY_REFRESH_INTERVAL || '60', 10),
 			matrixDomain: serverHostname,
