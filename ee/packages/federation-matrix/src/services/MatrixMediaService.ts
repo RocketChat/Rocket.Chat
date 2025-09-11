@@ -41,27 +41,16 @@ export class MatrixMediaService {
 			}
 
 			if (file.federation?.mxcUri) {
-				logger.debug('File already has MXC URI', {
-					fileId,
-					mxcUri: file.federation.mxcUri,
-				});
 				return file.federation.mxcUri;
 			}
 
 			const mxcUri = this.generateMXCUri(fileId, serverName);
 
-			await Uploads.updateOne(
-				{ _id: fileId },
-				{
-					$set: {
-						'federation.type': 'matrix',
-						'federation.mxcUri': mxcUri,
-						'federation.isRemote': false,
-						'federation.serverName': serverName,
-						'federation.mediaId': fileId,
-					},
-				},
-			);
+			await Uploads.setFederationInfo(fileId, {
+				mxcUri,
+				serverName,
+				mediaId: fileId,
+			});
 
 			return mxcUri;
 		} catch (error) {
@@ -70,24 +59,15 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async getLocalFileForMatrixNode(mxcUri: string): Promise<IUpload | null> {
+	static async getLocalFileForMatrixNode(mediaId: string, serverName: string): Promise<IUpload | null> {
 		try {
-			const parts = this.parseMXCUri(mxcUri);
-			if (!parts) {
-				return null;
-			}
-
-			let file = await Uploads.findOne({
-				'federation.mxcUri': mxcUri,
-				'federation.isRemote': false,
-			});
+			let file = await Uploads.findByFederationMediaIdAndServerName(mediaId, serverName);
 
 			if (!file) {
-				file = await Uploads.findOneById(parts.mediaId);
+				file = await Uploads.findOneById(mediaId);
 			}
 
 			if (!file) {
-				logger.warn('Local file not found for MXC URI', { mxcUri });
 				return null;
 			}
 
@@ -135,18 +115,11 @@ export class MatrixMediaService {
 				},
 			});
 
-			await Uploads.updateOne(
-				{ _id: uploadedFile._id },
-				{
-					$set: {
-						'federation.type': 'matrix',
-						'federation.mxcUri': mxcUri,
-						'federation.serverName': parts.serverName,
-						'federation.mediaId': parts.mediaId,
-						'federation.originalUrl': mxcUri,
-					},
-				},
-			);
+			await Uploads.setFederationInfo(uploadedFile._id, {
+				mxcUri,
+				serverName: parts.serverName,
+				mediaId: parts.mediaId,
+			});
 
 			return uploadedFile._id;
 		} catch (error) {
@@ -200,16 +173,7 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async getLocalFileBuffer(fileId: string): Promise<Buffer | null> {
-		try {
-			const fileRecord = await Uploads.findOneById(fileId);
-			if (!fileRecord || fileRecord.federation) {
-				return null;
-			}
-			return await Upload.getFileBuffer({ file: fileRecord });
-		} catch (error) {
-			logger.error('Error retrieving file buffer:', error);
-			return null;
-		}
+	static async getLocalFileBuffer(file: IUpload): Promise<Buffer> {
+		return Upload.getFileBuffer({ file });
 	}
 }
