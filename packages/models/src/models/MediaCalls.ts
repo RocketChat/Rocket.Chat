@@ -1,4 +1,10 @@
-import type { IMediaCall, RocketChatRecordDeleted, MediaCallActorType } from '@rocket.chat/core-typings';
+import type {
+	IMediaCall,
+	RocketChatRecordDeleted,
+	MediaCallActorType,
+	MediaCallSignedActor,
+	MediaCallContact,
+} from '@rocket.chat/core-typings';
 import type { IMediaCallsModel } from '@rocket.chat/model-typings';
 import type {
 	IndexDescription,
@@ -131,6 +137,27 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			},
 			{
 				$set: { expiresAt },
+			},
+		);
+	}
+
+	public async transferCallById(callId: string, params: { by: MediaCallSignedActor; to: MediaCallContact }): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: callId,
+				state: {
+					$in: ['accepted', 'active'],
+				},
+				transferedAt: {
+					$exists: false,
+				},
+			},
+			{
+				$set: {
+					transferedAt: new Date(),
+					transferedBy: params.by,
+					transferedTo: params.to,
+				},
 			},
 		);
 	}

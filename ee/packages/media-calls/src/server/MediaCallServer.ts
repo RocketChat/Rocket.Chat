@@ -5,10 +5,11 @@ import type { ClientMediaSignal, ServerMediaSignal } from '@rocket.chat/media-si
 
 import { MediaCallDirector } from './CallDirector';
 import type { IMediaCallServer, IMediaCallServerSettings, MediaCallServerEvents } from '../definition/IMediaCallServer';
-import type { InternalCallParams } from '../definition/common';
+import type { GetActorContactOptions, InternalCallParams } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
 import { GlobalSignalProcessor } from '../internal/SignalProcessor';
 import { logger } from '../logger';
+import { getDefaultSettings } from './getDefaultSettings';
 
 /**
  * Class used as gateway to send and receive signals to/from clients
@@ -17,17 +18,21 @@ import { logger } from '../logger';
 export class MediaCallServer implements IMediaCallServer {
 	private signalProcessor: GlobalSignalProcessor;
 
+	private settings: IMediaCallServerSettings;
+
 	public emitter: Emitter<MediaCallServerEvents>;
 
 	constructor() {
 		this.emitter = new Emitter();
+		this.settings = getDefaultSettings();
 		this.signalProcessor = new GlobalSignalProcessor();
 
 		this.signalProcessor.emitter.on('signalRequest', ({ toUid, signal }) => {
+			// Forward signal requests from the signal processor to the server
 			this.sendSignal(toUid, signal);
 		});
-		this.signalProcessor.emitter.on('callRequest', ({ fromUid, params }) => {
-			this.onCallRequest(fromUid, params);
+		this.signalProcessor.emitter.on('callRequest', ({ params }) => {
+			this.requestCall(params).catch(() => null);
 		});
 	}
 
@@ -50,6 +55,27 @@ export class MediaCallServer implements IMediaCallServer {
 		this.emitter.emit('signalRequest', { toUid, signal });
 	}
 
+	public async requestCall(params: InternalCallParams): Promise<void> {
+		const fullParams = await this.fillContactInformationForNewCall(params);
+		try {
+			await this.createCall(fullParams);
+		} catch (error) {
+			logger.error({ msg: 'Failed to create a requested call', params, error });
+
+			const originalId = params.requestedCallId || params.parentCallId;
+
+			if (originalId && params.requestedBy?.type === 'user') {
+				this.sendSignal(params.requestedBy.id, {
+					type: 'rejected-call-request',
+					callId: originalId,
+					toContractId: params.requestedBy.contractId,
+					reason: 'unsupported',
+				});
+			}
+			throw error;
+		}
+	}
+
 	public async createCall(params: InternalCallParams): Promise<IMediaCall> {
 		logger.debug({ msg: 'MediaCallServer.createCall', params });
 
@@ -70,22 +96,67 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public configure(settings: IMediaCallServerSettings): void {
 		logger.debug({ msg: 'Media Server Configuration', settings });
-		this.signalProcessor.configure(settings);
+		this.settings = settings;
 	}
 
-	private onCallRequest(fromUid: IUser['_id'], params: InternalCallParams): void {
-		this.createCall(params).catch((error) => {
-			logger.error({ msg: 'Failed to create a call requested by a signal', fromUid, params, error });
+	private async fillContactInformationForNewCall(params: InternalCallParams): Promise<InternalCallParams> {
+		logger.debug({ msg: 'MediaCallServer.getContactForNewCallActors', params });
 
-			if (params.requestedCallId) {
-				this.sendSignal(fromUid, {
-					type: 'rejected-call-request',
-					callId: params.requestedCallId,
-					toContractId: params.caller.contractId,
-					reason: 'unsupported',
-				});
-			}
-			throw error;
-		});
+		// On call transfers, do not mutate the caller
+		// On new calls, force the caller type to be 'user' (since the call is being created in rocket.chat first)
+		const isTransfer = Boolean(params.parentCallId);
+		const callerRequiredType = isTransfer ? params.caller.type : 'user';
+
+		const caller = await MediaCallDirector.cast.getContactForActor(params.caller, { requiredType: callerRequiredType });
+		if (!caller) {
+			throw new Error('Failed to load caller contact information');
+		}
+
+		// The callee contact type will determine if the call is going to go through SIP or directly to another rocket.chat user
+		const callee = await MediaCallDirector.cast.getContactForActor(params.callee, this.getCalleeContactOptions());
+		if (!callee) {
+			throw new Error('Failed to load callee contact information.');
+		}
+
+		if (this.settings.internalCalls.requireExtensions && !callee.sipExtension) {
+			throw new Error('Invalid target user');
+		}
+
+		return {
+			...params,
+			caller: {
+				...caller,
+				contractId: params.caller.contractId,
+			},
+			callee,
+		};
+	}
+
+	private getCalleeContactOptions(): GetActorContactOptions {
+		if (!this.settings.sip.enabled) {
+			return {
+				requiredType: 'user',
+			};
+		}
+
+		switch (this.settings.internalCalls.routeExternally) {
+			case 'always':
+				// Will only make sip calls
+				return {
+					requiredType: 'sip',
+				};
+			case 'never':
+				// Will not use sip when calling an user or an extension assigned to an user, but will use sip when calling an unassigned extension
+				return {
+					preferredType: 'user',
+				};
+			case 'preferrably':
+				// Will only skip sip for users that don't have an assigned extension (or not call at all if `requireExtensions` is true)
+				return {
+					preferredType: 'sip',
+				};
+		}
+
+		return {};
 	}
 }

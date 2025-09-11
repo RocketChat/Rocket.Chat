@@ -46,11 +46,11 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 		return actor.type === this.actorType && actor.id === this.actorId;
 	}
 
-	public getMyCallActor(call: IMediaCall): MediaCallActor {
+	public getMyCallActor(call: IMediaCall): MediaCallContact {
 		return call[this.role];
 	}
 
-	public getOtherCallActor(call: IMediaCall): MediaCallActor {
+	public getOtherCallActor(call: IMediaCall): MediaCallContact {
 		return call[this.oppositeRole];
 	}
 
@@ -74,6 +74,8 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 	public abstract onCallCreated(call: IMediaCall): Promise<void>;
 
 	public abstract onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void>;
+
+	public abstract onCallTransfered(callId: string): Promise<void>;
 
 	protected async createOrUpdateChannel(call: IMediaCall, contractId: string): Promise<IMediaCallChannel> {
 		if (!contractId) {

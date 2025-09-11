@@ -8,6 +8,7 @@ import { clientMediaSignalLocalStateSchema, type ClientMediaSignalLocalState } f
 import { clientMediaSignalNegotiationNeededSchema, type ClientMediaSignalNegotiationNeeded } from './negotiation-needed';
 import { clientMediaSignalRegisterSchema, type ClientMediaSignalRegister } from './register';
 import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call';
+import { clientMediaSignalTransferSchema, type ClientMediaSignalTransfer } from './transfer';
 
 const ajv = new Ajv({ discriminator: true });
 
@@ -19,7 +20,8 @@ export type ClientMediaSignal =
 	| ClientMediaSignalRequestCall
 	| ClientMediaSignalLocalState
 	| ClientMediaSignalRegister
-	| ClientMediaSignalNegotiationNeeded;
+	| ClientMediaSignalNegotiationNeeded
+	| ClientMediaSignalTransfer;
 
 export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 	type: 'object',
@@ -35,6 +37,7 @@ export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 		clientMediaSignalLocalStateSchema,
 		clientMediaSignalRegisterSchema,
 		clientMediaSignalNegotiationNeededSchema,
+		clientMediaSignalTransferSchema,
 	],
 };
 

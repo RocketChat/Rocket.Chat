@@ -13,7 +13,7 @@ import type {
 	CallActorType,
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
-import type { IWebRTCProcessor, MediaStreamFactory, WebRTCInternalStateMap } from '../definition/services';
+import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { mergeContacts } from './utils/mergeContacts';
 import type { IMediaSignalLogger } from '../definition/logger';
 import { isPendingState } from './services/states';
@@ -29,7 +29,6 @@ export interface IClientMediaCallConfig {
 	logger?: IMediaSignalLogger;
 	transporter: MediaSignalTransportWrapper;
 	processorFactories: IServiceProcessorFactoryList;
-	mediaStreamFactory?: MediaStreamFactory;
 
 	iceGatheringTimeout: number;
 }
@@ -156,7 +155,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
-		{ inputTrack }: { inputTrack: MediaStreamTrack | null },
+		{ inputTrack }: { inputTrack?: MediaStreamTrack | null } = {},
 	) {
 		this.emitter = new Emitter<CallEvents>();
 
@@ -176,7 +175,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.serviceStates = new Map();
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
-		this.inputTrack = inputTrack;
+		this.inputTrack = inputTrack || null;
 
 		this.currentNegotiationId = null;
 		this.earlySignals = new Set();
@@ -234,7 +233,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	/** initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call */
-	public async initializeRemoteCall(signal: ServerMediaSignalNewCall): Promise<void> {
+	public async initializeRemoteCall(signal: ServerMediaSignalNewCall, oldCall?: ClientMediaCall | null): Promise<void> {
 		if (this.hasRemoteData) {
 			return;
 		}
@@ -251,9 +250,13 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.changeContact(signal.contact);
 
-		if (this._role === 'caller' && !this.acceptedLocally && AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS) {
-			this.config.logger?.log('Ignoring Unknown Outbound Call');
-			this.ignore();
+		if (this._role === 'caller' && !this.acceptedLocally) {
+			if (oldCall) {
+				this.acceptedLocally = true;
+			} else if (AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS) {
+				this.config.logger?.log('Ignoring Unknown Outbound Call');
+				this.ignore();
+			}
 		}
 
 		// If it's flagged as ignored even before the initialization, tell the server we're unavailable
@@ -278,7 +281,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		// If the call was requested by this specific session, assume we're signed already.
-		if (this._role === 'caller' && this.acceptedLocally && signal.requestedCallId === this.localCallId) {
+		if (this._role === 'caller' && this.acceptedLocally && (signal.requestedCallId === this.localCallId || Boolean(oldCall))) {
 			this.contractState = 'pre-signed';
 		}
 
@@ -287,6 +290,30 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		await this.processEarlySignals();
+	}
+
+	public mayNeedInputTrack(): boolean {
+		if (this.isOver() || this._ignored || this.hidden) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public needsInputTrack(): boolean {
+		if (!this.mayNeedInputTrack()) {
+			return false;
+		}
+
+		return ['active', 'renegotiating'].includes(this._state);
+	}
+
+	public hasInputTrack(): boolean {
+		return Boolean(this.inputTrack);
+	}
+
+	public isMissingInputTrack(): boolean {
+		return !this.hasInputTrack() && this.mayNeedInputTrack();
 	}
 
 	public getClientState(): ClientState {
@@ -329,16 +356,11 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
-		const oldId = this.inputTrack?.id;
-		const newId = newInputTrack?.id;
+		this.config.logger?.debug('ClientMediaCall.setInputTrack');
 
 		this.inputTrack = newInputTrack;
 		if (this.webrtcProcessor) {
 			await this.webrtcProcessor.setInputTrack(newInputTrack);
-		}
-
-		if (oldId !== newId) {
-			this.emitter.emit('trackStateChange');
 		}
 	}
 
@@ -353,7 +375,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.webrtcProcessor.getRemoteMediaStream();
 	}
 
-	public async processSignal(signal: ServerMediaSignal) {
+	public async processSignal(signal: ServerMediaSignal, oldCall?: ClientMediaCall | null) {
 		if (this.isOver()) {
 			return;
 		}
@@ -362,7 +384,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const { type: signalType } = signal;
 
 		if (signalType === 'new') {
-			return this.initializeRemoteCall(signal);
+			return this.initializeRemoteCall(signal, oldCall);
 		}
 
 		if (!this.hasRemoteData) {
@@ -416,6 +438,18 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.config.transporter.answer(this.callId, 'reject');
 		this.changeState('hangup');
+	}
+
+	public transfer(callee: { type: CallActorType; id: string }): void {
+		if (!this.busy) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.transfer', callee);
+
+		this.config.transporter.sendToServer(this.callId, 'transfer', {
+			to: callee,
+		});
 	}
 
 	public hangup(reason: CallHangupReason = 'normal'): void {
@@ -978,7 +1012,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private clearStateReporter(): void {
-		this.config.logger?.debug('ClientMediaCall.clearStateReporter');
 		if (this.stateReporterTimeoutHandler) {
 			clearTimeout(this.stateReporterTimeoutHandler);
 			this.stateReporterTimeoutHandler = null;
@@ -986,7 +1019,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	private requestStateReport(): void {
-		this.config.logger?.debug('ClientMediaCall.requestStateReport');
 		this.clearStateReporter();
 		if (!this.mayReportStates) {
 			return;
@@ -1009,7 +1041,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		const {
-			mediaStreamFactory,
 			logger,
 			processorFactories: { webrtc: webrtcFactory },
 			iceGatheringTimeout,
@@ -1019,7 +1050,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		this.webrtcProcessor = webrtcFactory({ mediaStreamFactory, logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
+		this.webrtcProcessor = webrtcFactory({ logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
 		this.webrtcProcessor.emitter.on('internalError', (event) => this.onWebRTCInternalError(event));
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 		this.webrtcProcessor.emitter.on('negotiationNeeded', () => this.onWebRTCNegotiationNeeded());
