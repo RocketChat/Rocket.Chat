@@ -4,9 +4,9 @@ import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechat
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { roomsQueryKeys } from '../../../../../client/lib/queryKeys';
 import { settings } from '../../../../../client/lib/settings';
+import { dispatchToastMessage } from '../../../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../../../client/lib/utils/mapMessageFromApi';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
-import { dispatchToastMessage } from '/client/lib/toast';
 
 const departments = new Set();
 
