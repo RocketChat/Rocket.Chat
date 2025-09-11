@@ -7,7 +7,6 @@ import './AmazonS3';
 import './FileSystem';
 import './GoogleStorage';
 import './GridFS';
-import './MatrixRemote';
 import './Webdav';
 
 const configStore = _.debounce(() => {

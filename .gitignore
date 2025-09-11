@@ -60,4 +60,5 @@ registration.yaml
 storybook-static
 development/tempo-data/
 
-homeserver
+.bmad-core
+.claude
