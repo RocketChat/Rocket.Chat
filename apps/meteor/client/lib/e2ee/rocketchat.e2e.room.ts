@@ -207,7 +207,7 @@ export class E2ERoom extends Emitter {
 		const subscription = Subscriptions.state.find(({ rid, lastMessage }) => rid === this.roomId && !!lastMessage && lastMessage.t === 'e2e' && lastMessage.e2e === 'pending');
 
 		if (subscription?.lastMessage?.t !== 'e2e') {
-			log('info', 'decryptSubscriptions nothing to do');
+			log('info', 'decryptSubscriptions', 'Nothing to do');
 			return;
 		}
 
@@ -404,29 +404,24 @@ export class E2ERoom extends Emitter {
 	}
 
 	async createGroupKey() {
-		try {
-			await this.createNewGroupKey();
+		await this.createNewGroupKey();
 
-			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
-			const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
-			if (myKey) {
-				await sdk.rest.post('/v1/e2e.updateGroupKey', {
-					rid: this.roomId,
-					uid: this.userId,
-					key: myKey,
-				});
-				await this.encryptKeyForOtherParticipants();
-			}
-		} catch (error) {
-			log('error', 'Error exporting group key: ', error);
-			throw error;
+		await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
+		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
+		if (myKey) {
+			await sdk.rest.post('/v1/e2e.updateGroupKey', {
+				rid: this.roomId,
+				uid: this.userId,
+				key: myKey,
+			});
+			await this.encryptKeyForOtherParticipants();
 		}
 	}
 
 	async resetRoomKey() {
-		log('info', 'Resetting room key', { currentKeyID: this.keyID });
+		log('info', 'resetRoomKey', 'started', { currentKeyID: this.keyID });
 		if (!e2e.publicKey) {
-			log('error', 'Cannot reset room key. No public key found.', { e2e });
+			log('error', 'Cannot reset room key', 'No public key found.', e2e);
 			return;
 		}
 
@@ -437,17 +432,17 @@ export class E2ERoom extends Emitter {
 			const e2eNewKeys = { e2eKeyId: this.keyID, e2eKey: await this.encryptGroupKeyForParticipant(e2e.publicKey) };
 
 			this.setState('READY');
-			log('info', 'Room key reset successfully', e2eNewKeys);
+			log('info', 'Room key', 'reset successfully', e2eNewKeys);
 
 			return e2eNewKeys;
 		} catch (error) {
-			log('error', 'Error resetting group key: ', error);
+			log('error', 'resetRoomKey', 'failed', error);
 			throw error;
 		}
 	}
 
 	onRoomKeyReset(keyID: string) {
-		log('info', 'Room keyID was reset', { NewKeyID: keyID, PreviousKeyID: this.keyID });
+		log('info', 'onRoomKeyReset', 'old:', this.keyID, 'new:', keyID);
 		this.setState('WAITING_KEYS');
 		this.keyID = keyID;
 		this.groupSessionKey = undefined;
@@ -522,7 +517,7 @@ export class E2ERoom extends Emitter {
 			}
 			return keys;
 		} catch (error) {
-			return log('error', 'Error encrypting user key: ', error);
+			return log('error', 'failed to encrypt old keys for participant', error);
 		}
 	}
 
@@ -531,7 +526,7 @@ export class E2ERoom extends Emitter {
 		try {
 			userKey = await importRSAKey(JSON.parse(publicKey), ['encrypt']);
 		} catch (error) {
-			return log('error', 'Error importing user key: ', error);
+			return log('error', 'importing user key', error);
 		}
 		// const vector = crypto.getRandomValues(new Uint8Array(16));
 
@@ -683,7 +678,6 @@ export class E2ERoom extends Emitter {
 
 	// Decrypt messages
 	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IE2EEMessage | IMessage> {
-		log('info', 'decryptMessage', message);
 		if (message.t !== 'e2e' || message.e2e === 'done') {
 			return message;
 		}
@@ -707,6 +701,7 @@ export class E2ERoom extends Emitter {
 	async doDecrypt(vector: ArrayBuffer, key: CryptoKey, cipherText: ArrayBuffer): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date }> {
 		const result = await decryptAes(vector, key, cipherText);
 		const parsed = EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
+		log('info', 'decrypted', parsed);
 		return parsed;
 	}
 
@@ -736,7 +731,6 @@ export class E2ERoom extends Emitter {
 
 	async decrypt(message: string | Required<IMessage>['content']): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined } | { msg: string }> {
 		const payload = this.parse(message);
-		log('info', 'Decrypting payload', payload);
 
 		let oldKey = null;
 		if (payload.key_id !== this.keyID) {
@@ -769,17 +763,15 @@ export class E2ERoom extends Emitter {
 		try {
 			if (oldKey) {
 				const result = await this.doDecrypt(payload.iv, oldKey, payload.ciphertext);
-				log('info', 'Message decrypted', result);
 				return result;
 			}
 			if (!this.groupSessionKey) {
 				throw new Error('No group session key found.');
 			}
 			const result = await this.doDecrypt(payload.iv, this.groupSessionKey, payload.ciphertext);
-			log('info', 'Message decrypted', result);
 			return result;
 		} catch (error) {
-			log('error', 'Error decrypting message: ', error, message);
+			log('error', 'decrypting', error, message);
 			return { msg: t('E2E_Key_Error') };
 		}
 	}

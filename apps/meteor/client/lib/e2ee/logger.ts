@@ -6,10 +6,16 @@ const styles: Record<LogLevel, string> = {
 	error: 'color: red; background-color: white; font-weight: bold;',
 };
 
+const icon: Record<LogLevel, string> = {
+	info:  'ⓘ',
+	warn: '⚠️',
+	error: '❌',
+};
+
 export const createLogger = (label: string) => {
-	return (level: LogLevel, ...[first, ...msg]: [string, ...unknown[]]) => {
-		console.groupCollapsed(`%c[${level}][${label}]`, styles[level], first);
-		console.trace(...msg);
+	return (level: LogLevel, title: string, message: unknown, ...params: unknown[]) => {
+		console.groupCollapsed(`${icon[level]} %c[${label}:${title}]`, styles[level]);
+		console.trace(message, ...params);
 		console.groupEnd();
 	};
 };

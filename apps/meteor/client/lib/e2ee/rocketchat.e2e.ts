@@ -77,10 +77,6 @@ class E2E extends Emitter {
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
 
-		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
-			log('info', 'e2eStateChanged', { prevState, nextState });
-		});
-
 		this.on('READY', async () => {
 			await this.onE2EEReady();
 		});
@@ -200,6 +196,7 @@ class E2E extends Emitter {
 
 		this.state = nextState;
 
+		log('info', 'e2eStateChanged', { prevState, nextState });
 		this.emit('E2E_STATE_CHANGED', { prevState, nextState });
 
 		this.emit(nextState);
