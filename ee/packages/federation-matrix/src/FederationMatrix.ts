@@ -408,30 +408,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		return 'm.file';
 	}
 
-	private buildFileMessageContent(
-		file: NonNullable<IMessage['files']>[0],
-		mxcUri: string,
-	): {
-		body: string;
-		msgtype: 'm.image' | 'm.file' | 'm.video' | 'm.audio';
-		url: string;
-		info: {
-			mimetype?: string;
-			size?: number;
-		};
-	} {
-		const msgtype = this.determineFileMessageType(file.type);
-		return {
-			body: file.name,
-			msgtype,
-			url: mxcUri,
-			info: {
-				mimetype: file.type,
-				size: file.size,
-			},
-		};
-	}
-
 	private async handleFileMessage(
 		message: IMessage,
 		matrixRoomId: string,
@@ -445,18 +421,19 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			const file = message.files[0];
 			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
-			const fileContent = this.buildFileMessageContent(file, mxcUri);
-			const result = await this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
 
-			if (message.files.length > 1) {
-				this.logger.warn('Message contains multiple files, but only the first was sent to Matrix', {
-					messageId: message._id,
-					totalFiles: message.files.length,
-					sentFile: file.name,
-				});
-			}
+			const msgtype = this.determineFileMessageType(file.type);
+			const fileContent = {
+				body: file.name,
+				msgtype,
+				url: mxcUri,
+				info: {
+					mimetype: file.type,
+					size: file.size,
+				},
+			};
 
-			return result;
+			return this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
 		} catch (error) {
 			this.logger.error('Failed to handle file message', {
 				messageId: message._id,
