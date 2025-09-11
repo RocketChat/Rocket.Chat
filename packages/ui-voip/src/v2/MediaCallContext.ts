@@ -90,8 +90,8 @@ const getFirstOption = (filter: string): PeerAutocompleteOptions => {
 	return { value: `${PREFIX_FIRST_OPTION}${filter}`, label: filter, avatarUrl: '' };
 };
 
-export const usePeerAutocomplete = () => {
-	const { getAutocompleteOptions, peerInfo, onSelectPeer } = useMediaCallContext();
+export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, peerInfo: PeerInfo | undefined) => {
+	const { getAutocompleteOptions } = useMediaCallContext();
 	const [filter, setFilter] = useState('');
 
 	const debouncedFilter = useDebouncedValue(filter, 400);
@@ -113,7 +113,6 @@ export const usePeerAutocomplete = () => {
 
 	return {
 		options,
-		peerInfo,
 		onChangeFilter: setFilter,
 		onChangeValue: (value: string | string[]) => {
 			if (Array.isArray(value)) {

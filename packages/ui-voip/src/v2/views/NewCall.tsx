@@ -17,9 +17,9 @@ import {
 const NewCall = () => {
 	const { t } = useTranslation();
 
-	const { peerInfo, ...autocomplete } = usePeerAutocomplete();
+	const { onCall, onToggleWidget, peerInfo, onSelectPeer } = useMediaCallContext();
 
-	const { onCall, onToggleWidget } = useMediaCallContext();
+	const autocomplete = usePeerAutocomplete(onSelectPeer, peerInfo);
 
 	return (
 		<Widget>
