@@ -1,4 +1,3 @@
-import type { SidepanelItem } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Button,
@@ -15,9 +14,13 @@ import {
 	FieldHint,
 	Accordion,
 	AccordionItem,
-	Divider,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import {
 	useEndpoint,
 	usePermission,
@@ -32,6 +35,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
+import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateTeamModalInputs = {
@@ -42,8 +46,6 @@ type CreateTeamModalInputs = {
 	encrypted: boolean;
 	broadcast: boolean;
 	members?: string[];
-	showDiscussions?: boolean;
-	showChannels?: boolean;
 };
 
 type CreateTeamModalProps = { onClose: () => void };
@@ -51,13 +53,13 @@ type CreateTeamModalProps = { onClose: () => void };
 const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
-	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
+	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
+	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canCreateTeam = usePermission('create-team');
-	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createTeamAction = useEndpoint('POST', '/v1/teams.create');
@@ -69,6 +71,8 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 
 		return new RegExp(`^${namesValidation}$`);
 	}, [allowSpecialNames, namesValidation]);
+
+	const canOnlyCreateOneType = useCreateChannelTypePermission();
 
 	const validateTeamName = async (name: string): Promise<string | undefined> => {
 		if (!name) {
@@ -94,13 +98,11 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		formState: { errors, isSubmitting },
 	} = useForm<CreateTeamModalInputs>({
 		defaultValues: {
-			isPrivate: true,
+			isPrivate: canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : true,
 			readOnly: false,
 			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
 			broadcast: false,
 			members: [],
-			showChannels: true,
-			showDiscussions: true,
 		},
 	});
 
@@ -111,15 +113,11 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 			setValue('encrypted', false);
 		}
 
-		if (broadcast) {
-			setValue('encrypted', false);
-		}
-
 		setValue('readOnly', broadcast);
 	}, [watch, setValue, broadcast, isPrivate]);
 
-	const canChangeReadOnly = !broadcast;
-	const canChangeEncrypted = isPrivate && !broadcast && e2eEnabled && !e2eEnabledForPrivateByDefault;
+	const readOnlyDisabled = broadcast || !canSetReadOnly;
+	const canChangeEncrypted = isPrivate && e2eEnabled;
 	const getEncryptedHint = useEncryptedRoomDescription('team');
 
 	const handleCreateTeam = async ({
@@ -130,10 +128,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		topic,
 		broadcast,
 		encrypted,
-		showChannels,
-		showDiscussions,
 	}: CreateTeamModalInputs): Promise<void> => {
-		const sidepanelItem = [showChannels && 'channels', showDiscussions && 'discussions'].filter(Boolean) as [SidepanelItem, SidepanelItem?];
 		const params = {
 			name,
 			members,
@@ -146,7 +141,6 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 					encrypted,
 				},
 			},
-			...((showChannels || showDiscussions) && { sidepanel: { items: sidepanelItem } }),
 		};
 
 		try {
@@ -168,8 +162,6 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const encryptedId = useId();
 	const broadcastId = useId();
 	const addMembersId = useId();
-	const showChannelsId = useId();
-	const showDiscussionsId = useId();
 
 	return (
 		<Modal
@@ -178,11 +170,11 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 				<Box is='form' id={createTeamFormId} onSubmit={handleSubmit(handleCreateTeam)} {...props} />
 			)}
 		>
-			<Modal.Header>
-				<Modal.Title id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</Modal.Title>
-				<Modal.Close title={t('Close')} onClick={onClose} tabIndex={-1} />
-			</Modal.Header>
-			<Modal.Content mbe={2}>
+			<ModalHeader>
+				<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>
+				<ModalClose title={t('Close')} onClick={onClose} tabIndex={-1} />
+			</ModalHeader>
+			<ModalContent mbe={2}>
 				<Box fontScale='p2' mbe={16}>
 					{t('Teams_new_description')}
 				</Box>
@@ -210,7 +202,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 								{errors.name.message}
 							</FieldError>
 						)}
-						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces')}</FieldHint>}
+						{!allowSpecialNames && <FieldHint id={`${nameId}-hint`}>{t('No_spaces_or_special_characters')}</FieldHint>}
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
@@ -238,7 +230,14 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 								control={control}
 								name='isPrivate'
 								render={({ field: { onChange, value, ref } }): ReactElement => (
-									<ToggleSwitch id={privateId} aria-describedby={`${privateId}-hint`} onChange={onChange} checked={value} ref={ref} />
+									<ToggleSwitch
+										id={privateId}
+										aria-describedby={`${privateId}-hint`}
+										onChange={onChange}
+										checked={canOnlyCreateOneType ? canOnlyCreateOneType === 'p' : value}
+										disabled={!!canOnlyCreateOneType}
+										ref={ref}
+									/>
 								)}
 							/>
 						</FieldRow>
@@ -249,56 +248,6 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 				</FieldGroup>
 				<Accordion>
 					<AccordionItem title={t('Advanced_settings')}>
-						<FeaturePreview feature='sidepanelNavigation'>
-							<FeaturePreviewOff>{null}</FeaturePreviewOff>
-							<FeaturePreviewOn>
-								<FieldGroup>
-									<Box is='h5' fontScale='h5' color='titles-labels'>
-										{t('Navigation')}
-									</Box>
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={showChannelsId}>{t('Channels')}</FieldLabel>
-											<Controller
-												control={control}
-												name='showChannels'
-												render={({ field: { onChange, value, ref } }): ReactElement => (
-													<ToggleSwitch
-														aria-describedby={`${showChannelsId}-hint`}
-														id={showChannelsId}
-														onChange={onChange}
-														checked={value}
-														ref={ref}
-													/>
-												)}
-											/>
-										</FieldRow>
-										<FieldDescription id={`${showChannelsId}-hint`}>{t('Show_channels_description')}</FieldDescription>
-									</Field>
-
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={showDiscussionsId}>{t('Discussions')}</FieldLabel>
-											<Controller
-												control={control}
-												name='showDiscussions'
-												render={({ field: { onChange, value, ref } }): ReactElement => (
-													<ToggleSwitch
-														aria-describedby={`${showDiscussionsId}-hint`}
-														id={showDiscussionsId}
-														onChange={onChange}
-														checked={value}
-														ref={ref}
-													/>
-												)}
-											/>
-										</FieldRow>
-										<FieldDescription id={`${showDiscussionsId}-hint`}>{t('Show_discussions_description')}</FieldDescription>
-									</Field>
-								</FieldGroup>
-								<Divider mb={36} />
-							</FeaturePreviewOn>
-						</FeaturePreview>
 						<FieldGroup>
 							<Box is='h5' fontScale='h5' color='titles-labels'>
 								{t('Security_and_permissions')}
@@ -312,7 +261,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 										render={({ field: { onChange, value, ref } }): ReactElement => (
 											<ToggleSwitch
 												id={encryptedId}
-												disabled={!canSetReadOnly || !canChangeEncrypted}
+												disabled={!canChangeEncrypted}
 												onChange={onChange}
 												aria-describedby={`${encryptedId}-hint`}
 												checked={value}
@@ -321,7 +270,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 										)}
 									/>
 								</FieldRow>
-								<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldDescription>
+								<FieldDescription id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, encrypted })}</FieldDescription>
 							</Field>
 							<Field>
 								<FieldRow>
@@ -333,7 +282,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 											<ToggleSwitch
 												id={readOnlyId}
 												aria-describedby={`${readOnlyId}-hint`}
-												disabled={!canChangeReadOnly}
+												disabled={readOnlyDisabled}
 												onChange={onChange}
 												checked={value}
 												ref={ref}
@@ -367,15 +316,15 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 						</FieldGroup>
 					</AccordionItem>
 				</Accordion>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button disabled={!canCreateTeam} loading={isSubmitting} type='submit' primary>
 						{t('Create')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

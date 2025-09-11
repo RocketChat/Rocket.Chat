@@ -2,6 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { GenericModal } from '@rocket.chat/ui-client';
 import {
 	useTranslation,
 	usePermission,
@@ -16,7 +17,6 @@ import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 
-import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';

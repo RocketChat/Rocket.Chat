@@ -69,7 +69,12 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		};
 
 		const onOutgoingCallRinging = (): void => {
-			voipSounds.playDialer();
+			// VoipClient 'outgoingcall' event is emitted when the call is establishing
+			// and that event is also emitted when the call is accepted
+			// to avoid disrupting the VoipClient flow, we check if the call is outgoing here.
+			if (voipClient.isOutgoing()) {
+				voipSounds.playDialer();
+			}
 		};
 
 		const onIncomingCallRinging = (): void => {

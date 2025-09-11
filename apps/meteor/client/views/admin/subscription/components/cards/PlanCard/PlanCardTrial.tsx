@@ -1,7 +1,7 @@
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import { Box, Card, CardBody, CardControls, CardRow, Tag } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import differenceInDays from 'date-fns/differenceInDays';
+import { differenceInDays } from 'date-fns';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 

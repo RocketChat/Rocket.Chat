@@ -1,4 +1,4 @@
-FROM node:22.14.0-alpine3.20
+FROM node:22.16.0-alpine3.21
 
 ARG SERVICE
 
@@ -59,6 +59,9 @@ COPY ./ee/packages/omnichannel-services/dist ee/packages/omnichannel-services/di
 COPY ./ee/packages/pdf-worker/package.json ee/packages/pdf-worker/package.json
 COPY ./ee/packages/pdf-worker/dist ee/packages/pdf-worker/dist
 
+COPY ./packages/message-types/package.json packages/message-types/package.json
+COPY ./packages/message-types/dist packages/message-types/dist
+
 COPY ./packages/tools/package.json packages/tools/package.json
 COPY ./packages/tools/dist packages/tools/dist
 
@@ -70,6 +73,9 @@ COPY ./packages/tsconfig packages/tsconfig
 
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
+
+COPY ./packages/i18n/package.json packages/i18n/package.json
+COPY ./packages/i18n/dist packages/i18n/dist
 
 COPY ./ee/apps/${SERVICE}/dist .
 

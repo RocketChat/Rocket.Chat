@@ -7,7 +7,7 @@ import { WebApp } from 'meteor/webapp';
 import { settings } from '../../settings/server';
 import { addServerUrlToIndex } from '../lib/Assets';
 
-const indexHtmlWithServerURL = addServerUrlToIndex((await Assets.getTextAsync('livechat/index.html')) || '');
+const indexHtmlWithServerURL = await Assets.getTextAsync('livechat/index.html');
 
 function parseExtraAttributes(widgetData: string): string {
 	const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
@@ -66,6 +66,6 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 		res.removeHeader('Content-Security-Policy');
 	}
 
-	res.write(memoizedParseExtraAttributes(indexHtmlWithServerURL));
+	res.write(memoizedParseExtraAttributes(addServerUrlToIndex(indexHtmlWithServerURL || '')));
 	res.end();
 });

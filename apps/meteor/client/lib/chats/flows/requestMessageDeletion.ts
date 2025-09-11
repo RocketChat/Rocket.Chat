@@ -1,8 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 
 import { t } from '../../../../app/utils/lib/i18n';
-import GenericModal from '../../../components/GenericModal';
-import { imperativeModal } from '../../imperativeModal';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
@@ -15,6 +14,7 @@ export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): 
 	const room = message.drid ? await chat.data.getDiscussionByID(message.drid) : undefined;
 
 	await new Promise<void>((resolve, reject) => {
+		const mid = chat.currentEditingMessage.getMID();
 		const onConfirm = async (): Promise<void> => {
 			try {
 				if (!(await chat.data.canDeleteMessage(message))) {
@@ -25,8 +25,8 @@ export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): 
 
 				imperativeModal.close();
 
-				if (chat.currentEditing?.mid === message._id) {
-					chat.currentEditing.stop();
+				if (mid === message._id) {
+					chat.currentEditingMessage.stop();
 				}
 				chat.composer?.focus();
 
@@ -41,8 +41,8 @@ export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): 
 		const onCloseModal = async (): Promise<void> => {
 			imperativeModal.close();
 
-			if (chat.currentEditing?.mid === message._id) {
-				chat.currentEditing.stop();
+			if (mid === message._id) {
+				chat.currentEditingMessage.stop();
 			}
 			chat.composer?.focus();
 

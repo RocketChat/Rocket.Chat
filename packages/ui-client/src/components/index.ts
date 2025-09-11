@@ -14,3 +14,5 @@ export * from './FeaturePreview';
 export { default as AnnouncementBanner } from './AnnouncementBanner';
 export { default as UserAutoComplete } from './UserAutoComplete';
 export * from './GenericMenu';
+export * from './Modal';
+export * from './Wizard';

@@ -26,6 +26,7 @@ import {
 	AppSlashCommandManager,
 	AppVideoConfProviderManager,
 } from './managers';
+import { AppOutboundCommunicationProviderManager } from './managers/AppOutboundCommunicationProviderManager';
 import { AppRuntimeManager } from './managers/AppRuntimeManager';
 import { AppSignatureManager } from './managers/AppSignatureManager';
 import { UIActionButtonManager } from './managers/UIActionButtonManager';
@@ -57,6 +58,7 @@ export interface IAppManagerDeps {
 
 interface IPurgeAppConfigOpts {
 	keepScheduledJobs?: boolean;
+	keepSlashcommands?: boolean;
 }
 
 export class AppManager {
@@ -96,6 +98,8 @@ export class AppManager {
 	private readonly uiActionButtonManager: UIActionButtonManager;
 
 	private readonly videoConfProviderManager: AppVideoConfProviderManager;
+
+	private readonly outboundCommunicationProviderManager: AppOutboundCommunicationProviderManager;
 
 	private readonly signatureManager: AppSignatureManager;
 
@@ -147,6 +151,7 @@ export class AppManager {
 		this.schedulerManager = new AppSchedulerManager(this);
 		this.uiActionButtonManager = new UIActionButtonManager(this);
 		this.videoConfProviderManager = new AppVideoConfProviderManager(this);
+		this.outboundCommunicationProviderManager = new AppOutboundCommunicationProviderManager(this);
 		this.signatureManager = new AppSignatureManager(this);
 		this.runtime = new AppRuntimeManager(this);
 
@@ -196,6 +201,10 @@ export class AppManager {
 
 	public getVideoConfProviderManager(): AppVideoConfProviderManager {
 		return this.videoConfProviderManager;
+	}
+
+	public getOutboundCommunicationProviderManager(): AppOutboundCommunicationProviderManager {
+		return this.outboundCommunicationProviderManager;
 	}
 
 	public getLicenseManager(): AppLicenseManager {
@@ -272,6 +281,10 @@ export class AppManager {
 					// Maybe we should have an "EmptyRuntime" class for this?
 					getStatus() {
 						return Promise.resolve(AppStatus.COMPILER_ERROR_DISABLED);
+					},
+
+					on(): void {
+						return undefined;
 					},
 				} as unknown as DenoRuntimeSubprocessController);
 
@@ -479,7 +492,7 @@ export class AppManager {
 			await app.call(AppMethod.ONDISABLE).catch((e) => console.warn('Error while disabling:', e));
 		}
 
-		await this.purgeAppConfig(app, { keepScheduledJobs: true });
+		await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
 
 		await app.setStatus(status, silent);
 
@@ -580,9 +593,15 @@ export class AppManager {
 			return aff;
 		}
 
-		// Now that is has all been compiled, let's get the
-		// the App instance from the source.
-		const app = await this.getCompiler().toSandBox(this, descriptor, result);
+		let app: ProxiedApp;
+
+		try {
+			app = await this.getCompiler().toSandBox(this, descriptor, result);
+		} catch (error) {
+			await Promise.all(undoSteps.map((undoer) => undoer()));
+
+			throw error;
+		}
 
 		undoSteps.push(() =>
 			this.getRuntime()
@@ -807,6 +826,7 @@ export class AppManager {
 			}
 		})();
 
+		// We don't keep slashcommands here as the update could potentially not provide the same list
 		await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
 		this.apps.set(app.getID(), app);
@@ -1031,6 +1051,8 @@ export class AppManager {
 			await app.call(AppMethod.INITIALIZE);
 			await app.setStatus(AppStatus.INITIALIZED, silenceStatus);
 
+			await this.commandManager.registerCommands(app.getID());
+
 			result = true;
 		} catch (e) {
 			let status = AppStatus.ERROR_DISABLED;
@@ -1067,14 +1089,19 @@ export class AppManager {
 		if (!opts.keepScheduledJobs) {
 			await this.schedulerManager.cleanUp(app.getID());
 		}
+
+		if (!opts.keepSlashcommands) {
+			await this.commandManager.unregisterCommands(app.getID());
+		}
+
 		this.listenerManager.unregisterListeners(app);
 		this.listenerManager.lockEssentialEvents(app);
-		await this.commandManager.unregisterCommands(app.getID());
 		this.externalComponentManager.unregisterExternalComponents(app.getID());
 		await this.apiManager.unregisterApis(app.getID());
 		this.accessorManager.purifyApp(app.getID());
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		this.videoConfProviderManager.unregisterProviders(app.getID());
+		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID());
 	}
 
 	/**
@@ -1142,14 +1169,14 @@ export class AppManager {
 		}
 
 		if (enable) {
-			await this.commandManager.registerCommands(app.getID());
 			this.externalComponentManager.registerExternalComponents(app.getID());
 			await this.apiManager.registerApis(app.getID());
 			this.listenerManager.registerListeners(app);
 			this.listenerManager.releaseEssentialEvents(app);
 			this.videoConfProviderManager.registerProviders(app.getID());
+			await this.outboundCommunicationProviderManager.registerProviders(app.getID());
 		} else {
-			await this.purgeAppConfig(app);
+			await this.purgeAppConfig(app, { keepScheduledJobs: true, keepSlashcommands: true });
 		}
 
 		if (saveToDb) {

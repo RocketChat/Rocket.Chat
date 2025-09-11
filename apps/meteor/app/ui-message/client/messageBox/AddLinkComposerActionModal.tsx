@@ -1,9 +1,8 @@
 import { Field, FieldGroup, TextInput, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useEffect, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../../../client/components/GenericModal';
 
 type AddLinkComposerActionModalProps = {
 	selectedText?: string;

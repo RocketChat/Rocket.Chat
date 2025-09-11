@@ -107,6 +107,10 @@ export const permissions = [
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
 	{
+		_id: 'delete-livechat-contact',
+		roles: ['livechat-manager', 'admin'],
+	},
+	{
 		_id: 'view-livechat-contact-history',
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
@@ -250,4 +254,5 @@ export const permissions = [
 	{ _id: 'view-moderation-console', roles: ['admin'] },
 	{ _id: 'manage-moderation-actions', roles: ['admin'] },
 	{ _id: 'bypass-time-limit-edit-and-delete', roles: ['bot', 'app'] },
+	{ _id: 'export-messages-as-pdf', roles: ['admin', 'user'] },
 ];

@@ -1,8 +1,8 @@
 import type { StringMap } from 'esl';
 
 import type { FreeSwitchOptions } from '../FreeSwitchOptions';
+import { FreeSwitchApiClient } from '../esl';
 import { logger } from '../logger';
-import { runCommand } from '../runCommand';
 
 export function getCommandGetDomain(): string {
 	return 'eval ${domain}';
@@ -20,6 +20,6 @@ export function parseDomainResponse(response: StringMap): string {
 }
 
 export async function getDomain(options: FreeSwitchOptions): Promise<string> {
-	const response = await runCommand(options, getCommandGetDomain());
+	const response = await FreeSwitchApiClient.runSingleCommand(options, getCommandGetDomain());
 	return parseDomainResponse(response);
 }

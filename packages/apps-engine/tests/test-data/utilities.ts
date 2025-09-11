@@ -4,6 +4,7 @@ import { TestsAppBridges } from './bridges/appBridges';
 import { TestSourceStorage } from './storage/TestSourceStorage';
 import { TestsAppLogStorage } from './storage/logStorage';
 import { TestsAppStorage } from './storage/storage';
+import type { AppOutboundCommunicationProviderManager } from '../../server/managers/AppOutboundCommunicationProviderManager';
 import { AppStatus } from '../../src/definition/AppStatus';
 import type { IHttp, IModify, IPersistence, IRead } from '../../src/definition/accessors';
 import { HttpStatusCode } from '../../src/definition/accessors';
@@ -108,6 +109,9 @@ export class TestInfastructureSetup {
 			},
 			getVideoConfProviderManager() {
 				return {} as AppVideoConfProviderManager;
+			},
+			getOutboundCommunicationProviderManager() {
+				return {} as AppOutboundCommunicationProviderManager;
 			},
 			getSettingsManager() {
 				return {} as AppSettingsManager;

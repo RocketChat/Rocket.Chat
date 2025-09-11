@@ -106,8 +106,6 @@ type ChainedCallbackSignatures = {
 		options: T,
 	) => Promise<T>;
 
-	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
-
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
 
 	'livechat.saveInfo': (
@@ -153,10 +151,6 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.applyDepartmentRestrictions': (
-		query: FilterOperators<ILivechatDepartmentRecord>,
-		params: { userId: IUser['_id'] },
-	) => FilterOperators<ILivechatDepartmentRecord>;
 	'livechat.applyRoomRestrictions': (
 		query: FilterOperators<IOmnichannelRoom>,
 		params?: {

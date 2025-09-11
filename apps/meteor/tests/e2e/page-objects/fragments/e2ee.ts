@@ -75,6 +75,10 @@ export class EnterE2EEPasswordModal extends Modal {
 		return this.root.getByPlaceholder('Please enter your E2EE password');
 	}
 
+	private get forgotPasswordLink() {
+		return this.root.getByRole('link', { name: 'Forgot E2EE password?' });
+	}
+
 	private get enterE2EEPasswordButton() {
 		return this.root.getByRole('button', { name: 'Enable encryption' });
 	}
@@ -82,6 +86,26 @@ export class EnterE2EEPasswordModal extends Modal {
 	async enterPassword(password: string) {
 		await this.passwordInput.fill(password);
 		await this.enterE2EEPasswordButton.click();
+		await this.waitForDismissal();
+	}
+
+	async forgotPassword() {
+		await this.forgotPasswordLink.click();
+		await this.waitForDismissal();
+	}
+}
+
+export class ResetE2EEPasswordModal extends Modal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Reset E2EE password' }));
+	}
+
+	private get resetE2EEPasswordButton() {
+		return this.root.getByRole('button', { name: 'Reset E2EE password' });
+	}
+
+	async confirmReset() {
+		await this.resetE2EEPasswordButton.click();
 		await this.waitForDismissal();
 	}
 }

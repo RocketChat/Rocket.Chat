@@ -4,6 +4,7 @@ import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, U
 import type { ValidateFunction } from 'ajv';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
+import type { DeprecationLoggerNextPlannedVersion } from '../../lib/server/lib/deprecationWarningLogger';
 
 export type SuccessStatusCodes = Exclude<Range<208>, Range<200>>;
 
@@ -88,7 +89,7 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
-export type Options = SharedOptions<Method>;
+export type Options = SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type SharedOptions<TMethod extends string> = (
 	| {
@@ -136,8 +137,8 @@ export type SharedOptions<TMethod extends string> = (
 	validateParams?: ValidateFunction | { [key in TMethod]?: ValidateFunction };
 	authOrAnonRequired?: true;
 	deprecation?: {
-		version: string;
-		alternatives?: string[];
+		version: DeprecationLoggerNextPlannedVersion;
+		alternatives?: PathPattern[];
 	};
 };
 
@@ -155,7 +156,7 @@ export type PartialThis = {
 	readonly route: string;
 };
 
-type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	route: string;
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
@@ -302,25 +303,35 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
 
 	requestIp?: string;
+	route: string;
+	response: Response;
 };
 
 type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
 
+type InferNon200Result<T> =
+	InferResult<T> extends {
+		success: false;
+		error?: infer TError;
+	}
+		? TError
+		: never;
+
 type Results<TResponse extends TypedOptions['response']> = {
 	[K in keyof TResponse]: K extends SuccessStatusCodes
 		? SuccessResult<InferResult<TResponse[200]>, K>
 		: K extends RedirectStatusCodes
-			? RedirectResult<InferResult<TResponse[300]>, K>
+			? RedirectResult<InferNon200Result<TResponse[300]>, K>
 			: K extends 400
 				? FailureResult<InferResult<TResponse[400]>>
 				: K extends 401
-					? UnauthorizedResult<InferResult<TResponse[401]>>
+					? UnauthorizedResult<InferNon200Result<TResponse[401]>>
 					: K extends 403
-						? ForbiddenResult<InferResult<TResponse[403]>>
+						? ForbiddenResult<InferNon200Result<TResponse[403]>>
 						: K extends 404
-							? NotFoundResult<InferResult<TResponse[404]>>
+							? NotFoundResult<InferNon200Result<TResponse[404]>>
 							: K extends ErrorStatusCodes
 								? InternalError<InferResult<TResponse[500]>, K>
 								: never;

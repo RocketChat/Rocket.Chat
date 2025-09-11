@@ -3,7 +3,7 @@ import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager.ts';
 
 import { AppAccessors } from './accessors/mod.ts';
 import { Room } from './room.ts';
-import { JsonRpcError } from 'jsonrpc-lite';
+import { formatErrorResponse } from './accessors/formatResponseErrorHandler.ts';
 
 const getMockAppManager = (senderFn: AppAccessors['senderFn']) => ({
 	getBridges: () => ({
@@ -12,9 +12,11 @@ const getMockAppManager = (senderFn: AppAccessors['senderFn']) => ({
 				return senderFn({
 					method: 'bridges:getInternalBridge:doGetUsernamesOfRoomById',
 					params: [roomId],
-				}).then((result) => result.result).catch((err) => {
-					throw new JsonRpcError(`Error getting usernames of room: ${err}`, -32000);
-				});
+				})
+					.then((result) => result.result)
+					.catch((err) => {
+						throw formatErrorResponse(err);
+					});
 			},
 		}),
 	}),

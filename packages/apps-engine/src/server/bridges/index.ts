@@ -14,6 +14,7 @@ import { IListenerBridge } from './IListenerBridge';
 import { LivechatBridge } from './LivechatBridge';
 import { MessageBridge } from './MessageBridge';
 import { ModerationBridge } from './ModerationBridge';
+import { OutboundMessageBridge } from './OutboundMessagesBridge';
 import { PersistenceBridge } from './PersistenceBridge';
 import { RoleBridge } from './RoleBridge';
 import { RoomBridge } from './RoomBridge';
@@ -51,4 +52,5 @@ export {
 	IInternalFederationBridge,
 	ModerationBridge,
 	RoleBridge,
+	OutboundMessageBridge,
 };

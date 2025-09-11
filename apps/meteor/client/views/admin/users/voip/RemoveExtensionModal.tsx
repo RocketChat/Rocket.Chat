@@ -1,4 +1,18 @@
-import { Button, Modal, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import {
+	Button,
+	Modal,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	TextInput,
+	ModalHeader,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useUser } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId } from 'react';
@@ -48,11 +62,11 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 
 	return (
 		<Modal aria-labelledby={modalTitleId}>
-			<Modal.Header>
-				<Modal.Title id={modalTitleId}>{t('Remove_extension')}</Modal.Title>
-				<Modal.Close aria-label={t('Close')} onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalTitle id={modalTitleId}>{t('Remove_extension')}</ModalTitle>
+				<ModalClose aria-label={t('Close')} onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={userFieldId}>{t('User')}</FieldLabel>
@@ -68,15 +82,15 @@ const RemoveExtensionModal = ({ name, extension, username, onClose }: RemoveExte
 						</FieldRow>
 					</Field>
 				</FieldGroup>
-			</Modal.Content>
-			<Modal.Footer>
-				<Modal.FooterControllers>
+			</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button danger onClick={() => handleRemoveExtension.mutate(username)} loading={handleRemoveExtension.isPending}>
 						{t('Remove')}
 					</Button>
-				</Modal.FooterControllers>
-			</Modal.Footer>
+				</ModalFooterControllers>
+			</ModalFooter>
 		</Modal>
 	);
 };

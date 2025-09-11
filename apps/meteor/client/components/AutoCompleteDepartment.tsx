@@ -26,6 +26,7 @@ const AutoCompleteDepartment = ({
 	haveAll,
 	haveNone,
 	showArchived = false,
+	disabled,
 	...props
 }: AutoCompleteDepartmentProps): ReactElement | null => {
 	const { t } = useTranslation();
@@ -33,7 +34,11 @@ const AutoCompleteDepartment = ({
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
-	const { data: departmentsItems, fetchNextPage } = useDepartmentsList({
+	const {
+		data: departmentsItems,
+		isPending,
+		fetchNextPage,
+	} = useDepartmentsList({
 		filter: debouncedDepartmentsFilter,
 		onlyMyDepartments,
 		haveAll,
@@ -51,9 +56,12 @@ const AutoCompleteDepartment = ({
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
+			disabled={isPending || disabled}
+			aria-busy={isPending}
+			aria-disabled={disabled}
 			setFilter={setDepartmentsFilter as (value?: string | number) => void}
 			options={departmentsItems}
-			placeholder={t('Select_an_option')}
+			placeholder={isPending ? t('Loading...') : t('Select_an_option')}
 			data-qa='autocomplete-department'
 			endReached={() => fetchNextPage()}
 			renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}

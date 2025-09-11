@@ -1,3 +1,5 @@
+import { schemas } from '@rocket.chat/core-typings';
+import type { Route } from '@rocket.chat/http-router';
 import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
@@ -6,7 +8,6 @@ import swaggerUi from 'swagger-ui-express';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { API } from '../api';
-import type { Route } from '../router';
 
 const app = express();
 
@@ -65,8 +66,9 @@ const makeOpenAPIResponse = (paths: Record<string, Record<string, Route>>) => ({
 				name: 'X-Auth-Token',
 			},
 		},
-		schemas: {},
+		schemas: schemas.components.schemas,
 	},
+	schemas: schemas.components.schemas,
 	paths,
 });
 

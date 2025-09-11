@@ -144,6 +144,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		return this.find({
 			_id: { $ne: eventId }, // Exclude current event
 			uid,
+			busy: { $ne: false },
 			$or: [
 				// Event starts during our event
 				{ startTime: { $gte: startTime, $lt: endTime } },

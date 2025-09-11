@@ -18,6 +18,7 @@ import { RoomBuilder } from '../builders/RoomBuilder.ts';
 import { AppObjectRegistry } from '../../../AppObjectRegistry.ts';
 
 import { require } from '../../../lib/require.ts';
+import { formatErrorResponse } from '../formatResponseErrorHandler.ts';
 
 const { UIHelper } = require('@rocket.chat/apps-engine/server/misc/UIHelper.js') as { UIHelper: typeof _UIHelper };
 const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
@@ -32,15 +33,19 @@ export class ModifyUpdater implements IModifyUpdater {
 		return new Proxy(
 			{ __kind: 'getLivechatUpdater' },
 			{
-				get: (_target: unknown, prop: string) => (...params: unknown[]) =>
-					prop === 'toJSON' ? {} : this.senderFn({
-						method: `accessor:getModifier:getUpdater:getLivechatUpdater:${prop}`,
-						params,
-					})
-						.then((response) => response.result)
-						.catch((err) => {
-							throw new Error(err.error);
-						}),
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getUpdater:getLivechatUpdater:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
 			},
 		) as ILivechatUpdater;
 	}
@@ -49,15 +54,19 @@ export class ModifyUpdater implements IModifyUpdater {
 		return new Proxy(
 			{ __kind: 'getUserUpdater' },
 			{
-				get: (_target: unknown, prop: string) => (...params: unknown[]) =>
-					prop === 'toJSON' ? {} : this.senderFn({
-						method: `accessor:getModifier:getUpdater:getUserUpdater:${prop}`,
-						params,
-					})
-						.then((response) => response.result)
-						.catch((err) => {
-							throw new Error(err.error);
-						}),
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getUpdater:getUserUpdater:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
 			},
 		) as IUserUpdater;
 	}
@@ -66,6 +75,8 @@ export class ModifyUpdater implements IModifyUpdater {
 		const response = await this.senderFn({
 			method: 'bridges:getMessageBridge:doGetById',
 			params: [messageId, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 
 		const builder = new MessageBuilder(response.result as IMessage);
@@ -79,6 +90,8 @@ export class ModifyUpdater implements IModifyUpdater {
 		const response = await this.senderFn({
 			method: 'bridges:getRoomBridge:doGetById',
 			params: [roomId, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 
 		return new RoomBuilder(response.result as IRoom);
@@ -115,6 +128,8 @@ export class ModifyUpdater implements IModifyUpdater {
 		await this.senderFn({
 			method: 'bridges:getMessageBridge:doUpdate',
 			params: [changes, AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 	}
 
@@ -148,6 +163,8 @@ export class ModifyUpdater implements IModifyUpdater {
 		await this.senderFn({
 			method: 'bridges:getRoomBridge:doUpdate',
 			params: [changes, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
+		}).catch((err) => {
+			throw formatErrorResponse(err);
 		});
 	}
 }

@@ -16,7 +16,7 @@ type PageHeaderProps = {
 const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props }: PageHeaderProps) => {
 	const { t } = useTranslation();
 
-	const { isMobile } = useLayout();
+	const { isMobile, isTablet, isEmbedded } = useLayout();
 
 	useDocumentTitle(typeof title === 'string' ? title : undefined);
 
@@ -32,16 +32,23 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 				alignItems='center'
 				color='default'
 			>
-				{isMobile && (
-					<FeaturePreview feature='newNavigation'>
-						<FeaturePreviewOff>
+				<FeaturePreview feature='newNavigation'>
+					<FeaturePreviewOff>
+						{isMobile ? (
 							<HeaderToolbar>
 								<SidebarToggler />
 							</HeaderToolbar>
-						</FeaturePreviewOff>
-						<FeaturePreviewOn>{null}</FeaturePreviewOn>
-					</FeaturePreview>
-				)}
+						) : null}
+					</FeaturePreviewOff>
+					<FeaturePreviewOn>
+						{isTablet && isEmbedded ? (
+							<HeaderToolbar>
+								<SidebarToggler />
+							</HeaderToolbar>
+						) : null}
+					</FeaturePreviewOn>
+				</FeaturePreview>
+
 				{onClickBack && <IconButton small mie={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
 				<Box is='h1' fontScale='h2' flexGrow={1} data-qa-type='PageHeader-title'>
 					{title}

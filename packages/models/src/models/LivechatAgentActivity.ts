@@ -1,6 +1,6 @@
 import type { ILivechatAgentActivity, IServiceHistory, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatAgentActivityModel } from '@rocket.chat/model-typings';
-import moment from 'moment';
+import { parseISO, format } from 'date-fns';
 import type { AggregationCursor, Collection, Document, FindCursor, Db, WithId, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -187,8 +187,8 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		const match = {
 			$match: {
 				date: {
-					$gte: parseInt(moment(start).format('YYYYMMDD')),
-					$lte: parseInt(moment(end).format('YYYYMMDD')),
+					$gte: parseInt(format(parseISO(start), 'yyyyMMdd')),
+					$lte: parseInt(format(parseISO(end), 'yyyyMMdd')),
 				},
 			},
 		};

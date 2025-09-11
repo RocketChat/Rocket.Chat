@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Modal, Skeleton } from '@rocket.chat/fuselage';
+import { Box, ModalBackdrop, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayoutContextualBarExpanded, useToastMessageDispatch, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 
@@ -80,7 +80,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 	return (
 		<ContextualbarDialog>
 			<ContextualbarInnerContent>
-				{canExpand && expanded && <Modal.Backdrop onClick={handleBackdropClick} />}
+				{canExpand && expanded && <ModalBackdrop onClick={handleBackdropClick} />}
 				<Box flexGrow={1} position={expanded ? 'static' : 'relative'}>
 					<Contextualbar
 						rcx-thread-view

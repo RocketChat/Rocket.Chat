@@ -6,8 +6,8 @@ export const registerActionButtonsHandler = ({ api, _manager }: AppsRestApi) =>
 		'actionButtons',
 		{ authRequired: false },
 		{
-			get() {
-				const buttons = _manager.getUIActionButtonManager().getAllActionButtons();
+			async get() {
+				const buttons = await _manager.getUIActionButtonManager().getAllActionButtons();
 
 				return API.v1.success(buttons);
 			},

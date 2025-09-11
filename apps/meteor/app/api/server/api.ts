@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import type { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
@@ -9,7 +10,7 @@ import { loggerMiddleware } from './middlewares/logger';
 import { metricsMiddleware } from './middlewares/metrics';
 import { remoteAddressMiddleware } from './middlewares/remoteAddressMiddleware';
 import { tracerSpanMiddleware } from './middlewares/tracer';
-import { Router } from './router';
+import { type APIActionHandler, RocketChatAPIRouter } from './router';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
 
@@ -39,7 +40,7 @@ const createApi = function _createApi(options: { version?: string; useDefaultAut
 };
 
 export const API: {
-	api: Router<'/api'>;
+	api: Router<'/api', any, APIActionHandler>;
 	v1: APIClass<'/v1'>;
 	default: APIClass;
 	ApiClass: typeof APIClass;
@@ -67,7 +68,7 @@ export const API: {
 	};
 } = {
 	ApiClass: APIClass,
-	api: new Router('/api'),
+	api: new RocketChatAPIRouter('/api'),
 	v1: createApi({
 		version: 'v1',
 		useDefaultAuth: true,

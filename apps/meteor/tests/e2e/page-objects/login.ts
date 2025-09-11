@@ -10,7 +10,7 @@ export class LoginPage {
 	constructor(protected readonly page: Page) {}
 
 	get loginButton() {
-		return this.page.getByRole('button', { name: 'Login' });
+		return this.page.getByRole('button', { name: 'Login', exact: true });
 	}
 
 	/** @deprecated ideally the previous action should ensure the user is logged out and we should just assume to be at the login page */
@@ -20,6 +20,7 @@ export class LoginPage {
 
 	protected async waitForLogin() {
 		await expect(this.loginButton).not.toBeVisible();
+		await expect(this.page.getByRole('main')).toBeVisible();
 	}
 
 	async loginByUserState(userState: IUserState) {

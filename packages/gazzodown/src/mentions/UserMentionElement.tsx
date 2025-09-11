@@ -1,5 +1,6 @@
 import { Message } from '@rocket.chat/fuselage';
-import { memo, ReactElement, useContext, useMemo, KeyboardEvent } from 'react';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { memo, ReactElement, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -18,6 +19,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 
 	const resolved = useMemo(() => resolveUserMention?.(mention), [mention, resolveUserMention]);
 	const handleClick = useMemo(() => (resolved ? onUserMentionClick?.(resolved) : undefined), [resolved, onUserMentionClick]);
+	const buttonProps = useButtonPattern((e) => handleClick?.(e));
 
 	if (mention === 'all') {
 		return (
@@ -44,12 +46,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 			variant={resolved._id === ownUserId ? 'critical' : 'other'}
 			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
-			tabIndex={0}
-			role='button'
-			onClick={handleClick}
-			onKeyDown={(e: KeyboardEvent<HTMLSpanElement>): void => {
-				(e.code === 'Enter' || e.code === 'Space') && handleClick?.(e);
-			}}
+			{...buttonProps}
 			{...triggerProps}
 			data-uid={resolved._id}
 		>

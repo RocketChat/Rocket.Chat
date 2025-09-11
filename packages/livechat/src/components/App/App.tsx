@@ -140,11 +140,14 @@ export class App extends Component<AppProps, AppState> {
 			iframe: { visible },
 			config: { theme },
 			dispatch,
+			undocked,
 		} = this.props;
 
-		parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
-		parentCall(visible ? 'showWidget' : 'hideWidget');
-		parentCall('setWidgetPosition', theme.position || 'right');
+		if (!undocked) {
+			parentCall(minimized ? 'minimizeWindow' : 'restoreWindow');
+			parentCall(visible ? 'showWidget' : 'hideWidget');
+			parentCall('setWidgetPosition', theme.position || 'right');
+		}
 
 		visibility.addListener(this.handleVisibilityChange);
 

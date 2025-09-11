@@ -1,4 +1,16 @@
-import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	AnimatedVisibility,
+	Button,
+	Box,
+	ModalHeader,
+	ModalThumb,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, FormEventHandler, ReactElement } from 'react';
@@ -164,18 +176,18 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 			<FocusScope contain restoreFocus autoFocus>
 				<Modal open id={id} ref={ref}>
-					<Modal.Header>
-						{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${view.appId}/icon`)} /> : null}
-						<Modal.Title>{modalParser.text(view.title, UiKit.BlockContext.NONE, 0)}</Modal.Title>
-						<Modal.Close tabIndex={-1} onClick={onClose} />
-					</Modal.Header>
-					<Modal.Content>
+					<ModalHeader>
+						{view.showIcon ? <ModalThumb url={getURL(`/api/apps/${view.appId}/icon`)} /> : null}
+						<ModalTitle>{modalParser.text(view.title, UiKit.BlockContext.NONE, 0)}</ModalTitle>
+						<ModalClose tabIndex={-1} onClick={onClose} />
+					</ModalHeader>
+					<ModalContent>
 						<Box ref={formRef} is='form' method='post' action='#' onSubmit={onSubmit}>
 							<UiKitComponent render={UiKitModal} blocks={view.blocks} />
 						</Box>
-					</Modal.Content>
-					<Modal.Footer>
-						<Modal.FooterControllers>
+					</ModalContent>
+					<ModalFooter>
+						<ModalFooterControllers>
 							{view.close && (
 								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
 									{modalParser.text(view.close.text, UiKit.BlockContext.NONE, 0)}
@@ -186,8 +198,8 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 									{modalParser.text(view.submit.text, UiKit.BlockContext.NONE, 1)}
 								</Button>
 							)}
-						</Modal.FooterControllers>
-					</Modal.Footer>
+						</ModalFooterControllers>
+					</ModalFooter>
 				</Modal>
 			</FocusScope>
 		</AnimatedVisibility>

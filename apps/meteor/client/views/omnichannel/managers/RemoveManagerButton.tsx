@@ -1,22 +1,29 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { MouseEvent, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericModal from '../../../components/GenericModal';
 import { GenericTableCell } from '../../../components/GenericTable';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-const RemoveManagerButton = ({ _id, reload }: { _id: string; reload: () => void }): ReactElement => {
+const RemoveManagerButton = ({ _id }: { _id: string }): ReactElement => {
 	const { t } = useTranslation();
-	const deleteAction = useEndpointAction('DELETE', '/v1/livechat/users/manager/:_id', { keys: { _id } });
+	const queryClient = useQueryClient();
+	const { mutateAsync: deleteAction } = useEndpointMutation('DELETE', '/v1/livechat/users/manager/:_id', {
+		keys: { _id },
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.managers() });
+		},
+	});
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleRemoveClick = useEffectEvent(async () => {
 		await deleteAction();
-		reload();
 	});
 	const handleDelete = useEffectEvent((e: MouseEvent) => {
 		e.stopPropagation();

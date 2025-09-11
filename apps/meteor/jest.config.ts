@@ -41,6 +41,7 @@ export default {
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
 				'<rootDir>/server/cron/**.spec.ts',
 				'<rootDir>/app/api/server/**.spec.ts',
+				'<rootDir>/app/api/server/helpers/**.spec.ts',
 				'<rootDir>/app/api/server/middlewares/**.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],

@@ -1,22 +1,21 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 
-import { settings } from '../../../../app/settings/client';
 import { t } from '../../../../app/utils/lib/i18n';
-import GenericModal from '../../../components/GenericModal';
-import { imperativeModal } from '../../imperativeModal';
+import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
 export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
-	const maxAllowedSize = settings.get('Message_MaxAllowedSize');
+	const maxAllowedSize = settings.peek('Message_MaxAllowedSize');
 
 	if (msg.length <= maxAllowedSize) {
 		return false;
 	}
-	const fileUploadsEnabled = settings.get('FileUpload_Enabled');
-	const convertLongMessagesToAttachment = settings.get('Message_AllowConvertLongMessagesToAttachment');
+	const fileUploadsEnabled = settings.peek('FileUpload_Enabled');
+	const convertLongMessagesToAttachment = settings.peek('Message_AllowConvertLongMessagesToAttachment');
 
-	if (chat.currentEditing || !fileUploadsEnabled || !convertLongMessagesToAttachment) {
+	if (chat.currentEditingMessage.getMID() || !fileUploadsEnabled || !convertLongMessagesToAttachment) {
 		dispatchToastMessage({ type: 'error', message: new Error(t('Message_too_long')) });
 		chat.composer?.setText(msg);
 		return true;

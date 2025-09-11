@@ -1,10 +1,10 @@
+import { Router } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
 import express from 'express';
 import request from 'supertest';
 
-import { CachedSettings } from '../../../settings/server/CachedSettings';
-import { Router } from '../router';
 import { metricsMiddleware } from './metrics';
+import { CachedSettings } from '../../../settings/server/CachedSettings';
 
 describe('Metrics middleware', () => {
 	it('should handle metrics', async () => {

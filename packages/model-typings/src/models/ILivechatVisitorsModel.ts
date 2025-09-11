@@ -42,6 +42,8 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	removeContactManagerByUsername(manager: string): Promise<UpdateResult | Document>;
 
+	updateAllLivechatDataByToken(token: string, livechatDataToUpdate: Record<string, string>): Promise<UpdateResult>;
+
 	updateLivechatDataByToken(token: string, key: string, value: unknown, overwrite: boolean): Promise<UpdateResult | Document | boolean>;
 
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;

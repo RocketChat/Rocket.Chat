@@ -1,5 +1,4 @@
-import { parseISO } from 'date-fns/fp';
-import isSameDay from 'date-fns/isSameDay';
+import { parseISO, isSameDay } from 'date-fns';
 import { Suspense } from 'preact/compat';
 
 import { MemoizedComponent } from '../../../helpers/MemoizedComponent';
