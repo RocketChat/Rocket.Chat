@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
 
 export interface IRouteContext {

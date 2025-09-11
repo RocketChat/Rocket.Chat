@@ -212,43 +212,25 @@ async function handleMediaMessage(
 export function message(emitter: Emitter<HomeserverEventSignatures>, serverName: string) {
 	emitter.on('homeserver.matrix.message', async (data) => {
 		try {
-			console.log('on homeserver.matrix.message', data);
-
 			const content = data.content as any;
 			const msgtype = content?.msgtype;
 			const messageBody = content?.body?.toString();
-
-			logger.info('[federation-matrix:message] Received Matrix message event', {
-				eventId: data.event_id,
-				sender: data.sender,
-				roomId: data.room_id,
-				msgtype,
-				body: messageBody,
-				hasUrl: !!content?.url,
-				url: content?.url,
-				hasInfo: !!content?.info,
-				infoSize: content?.info?.size,
-				infoMimetype: content?.info?.mimetype,
-			});
 
 			if (!messageBody && !msgtype) {
 				logger.debug('No message content found in event');
 				return;
 			}
 
-			// Get or create the federated user
 			const user = await getOrCreateFederatedUser(data.sender);
 			if (!user) {
 				return;
 			}
 
-			// Get room and ensure subscription exists
 			const room = await getRoomAndEnsureSubscription(data.room_id, user);
 			if (!room) {
 				return;
 			}
 
-			// Handle thread messages and relations
 			const replyToRelation = content?.['m.relates_to'];
 			const threadRelation = content?.['m.relates_to'];
 			const isThreadMessage = threadRelation?.rel_type === 'm.thread';
@@ -256,10 +238,8 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 			const threadRootEventId = isThreadMessage ? threadRelation.event_id : undefined;
 			const tmid = await getThreadMessageId(threadRootEventId);
 
-			// Process the message based on type
 			const isMediaMessage = ['m.image', 'm.file', 'm.video', 'm.audio'].includes(msgtype);
 
-			// Handle message editing
 			const isEditedMessage = data.content['m.relates_to']?.rel_type === 'm.replace';
 			if (isEditedMessage && data.content['m.relates_to']?.event_id && data.content['m.new_content']) {
 				logger.debug('Received edited message from Matrix, updating existing message');
@@ -318,7 +298,6 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				return;
 			}
 
-			// Handle quote messages
 			if (isQuoteMessage && room.name) {
 				const originalMessage = await Messages.findOneByFederationId(replyToRelation?.['m.in_reply_to']?.event_id);
 				if (!originalMessage) {
@@ -343,15 +322,7 @@ export function message(emitter: Emitter<HomeserverEventSignatures>, serverName:
 				return;
 			}
 
-			// Handle media and plain messages
 			if (isMediaMessage && content?.url) {
-				logger.info('Processing media message from Matrix', {
-					eventId: data.event_id,
-					msgtype,
-					url: content.url,
-					body: messageBody,
-					hasInfo: !!content.info,
-				});
 				const result = await handleMediaMessage(content, msgtype, messageBody, user, room, data.event_id, tmid);
 				await Message.saveMessageFromFederation(result);
 			} else {

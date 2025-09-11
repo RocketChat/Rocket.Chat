@@ -1,13 +1,13 @@
 import crypto from 'crypto';
 
 import type { HomeserverServices } from '@hs/federation-sdk';
+import type { IUpload } from '@rocket.chat/core-typings';
 import { Router } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { MatrixMediaService } from '../../services/MatrixMediaService';
-import type { IUploadWithFederation } from '../../types/IUploadWithFederation';
 
 const logger = new Logger('federation-matrix:media');
 
@@ -83,21 +83,18 @@ async function getMediaFile(
 	mediaId: string,
 	serverName: string,
 ): Promise<{
-	file: IUploadWithFederation | null;
+	file: IUpload | null;
 	buffer: Buffer | null;
 }> {
 	const mxcUri = `mxc://${serverName}/${mediaId}`;
-	let file: IUploadWithFederation | null = await MatrixMediaService.getLocalFileForMatrixNode(mxcUri);
+	let file = await MatrixMediaService.getLocalFileForMatrixNode(mxcUri);
 
 	if (!file) {
 		const directFile = await Uploads.findOneById(mediaId);
 		if (!directFile) {
 			return { file: null, buffer: null };
 		}
-		file = {
-			...directFile,
-			federation: directFile.federation || { type: 'local', isRemote: false },
-		} as IUploadWithFederation;
+		file = directFile;
 	}
 
 	const buffer = await MatrixMediaService.getLocalFileBuffer(file._id);
