@@ -2,8 +2,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
-import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import type { IOAuthProvider } from '../../../definitions/IOAuthProvider';
+import type { LoginCallback } from '../../../lib/2fa/overrideLoginMethod';
 
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === Accounts.LoginCancelledError.numericError;
@@ -113,7 +113,7 @@ Accounts.onPageLoadLogin(async (loginAttempt: any) => {
 	const { credentialToken, credentialSecret } = oAuthArgs.oauth;
 	const cb = loginAttempt.userCallback;
 
-	const { process2faReturn } = await import('../../lib/2fa/process2faReturn');
+	const { process2faReturn } = await import('../../../lib/2fa/process2faReturn');
 
 	await process2faReturn({
 		error: loginAttempt.error,
