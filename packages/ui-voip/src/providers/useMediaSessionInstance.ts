@@ -1,12 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
-import {
-	MediaSignalingSession,
-	MediaCallWebRTCProcessor,
-	MediaSignalTransport,
-	ClientMediaSignal,
-	ServerMediaSignal,
-	WebRTCProcessorConfig,
-} from '@rocket.chat/media-signaling';
+import { MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/media-signaling';
+import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal, WebRTCProcessorConfig } from '@rocket.chat/media-signaling';
 import { useSetting, useStream, useWriteStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
 
