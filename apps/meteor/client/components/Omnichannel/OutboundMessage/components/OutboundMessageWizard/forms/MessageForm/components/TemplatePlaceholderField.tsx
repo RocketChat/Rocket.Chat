@@ -5,7 +5,7 @@ import type { Control } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import type { TemplateParameterMetadata } from '../../../../../definitions/template';
+import type { TemplateParameter, TemplateParameterMetadata } from '../../../../../definitions/template';
 import TemplatePlaceholderInput from '../../../../TemplatePlaceholderSelector';
 import type { MessageFormData } from '../MessageForm';
 
@@ -27,6 +27,7 @@ const TemplatePlaceholderField = ({ control, metadata, contact, ...props }: Temp
 	} = useController({
 		control,
 		name: `templateParameters.${componentType}.${index}` as const,
+		defaultValue: { type, value: '', format } as TemplateParameter,
 		rules: { validate: (param) => (!param?.value?.trim() ? t('Required_field', { field: fieldLabel }) : true) },
 		shouldUnregister: true,
 	});
