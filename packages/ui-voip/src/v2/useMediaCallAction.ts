@@ -40,9 +40,7 @@ export const useMediaCallAction = (direct = false): { title: string; icon: IconN
 
 		return {
 			title: t('New_voice_call'),
-			// TODO: use phone-plus when it's available in fuselage
-			// icon: 'phone-plus',
-			icon: direct ? 'phone' : 'phone-out',
+			icon: direct ? 'dialpad' : 'phone-out',
 			action: (callee?: PeerInfo) => onToggleWidget(callee),
 		};
 	}, [direct, onEndCall, onToggleWidget, peerInfo, state, t]);
