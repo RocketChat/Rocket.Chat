@@ -2487,14 +2487,29 @@ describe('[Rooms]', () => {
 		});
 
 		const uploadFile = async ({ roomId, file }: { roomId: IRoom['_id']; file: Buffer | fs.ReadStream | string | boolean | number }) => {
-			const { body } = await request
+			let fileId;
+			await request
 				.post(api(`rooms.media/${roomId}`))
 				.set(credentials)
 				.attach('file', file)
 				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('file');
+					expect(res.body.file).to.have.property('_id');
+					fileId = res.body.file._id;
+				});
 
-			return body.message.attachments[0];
+			const res = await request
+				.post(api(`rooms.mediaConfirm/${roomId}/${fileId}`))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			return res.body.message.attachments[0];
 		};
 
 		const getIdFromImgPath = (link: string) => {
