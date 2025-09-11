@@ -14,4 +14,6 @@ export interface IUploadsModel extends IBaseUploadsModel<IUpload> {
 		uploadedAt?: Date,
 		options?: Omit<FindOptions<IUpload>, 'sort'>,
 	): FindPaginated<FindCursor<WithId<IUpload>>>;
+
+	findByFederationMxcUri(mxcUri: string): Promise<IUpload | null>;
 }

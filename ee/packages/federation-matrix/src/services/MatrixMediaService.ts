@@ -1,8 +1,7 @@
-import crypto from 'crypto';
-
 import { Upload } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
-import { Uploads, Subscriptions, Settings } from '@rocket.chat/models';
+import { Uploads } from '@rocket.chat/models';
+import fetch from 'node-fetch';
 
 import type { IUploadWithFederation } from '../types/IUploadWithFederation';
 
@@ -100,7 +99,7 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async createRemoteFileReference(
+	static async downloadAndStoreRemoteFile(
 		mxcUri: string,
 		metadata: {
 			name: string;
@@ -118,49 +117,86 @@ export class MatrixMediaService {
 				throw new Error('Invalid MXC URI');
 			}
 
-			const existing = await Uploads.findOne({
-				'federation.mxcUri': mxcUri,
-				'federation.isRemote': true,
-			});
-
-			if (existing) {
-				logger.debug('Remote file reference already exists', {
-					mxcUri,
-					fileId: existing._id,
-				});
-				return existing._id;
+			const uploadAlreadyExists = await Uploads.findByFederationMxcUri(mxcUri);
+			if (uploadAlreadyExists) {
+				return uploadAlreadyExists._id;
 			}
 
-			const pseudoId = `matrix_remote_${crypto.randomBytes(16).toString('hex')}`;
+			const buffer = await this.downloadFromMatrixServer(parts.serverName, parts.mediaId);
 
-			const fileRecord: IUploadWithFederation = {
-				_id: pseudoId,
-				name: metadata.name || 'unnamed',
-				size: metadata.size || 0,
-				type: metadata.type || 'application/octet-stream',
-				rid: metadata.roomId,
-				userId: metadata.userId,
-				store: 'MatrixRemote:Uploads',
-				complete: true,
-				uploading: false,
-				extension: this.getFileExtension(metadata.name),
-				progress: 1,
-				uploadedAt: new Date(),
-				federation: {
-					type: 'matrix',
-					mxcUri,
-					isRemote: true,
-					serverName: parts.serverName,
-					mediaId: parts.mediaId,
+			const uploadedFile = await Upload.uploadFile({
+				userId: metadata.userId || 'federation',
+				buffer,
+				details: {
+					name: metadata.name || 'unnamed',
+					size: buffer.length,
+					type: metadata.type || 'application/octet-stream',
+					rid: metadata.roomId,
+					userId: metadata.userId || 'federation',
 				},
-				_updatedAt: new Date(),
-			} as any;
+			});
 
-			await Uploads.insertOne(fileRecord);
+			await Uploads.updateOne(
+				{ _id: uploadedFile._id },
+				{
+					$set: {
+						'federation.type': 'matrix',
+						'federation.mxcUri': mxcUri,
+						'federation.serverName': parts.serverName,
+						'federation.mediaId': parts.mediaId,
+						'federation.originalUrl': mxcUri,
+					},
+				},
+			);
 
-			return pseudoId;
+			return uploadedFile._id;
 		} catch (error) {
-			logger.error('Error creating remote file reference:', error);
+			logger.error('Error downloading and storing remote file:', error);
+			throw error;
+		}
+	}
+
+	private static async downloadFromMatrixServer(serverName: string, mediaId: string): Promise<Buffer> {
+		try {
+			// try different endpoints in order of preference
+			// according to MSC3916, new authenticated federation endpoints don't include server name in path
+			// first try new authenticated federation endpoints, then fall back to legacy endpoints
+			const endpoints = [
+				`https://${serverName}/_matrix/federation/v1/media/download/${mediaId}`,
+				`https://${serverName}/federation/v1/media/download/${mediaId}`,
+				// legacy endpoints (deprecated but still needed for backwards compatibility)
+				`https://${serverName}/_matrix/media/v3/download/${serverName}/${mediaId}`,
+				`https://${serverName}/_matrix/media/r0/download/${serverName}/${mediaId}`,
+			];
+
+			for await (const endpoint of endpoints) {
+				try {
+					const response = await fetch(endpoint, {
+						method: 'GET',
+						timeout: 15000, // 15 seconds timeout per endpoint
+						headers: {
+							'User-Agent': 'Rocket.Chat Federation',
+							'Accept': '*/*',
+						},
+					});
+
+					if (response.ok) {
+						return response.buffer();
+					}
+
+					logger.debug('Non-OK response from endpoint', {
+						endpoint,
+						status: response.status,
+						statusText: response.statusText,
+					});
+				} catch (error) {
+					logger.error('Error downloading from Matrix server:', error);
+				}
+			}
+
+			throw new Error(`Failed to download file from Matrix server ${serverName}/${mediaId}`);
+		} catch (error) {
+			logger.error('Error downloading from Matrix server:', error);
 			throw error;
 		}
 	}
@@ -176,98 +212,6 @@ export class MatrixMediaService {
 		} catch (error) {
 			logger.error('Error retrieving file buffer:', error);
 			return null;
-		}
-	}
-
-	static async isRemoteFile(fileId: string): Promise<boolean> {
-		try {
-			const file = (await Uploads.findOneById(fileId)) as IUploadWithFederation | null;
-			return (file as any)?.federation?.isRemote === true;
-		} catch (error) {
-			logger.error('Error checking if file is remote:', error);
-			return false;
-		}
-	}
-
-	static async getRemoteFileInfo(fileId: string): Promise<IRemoteFileReference | null> {
-		try {
-			const file = (await Uploads.findOneById(fileId)) as IUploadWithFederation | null;
-			if (!file || !(file as any)?.federation?.isRemote) {
-				return null;
-			}
-
-			const fed = (file as any).federation;
-			return {
-				name: file.name || '',
-				size: file.size || 0,
-				type: file.type || '',
-				mxcUri: fed.mxcUri || '',
-				serverName: fed.serverName || '',
-				mediaId: fed.mediaId || '',
-			};
-		} catch (error) {
-			logger.error('Error getting remote file info:', error);
-			return null;
-		}
-	}
-
-	static async validateUserAccess(userId: string, fileId: string): Promise<boolean> {
-		try {
-			const file = await Uploads.findOneById(fileId);
-			if (!file) {
-				return false;
-			}
-
-			if (file.rid) {
-				const subscription = await Subscriptions.findOneByRoomIdAndUserId(file.rid, userId);
-				if (!subscription) {
-					return false;
-				}
-			}
-
-			return true;
-		} catch (error) {
-			logger.error('Error validating user access:', error);
-			return false;
-		}
-	}
-
-	static async isUploadEnabled(): Promise<boolean> {
-		try {
-			const fileUploadEnabled = await Settings.getValueById('FileUpload_Enabled');
-			return Boolean(fileUploadEnabled);
-		} catch (error) {
-			logger.error('Error checking upload settings:', error);
-			return false;
-		}
-	}
-
-	private static getFileExtension(fileName: string): string {
-		if (!fileName) return '';
-		const lastDotIndex = fileName.lastIndexOf('.');
-		if (lastDotIndex === -1) {
-			return '';
-		}
-		return fileName.substring(lastDotIndex + 1).toLowerCase();
-	}
-
-	static async cleanupOrphanedReferences(): Promise<void> {
-		try {
-			const cutoffDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
-			const result = await Uploads.deleteMany({
-				'federation.isRemote': true,
-				'uploadedAt': { $lt: cutoffDate },
-				'store': 'MatrixRemote:Uploads',
-			});
-
-			if (result.deletedCount > 0) {
-				logger.debug('Cleaned up orphaned remote file references', {
-					count: result.deletedCount,
-				});
-			}
-		} catch (error) {
-			logger.error('Error cleaning up orphaned references:', error);
 		}
 	}
 }
