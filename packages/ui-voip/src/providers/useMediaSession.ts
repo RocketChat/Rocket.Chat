@@ -1,48 +1,9 @@
-import { Emitter } from '@rocket.chat/emitter';
-import {
-	// CallContact,
-	MediaSignalingSession,
-	MediaCallWebRTCProcessor,
-	MediaSignalTransport,
-	CallState,
-	CallRole,
-	ClientMediaSignal,
-	ServerMediaSignal,
-	WebRTCProcessorConfig,
-} from '@rocket.chat/media-signaling';
-import { useSetting, useStream, useUserAvatarPath, useWriteStream } from '@rocket.chat/ui-contexts';
-import { useEffect, useSyncExternalStore, useReducer, useMemo, useCallback, useRef } from 'react';
+import { MediaSignalingSession, CallState, CallRole } from '@rocket.chat/media-signaling';
+import { useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { useEffect, useReducer, useMemo } from 'react';
 
-import { useIceServers } from '../hooks/useIceServers';
+import type { SessionInfo } from './useMediaSessionInstance';
 import type { PeerInfo, State } from '../v2/MediaCallContext';
-
-// TODO remove this once the permission flow PR is merged
-export async function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
-	if (navigator.mediaDevices === undefined) {
-		throw new Error('Media devices not available in insecure contexts.');
-	}
-
-	return navigator.mediaDevices.getUserMedia.call(navigator.mediaDevices, constraints);
-}
-
-interface BaseSession {
-	state: State;
-	peerInfo?: PeerInfo;
-	muted: boolean;
-	held: boolean;
-	startedAt: Date | null; // todo not sure if I need this
-}
-
-interface EmptySession extends BaseSession {
-	state: Extract<State, 'closed' | 'new'>;
-}
-
-interface CallSession extends BaseSession {
-	state: Extract<State, 'calling' | 'ringing' | 'ongoing'>;
-	peerInfo: PeerInfo;
-}
-
-type SessionInfo = EmptySession | CallSession;
 
 const defaultSessionInfo: SessionInfo = {
 	state: 'closed' as const,
@@ -63,89 +24,11 @@ type MediaSession = SessionInfo & {
 	startCall: (id: string, kind: 'user' | 'sip', track: MediaStreamTrack) => Promise<void>;
 	acceptCall: (track: MediaStreamTrack) => Promise<void>;
 
-	// changeDevice: (device: string) => void;
 	changeDevice: (newTrack: MediaStreamTrack) => Promise<void>;
-	// changeDevice: (mediaStream: MediaStream) => void;
+
 	forwardCall: () => void;
 	sendTone: (tone: string) => void;
 };
-
-type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
-
-class MediaSessionStore extends Emitter<{ change: void }> {
-	private sessionInstance: MediaSignalingSession | null = null;
-
-	private sendSignalFn: SignalTransport | null = null;
-
-	private _webrtcProcessorFactory: ((config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) | null = null;
-
-	constructor() {
-		super();
-	}
-
-	private change() {
-		this.emit('change');
-	}
-
-	public onChange(callback: () => void) {
-		return this.on('change', callback);
-	}
-
-	private webrtcProcessorFactory(config: WebRTCProcessorConfig) {
-		if (!this._webrtcProcessorFactory) {
-			throw new Error('WebRTC processor factory not set');
-		}
-		return this._webrtcProcessorFactory(config);
-	}
-
-	private sendSignal(signal: ClientMediaSignal) {
-		if (this.sendSignalFn) {
-			return this.sendSignalFn(signal);
-		}
-
-		console.warn('Media Call - Tried to send signal, but no sendSignalFn was set');
-		return Promise.resolve();
-	}
-
-	private makeInstance(userId: string) {
-		this.sessionInstance = new MediaSignalingSession({
-			userId,
-			transport: (signal: ClientMediaSignal) => this.sendSignal(signal),
-			processorFactories: {
-				webrtc: (config) => this.webrtcProcessorFactory(config),
-			},
-			// mediaStreamFactory: getUserMedia,
-		});
-
-		this.change();
-
-		return this.sessionInstance;
-	}
-
-	public getInstance(userId?: string) {
-		if (!userId) {
-			return null;
-		}
-
-		if (this.sessionInstance?.userId === userId) {
-			return this.sessionInstance;
-		}
-
-		// TODO: maybe we need a cleanup step on the instance?
-		return this.makeInstance(userId);
-	}
-
-	public setSendSignalFn(sendSignalFn: SignalTransport) {
-		this.sendSignalFn = sendSignalFn;
-		return () => {
-			this.sendSignalFn = null;
-		};
-	}
-
-	public setWebRTCProcessorFactory(factory: (config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) {
-		this._webrtcProcessorFactory = factory;
-	}
-}
 
 const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole): State | undefined => {
 	switch (callState) {
@@ -156,59 +39,6 @@ const deriveWidgetStateFromCallState = (callState: CallState, callRole: CallRole
 		case 'ringing':
 			return callRole === 'callee' ? 'ringing' : 'calling';
 	}
-};
-
-const mediaSession = new MediaSessionStore();
-
-export const useMediaSessionInstance = (userId?: string) => {
-	const instance = useSyncExternalStore(
-		useCallback((callback) => {
-			return mediaSession.onChange(callback);
-		}, []),
-		useCallback(() => {
-			return mediaSession.getInstance(userId);
-		}, [userId]),
-	);
-
-	const iceServers = useIceServers();
-	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
-
-	const processor = useRef<MediaCallWebRTCProcessor | undefined>(undefined);
-
-	const notifyUserStream = useStream('notify-user');
-	const writeStream = useWriteStream('notify-user');
-
-	useEffect(() => {
-		// TODO: This stream is not typed.
-		return mediaSession.setSendSignalFn((signal: ClientMediaSignal) => writeStream(`${userId}/media-calls` as any, JSON.stringify(signal)));
-	}, [writeStream, userId]);
-
-	useEffect(() => {
-		if (!instance) {
-			return;
-		}
-
-		const unsubNotification = notifyUserStream(`${instance.userId}/media-signal`, (signal: ServerMediaSignal) =>
-			instance.processSignal(signal),
-		);
-
-		return () => {
-			unsubNotification();
-		};
-	}, [instance, notifyUserStream]);
-
-	useEffect(() => {
-		mediaSession.setWebRTCProcessorFactory((config) => {
-			const _processor = new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout });
-			processor.current = _processor;
-			return _processor;
-		});
-	}, [iceServers, iceGatheringTimeout]);
-
-	return {
-		instance: instance ?? undefined,
-		processor: processor.current,
-	};
 };
 
 const reducer = (
@@ -261,7 +91,7 @@ const reducer = (
 	return reducerState;
 };
 
-export const useMediaSession = (instance?: MediaSignalingSession, processor?: MediaCallWebRTCProcessor): MediaSession => {
+export const useMediaSession = (instance?: MediaSignalingSession): MediaSession => {
 	const [mediaSession, dispatch] = useReducer<typeof reducer>(reducer, defaultSessionInfo);
 
 	const getAvatarUrl = useUserAvatarPath();
@@ -329,7 +159,7 @@ export const useMediaSession = (instance?: MediaSignalingSession, processor?: Me
 		return () => {
 			offCbs.forEach((off) => off());
 		};
-	}, [getAvatarUrl, instance, processor]);
+	}, [getAvatarUrl, instance]);
 
 	const cbs = useMemo(() => {
 		const toggleWidget = (peerInfo?: PeerInfo) => {

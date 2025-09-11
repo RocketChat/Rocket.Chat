@@ -13,7 +13,8 @@ import { useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useCallSounds } from './useCallSounds';
-import { useMediaSessionInstance, useMediaSession } from './useMediaSession';
+import { useMediaSession } from './useMediaSession';
+import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
 import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import MediaCallContext, { PeerInfo } from '../v2/MediaCallContext';
@@ -24,9 +25,8 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const userId = user?._id;
 
-	const { instance, processor } = useMediaSessionInstance(userId ?? undefined);
-	// console.log('instance', instance);
-	const session = useMediaSession(instance, processor);
+	const instance = useMediaSessionInstance(userId ?? undefined);
+	const session = useMediaSession(instance);
 
 	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
 
