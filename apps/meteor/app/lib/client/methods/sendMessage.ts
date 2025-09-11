@@ -3,11 +3,11 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
+import { settings } from '../../../../client/lib/settings';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { Messages, Rooms } from '../../../../client/stores';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { settings } from '../../../settings/client';
 import { t } from '../../../utils/lib/i18n';
 
 Meteor.methods<ServerMethods>({
@@ -31,7 +31,7 @@ Meteor.methods<ServerMethods>({
 			name: user.name || '',
 		};
 		message.temp = true;
-		if (settings.get('Message_Read_Receipt_Enabled')) {
+		if (settings.peek('Message_Read_Receipt_Enabled')) {
 			message.unread = true;
 		}
 

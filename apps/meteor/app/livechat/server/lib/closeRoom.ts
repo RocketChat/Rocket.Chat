@@ -3,6 +3,7 @@ import { Message } from '@rocket.chat/core-services';
 import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelRoom, IOmnichannelRoomClosingInfo } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, Users } from '@rocket.chat/models';
+import { applyDepartmentRestrictions } from '@rocket.chat/omni-core';
 import type { ClientSession } from 'mongodb';
 
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
@@ -283,7 +284,7 @@ export async function closeOpenChats(userId: string, comment?: string) {
 	logger.debug(`Closing open chats for user ${userId}`);
 	const user = await Users.findOneById(userId);
 
-	const extraQuery = await callbacks.run('livechat.applyDepartmentRestrictions', {}, { userId });
+	const extraQuery = await applyDepartmentRestrictions({}, userId);
 	const openChats = LivechatRooms.findOpenByAgent(userId, extraQuery);
 	const promises: Promise<void>[] = [];
 	await openChats.forEach((room) => {
