@@ -23,6 +23,7 @@ const AutoCompleteDepartmentAgent = ({ value, onChange, agents, ...props }: Auto
 
 		return agents
 			.filter((agent) => agent.username?.includes(debouncedFilter))
+			.sort((a, b) => a.username.localeCompare(b.username))
 			.map((agent) => ({
 				value: agent.agentId,
 				label: agent.username,
