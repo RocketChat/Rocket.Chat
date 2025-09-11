@@ -2,12 +2,11 @@ import { AnchorPortal } from '@rocket.chat/ui-client';
 import {
 	useEndpoint,
 	useUserAvatarPath,
-	// useUserId,
 	useSetOutputMediaDevice,
 	useSetInputMediaDevice,
 	Device,
 	useUser,
-	// useSelectedDevices,
+	useSetModal,
 } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -19,9 +18,12 @@ import useMediaStream from './useMediaStream';
 import { stopTracks, useDevicePermissionPrompt2 } from '../hooks/useDevicePermissionPrompt';
 import MediaCallContext, { PeerInfo } from '../v2/MediaCallContext';
 import MediaCallWidget from '../v2/MediaCallWidget';
+import TransferModal from '../v2/TransferModal';
 
 const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 	const user = useUser();
+
+	const setModal = useSetModal();
 
 	const userId = user?._id;
 
@@ -137,7 +139,17 @@ const MediaCallProvider = ({ children }: { children: React.ReactNode }) => {
 
 	const onForward = () => {
 		console.log('forward');
-		session.forwardCall();
+		const onCancel = () => {
+			setModal(null);
+		};
+
+		const onConfirm = (_kind: 'user' | 'sip', _id: string) => {
+			session.forwardCall(/* kind, id */);
+			console.log('forwarded call', _kind, _id);
+			setModal(null);
+		};
+
+		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} />);
 	};
 
 	const onTone = (tone: string) => {
