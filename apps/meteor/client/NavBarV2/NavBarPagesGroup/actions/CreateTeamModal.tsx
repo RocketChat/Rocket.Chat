@@ -52,13 +52,13 @@ type CreateTeamModalProps = { onClose: () => void };
 const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
-	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
+	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
+	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const canCreateTeam = usePermission('create-team');
-	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createTeamAction = useEndpoint('POST', '/v1/teams.create');
@@ -112,15 +112,11 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 			setValue('encrypted', false);
 		}
 
-		if (broadcast) {
-			setValue('encrypted', false);
-		}
-
 		setValue('readOnly', broadcast);
 	}, [watch, setValue, broadcast, isPrivate]);
 
-	const canChangeReadOnly = !broadcast;
-	const canChangeEncrypted = isPrivate && !broadcast && e2eEnabled && !e2eEnabledForPrivateByDefault;
+	const readOnlyDisabled = broadcast || !canSetReadOnly;
+	const canChangeEncrypted = isPrivate && e2eEnabled;
 	const getEncryptedHint = useEncryptedRoomDescription('team');
 
 	const handleCreateTeam = async ({
@@ -264,7 +260,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 										render={({ field: { onChange, value, ref } }): ReactElement => (
 											<ToggleSwitch
 												id={encryptedId}
-												disabled={!canSetReadOnly || !canChangeEncrypted}
+												disabled={!canChangeEncrypted}
 												onChange={onChange}
 												aria-describedby={`${encryptedId}-hint`}
 												checked={value}
@@ -273,7 +269,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 										)}
 									/>
 								</FieldRow>
-								<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, broadcast, encrypted })}</FieldHint>
+								<FieldHint id={`${encryptedId}-hint`}>{getEncryptedHint({ isPrivate, encrypted })}</FieldHint>
 							</Field>
 							<Field>
 								<FieldRow>
@@ -285,7 +281,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 											<ToggleSwitch
 												id={readOnlyId}
 												aria-describedby={`${readOnlyId}-hint`}
-												disabled={!canChangeReadOnly}
+												disabled={readOnlyDisabled}
 												onChange={onChange}
 												checked={value}
 												ref={ref}
