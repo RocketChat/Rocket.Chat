@@ -1,8 +1,8 @@
+import type { HomeserverServices } from '@hs/federation-sdk';
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads } from '@rocket.chat/models';
-import fetch from 'node-fetch';
 
 const logger = new Logger('federation-matrix:media-service');
 
@@ -16,6 +16,12 @@ export interface IRemoteFileReference {
 }
 
 export class MatrixMediaService {
+	private static homeserverServices: HomeserverServices;
+
+	static setHomeserverServices(services: HomeserverServices): void {
+		this.homeserverServices = services;
+	}
+
 	static generateMXCUri(fileId: string, serverName: string): string {
 		return `mxc://${serverName}/${fileId}`;
 	}
@@ -101,7 +107,11 @@ export class MatrixMediaService {
 				return uploadAlreadyExists._id;
 			}
 
-			const buffer = await this.downloadFromMatrixServer(parts.serverName, parts.mediaId);
+			if (!this.homeserverServices) {
+				throw new Error('Homeserver services not initialized. Call setHomeserverServices first.');
+			}
+
+			const buffer = await this.homeserverServices.media.downloadFromRemoteServer(parts.serverName, parts.mediaId);
 
 			const uploadedFile = await Upload.uploadFile({
 				userId: metadata.userId || 'federation',
@@ -124,51 +134,6 @@ export class MatrixMediaService {
 			return uploadedFile._id;
 		} catch (error) {
 			logger.error('Error downloading and storing remote file:', error);
-			throw error;
-		}
-	}
-
-	private static async downloadFromMatrixServer(serverName: string, mediaId: string): Promise<Buffer> {
-		try {
-			// try different endpoints in order of preference
-			// according to MSC3916, new authenticated federation endpoints don't include server name in path
-			// first try new authenticated federation endpoints, then fall back to legacy endpoints
-			const endpoints = [
-				`https://${serverName}/_matrix/federation/v1/media/download/${mediaId}`,
-				`https://${serverName}/federation/v1/media/download/${mediaId}`,
-				// legacy endpoints (deprecated but still needed for backwards compatibility)
-				`https://${serverName}/_matrix/media/v3/download/${serverName}/${mediaId}`,
-				`https://${serverName}/_matrix/media/r0/download/${serverName}/${mediaId}`,
-			];
-
-			for await (const endpoint of endpoints) {
-				try {
-					const response = await fetch(endpoint, {
-						method: 'GET',
-						timeout: 15000, // 15 seconds timeout per endpoint
-						headers: {
-							'User-Agent': 'Rocket.Chat Federation',
-							'Accept': '*/*',
-						},
-					});
-
-					if (response.ok) {
-						return response.buffer();
-					}
-
-					logger.debug('Non-OK response from endpoint', {
-						endpoint,
-						status: response.status,
-						statusText: response.statusText,
-					});
-				} catch (error) {
-					logger.error('Error downloading from Matrix server:', error);
-				}
-			}
-
-			throw new Error(`Failed to download file from Matrix server ${serverName}/${mediaId}`);
-		} catch (error) {
-			logger.error('Error downloading from Matrix server:', error);
 			throw error;
 		}
 	}
