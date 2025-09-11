@@ -1,6 +1,8 @@
 import { Stream } from './Stream';
 
 export class LocalStream extends Stream {
+	private transceiver: RTCRtpTransceiver | null = null;
+
 	public async setTrack(newTrack: MediaStreamTrack | null, peer: RTCPeerConnection): Promise<void> {
 		if (newTrack) {
 			const matchingTrack = this.mediaStream.getTrackById(newTrack.id);
@@ -22,11 +24,13 @@ export class LocalStream extends Stream {
 
 	private async setRemoteTrack(newTrack: MediaStreamTrack | null, peer: RTCPeerConnection): Promise<void> {
 		// If the peer doesn't yet have any audio track, send it to them
-		const sender = peer.getSenders().find((sender) => sender.track?.kind === 'audio');
+		const sender = peer.getSenders().find((sender) => sender.track?.kind === 'audio' || sender === this.transceiver?.sender);
 		if (!sender) {
 			if (newTrack) {
 				// This will require a re-negotiation
 				peer.addTrack(newTrack, this.mediaStream);
+			} else {
+				this.transceiver = peer.addTransceiver('audio', { direction: 'sendrecv' });
 			}
 			return;
 		}

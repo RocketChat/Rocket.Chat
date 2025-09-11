@@ -75,7 +75,6 @@ export interface IClientMediaCall {
 
 	emitter: Emitter<CallEvents>;
 
-	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
 	getRemoteMediaStream(): MediaStream;
 
 	accept(): void;
