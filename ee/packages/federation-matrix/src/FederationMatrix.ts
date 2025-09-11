@@ -247,10 +247,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		return 'm.file';
 	}
 
-	private async prepareFileForMatrix(file: NonNullable<IMessage['files']>[0], matrixDomain: string): Promise<string> {
-		return MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
-	}
-
 	private buildFileMessageContent(
 		file: NonNullable<IMessage['files']>[0],
 		mxcUri: string,
@@ -287,7 +283,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		try {
 			const file = message.files[0];
-			const mxcUri = await this.prepareFileForMatrix(file, matrixDomain);
+			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain);
 			const fileContent = this.buildFileMessageContent(file, mxcUri);
 			const result = await this.homeserverServices.message.sendFileMessage(matrixRoomId, fileContent, matrixUserId);
 
@@ -339,7 +335,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		matrixDomain: string,
 		parsedMessage: string,
 	): Promise<{ eventId: string } | null> {
-		const threadRootMessage = await Messages.findOneById(message.tmid!);
+		if (!message.tmid) {
+			throw new Error('Thread message ID not found');
+		}
+
+		const threadRootMessage = await Messages.findOneById(message.tmid);
 		const threadRootEventId = threadRootMessage?.federation?.eventId;
 
 		if (!threadRootEventId) {
