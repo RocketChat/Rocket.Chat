@@ -487,7 +487,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 
 			console.log('startCall', target);
 			const actorType = target.identifierKind === 'extension' ? 'sip' : 'user';
-			await this.session.startCall(actorType, target.identifier, { inputTrack: null });
+			await this.session.startCall(actorType, target.identifier);
 
 			this.emit('stateChanged');
 		} finally {
