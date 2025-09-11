@@ -62,7 +62,8 @@ export interface IUpload {
 	federation?: {
 		type: string;
 		mxcUri?: string;
-		uploadToken?: string;
+		serverName?: string;
+		mediaId?: string;
 		origin?: string;
 	};
 }

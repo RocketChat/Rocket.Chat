@@ -1,9 +1,8 @@
 import { Upload } from '@rocket.chat/core-services';
+import type { IUpload } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads } from '@rocket.chat/models';
 import fetch from 'node-fetch';
-
-import type { IUploadWithFederation } from '../types/IUploadWithFederation';
 
 const logger = new Logger('federation-matrix:media-service');
 
@@ -71,20 +70,20 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async getLocalFileForMatrixNode(mxcUri: string): Promise<IUploadWithFederation | null> {
+	static async getLocalFileForMatrixNode(mxcUri: string): Promise<IUpload | null> {
 		try {
 			const parts = this.parseMXCUri(mxcUri);
 			if (!parts) {
 				return null;
 			}
 
-			let file = (await Uploads.findOne({
+			let file = await Uploads.findOne({
 				'federation.mxcUri': mxcUri,
 				'federation.isRemote': false,
-			})) as IUploadWithFederation | null;
+			});
 
 			if (!file) {
-				file = (await Uploads.findOneById(parts.mediaId)) as IUploadWithFederation | null;
+				file = await Uploads.findOneById(parts.mediaId);
 			}
 
 			if (!file) {
@@ -203,11 +202,10 @@ export class MatrixMediaService {
 
 	static async getLocalFileBuffer(fileId: string): Promise<Buffer | null> {
 		try {
-			const fileRecord = (await Uploads.findOneById(fileId)) as IUploadWithFederation | null;
-			if (!fileRecord || (fileRecord as any).federation?.isRemote) {
+			const fileRecord = await Uploads.findOneById(fileId);
+			if (!fileRecord || fileRecord.federation) {
 				return null;
 			}
-
 			return await Upload.getFileBuffer({ file: fileRecord });
 		} catch (error) {
 			logger.error('Error retrieving file buffer:', error);
