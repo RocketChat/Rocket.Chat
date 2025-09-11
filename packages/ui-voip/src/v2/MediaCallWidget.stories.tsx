@@ -43,7 +43,7 @@ export const MediaCallWidgetManualTesting: StoryFn<typeof MediaCallWidget> = () 
 			<Button onClick={() => onToggleWidget()} disabled={state !== 'new' && state !== 'closed'} mie={8}>
 				Toggle widget
 			</Button>
-			<Button onClick={() => onCall('1234567890', 'user')} disabled={state !== 'closed'}>
+			<Button onClick={() => onCall()} disabled={state !== 'closed'}>
 				Receive call
 			</Button>
 			<MediaCallWidget />
