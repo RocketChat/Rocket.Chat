@@ -10,20 +10,15 @@ import { settings } from '../../settings';
 import type { ChatAPI } from '../ChatAPI';
 
 const parse = (msg: string): { command: string; params: string } | { command: SlashCommand; params: string } | undefined => {
-	//const match = msg.match(/^\/([^\s]+)(.*)/);
-	// if (!match) {
-	// 	return undefined;
-	// }
-
+	// This regex matches strings starting with '/', captures the command name (non-whitespace) skips optional spaces and a label before a colon, and finally captures the parameters after the colon.
 	const match = msg.match(/^\/([^\s]*)\s*[^:]*:\s*(.*)$/);
 	if (!match) {
 		return undefined;
 	}
 
-	const cmd = match[1]; 
-  	const params = match[2];
+	const cmd = match[1];
+	const params = match[2];
 
-	//const [, cmd, params] = match; //funziona grazie alla sintassi della regex
 	const command = slashCommands.commands[cmd];
 
 	if (!command) {

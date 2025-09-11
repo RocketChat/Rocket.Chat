@@ -329,11 +329,11 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 							if (!command.permission) {
 								return true;
 							}
-							//significa che il comando inserito dall'utente è stato trovato nella lista dei comandi, quindi è possibile gestire il click
+							
 							return hasAtLeastOnePermission(command.permission, rid);
 						})
 						.sort((a, b) => a._id.localeCompare(b._id))
-						.slice(0, 11); //modifica solo per un test
+						.slice(0, 11);
 				},
 				getItemsFromServer: async () => [],
 			}),
