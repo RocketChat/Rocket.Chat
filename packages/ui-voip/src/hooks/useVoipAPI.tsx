@@ -51,7 +51,7 @@ export const useVoipAPI = (): VoipAPI => {
 				endCall: () => mediaCallsClient.endCall(),
 				register: NOOP,
 				unregister: NOOP,
-				transferCall: mediaCallsClient.transfer,
+				transferCall: (callee) => mediaCallsClient.transfer({ identifier: callee, identifierKind: 'extension' }),
 				openDialer: () => mediaCallsClient.notifyDialer({ open: true }),
 				closeDialer: () => mediaCallsClient.notifyDialer({ open: false }),
 				changeAudioInputDevice,

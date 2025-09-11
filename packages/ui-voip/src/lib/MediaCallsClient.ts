@@ -105,16 +105,20 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 		await this.startCall(callee);
 	}
 
-	public async transfer(calleeURI: string): Promise<void> {
-		if (!calleeURI) {
-			throw new Error('Invalid URI');
+	public async transfer(callee: MediaCallsCallee): Promise<void> {
+		console.log('MediaCallsClient.transfer', callee);
+
+		const call = this.session.getMainCall();
+		if (!call) {
+			throw new Error('No active call.');
 		}
 
-		if (!this.isBusy()) {
-			throw new Error('No active call');
-		}
+		console.log('transferCall');
 
-		// #ToDo
+		const actorType = callee.identifierKind === 'extension' ? 'sip' : 'user';
+		await call.transfer({ type: actorType, id: callee.identifier });
+
+		this.emit('stateChanged');
 	}
 
 	public async answer(): Promise<void> {
