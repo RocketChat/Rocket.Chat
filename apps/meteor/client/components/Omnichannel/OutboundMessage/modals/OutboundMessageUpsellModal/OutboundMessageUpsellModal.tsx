@@ -20,7 +20,7 @@ const OutboundMessageUpsellModal = ({ hasModule, isAdmin, onClose }: OutboundMes
 	const openExternalLink = useExternalLink();
 
 	const props = useMemo(() => {
-		if (!hasModule) {
+		if (isAdmin && !hasModule) {
 			return {
 				cancelText: t('Learn_more'),
 				onCancel: () => openExternalLink(OMNICHANNEL_DOCS_LINK),

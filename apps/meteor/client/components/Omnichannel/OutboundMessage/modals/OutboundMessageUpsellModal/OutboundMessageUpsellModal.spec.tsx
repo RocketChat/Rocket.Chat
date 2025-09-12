@@ -27,27 +27,48 @@ describe('OutboundMessageUpsellModal', () => {
 	});
 
 	describe('hasModule is false', () => {
-		it('should render "Learn more" and "Contact sales" buttons', () => {
-			render(<OutboundMessageUpsellModal onClose={onClose} />, { wrapper: appRoot.build() });
-			expect(screen.getByRole('button', { name: 'Learn more' })).toBeInTheDocument();
-			expect(screen.getByRole('button', { name: 'Contact sales' })).toBeInTheDocument();
+		describe('user is not admin', () => {
+			it('should render only "Learn more" button', () => {
+				render(<OutboundMessageUpsellModal hasModule onClose={onClose} />, { wrapper: appRoot.build() });
+				expect(screen.getByRole('button', { name: 'Learn more' })).toBeInTheDocument();
+				expect(screen.queryByRole('button', { name: 'Contact sales' })).not.toBeInTheDocument();
+			});
+
+			it('should render the annotation', () => {
+				render(<OutboundMessageUpsellModal hasModule onClose={onClose} />, { wrapper: appRoot.build() });
+				expect(screen.getByText('Outbound_message_upsell_annotation')).toBeInTheDocument();
+			});
+
+			it('should call openExternalLink with docs link when "Learn more" is clicked', async () => {
+				render(<OutboundMessageUpsellModal hasModule onClose={onClose} />, { wrapper: appRoot.build() });
+				await userEvent.click(screen.getByRole('button', { name: 'Learn more' }));
+				expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/omnichannel-docs');
+			});
 		});
 
-		it('should call openExternalLink with docs link when "Learn more" is clicked', async () => {
-			render(<OutboundMessageUpsellModal onClose={onClose} />, { wrapper: appRoot.build() });
-			await userEvent.click(screen.getByRole('button', { name: 'Learn more' }));
-			expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/omnichannel-docs');
-		});
+		describe('user is admin', () => {
+			it('should render "Learn more" and "Contact sales" buttons', () => {
+				render(<OutboundMessageUpsellModal isAdmin onClose={onClose} />, { wrapper: appRoot.build() });
+				expect(screen.getByRole('button', { name: 'Learn more' })).toBeInTheDocument();
+				expect(screen.getByRole('button', { name: 'Contact sales' })).toBeInTheDocument();
+			});
 
-		it('should call openExternalLink with sales link when "Contact sales" is clicked', async () => {
-			render(<OutboundMessageUpsellModal onClose={onClose} />, { wrapper: appRoot.build() });
-			await userEvent.click(screen.getByRole('button', { name: 'Contact sales' }));
-			expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/contact-sales');
-		});
+			it('should call openExternalLink with docs link when "Learn more" is clicked', async () => {
+				render(<OutboundMessageUpsellModal isAdmin onClose={onClose} />, { wrapper: appRoot.build() });
+				await userEvent.click(screen.getByRole('button', { name: 'Learn more' }));
+				expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/omnichannel-docs');
+			});
 
-		it('should not render the annotation', () => {
-			render(<OutboundMessageUpsellModal onClose={onClose} />, { wrapper: appRoot.build() });
-			expect(screen.queryByText('Outbound_message_upsell_annotation')).not.toBeInTheDocument();
+			it('should call openExternalLink with sales link when "Contact sales" is clicked', async () => {
+				render(<OutboundMessageUpsellModal isAdmin onClose={onClose} />, { wrapper: appRoot.build() });
+				await userEvent.click(screen.getByRole('button', { name: 'Contact sales' }));
+				expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/contact-sales');
+			});
+
+			it('should not render the annotation', () => {
+				render(<OutboundMessageUpsellModal isAdmin onClose={onClose} />, { wrapper: appRoot.build() });
+				expect(screen.queryByText('Outbound_message_upsell_annotation')).not.toBeInTheDocument();
+			});
 		});
 	});
 
