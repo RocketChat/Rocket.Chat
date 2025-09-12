@@ -1,7 +1,9 @@
 import type { TwitterOAuthConfiguration } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
+// eslint-disable-next-line import/no-duplicates
 import { OAuth } from 'meteor/oauth';
+// eslint-disable-next-line import/no-duplicates
 import { Twitter } from 'meteor/twitter-oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
