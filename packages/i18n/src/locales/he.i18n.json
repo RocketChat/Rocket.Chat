@@ -1505,7 +1505,6 @@
   "quote": "ציטוט",
   "registration.component.form.confirmPassword": "אמת את הסיסמה שלך",
   "registration.component.form.email": "דוא״ל",
-  "registration.component.form.emailAlreadyExists": "כתובת הדוא״ל כבר קיימת",
   "registration.component.form.invalidConfirmPass": "אימות הססמה אינו זהה לססמה",
   "registration.component.form.invalidEmail": "כתובת הדוא״ל שהוזנה אינה תקינה",
   "registration.component.form.name": "שם",
