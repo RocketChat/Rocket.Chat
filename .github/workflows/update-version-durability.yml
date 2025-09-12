@@ -3,6 +3,10 @@ name: Update Version Durability
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      LTS_VERSIONS:
+        required: false
+        type: string
     secrets:
       CI_PAT:
         required: true
@@ -29,7 +33,7 @@ jobs:
       - name: Update Version Durability
         uses: ./.github/actions/update-version-durability
         with:
-          LTS_VERSIONS: ${{ vars.LTS_VERSIONS }}
+          LTS_VERSIONS: ${{ inputs.LTS_VERSIONS != '' && inputs.LTS_VERSIONS || vars.LTS_VERSIONS }}
           GH_TOKEN: ${{ secrets.CI_PAT }}
           D360_TOKEN: ${{ secrets.D360_TOKEN }}
           D360_ARTICLE_ID: 800f8d52-409d-478d-b560-f82a2c0eb7fb
