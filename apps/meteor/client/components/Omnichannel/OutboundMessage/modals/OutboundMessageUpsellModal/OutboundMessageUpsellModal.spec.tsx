@@ -29,18 +29,18 @@ describe('OutboundMessageUpsellModal', () => {
 	describe('hasModule is false', () => {
 		describe('user is not admin', () => {
 			it('should render only "Learn more" button', () => {
-				render(<OutboundMessageUpsellModal hasModule onClose={onClose} />, { wrapper: appRoot.build() });
+				render(<OutboundMessageUpsellModal onClose={onClose} />, { wrapper: appRoot.build() });
 				expect(screen.getByRole('button', { name: 'Learn more' })).toBeInTheDocument();
 				expect(screen.queryByRole('button', { name: 'Contact sales' })).not.toBeInTheDocument();
 			});
 
 			it('should render the annotation', () => {
-				render(<OutboundMessageUpsellModal hasModule onClose={onClose} />, { wrapper: appRoot.build() });
+				render(<OutboundMessageUpsellModal onClose={onClose} />, { wrapper: appRoot.build() });
 				expect(screen.getByText('Outbound_message_upsell_annotation')).toBeInTheDocument();
 			});
 
 			it('should call openExternalLink with docs link when "Learn more" is clicked', async () => {
-				render(<OutboundMessageUpsellModal hasModule onClose={onClose} />, { wrapper: appRoot.build() });
+				render(<OutboundMessageUpsellModal onClose={onClose} />, { wrapper: appRoot.build() });
 				await userEvent.click(screen.getByRole('button', { name: 'Learn more' }));
 				expect(openExternalLink).toHaveBeenCalledWith('https://go.rocket.chat/i/omnichannel-docs');
 			});
