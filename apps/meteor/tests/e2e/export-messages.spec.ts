@@ -145,9 +145,7 @@ test.describe('export-messages', () => {
 		await expect(exportMessagesTab.sendButton).toBeEnabled();
 	});
 
-	// TODO: Fix this test - the test is failing because when selecting the message, the import messages tab becomes not visible
-	// and the message is not selected.
-	test.fail('should be able to select a single message to export with hide contextual bar preference enabled', async ({ page, api }) => {
+	test('should be able to select a single message to export with hide contextual bar preference enabled', async ({ page, api }) => {
 		await api.post('/users.setPreferences', {
 			userId: 'rocketchat.internal.admin.test',
 			data: { hideFlexTab: true },
