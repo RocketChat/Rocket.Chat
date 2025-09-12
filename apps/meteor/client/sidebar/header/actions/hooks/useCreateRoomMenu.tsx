@@ -12,7 +12,9 @@ export const useCreateRoom = () => {
 	const showCreate = useAtLeastOnePermission(CREATE_ROOM_PERMISSIONS);
 
 	const { data } = useIsEnterprise();
-	const isMatrixEnabled = useSetting('Federation_Matrix_enabled') && data?.isEnterprise;
+	const matrixFederationEnabled = useSetting('Federation_Matrix_enabled');
+	const serviceFederationEnabled = useSetting('Federation_Service_Enabled');
+	const isMatrixEnabled = (matrixFederationEnabled || serviceFederationEnabled) && data?.isEnterprise;
 
 	const createRoomItems = useCreateRoomItems();
 	const matrixFederationSearchItems = useMatrixFederationItems({ isMatrixEnabled });

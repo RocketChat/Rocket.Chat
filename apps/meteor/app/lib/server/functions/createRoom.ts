@@ -1,17 +1,19 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Federation, FederationEE, License, Message, Team } from '@rocket.chat/core-services';
+import { Federation, FederationEE, FederationMatrix, License, Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { MatrixBridgedRoom, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
+import { setupTypingEventListenerForRoom } from '../../../../ee/server/hooks/federation';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { calculateRoomRolePriorityFromRoles } from '../../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { syncRoomRolePriorityForUserAndRoom } from '../../../../server/lib/roles/syncRoomRolePriority';
+import { getFederationVersion } from '../../../../server/services/federation/utils';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
@@ -68,6 +70,7 @@ async function createUsersSubscriptions({
 		projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1, 'roles': 1 },
 	});
 
+	// TODO: Check re new federation-service - should we add them here or keep on createRoom inside of homeserver?!
 	for await (const member of membersCursor) {
 		try {
 			await callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
@@ -237,8 +240,9 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	const shouldBeHandledByFederation = roomProps.federated === true || owner.username.includes(':');
+	const federationVersion = getFederationVersion();
 
-	if (shouldBeHandledByFederation) {
+	if (shouldBeHandledByFederation && federationVersion === 'matrix') {
 		const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
 		await federation.beforeCreateRoom(roomProps);
 	}
@@ -265,8 +269,26 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
-	if (shouldBeHandledByFederation) {
+
+	if (shouldBeHandledByFederation && federationVersion === 'matrix') {
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
+	}
+
+	if (shouldBeHandledByFederation && federationVersion === 'native') {
+		// TODO: move this to the hooks folder
+		setupTypingEventListenerForRoom(room._id);
+
+		if (!options?.federatedRoomId) {
+			// if room if exists, we don't want to create it again
+			// adds bridge record
+			await FederationMatrix.createRoom(room, owner, members);
+		} else {
+			// matrix room was already created and passed
+			const fromServer = options.federatedRoomId.split(':')[1];
+			await MatrixBridgedRoom.createOrUpdateByLocalRoomId(room._id, options.federatedRoomId, fromServer);
+		}
+
+		await Rooms.setAsFederated(room._id);
 	}
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);

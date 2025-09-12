@@ -116,6 +116,8 @@ import {
 	TeamRaw,
 	UsersRaw,
 	UsersSessionsRaw,
+	MatrixBridgedUserRaw,
+	MatrixBridgedRoomRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -256,6 +258,8 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
+	registerModel('IMatrixBridgedUserModel', () => new MatrixBridgedUserRaw(db));
+	registerModel('IMatrixBridgedRoomModel', () => new MatrixBridgedRoomRaw(db));
 }
 
 if (!dbWatchersDisabled) {
