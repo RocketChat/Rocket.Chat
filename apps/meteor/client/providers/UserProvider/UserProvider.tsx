@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
@@ -21,16 +21,12 @@ import { getUserPreference } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { afterLogoutCleanUpCallback } from '../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
-import { useReactiveValue } from '../../hooks/useReactiveValue';
-import { applyQueryOptions } from '../../lib/cachedStores';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
+import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
 import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
+import { userIdStore } from '../../lib/user';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
-
-const getUser = (): IUser | null => Meteor.user() as IUser | null;
-
-const getUserId = (): string | null => Meteor.userId();
 
 type UserProviderProps = {
 	children: ReactNode;
@@ -40,11 +36,11 @@ const ee = new Emitter();
 Accounts.onLogout(() => ee.emit('logout'));
 
 ee.on('logout', async () => {
-	const user = getUser();
+	const userId = userIdStore.getState();
+	if (!userId) return;
+	const user = Users.state.get(userId);
+	if (!user) return;
 
-	if (!user) {
-		return;
-	}
 	await afterLogoutCleanUpCallback.run(user);
 	await sdk.call('logoutCleanUp', user);
 });
@@ -69,11 +65,13 @@ const queryRoom = (
 };
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
-	const userId = useReactiveValue(getUserId);
+	const userId = userIdStore();
+
 	const user = Users.use((state) => {
 		if (!userId) return null;
 		return state.get(userId) ?? null;
 	});
+
 	const previousUserId = useRef(userId);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
