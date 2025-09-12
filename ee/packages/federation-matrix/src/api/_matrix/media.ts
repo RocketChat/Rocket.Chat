@@ -7,6 +7,7 @@ import { Logger } from '@rocket.chat/logger';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { MatrixMediaService } from '../../services/MatrixMediaService';
+import { canAccessMedia } from '../middlewares';
 
 const logger = new Logger('federation-matrix:media');
 
@@ -76,7 +77,7 @@ async function getMediaFile(mediaId: string, serverName: string): Promise<{ file
 }
 
 export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => {
-	const { config } = homeserverServices;
+	const { config, federationAuth } = homeserverServices;
 	const router = new Router('/federation');
 
 	router.get(
@@ -86,12 +87,14 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 			response: {
 				200: isBufferResponseProps,
 				401: isErrorResponseProps,
+				403: isErrorResponseProps,
 				404: isErrorResponseProps,
 				429: isErrorResponseProps,
 				500: isErrorResponseProps,
 			},
 			tags: ['Federation', 'Media'],
 		},
+		canAccessMedia(federationAuth),
 		async (c) => {
 			try {
 				const { mediaId } = c.req.param();
@@ -138,10 +141,12 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 			response: {
 				200: isBufferResponseProps,
 				401: isErrorResponseProps,
+				403: isErrorResponseProps,
 				404: isErrorResponseProps,
 			},
 			tags: ['Federation', 'Media'],
 		},
+		canAccessMedia(federationAuth),
 		async (context: any) => {
 			try {
 				const { mediaId } = context.req.param();
