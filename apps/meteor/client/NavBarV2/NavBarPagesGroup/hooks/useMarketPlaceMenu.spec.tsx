@@ -14,7 +14,7 @@ it('should return and empty array if the user does not have `manage-apps` and `a
 	expect(result.current[0].items).toEqual([]);
 });
 
-it('should return `explore` and `installed` items if the user has `access-marketplace` permission', () => {
+it('should return `explore`, `installed` and `private` items if the user has `access-marketplace` permission', () => {
 	const { result } = renderHook(() => useMarketPlaceMenu(), {
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
@@ -33,9 +33,15 @@ it('should return `explore` and `installed` items if the user has `access-market
 			id: 'installed',
 		}),
 	);
+
+	expect(result.current[0].items[2]).toEqual(
+		expect.objectContaining({
+			id: 'private',
+		}),
+	);
 });
 
-it('should return `explore`, `installed` and `requested` items if the user has `manage-apps` permission', () => {
+it('should return `explore`, `installed`, `private` and `requested` items if the user has `manage-apps` permission', () => {
 	const { result } = renderHook(() => useMarketPlaceMenu(), {
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
@@ -62,6 +68,12 @@ it('should return `explore`, `installed` and `requested` items if the user has `
 	);
 
 	expect(result.current[0].items[2]).toEqual(
+		expect.objectContaining({
+			id: 'private',
+		}),
+	);
+
+	expect(result.current[0].items[3]).toEqual(
 		expect.objectContaining({
 			id: 'requested-apps',
 		}),
@@ -102,7 +114,7 @@ it('should return one action from the server with no conditions', async () => {
 	);
 
 	await waitFor(() =>
-		expect(result.current[0]?.items[3]).toEqual(
+		expect(result.current[0]?.items[4]).toEqual(
 			expect.objectContaining({
 				id: 'APP_ID_ACTION_ID',
 			}),
@@ -150,7 +162,7 @@ describe('Marketplace menu with role conditions', () => {
 		);
 
 		await waitFor(() =>
-			expect(result.current[0]?.items[3]).toEqual(
+			expect(result.current[0]?.items[4]).toEqual(
 				expect.objectContaining({
 					id: 'APP_ID_ACTION_ID',
 				}),
@@ -194,13 +206,13 @@ describe('Marketplace menu with role conditions', () => {
 			}),
 		);
 
-		expect(result.current[0].items[2]).toEqual(
+		expect(result.current[0].items[3]).toEqual(
 			expect.objectContaining({
 				id: 'requested-apps',
 			}),
 		);
 
-		expect(result.current[0].items[3]).toEqual(undefined);
+		expect(result.current[0].items[4]).toEqual(undefined);
 	});
 });
 
@@ -242,7 +254,7 @@ describe('Marketplace menu with permission conditions', () => {
 		);
 
 		await waitFor(() =>
-			expect(result.current[0].items[3]).toEqual(
+			expect(result.current[0].items[4]).toEqual(
 				expect.objectContaining({
 					id: 'APP_ID_ACTION_ID',
 				}),
@@ -274,6 +286,6 @@ describe('Marketplace menu with permission conditions', () => {
 				.build(),
 		});
 
-		expect(result.current[0].items[3]).toEqual(undefined);
+		expect(result.current[0].items[4]).toEqual(undefined);
 	});
 });
