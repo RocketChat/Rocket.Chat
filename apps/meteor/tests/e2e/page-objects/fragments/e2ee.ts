@@ -18,7 +18,7 @@ abstract class E2EEBanner {
 
 export class SaveE2EEPasswordBanner extends E2EEBanner {
 	constructor(page: Page) {
-		super(page.getByRole('button', { name: 'Save your encryption password' }));
+		super(page.getByRole('button', { name: 'Save your new E2EE password' }));
 	}
 }
 
@@ -43,7 +43,7 @@ export class SaveE2EEPasswordModal extends Modal {
 	private readonly toastMessages: ToastMessages;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Save your encryption password' }));
+		super(page.getByRole('dialog', { name: 'Save your new E2EE password' }));
 		this.toastMessages = new ToastMessages(page);
 	}
 
