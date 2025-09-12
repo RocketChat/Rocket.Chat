@@ -57,7 +57,9 @@ export class MediaCallDirector {
 		// Once the state changes, negotiations need to be referred by id.
 		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
 
-		const stateResult = await MediaCalls.acceptCallById(call._id, data, this.getNewExpirationTime());
+		const { webrtcAnswer, ...acceptData } = data;
+
+		const stateResult = await MediaCalls.acceptCallById(call._id, acceptData, this.getNewExpirationTime());
 		// If nothing changed, the call was no longer ringing
 		if (!stateResult.modifiedCount) {
 			return false;
@@ -198,7 +200,6 @@ export class MediaCallDirector {
 			expiresAt: MediaCallDirector.getNewExpirationTime(),
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
-			...(webrtcOffer && { webrtcOffer }),
 			...(parentCallId && { parentCallId }),
 		};
 
@@ -212,6 +213,10 @@ export class MediaCallDirector {
 		const newCall = await MediaCalls.findOneById(insertResult.insertedId);
 		if (!newCall) {
 			throw new Error('failed-to-retrieve-call');
+		}
+
+		if (webrtcOffer) {
+			await this.startNewNegotiation(newCall, 'caller', webrtcOffer);
 		}
 
 		return newCall;
@@ -233,17 +238,17 @@ export class MediaCallDirector {
 			return;
 		}
 
-		agent.oppositeAgent.onCallTransfered(call._id);
+		await agent.oppositeAgent.onCallTransferred(call._id);
 	}
 
-	public static async hangupTransferedCallById(callId: string): Promise<void> {
-		logger.debug({ msg: 'MediaCallDirector.hangupTransferedCallById', callId });
+	public static async hangupTransferredCallById(callId: string): Promise<void> {
+		logger.debug({ msg: 'MediaCallDirector.hangupTransferredCallById', callId });
 		const call = await MediaCalls.findOneById(callId);
-		if (!call?.transferedBy) {
+		if (!call?.transferredBy) {
 			return;
 		}
 
-		return this.hangupDetachedCall(call, { endedBy: call.transferedBy, reason: 'transfer' });
+		return this.hangupDetachedCall(call, { endedBy: call.transferredBy, reason: 'transfer' });
 	}
 
 	public static async hangupExpiredCalls(): Promise<void> {

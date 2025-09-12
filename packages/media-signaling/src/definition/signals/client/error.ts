@@ -17,10 +17,12 @@ export const clientMediaSignalErrorSchema: JSONSchemaType<ClientMediaSignalError
 		callId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		contractId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		type: {
 			type: 'string',
@@ -28,6 +30,7 @@ export const clientMediaSignalErrorSchema: JSONSchemaType<ClientMediaSignalError
 		},
 		errorType: {
 			type: 'string',
+			enum: ['signaling', 'service', 'other'],
 			nullable: true,
 		},
 		errorCode: {

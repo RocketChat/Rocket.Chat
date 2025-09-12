@@ -14,6 +14,7 @@ export const clientMediaSignalRegisterSchema: JSONSchemaType<ClientMediaSignalRe
 		contractId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		type: {
 			type: 'string',

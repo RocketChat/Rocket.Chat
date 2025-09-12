@@ -16,10 +16,12 @@ export const clientMediaSignalLocalSDPSchema: JSONSchemaType<ClientMediaSignalLo
 		callId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		contractId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		type: {
 			type: 'string',
@@ -34,6 +36,7 @@ export const clientMediaSignalLocalSDPSchema: JSONSchemaType<ClientMediaSignalLo
 				},
 				type: {
 					type: 'string',
+					enum: ['offer', 'answer', 'pranswer', 'rollback'],
 					nullable: false,
 				},
 			},

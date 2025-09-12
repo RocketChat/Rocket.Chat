@@ -18,10 +18,12 @@ export const clientMediaSignalTransferSchema: JSONSchemaType<ClientMediaSignalTr
 		callId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		contractId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		type: {
 			type: 'string',
@@ -32,11 +34,13 @@ export const clientMediaSignalTransferSchema: JSONSchemaType<ClientMediaSignalTr
 			properties: {
 				type: {
 					type: 'string',
+					enum: ['user', 'sip'],
 					nullable: false,
 				},
 				id: {
 					type: 'string',
 					nullable: false,
+					minLength: 1,
 				},
 			},
 			required: ['type', 'id'],

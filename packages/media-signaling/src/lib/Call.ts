@@ -14,7 +14,6 @@ import type {
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
-import { mergeContacts } from './utils/mergeContacts';
 import type { IMediaSignalLogger } from '../definition/logger';
 import { isPendingState } from './services/states';
 import type {
@@ -650,10 +649,12 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private changeContact(contact: CallContact | null, { prioritizeExisting }: { prioritizeExisting?: boolean } = {}): void {
 		this.config.logger?.debug('ClientMediaCall.changeContact');
-		const oldContct = prioritizeExisting ? contact : this._contact;
-		const newContact = prioritizeExisting ? this._contact : contact;
+		const lowPriorityContact = prioritizeExisting ? contact : this._contact;
+		const highPriorityContact = prioritizeExisting ? this._contact : contact;
 
-		this._contact = mergeContacts(oldContct, newContact);
+		const finalContact = highPriorityContact || lowPriorityContact;
+
+		this._contact = finalContact && { ...finalContact };
 		if (this._contact) {
 			this.emitter.emit('contactUpdate');
 		}
@@ -726,7 +727,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (iceRestart) {
 			this.hasLocalDescription = false;
 			this.hasRemoteDescription = false;
-			await this.webrtcProcessor.startNewNegotiation();
+			this.webrtcProcessor.startNewNegotiation();
 		}
 		this.currentNegotiationId = negotiationId;
 
@@ -812,7 +813,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	protected async processEarlySignals(): Promise<void> {
 		this.config.logger?.debug('ClientMediaCall.processEarlySignals');
 
-		const earlySignals = this.earlySignals.values().toArray();
+		const earlySignals = Array.from(this.earlySignals.values());
 		this.earlySignals.clear();
 
 		for await (const signal of earlySignals) {

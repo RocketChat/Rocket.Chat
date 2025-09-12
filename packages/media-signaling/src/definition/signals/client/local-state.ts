@@ -23,10 +23,12 @@ export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignal
 		callId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		contractId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		type: {
 			type: 'string',
@@ -34,10 +36,25 @@ export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignal
 		},
 		callState: {
 			type: 'string',
+			enum: ['none', 'ringing', 'accepted', 'active', 'renegotiating', 'hangup'],
 			nullable: false,
 		},
 		clientState: {
 			type: 'string',
+			enum: [
+				'none',
+				'pending',
+				'accepting',
+				'accepted',
+				'busy-elsewhere',
+				'has-offer',
+				'has-answer',
+				'active',
+				'renegotiating',
+				'has-new-offer',
+				'has-new-answer',
+				'hangup',
+			],
 			nullable: false,
 		},
 		serviceStates: {
@@ -56,6 +73,7 @@ export const clientMediaSignalLocalStateSchema: JSONSchemaType<ClientMediaSignal
 		},
 		contractState: {
 			type: 'string',
+			enum: ['proposed', 'signed', 'pre-signed', 'self-signed', 'ignored'],
 			nullable: false,
 		},
 		negotiationId: {

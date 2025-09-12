@@ -143,15 +143,19 @@ export class GlobalSignalProcessor {
 		const caller = { type: 'user', id: uid } as const;
 		const rejection = { callId: requestedCallId, toContractId: signal.contractId, reason: 'invalid-call-id' } as const;
 
-		const call = await MediaCalls.findOneByIdOrCallerRequestedId(requestedCallId, caller);
+		// The requestedCallId must never match a real call id
+		const matchingValidCall = await MediaCalls.findOneById(requestedCallId, { projection: { _id: 1 } });
+		if (matchingValidCall) {
+			this.invalidCallId(uid, rejection);
+		}
 
+		const call = await MediaCalls.findOneByCallerRequestedId(requestedCallId, caller);
 		if (!call) {
 			return null;
 		}
 
-		// if the requested id matches a real call id, we block it to avoid any potential issues as the requestedId is not expected to ever be an actual call id.
 		// if the call is already over, we treat it as an invalid id since it can't be reused
-		if (call._id === requestedCallId || call.state === 'hangup') {
+		if (call.state === 'hangup') {
 			this.invalidCallId(uid, rejection);
 		}
 
