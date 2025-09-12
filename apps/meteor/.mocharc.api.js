@@ -11,5 +11,4 @@ module.exports = /** @satisfies {import('mocha').MochaOptions} */ ({
 	retries: 0,
 	file: 'tests/end-to-end/teardown.ts',
 	spec: ['tests/end-to-end/api/**/*', 'tests/end-to-end/apps/*'],
-	reporter: process.env.GITHUB_SUMMARY_PATH ? 'json' : 'spec',
 });
