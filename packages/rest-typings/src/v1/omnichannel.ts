@@ -3868,8 +3868,12 @@ const POSTLivechatRoomsCloseAllSuccessResponseSchema = {
 		removedRooms: {
 			type: 'number',
 		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
 	},
-	required: ['roomsClosed'],
+	required: ['removedRooms'],
 	additionalProperties: false,
 };
 

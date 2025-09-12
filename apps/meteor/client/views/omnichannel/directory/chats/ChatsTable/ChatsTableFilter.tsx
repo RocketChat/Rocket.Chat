@@ -13,7 +13,6 @@ const ChatsTableFilter = () => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const directoryRoute = useRoute('omnichannel-directory');
-	// const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
 	const queryClient = useQueryClient();
 	const removeClosedRooms = useEndpoint('POST', '/v1/livechat/rooms.removeAllClosedRooms');
 
