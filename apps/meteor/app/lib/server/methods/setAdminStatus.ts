@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRole } from '../../../authorization/server/methods/addUserToRole';
-import { removeUserFromRole } from '../../../authorization/server/methods/removeUserFromRole';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -37,9 +36,6 @@ Meteor.methods<ServerMethods>({
 
 		if (admin) {
 			await addUserToRole(uid, 'admin', user?.username);
-			return;
 		}
-
-		await removeUserFromRole(uid, 'admin', user?.username);
 	},
 });

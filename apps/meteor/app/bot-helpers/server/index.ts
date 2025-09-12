@@ -8,7 +8,6 @@ import type { Filter, FindCursor } from 'mongodb';
 import { removeUserFromRoomMethod } from '../../../server/methods/removeUserFromRoom';
 import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 import { addUserToRole } from '../../authorization/server/methods/addUserToRole';
-import { removeUserFromRole } from '../../authorization/server/methods/removeUserFromRole';
 import { addUsersToRoomMethod } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
 
@@ -65,10 +64,6 @@ class BotHelpers {
 
 	async addUserToRole(userName: string, roleId: string, userId: string): Promise<void> {
 		await addUserToRole(userId, roleId, userName);
-	}
-
-	async removeUserFromRole(userName: string, roleId: string, userId: string): Promise<void> {
-		await removeUserFromRole(userId, roleId, userName);
 	}
 
 	async addUserToRoom(userName: string, room: string): Promise<void> {
