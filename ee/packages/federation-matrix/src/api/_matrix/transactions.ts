@@ -15,6 +15,45 @@ const SendTransactionParamsSchema = {
 
 const isSendTransactionParamsProps = ajv.compile(SendTransactionParamsSchema);
 
+const GetEventParamsSchema = {
+	type: 'object',
+	properties: {
+		eventId: {
+			type: 'string',
+			description: 'Event ID',
+		},
+	},
+	required: ['eventId'],
+	additionalProperties: false,
+};
+
+const isGetEventParamsProps = ajv.compile(GetEventParamsSchema);
+
+const GetEventResponseSchema = {
+	type: 'object',
+	properties: {
+		origin_server_ts: {
+			type: 'number',
+			minimum: 0,
+			description: 'Unix timestamp in milliseconds',
+		},
+		origin: {
+			type: 'string',
+			description: 'Origin server',
+		},
+		pdus: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+			description: 'Persistent data units (PDUs)',
+		},
+	},
+	required: ['origin_server_ts', 'origin', 'pdus'],
+};
+
+const isGetEventResponseProps = ajv.compile(GetEventResponseSchema);
+
 const EventHashSchema = {
 	type: 'object',
 	properties: {
@@ -163,51 +202,237 @@ const ErrorResponseSchema = {
 
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
-export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
-	const { event } = services;
+const GetStateIdsParamsSchema = {
+	type: 'object',
+	properties: {
+		event_id: {
+			type: 'string',
+		},
+	},
+	required: ['event_id'],
+};
 
-	return new Router('/federation').put(
-		'/v1/send/:txnId',
-		{
-			params: isSendTransactionParamsProps,
-			body: isSendTransactionBodyProps,
-			response: {
-				200: isSendTransactionResponseProps,
-				400: isErrorResponseProps,
+const isGetStateIdsParamsProps = ajv.compile(GetStateIdsParamsSchema);
+
+const GetStateIdsResponseSchema = {
+	type: 'object',
+	properties: {
+		stateIds: {
+			type: 'array',
+			items: {
+				type: 'string',
 			},
-			tags: ['Federation'],
-			license: ['federation'],
 		},
-		async (c) => {
-			const body = await c.req.json();
+	},
+};
 
-			try {
-				await event.processIncomingTransaction(body);
-			} catch (error: any) {
-				// TODO custom error types?
-				if (error.message === 'too-many-concurrent-transactions') {
-					return {
-						statusCode: 429,
-						body: {
-							errorcode: 'M_UNKNOWN',
-							error: 'Too many concurrent transactions',
-						},
-					};
-				}
+const isGetStateIdsResponseProps = ajv.compile(GetStateIdsResponseSchema);
+const GetStateParamsSchema = {
+	type: 'object',
+	properties: {
+		event_id: {
+			type: 'string',
+		},
+	},
+};
+const isGetStateParamsProps = ajv.compile(GetStateParamsSchema);
 
-				return {
-					statusCode: 400,
-					body: {},
-				};
-			}
+const GetStateResponseSchema = {
+	type: 'object',
+	properties: {
+		state: {
+			type: 'object',
+		},
+	},
+};
 
-			return {
-				body: {
-					pdus: {},
-					edus: {},
+const isGetStateResponseProps = ajv.compile(GetStateResponseSchema);
+
+const PostTestBodySchema = {
+	type: 'object',
+	properties: {
+		method: {
+			type: 'string',
+		},
+		url: {
+			type: 'string',
+		},
+		params: {
+			type: 'object',
+		},
+		body: {
+			type: 'object',
+		},
+	},
+	required: ['method', 'url', 'params', 'body'],
+};
+
+const isPostTestBodyProps = ajv.compile(PostTestBodySchema);
+
+
+export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
+	const { event, config, profile, request } = services;
+
+	setTimeout(() => {
+		request
+			.get('hs1', '/_matrix/federation/v1/state/!mFLsjoZaidTbBSrqDR:hs1', {
+				event_id: '$c82X1idu-opwTPzW-UA2TPvwm84GoRz8LaC8iCzKA1E',
+				// event_id: '$M4nL0zG1c4TlNBiSKqUqreTLuYnshCpunrLbOfboQRE',
+			})
+			.then((res) => {
+				console.log('res', JSON.stringify(res, null, 2));
+			})
+			.catch((err) => {
+				console.log('err', err);
+			});
+	}, 1000);
+
+	// PUT /_matrix/federation/v1/send/{txnId}
+	return (
+		new Router('/federation')
+			.post(
+				'/test',
+				{
+					response: {
+						200: isPostTestBodyProps,
+					},
 				},
-				statusCode: 200,
-			};
-		},
+				async (c) => {
+					try {
+						const { url, params } = await c.req.json();
+
+						return {
+							statusCode: 200,
+							body: await request.get('hs1', url, params),
+						};
+					} catch (error) {
+						console.log('error', error);
+						return {
+							statusCode: 500,
+							body: {
+								error,
+							},
+						};
+					}
+				},
+			)
+			.put(
+				'/v1/send/:txnId',
+				{
+					params: isSendTransactionParamsProps,
+					body: isSendTransactionBodyProps,
+					response: {
+						200: isSendTransactionResponseProps,
+						400: isErrorResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
+				},
+				async (c) => {
+					const body = await c.req.json();
+
+					try {
+						await event.processIncomingTransaction(body);
+					} catch (error: any) {
+						// TODO custom error types?
+						if (error.message === 'too-many-concurrent-transactions') {
+							return {
+								statusCode: 429,
+								body: {
+									errorcode: 'M_UNKNOWN',
+									error: 'Too many concurrent transactions',
+								},
+							};
+						}
+
+						return {
+							statusCode: 400,
+							body: {},
+						};
+					}
+
+					return {
+						body: {
+							pdus: {},
+							edus: {},
+						},
+						statusCode: 200,
+					};
+				},
+			)
+
+			// GET /_matrix/federation/v1/state_ids/{roomId}
+
+			.get(
+				'/v1/state_ids/:roomId',
+				{
+					params: isGetStateIdsParamsProps,
+					response: {
+						200: isGetStateIdsResponseProps,
+					},
+				},
+				async (c) => {
+
+					const roomId = c.req.param('roomId');
+					const eventId = c.req.query('event_id');
+					const stateIds = await profile.getStateIds(roomId, eventId!);
+
+					return {
+						body: stateIds,
+						statusCode: 200,
+					};
+				},
+			)
+			.get(
+				'/v1/state/:roomId',
+				{
+					params: isGetStateParamsProps,
+					response: {
+						200: isGetStateResponseProps,
+					},
+				},
+				async (c) => {
+					const roomId = c.req.param('roomId');
+					const eventId = c.req.query('event_id');
+					const state = await profile.getState(roomId, eventId!);
+					return {
+						statusCode: 200,
+						body: state,
+					};
+				},
+			)
+			// GET /_matrix/federation/v1/event/{eventId}
+			.get(
+				'/v1/event/:eventId',
+				{
+					params: isGetEventParamsProps,
+					response: {
+						200: isGetEventResponseProps,
+					},
+					tags: ['Federation'],
+					license: ['federation'],
+				},
+				async (c) => {
+					const eventData = await event.getEventById(c.req.param('eventId'));
+					if (!eventData) {
+						return {
+							body: {
+								errcode: 'M_NOT_FOUND',
+								error: 'Event not found',
+							},
+							statusCode: 404,
+						};
+					}
+
+					return {
+						body: {
+							origin_server_ts: eventData.event.origin_server_ts,
+							origin: config.serverName,
+							pdus: [eventData.event],
+						},
+						statusCode: 200,
+					};
+				},
+			)
 	);
 };
