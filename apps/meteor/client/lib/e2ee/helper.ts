@@ -175,6 +175,12 @@ export function readFileAsArrayBuffer(file: File) {
 	});
 }
 
+export const generateMnemonicPhrase = async (length: number): Promise<string> => {
+	const { default: wordList} = await import('./wordList');
+	const randomBuffer = crypto.getRandomValues(new Uint8Array(length));
+	return Array.from(randomBuffer, (value) => wordList[value % wordList.length]).join(' ');
+};
+
 export async function createSha256HashFromText(data: string) {
 	const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
 	return Array.from(new Uint8Array(hash))

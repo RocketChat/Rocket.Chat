@@ -3,7 +3,6 @@ import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import { generateMnemonicPhrase } from '@rocket.chat/e2ee';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import EJSON from 'ejson';
@@ -24,6 +23,7 @@ import {
 	importRSAKey,
 	importRawKey,
 	deriveKey,
+	generateMnemonicPhrase,
 } from './helper';
 import { createLogger } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
@@ -501,7 +501,7 @@ class E2E extends Emitter {
 	}
 
 	async createRandomPassword(): Promise<string> {
-		const randomPassword = await generateMnemonicPhrase(5);
+		const randomPassword = await generateMnemonicPhrase(12);
 		Accounts.storageLocation.setItem('e2e.randomPassword', randomPassword);
 		return randomPassword;
 	}
