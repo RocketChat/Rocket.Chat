@@ -1,4 +1,4 @@
-import { useMediaDeviceMicrophonePermission, useSetInputMediaDevice, useSetModal } from '@rocket.chat/ui-contexts';
+import { useMediaDeviceMicrophonePermission, useSelectedDevices, useSetInputMediaDevice, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
@@ -47,6 +47,13 @@ const getModalType = (
 	return 'incomingPrompt';
 };
 
+export const stopTracks = (stream: MediaStream) => {
+	stream.getTracks().forEach((track) => {
+		track.stop();
+	});
+};
+
+// TODO: Remove this hook
 export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actionType }: UseDevicePermissionPromptProps) => {
 	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
 	const setModal = useSetModal();
@@ -119,5 +126,89 @@ export const useDevicePermissionPrompt = ({ onAccept: _onAccept, onReject, actio
 			setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
 		},
 		[state, setModal, actionType, queryClient, _onAccept, setInputMediaDevice, requestDevice, onReject],
+	);
+};
+
+export const useDevicePermissionPrompt2 = () => {
+	const { state, requestDevice } = useMediaDeviceMicrophonePermission();
+	const setModal = useSetModal();
+	const setInputMediaDevice = useSetInputMediaDevice();
+	const queryClient = useQueryClient();
+	const { audioInput } = useSelectedDevices() || {};
+
+	const selectedDeviceId = audioInput?.id;
+
+	return useCallback(
+		async ({
+			constraints: _constraints,
+			actionType,
+		}: {
+			constraints?: MediaStreamConstraints;
+			actionType: 'outgoing' | 'incoming' | 'device-change';
+		}) => {
+			return new Promise<MediaStream>((_resolve, reject) => {
+				const resolve = (stream: MediaStream) => {
+					// Since we now have requested a stream, we can now invalidate the devices list and generate a complete one.
+					// Obs2: Safari does not seem to be dispatching the change event when permission is granted, so we need to invalidate the permission query as well.
+					queryClient.invalidateQueries({ queryKey: ['media-devices-list'] });
+					_resolve(stream);
+				};
+
+				const onAccept = (stream: MediaStream) => {
+					stream.getTracks().forEach((track) => {
+						const { deviceId } = track.getSettings();
+						if (!deviceId) {
+							return;
+						}
+
+						if (track.kind === 'audio' && navigator.mediaDevices.enumerateDevices) {
+							navigator.mediaDevices.enumerateDevices().then((devices) => {
+								const device = devices.find((device) => device.deviceId === deviceId);
+								if (!device) {
+									return;
+								}
+								setInputMediaDevice({
+									id: device.deviceId,
+									label: device.label,
+									type: 'audioinput',
+								});
+							});
+						}
+					});
+					resolve(stream);
+				};
+
+				const constraints = _constraints || {
+					audio: selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : true,
+				};
+
+				if (state === 'granted') {
+					requestDevice({
+						onAccept: resolve,
+						onReject: reject,
+						constraints,
+					});
+					return;
+				}
+
+				const onConfirm = () => {
+					requestDevice?.({
+						onReject: reject,
+						onAccept: (...args) => {
+							onAccept(...args);
+							setModal(null);
+						},
+						constraints,
+					});
+				};
+
+				const onCancel = () => {
+					reject();
+					setModal(null);
+				};
+				setModal(<PermissionFlowModal type={getModalType(actionType, state)} onCancel={onCancel} onConfirm={onConfirm} />);
+			});
+		},
+		[selectedDeviceId, state, setModal, queryClient, setInputMediaDevice, requestDevice],
 	);
 };

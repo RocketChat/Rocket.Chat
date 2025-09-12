@@ -1,16 +1,15 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
+import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
-
-import { useVoipDialerAction } from './hooks/useVoipDialerAction';
 
 type NavBarItemVoipDialerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	primary?: boolean;
 };
 
 const NavBarItemVoipDialer = (props: NavBarItemVoipDialerProps) => {
-	const { title, handleToggleDialer, isPressed, isDisabled } = useVoipDialerAction();
+	const { action, title, icon } = useMediaCallAction();
 
-	return <NavBarItem {...props} title={title} icon='dialpad' onClick={handleToggleDialer} pressed={isPressed} disabled={isDisabled} />;
+	return <NavBarItem {...props} title={title} icon={icon} onClick={() => action()} />;
 };
 
 export default NavBarItemVoipDialer;

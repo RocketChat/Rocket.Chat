@@ -1,15 +1,20 @@
 import { Divider, Box } from '@rocket.chat/fuselage';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Keypad } from './components';
 
 type UseKeypad = {
 	element: React.ReactNode;
-	toggleOpen: () => void;
+	buttonProps: {
+		title: string;
+		onClick: () => void;
+	};
 };
 
 export const useKeypad = (onPress: (tone: string) => void): UseKeypad => {
 	const [open, setOpen] = useState(false);
+	const { t } = useTranslation();
 
 	const element = useMemo(() => {
 		if (!open) {
@@ -25,6 +30,9 @@ export const useKeypad = (onPress: (tone: string) => void): UseKeypad => {
 
 	return {
 		element,
-		toggleOpen: () => setOpen((open) => !open),
+		buttonProps: {
+			title: open ? t('Close_dialpad') : t('Open_dialpad'),
+			onClick: () => setOpen((open) => !open),
+		},
 	};
 };
