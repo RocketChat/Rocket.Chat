@@ -50,7 +50,9 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	const kickAnyUserPermission = room.t === 'c' ? 'kick-user-from-any-c-room' : 'kick-user-from-any-p-room';
 
 	const canKickAnyUser = await hasPermissionAsync(fromId, kickAnyUserPermission);
-	if (!canKickAnyUser && !(await canAccessRoomAsync(room, fromUser))) {
+	const hasManageRemotely = await hasPermissionAsync(fromId, 'manage-room-members-remotely');
+
+	if (!canKickAnyUser && !hasManageRemotely && !(await canAccessRoomAsync(room, fromUser))) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 

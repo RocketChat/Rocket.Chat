@@ -254,5 +254,6 @@ export const permissions = [
 	{ _id: 'view-moderation-console', roles: ['admin'] },
 	{ _id: 'manage-moderation-actions', roles: ['admin'] },
 	{ _id: 'bypass-time-limit-edit-and-delete', roles: ['bot', 'app'] },
+	{ _id: 'manage-room-members-remotely', roles: ['admin'] },
 	{ _id: 'export-messages-as-pdf', roles: ['admin', 'user'] },
 ];

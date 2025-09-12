@@ -1,7 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useLayoutHiddenActions, usePermission } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
@@ -78,41 +78,48 @@ export const useUserInfoActions = ({
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const { userToolbox: hiddenActions } = useLayoutHiddenActions();
+	const hasManageRemotely = usePermission('manage-room-members-remotely');
 
-	const userinfoActions = useMemo(
-		() => ({
+	const userinfoActions = useMemo(() => {
+		const isRemoteManagement = hasManageRemotely && !isMember;
+		const canManageRoles = isMember || hasManageRemotely;
+		const showAddUser = !isMember && !isRemoteManagement && addUser;
+		// Cannot see “View reported messages” if user is using remote management
+		const showModerationConsole = canManageRoles && !isRemoteManagement && openModerationConsole;
+
+		return {
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
 			...(videoCall && { videoCall }),
 			...(voipCall && { voipCall }),
-			...(!isMember && addUser && { addUser }),
-			...(isMember && changeOwner && { changeOwner }),
-			...(isMember && changeLeader && { changeLeader }),
-			...(isMember && changeModerator && { changeModerator }),
-			...(isMember && openModerationConsole && { openModerationConsole }),
+			...(showAddUser && { addUser }),
+			...(canManageRoles && changeOwner && { changeOwner }),
+			...(canManageRoles && changeLeader && { changeLeader }),
+			...(canManageRoles && changeModerator && { changeModerator }),
+			...(showModerationConsole && { openModerationConsole }),
 			...(isMember && ignoreUser && { ignoreUser }),
 			...(isMember && muteUser && { muteUser }),
-			...(blockUser && { toggleBlock: blockUser }),
-			...(reportUserOption && { reportUser: reportUserOption }),
-			...(isMember && removeUser && { removeUser }),
-		}),
-		[
-			openDirectMessage,
-			isLayoutEmbedded,
-			videoCall,
-			voipCall,
-			changeOwner,
-			changeLeader,
-			changeModerator,
-			ignoreUser,
-			muteUser,
-			blockUser,
-			removeUser,
-			reportUserOption,
-			openModerationConsole,
-			addUser,
-			isMember,
-		],
-	);
+			...(isMember && blockUser && { toggleBlock: blockUser }),
+			...(isMember && reportUserOption && { reportUser: reportUserOption }),
+			...(canManageRoles && removeUser && { removeUser }),
+		};
+	}, [
+		openDirectMessage,
+		isLayoutEmbedded,
+		videoCall,
+		voipCall,
+		addUser,
+		changeOwner,
+		changeLeader,
+		changeModerator,
+		openModerationConsole,
+		ignoreUser,
+		muteUser,
+		blockUser,
+		reportUserOption,
+		removeUser,
+		isMember,
+		hasManageRemotely,
+	]);
 
 	const actionSpread = useMemo(() => {
 		const entries = Object.entries(userinfoActions).filter(([key]) => !hiddenActions.includes(key));
