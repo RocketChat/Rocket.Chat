@@ -451,11 +451,11 @@ const livechatRoomsEndpoints = API.v1.post(
 	async function action() {
 		livechatLogger.info(`User ${this.userId} is removing all closed rooms`);
 
-		const { departmentIds } = this.bodyParams;
+		const params = this.bodyParams;
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
 		const promises: Promise<void>[] = [];
-		await LivechatRooms.findClosedRooms(departmentIds, {}, extraQuery).forEach(({ _id }: IOmnichannelRoom) => {
+		await LivechatRooms.findClosedRooms(params?.departmentIds, {}, extraQuery).forEach(({ _id }: IOmnichannelRoom) => {
 			promises.push(removeOmnichannelRoom(_id));
 		});
 		await Promise.all(promises);
