@@ -47,8 +47,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: FindOptions<IMessage>,
 	): FindPaginated<FindCursor<IMessage>>;
 
-	findDiscussionsByRoom(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
-
 	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
 	findAllNumberOfTransferredRooms(p: {
@@ -70,7 +68,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	getTotalOfMessagesSentByDate(params: { start: Date; end: Date; options?: any }): Promise<any[]>;
 
 	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
-	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findLivechatMessagesWithoutTypes(
 		rid: IRoom['_id'],
 		ignoredTypes: IMessage['t'][],
@@ -81,13 +78,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number>;
 
-	findPinned(options?: FindOptions<IMessage>): FindCursor<IMessage>;
-
-	findStarred(options?: FindOptions<IMessage>): FindCursor<IMessage>;
-
 	setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void>;
-
-	addBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void>;
 
 	countRoomsWithMessageType(type: IMessage['t'], options: AggregateOptions): Promise<number>;
 
@@ -107,13 +98,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	removeByRoomId(roomId: IRoom['_id']): Promise<DeleteResult>;
 
-	findVisibleByRoomIdNotContainingTypesAndUsers(
-		roomId: IRoom['_id'],
-		types: IMessage['t'][],
-		users?: string[],
-		options?: FindOptions<IMessage>,
-		showThreadMessages?: boolean,
-	): FindCursor<IMessage>;
 	findVisibleByRoomIdNotContainingTypesBeforeTs(
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
