@@ -1,5 +1,3 @@
-import { EventEmitter } from 'stream';
-
 import { Expect, Test } from 'alsatian';
 
 import { AppStatus } from '../../../src/definition/AppStatus';
@@ -8,8 +6,8 @@ import { AppInterface } from '../../../src/definition/metadata';
 import type { AppManager } from '../../../src/server/AppManager';
 import { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { AppFabricationFulfillment } from '../../../src/server/compiler';
-import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../../../src/server/storage';
+import { TestData } from '../../test-data/utilities';
 
 export class AppFabricationFulfillmentTestFixture {
 	@Test()
@@ -46,8 +44,9 @@ export class AppFabricationFulfillmentTestFixture {
 		const fakeApp = new ProxiedApp(
 			{} as AppManager,
 			{ status: AppStatus.UNKNOWN } as IAppStorageItem,
-			new EventEmitter() as DenoRuntimeSubprocessController,
+			TestData.getMockRuntimeController('unknown'),
 		);
+
 		Expect(() => aff.setApp(fakeApp)).not.toThrow();
 		Expect(aff.getApp()).toEqual(fakeApp);
 	}
