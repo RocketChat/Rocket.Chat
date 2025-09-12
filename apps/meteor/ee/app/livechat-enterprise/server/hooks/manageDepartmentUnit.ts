@@ -1,9 +1,9 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatUnit } from '@rocket.chat/models';
+import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 
 import { hasAnyRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
 import { callbacks } from '../../../../../lib/callbacks';
-import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 export const manageDepartmentUnit = async ({ userId, departmentId, unitId }: { userId: string; departmentId: string; unitId: string }) => {
 	const accessibleUnits = await getUnitsFromUser(userId);

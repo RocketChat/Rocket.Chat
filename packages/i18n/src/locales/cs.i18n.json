@@ -3755,10 +3755,12 @@
   "mention-here": "Zmínka @here",
   "mention-here_description": "Právo použít zmínku @here",
   "message": "zpráva",
-  "message_counter_one": "{{count}} zpráva",
-  "message_counter_other": "{{count}} zpráv(y)",
-  "message_counter_many": "{{count}} zpráv(y)",
-  "message_counter_few": "{{count}} zpráv(y)",
+  "message_counter": {
+    "one": "{{count}} zpráva",
+    "few": "{{count}} zpráv(y)",
+    "many": "{{count}} zpráv(y)",
+    "other": "{{count}} zpráv(y)"
+  },
   "message_pruned": "zpráva byla oříznuta",
   "messages": "zprávy",
   "messages_pruned": "zprávy byly pročištěny",
@@ -3766,10 +3768,12 @@
   "meteor_status_connecting": "Připojuji k serveru...",
   "meteor_status_failed": "Připojení k serveru selhalo",
   "meteor_status_offline": "Offline režim.",
-  "meteor_status_reconnect_in_one": "zkusím znovu za sekundu...",
-  "meteor_status_reconnect_in_other": "zkusím znovu za {{count}} sekund...",
-  "meteor_status_reconnect_in_many": "zkusím znovu za {{count}} sekund...",
-  "meteor_status_reconnect_in_few": "zkusím znovu za {{count}} sekund...",
+  "meteor_status_reconnect_in": {
+    "one": "zkusím znovu za sekundu...",
+    "few": "zkusím znovu za {{count}} sekund...",
+    "many": "zkusím znovu za {{count}} sekund...",
+    "other": "zkusím znovu za {{count}} sekund..."
+  },
   "meteor_status_try_now_offline": "Znovu připojit",
   "meteor_status_try_now_waiting": "Zkusit nyní",
   "meteor_status_waiting": "Čekám na připojení k serveru,",

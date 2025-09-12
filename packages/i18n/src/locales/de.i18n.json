@@ -767,10 +767,11 @@
   "Caller_Id": "Anrufer-ID",
   "Calling": "Anruf wird ausgeführt",
   "Calls": "Anrufe",
-  "Calls_in_queue": "{{calls}} Anrufe in der Warteschlange",
-  "Calls_in_queue_one": "{{count}} Anrufe in der Warteschlange",
-  "Calls_in_queue_other": "{{count}} Anrufe in der Warteschlange",
-  "Calls_in_queue_zero": "Warteschlange ist leer",
+  "Calls_in_queue": {
+    "zero": "Warteschlange ist leer",
+    "one": "{{count}} Anrufe in der Warteschlange",
+    "other": "{{count}} Anrufe in der Warteschlange"
+  },
   "Cam_off": "Kamera aus",
   "Cam_on": "Kamera an",
   "Camera_access_not_allowed": "Der Zugriff auf die Kamera wurde nicht erlaubt. Bitte überprüfen Sie Ihre Browsereinstellungen.",
@@ -1533,7 +1534,6 @@
   "ECDH_Enabled": "Zusätzliche Verschlüsselungsschicht für den Datentransfer aktivieren",
   "Edit": "Bearbeiten",
   "Edit_Business_Hour": "Teil der Geschäftszeiten bearbeiten",
-  "Edit_CannedResponse": "Vorformulierte Antwort bearbeiten",
   "Edit_Canned_Response": "Vorformulierte Antwort bearbeiten",
   "Edit_Canned_Responses": "Vorformulierte Antworten bearbeiten",
   "Edit_Contact_Profile": "Kontaktprofil bearbeiten",
@@ -5096,8 +5096,10 @@
   "message": "Nachricht",
   "message-impersonate": "Sich als anderer Benutzer ausgeben",
   "message-impersonate_description": "Erlaubnis, sich für andere Benutzer mit Nachrichten-Alias auszugeben",
-  "message_counter_one": "{{count}} message",
-  "message_counter_other": "{{count}} messages",
+  "message_counter": {
+    "one": "{{count}} message",
+    "other": "{{count}} messages"
+  },
   "message_pruned": "Nachricht abgeschnitten",
   "messages": "Nachrichten",
   "messages_pruned": "Nachrichten gelöscht",
@@ -5105,8 +5107,10 @@
   "meteor_status_connecting": "Verbinden...",
   "meteor_status_failed": "Die Verbindung zum Server wurde unterbrochen",
   "meteor_status_offline": "Offline Modus.",
-  "meteor_status_reconnect_in_one": "Versuche in einer Sekunde zu verbinden...",
-  "meteor_status_reconnect_in_other": "Versuche in {{count}} Sekunden zu verbinden...",
+  "meteor_status_reconnect_in": {
+    "one": "Versuche in einer Sekunde zu verbinden...",
+    "other": "Versuche in {{count}} Sekunden zu verbinden..."
+  },
   "meteor_status_try_now_offline": "Nochmal verbinden",
   "meteor_status_try_now_waiting": "Jetzt versuchen",
   "meteor_status_waiting": "Warte auf Verbindung zum Server,",
@@ -5519,8 +5523,10 @@
   "your_message_optional": "Ihre optionale Nachricht",
   "__count__empty_rooms_will_be_removed_automatically": "{{count}} leere Räume werden automatisch entfernt.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "<bold>{{count}}</bold> leere Räume werden automatisch entfernt:<br/> {{rooms}}.",
-  "__count__message_pruned_one": "{{count}} Nachricht gelöscht",
-  "__count__message_pruned_other": "{{count}} Nachrichten gelöscht",
+  "__count__message_pruned": {
+    "one": "{{count}} Nachricht gelöscht",
+    "other": "{{count}} Nachrichten gelöscht"
+  },
   "__username__is_no_longer__role__defined_by__user_by_": "{{username}} ist nicht länger {{role}}, geändert durch {{user_by}}",
   "__username__was_set__role__by__user_by_": "{{username}} ist jetzt {{role}}, geändert durch {{user_by}}",
   "__usersCount__people_will_be_invited": "{{usersCount}} Mitglieder werden eingeladen"

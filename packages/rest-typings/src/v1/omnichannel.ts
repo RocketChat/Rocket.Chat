@@ -31,6 +31,7 @@ import type {
 	ILivechatContact,
 	ILivechatContactChannel,
 	IUser,
+	OmichannelRoutingConfig,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
@@ -1389,6 +1390,36 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
+type POSTOmnichannelContactDeleteProps = {
+	contactId: string;
+};
+
+const POSTOmnichannelContactDeleteSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isPOSTOmnichannelContactDeleteProps = ajv.compile<POSTOmnichannelContactDeleteProps>(POSTOmnichannelContactDeleteSchema);
+
+const POSTOmnichannelContactDeleteSuccess = {
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTOmnichannelContactDeleteSuccessSchema = ajv.compile<void>(POSTOmnichannelContactDeleteSuccess);
+
 type POSTOmnichannelContactsConflictsProps = {
 	contactId: string;
 	name?: string;
@@ -2103,6 +2134,46 @@ const GETLivechatConfigParamsSchema = {
 };
 
 export const isGETLivechatConfigParams = ajv.compile<GETLivechatConfigParams>(GETLivechatConfigParamsSchema);
+
+export const GETLivechatConfigRoutingSchema = {
+	type: 'object',
+	properties: {
+		config: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				previewRoom: {
+					type: 'boolean',
+				},
+				showConnecting: {
+					type: 'boolean',
+				},
+				showQueue: {
+					type: 'boolean',
+				},
+				showQueueLink: {
+					type: 'boolean',
+				},
+				returnQueue: {
+					type: 'boolean',
+				},
+				enableTriggerAction: {
+					type: 'boolean',
+				},
+				autoAssignAgent: {
+					type: 'boolean',
+				},
+			},
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	additionalProperties: false,
+};
+
+export const GETLivechatConfigRouting = ajv.compile<{ config: OmichannelRoutingConfig | undefined }>(GETLivechatConfigRoutingSchema);
 
 type POSTLivechatCustomFieldParams = {
 	token: string;

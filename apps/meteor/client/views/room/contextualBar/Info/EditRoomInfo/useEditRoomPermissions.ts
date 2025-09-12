@@ -2,9 +2,9 @@ import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings'
 import { usePermission, useAtLeastOnePermission, useRole } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { E2EEState } from '../../../../../../app/e2e/client/E2EEState';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
 import { useTeamInfoQuery } from '../../../../../hooks/useTeamInfoQuery';
+import { E2EEState } from '../../../../../lib/e2ee/E2EEState';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { useE2EEState } from '../../../hooks/useE2EEState';
 

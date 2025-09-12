@@ -3,6 +3,7 @@ import { useState, forwardRef, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VoipDialPad as DialPad, VoipSettingsButton as SettingsButton } from '../..';
+import { useDevicePermissionPrompt } from '../../../hooks/useDevicePermissionPrompt';
 import { useVoipAPI } from '../../../hooks/useVoipAPI';
 import type { PositionOffsets } from '../components/VoipPopupContainer';
 import Container from '../components/VoipPopupContainer';
@@ -20,10 +21,13 @@ const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(function 
 	const { makeCall, closeDialer } = useVoipAPI();
 	const [number, setNumber] = useState('');
 
-	const handleCall = () => {
-		makeCall(number);
-		closeDialer();
-	};
+	const handleCall = useDevicePermissionPrompt({
+		actionType: 'outgoing',
+		onAccept: () => {
+			makeCall(number);
+			closeDialer();
+		},
+	});
 
 	return (
 		<Container ref={ref} data-testid='vc-popup-dialer' position={position} {...props}>
@@ -38,7 +42,7 @@ const VoipDialerView = forwardRef<HTMLDivElement, VoipDialerViewProps>(function 
 			<Footer>
 				<ButtonGroup large>
 					<SettingsButton />
-					<Button medium success icon='phone' disabled={!number} flexGrow={1} onClick={handleCall}>
+					<Button medium success icon='phone' disabled={!number} flexGrow={1} onClick={() => handleCall()}>
 						{t('Call')}
 					</Button>
 				</ButtonGroup>

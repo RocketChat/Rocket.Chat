@@ -178,30 +178,19 @@ const POSTOutboundMessageSchema = {
 			},
 			additionalProperties: false,
 		},
+		agentId: { type: 'string' },
+		departmentId: { type: 'string' },
 	},
 	additionalProperties: false,
 };
 
 export const POSTOutboundMessageParams = ajv.compile<POSTOutboundMessageParamsType>(POSTOutboundMessageSchema);
 
-const POSTOutboundMessageError = {
-	type: 'object',
-	properties: {
-		success: {
-			type: 'boolean',
-		},
-		message: {
-			type: 'string',
-		},
-	},
-	additionalProperties: false,
-};
-
-export const POSTOutboundMessageErrorSchema = ajv.compile<GenericErrorResponse>(POSTOutboundMessageError);
-
 const POSTOutboundMessageSuccess = {
 	type: 'object',
-	properties: {},
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
 	additionalProperties: false,
 };
 
@@ -274,10 +263,10 @@ const OutboundProviderMetadataSchema = {
 										oneOf: [
 											{
 												properties: {
-													type: { const: 'HEADER' },
+													type: { const: 'header' },
 													format: {
 														type: 'string',
-														enum: ['TEXT', 'IMAGE', 'VIDEO', 'DOCUMENT'],
+														enum: ['text', 'image', 'video', 'document'],
 													},
 													text: { type: 'string' },
 													example: {
@@ -293,7 +282,7 @@ const OutboundProviderMetadataSchema = {
 											},
 											{
 												properties: {
-													type: { const: 'BODY' },
+													type: { const: 'body' },
 													text: { type: 'string' },
 													example: {
 														type: 'object',
@@ -312,7 +301,7 @@ const OutboundProviderMetadataSchema = {
 											},
 											{
 												properties: {
-													type: { const: 'FOOTER' },
+													type: { const: 'footer' },
 													text: { type: 'string' },
 												},
 												required: ['type', 'text'],

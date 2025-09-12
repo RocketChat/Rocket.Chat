@@ -520,6 +520,7 @@ export class AppsRestApi {
 					try {
 						const adminsRaw = await Users.findUsersInRoles(['admin'], undefined, {
 							projection: {
+								_id: 1,
 								username: 1,
 								name: 1,
 								nickname: 1,

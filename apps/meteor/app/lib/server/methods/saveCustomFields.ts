@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { saveCustomFields } from '../functions/saveCustomFields';
 import { RateLimiter } from '../lib';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,6 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async saveCustomFields(fields = {}) {
+		methodDeprecationLogger.method('saveCustomFields', '8.0.0', 'Use the endpoint /v1/users.updateOwnBasicInfo instead');
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveCustomFields' });
