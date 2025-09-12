@@ -22,7 +22,7 @@ export const useIframe = () => {
 				};
 			}
 			if ('loginToken' in tokenData) {
-				tokenLogin(tokenData.loginToken);
+				tokenLogin(tokenData.loginToken, callback);
 			}
 			if ('token' in tokenData) {
 				iframeLogin(tokenData.token, callback);
