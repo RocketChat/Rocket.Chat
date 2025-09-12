@@ -11,9 +11,5 @@ module.exports = /** @satisfies {import('mocha').MochaOptions} */ ({
 	retries: 0,
 	file: 'tests/end-to-end/teardown.ts',
 	spec: ['tests/end-to-end/api/**/*', 'tests/end-to-end/apps/*'],
-	// Add GitHub summary reporter when explicitly requested
-	reporter: process.env.GITHUB_SUMMARY_PATH ? './reporters/mocha-github-summary.js' : 'spec',
-	reporterOptions: {
-		outputPath: process.env.GITHUB_SUMMARY_PATH || 'test-summary-api.json',
-	},
+	reporter: process.env.GITHUB_SUMMARY_PATH ? 'json' : 'spec',
 });

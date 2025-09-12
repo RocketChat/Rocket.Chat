@@ -60,6 +60,11 @@ class GitHubSummaryReporter implements Reporter {
 		}
 
 		// Update counters based on test result
+		// Only count the final attempt to avoid double-counting retries
+		const isLastAttempt = typeof result.retry === 'number' ? result.retry === test.results.length - 1 : true;
+		if (!isLastAttempt) {
+			return;
+		}
 		summary.total++;
 		switch (result.status) {
 			case 'passed':

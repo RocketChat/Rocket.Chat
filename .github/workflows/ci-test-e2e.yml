@@ -239,7 +239,7 @@ jobs:
           CI: true
         run: |
           for i in $(seq 1 2); do
-            npm run testapi && s=0 && break || s=$?
+            npm run testapi > mocha-results.json && s=0 && break || s=$?
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
 
@@ -258,6 +258,13 @@ jobs:
             done;
           done;
           docker compose -f ../../docker-compose-ci.yml stop
+
+          # Convert Mocha JSON output to our summary format
+          if [ $s -eq 0 ] && [ -f "mocha-results.json" ]; then
+            node reporters/convert-mocha-json.js mocha-results.json "$GITHUB_SUMMARY_PATH"
+          else
+            echo "⚠️ API tests failed or no results file found, skipping summary conversion"
+          fi
 
           ls -l $COVERAGE_DIR
           exit $s

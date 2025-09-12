@@ -316,6 +316,8 @@ async function main() {
     }
 
     summaryFiles = findSummaryFiles();
+    // Deduplicate paths to avoid double counting
+    summaryFiles = Array.from(new Set(summaryFiles));
 
     if (summaryFiles.length === 0) {
       console.log('❌ No test summary files found');
