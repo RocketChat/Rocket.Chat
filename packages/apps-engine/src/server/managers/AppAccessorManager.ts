@@ -9,6 +9,7 @@ import type {
 	IPersistence,
 	IRead,
 } from '../../definition/accessors';
+import type { IServerEndpoints } from '../../definition/accessors/IServerEndpoints';
 import type { AppManager } from '../AppManager';
 import {
 	ApiExtend,
@@ -48,6 +49,7 @@ import {
 } from '../accessors';
 import { CloudWorkspaceRead } from '../accessors/CloudWorkspaceRead';
 import { ContactRead } from '../accessors/ContactRead';
+import { ServerEndpoints } from '../accessors/ServerEndpoints';
 import { ThreadRead } from '../accessors/ThreadRead';
 import { UIExtend } from '../accessors/UIExtend';
 import type { AppBridges } from '../bridges/AppBridges';
@@ -71,6 +73,8 @@ export class AppAccessorManager {
 
 	private readonly https: Map<string, IHttp>;
 
+	private readonly serverEndpoints: Map<string, IServerEndpoints>;
+
 	constructor(private readonly manager: AppManager) {
 		this.bridges = this.manager.getBridges();
 		this.configExtenders = new Map<string, IConfigurationExtend>();
@@ -81,6 +85,7 @@ export class AppAccessorManager {
 		this.modifiers = new Map<string, IModify>();
 		this.persists = new Map<string, IPersistence>();
 		this.https = new Map<string, IHttp>();
+		this.serverEndpoints = new Map<string, IServerEndpoints>();
 	}
 
 	/**
@@ -230,5 +235,13 @@ export class AppAccessorManager {
 		}
 
 		return this.https.get(appId);
+	}
+
+	public getServerEndpoints(appId: string): IServerEndpoints {
+		if (!this.serverEndpoints.has(appId)) {
+			this.serverEndpoints.set(appId, new ServerEndpoints(this.bridges, appId));
+		}
+
+		return this.serverEndpoints.get(appId);
 	}
 }

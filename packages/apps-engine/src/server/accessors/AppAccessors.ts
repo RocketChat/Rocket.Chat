@@ -1,4 +1,5 @@
 import type { IAppAccessors, IEnvironmentRead, IEnvironmentWrite, IHttp, IRead } from '../../definition/accessors';
+import type { IServerEndpoints } from '../../definition/accessors/IServerEndpoints';
 import type { IApiEndpointMetadata } from '../../definition/api';
 import type { AppManager } from '../AppManager';
 import type { AppAccessorManager } from '../managers/AppAccessorManager';
@@ -31,6 +32,10 @@ export class AppAccessors implements IAppAccessors {
 
 	public get http(): IHttp {
 		return this.accessorManager.getHttp(this.appId);
+	}
+
+	public get serverEndpoints(): IServerEndpoints {
+		return this.accessorManager.getServerEndpoints(this.appId);
 	}
 
 	public get providedApiEndpoints(): Array<IApiEndpointMetadata> {

@@ -122,6 +122,10 @@ export const AppPermissions = {
 	'outboundComms': {
 		provide: { name: 'outbound-communication.provide' },
 	},
+	'server-endpoints': {
+		call: { name: 'server-endpoints.call' },
+		impersonate: { name: 'server-endpoints.impersonate' },
+	},
 };
 
 /**
