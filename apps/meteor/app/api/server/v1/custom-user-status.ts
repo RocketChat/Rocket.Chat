@@ -1,4 +1,4 @@
-import type { IUserStatus } from '@rocket.chat/core-typings';
+import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 import { CustomUserStatus } from '@rocket.chat/models';
 import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
@@ -56,7 +56,7 @@ const customUserStatusEndpoints = API.v1.get(
 		response: {
 			200: ajv.compile<
 				PaginatedResult<{
-					statuses: IUserStatus[];
+					statuses: ICustomUserStatus[];
 				}>
 			>({
 				type: 'object',
@@ -64,20 +64,20 @@ const customUserStatusEndpoints = API.v1.get(
 					statuses: {
 						type: 'array',
 						items: {
-							$ref: '#/components/schemas/IUserStatus',
+							$ref: '#/components/schemas/ICustomUserStatus',
 						},
 					},
 					count: {
 						type: 'number',
-						description: 'The number of sounds returned in this response.',
+						description: 'The number of custom user statuses returned in this response.',
 					},
 					offset: {
 						type: 'number',
-						description: 'The number of sounds that were skipped in this response.',
+						description: 'The number of custom user statuses that were skipped in this response.',
 					},
 					total: {
 						type: 'number',
-						description: 'The total number of sounds that match the query.',
+						description: 'The total number of custom user statuses that match the query.',
 					},
 					success: {
 						type: 'boolean',
