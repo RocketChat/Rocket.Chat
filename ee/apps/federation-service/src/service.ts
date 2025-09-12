@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { serve } from '@hono/node-server';
 import { api, getConnection, getTrashCollection, Settings } from '@rocket.chat/core-services';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 import { License } from '@rocket.chat/license';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
@@ -49,7 +50,7 @@ function handleHealthCheck(app: Hono) {
 	}
 
 	const { FederationMatrix } = await import('@rocket.chat/federation-matrix');
-	const federationMatrix = await FederationMatrix.create();
+	const federationMatrix = await FederationMatrix.create(InstanceStatus.id());
 	api.registerService(federationMatrix);
 
 	const app = new Hono();
