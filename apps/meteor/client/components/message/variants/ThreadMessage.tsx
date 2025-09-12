@@ -5,6 +5,7 @@ import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
+import { Users } from '../../../stores/Users';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
@@ -56,16 +57,23 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 		>
 			<MessageLeftContainer>
 				{!sequential && message.u.username && showUserAvatar && (
-					<MessageAvatar
-						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
-						avatarUrl={message.avatar}
-						username={message.u.username}
-						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
-						style={{ cursor: 'pointer' }}
-						role='button'
-						{...triggerProps}
-					/>
+					(() => {
+						const user = Users.state.find((u) => u.username === message.u.username);
+						const etag = user?.avatarETag;
+						const avatarUrl = etag ? `/avatar/${message.u.username}?etag=${etag}` : message.avatar;
+						return (
+							<MessageAvatar
+								emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
+								avatarUrl={avatarUrl}
+								username={message.u.username}
+								size='x36'
+								onClick={(e) => openUserCard(e, message.u.username)}
+								style={{ cursor: 'pointer' }}
+								role='button'
+								{...triggerProps}
+							/>
+						);
+					})()
 				)}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
