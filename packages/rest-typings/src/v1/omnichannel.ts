@@ -3911,6 +3911,7 @@ const POSTLivechatRemoveCustomFieldSuccessSchema = {
 		},
 		success: {
 			type: 'boolean',
+			enum: [true],
 		},
 	},
 	additionalProperties: false,

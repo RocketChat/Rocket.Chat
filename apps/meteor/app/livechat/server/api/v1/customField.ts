@@ -108,7 +108,7 @@ const livechatCustomFieldsEndpoints = API.v1.post(
 
 		const customField = await LivechatCustomField.findOneById(_id, { projection: { _id: 1 } });
 		if (!customField) {
-			API.v1.failure('custom-field-not-found');
+			return API.v1.failure('custom-field-not-found');
 		}
 
 		const result = await LivechatCustomField.removeById(_id);
