@@ -205,11 +205,11 @@ const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 const GetStateIdsParamsSchema = {
 	type: 'object',
 	properties: {
-		roomId: {
+		event_id: {
 			type: 'string',
 		},
 	},
-	required: ['roomId'],
+	required: ['event_id'],
 };
 
 const isGetStateIdsParamsProps = ajv.compile(GetStateIdsParamsSchema);
@@ -268,6 +268,7 @@ const PostTestBodySchema = {
 };
 
 const isPostTestBodyProps = ajv.compile(PostTestBodySchema);
+
 
 export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 	const { event, config, profile, request } = services;
@@ -371,11 +372,11 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 					},
 				},
 				async (c) => {
+
 					const roomId = c.req.param('roomId');
 					const eventId = c.req.query('event_id');
-					const stateIds = await profile.getStateIds(roomId, eventId);
+					const stateIds = await profile.getStateIds(roomId, eventId!);
 
-					console.log('stateIds', eventId, stateIds);
 					return {
 						body: stateIds,
 						statusCode: 200,
@@ -392,11 +393,8 @@ export const getMatrixTransactionsRoutes = (services: HomeserverServices) => {
 				},
 				async (c) => {
 					const roomId = c.req.param('roomId');
-
-					const eventId = c.req.query('eventId');
-					const state = await profile.getState(roomId, eventId);
-
-					console.log('state', eventId, state);
+					const eventId = c.req.query('event_id');
+					const state = await profile.getState(roomId, eventId!);
 					return {
 						statusCode: 200,
 						body: state,
