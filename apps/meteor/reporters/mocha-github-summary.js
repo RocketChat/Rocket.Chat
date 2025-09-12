@@ -69,7 +69,7 @@ class MochaGitHubSummaryReporter {
 		}
 
 		// Get file path from the test
-		let filePath = test.file;
+		const filePath = test.file;
 		let lineNumber = null;
 
 		// Try to extract line number if available
@@ -136,4 +136,3 @@ class MochaGitHubSummaryReporter {
 }
 
 module.exports = MochaGitHubSummaryReporter;
-
