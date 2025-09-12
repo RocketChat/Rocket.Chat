@@ -97,7 +97,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 						{!keysExist && (
 							<FieldHint id={`${passwordId}-hint`}>
 								<Trans i18nKey='Enter_current_E2EE_password_to_set_new'>
-									To set a new password, first{' '}
+									To set a new password, first
 									<Box
 										is='a'
 										href='#'
@@ -106,9 +106,8 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 											await e2e.decodePrivateKeyFlow();
 										}}
 									>
-										enter your current E2EE password
+										enter your current E2EE password.
 									</Box>
-									.
 								</Trans>
 							</FieldHint>
 						)}

@@ -77,11 +77,11 @@ export class HomeFlextab {
 	}
 
 	get btnDisableE2E(): Locator {
-		return this.page.locator('role=menuitem[name="Disable E2E"]');
+		return this.page.locator('role=menuitem[name="Disable E2E encryption"]');
 	}
 
 	get btnEnableE2E(): Locator {
-		return this.page.locator('role=menuitem[name="Enable E2E"]');
+		return this.page.locator('role=menuitem[name="Enable E2E encryption"]');
 	}
 
 	get btnEnableOTR(): Locator {
