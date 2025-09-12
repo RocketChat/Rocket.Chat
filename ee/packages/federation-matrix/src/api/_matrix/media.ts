@@ -125,7 +125,6 @@ export const getMatrixMediaRoutes = (homeserverServices: HomeserverServices) => 
 					body: multipartResponse.body,
 				};
 			} catch (error) {
-				logger.error('Federation media download error:', error);
 				return {
 					statusCode: 500,
 					body: { errcode: 'M_UNKNOWN', error: 'Internal server error' },
