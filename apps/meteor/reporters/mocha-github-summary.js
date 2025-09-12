@@ -9,7 +9,7 @@ class MochaGitHubSummaryReporter {
 	constructor(runner, options) {
 		this.runner = runner;
 		this.options = options || {};
-		this.outputPath = this.options.reporterOptions?.outputPath || 'test-summary.json';
+		this.outputPath = this.options.reporterOptions?.outputPath || 'test-summary-api.json';
 		this.testResults = new Map();
 
 		// Set up event listeners
@@ -18,40 +18,45 @@ class MochaGitHubSummaryReporter {
 	}
 
 	onTestEnd(test) {
-		// Get the describe block name (suite title) and location info
-		const { suiteName, filePath, lineNumber } = this.getSuiteNameAndLocation(test);
+		try {
+			// Get the describe block name (suite title) and location info
+			const { suiteName, filePath, lineNumber } = this.getSuiteNameAndLocation(test);
 
-		// Initialize or get existing summary
-		let summary = this.testResults.get(suiteName);
-		if (!summary) {
-			summary = {
-				name: suiteName,
-				passed: 0,
-				failed: 0,
-				skipped: 0,
-				total: 0,
-				status: 'passed',
-				filePath,
-				lineNumber,
-			};
-			this.testResults.set(suiteName, summary);
-		}
+			// Initialize or get existing summary
+			let summary = this.testResults.get(suiteName);
+			if (!summary) {
+				summary = {
+					name: suiteName,
+					passed: 0,
+					failed: 0,
+					skipped: 0,
+					total: 0,
+					status: 'passed',
+					filePath,
+					lineNumber,
+				};
+				this.testResults.set(suiteName, summary);
+			}
 
-		// Update counters based on test result
-		summary.total++;
-		if (test.state === 'passed') {
-			summary.passed++;
-		} else if (test.state === 'failed') {
-			summary.failed++;
-		} else if (test.pending || test.state === 'pending') {
-			summary.skipped++;
-		}
+			// Update counters based on test result
+			summary.total++;
+			if (test.state === 'passed') {
+				summary.passed++;
+			} else if (test.state === 'failed') {
+				summary.failed++;
+			} else if (test.pending || test.state === 'pending') {
+				summary.skipped++;
+			}
 
-		// Update suite status
-		if (summary.failed > 0) {
-			summary.status = 'failed';
-		} else if (summary.passed > 0 && summary.skipped > 0) {
-			summary.status = 'mixed';
+			// Update suite status
+			if (summary.failed > 0) {
+				summary.status = 'failed';
+			} else if (summary.passed > 0 && summary.skipped > 0) {
+				summary.status = 'mixed';
+			}
+		} catch (error) {
+			console.error('❌ Error in onTestEnd:', error);
+			// Don't throw - let tests continue
 		}
 	}
 
@@ -70,14 +75,8 @@ class MochaGitHubSummaryReporter {
 
 		// Get file path from the test
 		const filePath = test.file;
-		let lineNumber = null;
-
-		// Try to extract line number if available
-		if (test.body && typeof test.body === 'string') {
-			// This is a rough approximation - Mocha doesn't provide exact line numbers
-			// We could enhance this later if needed
-			lineNumber = null;
-		}
+		// Mocha doesn't provide exact line numbers
+		const lineNumber = null;
 
 		return {
 			suiteName: suiteName || 'Unknown Suite',
@@ -87,7 +86,30 @@ class MochaGitHubSummaryReporter {
 	}
 
 	onEnd() {
-		this.generateSummaryJson();
+		try {
+			this.generateSummaryJson();
+		} catch (error) {
+			console.error('❌ Error in onEnd:', error);
+			// Still try to create an empty summary file
+			try {
+				const fs = require('fs');
+				const emptyReport = {
+					summaries: [],
+					totals: { passed: 0, failed: 0, skipped: 0, total: 0 },
+					metadata: {
+						timestamp: new Date().toISOString(),
+						shard: process.env.MOCHA_SHARD || '1',
+						type: 'api',
+						release: process.env.IS_EE === 'true' ? 'ee' : 'ce',
+						error: 'Reporter encountered an error during summary generation',
+					},
+				};
+				fs.writeFileSync(this.outputPath, JSON.stringify(emptyReport, null, 2), 'utf8');
+				console.log(`⚠️ Empty API test summary written to ${this.outputPath} due to error`);
+			} catch (writeError) {
+				console.error('❌ Failed to write error summary:', writeError);
+			}
+		}
 	}
 
 	generateSummaryJson() {
@@ -97,15 +119,13 @@ class MochaGitHubSummaryReporter {
 		summaries.sort((a, b) => a.name.localeCompare(b.name));
 
 		// Calculate totals
-		const totals = summaries.reduce(
-			(acc, summary) => ({
-				passed: acc.passed + summary.passed,
-				failed: acc.failed + summary.failed,
-				skipped: acc.skipped + summary.skipped,
-				total: acc.total + summary.total,
-			}),
-			{ passed: 0, failed: 0, skipped: 0, total: 0 },
-		);
+		const totals = { passed: 0, failed: 0, skipped: 0, total: 0 };
+		for (const summary of summaries) {
+			totals.passed += summary.passed;
+			totals.failed += summary.failed;
+			totals.skipped += summary.skipped;
+			totals.total += summary.total;
+		}
 
 		// Create report object matching the format from Playwright reporter
 		const report = {

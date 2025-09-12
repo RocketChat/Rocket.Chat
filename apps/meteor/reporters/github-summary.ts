@@ -130,15 +130,13 @@ class GitHubSummaryReporter implements Reporter {
 		summaries.sort((a, b) => a.name.localeCompare(b.name));
 
 		// Calculate totals
-		const totals = summaries.reduce(
-			(acc, summary) => ({
-				passed: acc.passed + summary.passed,
-				failed: acc.failed + summary.failed,
-				skipped: acc.skipped + summary.skipped,
-				total: acc.total + summary.total,
-			}),
-			{ passed: 0, failed: 0, skipped: 0, total: 0 },
-		);
+		const totals = { passed: 0, failed: 0, skipped: 0, total: 0 };
+		for (const summary of summaries) {
+			totals.passed += summary.passed;
+			totals.failed += summary.failed;
+			totals.skipped += summary.skipped;
+			totals.total += summary.total;
+		}
 
 		// Create report object
 		const report: ITestSummaryReport = {

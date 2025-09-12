@@ -18,7 +18,7 @@ function parseJsonReport(content) {
     const report = JSON.parse(content);
     const suites = new Map();
 
-    if (report.summaries) {
+    if (Array.isArray(report.summaries)) {
       for (const summary of report.summaries) {
         suites.set(summary.name, {
           name: summary.name,
@@ -290,8 +290,7 @@ async function main() {
           const fullPath = path.join(dir, entry.name);
           if (entry.isFile()) {
             // Match various test summary file patterns (JSON files only)
-            if ((entry.name.includes('test-summary') || entry.name.startsWith('test-summary-')) &&
-                entry.name.endsWith('.json')) {
+            if (entry.name.includes('test-summary') && entry.name.endsWith('.json')) {
               files.push(fullPath);
             }
           } else if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'node_modules') {
@@ -416,15 +415,13 @@ async function main() {
     console.log('✅ Merged test summary written to merged-test-summary.md');
 
     // Log test results summary (don't exit with error code for failed tests - that's handled elsewhere)
-    const totals = Array.from(allSuites.values()).reduce(
-      (acc, suite) => ({
-        passed: acc.passed + suite.passed,
-        failed: acc.failed + suite.failed,
-        skipped: acc.skipped + suite.skipped,
-        total: acc.total + suite.total,
-      }),
-      { passed: 0, failed: 0, skipped: 0, total: 0 }
-    );
+    const totals = { passed: 0, failed: 0, skipped: 0, total: 0 };
+    for (const suite of allSuites.values()) {
+      totals.passed += suite.passed;
+      totals.failed += suite.failed;
+      totals.skipped += suite.skipped;
+      totals.total += suite.total;
+    }
 
     console.log(`📊 Final totals: ${totals.total} tests (✅${totals.passed} passed, ❌${totals.failed} failed, ⏭️${totals.skipped} skipped)`);
 
