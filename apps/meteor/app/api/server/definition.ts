@@ -43,7 +43,7 @@ export type UnauthorizedResult<T> = {
 	statusCode: 401;
 	body: {
 		success: false;
-		error: T | 'unauthorized';
+		error?: T | string; // 'unauthorized' is the default error message
 	};
 };
 
@@ -52,7 +52,7 @@ export type ForbiddenResult<T> = {
 	body: {
 		success: false;
 		// TODO: MAJOR remove 'unauthorized'
-		error: T | 'forbidden' | 'unauthorized';
+		error?: T | string; // 'forbidden' is the default error message
 	};
 };
 
