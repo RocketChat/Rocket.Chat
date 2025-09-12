@@ -1895,6 +1895,131 @@ describe('LIVECHAT - rooms', () => {
 		});
 	});
 
+	describe('livechat/visitor/department.transfer', () => {
+		let initialDepartmentId: string;
+		let departmentForwardToId: string;
+		let omnichannelRoomId: string;
+
+		afterEach(async () => {
+			await Promise.all([
+				initialDepartmentId && deleteDepartment(initialDepartmentId),
+				departmentForwardToId && deleteDepartment(departmentForwardToId),
+				omnichannelRoomId && closeOmnichannelRoom(omnichannelRoomId),
+				updateSetting('Livechat_Routing_Method', 'Manual_Selection'),
+			]);
+		});
+
+		it('should not be successful when no target (userId or departmentId) was specified', async () => {
+			await request
+				.post(api('livechat/visitor/department.transfer'))
+				.set(credentials)
+				.send({
+					rid: room._id,
+					token: visitor.token,
+					department: 'invalid-department-id',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		(IS_EE ? it : it.skip)('should return a success message when transferred successfully to a department', async () => {
+			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+			const { department: forwardToDepartment } = await createDepartmentWithAnOnlineAgent();
+			initialDepartmentId = initialDepartment._id;
+			departmentForwardToId = forwardToDepartment._id;
+
+			const newVisitor = await createVisitor(initialDepartment._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+			omnichannelRoomId = newRoom._id;
+
+			await request
+				.post(api('livechat/visitor/department.transfer'))
+				.set(credentials)
+				.send({
+					rid: newRoom._id,
+					token: newVisitor.token,
+					department: forwardToDepartment._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+			expect(latestRoom).to.have.property('departmentId');
+			expect(latestRoom.departmentId).to.be.equal(forwardToDepartment._id);
+
+			expect(latestRoom).to.have.property('lastMessage');
+			expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
+			expect(latestRoom.lastMessage?.u?.username).to.be.equal(newVisitor.username);
+			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
+			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToDepartment._id);
+		});
+
+		(IS_EE ? it : it.skip)(
+			'should return a success message when transferred successfully to an offline department when the department accepts it',
+			async () => {
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent({ allowReceiveForwardOffline: true });
+				initialDepartmentId = initialDepartment._id;
+				departmentForwardToId = forwardToOfflineDepartment._id;
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+				omnichannelRoomId = newRoom._id;
+
+				await request
+					.post(api('livechat/visitor/department.transfer'))
+					.set(credentials)
+					.send({
+						rid: newRoom._id,
+						token: newVisitor.token,
+						department: forwardToOfflineDepartment._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			},
+		);
+		(IS_EE ? it : it.skip)('inquiry should be taken automatically when agent on department is online again', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+			const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent({ allowReceiveForwardOffline: true });
+			initialDepartmentId = initialDepartment._id;
+			departmentForwardToId = forwardToOfflineDepartment._id;
+
+			const newVisitor = await createVisitor(initialDepartment._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+			omnichannelRoomId = newRoom._id;
+
+			await request.post(api('livechat/visitor/department.transfer')).set(credentials).send({
+				rid: newRoom._id,
+				token: newVisitor.token,
+				department: forwardToOfflineDepartment._id,
+			});
+
+			await makeAgentAvailable();
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+			expect(latestRoom).to.have.property('departmentId');
+			expect(latestRoom.departmentId).to.be.equal(forwardToOfflineDepartment._id);
+
+			expect(latestRoom).to.have.property('lastMessage');
+			expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
+			expect(latestRoom.lastMessage?.u?.username).to.be.equal(newVisitor.username);
+			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
+			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToOfflineDepartment._id);
+		});
+	});
+
 	describe('livechat/room.survey', () => {
 		it('should return an "invalid-token" error when the visitor is not found due to an invalid token', async () => {
 			await request
