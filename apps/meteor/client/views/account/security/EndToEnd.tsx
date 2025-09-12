@@ -96,7 +96,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 						</FieldRow>
 						{!keysExist && (
 							<FieldHint id={`${passwordId}-hint`}>
-								<Trans key='Enter_current_E2EE_password_to_set_new'>
+								<Trans i18nKey='Enter_current_E2EE_password_to_set_new'>
 									To set a new password, first{' '}
 									<Box
 										is='a'
@@ -135,7 +135,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 											id={passwordConfirmId}
 											error={errors.passwordConfirm?.message}
 											aria-describedby={`${passwordConfirmId}-error`}
-											aria-invalid={errors.password ? 'true' : 'false'}
+											aria-invalid={errors.passwordConfirm ? 'true' : 'false'}
 										/>
 									)}
 								/>
