@@ -34,7 +34,7 @@ import type {
 	OmichannelRoutingConfig,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
-import type { WithId } from 'mongodb';
+import type { DeleteResult, WithId } from 'mongodb';
 
 import { ajv } from './Ajv';
 import type { Deprecated } from '../helpers/Deprecated';
@@ -3882,6 +3882,41 @@ const LivechatTriggerWebhookCallParamsSchema = {
 };
 
 export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWebhookCallParams>(LivechatTriggerWebhookCallParamsSchema);
+
+type POSTLivechatRemoveCustomFields = {
+	_id: string;
+};
+
+const POSTLivechatRemoveCustomFieldsSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+		},
+	},
+	required: ['_id'],
+	additionalProperties: false,
+};
+
+export const isPOSTLivechatRemoveCustomFields = ajv.compile<POSTLivechatRemoveCustomFields>(POSTLivechatRemoveCustomFieldsSchema);
+
+const POSTLivechatRemoveCustomFieldSuccessSchema = {
+	type: 'object',
+	properties: {
+		acknowledged: {
+			type: 'boolean',
+		},
+		deletedCount: {
+			type: 'number',
+		},
+		success: {
+			type: 'boolean',
+		},
+	},
+	additionalProperties: false,
+};
+
+export const POSTLivechatRemoveCustomFieldSuccess = ajv.compile<DeleteResult>(POSTLivechatRemoveCustomFieldSuccessSchema);
 
 export type ILivechatContactWithManagerData = Omit<ILivechatContact, 'contactManager'> & {
 	contactManager?: Pick<IUser, '_id' | 'name' | 'username'>;
