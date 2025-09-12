@@ -37,6 +37,21 @@ export type MediaCallsClientConfig = {
 	iceServers: RTCIceServer[];
 };
 
+function randomString(length: number): string {
+	const buffer: Array<string> = [];
+	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+	for (let i = 0; i < length; i++) {
+		buffer.push(chars[getRandomInt(chars.length)]);
+	}
+
+	return buffer.join('');
+}
+
+function getRandomInt(max: number): number {
+	return Math.floor(Math.random() * Math.floor(max));
+}
+
 class MediaCallsClient extends Emitter<VoipEvents> {
 	public networkEmitter: Emitter<SignalingSocketEvents>;
 
@@ -65,6 +80,7 @@ class MediaCallsClient extends Emitter<VoipEvents> {
 				webrtc: (config) => new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers: clientConfig.iceServers } }),
 			},
 			mediaStreamFactory: getUserMedia,
+			randomStringFactory: () => randomString(12),
 		});
 
 		this.networkEmitter = new Emitter<SignalingSocketEvents>();
