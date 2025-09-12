@@ -1,6 +1,5 @@
 import type { IMessage, IRoom, IUser, IUploadWithUser } from '@rocket.chat/core-typings';
 
-import type { DmCloseProps } from './DmCloseProps';
 import type { DmCreateProps } from './DmCreateProps';
 import type { DmFileProps } from './DmFileProps';
 import type { DmHistoryProps } from './DmHistoryProps';
@@ -15,12 +14,6 @@ export type ImEndpoints = {
 		POST: (params: DmCreateProps) => {
 			room: IRoom & { rid: IRoom['_id'] };
 		};
-	};
-	'/v1/im.close': {
-		POST: (params: DmCloseProps) => void;
-	};
-	'/v1/im.kick': {
-		POST: (params: DmCloseProps) => void;
 	};
 	'/v1/im.leave': {
 		POST: (params: DmLeaveProps) => void;
