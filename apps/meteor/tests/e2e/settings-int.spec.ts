@@ -11,7 +11,7 @@ test.describe.serial('settings-int', () => {
 		poAdmin = new Admin(page);
 		await page.goto('/admin/settings/Message');
 
-		await expect(page.locator('[data-qa-type="PageHeader-title"]')).toHaveText('Message');
+		await expect(page.getByRole('main').getByRole('heading', { level: 1, name: 'Message', exact: true })).toBeVisible();
 	});
 
 	test('expect not being able to set int value as empty string', async ({ page }) => {
