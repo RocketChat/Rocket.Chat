@@ -32,15 +32,35 @@ function isTesting(): boolean {
 
 const DISABLED_PRIVATE_APP_INSTALLATION = ['yes', 'true'].includes(String((process.env as any).DISABLE_PRIVATE_APP_INSTALLATION).toLowerCase());
 
-interface AppConverter {
-	// Define common converter interface if needed
+// Interface for orchestrator that converters expect
+interface IAppServerOrchestrator {
+	getConverters(): Map<string, any>;
+	// Add other methods that converters might need
 }
 
-interface AppCommunicator {
-	// Define common communicator interface if needed
+// Specific interface for thread converter orchestrator expectations
+interface ThreadConverterOrchestrator {
+	getConverters(): {
+		get<T extends string>(key: T): any;
+	};
 }
 
-export class AppServerOrchestrator {
+// Base interface for app converters - using flexible signatures
+interface IAppConverter {
+	convertById?(...args: any[]): Promise<any>;
+	convertMessage?(...args: any[]): Promise<any>;
+	convertRoom?(...args: any[]): Promise<any>;
+	convertUser?(...args: any[]): Promise<any>;
+	// Add other common converter methods as needed
+}
+
+// Base interface for app communicators  
+interface IAppCommunicator {
+	appUpdated?(appId: string): Promise<void>;
+	// Add other common communicator methods as needed
+}
+
+export class AppServerOrchestrator implements IAppServerOrchestrator, ThreadConverterOrchestrator {
 	private _isInitialized: boolean;
 	private _rocketchatLogger!: Logger;
 	private _marketplaceUrl!: string;
@@ -51,10 +71,10 @@ export class AppServerOrchestrator {
 	private _storage!: AppRealStorage;
 	private _logStorage!: AppRealLogStorage;
 	private _appSourceStorage!: ConfigurableAppSourceStorage;
-	private _converters!: Map<string, AppConverter>;
+	private _converters!: Map<string, IAppConverter>;
 	private _bridges!: RealAppBridges;
 	private _manager!: AppManager;
-	private _communicators!: Map<string, AppCommunicator>;
+	private _communicators!: Map<string, IAppCommunicator>;
 
 	constructor() {
 		this._isInitialized = false;
@@ -85,19 +105,19 @@ export class AppServerOrchestrator {
 		);
 
 		this._converters = new Map();
-		this._converters.set('messages', new AppMessagesConverter(this as any) as AppConverter);
-		this._converters.set('rooms', new AppRoomsConverter(this as any) as AppConverter);
-		this._converters.set('settings', new AppSettingsConverter(this as any) as AppConverter);
-		this._converters.set('users', new AppUsersConverter(this as any) as AppConverter);
-		this._converters.set('visitors', new AppVisitorsConverter(this as any) as AppConverter);
-		this._converters.set('contacts', new AppContactsConverter(this as any) as AppConverter);
-		this._converters.set('departments', new AppDepartmentsConverter(this as any) as AppConverter);
-		this._converters.set('uploads', new AppUploadsConverter(this as any) as AppConverter);
-		this._converters.set('videoConferences', new AppVideoConferencesConverter() as AppConverter);
-		this._converters.set('threads', new AppThreadsConverter(this as any) as AppConverter);
-		this._converters.set('roles', new AppRolesConverter(this as any) as AppConverter);
+		this._converters.set('messages', new AppMessagesConverter(this));
+		this._converters.set('rooms', new AppRoomsConverter(this));
+		this._converters.set('settings', new AppSettingsConverter(this));
+		this._converters.set('users', new AppUsersConverter(this));
+		this._converters.set('visitors', new AppVisitorsConverter(this));
+		this._converters.set('contacts', new AppContactsConverter(this));
+		this._converters.set('departments', new AppDepartmentsConverter(this));
+		this._converters.set('uploads', new AppUploadsConverter(this));
+		this._converters.set('videoConferences', new AppVideoConferencesConverter());
+		this._converters.set('threads', new AppThreadsConverter(this));
+		this._converters.set('roles', new AppRolesConverter(this));
 
-		this._bridges = new RealAppBridges(this as any);
+		this._bridges = new RealAppBridges(this);
 
 		this._manager = new AppManager({
 			metadataStorage: this._storage,
@@ -107,9 +127,9 @@ export class AppServerOrchestrator {
 		});
 
 		this._communicators = new Map();
-		this._communicators.set('notifier', new AppServerNotifier(this as any) as AppCommunicator);
-		this._communicators.set('restapi', new AppsRestApi(this as any, this._manager) as AppCommunicator);
-		this._communicators.set('uikit', new AppUIKitInteractionApi(this as any) as AppCommunicator);
+		this._communicators.set('notifier', new AppServerNotifier(this));
+		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
+		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
 
 		this._isInitialized = true;
 	}
@@ -141,15 +161,19 @@ export class AppServerOrchestrator {
 		return this._logStorage;
 	}
 
-	getConverters(): Map<string, AppConverter> {
-		return this._converters;
+	getConverters(): Map<string, IAppConverter> & { get<T extends string>(key: T): any } {
+		const converters = this._converters;
+		// Add the get method that thread converter expects
+		return Object.assign(converters, {
+			get: <T extends string>(key: T) => converters.get(key)
+		});
 	}
 
 	getBridges(): RealAppBridges {
 		return this._bridges;
 	}
 
-	getNotifier(): AppCommunicator | undefined {
+	getNotifier(): IAppCommunicator | undefined {
 		return this._communicators.get('notifier');
 	}
 
@@ -232,7 +256,7 @@ export class AppServerOrchestrator {
 		const apps = await this.getManager().get({ installationSource: 'private' });
 
 		await Promise.all(apps.map((app: ProxiedApp) => this.getManager().migrate(app.getID())));
-		await Promise.all(apps.map((app: ProxiedApp) => (this.getNotifier() as any)?.appUpdated?.(app.getID())));
+		await Promise.all(apps.map((app: ProxiedApp) => this.getNotifier()?.appUpdated?.(app.getID())));
 	}
 
 	async findMajorVersionUpgradeDate(targetVersion = 7): Promise<Date | null> {
@@ -378,6 +402,7 @@ export class AppServerOrchestrator {
 			.handleEvent(event, ...payload)
 			.catch((error: any) => {
 				if (error instanceof EssentialAppDisabledException) {
+					// Type assertion needed due to Meteor typings
 					throw new (Meteor as any).Error('error-essential-app-disabled');
 				}
 
