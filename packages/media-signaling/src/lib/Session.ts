@@ -8,6 +8,7 @@ import type {
 	IServiceProcessorFactoryList,
 	MediaSignalTransport,
 	MediaStreamFactory,
+	RandomStringFactory,
 	ServerMediaSignal,
 } from '../definition';
 import type { IClientMediaCall, CallState, CallActorType, CallContact } from '../definition/call';
@@ -32,12 +33,12 @@ export type MediaSignalingSessionConfig = {
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
+	randomStringFactory: RandomStringFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
 };
 
 const STATE_REPORT_INTERVAL = 60000;
-let sessionCount = 0;
 
 export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private _userId: string;
@@ -51,8 +52,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private transporter: MediaSignalTransportWrapper;
 
 	private recurringStateReportHandler: ReturnType<typeof setInterval> | null;
-
-	private callCount = 0;
 
 	private inputTrack: MediaStreamTrack | null;
 
@@ -74,9 +73,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	constructor(private config: MediaSignalingSessionConfig) {
 		super();
-		sessionCount++;
 		this._userId = config.userId;
-		this._sessionId = `${sessionCount}-${Date.now().toString()}`;
+		this._sessionId = config.randomStringFactory();
 		this.recurringStateReportHandler = null;
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
@@ -189,8 +187,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private createTemporaryCallId(): string {
-		this.callCount++;
-		return `${this._sessionId}-${this.callCount}-${Date.now().toString()}`;
+		return `${this._sessionId}-${this.config.randomStringFactory()}`;
 	}
 
 	private isSignalTargetingAnotherSession(signal: ServerMediaSignal): boolean {

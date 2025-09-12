@@ -115,7 +115,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.remoteStream.stopAudio();
 	}
 
-	public async startNewNegotiation(): Promise<void> {
+	public startNewNegotiation(): void {
 		this.iceGatheringFinished = false;
 		this.clearIceGatheringWaiters(new Error('new-negotiation'));
 	}
@@ -133,7 +133,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		if (this.peer.remoteDescription?.sdp !== sdp.sdp) {
 			this.startNewNegotiation();
-			this.peer.setRemoteDescription(sdp);
+			await this.peer.setRemoteDescription(sdp);
 		}
 
 		const answer = await this.peer.createAnswer();
@@ -144,7 +144,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	public async setRemoteAnswer({ sdp }: { sdp: RTCSessionDescriptionInit }): Promise<void> {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.setRemoteDescription');
+		this.config.logger?.debug('MediaCallWebRTCProcessor.setRemoteAnswer');
 		if (this.stopped) {
 			return;
 		}
@@ -153,7 +153,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			throw new Error('invalid-answer');
 		}
 
-		this.peer.setRemoteDescription(sdp);
+		await this.peer.setRemoteDescription(sdp);
 	}
 
 	public getInternalState<K extends keyof WebRTCInternalStateMap>(stateName: K): ServiceStateValue<WebRTCInternalStateMap, K> {
@@ -370,7 +370,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return;
 		}
 
-		const waiters = this.iceGatheringWaiters.values().toArray();
+		const waiters = Array.from(this.iceGatheringWaiters.values());
 		this.iceGatheringWaiters.clear();
 
 		for (const iceGatheringData of waiters) {

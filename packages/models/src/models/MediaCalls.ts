@@ -36,19 +36,16 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		];
 	}
 
-	public async findOneByIdOrCallerRequestedId<T extends Document = IMediaCall>(
-		id: IMediaCall['_id'] | Required<IMediaCall>['callerRequestedId'],
+	public async findOneByCallerRequestedId<T extends Document = IMediaCall>(
+		id: Required<IMediaCall>['callerRequestedId'],
 		caller: { type: MediaCallActorType; id: string },
 		options?: FindOptions<T>,
 	): Promise<T | null> {
 		return this.findOne(
 			{
-				$or: [
-					// If we get an id, find any call with that id
-					{ _id: id },
-					// if we get a callerRequestedId, then only find it if it was created by the same actor
-					{ 'caller.type': caller.type, 'caller.id': caller.id, 'callerRequestedId': id },
-				],
+				'caller.type': caller.type,
+				'caller.id': caller.id,
+				'callerRequestedId': id,
 			},
 			options,
 		);
@@ -72,12 +69,8 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async acceptCallById(
-		callId: string,
-		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit },
-		expiresAt: Date,
-	): Promise<UpdateResult> {
-		const { calleeContractId, webrtcAnswer } = data;
+	public async acceptCallById(callId: string, data: { calleeContractId: string }, expiresAt: Date): Promise<UpdateResult> {
+		const { calleeContractId } = data;
 
 		return this.updateOne(
 			{
@@ -89,7 +82,6 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					'state': 'accepted',
 					'callee.contractId': calleeContractId,
 					expiresAt,
-					...(webrtcAnswer && { webrtcAnswer }),
 				},
 			},
 		);
@@ -148,15 +140,15 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 				state: {
 					$in: ['accepted', 'active'],
 				},
-				transferedAt: {
+				transferredAt: {
 					$exists: false,
 				},
 			},
 			{
 				$set: {
-					transferedAt: new Date(),
-					transferedBy: params.by,
-					transferedTo: params.to,
+					transferredAt: new Date(),
+					transferredBy: params.by,
+					transferredTo: params.to,
 				},
 			},
 		);

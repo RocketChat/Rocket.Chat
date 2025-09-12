@@ -37,7 +37,7 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	public receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal): void {
-		logger.debug({ msg: 'MediaCallServer.receiveSignal', signal, fromUid });
+		logger.debug({ msg: 'MediaCallServer.receiveSignal', type: signal.type, fromUid });
 
 		if (!isClientMediaSignal(signal)) {
 			logger.error({ msg: 'The Media Signal Server received an invalid client signal object' });
@@ -50,7 +50,7 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	public sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
-		logger.debug({ msg: 'MediaCallServer.sendSignal', toUid, signal });
+		logger.debug({ msg: 'MediaCallServer.sendSignal', toUid, type: signal.type });
 
 		this.emitter.emit('signalRequest', { toUid, signal });
 	}
@@ -91,7 +91,7 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	public scheduleExpirationCheck(): void {
-		return MediaCallDirector.scheduleExpirationCheck();
+		MediaCallDirector.scheduleExpirationCheck();
 	}
 
 	public configure(settings: IMediaCallServerSettings): void {
@@ -150,7 +150,7 @@ export class MediaCallServer implements IMediaCallServer {
 				return {
 					preferredType: 'user',
 				};
-			case 'preferrably':
+			case 'preferably':
 				// Will only skip sip for users that don't have an assigned extension (or not call at all if `requireExtensions` is true)
 				return {
 					preferredType: 'sip',

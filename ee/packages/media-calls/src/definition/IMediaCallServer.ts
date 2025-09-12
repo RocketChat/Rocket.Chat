@@ -13,7 +13,7 @@ export interface IMediaCallServerSettings {
 
 	internalCalls: {
 		requireExtensions: boolean;
-		routeExternally: 'never' | 'preferrably' | 'always';
+		routeExternally: 'never' | 'preferably' | 'always';
 	};
 
 	sip: {

@@ -17,10 +17,12 @@ export const clientMediaSignalAnswerSchema: JSONSchemaType<ClientMediaSignalAnsw
 		callId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		contractId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		type: {
 			type: 'string',
@@ -28,6 +30,7 @@ export const clientMediaSignalAnswerSchema: JSONSchemaType<ClientMediaSignalAnsw
 		},
 		answer: {
 			type: 'string',
+			enum: ['accept', 'reject', 'ack', 'unavailable'],
 			nullable: false,
 		},
 	},

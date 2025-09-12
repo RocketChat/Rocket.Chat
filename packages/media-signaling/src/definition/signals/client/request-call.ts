@@ -20,10 +20,12 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 		callId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		contractId: {
 			type: 'string',
 			nullable: false,
+			minLength: 1,
 		},
 		type: {
 			type: 'string',
@@ -34,10 +36,12 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 			properties: {
 				type: {
 					type: 'string',
+					enum: ['user', 'sip'],
 					nullable: false,
 				},
 				id: {
 					type: 'string',
+					minLength: 1,
 					nullable: false,
 				},
 			},
@@ -48,6 +52,8 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 			type: 'array',
 			items: {
 				type: 'string',
+				enum: ['webrtc'],
+				nullable: false,
 			},
 			nullable: false,
 		},

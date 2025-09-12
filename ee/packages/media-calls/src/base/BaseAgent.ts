@@ -75,7 +75,7 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 
 	public abstract onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void>;
 
-	public abstract onCallTransfered(callId: string): Promise<void>;
+	public abstract onCallTransferred(callId: string): Promise<void>;
 
 	protected async createOrUpdateChannel(call: IMediaCall, contractId: string): Promise<IMediaCallChannel> {
 		if (!contractId) {

@@ -102,7 +102,7 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit, negotiationId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdp });
+		logger.debug({ msg: 'UserActorSignalProcessor.saveLocalDescription', sdpType: sdp?.type, hasSdpBody: Boolean(sdp?.sdp) });
 
 		await MediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId }, this.contractId);
 	}
@@ -191,6 +191,7 @@ export class UserActorSignalProcessor {
 
 	protected async clientIsUnavailable(): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.clientIsUnavailable', role: this.role, uid: this.actorId });
+		// Ignore 'unavailable' responses as some other client session may have a different answer
 	}
 
 	protected async clientHasAccepted(): Promise<void> {
@@ -243,7 +244,7 @@ export class UserActorSignalProcessor {
 
 	private async onSignalingError(errorMessage?: string): Promise<void> {
 		logger.error({ msg: 'Client reported a signaling error', errorMessage, callId: this.callId, role: this.role, state: this.call.state });
-		await MediaCallDirector.hangup(this.call, this.agent, 'service-error');
+		await MediaCallDirector.hangup(this.call, this.agent, 'signaling-error');
 	}
 
 	private async onServiceError(errorMessage?: string): Promise<void> {

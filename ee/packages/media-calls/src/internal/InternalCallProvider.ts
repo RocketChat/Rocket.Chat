@@ -34,7 +34,7 @@ export class InternalCallProvider extends BaseCallProvider {
 		await MediaCallDirector.runOnCallCreatedForAgent(call, calleeAgent, callerAgent);
 
 		if (params.parentCallId) {
-			MediaCallDirector.hangupTransferedCallById(params.parentCallId).catch(() => null);
+			MediaCallDirector.hangupTransferredCallById(params.parentCallId).catch(() => null);
 		}
 
 		return call;

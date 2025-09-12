@@ -115,25 +115,25 @@ export abstract class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
-	public async onCallTransfered(callId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallTransfered', callId });
+	public async onCallTransferred(callId: string): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onCallTransferred', callId });
 
 		const call = await MediaCalls.findOneById(callId);
-		if (!call?.transferedBy || !call?.transferedTo) {
+		if (!call?.transferredBy || !call?.transferredTo) {
 			return;
 		}
 
 		const actor = this.getMyCallActor(call);
-		// If we haven't signed yet, we can't be transfered
+		// If we haven't signed yet, we can't be transferred
 		if (!actor.contractId) {
 			return;
 		}
 
 		getMediaCallServer().requestCall({
 			caller: actor as MediaCallSignedContact,
-			callee: call.transferedTo,
+			callee: call.transferredTo,
 			requestedService: call.service,
-			requestedBy: call.transferedBy,
+			requestedBy: call.transferredBy,
 			parentCallId: call._id,
 		});
 	}

@@ -32,20 +32,20 @@ export function getExternalWaiter({ timeout, timeoutFn, cleanupFn }: PromiseWait
 	};
 
 	data.promise = new Promise((resolve, reject) => {
-		data.promiseResolve = (...args: unknown[]) => {
+		data.promiseResolve = () => {
 			if (data.done) {
 				return;
 			}
 
 			flagAsDone();
-			resolve(...(args as any));
+			resolve();
 		};
-		data.promiseReject = (...args: unknown[]) => {
+		data.promiseReject = (error: Error) => {
 			if (data.done) {
 				return;
 			}
 			flagAsDone();
-			reject(...args);
+			reject(error);
 		};
 	});
 
