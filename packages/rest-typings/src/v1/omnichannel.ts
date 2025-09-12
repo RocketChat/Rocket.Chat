@@ -3857,6 +3857,7 @@ const POSTLivechatRoomsCloseAllSchema = {
 			nullable: true,
 		},
 	},
+	required: [],
 	additionalProperties: false,
 };
 

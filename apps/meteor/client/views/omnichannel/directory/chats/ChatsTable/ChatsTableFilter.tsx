@@ -21,7 +21,7 @@ const ChatsTableFilter = () => {
 	const handleRemoveAllClosed = useEffectEvent(async () => {
 		const onDeleteAll = async () => {
 			try {
-				await removeClosedRooms({ departmentIds: [] });
+				await removeClosedRooms({});
 				queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
