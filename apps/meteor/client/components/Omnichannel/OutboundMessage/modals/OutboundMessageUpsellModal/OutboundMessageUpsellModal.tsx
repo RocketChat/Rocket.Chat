@@ -8,13 +8,14 @@ import GenericUpsellModal from '../../../../GenericUpsellModal';
 type OutboundMessageUpsellModalProps = {
 	hasModule?: boolean;
 	isAdmin?: boolean;
+	isCommunity?: boolean;
 	onClose: () => void;
 };
 
 const OMNICHANNEL_DOCS_LINK = 'https://go.rocket.chat/i/omnichannel-docs';
 const CONTACT_SALES_LINK = 'https://go.rocket.chat/i/contact-sales';
 
-const OutboundMessageUpsellModal = ({ hasModule, isAdmin, onClose }: OutboundMessageUpsellModalProps) => {
+const OutboundMessageUpsellModal = ({ isCommunity, hasModule, isAdmin, onClose }: OutboundMessageUpsellModalProps) => {
 	const { t } = useTranslation();
 
 	const openExternalLink = useExternalLink();
@@ -24,7 +25,7 @@ const OutboundMessageUpsellModal = ({ hasModule, isAdmin, onClose }: OutboundMes
 			return {
 				cancelText: t('Learn_more'),
 				onCancel: () => openExternalLink(OMNICHANNEL_DOCS_LINK),
-				confirmText: t('Contact_sales'),
+				confirmText: isCommunity ? t('Upgrade') : t('Contact_sales'),
 				onConfirm: () => openExternalLink(CONTACT_SALES_LINK),
 				onClose,
 			};
@@ -36,7 +37,7 @@ const OutboundMessageUpsellModal = ({ hasModule, isAdmin, onClose }: OutboundMes
 			onCancel: () => openExternalLink(OMNICHANNEL_DOCS_LINK),
 			onClose,
 		};
-	}, [hasModule, isAdmin, onClose, openExternalLink, t]);
+	}, [hasModule, isAdmin, isCommunity, onClose, openExternalLink, t]);
 
 	return (
 		<GenericUpsellModal

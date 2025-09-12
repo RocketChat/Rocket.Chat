@@ -53,6 +53,12 @@ describe('OutboundMessageUpsellModal', () => {
 				expect(screen.getByRole('button', { name: 'Contact sales' })).toBeInTheDocument();
 			});
 
+			it('should render "Upgrade" button when isCommunity is true', () => {
+				render(<OutboundMessageUpsellModal isAdmin isCommunity onClose={onClose} />, { wrapper: appRoot.build() });
+				expect(screen.getByRole('button', { name: 'Upgrade' })).toBeInTheDocument();
+				expect(screen.queryByRole('button', { name: 'Contact sales' })).not.toBeInTheDocument();
+			});
+
 			it('should call openExternalLink with docs link when "Learn more" is clicked', async () => {
 				render(<OutboundMessageUpsellModal isAdmin onClose={onClose} />, { wrapper: appRoot.build() });
 				await userEvent.click(screen.getByRole('button', { name: 'Learn more' }));
