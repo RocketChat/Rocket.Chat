@@ -309,5 +309,6 @@ export type EventSignatures = {
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
 	'otrMessage'(data: { roomId: string; message: IMessage; room: IRoom; user: IUser }): void;
+	'qr-code'(data: { sessionId: string; authToken: string }): void;
 	'otrAckUpdate'(data: { roomId: string; acknowledgeMessage: IOTRMessage }): void;
 };
