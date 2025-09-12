@@ -3842,9 +3842,11 @@ const LivechatTriggerWebhookCallParamsSchema = {
 
 export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWebhookCallParams>(LivechatTriggerWebhookCallParamsSchema);
 
-type POSTLivechatRoomsCloseAll = {
-	departmentIds?: string[];
-};
+type POSTLivechatRoomsCloseAll =
+	| {
+			departmentIds?: string[];
+	  }
+	| undefined;
 
 const POSTLivechatRoomsCloseAllSchema = {
 	type: 'object',
@@ -3858,6 +3860,7 @@ const POSTLivechatRoomsCloseAllSchema = {
 		},
 	},
 	required: [],
+	nullable: true,
 	additionalProperties: false,
 };
 

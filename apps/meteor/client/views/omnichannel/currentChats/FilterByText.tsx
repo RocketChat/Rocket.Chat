@@ -86,7 +86,7 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 	const handleRemoveClosed = useEffectEvent(async () => {
 		const onDeleteAll = async (): Promise<void> => {
 			try {
-				await removeClosedRooms({});
+				await removeClosedRooms();
 				reload?.();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
