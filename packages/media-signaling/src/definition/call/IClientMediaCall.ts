@@ -36,7 +36,8 @@ export type CallHangupReason =
 	| 'signaling-error' // Hanging up because of an error during the signal processing
 	| 'service-error' // Hanging up because of an error setting up the service connection
 	| 'media-error' // Hanging up because of an error setting up the media connection
-	| 'error'; // Hanging up because of an unidentified error
+	| 'error' // Hanging up because of an unidentified error
+	| 'unknown'; // One of the call's signed users reported they don't know this call
 
 export type CallAnswer =
 	| 'accept' // actor accepts the call
@@ -54,7 +55,9 @@ export type CallRejectedReason =
 	| 'invalid-contract-id' // this specific contract can't request this call
 	| 'existing-call-id' // the call already exists with a different callee or contract
 	| 'already-requested' // the request is valid, but a call matching its params is already underway
-	| 'unsupported'; // no matching supported services between actors
+	| 'unsupported' // no matching supported services between actors
+	| 'unavailable' // the callee is unavailable
+	| 'busy'; // the actor who requested the call is supposedly busy
 
 export interface IClientMediaCall {
 	callId: string;

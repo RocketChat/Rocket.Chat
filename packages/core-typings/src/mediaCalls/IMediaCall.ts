@@ -1,4 +1,5 @@
 import type { IRocketChatRecord } from '../IRocketChatRecord';
+import type { IUser } from '../IUser';
 import type { RequiredField } from '../utils';
 
 export type MediaCallActorType = 'user' | 'sip';
@@ -42,6 +43,7 @@ export interface IMediaCall extends IRocketChatRecord {
 	caller: MediaCallSignedContact;
 	callee: MediaCallContact;
 
+	ended: boolean;
 	endedBy?: MediaCallActor | ServerActor;
 	endedAt?: Date;
 	hangupReason?: string;
@@ -55,4 +57,6 @@ export interface IMediaCall extends IRocketChatRecord {
 	transferredBy?: MediaCallSignedActor;
 	transferredTo?: MediaCallContact;
 	transferredAt?: Date;
+
+	uids: IUser['_id'][];
 }

@@ -96,10 +96,84 @@ export class GlobalSignalProcessor {
 		}
 	}
 
-	private async processRegisterSignal(_uid: IUser['_id'], _signal: ClientMediaSignalRegister): Promise<void> {
-		// #TODO: client registration
-		// 1. Re-send signals for any pending calls involving this actor;
-		// 2. Hangup active calls involving the oldContractId if it's different from the new one.
+	private async processRegisterSignal(uid: IUser['_id'], signal: ClientMediaSignalRegister): Promise<void> {
+		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
+		if (!calls.length) {
+			return;
+		}
+
+		await Promise.all(calls.map((call) => this.reactToUnknownCall(uid, call, signal).catch(() => null)));
+	}
+
+	private async reactToUnknownCall(uid: IUser['_id'], call: IMediaCall, signal: ClientMediaSignalRegister): Promise<void> {
+		if (call.state === 'hangup') {
+			return;
+		}
+
+		const isCaller = call.caller.type === 'user' && call.caller.id === uid;
+		const isCallee = call.callee.type === 'user' && call.callee.id === uid;
+
+		if (!isCaller && !isCallee) {
+			return;
+		}
+
+		const role = isCaller ? 'caller' : 'callee';
+		const actor = call[role];
+
+		// If this user's side of the call has already been signed
+		if (actor.contractId) {
+			// If it's signed to the same session that is now registering
+			// Or it was signed by a session that the current session is replacing (as in a browser refresh)
+			if (actor.contractId === signal.contractId || actor.contractId === signal.oldContractId) {
+				await MediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
+				return;
+			}
+		} else {
+			await MediaCallDirector.renewCallId(call._id);
+		}
+
+		if (isCaller) {
+			this.sendSignal(uid, {
+				callId: call._id,
+				type: 'new',
+				service: call.service,
+				kind: call.kind,
+				role: 'caller',
+				contact: {
+					...call.callee,
+				},
+				...(call.callerRequestedId && { requestedCallId: call.callerRequestedId }),
+			});
+		}
+
+		if (isCallee) {
+			this.sendSignal(uid, {
+				callId: call._id,
+				type: 'new',
+				service: call.service,
+				kind: call.kind,
+				role: 'callee',
+				contact: {
+					...call.caller,
+				},
+			});
+		}
+
+		if (call.state === 'active') {
+			this.sendSignal(uid, {
+				callId: call._id,
+				type: 'notification',
+				notification: 'active',
+				...(actor.contractId && { signedContractId: actor.contractId }),
+			});
+		} else if (actor.contractId && !isPendingState(call.state)) {
+			this.sendSignal(uid, {
+				callId: call._id,
+				type: 'notification',
+				notification: 'accepted',
+				signedContractId: actor.contractId,
+			});
+		}
 	}
 
 	private async processRequestCallSignal(uid: IUser['_id'], signal: ClientMediaSignalRequestCall): Promise<void> {
@@ -107,6 +181,11 @@ export class GlobalSignalProcessor {
 		const existingCall = await this.getExistingRequestedCall(uid, signal);
 		if (existingCall) {
 			return;
+		}
+
+		const hasCalls = await MediaCalls.hasUnfinishedCallsByUid(uid);
+		if (hasCalls) {
+			this.rejectCallRequest(uid, { callId: signal.callId, toContractId: signal.contractId, reason: 'busy' });
 		}
 
 		const services = signal.supportedServices ?? [];
@@ -146,7 +225,7 @@ export class GlobalSignalProcessor {
 		// The requestedCallId must never match a real call id
 		const matchingValidCall = await MediaCalls.findOneById(requestedCallId, { projection: { _id: 1 } });
 		if (matchingValidCall) {
-			this.invalidCallId(uid, rejection);
+			this.rejectCallRequest(uid, rejection);
 		}
 
 		const call = await MediaCalls.findOneByCallerRequestedId(requestedCallId, caller);
@@ -156,20 +235,20 @@ export class GlobalSignalProcessor {
 
 		// if the call is already over, we treat it as an invalid id since it can't be reused
 		if (call.state === 'hangup') {
-			this.invalidCallId(uid, rejection);
+			this.rejectCallRequest(uid, rejection);
 		}
 
 		if (call.caller.contractId !== signal.contractId) {
-			this.invalidCallId(uid, { ...rejection, reason: 'existing-call-id' });
+			this.rejectCallRequest(uid, { ...rejection, reason: 'existing-call-id' });
 		}
 
 		if (signal.supportedServices?.length && !signal.supportedServices.includes(call.service)) {
-			this.invalidCallId(uid, { ...rejection, reason: 'unsupported' });
+			this.rejectCallRequest(uid, { ...rejection, reason: 'unsupported' });
 		}
 
 		// if the call is already accepted, we won't send its signals again
 		if (!isPendingState(call.state)) {
-			this.invalidCallId(uid, { ...rejection, reason: 'already-requested' });
+			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
 		this.sendSignal(uid, {
@@ -187,9 +266,9 @@ export class GlobalSignalProcessor {
 		return call;
 	}
 
-	private invalidCallId(uid: IUser['_id'], rejection: Omit<ServerMediaSignalRejectedCallRequest, 'type'>): never {
+	private rejectCallRequest(uid: IUser['_id'], rejection: Omit<ServerMediaSignalRejectedCallRequest, 'type'>): never {
 		this.sendSignal(uid, { type: 'rejected-call-request', ...rejection });
 
-		throw new Error(rejection.reason ?? 'invalid-call-id');
+		throw new Error(rejection.reason);
 	}
 }

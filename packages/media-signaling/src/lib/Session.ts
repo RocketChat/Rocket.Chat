@@ -63,6 +63,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private callsToGetUserMedia: number;
 
+	private lastRegisterTimestamp: Date | null = null;
+
 	public get sessionId(): string {
 		return this._sessionId;
 	}
@@ -139,7 +141,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public async processSignal(signal: ServerMediaSignal): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.processSignal', signal);
-		if (this.isSignalTargetingAnotherSession(signal) || this.isCallIgnored(signal.callId)) {
+
+		if (this.isCallIgnored(signal.callId)) {
 			return;
 		}
 
@@ -152,6 +155,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 				// The server accepted a contract, but it wasn't ours - ignore the call in this session
 				call.setContractState('ignored');
 			}
+		} else if ('toContractId' in signal) {
+			call.setContractState(signal.toContractId === this._sessionId ? 'signed' : 'ignored');
 		}
 
 		const oldCall = this.getReplacedCallBySignal(signal);
@@ -182,24 +187,22 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
 	}
 
+	public register(): void {
+		this.lastRegisterTimestamp = new Date();
+
+		this.transporter.sendSignal({
+			type: 'register',
+			contractId: this._sessionId,
+			...(this.config.oldSessionId && { oldContractId: this.config.oldSessionId }),
+		});
+	}
+
 	public setIceGatheringTimeout(newTimeout: number): void {
 		this.config.iceGatheringTimeout = newTimeout;
 	}
 
 	private createTemporaryCallId(): string {
 		return `${this._sessionId}-${this.config.randomStringFactory()}`;
-	}
-
-	private isSignalTargetingAnotherSession(signal: ServerMediaSignal): boolean {
-		if (signal.type === 'new' || signal.type === 'notification') {
-			return false;
-		}
-
-		if (signal.toContractId && signal.toContractId !== this._sessionId) {
-			return true;
-		}
-
-		return false;
 	}
 
 	private isCallIgnored(callId: string): boolean {
@@ -254,22 +257,46 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private reportState(): void {
-		const call = this.getMainCall() as ClientMediaCall | null;
-		if (call && !call.isOver()) {
+		let reportedAny = false;
+		let anyNotOver = false;
+
+		for (const call of this.knownCalls.values()) {
+			if (call.state !== 'hangup') {
+				anyNotOver = true;
+			}
+
+			if (!call.isAbleToReportStates()) {
+				continue;
+			}
+
+			reportedAny = true;
 			call.reportStates();
+		}
+
+		if (reportedAny) {
+			// If we're reporting a call's state, then ensure we'll register again once all calls over
+			this.lastRegisterTimestamp = null;
 			return;
 		}
 
-		// If we don't have any call to report the state on, send a register signal instead; the server will ignore it if there's nothing on that side either
-		this.register();
+		// Even if we're not reporting any calls, if we know about one that isn't over, don't register
+		if (anyNotOver) {
+			return;
+		}
+
+		// By registering we're telling the server we have a clean session; if it's not supposed to be clean, it'll tell us
+		this.autoRegister();
 	}
 
-	private register(): void {
-		this.transporter.sendSignal({
-			type: 'register',
-			contractId: this._sessionId,
-			...(this.config.oldSessionId && { oldContractId: this.config.oldSessionId }),
-		});
+	private autoRegister(): void {
+		if (this.lastRegisterTimestamp) {
+			const diff = Date.now() - this.lastRegisterTimestamp.valueOf();
+			if (diff < STATE_REPORT_INTERVAL * 10) {
+				return;
+			}
+		}
+
+		this.register();
 	}
 
 	private async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {

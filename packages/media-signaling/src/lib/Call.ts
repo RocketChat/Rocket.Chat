@@ -13,8 +13,8 @@ import type {
 	CallActorType,
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
-import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import type { IMediaSignalLogger } from '../definition/logger';
+import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { isPendingState } from './services/states';
 import type {
 	ServerMediaSignal,
@@ -36,6 +36,7 @@ const TIMEOUT_TO_ACCEPT = 30000;
 const TIMEOUT_TO_CONFIRM_ACCEPTANCE = 2000;
 const TIMEOUT_TO_PROGRESS_SIGNALING = 10000;
 const STATE_REPORT_DELAY = 300;
+const CALLS_WITH_NO_REMOTE_DATA_REPORT_DELAY = 5000;
 
 // if the server tells us we're the caller in a call we don't recognize, ignore it completely
 const AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS = true;
@@ -151,6 +152,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private currentNegotiationId: string | null;
 
+	private creationTimestamp: Date;
+
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
@@ -175,6 +178,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
+		this.creationTimestamp = new Date();
 
 		this.currentNegotiationId = null;
 		this.earlySignals = new Set();
@@ -365,6 +369,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	public getRemoteMediaStream(): MediaStream {
 		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream');
+		if (this.hidden) {
+			this.throwError('getRemoteMediaStream is not available for this call');
+		}
+
 		if (this.shouldIgnoreWebRTC()) {
 			this.throwError('getRemoteMediaStream is not available for this service');
 		}
@@ -384,6 +392,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		if (signalType === 'new') {
 			return this.initializeRemoteCall(signal, oldCall);
+		}
+
+		if (signalType === 'rejected-call-request') {
+			return this.flagAsEnded('remote');
 		}
 
 		if (!this.hasRemoteData) {
@@ -485,6 +497,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._state === 'hangup';
 	}
 
+	public isAbleToReportStates(): boolean {
+		return this.mayReportStates;
+	}
+
 	public ignore(): void {
 		if (this.ignored) {
 			return;
@@ -505,7 +521,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public setMuted(muted: boolean): void {
-		if (this.isOver()) {
+		if (this.isOver() || this.hidden) {
 			return;
 		}
 		if (!this.webrtcProcessor && !muted) {
@@ -521,7 +537,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public setHeld(held: boolean): void {
-		if (this.isOver()) {
+		if (this.isOver() || this.hidden) {
 			return;
 		}
 		if (!this.webrtcProcessor && !held) {
@@ -577,14 +593,16 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		this.config.transporter.sendToServer(this.callId, 'local-state', {
-			callState: this.state,
-			clientState: this.getClientState(),
-			serviceStates: Object.fromEntries(this.serviceStates.entries()),
-			ignored: this.ignored,
-			contractState: this.contractState,
-			...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }),
-		});
+		if (this.hasRemoteData || Date.now() > this.creationTimestamp.valueOf() + CALLS_WITH_NO_REMOTE_DATA_REPORT_DELAY) {
+			this.config.transporter.sendToServer(this.callId, 'local-state', {
+				callState: this.state,
+				clientState: this.getClientState(),
+				serviceStates: Object.fromEntries(this.serviceStates.entries()),
+				ignored: this.ignored,
+				contractState: this.contractState,
+				...(this.currentNegotiationId && { negotiationId: this.currentNegotiationId }),
+			});
+		}
 
 		if (this.state === 'hangup') {
 			this.mayReportStates = false;
@@ -661,6 +679,10 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async processOfferRequest(signal: ServerMediaSignalRequestOffer) {
+		if (this.hidden) {
+			return;
+		}
+
 		this.config.logger?.debug('ClientMediaCall.processOfferRequest', signal);
 
 		if (!signal.toContractId && !this.signed) {
@@ -714,7 +736,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	protected async processAnswerRequest(signal: ServerMediaSignalRemoteSDP): Promise<void> {
-		if (this.shouldIgnoreWebRTC()) {
+		if (this.hidden || this.shouldIgnoreWebRTC()) {
 			return;
 		}
 
@@ -847,7 +869,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			case 'accepted':
 				return this.flagAsAccepted();
 			case 'active':
-				if (this.state === 'accepted') {
+				if (this.state === 'accepted' || this.hidden) {
 					this.changeState('active');
 				}
 				return;
@@ -889,7 +911,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
-		if (!this.hidden) {
+		if (!this.hidden && this.hasRemoteData) {
 			this.config.transporter.hangup(this.callId, reason);
 		}
 
