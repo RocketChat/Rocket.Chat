@@ -10,11 +10,11 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { setCustomFields, setMultipleCustomFields } from '../../lib/custom-fields';
 import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
 import { findGuest } from '../lib/livechat';
-import { ExtractRoutesFromAPI } from '/app/api/server/ApiClass';
 
 API.v1.addRoute(
 	'livechat/custom.field',
