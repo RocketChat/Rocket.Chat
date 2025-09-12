@@ -5,8 +5,8 @@ import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
-import { overrideLoginMethod } from '../../lib/2fa/overrideLoginMethod';
-import { wrapRequestCredentialFn } from '../../lib/wrapRequestCredentialFn';
+import { overrideLoginMethod } from '../../../lib/2fa/overrideLoginMethod';
+import { wrapRequestCredentialFn } from '../../../lib/wrapRequestCredentialFn';
 
 const { loginWithFacebook } = Meteor;
 const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(Facebook);
