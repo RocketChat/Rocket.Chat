@@ -42,16 +42,11 @@ export const createCustomField = (customField: ExtendedCustomField): Promise<Ext
 export const deleteCustomField = (customFieldID: string) =>
 	new Promise((resolve, reject) => {
 		void request
-			.post(methodCall('livechat:removeCustomField'))
-			.send({
-				message: JSON.stringify({
-					method: 'livechat:removeCustomField',
-					params: [customFieldID],
-					id: 'id',
-					msg: 'method',
-				}),
-			})
+			.post(api('livechat/custom-fields.remove'))
 			.set(credentials)
+			.send({
+				_id: customFieldID,
+			})
 			.end((err: Error, res: Response): void => {
 				if (err) {
 					return reject(err);

@@ -81,10 +81,6 @@ test.describe('Omnichannel Contact Center', () => {
 	test.afterAll(async ({ api }) => {
 		// Remove added contacts
 		await Promise.all([api.delete(`/livechat/visitor/${NEW_CONTACT.token}`), api.delete(`/livechat/visitor/${EXISTING_CONTACT.token}`)]);
-
-		if (IS_EE) {
-			await api.post('method.call/livechat:removeCustomField', { message: NEW_CUSTOM_FIELD.field });
-		}
 	});
 
 	test.beforeEach(async ({ page }) => {
