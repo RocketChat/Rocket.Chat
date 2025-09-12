@@ -1,4 +1,5 @@
-import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { imperativeModal } from '@rocket.chat/ui-client/lib/imperativeModal';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';

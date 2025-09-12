@@ -1,6 +1,6 @@
 import { Box, RadioButton } from '@rocket.chat/fuselage';
-import { GenericMenu } from '@rocket.chat/ui-client';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client/components/GenericMenu';
+import GenericMenu from '@rocket.chat/ui-client/components/GenericMenu/index';
 import { useAvailableDevices, useSelectedDevices } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';

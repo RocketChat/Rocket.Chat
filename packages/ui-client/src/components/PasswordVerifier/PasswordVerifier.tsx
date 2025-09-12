@@ -51,3 +51,5 @@ export const PasswordVerifier = ({ password, id, vertical }: PasswordVerifierPro
 		</>
 	);
 };
+
+export default PasswordVerifier;

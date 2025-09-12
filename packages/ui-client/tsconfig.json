@@ -2,7 +2,9 @@
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
 		"rootDirs": ["./src", "./"],
-		"outDir": "./dist"
+		"target": "es2024",
+		"module": "es2022",
+		"moduleResolution": "bundler"
 	},
 	"include": ["./src/**/*", "./.storybook/**/*", "./jest.config.ts"],
 }

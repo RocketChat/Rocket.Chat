@@ -1,4 +1,4 @@
-import { useDocumentTitle } from '@rocket.chat/ui-client';
+import { useDocumentTitle } from '@rocket.chat/ui-client/hooks/useDocumentTitle';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';

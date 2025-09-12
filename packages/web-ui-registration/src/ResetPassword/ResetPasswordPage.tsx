@@ -1,7 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Button, FieldGroup, Field, FieldLabel, ButtonGroup, PasswordInput, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { Form } from '@rocket.chat/layout';
-import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
+import PasswordVerifier from '@rocket.chat/ui-client/components/PasswordVerifier/PasswordVerifier';
+import { useValidatePassword } from '@rocket.chat/ui-client/hooks/useValidatePassword';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetting,

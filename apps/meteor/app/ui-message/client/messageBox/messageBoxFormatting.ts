@@ -1,5 +1,5 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { imperativeModal } from '@rocket.chat/ui-client';
+import { imperativeModal } from '@rocket.chat/ui-client/lib/imperativeModal';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { flushSync } from 'react-dom';
 

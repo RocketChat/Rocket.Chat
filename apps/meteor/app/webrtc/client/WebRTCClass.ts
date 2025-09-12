@@ -1,7 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { imperativeModal } from '@rocket.chat/ui-client/lib/imperativeModal';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 

@@ -1,5 +1,5 @@
 import { Emitter, OffCallbackHandler } from '@rocket.chat/emitter';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useSafeRefCallback } from '@rocket.chat/ui-client/hooks/useSafeRefCallback/index';
 import { useCallback, useRef, useState } from 'react';
 
 const GRAB_DOM_EVENTS = ['pointerdown'] as const;

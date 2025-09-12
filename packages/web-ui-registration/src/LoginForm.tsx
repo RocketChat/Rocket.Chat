@@ -12,7 +12,7 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { useDocumentTitle } from '@rocket.chat/ui-client';
+import { useDocumentTitle } from '@rocket.chat/ui-client/hooks/useDocumentTitle';
 import { useLoginWithPassword, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';

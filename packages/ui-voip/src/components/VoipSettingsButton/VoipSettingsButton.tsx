@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import { IconButton } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import GenericMenu from '@rocket.chat/ui-client/components/GenericMenu/index';
 import type { ComponentProps, Ref } from 'react';
 import { forwardRef, useCallback, useState } from 'react';
 
