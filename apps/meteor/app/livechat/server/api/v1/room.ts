@@ -1,5 +1,12 @@
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatAgent, IOmnichannelInquiryExtraData, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	IOmnichannelInquiryExtraData,
+	IOmnichannelRoom,
+	IUser,
+	SelectedAgent,
+	TransferByData,
+} from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
 import {
@@ -10,12 +17,15 @@ import {
 	isLiveChatRoomJoinProps,
 	isLiveChatRoomSaveInfoProps,
 	isPOSTLivechatRoomCloseByUserParams,
+	isPOSTLivechatRoomsCloseAll,
+	isPOSTLivechatRoomsCloseAllSuccessResponse,
 } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -27,7 +37,7 @@ import { closeRoom } from '../../lib/closeRoom';
 import { saveGuest } from '../../lib/guests';
 import type { CloseRoomParams } from '../../lib/localTypes';
 import { livechatLogger } from '../../lib/logger';
-import { createRoom, saveRoomInfo } from '../../lib/rooms';
+import { createRoom, removeOmnichannelRoom, saveRoomInfo } from '../../lib/rooms';
 import { transfer } from '../../lib/transfer';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 
@@ -427,3 +437,37 @@ API.v1.addRoute(
 		},
 	},
 );
+
+const livechatRoomsEndpoints = API.v1.post(
+	'livechat/rooms.removeAllClosedRooms',
+	{
+		response: {
+			200: isPOSTLivechatRoomsCloseAllSuccessResponse,
+		},
+		authRequired: true,
+		permissionsRequired: ['remove-closed-livechat-rooms'],
+		body: isPOSTLivechatRoomsCloseAll,
+	},
+	async function action() {
+		livechatLogger.info(`User ${this.userId} is removing all closed rooms`);
+
+		const params = this.bodyParams;
+
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
+		const promises: Promise<void>[] = [];
+		await LivechatRooms.findClosedRooms(params?.departmentIds, {}, extraQuery).forEach(({ _id }: IOmnichannelRoom) => {
+			promises.push(removeOmnichannelRoom(_id));
+		});
+		await Promise.all(promises);
+
+		livechatLogger.info(`User ${this.userId} removed ${promises.length} closed rooms`);
+		return API.v1.success({ removedRooms: promises.length });
+	},
+);
+
+type LivechatRoomsEndpoints = ExtractRoutesFromAPI<typeof livechatRoomsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatRoomsEndpoints {}
+}

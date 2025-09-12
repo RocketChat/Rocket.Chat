@@ -1,7 +1,7 @@
 import { Box, Button, Chip } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
-import { useMethod, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -13,15 +13,15 @@ const ChatsTableFilter = () => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const directoryRoute = useRoute('omnichannel-directory');
-	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
 	const queryClient = useQueryClient();
+	const removeClosedRooms = useEndpoint('POST', '/v1/livechat/rooms.removeAllClosedRooms');
 
 	const { filtersQuery, displayFilters, setFiltersQuery, removeFilter, textInputRef } = useChatsContext();
 
 	const handleRemoveAllClosed = useEffectEvent(async () => {
 		const onDeleteAll = async () => {
 			try {
-				await removeClosedChats();
+				await removeClosedRooms();
 				queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {

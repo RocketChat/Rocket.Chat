@@ -1,7 +1,7 @@
 import { TextInput, Box, Select, InputBox } from '@rocket.chat/fuselage';
 import { useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { Dispatch, FormEvent, Key, SetStateAction } from 'react';
 import { useEffect } from 'react';
@@ -81,12 +81,12 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 		reset();
 	});
 
-	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
+	const removeClosedRooms = useEndpoint('POST', '/v1/livechat/rooms.removeAllClosedRooms');
 
 	const handleRemoveClosed = useEffectEvent(async () => {
 		const onDeleteAll = async (): Promise<void> => {
 			try {
-				await removeClosedChats();
+				await removeClosedRooms();
 				reload?.();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
