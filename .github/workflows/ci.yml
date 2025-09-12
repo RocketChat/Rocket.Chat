@@ -539,8 +539,8 @@ jobs:
   test-summary:
     name: 📊 Generate Test Summary
     runs-on: ubuntu-24.04
-    needs: [test-ui, test-ui-ee, test-ui-ee-watcher]
-    if: always() && (needs.test-ui.result != 'skipped' || needs.test-ui-ee.result != 'skipped' || needs.test-ui-ee-watcher.result != 'skipped')
+    needs: [test-api, test-api-ee, test-ui, test-ui-ee, test-ui-ee-watcher]
+    if: always() && (needs.test-api.result != 'skipped' || needs.test-api-ee.result != 'skipped' || needs.test-ui.result != 'skipped' || needs.test-ui-ee.result != 'skipped' || needs.test-ui-ee-watcher.result != 'skipped')
     steps:
       - uses: actions/checkout@v4
 

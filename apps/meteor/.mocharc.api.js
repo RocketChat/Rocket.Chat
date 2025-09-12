@@ -11,4 +11,9 @@ module.exports = /** @satisfies {import('mocha').MochaOptions} */ ({
 	retries: 0,
 	file: 'tests/end-to-end/teardown.ts',
 	spec: ['tests/end-to-end/api/**/*', 'tests/end-to-end/apps/*'],
+	// Add GitHub summary reporter when running in CI
+	reporter: process.env.CI ? './reporters/mocha-github-summary.js' : 'spec',
+	reporterOptions: {
+		outputPath: process.env.GITHUB_SUMMARY_PATH || 'test-summary-api.json',
+	},
 });

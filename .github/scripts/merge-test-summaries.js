@@ -17,7 +17,7 @@ function parseJsonReport(content) {
   try {
     const report = JSON.parse(content);
     const suites = new Map();
-    
+
     if (report.summaries) {
       for (const summary of report.summaries) {
         suites.set(summary.name, {
@@ -31,7 +31,7 @@ function parseJsonReport(content) {
         });
       }
     }
-    
+
     return { suites, metadata: report.metadata || {} };
   } catch (error) {
     console.error('Failed to parse JSON:', error.message);
@@ -76,12 +76,12 @@ function formatSuiteNameWithLink(suiteName, filePath, lineNumber) {
   if (!filePath) {
     return suiteName;
   }
-  
+
   // Extract repository info from environment variables or use defaults
   const repoOwner = process.env.GITHUB_REPOSITORY_OWNER || 'RocketChat';
   const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] || 'Rocket.Chat';
   const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || 'develop';
-  
+
   // Convert absolute path to relative path by removing common prefixes
   let relativePath = filePath;
   const commonPrefixes = ['/home/runner/work/Rocket.Chat/Rocket.Chat/', '/github/workspace/', process.cwd() + '/'];
@@ -91,11 +91,11 @@ function formatSuiteNameWithLink(suiteName, filePath, lineNumber) {
       break;
     }
   }
-  
+
   // Generate GitHub link
   const githubUrl = `https://github.com/${repoOwner}/${repoName}/blob/${branch}/${relativePath}`;
   const linkWithLine = lineNumber ? `${githubUrl}#L${lineNumber}` : githubUrl;
-  
+
   return `[${suiteName}](${linkWithLine})`;
 }
 
@@ -108,7 +108,7 @@ function formatSuiteNameWithLink(suiteName, filePath, lineNumber) {
  */
 function generateMergedSummary(allSuites, allMetadata, includeLinks = false) {
   const suites = Array.from(allSuites.values()).sort((a, b) => a.name.localeCompare(b.name));
-  
+
   // Calculate totals
   const totals = suites.reduce(
     (acc, suite) => ({
@@ -120,25 +120,25 @@ function generateMergedSummary(allSuites, allMetadata, includeLinks = false) {
     { passed: 0, failed: 0, skipped: 0, total: 0 }
   );
 
-  let markdown = '# 🧪 E2E Test Summary (All Shards)\n\n';
-  
+  let markdown = '# 🧪 Test Summary (All Shards)\n\n';
+
   // Overall status
   const overallIcon = getStatusIcon(totals.passed, totals.failed);
   const overallStatus = getStatusText(totals.passed, totals.failed).toUpperCase();
   markdown += `## Overall Status: ${overallIcon} ${overallStatus}\n\n`;
-  
+
   // Summary stats
   markdown += '### 📊 Summary Statistics\n\n';
   markdown += `- **Total Tests**: ${totals.total}\n`;
   markdown += `- **✅ Passed**: ${totals.passed}\n`;
   markdown += `- **❌ Failed**: ${totals.failed}\n`;
   markdown += `- **⏭️ Skipped**: ${totals.skipped}\n`;
-  
+
   if (totals.total > 0) {
     const passRate = ((totals.passed / totals.total) * 100).toFixed(1);
     markdown += `- **📈 Pass Rate**: ${passRate}%\n`;
   }
-  
+
   markdown += '\n';
 
   // Test run metadata
@@ -146,64 +146,117 @@ function generateMergedSummary(allSuites, allMetadata, includeLinks = false) {
     const uniqueShards = [...new Set(allMetadata.map(m => m.shard).filter(Boolean))];
     const uniqueTypes = [...new Set(allMetadata.map(m => m.type).filter(Boolean))];
     const uniqueReleases = [...new Set(allMetadata.map(m => m.release).filter(Boolean))];
-    
+
     markdown += '### 📋 Test Run Info\n\n';
     if (uniqueShards.length > 0) {
       markdown += `- **Shards**: ${uniqueShards.join(', ')}\n`;
     }
     if (uniqueTypes.length > 0) {
-      markdown += `- **Test Types**: ${uniqueTypes.join(', ')}\n`;
+      const typeLabels = uniqueTypes.map(type => {
+        switch(type) {
+          case 'api': return '🔌 API';
+          case 'ui': return '🖥️ UI';
+          default: return type;
+        }
+      });
+      markdown += `- **Test Types**: ${typeLabels.join(', ')}\n`;
     }
     if (uniqueReleases.length > 0) {
-      markdown += `- **Releases**: ${uniqueReleases.join(', ')}\n`;
+      const releaseLabels = uniqueReleases.map(release => {
+        switch(release) {
+          case 'ce': return 'Community Edition';
+          case 'ee': return 'Enterprise Edition';
+          default: return release;
+        }
+      });
+      markdown += `- **Releases**: ${releaseLabels.join(', ')}\n`;
     }
     markdown += '\n';
   }
 
-  // Test suites breakdown
+  // Test suites breakdown - separate tables by type
   markdown += '### 📋 Test Suites\n\n';
-  
-  if (includeLinks) {
-    // GitHub Actions summary version with links, no padding
-    markdown += `| Suite | Status | Passed | Failed | Skipped | Total |\n`;
-    markdown += `|-------|--------|--------|--------|---------|-------|\n`;
 
-    for (const suite of suites) {
-      const icon = getStatusIcon(suite.passed, suite.failed);
-      const status = getStatusText(suite.passed, suite.failed);
-      const statusText = `${icon} ${status}`;
-      const formattedName = formatSuiteNameWithLink(suite.name, suite.filePath, suite.lineNumber);
-      
-      markdown += `| ${formattedName} | ${statusText} | ${suite.passed} | ${suite.failed} | ${suite.skipped} | ${suite.total} |\n`;
-    }
-  } else {
-    // Console/file version with padding, no links
-    // Calculate column widths for better formatting
-    const maxSuiteNameLength = Math.max('Suite'.length, ...suites.map(s => s.name.length));
-    const maxStatusLength = Math.max('Status'.length, ...suites.map(s => {
-      const status = getStatusText(s.passed, s.failed);
-      return (status + ' ' + getStatusIcon(s.passed, s.failed)).length;
-    }));
-    
-    // Create properly padded table headers
-    const suiteHeader = 'Suite'.padEnd(maxSuiteNameLength);
-    const statusHeader = 'Status'.padEnd(maxStatusLength);
-    
-    markdown += `| ${suiteHeader} | ${statusHeader} | Passed | Failed | Skipped | Total |\n`;
-    markdown += `|${'-'.repeat(maxSuiteNameLength + 2)}|${'-'.repeat(maxStatusLength + 2)}|--------|--------|---------|-------|\n`;
+  // Separate suites by type based on metadata
+  const apiSuites = [];
+  const uiSuites = [];
+  const otherSuites = [];
 
-    for (const suite of suites) {
-      const icon = getStatusIcon(suite.passed, suite.failed);
-      const status = getStatusText(suite.passed, suite.failed);
-      const suiteName = suite.name.padEnd(maxSuiteNameLength);
-      const statusText = `${icon} ${status}`.padEnd(maxStatusLength);
-      const passed = suite.passed.toString().padStart(6);
-      const failed = suite.failed.toString().padStart(6);
-      const skipped = suite.skipped.toString().padStart(7);
-      const total = suite.total.toString().padStart(5);
-      
-      markdown += `| ${suiteName} | ${statusText} | ${passed} | ${failed} | ${skipped} | ${total} |\n`;
+  for (const suite of suites) {
+    // Determine suite type based on file path or metadata
+    if (suite.filePath && (suite.filePath.includes('/api/') || suite.filePath.includes('api-'))) {
+      apiSuites.push(suite);
+    } else if (suite.filePath && (suite.filePath.includes('/e2e/') || suite.filePath.includes('ui-') || suite.filePath.includes('.spec.'))) {
+      uiSuites.push(suite);
+    } else {
+      otherSuites.push(suite);
     }
+  }
+
+  // Function to generate a table for a specific test type
+  function generateTestTypeTable(testSuites, typeTitle, typeIcon) {
+    if (testSuites.length === 0) return '';
+
+    let tableMarkdown = `#### ${typeIcon} ${typeTitle}\n\n`;
+
+    if (includeLinks) {
+      // GitHub Actions summary version with links, no padding
+      tableMarkdown += `| Suite | Status | Passed | Failed | Skipped | Total |\n`;
+      tableMarkdown += `|-------|--------|--------|--------|---------|-------|\n`;
+
+      for (const suite of testSuites) {
+        const icon = getStatusIcon(suite.passed, suite.failed);
+        const status = getStatusText(suite.passed, suite.failed);
+        const statusText = `${icon} ${status}`;
+        const formattedName = formatSuiteNameWithLink(suite.name, suite.filePath, suite.lineNumber);
+
+        tableMarkdown += `| ${formattedName} | ${statusText} | ${suite.passed} | ${suite.failed} | ${suite.skipped} | ${suite.total} |\n`;
+      }
+    } else {
+      // Console/file version with padding, no links
+      // Calculate column widths for better formatting
+      const maxSuiteNameLength = Math.max('Suite'.length, ...testSuites.map(s => s.name.length));
+      const maxStatusLength = Math.max('Status'.length, ...testSuites.map(s => {
+        const status = getStatusText(s.passed, s.failed);
+        return (status + ' ' + getStatusIcon(s.passed, s.failed)).length;
+      }));
+
+      // Create properly padded table headers
+      const suiteHeader = 'Suite'.padEnd(maxSuiteNameLength);
+      const statusHeader = 'Status'.padEnd(maxStatusLength);
+
+      tableMarkdown += `| ${suiteHeader} | ${statusHeader} | Passed | Failed | Skipped | Total |\n`;
+      tableMarkdown += `|${'-'.repeat(maxSuiteNameLength + 2)}|${'-'.repeat(maxStatusLength + 2)}|--------|--------|---------|-------|\n`;
+
+      for (const suite of testSuites) {
+        const icon = getStatusIcon(suite.passed, suite.failed);
+        const status = getStatusText(suite.passed, suite.failed);
+        const suiteName = suite.name.padEnd(maxSuiteNameLength);
+        const statusText = `${icon} ${status}`.padEnd(maxStatusLength);
+        const passed = suite.passed.toString().padStart(6);
+        const failed = suite.failed.toString().padStart(6);
+        const skipped = suite.skipped.toString().padStart(7);
+        const total = suite.total.toString().padStart(5);
+
+        tableMarkdown += `| ${suiteName} | ${statusText} | ${passed} | ${failed} | ${skipped} | ${total} |\n`;
+      }
+    }
+
+    tableMarkdown += '\n';
+    return tableMarkdown;
+  }
+
+  // Generate tables for each test type
+  if (apiSuites.length > 0) {
+    markdown += generateTestTypeTable(apiSuites, 'API Tests', '🔌');
+  }
+
+  if (uiSuites.length > 0) {
+    markdown += generateTestTypeTable(uiSuites, 'UI Tests', '🖥️');
+  }
+
+  if (otherSuites.length > 0) {
+    markdown += generateTestTypeTable(otherSuites, 'Other Tests', '📋');
   }
 
   markdown += '\n---\n';
@@ -223,7 +276,7 @@ async function main() {
   try {
     // Find all test summary files using native Node.js (check current dir and subdirs)
     let summaryFiles = [];
-    
+
     /**
      * Recursively finds test summary JSON files in directory tree
      * @param {string} dir - Directory to search (defaults to current directory)
@@ -237,7 +290,7 @@ async function main() {
           const fullPath = path.join(dir, entry.name);
           if (entry.isFile()) {
             // Match various test summary file patterns (JSON files only)
-            if ((entry.name.includes('test-summary') || entry.name.startsWith('test-summary-')) && 
+            if ((entry.name.includes('test-summary') || entry.name.startsWith('test-summary-')) &&
                 entry.name.endsWith('.json')) {
               files.push(fullPath);
             }
@@ -262,13 +315,13 @@ async function main() {
       }
       return files;
     }
-    
+
     summaryFiles = findSummaryFiles();
-    
+
     if (summaryFiles.length === 0) {
       console.log('❌ No test summary files found');
       console.log('Expected patterns: test-summary*.json');
-      
+
       // List all potential files for debugging
       try {
         const allFiles = fs.readdirSync('.').filter(f => f.endsWith('.json'));
@@ -279,27 +332,27 @@ async function main() {
       } catch (error) {
         console.log('Could not list files for debugging:', error.message);
       }
-      
+
       // Create empty summary to avoid CI failure
       const emptySummary = generateMergedSummary(new Map(), [], false);
       fs.writeFileSync('merged-test-summary.md', emptySummary);
       console.log('✅ Created empty merged test summary');
       return;
     }
-    
+
     console.log(`📊 Found ${summaryFiles.length} test summary files:`);
     summaryFiles.forEach(file => console.log(`  - ${file}`));
-    
+
     const allSuites = new Map();
     const allMetadata = [];
     let filesProcessed = 0;
-    
+
     // Parse each summary file
     for (const file of summaryFiles) {
       try {
         console.log(`🔍 Processing ${file}`);
         const content = fs.readFileSync(file, 'utf8');
-        
+
         let suites, metadata;
         if (file.endsWith('.json')) {
           const result = parseJsonReport(content);
@@ -312,13 +365,13 @@ async function main() {
           console.log(`  ⚠️ Unsupported file format: ${file} (only JSON files supported)`);
           continue;
         }
-        
+
         if (suites.size === 0) {
           console.log(`  ⚠️ No test suites found in ${file}`);
         } else {
           console.log(`  ✅ Found ${suites.size} test suites in ${file}`);
         }
-        
+
         // Merge suites
         for (const [name, suite] of suites) {
           if (!allSuites.has(name)) {
@@ -336,20 +389,20 @@ async function main() {
             }
           }
         }
-        
+
         filesProcessed++;
       } catch (error) {
         console.error(`❌ Error processing ${file}:`, error.message);
         // Continue processing other files
       }
     }
-    
+
     console.log(`📈 Summary: Processed ${filesProcessed}/${summaryFiles.length} files, found ${allSuites.size} unique test suites`);
-    
+
     // Generate both versions of the summary
     const printedSummary = generateMergedSummary(allSuites, allMetadata, false); // No links, with padding
     const githubSummary = generateMergedSummary(allSuites, allMetadata, true);   // With links, no padding
-    
+
     // Write to GitHub Actions summary if in CI (with links)
     if (process.env.GITHUB_STEP_SUMMARY) {
       fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, githubSummary);
@@ -357,11 +410,11 @@ async function main() {
     } else {
       console.log('ℹ️ No GitHub Actions summary file found - skipping links, content:' + githubSummary);
     }
-    
+
     // Write to file for artifact (printed version without links)
     fs.writeFileSync('merged-test-summary.md', printedSummary);
     console.log('✅ Merged test summary written to merged-test-summary.md');
-    
+
     // Log test results summary (don't exit with error code for failed tests - that's handled elsewhere)
     const totals = Array.from(allSuites.values()).reduce(
       (acc, suite) => ({
@@ -372,9 +425,9 @@ async function main() {
       }),
       { passed: 0, failed: 0, skipped: 0, total: 0 }
     );
-    
+
     console.log(`📊 Final totals: ${totals.total} tests (✅${totals.passed} passed, ❌${totals.failed} failed, ⏭️${totals.skipped} skipped)`);
-    
+
     if (totals.failed > 0) {
       console.log('❌ Some tests failed - summary generated successfully');
     } else if (totals.total > 0) {
@@ -382,7 +435,7 @@ async function main() {
     } else {
       console.log('ℹ️ No tests found - empty summary generated');
     }
-    
+
   } catch (error) {
     console.error('❌ Error generating test summary:', error);
     process.exit(1);

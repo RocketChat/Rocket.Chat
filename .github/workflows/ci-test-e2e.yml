@@ -235,6 +235,8 @@ jobs:
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           COVERAGE_DIR: '/tmp/coverage'
           COVERAGE_REPORTER: 'lcovonly'
+          GITHUB_SUMMARY_PATH: test-summary-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          CI: true
         run: |
           for i in $(seq 1 2); do
             npm run testapi && s=0 && break || s=$?
@@ -300,6 +302,14 @@ jobs:
         with:
           name: test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/test-summary-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
+          if-no-files-found: ignore
+
+      - name: Store API test summary
+        if: inputs.type == 'api' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
+          path: ./apps/meteor/test-summary-api-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}.json
           if-no-files-found: ignore
 
       - name: Show server logs if E2E test failed
