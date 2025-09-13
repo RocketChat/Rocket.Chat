@@ -1,9 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team, Room } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server';
@@ -125,25 +123,3 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async removeUserFromRoom(data) {
-		check(
-			data,
-			Match.ObjectIncluding({
-				rid: String,
-				username: String,
-			}),
-		);
-
-		const fromId = Meteor.userId();
-
-		if (!fromId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'removeUserFromRoom',
-			});
-		}
-
-		return removeUserFromRoomMethod(fromId, data);
-	},
-});
