@@ -1,15 +1,19 @@
 import type { EventAuthorizationService } from '@hs/federation-sdk';
 import { errCodes } from '@hs/federation-sdk';
 import type { EventID } from '@hs/room';
+import type { Context, Next } from 'hono';
 
 export const canAccessMedia = (federationAuth: EventAuthorizationService) => async (c: Context, next: Next) => {
 	try {
+		const url = new URL(c.req.url);
+		const path = url.search ? `${c.req.path}${url.search}` : c.req.path;
+
 		const verificationResult = await federationAuth.canAccessMediaFromAuthorizationHeader(
 			c.req.param('mediaId'),
 			c.req.header('Authorization') || '',
 			c.req.method,
-			c.req.path,
-			await c.req.json(),
+			path,
+			undefined,
 		);
 
 		if (!verificationResult.authorized) {
