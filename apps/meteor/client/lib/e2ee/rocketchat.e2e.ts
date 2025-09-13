@@ -1,10 +1,12 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser, IUploadWithUser, MessageAttachment } from '@rocket.chat/core-typings';
+import { Base64 } from '@rocket.chat/base64';
+import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, IE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { imperativeModal } from '@rocket.chat/ui-client';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import EJSON from 'ejson';
 import _ from 'lodash';
 import { Accounts } from 'meteor/accounts-base';
@@ -14,16 +16,17 @@ import type { E2EEState } from './E2EEState';
 import {
 	toString,
 	toArrayBuffer,
-	joinVectorAndEncryptedData,
+	// joinVectorAndEncryptedData,
 	splitVectorAndEncryptedData,
 	encryptAesGcm,
-	decryptAesGcm,
+	// decryptAesGcm,
 	generateRSAKey,
 	exportJWKKey,
 	importRSAKey,
 	importRawKey,
 	deriveKey,
 	generateMnemonicPhrase,
+	decryptAes,
 } from './helper';
 import { createLogger } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
@@ -121,8 +124,9 @@ class E2E extends Emitter {
 		this.observeSubscriptions();
 	}
 
-	async onSubscriptionChanged(sub: ISubscription) {
-		log('info', 'subscriptionChanged', sub);
+	async onSubscriptionChanged(sub: SubscriptionWithRoom): Promise<void> {
+		const span = log.span('onSubscriptionChanged');
+		span.info('subscriptionChanged', sub.lastMessage);
 		if (!sub.encrypted && !sub.E2EKey) {
 			this.removeInstanceByRoomId(sub.rid);
 			return;
@@ -138,7 +142,7 @@ class E2E extends Emitter {
 				await this.acceptSuggestedKey(sub.rid);
 				e2eRoom.keyReceived();
 			} else {
-				log('warn', 'Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+				span.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
 				await this.rejectSuggestedKey(sub.rid);
 			}
 		}
@@ -160,15 +164,19 @@ class E2E extends Emitter {
 			return;
 		}
 
-		await e2eRoom.decryptSubscription();
+		if (sub.lastMessage?.e2e !== 'done') {
+			await e2eRoom.decryptSubscription();
+		}
 	}
 
 	private unsubscribeFromSubscriptions: (() => void) | undefined;
 
 	observeSubscriptions() {
+		const span = log.span('observeSubscriptions');
 		this.unsubscribeFromSubscriptions?.();
 
-		this.unsubscribeFromSubscriptions = Subscriptions.use.subscribe((state) => {
+		this.unsubscribeFromSubscriptions = Subscriptions.use.subscribe(async (state) => {
+
 			const subscriptions = Array.from(state.records.values()).filter((sub) => sub.encrypted || sub.E2EKey);
 
 			const subscribed = new Set(subscriptions.map((sub) => sub.rid));
@@ -176,13 +184,11 @@ class E2E extends Emitter {
 			const excess = instatiated.difference(subscribed);
 
 			if (excess.size) {
-				log('info', 'Unsubscribing from excess instances', excess);
+				span.info('Unsubscribing from excess instances', excess);
 				excess.forEach((rid) => this.removeInstanceByRoomId(rid));
 			}
 
-			for (const sub of subscriptions) {
-				void this.onSubscriptionChanged(sub);
-			}
+			await Promise.all(subscriptions.map((sub) => this.onSubscriptionChanged(sub)));
 		});
 	}
 
@@ -192,17 +198,19 @@ class E2E extends Emitter {
 	}
 
 	setState(nextState: E2EEState) {
+		const span = log.span('setState');
 		const prevState = this.state;
 
 		this.state = nextState;
 
-		log('info', 'e2eStateChanged', `${prevState} -> ${nextState}`);
+		span.info(`${prevState} -> ${nextState}`);
 		this.emit('E2E_STATE_CHANGED', { prevState, nextState });
 
 		this.emit(nextState);
 	}
 
 	async handleAsyncE2EESuggestedKey() {
+		const span = log.span('handleAsyncE2EESuggestedKey');
 		const subs = Subscriptions.state.filter((sub) => typeof sub.E2ESuggestedKey !== 'undefined');
 		await Promise.all(
 			subs
@@ -215,11 +223,11 @@ class E2E extends Emitter {
 					}
 
 					if (sub.E2ESuggestedKey && (await e2eRoom.importGroupKey(sub.E2ESuggestedKey))) {
-						log('info', 'importedE2ESuggestedKey', sub.E2ESuggestedKey);
+						span.info('importedE2ESuggestedKey', sub.E2ESuggestedKey);
 						await e2e.acceptSuggestedKey(sub.rid);
 						e2eRoom.keyReceived();
 					} else {
-						log('error', 'invalidE2ESuggestedKey', sub.E2ESuggestedKey);
+						span.error('invalidE2ESuggestedKey', sub.E2ESuggestedKey);
 						await e2e.rejectSuggestedKey(sub.rid);
 					}
 
@@ -244,16 +252,8 @@ class E2E extends Emitter {
 		});
 	}
 
-	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
+	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom> {
 		const room = await this.waitForRoom(rid);
-
-		if (room.t !== 'd' && room.t !== 'p') {
-			return null;
-		}
-
-		if (!room.encrypted) {
-			return null;
-		}
 
 		const userId = Meteor.userId();
 		if (!this.instancesByRoomId[rid] && userId) {
@@ -294,7 +294,7 @@ class E2E extends Emitter {
 
 		await sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
 			public_key,
-			private_key: encodedPrivateKey,
+			private_key: JSON.stringify(encodedPrivateKey),
 			force,
 		});
 	}
@@ -344,11 +344,12 @@ class E2E extends Emitter {
 	}
 
 	async startClient(): Promise<void> {
+		const span = log.span('startClient');
 		if (this.started) {
 			return;
 		}
 
-		log('info', 'startClient', this.state);
+		span.info(this.state);
 
 		this.started = true;
 
@@ -378,7 +379,7 @@ class E2E extends Emitter {
 						this.closeAlert();
 					},
 				});
-				return log('error', 'E2E -> Error decoding private key: ', error);
+				return span.error('E2E -> Error decoding private key: ', error);
 			}
 		}
 
@@ -410,7 +411,8 @@ class E2E extends Emitter {
 	}
 
 	async stopClient(): Promise<void> {
-		log('info', 'stopClient', this.state);
+		const span = log.span('stopClient');
+		span.info(this.state);
 		this.closeAlert();
 
 		Accounts.storageLocation.removeItem('public_key');
@@ -433,6 +435,7 @@ class E2E extends Emitter {
 	}
 
 	async loadKeysFromDB(): Promise<void> {
+		const span = log.span('loadKeysFromDB');
 		try {
 			this.setState('LOADING_KEYS');
 			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
@@ -441,7 +444,7 @@ class E2E extends Emitter {
 			this.db_private_key = private_key;
 		} catch (error) {
 			this.setState('ERROR');
-			log('error', 'Error fetching RSA keys: ', error);
+			span.error('Error fetching RSA keys: ', error);
 			// Stop any process since we can't communicate with the server
 			// to get the keys. This prevents new key generation
 			throw error;
@@ -449,6 +452,7 @@ class E2E extends Emitter {
 	}
 
 	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
+		const span = log.span('loadKeys');
 		Accounts.storageLocation.setItem('public_key', public_key);
 		this.publicKey = public_key;
 
@@ -458,11 +462,12 @@ class E2E extends Emitter {
 			Accounts.storageLocation.setItem('private_key', private_key);
 		} catch (error) {
 			this.setState('ERROR');
-			return log('error', 'Error importing private key: ', error);
+			return span.error('Error importing private key: ', error);
 		}
 	}
 
 	async createAndLoadKeys(): Promise<void> {
+		const span = log.span('createAndLoadKeys');
 		// Could not obtain public-private keypair from server.
 		this.setState('LOADING_KEYS');
 		let key;
@@ -471,7 +476,7 @@ class E2E extends Emitter {
 			this.privateKey = key.privateKey;
 		} catch (error) {
 			this.setState('ERROR');
-			return log('error', 'Error generating key: ', error);
+			return span.error('Error generating key: ', error);
 		}
 
 		try {
@@ -481,7 +486,7 @@ class E2E extends Emitter {
 			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
 			this.setState('ERROR');
-			return log('error', 'Error exporting public key: ', error);
+			return span.error('Error exporting public key: ', error);
 		}
 
 		try {
@@ -490,7 +495,7 @@ class E2E extends Emitter {
 			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {
 			this.setState('ERROR');
-			return log('error', 'Error exporting private key: ', error);
+			return span.error('Error exporting private key: ', error);
 		}
 
 		await this.requestSubscriptionKeys();
@@ -506,44 +511,21 @@ class E2E extends Emitter {
 		return randomPassword;
 	}
 
-	async encodePrivateKey(privateKey: string, password: string): Promise<string | void> {
+	async encodePrivateKey(privateKey: string, password: string) {
 		const masterKey = await this.getMasterKey(password);
 
 		const vector = crypto.getRandomValues(new Uint8Array(12));
-		try {
-			if (!masterKey) {
-				throw new Error('Error getting master key');
-			}
-			const encodedPrivateKey = await encryptAesGcm(vector.buffer, masterKey, toArrayBuffer(privateKey));
-
-			return EJSON.stringify(joinVectorAndEncryptedData(vector, encodedPrivateKey));
-		} catch (error) {
-			this.setState('ERROR');
-			return log('error', 'Error encrypting encodedPrivateKey: ', error);
-		}
+		const result = await encryptAesGcm(vector.buffer, masterKey, toArrayBuffer(privateKey));
+		return {
+			iv: Base64.encode(vector),
+			ciphertext: Base64.encode(new Uint8Array(result)),
+		};
 	}
 
-	async getMasterKey(password: string): Promise<void | CryptoKey> {
-		if (password == null) {
-			alert('You should provide a password');
-		}
-
-		// First, create a PBKDF2 "key" containing the password
-		let baseKey;
-		try {
-			baseKey = await importRawKey(toArrayBuffer(password));
-		} catch (error) {
-			this.setState('ERROR');
-			return log('error', 'Error creating a key based on user password: ', error);
-		}
-
-		// Derive a key from the password
-		try {
-			return await deriveKey(toArrayBuffer(Meteor.userId()), baseKey);
-		} catch (error) {
-			this.setState('ERROR');
-			return log('error', 'Error deriving baseKey: ', error);
-		}
+	async getMasterKey(password: string): Promise<CryptoKey> {
+		const baseKey = await importRawKey(toArrayBuffer(password));
+		const derivedKey = await deriveKey(toArrayBuffer(Meteor.userId()), baseKey);
+		return derivedKey;
 	}
 
 	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string) => void) {
@@ -603,14 +585,14 @@ class E2E extends Emitter {
 			return;
 		}
 
-		const [vector, cipherText] = splitVectorAndEncryptedData(EJSON.parse(this.db_private_key), 12);
+		const { iv, ciphertext } = this.parsePrivateKey(this.db_private_key);
 
 		try {
 			if (!masterKey) {
 				throw new Error('Error getting master key');
 			}
-			const privKey = await decryptAesGcm(vector, masterKey, cipherText);
-			const privateKey = toString(privKey) as string;
+			const privKey = await decryptAes(iv, masterKey, ciphertext);
+			const privateKey = toString(privKey);
 
 			if (this.db_public_key && privateKey) {
 				await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
@@ -628,18 +610,38 @@ class E2E extends Emitter {
 		}
 	}
 
+	parsePrivateKey(privateKey: string): { iv: Uint8Array<ArrayBuffer>; ciphertext: Uint8Array<ArrayBuffer> } {
+		const json: unknown = JSON.parse(privateKey);
+
+		if (typeof json !== 'object' || json === null) {
+			throw new Error('Invalid private key format');
+		}
+
+		if ('iv' in json && 'ciphertext' in json && typeof json.iv === 'string' && typeof json.ciphertext === 'string') {
+			return { iv: Base64.decode(json.iv), ciphertext: Base64.decode(json.ciphertext) };
+		}
+
+		if ('$binary' in json && typeof json.$binary === 'string') {
+			// Old format, just base64 string
+			const binary = Base64.decode(json.$binary);
+			const [iv, ciphertext] = splitVectorAndEncryptedData(binary, 16);
+			return { iv, ciphertext };
+		}
+
+		throw new Error('Invalid private key format');
+	}
+
 	async decodePrivateKey(privateKey: string): Promise<string> {
 		const password = await this.requestPasswordAlert();
 
 		const masterKey = await this.getMasterKey(password);
-
-		const [vector, cipherText] = splitVectorAndEncryptedData(EJSON.parse(privateKey), 12);
+		const { iv, ciphertext } = this.parsePrivateKey(privateKey);
 
 		try {
 			if (!masterKey) {
 				throw new Error('Error getting master key');
 			}
-			const privKey = await decryptAesGcm(vector, masterKey, cipherText);
+			const privKey = await decryptAes(iv, masterKey, ciphertext);
 			return toString(privKey);
 		} catch (error) {
 			this.setState('ENTER_PASSWORD');
@@ -681,29 +683,30 @@ class E2E extends Emitter {
 		return decryptedMessageWithQuote;
 	}
 
-	async decryptPinnedMessage(message: IMessage) {
-		const pinnedMessage = message?.attachments?.[0]?.text;
+	async decryptPinnedMessage(message: IE2EEPinnedMessage) {
+		return message;
+		// const pinnedMessage = message?.attachments?.[0]?.;
 
-		if (!pinnedMessage) {
-			return message;
-		}
+		// if (!pinnedMessage) {
+		// 	return message;
+		// }
 
-		const e2eRoom = await this.getInstanceByRoomId(message.rid);
+		// const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
-		if (!e2eRoom) {
-			return message;
-		}
+		// if (!e2eRoom) {
+		// 	return message;
+		// }
 
-		const data = await e2eRoom.decrypt(pinnedMessage);
+		// const data = await e2eRoom.decrypt({ ciphertext: pinnedMessage });
 
-		if (!data) {
-			return message;
-		}
+		// if (!data) {
+		// 	return message;
+		// }
 
-		const decryptedPinnedMessage = { ...message } as IMessage & { attachments: MessageAttachment[] };
-		decryptedPinnedMessage.attachments[0].text = typeof data.msg === 'undefined' ? data.text : data.msg;
+		// const decryptedPinnedMessage = { ...message } as IMessage & { attachments: MessageAttachment[] };
+		// decryptedPinnedMessage.attachments[0].text = typeof data.msg === 'undefined' ? data.text : data.msg;
 
-		return decryptedPinnedMessage;
+		// return decryptedPinnedMessage;
 	}
 
 	async decryptPendingMessages(): Promise<void> {
@@ -713,16 +716,21 @@ class E2E extends Emitter {
 		);
 	}
 
-	async decryptSubscription(subscriptionId: ISubscription['_id']): Promise<void> {
-		const e2eRoom = await this.getInstanceByRoomId(subscriptionId);
-		log('info', 'decryptSubscription', subscriptionId);
+	async decryptSubscription(subscription: SubscriptionWithRoom): Promise<void> {
+		const span = log.span('decryptSubscription');
+		const e2eRoom = await this.getInstanceByRoomId(subscription.rid);
+		span.info(subscription._id);
 		await e2eRoom?.decryptSubscription();
 	}
 
 	async decryptSubscriptions(): Promise<void> {
-		Subscriptions.state
-			.filter((subscription) => Boolean(subscription.encrypted))
-			.forEach((subscription) => this.decryptSubscription(subscription._id));
+		const subscriptions = Subscriptions.state.filter((subscription) => !!subscription.encrypted);
+
+		await Promise.all(
+			subscriptions.map(async (subscription) => {
+				await this.decryptSubscription(subscription);
+			}),
+		);
 	}
 
 	openAlert(config: Omit<LegacyBannerPayload, 'id'>): void {
@@ -834,6 +842,7 @@ class E2E extends Emitter {
 	}
 
 	async initiateKeyDistribution() {
+		
 		if (this.keyDistributionInterval) {
 			return;
 		}
@@ -841,6 +850,7 @@ class E2E extends Emitter {
 		const predicate = (record: IRoom) =>
 			Boolean('usersWaitingForE2EKeys' in record && record.usersWaitingForE2EKeys?.every((user) => user.userId !== Meteor.userId()));
 
+		const span = log.span('initiateKeyDistribution');
 		const keyDistribution = async () => {
 			const roomIds = Rooms.state.filter(predicate).map((room) => room._id);
 
@@ -870,7 +880,7 @@ class E2E extends Emitter {
 			try {
 				await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys: userKeysWithRooms });
 			} catch (error) {
-				return log('error', 'Error providing group key to users: ', error);
+				return span.error('provideUsersSuggestedGroupKeys', error);
 			}
 		};
 

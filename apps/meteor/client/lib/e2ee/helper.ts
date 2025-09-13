@@ -33,11 +33,11 @@ export function joinVectorAndEncryptedData(vector: Uint8Array<ArrayBuffer>, encr
 	return output;
 }
 
-export function splitVectorAndEncryptedData(cipherText: Uint8Array<ArrayBuffer>, ivLength: 12 | 16 = 16): [ArrayBuffer, ArrayBuffer] {
+export function splitVectorAndEncryptedData(cipherText: Uint8Array<ArrayBuffer>, ivLength: 12 | 16 = 16): [Uint8Array<ArrayBuffer>, Uint8Array<ArrayBuffer>] {
 	const vector = cipherText.slice(0, ivLength);
 	const encryptedData = cipherText.slice(ivLength);
 
-	return [vector.buffer, encryptedData.buffer];
+	return [vector, encryptedData];
 }
 
 export async function encryptRSA(key: CryptoKey, data: BufferSource) {
@@ -46,31 +46,32 @@ export async function encryptRSA(key: CryptoKey, data: BufferSource) {
 
 /**
  * Encrypts data using AES-CBC.
- * @param vector The initialization vector.
+ * @param iv The initialization vector.
  * @param key The encryption key.
  * @param data The data to encrypt.
  * @returns The encrypted data.
  * @deprecated Use {@link encryptAesGcm} instead.
  */
-export async function encryptAesCbc(vector: Uint8Array<ArrayBuffer>, key: CryptoKey, data: Uint8Array<ArrayBuffer>) {
-	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
+export async function encryptAesCbc(iv: BufferSource, key: CryptoKey, data: BufferSource) {
+	const encrypted = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, data);
+	return encrypted;
 }
 
-export async function decryptAesCbc(iv: ArrayBuffer, key: CryptoKey, data: ArrayBuffer) {
+export async function decryptAesCbc(iv: BufferSource, key: CryptoKey, data: BufferSource) {
 	return crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data);
 }
 
-export async function encryptAesGcm(iv: ArrayBuffer, key: CryptoKey, data: BufferSource) {
+export async function encryptAesGcm(iv: BufferSource, key: CryptoKey, data: BufferSource) {
 	const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
 	return encrypted;
 }
 
-export async function decryptAesGcm(iv: ArrayBuffer, key: CryptoKey, data: ArrayBuffer) {
+export async function decryptAesGcm(iv: BufferSource, key: CryptoKey, data: BufferSource) {
 	const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
 	return decrypted;
 }
 
-export function decryptAes(iv: ArrayBuffer, key: CryptoKey, data: ArrayBuffer) {
+export function decryptAes(iv: BufferSource, key: CryptoKey, data: BufferSource) {
 	if (key.algorithm.name === 'AES-GCM') {
 		return decryptAesGcm(iv, key, data);
 	} 

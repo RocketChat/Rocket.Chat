@@ -110,7 +110,8 @@ export const useE2EEncryption = () => {
 			}
 
 			// Should encrypt this message.
-			return e2eRoom.encryptMessage(message);
+			const encryptedMessage = await e2eRoom.encryptMessage(message);
+			return encryptedMessage;
 		});
 
 		listenersAttachedRef.current = true;
