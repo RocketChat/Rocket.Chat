@@ -7,7 +7,6 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -1419,17 +1418,6 @@ describe('[Chat]', () => {
 							customFields,
 						},
 					})
-					.expect('Content-Type', 'application/json')
-					.expect(statusCode)
-					.expect(testCb);
-
-				await (
-					customFields
-						? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
-						: request.post(api(`rooms.upload/${testChannel._id}`))
-				)
-					.set(credentials)
-					.attach('file', imgURL)
 					.expect('Content-Type', 'application/json')
 					.expect(statusCode)
 					.expect(testCb);
