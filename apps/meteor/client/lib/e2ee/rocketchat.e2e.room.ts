@@ -86,7 +86,7 @@ export class E2ERoom extends Emitter {
 
 	roomKeyId: string | undefined;
 
-	groupSessionKey: CryptoKey | undefined;
+	groupSessionKey: CryptoKey | null = null;
 
 	oldKeys: { E2EKey: CryptoKey | null; ts: Date; e2eKeyId: string }[] | undefined;
 
@@ -423,6 +423,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async createGroupKey() {
+
 		await this.createNewGroupKey();
 
 		await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
@@ -439,6 +440,7 @@ export class E2ERoom extends Emitter {
 
 	async resetRoomKey() {
 		const span = log.span('resetRoomKey');
+
 		if (!e2e.publicKey) {
 			span.error('Cannot reset room key', 'No public key found.', e2e);
 			return;
@@ -461,7 +463,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	onRoomKeyReset(keyID: string) {
-		const span = log.span('onRoomKeyReset');
+		const span = log.span('onRoomKeyReset').set('key_id', keyID);
 
 		if (this.keyID === keyID) {
 			span.warn('Key ID matches current key, nothing to do');
@@ -471,7 +473,7 @@ export class E2ERoom extends Emitter {
 		span.info('Room key has been reset', { oldKeyID: this.keyID, newKeyID: keyID });
 		this.setState('WAITING_KEYS');
 		this.keyID = keyID;
-		this.groupSessionKey = undefined;
+		this.groupSessionKey = null;
 		this.sessionKeyExportedString = undefined;
 		this.sessionKeyExported = undefined;
 		this.oldKeys = undefined;
@@ -720,14 +722,6 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
-	async doDecrypt(iv: Uint8Array<ArrayBuffer>, key: CryptoKey, ciphertext: Uint8Array<ArrayBuffer>): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date }> {
-		const span = log.span('doDecrypt');
-		const result = await decryptAes(iv.buffer, key, ciphertext.buffer);
-		const parsed = EJSON.parse(new TextDecoder('UTF-8').decode(result));
-		span.info('decrypted', parsed);
-		return parsed;
-	}
-
 	// Parses the message to extract the keyID and cipherText
 	parse(payload: string | Required<IMessage>['content']): {
 		key_id: string;
@@ -752,50 +746,54 @@ export class E2ERoom extends Emitter {
 		};
 	}
 
-	async decrypt(message: Required<IMessage>['content']): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined } | { msg: string }> {
-		const span = log.span('decrypt');
-		const payload = this.parse(message);
-		let oldKey = null;
-		if (payload.key_id !== this.keyID) {
-			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === payload.key_id);
-			// Messages already contain a keyID stored with them
-			// That means that if we cannot find a keyID for the key the message has preppended to
-			// The message is indecipherable.
-			// In these cases, we'll give a last shot using the current session key, which may not work
-			// but will be enough to help with some mobile issues.
-			if (!oldRoomKey) {
-				try {
-					if (!this.groupSessionKey) {
-						throw new Error('No group session key found.');
-					}
-					const result = await this.doDecrypt(payload.iv, this.groupSessionKey, payload.ciphertext);
-					span.warn(
-						'Message keyID does not match any known keys, but was able to decrypt with current session key. This may be a mobile client issue.',
-						{ message: result },
-					);
-					return result;
-				} catch (error) {
-					span.error('Error decrypting message: ', error, message);
-					return { msg: t('E2E_indecipherable') };
-				}
+	async decrypt(
+		message: Required<IMessage>['content'],
+	): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined } | { msg: string }> {
+		const span = log.span('decrypt').set('rid', this.roomId);
+		const { key_id, iv, ciphertext } = this.parse(message);
+		span.set('key_id', key_id);
+		span.set('iv', iv.toString());
+		span.set('ciphertext', ciphertext.toString());
+
+		let key;
+		if (key_id !== this.keyID) {
+			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === key_id);
+			if (oldRoomKey) {
+				key = oldRoomKey.E2EKey;
+			} else if (this.groupSessionKey) {
+				key = this.groupSessionKey;
+				span.warn('No matching old key found, using current group key');
+			} else {
+				span.error('No matching key found');
 			}
-			oldKey = oldRoomKey.E2EKey;
+		} else {
+			if (!this.groupSessionKey) {
+				span.error('No group session key found');
+			}
+			key = this.groupSessionKey;
 		}
 
-		try {
-			if (oldKey) {
-				const result = await this.doDecrypt(payload.iv, oldKey, payload.ciphertext);
-				return result;
+		let ret;
+
+		if (!key) {
+			span.error('No decryption key found.');
+			ret = { msg: t('E2E_indecipherable') };
+		} else {
+			span.set('algorithm', key.algorithm.name);
+			span.set('extractable', key.extractable);
+			span.set('type', key.type);
+			span.set('usages', key.usages.toString());
+			try {
+				const result = await decryptAes(iv.buffer, key, ciphertext.buffer);
+				ret = EJSON.parse(new TextDecoder('UTF-8').decode(result));
+				span.info('decrypted', ret);
+			} catch (error) {
+				span.error('', error);
+				ret = { msg: t('E2E_Key_Error') };
 			}
-			if (!this.groupSessionKey) {
-				throw new Error('No group session key found.');
-			}
-			const result = await this.doDecrypt(payload.iv, this.groupSessionKey, payload.ciphertext);
-			return result;
-		} catch (error) {
-			span.error('decrypting', error);
-			return { msg: t('E2E_Key_Error') };
 		}
+
+		return ret;
 	}
 
 	provideKeyToUser(keyId: string) {

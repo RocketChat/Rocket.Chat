@@ -176,7 +176,6 @@ class E2E extends Emitter {
 		this.unsubscribeFromSubscriptions?.();
 
 		this.unsubscribeFromSubscriptions = Subscriptions.use.subscribe(async (state) => {
-
 			const subscriptions = Array.from(state.records.values()).filter((sub) => sub.encrypted || sub.E2EKey);
 
 			const subscribed = new Set(subscriptions.map((sub) => sub.rid));
@@ -198,7 +197,7 @@ class E2E extends Emitter {
 	}
 
 	setState(nextState: E2EEState) {
-		const span = log.span('setState');
+		const span = log.span('setState').set('prevState', this.state).set('nextState', nextState);
 		const prevState = this.state;
 
 		this.state = nextState;
@@ -842,7 +841,6 @@ class E2E extends Emitter {
 	}
 
 	async initiateKeyDistribution() {
-		
 		if (this.keyDistributionInterval) {
 			return;
 		}
