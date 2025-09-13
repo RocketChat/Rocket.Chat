@@ -112,6 +112,9 @@ export class MatrixMediaService {
 			}
 
 			const buffer = await this.homeserverServices.media.downloadFromRemoteServer(parts.serverName, parts.mediaId);
+			if (!buffer) {
+				throw new Error('Download from remote server returned null content.');
+			}
 
 			const uploadedFile = await Upload.uploadFile({
 				userId: metadata.userId || 'federation',
