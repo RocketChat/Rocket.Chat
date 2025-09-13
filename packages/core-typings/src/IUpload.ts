@@ -60,9 +60,9 @@ export interface IUpload {
 		sha256: string;
 	};
 	federation?: {
-		mxcUri?: string;
-		serverName?: string;
-		mediaId?: string;
+		mxcUri: string;
+		serverName: string;
+		mediaId: string;
 	};
 }
 
