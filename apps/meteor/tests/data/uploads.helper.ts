@@ -165,16 +165,24 @@ export async function testFileUploads(
 			.end(done);
 	});
 
+	let fileId: string;
 	it('should not return thumbnails', async () => {
 		await request
-			.post(api(`rooms.upload/${testRoom._id}`))
+			.post(api(`rooms.media/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
+				fileId = res.body.file._id;
 			});
+
+		await request
+			.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200);
 
 		await request
 			.get(api(filesEndpoint))
@@ -198,19 +206,25 @@ export async function testFileUploads(
 
 	it('should not return hidden files', async () => {
 		let msgId;
-		let fileId: string;
 
 		await request
-			.post(api(`rooms.upload/${testRoom._id}`))
+			.post(api(`rooms.media/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
-
+				fileId = res.body.file._id;
+			});
+		await request
+			.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId}`))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res: Response) => {
+				expect(res.body).to.have.property('success', true);
 				msgId = res.body.message._id;
-				fileId = res.body.message.file._id;
 			});
 
 		await request
