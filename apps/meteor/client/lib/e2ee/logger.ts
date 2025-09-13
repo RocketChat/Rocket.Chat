@@ -7,14 +7,9 @@ const styles: Record<LogLevel, string> = {
 };
 
 class Logger {
-	static instances: Map<string, WeakRef<Logger>> = new Map();
-
 	title: string;
 
 	constructor(title: string) {
-		if (Logger.instances.has(title)) {
-			throw new Error(`Logger with title "${title}" already exists.`);
-		}
 		this.title = title;
 	}
 
