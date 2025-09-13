@@ -1,8 +1,9 @@
-import { Modal, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
+import { Box, Modal, ModalBackdrop, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, type ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import OutboundMessageCloseConfirmation from './OutboundMessageCloseConfirmation';
 import OutboundMessageWizard from '../../components/OutboundMessageWizard';
 
 export type OutboundMessageModalProps = {
@@ -14,6 +15,7 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 	const { t } = useTranslation();
 	const router = useRouter();
 	const [initialRoute] = useState(router.getLocationPathname());
+	const [isClosing, setClosingConfirmation] = useState(false);
 
 	useEffect(() => {
 		// NOTE: close the modal when the route changes.
@@ -27,16 +29,26 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 		});
 	}, [initialRoute, onClose, router]);
 
+	const handleCloseConfirmation = (): void => {
+		setClosingConfirmation(true);
+	};
+
 	return (
-		<Modal>
-			<ModalHeader>
-				<ModalTitle>{t('Outbound_Message')}</ModalTitle>
-				<ModalClose onClick={onClose} />
-			</ModalHeader>
-			<ModalContent pbe={16}>
-				<OutboundMessageWizard defaultValues={defaultValues} onSuccess={onClose} onError={onClose} />
-			</ModalContent>
-		</Modal>
+		<ModalBackdrop bg='transparent' onClick={(e) => e.stopPropagation()}>
+			<Modal>
+				<ModalHeader>
+					<ModalTitle>{t('Outbound_Message')}</ModalTitle>
+					{!isClosing ? <ModalClose onClick={handleCloseConfirmation} /> : null}
+				</ModalHeader>
+				<ModalContent pbe={16}>
+					<Box display={isClosing ? 'none' : 'block'}>
+						<OutboundMessageWizard defaultValues={defaultValues} onSuccess={onClose} onError={onClose} />
+					</Box>
+
+					{isClosing ? <OutboundMessageCloseConfirmation onConfirm={onClose} onCancel={() => setClosingConfirmation(false)} /> : null}
+				</ModalContent>
+			</Modal>
+		</ModalBackdrop>
 	);
 };
 

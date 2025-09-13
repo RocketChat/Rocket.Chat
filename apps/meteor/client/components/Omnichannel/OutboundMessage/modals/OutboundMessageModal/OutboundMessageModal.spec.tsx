@@ -1,0 +1,49 @@
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+import OutboundMessageModal from './OutboundMessageModal';
+
+jest.mock('../../components/OutboundMessageWizard', () => ({
+	__esModule: true,
+	default: () => <div>Outbound Message Wizard</div>,
+}));
+
+const appRoot = mockAppRoot()
+	.withTranslations('en', 'core', {
+		Close: 'Close',
+		Cancel: 'Cancel',
+		Are_you_sure_you_want_to_discard_this_outbound_message: 'Are you sure you want to discard this outbound message?',
+	})
+	.build();
+
+it('should display confirmation before closing the modal', async () => {
+	const onClose = jest.fn();
+	render(<OutboundMessageModal onClose={onClose} />, { wrapper: appRoot });
+
+	expect(screen.queryByText('Are you sure you want to discard this outbound message?')).not.toBeInTheDocument();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+	expect(screen.getByText('Are you sure you want to discard this outbound message?')).toBeInTheDocument();
+	expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+	expect(onClose).toHaveBeenCalled();
+});
+
+it('should close confirmation and leave modal open when cancel is clicked', async () => {
+	const onClose = jest.fn();
+	render(<OutboundMessageModal onClose={onClose} />, { wrapper: appRoot });
+
+	await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+
+	expect(screen.getByText('Are you sure you want to discard this outbound message?')).toBeInTheDocument();
+	expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+	expect(screen.queryByText('Are you sure you want to discard this outbound message?')).not.toBeInTheDocument();
+	expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+	expect(onClose).not.toHaveBeenCalled();
+});
