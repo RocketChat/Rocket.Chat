@@ -43,7 +43,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 			await Promise.all(
 				users.map(async (user) => {
 					if (user) {
-						await addUserToRoleEndpoint({ roleName: _id, username: user, roomId: rid });
+						await addUserToRoleEndpoint({ roleId: _id, username: user, roomId: rid });
 					}
 				}),
 			);
