@@ -258,9 +258,9 @@ export class E2ERoom extends Emitter {
 					E2EKey: k,
 				});
 			} catch (e) {
+				span.set('error', e);
 				span.error(
 					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
-					e,
 				);
 				keys.push({ ...key, E2EKey: null });
 			}
@@ -270,7 +270,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async exportOldRoomKeys(oldKeys: ISubscription['oldRoomKeys']) {
-		const span = log.span('exportOldRoomKeys');
+		const span = log.span('exportOldRoomKeys').set('oldKeys', oldKeys);
 		if (!oldKeys || oldKeys.length === 0) {
 			span.info('Nothing to do');
 			return;
@@ -289,9 +289,9 @@ export class E2ERoom extends Emitter {
 					E2EKey: k,
 				});
 			} catch (e) {
+				span.set('error', e);
 				span.error(
-					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
-					e,
+					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping.`,
 				);
 			}
 		}
@@ -329,12 +329,14 @@ export class E2ERoom extends Emitter {
 			}
 		} catch (error) {
 			this.setState('ERROR');
-			span.error('Error fetching group key: ', error);
+			span.set('error', error);
+			span.error('Error fetching group key');
 			return;
 		}
 
 		try {
 			const room = Rooms.state.get(this.roomId);
+			span.set('room', room);
 			if (!room?.e2eKeyId) {
 				this.setState('CREATING_KEYS');
 				await this.createGroupKey();
@@ -343,10 +345,11 @@ export class E2ERoom extends Emitter {
 			}
 
 			this.setState('WAITING_KEYS');
-			span.info('Requesting room key', room.e2eKeyId);
+			span.info('Requesting room key');
 			sdk.publish('notify-room-users', [`${this.roomId}/e2ekeyRequest`, this.roomId, room.e2eKeyId]);
 		} catch (error) {
-			span.error('Error during handshake: ', error);
+			span.set('error', error);
+			span.error('Error during handshake');
 			this.setState('ERROR');
 		}
 	}
@@ -375,13 +378,17 @@ export class E2ERoom extends Emitter {
 		const span = log.span('importGroupKey');
 		// Get existing group key
 		const keyID = groupKey.slice(0, 36);
-		groupKey = groupKey.slice(36);
-		const decodedGroupKey = Base64.decode(groupKey);
+
+		span.set('kid', keyID);
 
 		if (this.keyID === keyID && this.groupSessionKey) {
 			span.info('Key already imported');
 			return true;
 		}
+
+		groupKey = groupKey.slice(36);
+		const decodedGroupKey = Base64.decode(groupKey);
+		span.set('group_key', groupKey);
 
 		// Decrypt obtained encrypted session key
 		try {
@@ -391,7 +398,7 @@ export class E2ERoom extends Emitter {
 			const decryptedKey = await decryptRSA(e2e.privateKey, decodedGroupKey);
 			this.sessionKeyExportedString = toString(decryptedKey);
 		} catch (error) {
-			span.error('Error decrypting group key: ', { error, groupKey, keyID, decodedGroupKey });
+			span.set('error', error).error('Error decrypting group key');
 			return false;
 		}
 
@@ -407,7 +414,7 @@ export class E2ERoom extends Emitter {
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 		} catch (error) {
-			span.error('Error importing group key: ', error);
+			span.set('error', error).error('Error importing group key');
 			return false;
 		}
 
@@ -423,7 +430,6 @@ export class E2ERoom extends Emitter {
 	}
 
 	async createGroupKey() {
-
 		await this.createNewGroupKey();
 
 		await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
@@ -442,7 +448,7 @@ export class E2ERoom extends Emitter {
 		const span = log.span('resetRoomKey');
 
 		if (!e2e.publicKey) {
-			span.error('Cannot reset room key', 'No public key found.', e2e);
+			span.error('No public key found');
 			return;
 		}
 
@@ -453,11 +459,11 @@ export class E2ERoom extends Emitter {
 			const e2eNewKeys = { e2eKeyId: this.keyID, e2eKey: await this.encryptGroupKeyForParticipant(e2e.publicKey) };
 
 			this.setState('READY');
-			span.info('Room key reset successfully', e2eNewKeys);
+			span.set('kid', this.keyID).set('key', e2eNewKeys.e2eKey).info('Room key reset successfully');
 
 			return e2eNewKeys;
 		} catch (error) {
-			span.error('resetRoomKey failed', error);
+			span.set('error', error).error('Error resetting room key');
 			throw error;
 		}
 	}
@@ -470,7 +476,7 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		span.info('Room key has been reset', { oldKeyID: this.keyID, newKeyID: keyID });
+		span.set('new_key_id', keyID).info('Room key has been reset');
 		this.setState('WAITING_KEYS');
 		this.keyID = keyID;
 		this.groupSessionKey = null;
@@ -516,7 +522,7 @@ export class E2ERoom extends Emitter {
 
 			await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys });
 		} catch (error) {
-			return span.error('Error getting room users: ', error);
+			return span.set('error', error).error('Error getting room users');
 		}
 	}
 
@@ -531,7 +537,7 @@ export class E2ERoom extends Emitter {
 		try {
 			userKey = await importRSAKey(JSON.parse(publicKey), ['encrypt']);
 		} catch (error) {
-			return span.error('Error importing user key', error);
+			return span.set('error', error).error('Error importing user key');
 		}
 
 		try {
@@ -547,7 +553,7 @@ export class E2ERoom extends Emitter {
 			}
 			return keys;
 		} catch (error) {
-			return span.error('failed to encrypt old keys for participant', error);
+			return span.set('error', error).error('failed to encrypt old keys for participant');
 		}
 	}
 
@@ -557,7 +563,7 @@ export class E2ERoom extends Emitter {
 		try {
 			userKey = await importRSAKey(JSON.parse(publicKey), ['encrypt']);
 		} catch (error) {
-			return span.error('error', 'importing user key', error);
+			return span.set('error', error).error('Error importing user key');
 		}
 		// const vector = crypto.getRandomValues(new Uint8Array(16));
 
@@ -567,7 +573,7 @@ export class E2ERoom extends Emitter {
 			const encryptedUserKeyToString = this.keyID + Base64.encode(new Uint8Array(encryptedUserKey));
 			return encryptedUserKeyToString;
 		} catch (error) {
-			return span.error('Error encrypting user key: ', error);
+			return span.set('error', error).error('Error encrypting user key');
 		}
 	}
 
@@ -588,7 +594,7 @@ export class E2ERoom extends Emitter {
 		try {
 			result = await encryptAESCTR(vector, key, fileArrayBuffer);
 		} catch (error) {
-			return span.error('Error encrypting group key: ', error);
+			return span.set('error', error).error('Error encrypting group key');
 		}
 
 		const exportedKey = await window.crypto.subtle.exportKey('jwk', key);
@@ -625,14 +631,14 @@ export class E2ERoom extends Emitter {
 			}
 			const result = await encryptAesGcm(vector.buffer, this.groupSessionKey, data);
 			const ciphertext = {
-				key_id: this.keyID,
+				kid: this.keyID,
 				iv: Base64.encode(vector),
 				ciphertext: Base64.encode(new Uint8Array(result)),
 			};
-			span.info('encrypted', ciphertext);
+			span.set('ciphertext', ciphertext).info('message encrypted');
 			return ciphertext;
 		} catch (error) {
-			span.error('Error encrypting message: ', error);
+			span.set('error', error).error('Error encrypting message');
 			throw error;
 		}
 	}
@@ -694,17 +700,8 @@ export class E2ERoom extends Emitter {
 			return data;
 		}
 
-		const { content } = data;
-
-		if (content.algorithm === 'rc.v1.aes-sha2') {
-			const decrypted = await this.decrypt(content);
-			Object.assign(data, decrypted);
-		}
-
-		if (content.algorithm === 'rc.v2.aes-sha2') {
-			const decrypted = await this.decrypt(content);
-			Object.assign(data, decrypted);
-		}
+		const decrypted = await this.decrypt(data.content);
+		Object.assign(data, decrypted);
 
 		return data;
 	}
@@ -724,23 +721,23 @@ export class E2ERoom extends Emitter {
 
 	// Parses the message to extract the keyID and cipherText
 	parse(payload: string | Required<IMessage>['content']): {
-		key_id: string;
+		kid: string;
 		iv: Uint8Array<ArrayBuffer>;
 		ciphertext: Uint8Array<ArrayBuffer>;
 	} {
-		// v2: {"key_id":"...", "iv": "...", "ciphertext":"..."}
+		// v2: {"kid":"...", "iv": "...", "ciphertext":"..."}
 		if (typeof payload !== 'string' && payload.algorithm === 'rc.v2.aes-sha2') {
 			const iv = Base64.decode(payload.iv);
 			const ciphertext = Base64.decode(payload.ciphertext);
 
-			return { key_id: payload.key_id, iv, ciphertext };
+			return { kid: payload.kid, iv, ciphertext };
 		}
-		// v1: key_id + base64(vector + ciphertext)
+		// v1: kid + base64(vector + ciphertext)
 		const message = typeof payload === 'string' ? payload : payload.ciphertext;
-		const key_id = message.slice(0, 12);
+		const kid = message.slice(0, 12);
 		const [iv, ciphertext] = splitVectorAndEncryptedData(Base64.decode(message.slice(12)));
 		return {
-			key_id,
+			kid,
 			iv,
 			ciphertext,
 		};
@@ -750,14 +747,14 @@ export class E2ERoom extends Emitter {
 		message: Required<IMessage>['content'],
 	): Promise<{ _id: IMessage['_id']; text: string; userId: IUser['_id']; ts: Date; msg?: undefined } | { msg: string }> {
 		const span = log.span('decrypt').set('rid', this.roomId);
-		const { key_id, iv, ciphertext } = this.parse(message);
-		span.set('key_id', key_id);
+		const { kid, iv, ciphertext } = this.parse(message);
+		span.set('kid', kid);
 		span.set('iv', iv.toString());
 		span.set('ciphertext', ciphertext.toString());
 
 		let key;
-		if (key_id !== this.keyID) {
-			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === key_id);
+		if (kid !== this.keyID) {
+			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === kid);
 			if (oldRoomKey) {
 				key = oldRoomKey.E2EKey;
 			} else if (this.groupSessionKey) {
@@ -773,27 +770,23 @@ export class E2ERoom extends Emitter {
 			key = this.groupSessionKey;
 		}
 
-		let ret;
-
 		if (!key) {
 			span.error('No decryption key found.');
-			ret = { msg: t('E2E_indecipherable') };
-		} else {
-			span.set('algorithm', key.algorithm.name);
-			span.set('extractable', key.extractable);
-			span.set('type', key.type);
-			span.set('usages', key.usages.toString());
-			try {
-				const result = await decryptAes(iv.buffer, key, ciphertext.buffer);
-				ret = EJSON.parse(new TextDecoder('UTF-8').decode(result));
-				span.info('decrypted', ret);
-			} catch (error) {
-				span.error('', error);
-				ret = { msg: t('E2E_Key_Error') };
-			}
+			return { msg: t('E2E_indecipherable') };
 		}
-
-		return ret;
+		span.set('algorithm', key.algorithm.name);
+		span.set('extractable', key.extractable);
+		span.set('type', key.type);
+		span.set('usages', key.usages.toString());
+		try {
+			const result = await decryptAes(iv.buffer, key, ciphertext.buffer);
+			const ret = EJSON.parse(new TextDecoder('UTF-8').decode(result));
+			span.set('decrypted', ret).info('decrypted');
+			return ret;
+		} catch (error) {
+			span.set('error', error).error('Error decrypting message');
+			return { msg: t('E2E_Key_Error') };
+		}
 	}
 
 	provideKeyToUser(keyId: string) {

@@ -125,8 +125,10 @@ class E2E extends Emitter {
 	}
 
 	async onSubscriptionChanged(sub: SubscriptionWithRoom): Promise<void> {
-		const span = log.span('onSubscriptionChanged');
-		span.info('subscriptionChanged', sub.lastMessage);
+		const span = log.span('onSubscriptionChanged')
+			.set('subscription_id', sub._id)
+			.set('room_id', sub.rid)
+			.set('encrypted', sub.encrypted);
 		if (!sub.encrypted && !sub.E2EKey) {
 			this.removeInstanceByRoomId(sub.rid);
 			return;
@@ -134,6 +136,7 @@ class E2E extends Emitter {
 
 		const e2eRoom = await this.getInstanceByRoomId(sub.rid);
 		if (!e2eRoom) {
+			span.warn('no e2eRoom found');
 			return;
 		}
 
@@ -142,7 +145,7 @@ class E2E extends Emitter {
 				await this.acceptSuggestedKey(sub.rid);
 				e2eRoom.keyReceived();
 			} else {
-				span.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+				span.warn('rejected');
 				await this.rejectSuggestedKey(sub.rid);
 			}
 		}
@@ -183,7 +186,7 @@ class E2E extends Emitter {
 			const excess = instatiated.difference(subscribed);
 
 			if (excess.size) {
-				span.info('Unsubscribing from excess instances', excess);
+				span.info('Unsubscribing from excess instances');
 				excess.forEach((rid) => this.removeInstanceByRoomId(rid));
 			}
 
@@ -216,13 +219,16 @@ class E2E extends Emitter {
 				.filter((sub) => sub.E2ESuggestedKey && !sub.E2EKey)
 				.map(async (sub) => {
 					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+					span
+						.set('subscription_id', sub._id)
+						.set('room_id', sub.rid);
 
 					if (!e2eRoom) {
 						return;
 					}
 
 					if (sub.E2ESuggestedKey && (await e2eRoom.importGroupKey(sub.E2ESuggestedKey))) {
-						span.info('importedE2ESuggestedKey', sub.E2ESuggestedKey);
+						span.info('importedE2ESuggestedKey');
 						await e2e.acceptSuggestedKey(sub.rid);
 						e2eRoom.keyReceived();
 					} else {
@@ -233,6 +239,7 @@ class E2E extends Emitter {
 					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 				}),
 		);
+		span.info('handledAsyncE2ESuggestedKey');
 	}
 
 	private waitForRoom(rid: IRoom['_id']): Promise<IRoom> {
@@ -475,7 +482,7 @@ class E2E extends Emitter {
 			this.privateKey = key.privateKey;
 		} catch (error) {
 			this.setState('ERROR');
-			return span.error('Error generating key: ', error);
+			return span.set('error', error).error('Error generating key');
 		}
 
 		try {
@@ -485,7 +492,7 @@ class E2E extends Emitter {
 			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
 			this.setState('ERROR');
-			return span.error('Error exporting public key: ', error);
+			return span.set('error', error).error('Error exporting public key');
 		}
 
 		try {
@@ -494,7 +501,7 @@ class E2E extends Emitter {
 			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {
 			this.setState('ERROR');
-			return span.error('Error exporting private key: ', error);
+			return span.set('error', error).error('Error exporting private key');
 		}
 
 		await this.requestSubscriptionKeys();
@@ -878,7 +885,7 @@ class E2E extends Emitter {
 			try {
 				await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys: userKeysWithRooms });
 			} catch (error) {
-				return span.error('provideUsersSuggestedGroupKeys', error);
+				return span.set('error', error).error('provideUsersSuggestedGroupKeys');
 			}
 		};
 

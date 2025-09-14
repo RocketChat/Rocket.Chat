@@ -13,13 +13,13 @@ interface IEncryptedContentV1 extends IEncryptedContent {
 	/**
 	 * The encryption algorithm used.
 	 */
-	algorithm: 'rc.v1.aes-sha2'
+	algorithm: 'rc.v1.aes-sha2';
 }
 
 interface IEncryptedContentV2 extends IEncryptedContent {
-	algorithm: 'rc.v2.aes-sha2',
+	algorithm: 'rc.v2.aes-sha2';
 	iv: string; // base64-encoded initialization vector
-	key_id: string; // ID of the key used to encrypt the message
+	kid: string; // ID of the key used to encrypt the message
 }
 
 export type EncryptedContent = IEncryptedContentV1 | IEncryptedContentV2;

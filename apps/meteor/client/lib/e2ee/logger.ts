@@ -30,11 +30,13 @@ class Span {
 		this.label = label;
 	}
 
-	private log(level: LogLevel, message: string, ...params: unknown[]) {
-		console.groupCollapsed(`%c[${this.logger.deref()?.title}:${this.label}]%c ${message}`, styles[level], 'color: gray; font-weight: normal;', ...params);
-		if (this.attributes.size > 0) {
-			console.table(Object.fromEntries(this.attributes));
-		}
+	private log(level: LogLevel, message: string) {
+		console.groupCollapsed(`%c[${this.logger.deref()?.title}:${this.label}]%c ${message}`, styles[level], 'color: gray; font-weight: normal;');
+		
+		this.attributes.forEach((values, key) => {
+			console.log(`%c${key}:`, 'font-weight: bold;', ...values);
+		});
+
 		console.trace();
 		console.groupEnd();
 	}
@@ -48,16 +50,19 @@ class Span {
 		return this;
 	}
 
-	info(message: string, ...params: unknown[]) {
-		this.log('info', message, ...params);
+	info(message: string) {
+		this.log('info', message);
 	}
 
-	warn(message: string, ...params: unknown[]) {
-		this.log('warn', message, ...params);
+	warn(message: string) {
+		this.log('warn', message);
 	}
 
-	error(message: string, ...params: unknown[]) {
-		this.log('error', message, ...params);
+	error(message: string, error?: unknown) {
+		if (error) {
+			this.set('error', error);
+		}
+		this.log('error', message);
 	}
 }
 
