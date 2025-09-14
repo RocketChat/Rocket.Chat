@@ -12,7 +12,7 @@ type AutoCompleteDepartmentAgentProps = Omit<AllHTMLAttributes<HTMLInputElement>
 	agents?: Serialized<ILivechatDepartmentAgents>[];
 };
 
-const AutoCompleteDepartmentAgent = ({ value, onChange, agents, ...props }: AutoCompleteDepartmentAgentProps) => {
+const AutoCompleteDepartmentAgent = ({ value, onChange, agents, placeholder, ...props }: AutoCompleteDepartmentAgentProps) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 
@@ -33,6 +33,7 @@ const AutoCompleteDepartmentAgent = ({ value, onChange, agents, ...props }: Auto
 	return (
 		<AutoComplete
 			{...props}
+			placeholder={!value ? placeholder : undefined}
 			filter={filter}
 			setFilter={setFilter}
 			value={value}
