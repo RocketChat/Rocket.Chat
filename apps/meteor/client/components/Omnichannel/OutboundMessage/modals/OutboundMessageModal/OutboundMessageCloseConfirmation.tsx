@@ -25,7 +25,7 @@ const OutboundMessageCloseConfirmation = ({ onConfirm, onCancel }: OutboundMessa
 				<StatesTitle>{t('All_changes_will_be_lost')}</StatesTitle>
 				<StatesSubtitle>{t('Are_you_sure_you_want_to_discard_this_outbound_message')}</StatesSubtitle>
 				<StatesActions>
-					<Button secondary onClick={onCancel}>
+					<Button ref={(el) => el?.focus()} secondary onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
 					<Button danger onClick={onConfirm}>

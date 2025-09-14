@@ -1,6 +1,8 @@
 import { Box, Modal, ModalBackdrop, ModalClose, ModalContent, ModalHeader, ModalTitle } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useEffect, useState, type ComponentProps } from 'react';
+import { useEffect, useState } from 'react';
+import type { KeyboardEvent, ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import OutboundMessageCloseConfirmation from './OutboundMessageCloseConfirmation';
@@ -29,16 +31,25 @@ const OutboundMessageModal = ({ defaultValues, onClose }: OutboundMessageModalPr
 		});
 	}, [initialRoute, onClose, router]);
 
-	const handleCloseConfirmation = (): void => {
-		setClosingConfirmation(true);
-	};
+	const handleKeyDown = useEffectEvent((e: KeyboardEvent<HTMLDivElement>): void => {
+		if (e.key !== 'Escape') {
+			return;
+		}
+
+		e.stopPropagation();
+		e.preventDefault();
+
+		// If the confirmation is already being shown, close it.
+		// Otherwise, show the confirmation.
+		setClosingConfirmation(!isClosing);
+	});
 
 	return (
-		<ModalBackdrop bg='transparent' onClick={(e) => e.stopPropagation()}>
-			<Modal>
+		<ModalBackdrop bg='transparent' onClick={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
+			<Modal onKeyDown={handleKeyDown}>
 				<ModalHeader>
 					<ModalTitle>{t('Outbound_Message')}</ModalTitle>
-					{!isClosing ? <ModalClose onClick={handleCloseConfirmation} /> : null}
+					{!isClosing ? <ModalClose onClick={() => setClosingConfirmation(true)} /> : null}
 				</ModalHeader>
 				<ModalContent pbe={16}>
 					<Box display={isClosing ? 'none' : 'block'}>
